@@ -23,7 +23,10 @@ spec:
   externalClusters:
     {{- .Values.postgres.spec.externalClusters | toYaml | nindent 4 }}
   {{- end }}
-  {{- if .Values.postgres.spec.plugins }}
+  {{- if .Values.postgres.backup.enabled }}
   plugins:
-    {{- .Values.postgres.spec.plugins | toYaml | nindent 4 }}
+    - name: barman-objectstore
+      spec:
+        objectStoreRef:
+          name: "{{ .Release.Name }}-barman-objectstore"
   {{- end }}
