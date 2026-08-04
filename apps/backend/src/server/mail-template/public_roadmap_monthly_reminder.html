@@ -1,342 +1,44 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="x-apple-disable-message-reformatting" />
-    <meta
-      content="width=device-width, initial-scale=1"
-      name="viewport" />
-    <meta
-      content="telephone=no, date=no, address=no, email=no, url=no"
-      name="format-detection" />
-    <meta
-      content="light dark"
-      name="color-scheme" />
-    <meta
-      content="light dark"
-      name="supported-color-schemes" />
-    <!--[if mso]>
-      <noscript>
-        <xml>
-          <o:OfficeDocumentSettings
-            xmlns:o="urn:schemas-microsoft-com:office:office">
-            <o:PixelsPerInch>96</o:PixelsPerInch>
-          </o:OfficeDocumentSettings>
-        </xml>
-      </noscript>
-      <style>
-        td,
-        th,
-        div,
-        p,
-        a,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-          font-family: 'Segoe UI', sans-serif;
-          mso-line-height-rule: exactly;
-        }
-      </style>
-    <![endif]-->
-    <title>XTM Hub - Public Roadmap monthly reminder</title>
-    <style>
-      [data-layout-table='true'] {
-        display: table;
-        margin-left: auto;
-        margin-right: auto;
-        border-collapse: collapse;
-        border-spacing: 0;
-      }
-      [data-layout-row='true'] {
-        display: table-row;
-      }
-      [data-layout-cell='true'] {
-        display: table-cell;
-        padding: 0;
-        vertical-align: top;
-      }
-      @media (max-width: 600px) {
-        .sm-my-8 {
-          margin-top: 32px !important;
-          margin-bottom: 32px !important;
-        }
+{{#> layout}}
+<p style="margin: 0; line-height: 24px">
+  Hello PMs and PMMs,<br /><br />
+  Friendly monthly reminder: please make sure your epics are created and kept up
+  to date in the roadmap. <br />
 
-        .sm-px-4 {
-          padding-left: 16px !important;
-          padding-right: 16px !important;
-        }
+  Keeping the roadmap accurate helps us maintain a clear and reliable view of
+  Filigran’s priorities internally, while also giving our community better
+  visibility into what’s coming next. <br />
 
-        .sm-px-6 {
-          padding-left: 24px !important;
-          padding-right: 24px !important;
-        }
-
-        .sm-leading-8 {
-          line-height: 32px !important;
-        }
-      }
-
-      @media (prefers-color-scheme: dark) {
-        .logo-light {
-          display: none !important;
-        }
-
-        .logo-dark {
-          display: block !important;
-        }
-      }
-    </style>
-  </head>
-  <body
-    style="
-      margin: 0;
-      width: 100%;
-      background-color: #f1f5f9;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-      word-break: break-word;
-    ">
+  <br />
+  If you’ve already submitted your roadmap, thank you for staying on top of it!
+  <br />
+  <br />
+</p>
+<div
+  data-layout-table="true"
+  style="margin: 8px auto 16px">
+  <div data-layout-row="true">
     <div
-      aria-label="XTM Hub - Public Roadmap monthly reminder"
-      aria-roledescription="email"
-      lang="en"
-      role="article">
-      <div
-        class="sm-px-4"
+      data-layout-cell="true"
+      style="border-radius: 4px; background-color: #001bdb">
+      <a
+        href="{{ roadmapLink }}"
         style="
-          background-color: #f1f5f9;
-          font-family:
-            ui-sans-serif,
-            system-ui,
-            -apple-system,
-            'Segoe UI',
-            sans-serif;
+          display: inline-block;
+          padding: 12px 28px;
+          font-size: 14px;
+          font-weight: 600;
+          line-height: 20px;
+          color: #ffffff;
+          text-decoration: none;
+          border-radius: 4px;
         ">
-        <div data-layout-table="true">
-          <div data-layout-row="true">
-            <div
-              data-layout-cell="true"
-              style="width: 552px; max-width: 100%">
-              <div
-                class="sm-my-8"
-                style="
-                  margin-bottom: 40px;
-                  margin-top: 40px;
-                  text-align: center;
-                ">
-                <a href="{{ base_url_front }}">
-                  <img
-                    alt="XTM Hub logo"
-                    class="logo-light"
-                    src="{{ base_url_front }}/logo_xtm_hub_light.svg"
-                    style="max-width: 100%; vertical-align: middle"
-                    width="320" />
-                  <img
-                    alt="XTM Hub logo"
-                    class="logo-dark"
-                    src="{{ base_url_front }}/logo_xtm_hub_dark.svg"
-                    style="
-                      display: none;
-                      max-width: 100%;
-                      vertical-align: middle;
-                    "
-                    width="320" />
-                </a>
-              </div>
-              <div
-                data-layout-table="true"
-                style="width: 100%">
-                <div data-layout-row="true">
-                  <div
-                    data-layout-cell="true"
-                    class="sm-px-6"
-                    style="
-                      border-radius: 4px;
-                      background-color: #fffffe;
-                      padding: 48px;
-                      font-size: 16px;
-                      color: #00020c;
-                      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-                    ">
-                    <p style="margin: 0; line-height: 24px">
-                      Hello PMs and PMMs,<br /><br />
-                      Friendly monthly reminder: please make sure your epics are
-                      created and kept up to date in the roadmap. <br />
-
-                      Keeping the roadmap accurate helps us maintain a clear and
-                      reliable view of Filigran’s priorities internally, while
-                      also giving our community better visibility into what’s
-                      coming next. <br />
-
-                      <br />
-                      If you’ve already submitted your roadmap, thank you for
-                      staying on top of it!
-                      <br />
-                      <br />
-                    </p>
-                    <div
-                      data-layout-table="true"
-                      style="margin: 8px auto 16px">
-                      <div data-layout-row="true">
-                        <div
-                          data-layout-cell="true"
-                          style="border-radius: 4px; background-color: #001bdb">
-                          <a
-                            href="{{ roadmapLink }}"
-                            style="
-                              display: inline-block;
-                              padding: 12px 28px;
-                              font-size: 14px;
-                              font-weight: 600;
-                              line-height: 20px;
-                              color: #ffffff;
-                              text-decoration: none;
-                              border-radius: 4px;
-                            ">
-                            Open the roadmap
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                    <p style="margin: 0; padding-top: 16px">
-                      Kind regards, <br />
-                      <strong>The XTM Hub team</strong>
-                    </p>
-                  </div>
-                </div>
-                <div data-layout-row="true"></div>
-                <div
-                  data-layout-row="true"
-                  role="separator">
-                  <div
-                    data-layout-cell="true"
-                    style="line-height: 16px">
-                    &zwj;
-                  </div>
-                </div>
-                <div
-                  data-layout-cell="true"
-                  style="
-                    padding-left: 24px;
-                    padding-right: 24px;
-                    text-align: center;
-                    font-size: 12px;
-                    color: #00020c;
-                  ">
-                  <div data-layout-table="true">
-                    <div data-layout-row="true">
-                      <div data-layout-cell="true">
-                        <div
-                          data-layout-table="true"
-                          style="
-                            margin: 16px;
-                            border-spacing: 4px;
-                            border-collapse: separate;
-                          ">
-                          <div data-layout-row="true">
-                            <div
-                              data-layout-cell="true"
-                              style="padding: 4px">
-                              <a href="https://filigran.io/">
-                                <img
-                                  alt="Filigran website"
-                                  src="{{ base_url_front }}/website.png"
-                                  style="
-                                    max-width: 100%;
-                                    vertical-align: middle;
-                                    border: none;
-                                  "
-                                  width="24" />
-                              </a>
-                            </div>
-                            <div
-                              data-layout-cell="true"
-                              style="padding: 4px">
-                              <a
-                                href="https://filigran-community.slack.com/join/shared_invite/zt-2pp43qkqc-EY7qC7Sk30zZfsNjgXwF5w">
-                                <img
-                                  alt="Slack community"
-                                  src="{{ base_url_front }}/slack.png"
-                                  style="
-                                    max-width: 100%;
-                                    vertical-align: middle;
-                                    border: none;
-                                  "
-                                  width="24" />
-                              </a>
-                            </div>
-                            <div
-                              data-layout-cell="true"
-                              style="padding: 4px">
-                              <a
-                                href="https://www.linkedin.com/company/filigran">
-                                <img
-                                  alt="Linkedin page"
-                                  src="{{ base_url_front }}/linkedin.png"
-                                  style="
-                                    max-width: 100%;
-                                    vertical-align: middle;
-                                    border: none;
-                                  "
-                                  width="24" />
-                              </a>
-                            </div>
-                            <div
-                              data-layout-cell="true"
-                              style="padding: 4px">
-                              <a href="https://www.youtube.com/@Filigran">
-                                <img
-                                  alt="Youtube channel"
-                                  src="{{ base_url_front }}/youtube.png"
-                                  style="
-                                    max-width: 100%;
-                                    vertical-align: middle;
-                                    border: none;
-                                  "
-                                  width="24" />
-                              </a>
-                            </div>
-                            <div
-                              data-layout-cell="true"
-                              style="padding: 4px">
-                              <a href="https://x.com/FiligranHQ">
-                                <img
-                                  alt="X link"
-                                  src="{{ base_url_front }}/twitter.png"
-                                  style="
-                                    max-width: 100%;
-                                    vertical-align: middle;
-                                    border: none;
-                                  "
-                                  width="24" />
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div style="margin-bottom: 8px">
-                    <a href="https://filigran.io">
-                      <img
-                        alt="Filigran logo"
-                        src="{{ base_url_front }}/logo-filigran.png"
-                        style="max-width: 100%; vertical-align: middle"
-                        width="100" />
-                    </a>
-                  </div>
-                  <p style="margin: 0 0 40px">
-                    New York, Paris, London, Sydney
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        Open the roadmap
+      </a>
     </div>
-  </body>
-</html>
+  </div>
+</div>
+<p style="margin: 0; padding-top: 16px">
+  Kind regards, <br />
+  <strong>The XTM Hub team</strong>
+</p>
+{{/layout}}

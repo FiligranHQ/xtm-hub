@@ -22,6 +22,8 @@ const smtpOptions = config.get<TransportOptions>('smtp_options');
 const transporter = nodemailer.createTransport(smtpOptions);
 
 const templateCache = new Map<string, HandlebarsTemplateDelegate>();
+const templateDirectory = path.join('src/server/mail-template');
+let layoutPartialRegistrationPromise: Promise<void> | undefined;
 
 interface SendMailParams<T extends keyof MailTemplates> {
   to: string | string[];
@@ -31,6 +33,18 @@ interface SendMailParams<T extends keyof MailTemplates> {
 
 const useQueueProcessing = (): boolean =>
   config.get<boolean>('mail_use_queue_processing');
+
+const registerLayoutPartial = async (): Promise<void> => {
+  if (!layoutPartialRegistrationPromise) {
+    layoutPartialRegistrationPromise = fsPromises
+      .readFile(path.join(templateDirectory, 'layout.html'))
+      .then((layoutSource) => {
+        Handlebars.registerPartial('layout', layoutSource.toString());
+      });
+  }
+
+  await layoutPartialRegistrationPromise;
+};
 
 export const buildServiceLink = ({
   serviceDefinitionIdentifier,
@@ -46,13 +60,12 @@ export async function renderEmail<T extends keyof MailTemplates>(
   templateName: T,
   params: MailTemplates[T]
 ) {
+  await registerLayoutPartial();
+
   let compiledTemplate = templateCache.get(templateName);
 
   if (!compiledTemplate) {
-    const filepath = path.join(
-      'src/server/mail-template',
-      `${templateName}.html`
-    );
+    const filepath = path.join(templateDirectory, `${templateName}.html`);
     const templateContent = (await fsPromises.readFile(filepath)).toString();
     compiledTemplate = Handlebars.compile(templateContent);
     templateCache.set(templateName, compiledTemplate);
@@ -61,6 +74,7 @@ export async function renderEmail<T extends keyof MailTemplates>(
   const baseParams = {
     base_url_front: config.get('base_url_front'),
     contactEmail: 'xtm-hub-support@filigran.io',
+    title: templateSubjects[templateName](params),
   };
 
   const renderParams = params
@@ -131,4 +145,6 @@ export const sendMail = async <T extends keyof MailTemplates>({
  */
 export const clearTemplateCache = () => {
   templateCache.clear();
+  Handlebars.unregisterPartial('layout');
+  layoutPartialRegistrationPromise = undefined;
 };
