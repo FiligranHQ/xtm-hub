@@ -115,14 +115,15 @@ export const DocumentDomain = {
     id: string,
     include_metadata: DocumentMetadataKeyCode[] = []
   ): Promise<T> => {
-    const docQuery = db<T>('Document')
+    const document = await db<T>('Document')
       .where('Document.id', '=', id)
       .select('Document.*')
-      .groupBy(['Document.id']);
+      .first();
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
-
-    return docQuery.first();
+    return DocumentMetadataDomain.hydrateMetadataOne(
+      document,
+      include_metadata
+    );
   },
 
   loadDocumentsWithMetadataByIds: async <T extends Document>(
@@ -131,14 +132,11 @@ export const DocumentDomain = {
   ): Promise<T[]> => {
     if (ids.length === 0) return [];
 
-    const docQuery = db<T>('Document')
+    const documents = (await db<T>('Document')
       .whereIn('Document.id', ids)
-      .select('Document.*')
-      .groupBy(['Document.id']);
+      .select('Document.*')) as T[];
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
-
-    return docQuery;
+    return DocumentMetadataDomain.hydrateMetadata(documents, include_metadata);
   },
 
   lockDocumentsByMetadata: async (
@@ -181,9 +179,9 @@ export const DocumentDomain = {
       );
     }
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
+    const documents: DocumentModel[] = await docQuery;
 
-    return docQuery;
+    return DocumentMetadataDomain.hydrateMetadata(documents, include_metadata);
   },
 
   buildUploaderQuery: (documentIds: readonly string[]) => {
@@ -275,17 +273,25 @@ export const DocumentDomain = {
 
     loadDocumentQuery.groupBy(['Document.id']);
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(
-      loadDocumentQuery,
-      include_metadata
-    );
-
-    return paginate<Document, DocumentConnection>(
+    const connection = await paginate<Document, DocumentConnection>(
       'Document',
       opts,
       { normalizeSearchTerm: true },
       loadDocumentQuery
     );
+
+    const hydratedNodes = await DocumentMetadataDomain.hydrateMetadata(
+      connection.edges.map(({ node }) => node),
+      include_metadata
+    );
+
+    return {
+      ...connection,
+      edges: connection.edges.map((edge, index) => ({
+        ...edge,
+        node: hydratedNodes[index] as Document,
+      })),
+    };
   },
 
   loadSeoDocumentBySlug: async (
@@ -293,7 +299,7 @@ export const DocumentDomain = {
     slug: string,
     include_metadata: DocumentMetadataKeyCode[] = []
   ) => {
-    const docQuery = db<Document>('Document')
+    const document = await db<Document>('Document')
       .select('Document.*')
       .where('Document.slug', '=', slug)
       .where('Document.active', '=', true)
@@ -306,11 +312,13 @@ export const DocumentDomain = {
             '"Document_Children"."child_document_id" = "Document"."id"'
           );
       })
-      .groupBy(['Document.id']);
+      .groupBy(['Document.id'])
+      .first();
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(docQuery, include_metadata);
-
-    return docQuery.first();
+    return DocumentMetadataDomain.hydrateMetadataOne(
+      document,
+      include_metadata
+    );
   },
 
   loadPaginatedSeoDocumentsByServiceSlug: async (
@@ -320,28 +328,40 @@ export const DocumentDomain = {
     include_metadata?: DocumentMetadataKeyCode[]
   ) => {
     const useDefaultSort = !opts.orderBy;
-    const loadDocumentsQuery = DocumentDomain.loadSeoDocumentsByServiceSlug(
-      type,
-      serviceSlug,
-      include_metadata,
-      useDefaultSort
-    );
+    const loadDocumentsQuery =
+      DocumentDomain.buildSeoDocumentsByServiceSlugQuery(
+        type,
+        serviceSlug,
+        useDefaultSort
+      );
 
-    return paginate<Document, DocumentConnection>(
+    const connection = await paginate<Document, DocumentConnection>(
       'Document',
       opts,
       opts,
       loadDocumentsQuery
     );
+
+    const hydratedNodes = await DocumentMetadataDomain.hydrateMetadata(
+      connection.edges.map(({ node }) => node),
+      include_metadata
+    );
+
+    return {
+      ...connection,
+      edges: connection.edges.map((edge, index) => ({
+        ...edge,
+        node: hydratedNodes[index] as Document,
+      })),
+    };
   },
 
-  loadSeoDocumentsByServiceSlug: (
+  buildSeoDocumentsByServiceSlugQuery: (
     type: string,
     serviceSlug: string,
-    include_metadata: DocumentMetadataKeyCode[] = [],
     orderResults: boolean = true
   ): Knex.QueryBuilder => {
-    const loadDocumentsQuery = db<Document>('Document')
+    return db<Document>('Document')
       .select('Document.*')
       .leftJoin(
         'ServiceInstance',
@@ -368,13 +388,22 @@ export const DocumentDomain = {
         }
       })
       .groupBy(['Document.id']);
+  },
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(
-      loadDocumentsQuery,
-      include_metadata
-    );
+  loadSeoDocumentsByServiceSlug: async (
+    type: string,
+    serviceSlug: string,
+    include_metadata: DocumentMetadataKeyCode[] = [],
+    orderResults: boolean = true
+  ): Promise<Document[]> => {
+    const documents: Document[] =
+      await DocumentDomain.buildSeoDocumentsByServiceSlugQuery(
+        type,
+        serviceSlug,
+        orderResults
+      );
 
-    return loadDocumentsQuery;
+    return DocumentMetadataDomain.hydrateMetadata(documents, include_metadata);
   },
 
   updateDocument: async ({
@@ -483,7 +512,7 @@ export const DocumentDomain = {
     include_metadata: DocumentMetadataKeyCode[] = [],
     documentTypes?: DOCUMENT_TYPE[]
   ): Promise<Document[]> => {
-    const query = db<Document>('Document')
+    const documents = await db<Document>('Document')
       .select('Document.*')
       .where('Document.active', true)
       .whereNotExists(function () {
@@ -503,9 +532,7 @@ export const DocumentDomain = {
       .limit(limit)
       .groupBy(['Document.id']);
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
-
-    return query;
+    return DocumentMetadataDomain.hydrateMetadata(documents, include_metadata);
   },
 
   loadMostDeployedDocuments: async (
@@ -527,7 +554,7 @@ export const DocumentDomain = {
       .groupBy('resource_id')
       .as('deploy_counts');
 
-    const query = db<Document>('Document')
+    const documents = await db<Document>('Document')
       .select('Document.*')
       .join(deployCounts, 'deploy_counts.resource_id', 'Document.id')
       .groupBy(['Document.id'])
@@ -535,9 +562,7 @@ export const DocumentDomain = {
       .orderBy('Document.id', 'asc')
       .limit(limit);
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
-
-    return query;
+    return DocumentMetadataDomain.hydrateMetadata(documents, include_metadata);
   },
 
   /**
@@ -558,7 +583,7 @@ export const DocumentDomain = {
     const metadataKeys =
       INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[];
 
-    const query = db<DocumentModel>('Document')
+    const connectors: ConnectorV2[] = await db<DocumentModel>('Document')
       .distinctOn('dm_fragment.value')
       .join(
         'Document_Metadata as dm_type',
@@ -570,6 +595,12 @@ export const DocumentDomain = {
         'Document.id',
         'dm_fragment.document_id'
       )
+      .leftJoin({ dm_min: 'Document_Metadata' }, function () {
+        this.on('dm_min.document_id', '=', 'Document.id').andOnVal(
+          'dm_min.key',
+          DocumentMetadataKeyCode.MinimumDeployableVersionPadded
+        );
+      })
       .where('dm_type.key', DocumentMetadataKeyCode.IntegrationType)
       .andWhere('dm_type.value', IntegrationType.Connector)
       .andWhere('dm_fragment.key', DocumentMetadataKeyCode.ManifestFragmentId)
@@ -578,23 +609,15 @@ export const DocumentDomain = {
       .where('Document.is_decommissioned', false)
       .select('Document.*')
       .groupBy('Document.id', 'dm_fragment.value')
-      // dm_pivot comes from addIncludeMetadataQuery
       .havingRaw(
-        `(MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) IS NULL
-          OR MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) <= ?)
+        `(MAX("dm_min"."value") IS NULL OR MAX("dm_min"."value") <= ?)
          AND "Document"."version" ${isLts ? 'LIKE' : 'NOT LIKE'} '%.LTS.%'`,
-        [
-          DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
-          DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
-          paddedVersion,
-        ]
+        [paddedVersion]
       )
       .orderByRaw(
         `"dm_fragment"."value" ASC, "Document"."version" DESC NULLS LAST`
       );
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(query, metadataKeys);
-
-    return query as unknown as Promise<ConnectorV2[]>;
+    return DocumentMetadataDomain.hydrateMetadata(connectors, metadataKeys);
   },
 };

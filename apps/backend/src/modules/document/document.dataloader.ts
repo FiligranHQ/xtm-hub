@@ -107,7 +107,7 @@ export const DocumentDataLoader = {
     ids: readonly string[]
   ): Promise<Document[][]> => {
     const rows: WithParentId<Document>[] =
-      await DocumentChildrenDomain.buildChildrenDocumentsQuery<
+      await DocumentChildrenDomain.loadChildrenDocumentsByParentIds<
         WithParentId<Document>
       >(ids, {
         isDataLoader: true,
@@ -127,7 +127,7 @@ export const DocumentDataLoader = {
     ids: readonly string[]
   ): Promise<Document[][]> => {
     const rows: WithParentId<Document>[] =
-      await DocumentChildrenDomain.buildImagesByDocumentIdQuery<
+      await DocumentChildrenDomain.loadImagesByParentIds<
         WithParentId<Document>
       >(ids, {
         isDataLoader: true,
