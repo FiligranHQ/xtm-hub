@@ -1,8 +1,5 @@
-import {
-  getGraphqlApi,
-  networkFetch,
-  UnauthenticatedError,
-} from '@/relay/environment/fetch-fn';
+import { UnauthenticatedError } from '@/lib/graphql-fetch.utils';
+import { getGraphqlApi, networkFetch } from '@/relay/environment/fetch-fn';
 import { buildSignupRedirect } from '@/utils/redirect';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';

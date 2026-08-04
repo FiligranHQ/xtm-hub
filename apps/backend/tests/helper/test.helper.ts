@@ -25,6 +25,9 @@ import ManifestRebuildQueue, {
   ManifestRebuildQueueInitializer,
   ManifestRebuildQueueMutator,
 } from '../../src/model/kanel/public/ManifestRebuildQueue';
+import ObjectSolutionCategory, {
+  ObjectSolutionCategoryMutator,
+} from '../../src/model/kanel/public/ObjectSolutionCategory';
 import ObjectUseCase, {
   ObjectUseCaseInitializer,
   ObjectUseCaseMutator,
@@ -64,6 +67,9 @@ export type {
 } from './perf/test.document.perf.helper';
 export { measureAvgDuration } from './perf/test.perf.helper';
 export { mockPlatformConfig };
+
+export const DEFAULT_ONE_CLICK_PLATFORM_ID =
+  'a1b2c3d4-0000-4000-8000-000000000001';
 
 export const TestHelper = {
   ...TestDocumentHelper,
@@ -106,10 +112,16 @@ export const TestHelper = {
   },
   oneClickDeployment: {
     insert: async (
-      data: OneClickDeploymentInitializer
+      data: Partial<OneClickDeploymentInitializer> & { resource_id: string }
     ): Promise<OneClickDeployment> => {
       const [row] = await db<OneClickDeployment>('OneClickDeployment')
-        .insert(data)
+        .insert({
+          platform_id: DEFAULT_ONE_CLICK_PLATFORM_ID,
+          tenant_id: null,
+          user_id: null,
+          deployed_at: new Date(),
+          ...data,
+        })
         .returning('*');
       return row!;
     },
@@ -198,6 +210,20 @@ export const TestHelper = {
     },
     load: async (field: ObjectUseCaseMutator): Promise<ObjectUseCase[]> => {
       return db<ObjectUseCase[]>('Object_UseCase').where(field).select('*');
+    },
+  },
+  objectSolutionCategory: {
+    delete: async (field: ObjectSolutionCategoryMutator): Promise<void> => {
+      await db<ObjectSolutionCategory>('Object_SolutionCategory')
+        .where(field)
+        .del();
+    },
+    load: async (
+      field: ObjectSolutionCategoryMutator
+    ): Promise<ObjectSolutionCategory[]> => {
+      return db<ObjectSolutionCategory[]>('Object_SolutionCategory')
+        .where(field)
+        .select('*');
     },
   },
   manifestRebuildQueue: {

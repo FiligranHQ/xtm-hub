@@ -75,6 +75,7 @@ type BaseDatabaseType =
   | 'UseCase'
   | 'SolutionCategory'
   | 'Object_UseCase'
+  | 'Object_SolutionCategory'
   | 'UserOrganization_Capability'
   | 'User_TransferRequest'
   | 'Document_Children'

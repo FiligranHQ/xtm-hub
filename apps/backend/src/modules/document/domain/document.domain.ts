@@ -26,6 +26,7 @@ import { Document, DOCUMENT_TYPE, WithDocumentId } from '../document.helper';
 
 import { requestContext } from '../../../context/request.context';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { SolutionCategoryId } from '../../../model/kanel/public/SolutionCategory';
 import type { UseCaseId } from '../../../model/kanel/public/UseCase';
 import {
   restrictDocumentToActive,
@@ -44,6 +45,7 @@ import {
 } from './document.metadata.domain';
 
 type UseCaseValue = UseCaseId | string;
+type SolutionCategoryValue = SolutionCategoryId | string;
 
 // Excludes documents tagged with TAG_DECOUPLING (case-insensitive), regardless of casing.
 const excludeDecouplingTag = (query: Knex.QueryBuilder) =>
@@ -55,8 +57,10 @@ const excludeDecouplingTag = (query: Knex.QueryBuilder) =>
 export type DocumentData<
   T extends DocumentModel,
   TUseCase extends UseCaseValue = UseCaseId,
+  TSolutionCategory extends SolutionCategoryValue = SolutionCategoryId,
 > = Omit<Partial<T>, 'use_cases'> & {
   use_cases?: TUseCase[];
+  solution_category?: TSolutionCategory;
   parent_document_id?: DocumentId;
 };
 
@@ -83,6 +87,7 @@ export const DocumentDomain = {
         ...omit(documentData, [
           'parent_document_id',
           'use_cases',
+          'solution_category',
           ...metadataKeys,
         ]),
         active: documentData.active ?? true,
@@ -402,7 +407,9 @@ export const DocumentDomain = {
     const [updatedDocument] = await db<DocumentModel>('Document')
       .where('id', '=', parentDocumentId)
       .update({
-        ...stripNulls(omit(completeDocumentData, ['use_cases'])),
+        ...stripNulls(
+          omit(completeDocumentData, ['use_cases', 'solution_category'])
+        ),
         uploader_organization_id,
         uploader_id,
         updated_at: new Date(),
@@ -495,6 +502,38 @@ export const DocumentDomain = {
       .orderBy('Document.created_at', 'desc')
       .limit(limit)
       .groupBy(['Document.id']);
+
+    DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
+
+    return query;
+  },
+
+  loadMostDeployedDocuments: async (
+    limit: number,
+    include_metadata: DocumentMetadataKeyCode[] = [],
+    documentTypes?: DOCUMENT_TYPE[]
+  ): Promise<Document[]> => {
+    const deployCounts = db('OneClickDeployment')
+      .select('resource_id')
+      .count('* as deploy_count')
+      .modify((qb) => {
+        if (documentTypes?.length) {
+          qb.whereIn(
+            'resource_id',
+            db('Document').select('id').whereIn('type', documentTypes)
+          );
+        }
+      })
+      .groupBy('resource_id')
+      .as('deploy_counts');
+
+    const query = db<Document>('Document')
+      .select('Document.*')
+      .join(deployCounts, 'deploy_counts.resource_id', 'Document.id')
+      .groupBy(['Document.id'])
+      .orderByRaw('MAX("deploy_counts"."deploy_count") DESC')
+      .orderBy('Document.id', 'asc')
+      .limit(limit);
 
     DocumentMetadataDomain.addIncludeMetadataQuery(query, include_metadata);
 

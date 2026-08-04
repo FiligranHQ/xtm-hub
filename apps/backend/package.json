@@ -64,7 +64,7 @@
     "@opentelemetry/semantic-conventions": "1.43.0",
     "@vitest/eslint-plugin": "1.6.24",
     "apollo-errors": "1.9.0",
-    "auth0": "5.13.0",
+    "auth0": "5.14.1",
     "body-parser": "2.3.0",
     "config": "4.4.2",
     "cors": "2.8.6",

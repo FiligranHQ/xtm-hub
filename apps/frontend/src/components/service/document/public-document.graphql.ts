@@ -89,6 +89,11 @@ export const publicDocumentByServiceSlugItem = graphql`
       datasheet_url
       blogpost_url
       demo_url
+      solution_category {
+        id
+        name
+      }
+      license_type
     }
 
     ... on CustomDashboard {
@@ -183,6 +188,11 @@ export const publicDocumentBySlugItem = graphql`
       datasheet_url
       blogpost_url
       demo_url
+      solution_category {
+        id
+        name
+      }
+      license_type
     }
 
     ... on CustomDashboard {

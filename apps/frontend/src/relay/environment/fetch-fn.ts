@@ -1,8 +1,12 @@
-import { isDevelopment } from '@/lib/utils';
 import {
   buildCookieHeader,
+  extractOperationType,
+  prepareUri,
+  resolveActiveCacheConfig,
   scrubSensitiveVariables,
-} from '@/relay/environment/fetch-fn.utils';
+  throwOnGraphqlErrors,
+} from '@/lib/graphql-fetch.utils';
+import { isDevelopment } from '@/lib/utils';
 import { createClient } from 'graphql-sse';
 import {
   GraphQLResponse,
@@ -11,15 +15,6 @@ import {
   Variables,
 } from 'relay-runtime';
 
-function prepareUri(uri: string | undefined) {
-  if (uri) {
-    return uri.endsWith('/') ? uri : uri + '/';
-  } else {
-    // Default for dev
-    return 'http://localhost:4002/';
-  }
-}
-
 export function getGraphqlApi(serverSide: boolean, type: 'sse' | 'api') {
   if (serverSide) {
     return prepareUri(process.env.SERVER_HTTP_API) + ('graphql-' + type);
@@ -27,13 +22,6 @@ export function getGraphqlApi(serverSide: boolean, type: 'sse' | 'api') {
     return (
       prepareUri(process.env.NEXT_PUBLIC_CLIENT_HTTP_API) + ('graphql-' + type)
     );
-  }
-}
-
-export class UnauthenticatedError extends Error {
-  constructor() {
-    super('UNAUTHENTICATED');
-    this.name = 'UnauthenticatedError';
   }
 }
 
@@ -67,11 +55,7 @@ export async function networkFetch({
     headers.cookie = cookieHeader;
   }
 
-  const activeCacheConfig = isDevelopment() ? 'no-store' : cacheConfig;
-
-  if (activeCacheConfig === 'no-store' && options.next?.revalidate) {
-    delete options.next.revalidate;
-  }
+  const activeCacheConfig = resolveActiveCacheConfig(cacheConfig, options);
 
   const resp = await fetch(apiUri, {
     method: 'POST',
@@ -86,19 +70,7 @@ export async function networkFetch({
     cache: activeCacheConfig,
   });
   const json = await resp.json();
-  // GraphQL returns exceptions (for example, a missing required variable) in the "errors"
-  // property of the response. If any exceptions occurred when processing the request,
-  // throw an error to indicate to the developer what went wrong.
-  if (Array.isArray(json.errors)) {
-    const containsAuthenticationFailure = json.errors.find(
-      (e: { extensions?: { code?: string }; message: string }) =>
-        e.extensions?.code === 'UNAUTHENTICATED'
-    );
-    if (containsAuthenticationFailure) {
-      throw new UnauthenticatedError();
-    }
-    throw new Error(json.errors[0].message);
-  }
+  throwOnGraphqlErrors(json.errors);
   return json;
 }
 
@@ -132,12 +104,7 @@ export function logGraphQLOperation(
   cache?: RequestCache
 ) {
   const operationName = request.name || 'Anonymous';
-  const query = request.text || '';
-  const operationType =
-    query
-      .trim()
-      .match(/^(query|mutation|subscription)/i)?.[1]
-      ?.toUpperCase() || 'QUERY';
+  const operationType = extractOperationType(request.text || '');
   // eslint-disable-next-line no-console
   console.log(`[GraphQL:Relay ${operationType}] ${operationName} → ${apiUri}`, {
     variables: scrubSensitiveVariables(variables ?? {}),

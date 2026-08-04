@@ -1,8 +1,5 @@
 import config from 'config';
-import {
-  OneClickDeployInput,
-  PlatformIdentifier,
-} from '../../__generated__/resolvers-types';
+import { OneClickDeployInput } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import OneClickDeployment, {
@@ -19,10 +16,7 @@ import { OrganizationDomain } from '../organization-management/organization/orga
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { OneClickDeploymentDomain } from './one-click-deployment.domain';
 import { loadInstanceIdentity } from './telemetry-snapshot.domain';
-import {
-  TelemetryHelper,
-  TelemetryTargetProductMappedByPlatformIdentifier,
-} from './telemetry.helper';
+import { TelemetryHelper } from './telemetry.helper';
 import {
   OneClickDeployEvent,
   TelemetryEvent,
@@ -141,49 +135,6 @@ export const TelemetryApp = {
         error,
       });
     }
-  },
-
-  async getMostDeployedResourceIds(
-    limit: number,
-    platformIdentifiers?: PlatformIdentifier[]
-  ): Promise<string[]> {
-    const products = platformIdentifiers?.flatMap((id) => {
-      const product = TelemetryTargetProductMappedByPlatformIdentifier.get(id);
-      return product ? [product] : [];
-    });
-
-    const hasProductFilter = products && products.length > 0;
-
-    const query = hasProductFilter
-      ? {
-          bool: {
-            filter: [
-              { term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY } },
-              { terms: { target_product: products } },
-            ],
-          },
-        }
-      : { term: { event_type: TelemetryEventType.ONE_CLICK_DEPLOY } };
-
-    const result = await esDbClient.search({
-      index: TELEMETRY_INDEX,
-      size: 0,
-      query,
-      aggs: {
-        resource_counts: {
-          terms: {
-            field: 'resource_id',
-            size: limit,
-            order: { _count: 'desc' },
-          },
-        },
-      },
-    });
-
-    const agg = result.aggregations?.resource_counts as
-      { buckets: Array<{ key: string; doc_count: number }> } | undefined;
-
-    return agg?.buckets.map((bucket) => bucket.key) ?? [];
   },
 
   async getLastDeployments(

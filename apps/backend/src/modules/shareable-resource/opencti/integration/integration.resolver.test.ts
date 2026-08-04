@@ -7,6 +7,7 @@ import {
 import {
   Connector,
   IntegrationType,
+  SolutionCategory,
 } from '../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../utils/app-logger.util';
 import { Integration } from './integration.model';
@@ -89,6 +90,32 @@ describe('integration field resolvers', () => {
         contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader.load
       ).toHaveBeenCalledWith(documentId);
       expect(result).toEqual(expected);
+    });
+
+    describe('integration.solution_category', () => {
+      it('should load solution category by document id', async () => {
+        const documentId = uuidv4();
+        const expected = { id: uuidv4(), name: 'Case Management', product: [] };
+        vi.spyOn(
+          contextSimpleUserFiligran2.dataLoaders
+            .solutionCategoryByDocumentIdLoader,
+          'load'
+        ).mockResolvedValue(expected as unknown as SolutionCategory | null);
+
+        const result = await integrationResolver.Integration!
+          .solution_category!(
+          { id: documentId } as unknown as Connector,
+          {},
+          contextSimpleUserFiligran2,
+          GRAPHQL_RESOLVE_INFO
+        );
+
+        expect(
+          contextSimpleUserFiligran2.dataLoaders
+            .solutionCategoryByDocumentIdLoader.load
+        ).toHaveBeenCalledWith(documentId);
+        expect(result).toEqual(expected);
+      });
     });
   });
 });

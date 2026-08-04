@@ -1,38 +1,12 @@
+import {
+  buildCookieHeader,
+  extractOperationType,
+  prepareUri,
+  scrubSensitiveVariables,
+  UnauthenticatedError,
+} from '@/lib/graphql-fetch.utils';
 import { isDevelopment } from '@/lib/utils';
-import { buildCookieHeader } from '@/relay/environment/fetch-fn.utils';
 import { ClientError, GraphQLClient } from 'graphql-request';
-
-const SENSITIVE_FIELD_KEYS = new Set([
-  'password',
-  'token',
-  'secret',
-  'apiKey',
-  'api_key',
-  'accessToken',
-  'refreshToken',
-  'access_token',
-  'refresh_token',
-]);
-
-const scrubSensitiveVariables = (
-  variables: Record<string, unknown>
-): Record<string, unknown> => {
-  return Object.fromEntries(
-    Object.entries(variables).map(([key, value]) => {
-      if (SENSITIVE_FIELD_KEYS.has(key)) {
-        return [key, '[HIDDEN]'];
-      }
-      if (
-        value !== null &&
-        typeof value === 'object' &&
-        !Array.isArray(value)
-      ) {
-        return [key, scrubSensitiveVariables(value as Record<string, unknown>)];
-      }
-      return [key, value];
-    })
-  );
-};
 
 const getOperationType = (body: BodyInit | null | undefined): string => {
   if (typeof body !== 'string') {
@@ -41,13 +15,7 @@ const getOperationType = (body: BodyInit | null | undefined): string => {
 
   try {
     const parsedBody = JSON.parse(body) as { query?: string };
-    const query = parsedBody.query ?? '';
-    return (
-      query
-        .trim()
-        .match(/^(query|mutation|subscription)/i)?.[1]
-        ?.toUpperCase() || 'QUERY'
-    );
+    return extractOperationType(parsedBody.query ?? '');
   } catch {
     return 'QUERY';
   }
@@ -75,16 +43,7 @@ const logGraphQLOperation = ({
   );
 };
 
-function prepareUri(uri: string | undefined) {
-  if (uri) {
-    return uri.endsWith('/') ? uri : uri + '/';
-  }
-
-  // Default for local development.
-  return 'http://localhost:4002/';
-}
-
-function resolveGraphqlApiEndpoint() {
+export function resolveGraphqlApiEndpoint() {
   const isServerSide = typeof window === 'undefined';
   if (!isServerSide) {
     if (process.env.NEXT_PUBLIC_CLIENT_HTTP_API) {
@@ -98,13 +57,6 @@ function resolveGraphqlApiEndpoint() {
 }
 
 const defaultGraphqlApiEndpoint = 'http://localhost:4002/graphql-api';
-
-export class UnauthenticatedError extends Error {
-  constructor() {
-    super('UNAUTHENTICATED');
-    this.name = 'UnauthenticatedError';
-  }
-}
 
 const normalizeGraphqlError = (error: unknown): never => {
   if (!(error instanceof ClientError)) {
@@ -128,15 +80,7 @@ const normalizeGraphqlError = (error: unknown): never => {
   throw error;
 };
 
-type GraphQLClientCacheOptions = {
-  cache?: RequestCache;
-  next?: { revalidate?: number | false; tags?: string[] };
-};
-
-export const createPortalGraphqlClient = (
-  cookie?: string,
-  fetchOptions?: GraphQLClientCacheOptions
-) => {
+export const createPortalGraphqlClient = (cookie?: string) => {
   return new GraphQLClient(defaultGraphqlApiEndpoint, {
     credentials: 'include',
     headers: {
@@ -144,7 +88,6 @@ export const createPortalGraphqlClient = (
       'Content-Type': 'application/json',
       ...(cookie ? { cookie } : {}),
     },
-    ...fetchOptions,
     requestMiddleware: (request) => {
       const apiUri = resolveGraphqlApiEndpoint();
       if (isDevelopment()) {
@@ -170,14 +113,8 @@ export const createPortalGraphqlClient = (
 };
 
 export const portalGraphqlClient = createPortalGraphqlClient();
-export const portalGraphqlClientCached = createPortalGraphqlClient(undefined, {
-  next: { revalidate: 3600 },
-});
 
-/**
- * Returns an authenticated GraphQL client for use in Server Components.
- * credentials: 'include' is browser-only — cookies must be forwarded explicitly on the server.
- */
+// credentials: 'include' is browser-only, so cookies must be forwarded explicitly here.
 export const getAuthenticatedGraphqlClient = async () => {
   const { cookies } = await import('next/headers');
   const cookieStore = await cookies();

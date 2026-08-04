@@ -1,5 +1,7 @@
-import { UnauthenticatedError } from '@/relay/environment/fetch-fn';
-import { buildCookieHeader } from '@/relay/environment/fetch-fn.utils';
+import {
+  buildCookieHeader,
+  UnauthenticatedError,
+} from '@/lib/graphql-fetch.utils';
 import { RequestParameters, UploadableMap, Variables } from 'relay-runtime';
 
 const FILE_PREFIX_SEPARATOR = 'prefix-';
