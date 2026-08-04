@@ -768,11 +768,13 @@ export enum FilterKey {
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   Label = 'label',
+  LicenseType = 'license_type',
   ManagerSupported = 'manager_supported',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
   ProductVersion = 'product_version',
   Slug = 'slug',
+  SolutionCategory = 'solution_category',
   Verified = 'verified'
 }
 

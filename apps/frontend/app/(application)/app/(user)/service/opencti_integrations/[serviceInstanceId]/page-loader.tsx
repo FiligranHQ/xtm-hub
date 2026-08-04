@@ -25,6 +25,8 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     labels,
     integrationTypes,
     productVersions,
+    licenseTypes,
+    solutionCategories,
     setSearch,
     deployable,
     verified,
@@ -50,6 +52,8 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     verified,
     integrationTypes,
     productVersions,
+    licenseTypes,
+    solutionCategories,
   });
 
   useEffect(() => {

@@ -7,7 +7,10 @@ import {
 } from '@/components/service/components/header/ServiceListHeader';
 import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
 import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/IntegrationFilters';
+import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationLicenseTypeFilter';
+import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-resource/integration/IntegrationSolutionCategoryFilter';
 import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -16,8 +19,16 @@ import {
   ServiceSlug,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { FeatureFlag } from '@graphql/generated';
 
-export const useShareableResourceMapping = (slug: ServiceSlug) => {
+interface UseShareableResourceMappingOptions {
+  isSolutionCategoriesEnabled?: boolean;
+}
+
+export const useShareableResourceMapping = (
+  slug: ServiceSlug,
+  options?: UseShareableResourceMappingOptions
+) => {
   const localStorageKeyMapping: Record<
     ServiceSlug,
     ServiceListLocalStorageKey
@@ -47,10 +58,17 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const {
     removeLabels,
     removeIntegrationTypes,
+    removeLicenseTypes,
+    removeSolutionCategories,
     removeDeployable,
     removeVerified,
     removeEntityTypes,
   } = useServiceListLocalStorage(localStorageKey);
+  const isSolutionCategoriesEnabled = useIsFeatureEnabled(
+    FeatureFlag.SolutionCategories
+  );
+  const shouldEnableSolutionCategories =
+    options?.isSolutionCategoriesEnabled ?? isSolutionCategoriesEnabled;
 
   const labelFilter = {
     node: <ServiceListFilterLabel type={typeFeed[slug]} />,
@@ -77,6 +95,18 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
         node: <IntegrationVerifiedFilter />,
         reset: removeVerified,
       },
+      ...(shouldEnableSolutionCategories
+        ? {
+            [ServiceListFilterKey.SolutionCategory]: {
+              node: <IntegrationSolutionCategoryFilter />,
+              reset: removeSolutionCategories,
+            },
+            [ServiceListFilterKey.LicenseType]: {
+              node: <IntegrationLicenseTypeFilter />,
+              reset: removeLicenseTypes,
+            },
+          }
+        : {}),
     },
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
       [ServiceListFilterKey.Label]: labelFilter,

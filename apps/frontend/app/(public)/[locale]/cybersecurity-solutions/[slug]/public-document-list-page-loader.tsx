@@ -17,18 +17,22 @@ import { useQueryLoader } from 'react-relay';
 interface PublicDocumentListPageLoaderProps {
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
+  isSolutionCategoriesEnabled: boolean;
 }
 
 export const PublicDocumentListPageLoader = ({
   serviceInstance,
   baseUrl,
+  isSolutionCategoriesEnabled,
 }: PublicDocumentListPageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<publicDocumentsQuery>(
     PublicDocumentListQuery
   );
 
   const serviceInstanceSlug = serviceInstance.slug as ServiceSlug;
-  const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug);
+  const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug, {
+    isSolutionCategoriesEnabled,
+  });
 
   const {
     pageSize,
@@ -39,6 +43,8 @@ export const PublicDocumentListPageLoader = ({
     deployable,
     verified,
     productVersions,
+    licenseTypes,
+    solutionCategories,
     orderMode,
     orderBy,
   } = useServiceListLocalStorage(localStorageKey);
@@ -52,6 +58,9 @@ export const PublicDocumentListPageLoader = ({
           verified,
           integrationTypes,
           productVersions,
+          licenseTypes,
+          solutionCategories,
+          isSolutionCategoriesEnabled,
         }
       : {
           serviceInstanceSlug: serviceInstanceSlug as
@@ -102,6 +111,7 @@ export const PublicDocumentListPageLoader = ({
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           baseUrl={baseUrl}
+          isSolutionCategoriesEnabled={isSolutionCategoriesEnabled}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

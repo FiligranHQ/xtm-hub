@@ -1,8 +1,10 @@
 import { buildTypeSubtypeFilterExpression } from '@/components/service/integrations/Integration.utils';
 import { LogicalMultiSelectSelection } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   DocumentMetadataKeyCode,
+  FeatureFlag,
   FilterKey,
   LogicalOperator,
 } from '@graphql/generated';
@@ -25,6 +27,9 @@ type IntegrationFiltersParams = {
   verified: LogicalMultiSelectSelection;
   integrationTypes: LogicalMultiSelectSelection;
   productVersions: LogicalMultiSelectSelection;
+  licenseTypes?: LogicalMultiSelectSelection;
+  solutionCategories?: LogicalMultiSelectSelection;
+  isSolutionCategoriesEnabled?: boolean;
 };
 
 export type LogicalFiltersParams =
@@ -40,6 +45,17 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
     'integrationTypes' in params ? params.integrationTypes : undefined;
   const productVersions =
     'productVersions' in params ? params.productVersions : undefined;
+  const licenseTypes =
+    'licenseTypes' in params ? params.licenseTypes : undefined;
+  const solutionCategories =
+    'solutionCategories' in params ? params.solutionCategories : undefined;
+  const solutionCategoriesFeatureEnabled = useIsFeatureEnabled(
+    FeatureFlag.SolutionCategories
+  );
+  const isSolutionCategoriesEnabled =
+    'isSolutionCategoriesEnabled' in params
+      ? params.isSolutionCategoriesEnabled
+      : solutionCategoriesFeatureEnabled;
 
   return useMemo(() => {
     if (serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS) {
@@ -69,6 +85,22 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
               value: Object.keys(productVersions!),
             },
           },
+          ...(isSolutionCategoriesEnabled
+            ? [
+                {
+                  leaf: {
+                    key: FilterKey.SolutionCategory,
+                    value: Object.keys(solutionCategories ?? {}),
+                  },
+                },
+                {
+                  leaf: {
+                    key: FilterKey.LicenseType,
+                    value: Object.keys(licenseTypes ?? {}),
+                  },
+                },
+              ]
+            : []),
         ],
       };
     }
@@ -98,5 +130,8 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
     verified,
     integrationTypes,
     productVersions,
+    licenseTypes,
+    solutionCategories,
+    isSolutionCategoriesEnabled,
   ]);
 };

@@ -10,8 +10,11 @@ import { useIntegrationListStorage } from '@/components/service/integrations/[se
 import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
 import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
 import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/IntegrationFilters';
+import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationLicenseTypeFilter';
+import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-resource/integration/IntegrationSolutionCategoryFilter';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
-import { PlatformIdentifier } from '@graphql/generated';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
+import { FeatureFlag, PlatformIdentifier } from '@graphql/generated';
 
 import {
   documentItem,
@@ -78,12 +81,17 @@ const IntegrationsList = ({
   const {
     removeIntegrationTypes,
     removeProductVersions,
+    removeLicenseTypes,
+    removeSolutionCategories,
     removeDeployable,
     removeVerified,
     pageSize,
     setPageSize,
     localStorageKey,
   } = useIntegrationListStorage();
+  const isSolutionCategoriesEnabled = useIsFeatureEnabled(
+    FeatureFlag.SolutionCategories
+  );
 
   const filters: ServiceListFilterMap = {
     [ServiceListFilterKey.IntegrationType]: {
@@ -106,6 +114,18 @@ const IntegrationsList = ({
       node: <IntegrationVerifiedFilter />,
       reset: removeVerified,
     },
+    ...(isSolutionCategoriesEnabled
+      ? {
+          [ServiceListFilterKey.SolutionCategory]: {
+            node: <IntegrationSolutionCategoryFilter />,
+            reset: removeSolutionCategories,
+          },
+          [ServiceListFilterKey.LicenseType]: {
+            node: <IntegrationLicenseTypeFilter />,
+            reset: removeLicenseTypes,
+          },
+        }
+      : {}),
   };
 
   const [pagination, setPagination] = useState<PaginationState>({
