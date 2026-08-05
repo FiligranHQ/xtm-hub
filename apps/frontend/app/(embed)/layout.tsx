@@ -4,22 +4,16 @@ import '@filigran/ui/theme.css';
 import '@styles/embed.css';
 import '@styles/globals.css';
 
-import serverPortalApiFetch, {
-  serverMutateGraphQL,
-} from '@/relay/server-portal-api-fetch';
+import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
 
 import { SharedContent } from '@/components/layout/SharedContent';
 import { ErrorPage } from '@/components/ui/ErrorPage';
 import { RelayProvider } from '@/relay/relay-provider';
+import { fetchMe } from '@/utils/me';
 import { getMetadataBase } from '@/utils/metadata';
 import errorFrontendLogMutationNode, {
   errorFrontendLogMutation,
 } from '@generated/errorFrontendLogMutation.graphql';
-import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
-import meLoaderQueryNode, {
-  meLoaderQuery,
-  meLoaderQuery$data,
-} from '@generated/meLoaderQuery.graphql';
 import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -44,14 +38,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
   let hasError = false;
 
   try {
-    // @ts-expect-error
-    const { data: meData }: { data: meLoaderQuery$data } =
-      await serverPortalApiFetch<typeof meLoaderQueryNode, meLoaderQuery>(
-        meLoaderQueryNode,
-        {}
-      );
-
-    const me = meData.me as unknown as meContext_fragment$data;
+    const me = await fetchMe();
     if (!me) {
       shouldRedirect = true;
     }
