@@ -3,7 +3,7 @@ import '@styles/globals.css';
 
 import Login from '@/components/login/Login';
 import { RelayProvider } from '@/relay/relay-provider';
-import { fetchMe } from '@/utils/me';
+import { loadMeUser } from '@/utils/load-me-user';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { Metadata } from 'next';
@@ -20,7 +20,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
 export const dynamic = 'force-dynamic';
 
 const Page = async () => {
-  const me = await fetchMe();
+  const me = await loadMeUser();
   if (me) {
     redirect(`/${APP_PATH}`);
   }

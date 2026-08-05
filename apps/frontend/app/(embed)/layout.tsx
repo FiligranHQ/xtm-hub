@@ -9,7 +9,7 @@ import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
 import { SharedContent } from '@/components/layout/SharedContent';
 import { ErrorPage } from '@/components/ui/ErrorPage';
 import { RelayProvider } from '@/relay/relay-provider';
-import { fetchMe } from '@/utils/me';
+import { loadMeUser } from '@/utils/load-me-user';
 import { getMetadataBase } from '@/utils/metadata';
 import errorFrontendLogMutationNode, {
   errorFrontendLogMutation,
@@ -38,7 +38,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
   let hasError = false;
 
   try {
-    const me = await fetchMe();
+    const me = await loadMeUser();
     if (!me) {
       shouldRedirect = true;
     }

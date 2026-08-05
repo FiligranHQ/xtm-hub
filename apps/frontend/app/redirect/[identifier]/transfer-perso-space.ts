@@ -1,5 +1,6 @@
+import { loadMeUser } from '@/utils/load-me-user';
 import { NextRequest, NextResponse } from 'next/server';
-import { loadBaseUrlFront, loadMeUser } from './utils/load';
+import { loadBaseUrlFront } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
 
 export const redirectToTransferPersoSpace = async (request: NextRequest) => {

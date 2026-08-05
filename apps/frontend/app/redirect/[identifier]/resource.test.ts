@@ -1,11 +1,11 @@
 import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
+import { loadMeUser } from '@/utils/load-me-user';
 import { ServiceDefinitionIdentifier } from '@graphql/generated';
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { redirectToResource } from './resource';
 import {
   loadBaseUrlFront,
-  loadMeUser,
   loadPlatformOrganizationId,
   loadServiceInstances,
 } from './utils/load';
@@ -14,6 +14,7 @@ vi.mock('../../../src/relay/server-portal-api-fetch', () => ({
   serverMutateGraphQL: vi.fn(),
 }));
 vi.mock('./utils/load');
+vi.mock('../../../src/utils/load-me-user');
 
 const BASE_URL = 'http://localhost:3002';
 const IDENTIFIER = ServiceDefinitionIdentifier.OpenaevScenarios;
@@ -49,9 +50,7 @@ describe('redirectToResource', () => {
     // Given
     const pathAndQuery = `/redirect/${IDENTIFIER}?platform_id=platform-1&tenant_id=tenant-1`;
     const expectedLocation = `${BASE_URL}/login?redirect=${btoa(pathAndQuery)}`;
-    vi.mocked(loadMeUser).mockResolvedValue(
-      null as unknown as LoadMeUserResult
-    );
+    vi.mocked(loadMeUser).mockResolvedValue(null);
 
     // When
     const response = await redirectToResource(

@@ -10,7 +10,7 @@ import PrivateMenu from '@/components/menu/PrivateMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import { RelayProvider } from '@/relay/relay-provider';
-import { fetchMe } from '@/utils/me';
+import { loadMeUser } from '@/utils/load-me-user';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
 import { buildSignupRedirect } from '@/utils/redirect';
@@ -39,7 +39,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
   const h = await headers();
   const pathname = h.get('x-pathname') ?? `/${APP_PATH}`;
 
-  const me = await fetchMe();
+  const me = await loadMeUser();
   if (!me) {
     redirect(buildSignupRedirect(pathname));
   }
