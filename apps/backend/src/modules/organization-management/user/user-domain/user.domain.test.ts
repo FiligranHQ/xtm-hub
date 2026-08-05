@@ -30,7 +30,7 @@ describe('users domain', () => {
 
     afterEach(async () => {
       if (insertedUser) {
-        await UserDomain.deleteUserById(insertedUser.id);
+        await UserDomain.deleteUserBy({ id: insertedUser.id });
         insertedUser = undefined;
       }
     });

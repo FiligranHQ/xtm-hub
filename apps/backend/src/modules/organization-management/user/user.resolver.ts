@@ -23,7 +23,7 @@ import { UserOrganizationApp } from './user-organization/user-organization.app';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { userProfileApp } from './user-profile/user.profile.app';
 import { UserAuthApp } from './user.auth.app';
-import { mapUserToGraphqlUser } from './user.helper';
+import { UserHelper } from './user.helper';
 
 const resolvers: Resolvers = {
   UserId: createRelayIdScalar<UserId>('User'),
@@ -38,7 +38,7 @@ const resolvers: Resolvers = {
       if (!context.user) {
         return null;
       }
-      return mapUserToGraphqlUser(context.user);
+      return UserHelper.mapUserToGraphqlUser(context.user);
     },
 
     usersWithCapabilitiesInOrganization: async (_, { input }) => {
@@ -85,7 +85,7 @@ const resolvers: Resolvers = {
 
         await dispatch('User', 'add', user);
 
-        return mapUserToGraphqlUser(user);
+        return UserHelper.mapUserToGraphqlUser(user);
       } catch (error) {
         throw mapToGraphQLError(error, UnknownErrorCode.AddingUserError);
       }
@@ -95,7 +95,7 @@ const resolvers: Resolvers = {
     adminAddUser: async (_, { input }) => {
       try {
         const user = await UserAdminApp.addUser(input);
-        return mapUserToGraphqlUser(user);
+        return UserHelper.mapUserToGraphqlUser(user);
       } catch (error) {
         if (getErrorMessage(error).includes(ErrorCode.UserDisabled)) {
           logApp.warn('You cannot add a user who is disabled in the plaform');
@@ -180,7 +180,7 @@ const resolvers: Resolvers = {
         portalContext.req.session.save();
         portalContext.user = user;
 
-        return mapUserToGraphqlUser(user);
+        return UserHelper.mapUserToGraphqlUser(user);
       } catch (error) {
         throw mapToGraphQLError(error);
       }
@@ -191,7 +191,7 @@ const resolvers: Resolvers = {
           userId: user_id,
           organizationId: organization_id,
         });
-        return mapUserToGraphqlUser(user);
+        return UserHelper.mapUserToGraphqlUser(user);
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -256,7 +256,7 @@ const resolvers: Resolvers = {
             organizationId: organization_id,
           });
 
-        const graphQLUser = mapUserToGraphqlUser(user);
+        const graphQLUser = UserHelper.mapUserToGraphqlUser(user);
         await dispatch(
           'UserPending',
           'delete',
@@ -279,7 +279,7 @@ const resolvers: Resolvers = {
       try {
         const loggedUser = await UserAuthApp.login(req, res, args);
         if (loggedUser) {
-          return mapUserToGraphqlUser(loggedUser);
+          return UserHelper.mapUserToGraphqlUser(loggedUser);
         }
 
         return undefined;

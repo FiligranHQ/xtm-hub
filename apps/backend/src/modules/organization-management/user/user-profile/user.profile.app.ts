@@ -26,7 +26,7 @@ import { SubscriptionDomain } from '../../../subscription/subscription.domain';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserTransferRequestDomain } from '../user-transferRequest/user-transfer-request.domain';
-import { updateAndDispatchUser } from '../user.helper';
+import { UserHelper } from '../user.helper';
 
 const deletePicture = async (pictureMinio: string) => {
   try {
@@ -75,7 +75,7 @@ export const userProfileApp = {
 
     updateUserSession(user);
 
-    return updateAndDispatchUser(meUser.id);
+    return UserHelper.updateAndDispatchUser(meUser.id);
   },
   uploadUserPicture: async (meUser: UserLoadUserBy, document: Upload) => {
     await DocumentUploadsHelper.waitForUploads(document);
@@ -92,7 +92,7 @@ export const userProfileApp = {
       picture_minio: minioName,
     });
 
-    return updateAndDispatchUser(meUser.id);
+    return UserHelper.updateAndDispatchUser(meUser.id);
   },
   requestTransferPersonalSpace: async (
     user: UserLoadUserBy,

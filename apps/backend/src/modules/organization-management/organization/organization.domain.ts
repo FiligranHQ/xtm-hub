@@ -102,6 +102,21 @@ export const OrganizationDomain = {
       .select('Organization.*');
   },
 
+  loadNonPersonalSpaceOrganizationIdsByUser: async (
+    userId: UserId
+  ): Promise<Pick<Organization, 'id'>[]> => {
+    return db<Pick<Organization, 'id'>>('Organization')
+      .leftJoin(
+        'User_Organization',
+        'User_Organization.organization_id',
+        'Organization.id'
+      )
+      .leftJoin('User', 'User.id', 'User_Organization.user_id')
+      .where('User.id', '=', userId)
+      .andWhereNot('Organization.personal_space', '=', true)
+      .select('Organization.id');
+  },
+
   loadUserByOrganization: async (
     organizationId: OrganizationId
   ): Promise<User[]> => {

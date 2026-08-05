@@ -207,4 +207,30 @@ export const UserOrganizationDomain = {
       .del()
       .returning('id');
   },
+
+  countOrganizationAdministrators: async (
+    organizationId: OrganizationId
+  ): Promise<number> => {
+    const [administratorsCount] = await db('Organization')
+      .count('Organization.id')
+      .leftJoin(
+        'User_Organization',
+        'User_Organization.organization_id',
+        'Organization.id'
+      )
+      .leftJoin(
+        'UserOrganization_Capability',
+        'UserOrganization_Capability.user_organization_id',
+        'User_Organization.id'
+      )
+      .where('Organization.id', '=', organizationId)
+      .andWhere(
+        'UserOrganization_Capability.name',
+        '=',
+        OrganizationCapability.AdministrateOrganization
+      )
+      .groupBy('Organization.id');
+
+    return Number(administratorsCount?.count ?? 0);
+  },
 };
