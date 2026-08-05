@@ -81,4 +81,12 @@ export const solutionCategoryDomain = {
 
     return deletedSolutionCategory;
   },
+
+  loadAllSolutionCategories: (): Promise<SolutionCategory[]> =>
+    db<SolutionCategory>('SolutionCategory').select<SolutionCategory[]>('*'),
+
+  loadSolutionCategoryBy: (
+    field: SolutionCategoryMutator
+  ): Promise<SolutionCategory | null> =>
+    db<SolutionCategory>('SolutionCategory').where(field).first(),
 };

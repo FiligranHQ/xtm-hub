@@ -1,13 +1,17 @@
 import { db } from '../../../../knexfile';
 import ObjectSolutionCategory, {
+  ObjectSolutionCategoryInitializer,
   ObjectSolutionCategoryMutator,
 } from '../../../model/kanel/public/ObjectSolutionCategory';
 
 export const objectSolutionCategoryDomain = {
   insertObjectSolutionCategory: async (
-    field: ObjectSolutionCategoryMutator
+    initializer:
+      ObjectSolutionCategoryInitializer | ObjectSolutionCategoryInitializer[]
   ) => {
-    await db<ObjectSolutionCategory>('Object_SolutionCategory').insert(field);
+    await db<ObjectSolutionCategory>('Object_SolutionCategory').insert(
+      initializer
+    );
   },
 
   deleteObjectSolutionCategoryBy: async (

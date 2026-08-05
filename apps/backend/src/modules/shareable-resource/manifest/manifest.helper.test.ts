@@ -383,6 +383,7 @@ describe('manifestHelper', () => {
         expect(contract.support_version).toBe('7.260507.0');
         expect(contract.license_type).toBe('commercial');
         expect(contract.contact).toBe('https://github.com/some-contributor');
+        expect(contract.solution_categories).toEqual([]);
         expect(contract.version).toBe('6.5.1');
         expect(contract.image_name).toBe('opencti/connector-misp');
         expect(contract.image_type).toBe('EXTERNAL_IMPORT');
@@ -418,6 +419,7 @@ describe('manifestHelper', () => {
           'manager_supported',
           'short_description',
           'slug',
+          'solution_categories',
           'source_code',
           'subscription_link',
           'support_version',
@@ -439,7 +441,9 @@ describe('manifestHelper', () => {
       });
 
       it('populates logo from the logoByConnectorId map', () => {
-        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const connector = buildConnector({
+          id: 'connector-uuid-1' as DocumentId,
+        });
         const logoByConnectorId = new Map<DocumentId, string | null>([
           ['connector-uuid-1' as DocumentId, 'abc123base64'],
         ]);
@@ -464,7 +468,9 @@ describe('manifestHelper', () => {
       });
 
       it('populates use_cases from the useCasesByConnectorId map', () => {
-        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const connector = buildConnector({
+          id: 'connector-uuid-1' as DocumentId,
+        });
         const useCasesByConnectorId = new Map<string, string[]>([
           ['connector-uuid-1', ['automation', 'integration']],
         ]);
@@ -477,8 +483,51 @@ describe('manifestHelper', () => {
         expect(contract.use_cases).toEqual(['automation', 'integration']);
       });
 
+      it('populates solution_categories from the solutionCategoriesByConnectorId map', () => {
+        // Given a connector linked to two categories
+        const connector = buildConnector({
+          id: 'connector-uuid-1' as DocumentId,
+        });
+        const solutionCategoriesByConnectorId = new Map<string, string[]>([
+          ['connector-uuid-1', ['Threat Intelligence Feed', 'EDR/XDR']],
+        ]);
+
+        // When the contract is built
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [connector],
+          FIXED_DATE,
+          new Map(),
+          new Map(),
+          solutionCategoriesByConnectorId
+        ).contracts[0]!;
+
+        // Then both category names are exposed
+        expect(contract.solution_categories).toEqual([
+          'Threat Intelligence Feed',
+          'EDR/XDR',
+        ]);
+      });
+
+      it('sets solution_categories to empty array when the map has no entry for the connector id', () => {
+        // Given a connector with no linked category
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [buildConnector({ id: 'connector-uuid-1' as DocumentId })],
+          FIXED_DATE,
+          new Map(),
+          new Map(),
+          new Map()
+        ).contracts[0]!;
+
+        // Then the field is an empty array, never null
+        expect(contract.solution_categories).toEqual([]);
+      });
+
       it('sets use_cases to empty array when the map has no entry for the connector id', () => {
-        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const connector = buildConnector({
+          id: 'connector-uuid-1' as DocumentId,
+        });
         const useCasesByConnectorId = new Map<string, string[]>([
           ['other-connector-id', ['automation']],
         ]);

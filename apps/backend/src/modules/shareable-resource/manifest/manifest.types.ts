@@ -14,6 +14,7 @@ export interface ManifestContract {
   support_version: string | null;
   license_type: string | null;
   contact: string | null;
+  solution_categories: string[];
   version: string | null;
   image_name: string | null;
   image_type: string;

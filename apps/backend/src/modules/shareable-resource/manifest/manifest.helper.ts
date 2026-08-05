@@ -217,7 +217,8 @@ export const ManifestHelper = {
     connectors: ConnectorV2[],
     now: Date = new Date(),
     useCasesByConnectorId: Map<string, string[]>,
-    logoByConnectorId: Map<DocumentId, string | null> = new Map()
+    logoByConnectorId: Map<DocumentId, string | null> = new Map(),
+    solutionCategoriesByConnectorId: Map<string, string[]> = new Map()
   ): ManifestOutput => {
     const contracts: ManifestContract[] = connectors.map((connector) => ({
       id: connector.manifest_fragment_id,
@@ -227,6 +228,8 @@ export const ManifestHelper = {
       short_description: connector.short_description ?? '',
       logo: logoByConnectorId.get(connector.id) ?? null,
       use_cases: useCasesByConnectorId.get(connector.id as string) ?? [],
+      solution_categories:
+        solutionCategoriesByConnectorId.get(connector.id as string) ?? [],
       verified: connector.verified,
       last_verified_date: connector.last_verified_date,
       subscription_link: connector.subscription_link ?? null,

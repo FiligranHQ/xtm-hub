@@ -21,6 +21,7 @@ input ManifestFragmentInput {
   config_schema: JSON!
   license_type: String
   contact: String
+  solution_categories: [String!]
 }
 
 type Mutation {

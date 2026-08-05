@@ -9,12 +9,14 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import Document from '../../../model/kanel/public/Document';
+import { ObjectSolutionCategoryObjectId } from '../../../model/kanel/public/ObjectSolutionCategory';
 import { isUniqueConstraintViolation } from '../../../utils/error/error-guard.util';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
 import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
 import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../document/domain/document.domain';
+import { solutionCategoryApp } from '../../solution-category/solution-category.app';
 import { IngestManifestHelper } from '../opencti/integration/ingest-manifest/ingest-manifest.helper';
 import {
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
@@ -30,6 +32,10 @@ type ConnectorWithMetadata = Document & {
   blogpost_url?: string;
   demo_url?: string;
 };
+
+const toObjectSolutionCategoryObjectId = (
+  id: string
+): ObjectSolutionCategoryObjectId => id as ObjectSolutionCategoryObjectId;
 
 const attachConnectorLogo = async ({
   connector,
@@ -81,7 +87,7 @@ const createConnectorDocument = async ({
   >;
   licenseType?: string;
   contact?: string;
-}) => {
+}): Promise<ConnectorV2> => {
   const createdConnector =
     await DocumentApp.createDocumentWithChildrenAndMetadata<ConnectorV2>(
       {
@@ -121,10 +127,9 @@ const createConnectorDocument = async ({
       INTEGRATION_CONNECTOR_V2_METADATA_KEYS
     );
 
-  await attachConnectorLogo({
-    connector: createdConnector,
-    fragment,
-  });
+  await attachConnectorLogo({ connector: createdConnector, fragment });
+
+  return createdConnector;
 };
 
 const removeLatestTagFromExistingBatchConnectors = async ({
@@ -228,13 +233,19 @@ export const ManifestFragmentDomain = {
       );
 
       try {
-        await createConnectorDocument({
+        const connector = await createConnectorDocument({
           fragment,
           formattedVersion,
           tags: newDocumentTags,
           metadataFromExisting,
           licenseType,
           contact,
+        });
+
+        await solutionCategoryApp.linkSolutionCategoriesByNameToObject({
+          objectId: toObjectSolutionCategoryObjectId(connector.id),
+          names: fragment.solution_categories ?? [],
+          product: fragment.platform.trim().toLowerCase(),
         });
       } catch (error) {
         // Backstop for brand-new connectors: no existing rows for the lock above.
