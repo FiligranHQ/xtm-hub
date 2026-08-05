@@ -23,7 +23,11 @@ export const PublicHeaderContent = async ({
       </Link>
       <div className="flex items-center gap-s ml-auto">
         <Button variant="secondary">
-          <Link href="/auth/oidc">{t('PublicLayout.Login')}</Link>
+          <Link
+            href="/auth/oidc"
+            prefetch={false}>
+            {t('PublicLayout.Login')}
+          </Link>
         </Button>
         <Button
           asChild
