@@ -463,7 +463,8 @@ describe('user mutation resolver', () => {
       });
 
       afterAll(async () => {
-        if (response) await UserDomain.deleteUserById(response.id as UserId);
+        if (response)
+          await UserDomain.deleteUserBy({ id: response.id as UserId });
       });
 
       it('should have Personal space and Internal as organization', async () => {
@@ -546,7 +547,7 @@ describe('user mutation resolver', () => {
       });
 
       afterAll(async () => {
-        await UserDomain.deleteUserById(response!.id as UserId);
+        await UserDomain.deleteUserBy({ id: response!.id as UserId });
       });
 
       it('should have Personal space and ORGANIZATIONS_TEST.SECOND_ORGANIZATION.NAME as organization', async () => {

@@ -1,6 +1,5 @@
 import { GraphQLError } from 'graphql/error/index.js';
 import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../../../knexfile';
 import {
   Capability,
   User as GraphqlUser,
@@ -63,6 +62,115 @@ interface GetOrCreateUserOptions extends CreateNewUserOptions {
   upsert?: boolean;
 }
 
+const createOrganisationWithAdminUser = async (
+  email: string,
+  { sendWelcomeEmail = true }: WelcomeEmailOptions = {}
+) => {
+  const extractedDomain = extractDomain(email);
+
+  if (!extractedDomain) {
+    throw BadRequestError(BadRequestErrorCode.InvalidEmail);
+  }
+
+  const newOrganization = await OrganizationDomain.insertNewOrganization({
+    id: uuidv4() as OrganizationId,
+    name: extractedDomain,
+    domains: [extractedDomain],
+  });
+  const addedUser = await UserHelper.createUserWithPersonalSpace(
+    {
+      email,
+    },
+    { sendWelcomeEmail }
+  );
+
+  try {
+    const createOrgaEvent = TelemetryHelper.buildCreateOrganizationEvent(
+      newOrganization,
+      addedUser.id
+    );
+    await TelemetryApp.sendTelemetryEvent(createOrgaEvent);
+  } catch (error) {
+    logApp.error('Unable to send telemetry event for create organization', {
+      error,
+    });
+  }
+
+  const [userOrgRelation] =
+    await UserOrganizationDomain.createUserOrganizationRelation({
+      user_id: addedUser.id,
+      organizations_id: [newOrganization.id],
+    });
+
+  if (!userOrgRelation) {
+    throw UnknownError(UnknownErrorCode.AddingUserError);
+  }
+
+  await UserOrganizationCapabilityDomain.createUserOrganizationCapability({
+    user_organization_id: userOrgRelation.id,
+    capabilities_name: [OrganizationCapability.AdministrateOrganization],
+  });
+
+  return addedUser;
+};
+
+const countOrganizationAdministrators = async (
+  organizationId: OrganizationId
+): Promise<number> => {
+  return UserOrganizationDomain.countOrganizationAdministrators(organizationId);
+};
+
+const isUserLastOrganizationAdministrator = async (
+  userId: UserId,
+  organizationId: OrganizationId
+) => {
+  const { capabilities } = await UserDomain.loadUserCapabilitiesByOrganization(
+    userId,
+    organizationId
+  );
+  if (!UserHelper.hasAdministrateOrganizationCapability(capabilities)) {
+    return false;
+  }
+
+  const administratorsCount =
+    await countOrganizationAdministrators(organizationId);
+
+  if (administratorsCount === 0) {
+    logApp.error(
+      `Zero administrators found in the organization ${organizationId}`
+    );
+  }
+
+  return administratorsCount <= 1;
+};
+
+const updateUserCapabilities = async ({
+  user_id,
+  organization_id,
+  orgCapabilities,
+}: {
+  user_id: UserId;
+  organization_id: OrganizationId;
+  orgCapabilities?: string[] | null;
+}) => {
+  const user = await withTransaction(async () => {
+    await UserOrganizationDomain.updateUserOrgCapabilities({
+      user_id,
+      organization_id,
+      orgCapabilities,
+    });
+
+    const user = await UserDomain.loadUserDetails({
+      'User.id': user_id,
+    });
+
+    updateUserSession(user);
+    return user;
+  });
+  const userMapped = UserHelper.mapUserToGraphqlUser(user);
+  return { user, userMapped };
+};
+
 export const UserHelper = {
   createUserWithPersonalSpace: async (
     data: Pick<
@@ -123,59 +231,6 @@ export const UserHelper = {
     return addedUser;
   },
 
-  createOrganisationWithAdminUser: async (
-    email: string,
-    { sendWelcomeEmail = true }: WelcomeEmailOptions = {}
-  ) => {
-    const extractedDomain = extractDomain(email);
-
-    if (!extractedDomain) {
-      throw BadRequestError(BadRequestErrorCode.InvalidEmail);
-    }
-
-    const newOrganization = await OrganizationDomain.insertNewOrganization({
-      id: uuidv4() as OrganizationId,
-      name: extractedDomain,
-      domains: [extractedDomain],
-    });
-    const addedUser = await UserHelper.createUserWithPersonalSpace(
-      {
-        email,
-      },
-      { sendWelcomeEmail }
-    );
-
-    try {
-      const createOrgaEvent = TelemetryHelper.buildCreateOrganizationEvent(
-        newOrganization,
-        addedUser.id
-      );
-      await TelemetryApp.sendTelemetryEvent(createOrgaEvent);
-    } catch (error) {
-      logApp.error('Unable to send telemetry event for create organization', {
-        error,
-      });
-    }
-
-    // Insert relation UserOrganization
-    const [userOrgRelation] =
-      await UserOrganizationDomain.createUserOrganizationRelation({
-        user_id: addedUser.id,
-        organizations_id: [newOrganization.id],
-      });
-
-    if (!userOrgRelation) {
-      throw UnknownError(UnknownErrorCode.AddingUserError);
-    }
-
-    await UserOrganizationCapabilityDomain.createUserOrganizationCapability({
-      user_organization_id: userOrgRelation.id,
-      capabilities_name: [OrganizationCapability.AdministrateOrganization],
-    });
-
-    return addedUser;
-  },
-
   createNewUserWithPendingOrga: async (
     {
       email,
@@ -218,7 +273,7 @@ export const UserHelper = {
       await OrganizationDomain.loadOrganizationsFromEmail(email);
     let userWithRoles: User;
     if (!organization) {
-      userWithRoles = await UserHelper.createOrganisationWithAdminUser(email, {
+      userWithRoles = await createOrganisationWithAdminUser(email, {
         sendWelcomeEmail,
       });
     } else if (isFiligranUser) {
@@ -264,18 +319,16 @@ export const UserHelper = {
   ): Promise<User> => {
     const user = await UserDomain.loadUserBy({ email: userInfo.email });
     if (user && upsert) {
-      await db<User>('User')
-        .where({ id: user.id })
-        .update({
-          last_login: new Date(),
-          first_name: isEmpty(user.first_name)
-            ? userInfo.first_name
-            : user.first_name,
-          last_name: isEmpty(user.last_name)
-            ? userInfo.last_name
-            : user.last_name,
-          picture: isEmpty(user.picture) ? userInfo.picture : user.picture,
-        });
+      await UserDomain.updateUser(user.id, {
+        last_login: new Date(),
+        first_name: isEmpty(user.first_name)
+          ? userInfo.first_name
+          : user.first_name,
+        last_name: isEmpty(user.last_name)
+          ? userInfo.last_name
+          : user.last_name,
+        picture: isEmpty(user.picture) ? userInfo.picture : user.picture,
+      });
     }
     return user
       ? user
@@ -361,10 +414,7 @@ export const UserHelper = {
   },
 
   removeUser: async (field: UserMutator) => {
-    const [deletedUser] = await db<User>('User')
-      .where(field)
-      .delete('*')
-      .returning('*');
+    const deletedUser = await UserDomain.deleteUserBy(field);
 
     if (!deletedUser) {
       throw NotFoundError(NotFoundErrorCode.UserNotFound);
@@ -398,11 +448,10 @@ export const UserHelper = {
       return;
     }
 
-    const isLastWithCapability =
-      await UserHelper.isUserLastOrganizationAdministrator(
-        userId,
-        organizationId
-      );
+    const isLastWithCapability = await isUserLastOrganizationAdministrator(
+      userId,
+      organizationId
+    );
 
     if (isLastWithCapability) {
       throw new Error(ErrorCode.CantRemoveLastAdministrator);
@@ -416,16 +465,10 @@ export const UserHelper = {
       capabilities?: string[] | null;
     }[]
   ) => {
-    const userOrganizations = await db('Organization')
-      .select('Organization.id')
-      .leftJoin(
-        'User_Organization',
-        'User_Organization.organization_id',
-        'Organization.id'
-      )
-      .leftJoin('User', 'User.id', 'User_Organization.user_id')
-      .where('User.id', '=', userId)
-      .andWhereNot('Organization.personal_space', '=', true);
+    const userOrganizations =
+      await OrganizationDomain.loadNonPersonalSpaceOrganizationIdsByUser(
+        userId
+      );
 
     for (const organization of userOrganizations) {
       const organizationCapabilities = (newOrganizationCapabilities ?? []).find(
@@ -438,57 +481,6 @@ export const UserHelper = {
         organizationCapabilities?.capabilities
       );
     }
-  },
-
-  isUserLastOrganizationAdministrator: async (
-    userId: UserId,
-    organizationId: OrganizationId
-  ) => {
-    const { capabilities } =
-      await UserDomain.loadUserCapabilitiesByOrganization(
-        userId,
-        organizationId
-      );
-    if (!UserHelper.hasAdministrateOrganizationCapability(capabilities)) {
-      return false;
-    }
-
-    const administratorsCount =
-      await UserHelper.countOrganizationAdministrators(organizationId);
-
-    if (administratorsCount === 0) {
-      logApp.error(
-        `Zero administrators found in the organization ${organizationId}`
-      );
-    }
-
-    return administratorsCount <= 1;
-  },
-
-  countOrganizationAdministrators: async (
-    organizationId: OrganizationId
-  ): Promise<number> => {
-    const [administratorsCount] = await db('Organization')
-      .count('Organization.id')
-      .leftJoin(
-        'User_Organization',
-        'User_Organization.organization_id',
-        'Organization.id'
-      )
-      .leftJoin(
-        'UserOrganization_Capability',
-        'UserOrganization_Capability.user_organization_id',
-        'User_Organization.id'
-      )
-      .where('Organization.id', '=', organizationId)
-      .andWhere(
-        'UserOrganization_Capability.name',
-        '=',
-        OrganizationCapability.AdministrateOrganization
-      )
-      .groupBy('Organization.id');
-
-    return administratorsCount?.count ?? 0;
   },
 
   acceptPendingUserWithCapabilities: async ({
@@ -508,7 +500,7 @@ export const UserHelper = {
         }
       );
 
-      return await UserHelper.updateUserCapabilities({
+      return await updateUserCapabilities({
         user_id,
         organization_id,
         orgCapabilities,
@@ -536,7 +528,7 @@ export const UserHelper = {
     organization_id: OrganizationId;
     orgCapabilities?: string[] | null;
   }) => {
-    const { user, userMapped } = await UserHelper.updateUserCapabilities({
+    const { user, userMapped } = await updateUserCapabilities({
       user_id,
       organization_id,
       orgCapabilities,
@@ -546,33 +538,6 @@ export const UserHelper = {
     await dispatch('MeUser', 'edit', userMapped, 'User');
 
     return user;
-  },
-
-  updateUserCapabilities: async ({
-    user_id,
-    organization_id,
-    orgCapabilities,
-  }: {
-    user_id: UserId;
-    organization_id: OrganizationId;
-    orgCapabilities?: string[] | null;
-  }) => {
-    const user = await withTransaction(async () => {
-      await UserOrganizationDomain.updateUserOrgCapabilities({
-        user_id,
-        organization_id,
-        orgCapabilities,
-      });
-
-      const user = await UserDomain.loadUserDetails({
-        'User.id': user_id,
-      });
-
-      updateUserSession(user);
-      return user;
-    });
-    const userMapped = UserHelper.mapUserToGraphqlUser(user);
-    return { user, userMapped };
   },
 
   updateAndDispatchUser: async (userId: UserId) => {
