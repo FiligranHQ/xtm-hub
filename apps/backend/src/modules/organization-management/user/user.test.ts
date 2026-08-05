@@ -20,12 +20,7 @@ import { OrganizationDomain } from '../organization/organization.domain';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
-import {
-  createNewUserFromInvitation,
-  preventAdministratorRemovalOfAllOrganizations,
-  preventAdministratorRemovalOfOneOrganization,
-  removeUser,
-} from './user.helper';
+import { UserHelper } from './user.helper';
 
 describe('user helpers', async () => {
   afterEach(async () => {
@@ -34,7 +29,7 @@ describe('user helpers', async () => {
   describe('createNewUserFromInvitation', () => {
     it('should create a new user with Role USER and not add in an existing Organization, but in pending organization', async () => {
       const testMail = `testCreateNewUserFromInvitation${uuidv4()}@filigran.io`;
-      await createNewUserFromInvitation({
+      await UserHelper.createNewUserFromInvitation({
         email: testMail,
       });
       const newUser = (await UserDomain.loadUserBy({ email: testMail }))!;
@@ -51,7 +46,7 @@ describe('user helpers', async () => {
       );
 
       // Delete corresponding in order to avoid issue with other tests
-      await removeUser({ email: newUser.email });
+      await UserHelper.removeUser({ email: newUser.email });
     });
     it('should add new user with Role admin organization with an new Organization', async () => {
       const organizationName = 'test-new-organization.fr';
@@ -64,7 +59,7 @@ describe('user helpers', async () => {
         .spyOn(TelemetryApp, 'sendTelemetryEvent')
         .mockResolvedValue();
 
-      await createNewUserFromInvitation({
+      await UserHelper.createNewUserFromInvitation({
         email: testMail,
       });
       const newUser = (await UserDomain.loadUserBy({ email: testMail }))!;
@@ -107,13 +102,13 @@ describe('user helpers', async () => {
       });
 
       // Delete corresponding in order to avoid issue with other tests
-      await removeUser({ email: testMail });
+      await UserHelper.removeUser({ email: testMail });
       await OrganizationDomain.deleteOrganizationBy({ name: organizationName });
     });
 
     it('should create a new user with Role USER and should not add it to pending organization if orga does not exist', async () => {
       const testMail = `testCreateNewUserFromInvitation${uuidv4()}@whatever.io`;
-      await createNewUserFromInvitation({
+      await UserHelper.createNewUserFromInvitation({
         email: testMail,
       });
       const newUser = (await UserDomain.loadUserBy({ email: testMail }))!;
@@ -131,13 +126,13 @@ describe('user helpers', async () => {
       const sendMailSpy = vi.spyOn(MailService, 'sendMail').mockResolvedValue();
       const testMail = `testWelcomeEmail${uuidv4()}@whatever.io`;
 
-      await createNewUserFromInvitation({ email: testMail });
+      await UserHelper.createNewUserFromInvitation({ email: testMail });
 
       expect(sendMailSpy).toHaveBeenCalledWith(
         expect.objectContaining({ to: testMail, template: 'welcome' })
       );
 
-      await removeUser({ email: testMail });
+      await UserHelper.removeUser({ email: testMail });
       sendMailSpy.mockRestore();
     });
 
@@ -145,7 +140,7 @@ describe('user helpers', async () => {
       const sendMailSpy = vi.spyOn(MailService, 'sendMail').mockResolvedValue();
       const testMail = `testWelcomeEmail${uuidv4()}@whatever.io`;
 
-      await createNewUserFromInvitation(
+      await UserHelper.createNewUserFromInvitation(
         { email: testMail },
         { sendWelcomeEmail: false }
       );
@@ -154,7 +149,7 @@ describe('user helpers', async () => {
         expect.objectContaining({ template: 'welcome' })
       );
 
-      await removeUser({ email: testMail });
+      await UserHelper.removeUser({ email: testMail });
       sendMailSpy.mockRestore();
     });
   });
@@ -167,7 +162,7 @@ describe('user helpers', async () => {
 
     beforeEach(async () => {
       const userEmail = `testLastOrganizationAdministrator${uuidv4()}@${organizationName}`;
-      await createNewUserFromInvitation({
+      await UserHelper.createNewUserFromInvitation({
         email: userEmail,
       });
       const loadedOrganization = await OrganizationDomain.loadOrganizationBy({
@@ -182,10 +177,10 @@ describe('user helpers', async () => {
 
     afterEach(async () => {
       if (user) {
-        await removeUser({ email: user.email });
+        await UserHelper.removeUser({ email: user.email });
       }
       if (anotherUser) {
-        await removeUser({ email: anotherUser.email });
+        await UserHelper.removeUser({ email: anotherUser.email });
         anotherUser = undefined;
       }
       if (organization) {
@@ -197,7 +192,7 @@ describe('user helpers', async () => {
 
     describe('preventAdministratorRemovalOfOneOrganization', () => {
       it(`should throw an error when user is the last with ${OrganizationCapability.AdministrateOrganization}`, async () => {
-        const call = preventAdministratorRemovalOfOneOrganization(
+        const call = UserHelper.preventAdministratorRemovalOfOneOrganization(
           user.id,
           organization.id
         );
@@ -209,7 +204,7 @@ describe('user helpers', async () => {
         requestContext.set(requestContextAdminUser);
 
         const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}`;
-        await createNewUserFromInvitation({
+        await UserHelper.createNewUserFromInvitation({
           email: anotherUserEmail,
         });
 
@@ -235,10 +230,11 @@ describe('user helpers', async () => {
           }
         );
 
-        const result = await preventAdministratorRemovalOfOneOrganization(
-          user.id,
-          organization.id
-        );
+        const result =
+          await UserHelper.preventAdministratorRemovalOfOneOrganization(
+            user.id,
+            organization.id
+          );
 
         expect(result).toBeUndefined();
       });
@@ -246,18 +242,24 @@ describe('user helpers', async () => {
 
     describe('preventAdministratorRemovalOfAllOrganizations', () => {
       it(`should throw an error when user is the last with ${OrganizationCapability.AdministrateOrganization} and we specify empty capabilities`, async () => {
-        const call = preventAdministratorRemovalOfAllOrganizations(user.id, [
-          {
-            organizationId: organization.id,
-            capabilities: [],
-          },
-        ]);
+        const call = UserHelper.preventAdministratorRemovalOfAllOrganizations(
+          user.id,
+          [
+            {
+              organizationId: organization.id,
+              capabilities: [],
+            },
+          ]
+        );
 
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
 
       it(`should throw an error when user is the last with ${OrganizationCapability.AdministrateOrganization} and we don't specify new capabilities`, async () => {
-        const call = preventAdministratorRemovalOfAllOrganizations(user.id, []);
+        const call = UserHelper.preventAdministratorRemovalOfAllOrganizations(
+          user.id,
+          []
+        );
 
         await expect(call).rejects.toThrow('CANT_REMOVE_LAST_ADMINISTRATOR');
       });
@@ -266,7 +268,7 @@ describe('user helpers', async () => {
         requestContext.set(requestContextAdminUser);
 
         const anotherUserEmail = `testLastOrganizationAdministrator-anotherUser${uuidv4()}@${organizationName}.fr`;
-        await createNewUserFromInvitation({
+        await UserHelper.createNewUserFromInvitation({
           email: anotherUserEmail,
         });
 
@@ -292,11 +294,12 @@ describe('user helpers', async () => {
           }
         );
 
-        const result = await preventAdministratorRemovalOfOneOrganization(
-          user.id,
-          organization.id,
-          []
-        );
+        const result =
+          await UserHelper.preventAdministratorRemovalOfOneOrganization(
+            user.id,
+            organization.id,
+            []
+          );
 
         expect(result).toBeUndefined();
       });

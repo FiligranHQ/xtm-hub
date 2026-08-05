@@ -24,7 +24,7 @@ import UserServiceCapability, {
 } from '../../model/kanel/public/UserServiceCapability';
 import * as mailService from '../../server/mail-service';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
-import { removeUser } from '../organization-management/user/user.helper';
+import { UserHelper } from '../organization-management/user/user.helper';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user-service.domain';
@@ -307,7 +307,7 @@ describe('userServiceDomain', () => {
       expect(result[0]!.user_id).toBe(createdUser!.id);
 
       await cleanupUserServices(sub.id);
-      await removeUser({ email: newEmail });
+      await UserHelper.removeUser({ email: newEmail });
     });
 
     it('should reuse an existing user when the email is already in the DB', async () => {
