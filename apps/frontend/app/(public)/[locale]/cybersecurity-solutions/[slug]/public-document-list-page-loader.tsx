@@ -30,9 +30,10 @@ export const PublicDocumentListPageLoader = ({
   );
 
   const serviceInstanceSlug = serviceInstance.slug as ServiceSlug;
-  const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug, {
-    isSolutionCategoriesEnabled,
-  });
+  const { localStorageKey } = useShareableResourceMapping(
+    serviceInstanceSlug,
+    isSolutionCategoriesEnabled
+  );
 
   const {
     pageSize,
@@ -60,7 +61,6 @@ export const PublicDocumentListPageLoader = ({
           productVersions,
           licenseTypes,
           solutionCategories,
-          isSolutionCategoriesEnabled,
         }
       : {
           serviceInstanceSlug: serviceInstanceSlug as
@@ -72,7 +72,10 @@ export const PublicDocumentListPageLoader = ({
           entityTypes,
         };
 
-  const logicalFilters = useLogicalFiltersFromStorage(params);
+  const logicalFilters = useLogicalFiltersFromStorage(
+    params,
+    isSolutionCategoriesEnabled
+  );
 
   useEffect(() => {
     loadQuery(

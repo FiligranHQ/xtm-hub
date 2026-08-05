@@ -64,9 +64,7 @@ const PublicDocumentsList = ({
 
   const { filters, localStorageKey } = useShareableResourceMapping(
     serviceInstance.slug as ServiceSlug,
-    {
-      isSolutionCategoriesEnabled,
-    }
+    isSolutionCategoriesEnabled
   );
 
   const { search, setSearch, pageSize, setPageSize } =
