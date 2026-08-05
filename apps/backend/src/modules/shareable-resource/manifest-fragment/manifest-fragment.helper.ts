@@ -9,7 +9,7 @@ export const TAG_LATEST_LTS = 'latest-lts';
 export const TAG_DECOUPLING = 'decoupling';
 export const MAX_SHORT_DESCRIPTION_LENGTH = 250;
 export const MAX_CONTACT_LENGTH = 254;
-export const LICENSE_TYPES: readonly string[] = ['free', 'commercial'];
+export const LICENSE_TYPES: readonly string[] = ['Free', 'Commercial'];
 
 export type ConnectorMetadataSnapshot = {
   datasheet_url?: string;
@@ -129,22 +129,21 @@ export const ManifestFragmentHelper = {
     return `${title}-${version}-logo.png`;
   },
 
-  validateAndNormalizeLicenseType: (
-    value: string | null | undefined
-  ): string | undefined => {
+  parseLicenseType: (value: string | null | undefined): string | undefined => {
     const normalized = ManifestFragmentHelper.normalizeOptionalText(value);
     if (normalized === undefined) {
       return undefined;
     }
-    if (!LICENSE_TYPES.includes(normalized)) {
+    const canonical = LICENSE_TYPES.find(
+      (licenseType) => licenseType.toLowerCase() === normalized.toLowerCase()
+    );
+    if (!canonical) {
       throw new Error(BadRequestErrorCode.InvalidLicenseType);
     }
-    return normalized;
+    return canonical;
   },
 
-  validateAndNormalizeContact: (
-    value: string | null | undefined
-  ): string | undefined => {
+  parseContact: (value: string | null | undefined): string | undefined => {
     const normalized = ManifestFragmentHelper.normalizeOptionalText(value);
     if (normalized !== undefined && normalized.length > MAX_CONTACT_LENGTH) {
       throw new Error(BadRequestErrorCode.ContactTooLong);

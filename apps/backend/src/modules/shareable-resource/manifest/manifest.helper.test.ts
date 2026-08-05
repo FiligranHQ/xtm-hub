@@ -64,7 +64,7 @@ const buildConnector = (overrides: Partial<ConnectorV2> = {}): ConnectorV2 =>
     last_verified_date: '2025-01-15',
     additional_properties: '{"key":"value"}',
     config_schema: '{"type":"object"}',
-    license_type: 'commercial',
+    license_type: 'Commercial',
     contact: 'https://github.com/some-contributor',
     ...overrides,
   }) as unknown as ConnectorV2;
@@ -381,7 +381,7 @@ describe('manifestHelper', () => {
         );
         expect(contract.manager_supported).toBe(true);
         expect(contract.support_version).toBe('7.260507.0');
-        expect(contract.license_type).toBe('commercial');
+        expect(contract.license_type).toBe('Commercial');
         expect(contract.contact).toBe('https://github.com/some-contributor');
         expect(contract.solution_categories).toEqual([]);
         expect(contract.version).toBe('6.5.1');

@@ -815,6 +815,7 @@ export const mockManifestFragmentInput = (overrides?: Partial<ManifestFragmentIn
         platform: overrides && overrides.hasOwnProperty('platform') ? overrides.platform! : 'vilicus',
         short_description: overrides && overrides.hasOwnProperty('short_description') ? overrides.short_description! : 'molestias',
         slug: overrides && overrides.hasOwnProperty('slug') ? overrides.slug! : 'validus',
+        solution_categories: overrides && overrides.hasOwnProperty('solution_categories') ? overrides.solution_categories! : ['velociter'],
         source_code: overrides && overrides.hasOwnProperty('source_code') ? overrides.source_code! : 'vereor',
         subscription_link: overrides && overrides.hasOwnProperty('subscription_link') ? overrides.subscription_link! : 'temptatio',
         title: overrides && overrides.hasOwnProperty('title') ? overrides.title! : 'accusator',

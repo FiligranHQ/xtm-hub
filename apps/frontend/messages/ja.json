@@ -243,7 +243,7 @@
       "INVALID_ACTION_SIZE": "不明なエラーが発生した",
       "INVALID_EMAIL": "電子メールは有効な形式でなければなりません。",
       "INVALID_IMAGE_URL": "画像のURLが不正",
-      "INVALID_LICENSE_TYPE": "ライセンスタイプは free または commercial である必要があります",
+      "INVALID_LICENSE_TYPE": "ライセンスタイプは Free または Commercial である必要があります",
       "INVALID_MANIFEST_VERSION_FORMAT": "マニフェストのバージョン形式が無効です",
       "INVALID_PLATFORM_CONFIGURATION": "プラットフォーム設定が無効です",
       "INVALID_PLATFORM_ID": "不明なエラーが発生した",

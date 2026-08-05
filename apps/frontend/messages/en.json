@@ -243,7 +243,7 @@
       "INVALID_ACTION_SIZE": "An unknown error occurred",
       "INVALID_EMAIL": "The email should be in valid format.",
       "INVALID_IMAGE_URL": "The image URL is not valid",
-      "INVALID_LICENSE_TYPE": "The license type must be either free or commercial",
+      "INVALID_LICENSE_TYPE": "The license type must be either Free or Commercial",
       "INVALID_MANIFEST_VERSION_FORMAT": "The manifest version format is invalid",
       "INVALID_PLATFORM_CONFIGURATION": "Platform configuration is invalid",
       "INVALID_PLATFORM_ID": "An unknown error occurred",

@@ -166,12 +166,10 @@ export const ManifestFragmentDomain = {
     ManifestFragmentHelper.validateShortDescriptionLength(
       fragment.short_description
     );
-    const licenseType = ManifestFragmentHelper.validateAndNormalizeLicenseType(
+    const licenseType = ManifestFragmentHelper.parseLicenseType(
       fragment.license_type
     );
-    const contact = ManifestFragmentHelper.validateAndNormalizeContact(
-      fragment.contact
-    );
+    const contact = ManifestFragmentHelper.parseContact(fragment.contact);
     const formattedVersion =
       ManifestFragmentHelper.validateAndFormatManifestVersion(fragment.version);
     const latestTag =

@@ -93,7 +93,7 @@ describe('manifestFragmentDomain', () => {
       image_type: 'EXTERNAL_IMPORT',
       platform: 'OpenCTI',
       integration_type: integrationType,
-      license_type: 'commercial',
+      license_type: 'Commercial',
       contact: 'https://github.com/some-contributor',
       additional_properties: {
         max_confidence_level: 50,
