@@ -38,4 +38,22 @@ describe('IntegrationFilters', () => {
       screen.getByText('Service.OpenctiIntegrations.Filter.Type.Placeholder')
     ).toBeInTheDocument();
   });
+
+  it('propagates solution categories flag to hide subtype options', async () => {
+    const { user } = testRender(
+      <IntegrationFilters isSolutionCategoriesEnabled />
+    );
+
+    await user.click(
+      screen.getByText('Service.OpenctiIntegrations.Filter.Type.Placeholder')
+    );
+
+    const listbox = screen.getByRole('listbox');
+    expect(
+      screen.getByText(
+        `Service.OpenctiIntegrations.Type.${IntegrationType.Connector}`
+      )
+    ).toBeInTheDocument();
+    expect(listbox).not.toHaveTextContent('External import');
+  });
 });

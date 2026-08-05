@@ -73,7 +73,11 @@ export const useShareableResourceMapping = (
     [ServiceSlug.OPEN_CTI_INTEGRATIONS]: {
       [ServiceListFilterKey.Label]: labelFilter,
       [ServiceListFilterKey.IntegrationType]: {
-        node: <IntegrationFilters />,
+        node: (
+          <IntegrationFilters
+            isSolutionCategoriesEnabled={isSolutionCategoriesEnabled}
+          />
+        ),
         reset: removeIntegrationTypes,
       },
       [ServiceListFilterKey.ManagerSupported]: {

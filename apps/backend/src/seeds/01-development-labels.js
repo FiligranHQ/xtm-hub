@@ -130,7 +130,7 @@ export async function seed(knex) {
       },
       {
         id: '59af1b49-a95f-4d02-92d8-aaef8e65fbde',
-        name: 'Endpoint Detection & Response (EDR/XDR)',
+        name: 'Endpoint Detection & Response',
         product: ['opencti'],
       },
       {
@@ -200,7 +200,7 @@ export async function seed(knex) {
       },
       {
         id: '51b4ee2b-40e8-48ee-b355-f53dd46a7b12',
-        name: 'Import, Export & Sharing (TAXII etc)',
+        name: 'Import, Export & Sharing',
         product: ['opencti'],
       },
       {

@@ -8,9 +8,9 @@ import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { Skeleton } from '@filigran/ui';
-import { FeatureFlag } from '@graphql/generated';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
+import { FeatureFlag } from '@graphql/generated';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 

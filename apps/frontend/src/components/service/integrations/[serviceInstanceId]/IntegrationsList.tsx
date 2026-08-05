@@ -95,7 +95,11 @@ const IntegrationsList = ({
 
   const filters: ServiceListFilterMap = {
     [ServiceListFilterKey.IntegrationType]: {
-      node: <IntegrationFilters />,
+      node: (
+        <IntegrationFilters
+          isSolutionCategoriesEnabled={isSolutionCategoriesEnabled}
+        />
+      ),
       reset: () => {
         removeIntegrationTypes();
       },
