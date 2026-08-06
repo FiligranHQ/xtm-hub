@@ -1,10 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
+import { expect } from 'vitest';
 import { db } from '../../knexfile';
+import { OrganizationId } from '../../src/model/kanel/public/Organization';
 import RolePortal, {
   RolePortalId,
   RolePortalMutator,
 } from '../../src/model/kanel/public/RolePortal';
-import User, { UserMutator } from '../../src/model/kanel/public/User';
+import User, { UserId, UserMutator } from '../../src/model/kanel/public/User';
 import UserOrganization, {
   UserOrganizationInitializer,
   UserOrganizationMutator,
@@ -23,6 +25,7 @@ import UserServiceCapability, {
   UserServiceCapabilityId,
   UserServiceCapabilityMutator,
 } from '../../src/model/kanel/public/UserServiceCapability';
+import { TEST_ORGANIZATIONS } from '../tests.const';
 
 export const TestUserHelper = {
   user_Service: {
@@ -119,6 +122,19 @@ export const TestUserHelper = {
         .where(field)
         .del();
     },
+    linkUsersToOrganization: async (
+      users: User[],
+      organizationId: OrganizationId
+    ): Promise<void> => {
+      const promises = users.map(async (user) => {
+        await db<UserOrganizationPending>('User_Organization_Pending').insert({
+          organization_id: organizationId,
+          user_id: user!.id,
+        });
+      });
+
+      await Promise.all(promises);
+    },
   },
   user: {
     delete: async (field: UserMutator) => {
@@ -133,6 +149,22 @@ export const TestUserHelper = {
     create: async (data: UserMutator) => {
       const [user] = await db<User>('User').insert(data).returning('*');
       return user;
+    },
+    insert: async (fields: UserMutator = {}): Promise<User> => {
+      // eslint-disable-next-line no-restricted-syntax
+      const [createdUser] = await db<User>('User')
+        .insert({
+          id: uuidv4() as UserId,
+          salt: 'Fleur de sel',
+          password: 'Le mot de passe',
+          selected_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          ...fields,
+        })
+        .returning('*');
+
+      expect(createdUser).toBeDefined();
+
+      return createdUser!;
     },
   },
   rolePortal: {

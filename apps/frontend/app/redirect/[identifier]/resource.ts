@@ -1,5 +1,6 @@
 import { serverMutateGraphQL } from '@/relay/server-portal-api-fetch';
 import { isValueInEnum } from '@/utils/is-value-in-enum';
+import { loadMeUser } from '@/utils/load-me-user';
 import { APP_PATH } from '@/utils/path/constant';
 import OrganizationSwitcherMutation, {
   OrganizationSwitcherMutation as OrganizationSwitcherMutationType,
@@ -8,7 +9,6 @@ import { ServiceDefinitionIdentifier } from '@graphql/generated';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   loadBaseUrlFront,
-  loadMeUser,
   loadPlatformOrganizationId,
   loadServiceInstances,
 } from './utils/load';

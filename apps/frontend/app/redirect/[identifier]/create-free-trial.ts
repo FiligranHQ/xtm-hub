@@ -1,4 +1,5 @@
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { loadMeUser } from '@/utils/load-me-user';
 import type { createFreeTrialAvailableTrialsQuery } from '@generated/createFreeTrialAvailableTrialsQuery.graphql';
 import CreateFreeTrialAvailableTrials from '@generated/createFreeTrialAvailableTrialsQuery.graphql';
 import {
@@ -8,7 +9,7 @@ import {
   PortalCapability,
 } from '@graphql/generated';
 import { NextRequest, NextResponse } from 'next/server';
-import { loadBaseUrlFront, loadMeUser } from './utils/load';
+import { loadBaseUrlFront } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
 
 export const redirectToCreateFreeTrial = async (

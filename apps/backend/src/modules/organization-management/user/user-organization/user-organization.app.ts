@@ -20,7 +20,7 @@ import { formatName } from '../../../../utils/format';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
-import { createUserWithPersonalSpace } from '../user.helper';
+import { UserHelper } from '../user.helper';
 import { UserOrganizationDomain } from './user-organization.domain';
 
 export const UserOrganizationApp = {
@@ -59,7 +59,7 @@ export const UserOrganizationApp = {
     const user = await withTransaction(async () => {
       const user = existingUser
         ? existingUser
-        : await createUserWithPersonalSpace({
+        : await UserHelper.createUserWithPersonalSpace({
             email: input.email,
             password: input.password ?? undefined,
             selected_organization_id: chosenOrganization.id,

@@ -364,8 +364,13 @@ export const UserDomain = {
     return updatedUser;
   },
 
-  deleteUserById: async (userId: UserId) => {
-    return db<User>('User').where('id', userId).delete().returning('*');
+  deleteUserBy: async (field: UserMutator): Promise<User | undefined> => {
+    const [deletedUser] = await db<User>('User')
+      .where(field)
+      .delete('*')
+      .returning('*');
+
+    return deletedUser;
   },
 
   loadUserCapabilitiesByOrganization: async (

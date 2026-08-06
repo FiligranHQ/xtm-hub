@@ -12,7 +12,6 @@ import User, { UserId } from '../../../../model/kanel/public/User';
 import * as MailService from '../../../../server/mail-service';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
-import { insertUser } from '../user.test.utils';
 import { UserOrganizationApp } from './user-organization.app';
 import { UserOrganizationDomain } from './user-organization.domain';
 
@@ -227,7 +226,7 @@ describe('usersOrganizationApp', () => {
         ...originalEnabledEmails,
         pending_user_digest: true,
       };
-      const newUser = await insertUser({
+      const newUser = await TestHelper.user.insert({
         email: 'testPendingUser@filigran.io',
       });
 
@@ -263,7 +262,7 @@ describe('usersOrganizationApp', () => {
   });
   describe('addUserToOrganization', async () => {
     it('should add user and remove user from pending list', async () => {
-      const newUser = await insertUser({
+      const newUser = await TestHelper.user.insert({
         email: 'testAddingPendingUser@filigran.io',
       });
       await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
