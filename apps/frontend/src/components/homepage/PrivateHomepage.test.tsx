@@ -142,7 +142,11 @@ describe('PrivateHomepage', () => {
 
     expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
-    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
+    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(
+      MeLoaderQuery,
+      {},
+      { cache: 'no-store' }
+    );
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsFetcher.mock.calls[0]?.[1]).toEqual({
@@ -218,7 +222,11 @@ describe('PrivateHomepage', () => {
 
     expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
-    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
+    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(
+      MeLoaderQuery,
+      {},
+      { cache: 'no-store' }
+    );
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
@@ -266,7 +274,11 @@ describe('PrivateHomepage', () => {
 
     expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
-    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
+    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(
+      MeLoaderQuery,
+      {},
+      { cache: 'no-store' }
+    );
     expect(mockXtmPlatform).toHaveBeenCalledWith(
       expect.objectContaining({ welcomeName: undefined }),
       undefined

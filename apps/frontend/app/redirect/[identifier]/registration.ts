@@ -1,6 +1,7 @@
+import { loadMeUser } from '@/utils/load-me-user';
 import { PlatformIdentifier } from '@graphql/generated';
 import { NextRequest, NextResponse } from 'next/server';
-import { loadBaseUrlFront, loadMeUser } from './utils/load';
+import { loadBaseUrlFront } from './utils/load';
 import { getLoginRedirectionURL } from './utils/url';
 
 export type RegistrationAction = 'register' | 'unregister';

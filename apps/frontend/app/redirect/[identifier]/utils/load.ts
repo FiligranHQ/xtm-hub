@@ -1,6 +1,5 @@
 import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 import { SettingsResponse } from '@/utils/settings.service';
-import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
 import PlatformAssociatedOrganizationQueryGraphql, {
   platformAssociatedOrganizationQuery,
   platformAssociatedOrganizationQuery$data,
@@ -12,35 +11,9 @@ import ServiceInstancesListQueryGraphql, {
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import {
   OrderingMode,
-  OrganizationCapability,
-  PortalCapability,
   ServiceInstanceFilterKey,
   ServiceInstanceOrdering,
 } from '@graphql/generated';
-
-interface MeResponse {
-  data: {
-    me: {
-      id: string;
-      selected_organization_id: string;
-      organizations: {
-        id: string;
-        name: string;
-        personal_space: boolean;
-      }[];
-      capabilities: { name: PortalCapability }[];
-      selected_org_capabilities: OrganizationCapability[];
-    };
-  };
-}
-
-export const loadMeUser = async () => {
-  const meResponse = (await serverPortalApiFetch<
-    typeof MeLoaderQuery,
-    meLoaderQuery
-  >(MeLoaderQuery)) as MeResponse;
-  return meResponse.data.me;
-};
 
 export const loadBaseUrlFront = async () => {
   const settingsResponse = (await serverPortalApiFetch<

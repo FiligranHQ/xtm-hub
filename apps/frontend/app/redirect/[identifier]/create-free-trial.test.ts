@@ -1,4 +1,5 @@
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { loadMeUser } from '@/utils/load-me-user';
 import {
   DeploymentRequestSource,
   OrganizationCapability,
@@ -8,9 +9,10 @@ import {
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { redirectToCreateFreeTrial } from './create-free-trial';
-import { loadBaseUrlFront, loadMeUser } from './utils/load';
+import { loadBaseUrlFront } from './utils/load';
 
 vi.mock('./utils/load');
+vi.mock('../../../src/utils/load-me-user');
 vi.mock('../../../src/relay/server-portal-api-fetch', () => ({
   serverFetchGraphQL: vi.fn(),
 }));
@@ -51,9 +53,7 @@ describe('redirectToCreateFreeTrial', () => {
 
   describe('unauthenticated', () => {
     it('redirects to login with redirect param when user is null', async () => {
-      vi.mocked(loadMeUser).mockResolvedValue(
-        null as unknown as LoadMeUserResult
-      );
+      vi.mocked(loadMeUser).mockResolvedValue(null);
 
       const response = await redirectToCreateFreeTrial(makeRequest());
 
