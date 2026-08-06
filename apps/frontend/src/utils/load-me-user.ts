@@ -1,5 +1,6 @@
 import serverPortalApiFetch from '@/relay/server-portal-api-fetch';
 import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
+import { OrganizationCapability, PortalCapability } from '@graphql/generated';
 
 interface MeResponse {
   data: {
