@@ -23,11 +23,14 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, search, labels, entityTypes, setSearch, orderMode, orderBy } =
     useServiceListLocalStorage(ServiceListLocalStorageKey.OpenCTICustomViews);
-  const logicalFilters = useLogicalFiltersFromStorage({
-    serviceInstanceSlug: ServiceSlug.OPEN_CTI_CUSTOM_VIEWS,
-    labels,
-    entityTypes,
-  });
+  const logicalFilters = useLogicalFiltersFromStorage(
+    {
+      serviceInstanceSlug: ServiceSlug.OPEN_CTI_CUSTOM_VIEWS,
+      labels,
+      entityTypes,
+    },
+    false
+  );
 
   useEffect(() => {
     loadQuery(

@@ -1,9 +1,17 @@
 import { IntegrationTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationTypeFilter';
 
-export const IntegrationFilters = () => {
+interface IntegrationFiltersProps {
+  isSolutionCategoriesEnabled?: boolean;
+}
+
+export const IntegrationFilters = ({
+  isSolutionCategoriesEnabled,
+}: IntegrationFiltersProps = {}) => {
   return (
     <div className="flex justify-between gap-s">
-      <IntegrationTypeFilter />
+      <IntegrationTypeFilter
+        isSolutionCategoriesEnabled={isSolutionCategoriesEnabled}
+      />
     </div>
   );
 };
