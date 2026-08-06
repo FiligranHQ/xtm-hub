@@ -253,6 +253,22 @@ const createLabelFilter = (): FilterHandler => ({
   },
 });
 
+const createSolutionCategoryFilter = (): FilterHandler => ({
+  key: FilterKey.SolutionCategory,
+  addJoin: (qb, type) => {
+    qb.leftJoin(
+      'Object_SolutionCategory as osc',
+      'osc.object_id',
+      '=',
+      `${type}.id`
+    );
+  },
+  addWhere: (qb, _type, values) => {
+    if (!values.length) return;
+    qb.whereIn('osc.solution_category_id', values.map(extractId));
+  },
+});
+
 const createEntityTypeFilter = (): FilterHandler => ({
   key: FilterKey.EntityType,
   addWhere: (qb, _type, values) => {
@@ -394,6 +410,7 @@ export const applyFilterJoins = (
 
 const filterHandlers: Record<string, FilterHandler> = {
   [FilterKey.Label]: createLabelFilter(),
+  [FilterKey.SolutionCategory]: createSolutionCategoryFilter(),
   [FilterKey.EntityType]: createEntityTypeFilter(),
   [ServiceInstanceFilterKey.Tags]: createTagsFilter(),
   [ServiceInstanceFilterKey.ServiceDefinitionIdentifier]:

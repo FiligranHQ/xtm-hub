@@ -5,7 +5,9 @@ import {
   DEPLOYABLE_PARAM,
   INTEGRATION_TYPE_PARAM,
   LABEL_PARAM,
+  LICENSE_TYPE_PARAM,
   PRODUCT_VERSION_PARAM,
+  SOLUTION_CATEGORY_PARAM,
   VERIFIED_PARAM,
 } from '@/components/service/integrations/[serviceInstanceId]/integration-list-url-filters.utils';
 import {
@@ -24,11 +26,15 @@ export const useIntegrationListStorage = () => {
     deployable,
     verified,
     productVersions,
+    licenseTypes,
+    solutionCategories,
     setIntegrationTypes,
     setLabels,
     setDeployable,
     setVerified,
     setProductVersions,
+    setLicenseTypes,
+    setSolutionCategories,
   } = store;
 
   const filters = useMemo<AllFilters>(
@@ -38,8 +44,18 @@ export const useIntegrationListStorage = () => {
       [DEPLOYABLE_PARAM]: deployable,
       [VERIFIED_PARAM]: verified,
       [PRODUCT_VERSION_PARAM]: productVersions,
+      [LICENSE_TYPE_PARAM]: licenseTypes,
+      [SOLUTION_CATEGORY_PARAM]: solutionCategories,
     }),
-    [integrationTypes, labels, deployable, verified, productVersions]
+    [
+      integrationTypes,
+      labels,
+      deployable,
+      verified,
+      productVersions,
+      licenseTypes,
+      solutionCategories,
+    ]
   );
 
   const setFilters = useCallback(
@@ -49,6 +65,8 @@ export const useIntegrationListStorage = () => {
       setDeployable(value[DEPLOYABLE_PARAM] ?? {});
       setVerified(value[VERIFIED_PARAM] ?? {});
       setProductVersions(value[PRODUCT_VERSION_PARAM] ?? {});
+      setLicenseTypes(value[LICENSE_TYPE_PARAM] ?? {});
+      setSolutionCategories(value[SOLUTION_CATEGORY_PARAM] ?? {});
     },
     [
       setIntegrationTypes,
@@ -56,6 +74,8 @@ export const useIntegrationListStorage = () => {
       setDeployable,
       setVerified,
       setProductVersions,
+      setLicenseTypes,
+      setSolutionCategories,
     ]
   );
 

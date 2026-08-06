@@ -6,6 +6,8 @@ export const LABEL_PARAM = 'label';
 export const DEPLOYABLE_PARAM = 'deployable';
 export const VERIFIED_PARAM = 'verified';
 export const PRODUCT_VERSION_PARAM = 'productVersion';
+export const LICENSE_TYPE_PARAM = 'licenseType';
+export const SOLUTION_CATEGORY_PARAM = 'solutionCategory';
 
 export const ALL_FILTER_PARAMS = [
   INTEGRATION_TYPE_PARAM,
@@ -13,6 +15,8 @@ export const ALL_FILTER_PARAMS = [
   DEPLOYABLE_PARAM,
   VERIFIED_PARAM,
   PRODUCT_VERSION_PARAM,
+  LICENSE_TYPE_PARAM,
+  SOLUTION_CATEGORY_PARAM,
 ] as const;
 
 export type FilterParamName = (typeof ALL_FILTER_PARAMS)[number];

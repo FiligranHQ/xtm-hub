@@ -1048,6 +1048,16 @@
           "AutomaticDeploy": "自動デプロイ",
           "ManualDeploy": "手動デプロイ"
         },
+        "LicenseType": {
+          "Label": "ライセンス種別",
+          "Placeholder": "ライセンス種別...",
+          "Free": "無料",
+          "Commercial": "商用"
+        },
+        "SolutionCategory": {
+          "Label": "ソリューションカテゴリ",
+          "Placeholder": "ソリューションカテゴリ..."
+        },
         "Verified": {
           "Label": "検証ステータス",
           "Placeholder": "検証状況...",
@@ -1209,6 +1219,8 @@
         "Key": {
           "label": "使用例",
           "integration_type": "統合タイプ",
+          "solution_category": "ソリューションカテゴリ",
+          "license_type": "ライセンス種別",
           "product_version": "接続済み製品",
           "manager_supported": "配備タイプ",
           "verified": "検証状況",

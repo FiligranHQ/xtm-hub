@@ -31,6 +31,8 @@ enum FilterKey {
   feed_url
   verified
   entity_type
+  license_type
+  solution_category
 }
 
 enum LogicalOperator {
