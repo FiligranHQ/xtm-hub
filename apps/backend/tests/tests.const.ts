@@ -372,6 +372,8 @@ export const contextSimpleUserFiligran2: PortalContext = {
     useCasesByDocumentIdLoader: { load: () => Promise.resolve([]) },
     solutionCategoryByDocumentIdLoader: { load: () => Promise.resolve(null) },
     integrationTypeLoader: { load: () => Promise.resolve(null) },
+    serviceInstanceByIdLoader: { load: () => Promise.resolve(undefined) },
+    subscriptionByServiceInstanceLoader: { load: () => Promise.resolve(null) },
   } as unknown as DocumentDataLoaders,
 } as unknown as PortalContext;
 

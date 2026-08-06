@@ -90,6 +90,7 @@ describe('documentApp', () => {
     name: 'name',
     description: 'description',
     active: true,
+    use_cases: [],
   };
 
   const documentUpdateData = {
@@ -171,9 +172,11 @@ describe('documentApp', () => {
         sourceDocument: mockUpload,
       });
 
+      const { use_cases: _use_cases, ...expected } = documentData;
+
       // Then
       expect(result).toMatchObject({
-        ...documentData,
+        ...expected,
         integration_type: IntegrationType.ThirdPartyIntegration,
         integration_subtype: IntegrationSubType.Orchestration,
         vendor_url: 'https://example.com',
@@ -1157,7 +1160,6 @@ describe('documentApp', () => {
       );
     });
   });
-
   describe('createDocumentWithChildrenAndMetadata', () => {
     beforeEach(async () => {
       await TestHelper.objectUseCase.delete({});

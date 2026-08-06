@@ -43,6 +43,7 @@ const {
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
   loadServiceInstanceSubscriptions,
+  loadServiceInstancesByIds,
   loadSubscribedServiceInstancesByIdentifier,
   loadSubscriptionByServiceInstanceAndOrganization,
   updatePlatformConfigurationByServiceInstanceId,
@@ -716,6 +717,77 @@ describe('service instance domain', () => {
 
       // Then
       expect(result).toHaveLength(0);
+    });
+  });
+
+  describe('loadServiceInstancesByIds', () => {
+    const firstServiceInstanceId = uuidv4() as ServiceInstanceId;
+    const secondServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+    beforeAll(async () => {
+      await TestHelper.serviceInstance.create({
+        id: firstServiceInstanceId,
+        name: 'load-by-ids-first',
+        slug: 'load-by-ids-first',
+      });
+      await TestHelper.serviceInstance.create({
+        id: secondServiceInstanceId,
+        name: 'load-by-ids-second',
+        slug: 'load-by-ids-second',
+      });
+    });
+
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ id: firstServiceInstanceId });
+      await TestHelper.serviceInstance.delete({ id: secondServiceInstanceId });
+    });
+
+    it('should return an empty array without querying when no id is given', async () => {
+      // When
+      const result = await loadServiceInstancesByIds([]);
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return every requested service instance', async () => {
+      // When
+      const result = await loadServiceInstancesByIds([
+        firstServiceInstanceId,
+        secondServiceInstanceId,
+      ]);
+
+      // Then
+      expect(result).toHaveLength(2);
+      expect(result.map(({ id }) => id)).toEqual(
+        expect.arrayContaining([
+          firstServiceInstanceId,
+          secondServiceInstanceId,
+        ])
+      );
+    });
+
+    it('should return only the requested service instances', async () => {
+      // When
+      const result = await loadServiceInstancesByIds([firstServiceInstanceId]);
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        id: firstServiceInstanceId,
+        name: 'load-by-ids-first',
+      });
+    });
+
+    it('should ignore unknown ids', async () => {
+      // When
+      const result = await loadServiceInstancesByIds([
+        firstServiceInstanceId,
+        uuidv4() as ServiceInstanceId,
+      ]);
+
+      // Then
+      expect(result.map(({ id }) => id)).toEqual([firstServiceInstanceId]);
     });
   });
 

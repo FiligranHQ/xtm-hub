@@ -683,13 +683,13 @@ describe('manifestHelper', () => {
     });
 
     it('returns an empty map when given an empty list of connector ids', async () => {
-      vi.spyOn(DocumentChildrenDomain, 'buildImagesByDocumentIdQuery');
+      vi.spyOn(DocumentChildrenDomain, 'loadImagesByParentIds');
 
       const result = await ManifestHelper.loadConnectorLogosBase64([]);
 
       expect(result.size).toBe(0);
       expect(
-        DocumentChildrenDomain.buildImagesByDocumentIdQuery
+        DocumentChildrenDomain.loadImagesByParentIds
       ).not.toHaveBeenCalled();
     });
 
@@ -717,7 +717,7 @@ describe('manifestHelper', () => {
     ])('returns null when $description', async ({ images, downloadResult }) => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue(images);
       if (downloadResult !== undefined) {
         vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(downloadResult);
@@ -733,7 +733,7 @@ describe('manifestHelper', () => {
     it('returns a data URI when the logo is found', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue([buildImage({ mime_type: 'image/png' })]);
       const stream = Readable.from([Buffer.from('fake-image-bytes')]);
       vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(
@@ -754,7 +754,7 @@ describe('manifestHelper', () => {
     it('falls back to image/png when the logo document has no mime_type', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue([buildImage({ mime_type: null })]);
       const stream = Readable.from([Buffer.from('fake-image-bytes')]);
       vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(
@@ -775,7 +775,7 @@ describe('manifestHelper', () => {
     it('isolates a single connector logo failure: other connectors still resolve', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue([
         buildImage({
           _parent_id: CONNECTOR_ID,
@@ -816,7 +816,7 @@ describe('manifestHelper', () => {
     it('returns null for every connector and logs once when the batched query throws', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockRejectedValue(new Error('DB connection lost'));
 
       const result = await ManifestHelper.loadConnectorLogosBase64([
@@ -837,7 +837,7 @@ describe('manifestHelper', () => {
     it('returns null and logs an error when the download stream errors', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue([buildImage()]);
       const stream = new Readable({
         read() {

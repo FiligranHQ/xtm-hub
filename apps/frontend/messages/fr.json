@@ -1048,6 +1048,16 @@
           "AutomaticDeploy": "Déploiement automatique",
           "ManualDeploy": "Déploiement manuel"
         },
+        "LicenseType": {
+          "Label": "Type de licence",
+          "Placeholder": "Type de licence...",
+          "Free": "Gratuite",
+          "Commercial": "Commerciale"
+        },
+        "SolutionCategory": {
+          "Label": "Catégorie de solution",
+          "Placeholder": "Catégorie de solution..."
+        },
         "Verified": {
           "Label": "Statut de vérification",
           "Placeholder": "Statut de vérification...",
@@ -1209,6 +1219,8 @@
         "Key": {
           "label": "Cas d'utilisation",
           "integration_type": "Type d'intégration",
+          "solution_category": "Catégorie de solution",
+          "license_type": "Type de licence",
           "product_version": "Produits connectés",
           "manager_supported": "Type de déploiement",
           "verified": "Statut de vérification",
