@@ -527,8 +527,8 @@ describe('service instance domain', () => {
     it('should create user_service linked to the correct subscription', async () => {
       // When
       const result = await grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        GenericServiceCapabilityIds.AccessId,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         secondOrgaSubscriptionId
       );
 
@@ -552,8 +552,8 @@ describe('service instance domain', () => {
     it('should not link user_service to a different organization subscription', async () => {
       // When
       const result = await grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        GenericServiceCapabilityIds.AccessId,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         secondOrgaSubscriptionId
       );
 
@@ -574,8 +574,8 @@ describe('service instance domain', () => {
       const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
       // When
       await grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        GenericServiceCapabilityIds.AccessId,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         secondOrgaSubscriptionId
       );
 
@@ -607,8 +607,8 @@ describe('service instance domain', () => {
 
       // When
       await grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        GenericServiceCapabilityIds.AccessId,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         subscription!.id
       );
       // Then

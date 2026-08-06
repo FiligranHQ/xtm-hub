@@ -27,9 +27,8 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
-  SubscriptionMutator,
 } from '../../../model/kanel/public/Subscription';
-import { UserId, UserMutator } from '../../../model/kanel/public/User';
+import { UserId } from '../../../model/kanel/public/User';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { isUserAdminPlatform } from '../../../security/access';
@@ -395,27 +394,23 @@ export const ServiceInstanceDomain = {
   },
 
   grantServiceAccess: async (
-    capabilitiesIds: string[],
-    usersId: UserId[],
+    capabilityId: string,
+    userId: UserId,
     subscriptionId: SubscriptionId
   ) => {
-    const dataUserServices = usersId.map((userId) => ({
+    const dataUserService = {
       id: uuidv4() as UserServiceId,
       user_id: userId,
       subscription_id: subscriptionId,
-    }));
-    const insertedUserServices =
-      await UserServiceDomain.insertUserService(dataUserServices);
+    };
+    const [insertedUserService] =
+      await UserServiceDomain.insertUserService(dataUserService);
+    if (!insertedUserService) {
+      throw new Error(UnknownErrorCode.AddUserServiceError);
+    }
 
-    const [subscription] =
-      await SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy(
-        {
-          'Subscription.id': subscriptionId,
-        } as SubscriptionMutator
-      );
-    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
-      id: subscription.service_instance_id,
-    });
+    const serviceInstance =
+      await loadServiceInstanceBySubscriptionId(subscriptionId);
     if (!serviceInstance) {
       throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
     }
@@ -428,49 +423,21 @@ export const ServiceInstanceDomain = {
       throw new Error(NotFoundErrorCode.ServiceDefinitionNotFound);
     }
 
-    for (const userId of usersId) {
-      const user = await UserDomain.loadUserBy({
-        'User.id': userId,
-      } as UserMutator);
+    await notifyUserServiceAccessGranted(
+      userId,
+      serviceInstance,
+      service_definition.identifier
+    );
 
-      if (!user) {
-        logApp.warn(`User ${userId} not found, skipping mail notification`);
-        continue;
-      }
-
-      const mailTemplate = ServiceIdentifierToMailTemplate.get(
-        service_definition.identifier
-      );
-      if (mailTemplate) {
-        await sendMail({
-          to: user.email,
-          template: mailTemplate,
-          params: {
-            name: user.email,
-            serviceLink: buildServiceLink({
-              serviceDefinitionIdentifier: service_definition.identifier,
-              serviceInstanceId: serviceInstance.id,
-            }),
-            serviceName: serviceInstance.name,
-          },
-        });
-      }
-    }
-
-    for (const capabilityId of capabilitiesIds) {
-      const dataServiceCapabilities = insertedUserServices.map(
-        (insertedUserService) => ({
-          id: uuidv4() as UserServiceCapabilityId,
-          user_service_id: insertedUserService.id,
-          generic_service_capability_id:
-            capabilityId as GenericServiceCapabilityId,
-        })
-      );
-      await ServiceCapabilityHelper.insertServiceCapability(
-        dataServiceCapabilities
-      );
-    }
-    return insertedUserServices;
+    await ServiceCapabilityHelper.insertServiceCapability([
+      {
+        id: uuidv4() as UserServiceCapabilityId,
+        user_service_id: insertedUserService.id,
+        generic_service_capability_id:
+          capabilityId as GenericServiceCapabilityId,
+      },
+    ]);
+    return [insertedUserService];
   },
 
   loadLinksByServiceInstanceIds: async (
@@ -685,4 +652,56 @@ export const ServiceInstanceDomain = {
       .delete('*');
     return deletedServiceInstance;
   },
+};
+
+const loadServiceInstanceBySubscriptionId = async (
+  subscriptionId: SubscriptionId
+): Promise<ServiceInstance | undefined> => {
+  const subscription = await SubscriptionDomain.loadSubscriptionBy({
+    id: subscriptionId,
+  });
+  if (!subscription) {
+    return undefined;
+  }
+  return ServiceInstanceDomain.loadServiceInstanceBy({
+    id: subscription.service_instance_id,
+  });
+};
+
+const notifyUserServiceAccessGranted = async (
+  userId: UserId,
+  serviceInstance: ServiceInstance,
+  serviceDefinitionIdentifier: ServiceDefinitionIdentifier
+): Promise<void> => {
+  const mailTemplate = ServiceIdentifierToMailTemplate.get(
+    serviceDefinitionIdentifier
+  );
+  if (!mailTemplate) {
+    return;
+  }
+
+  const [user] = await UserDomain.loadUser({ id: userId });
+  if (!user) {
+    logApp.warn(`User ${userId} not found, skipping mail notification`);
+    return;
+  }
+
+  const serviceLink = buildServiceLink({
+    serviceDefinitionIdentifier,
+    serviceInstanceId: serviceInstance.id,
+  });
+
+  // Mails are best effort: a slow or failing SMTP/queue must never delay or fail
+  // the access grant, so they are dispatched without awaiting the send.
+  sendMail({
+    to: user.email,
+    template: mailTemplate,
+    params: {
+      name: user.email,
+      serviceLink,
+      serviceName: serviceInstance.name,
+    },
+  }).catch((error) => {
+    logApp.error('Failed to send service access granted mail', { error });
+  });
 };
