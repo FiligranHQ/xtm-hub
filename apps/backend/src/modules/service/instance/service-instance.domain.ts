@@ -691,17 +691,17 @@ const notifyUserServiceAccessGranted = async (
     serviceInstanceId: serviceInstance.id,
   });
 
-  // Mails are best effort: a slow or failing SMTP/queue must never delay or fail
-  // the access grant, so they are dispatched without awaiting the send.
-  sendMail({
-    to: user.email,
-    template: mailTemplate,
-    params: {
-      name: user.email,
-      serviceLink,
-      serviceName: serviceInstance.name,
-    },
-  }).catch((error) => {
+  try {
+    await sendMail({
+      to: user.email,
+      template: mailTemplate,
+      params: {
+        name: user.email,
+        serviceLink,
+        serviceName: serviceInstance.name,
+      },
+    });
+  } catch (error) {
     logApp.error('Failed to send service access granted mail', { error });
-  });
+  }
 };
