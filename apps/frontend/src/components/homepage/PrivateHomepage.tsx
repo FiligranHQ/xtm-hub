@@ -46,7 +46,11 @@ export const PrivateHomepage = async () => {
           hasDeployedResources: true,
         },
       })(),
-      serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
+      serverFetchGraphQL<meLoaderQuery>(
+        MeLoaderQuery,
+        {},
+        { cache: 'no-store' }
+      ),
     ]);
 
   const platformIdentifiers =

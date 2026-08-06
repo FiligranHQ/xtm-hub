@@ -13,6 +13,11 @@ describe('isSafeRedirect', () => {
     ['/', true],
     ['/app/service/opencti_custom_dashboards/abc-123', true],
     ['//evil.com', false],
+    ['/\\evil.com', false],
+    ['/\\\\evil.com', false],
+    ['\\\\evil.com', false],
+    ['\\evil.com', false],
+    ['/app/manage\\user', false],
     ['https://evil.com', false],
     ['https://evil.com/path', false],
     ['javascript:alert(1)', false],
@@ -125,6 +130,24 @@ describe('decodeSafeRedirect', () => {
   it('returns null when base64 decodes to an unsafe path', () => {
     expect(decodeSafeRedirect(btoa('//evil.com'))).toBeNull();
     expect(decodeSafeRedirect(btoa('https://evil.com'))).toBeNull();
+  });
+
+  it('returns null when base64 decodes to a backslash bypass path', () => {
+    expect(decodeSafeRedirect(btoa('/\\evil.com'))).toBeNull();
+    expect(decodeSafeRedirect(btoa('\\\\evil.com'))).toBeNull();
+    expect(decodeSafeRedirect(btoa('/app/manage\\user'))).toBeNull();
+  });
+
+  it('calls logFrontendError when base64 decodes to a backslash bypass path', () => {
+    const mockEnv = {} as never;
+    vi.mocked(getClientEnvironment).mockReturnValue(mockEnv);
+
+    decodeSafeRedirect(btoa('/\\evil.com'));
+
+    expect(logFrontendError).toHaveBeenCalledWith(
+      mockEnv,
+      'Unsafe redirect param detected: /\\evil.com'
+    );
   });
 
   it('calls logFrontendError when base64 decodes to an unsafe path', () => {
