@@ -19,8 +19,7 @@ import { UserLoadUserBy } from '../../../../model/user';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
-import * as UsersHelper from '../user.helper';
-import { createNewUserWithPendingOrga, removeUser } from '../user.helper';
+import { UserHelper } from '../user.helper';
 import { UserAdminApp } from './user.admin.app';
 
 describe('users admin app', () => {
@@ -201,12 +200,12 @@ describe('users admin app', () => {
   describe('bulkAcceptPendingUserInOrganization', () => {
     let createdUsers: User[];
     let mockAcceptPendingUser: MockInstance<
-      typeof UsersHelper.acceptPendingUserWithCapabilities
+      typeof UserHelper.acceptPendingUserWithCapabilities
     >;
     beforeEach(async () => {
       createdUsers = [];
       mockAcceptPendingUser = vi.spyOn(
-        UsersHelper,
+        UserHelper,
         'acceptPendingUserWithCapabilities'
       );
       const userList = [
@@ -228,13 +227,15 @@ describe('users admin app', () => {
       }))!;
 
       createdUsers = await Promise.all(
-        userList.map((user) => createNewUserWithPendingOrga(user, secondOrga))
+        userList.map((user) =>
+          UserHelper.createNewUserWithPendingOrga(user, secondOrga)
+        )
       );
 
       const filigranOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       }))!;
-      const filigranUser = await createNewUserWithPendingOrga(
+      const filigranUser = await UserHelper.createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',
           first_name: 'test',
@@ -248,7 +249,7 @@ describe('users admin app', () => {
 
     afterEach(async () => {
       await Promise.all(
-        createdUsers.map((user) => removeUser({ email: user.email }))
+        createdUsers.map((user) => UserHelper.removeUser({ email: user.email }))
       );
       vi.clearAllMocks();
     });
@@ -449,7 +450,7 @@ describe('users admin app', () => {
       const filigranOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       }))!;
-      const filigranUser = await createNewUserWithPendingOrga(
+      const filigranUser = await UserHelper.createNewUserWithPendingOrga(
         {
           email: 'testFiligranRemoveBulk@filigran.io',
           first_name: 'test',
@@ -463,7 +464,7 @@ describe('users admin app', () => {
 
     afterEach(async () => {
       await Promise.all(
-        createdUsers.map((user) => removeUser({ email: user.email }))
+        createdUsers.map((user) => UserHelper.removeUser({ email: user.email }))
       );
     });
     it('should throw if user is not allowed on orga', async () => {
@@ -471,7 +472,7 @@ describe('users admin app', () => {
       const filigranOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       }))!;
-      const filigranUser = await createNewUserWithPendingOrga(
+      const filigranUser = await UserHelper.createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',
           first_name: 'test',

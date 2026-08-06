@@ -9,7 +9,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { isEmptyField } from '../../../utils/utils';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
-import { getOrCreateUser } from '../../organization-management/user/user.helper';
+import { UserHelper } from '../../organization-management/user/user.helper';
 import { RolePortalDomain } from '../../role-portal/role-portal.domain';
 
 export const loginFromProvider = async (userInfo: UserInfo) => {
@@ -21,7 +21,7 @@ export const loginFromProvider = async (userInfo: UserInfo) => {
   }
   const isFiligranUser = email.endsWith('@filigran.io');
 
-  const user = await getOrCreateUser(userInfo, {
+  const user = await UserHelper.getOrCreateUser(userInfo, {
     upsert: true,
     isFiligranUser,
     sendWelcomeEmail: false,
