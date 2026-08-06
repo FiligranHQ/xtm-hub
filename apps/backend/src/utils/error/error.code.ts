@@ -99,6 +99,7 @@ export enum AlreadyExistsErrorCode {
 
 export enum NotFoundErrorCode {
   ServiceInstanceNotFound = 'SERVICE_INSTANCE_NOT_FOUND',
+  SeoServiceInstanceNotFound = 'SEO_SERVICE_INSTANCE_NOT_FOUND',
   ServiceDefinitionNotFound = 'SERVICE_DEFINITION_NOT_FOUND',
   SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
   ServiceNotFound = 'SERVICE_NOT_FOUND',

@@ -677,6 +677,11 @@ export type EditMeUserInput = {
   selected_language: InputMaybe<Scalars['String']['input']>;
 };
 
+export type EditSeoServiceInstanceInput = {
+  meta_description: Scalars['String']['input'];
+  meta_title: Scalars['String']['input'];
+};
+
 export type EditServiceCapabilityInput = {
   capabilities: Array<InputMaybe<Scalars['String']['input']>>;
   user_service_id: InputMaybe<Scalars['User_ServiceId']['input']>;
@@ -1000,6 +1005,7 @@ export type Mutation = {
   deleteUserServices: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization: Maybe<Organization>;
+  editSeoServiceInstance: SeoServiceInstanceMetadata;
   editServiceCapability: Maybe<SubscriptionModel>;
   editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
@@ -1223,6 +1229,13 @@ export type MutationEditMeUserArgs = {
 export type MutationEditOrganizationArgs = {
   id: Scalars['ID']['input'];
   input: OrganizationInput;
+};
+
+
+export type MutationEditSeoServiceInstanceArgs = {
+  input: EditSeoServiceInstanceInput;
+  language: SeoServiceInstanceLanguage;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1674,6 +1687,7 @@ export enum PortalCapability {
   ManageDeployment = 'MANAGE_DEPLOYMENT',
   ManageManifestIngestions = 'MANAGE_MANIFEST_INGESTIONS',
   ModifyCompetitors = 'MODIFY_COMPETITORS',
+  ModifyServiceMetadata = 'MODIFY_SERVICE_METADATA',
   ModifyTrials = 'MODIFY_TRIALS',
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
@@ -1721,6 +1735,7 @@ export type Query = {
   registeredPlatform: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   seoServiceInstance: SeoServiceInstance;
+  seoServiceInstanceMetadata: Array<SeoServiceInstanceMetadata>;
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById: Maybe<ServiceInstance>;
@@ -1914,6 +1929,12 @@ export type QueryRegisteredPlatformsArgs = {
 
 export type QuerySeoServiceInstanceArgs = {
   slug: Scalars['String']['input'];
+};
+
+
+export type QuerySeoServiceInstanceMetadataArgs = {
+  language: InputMaybe<SeoServiceInstanceLanguage>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2165,6 +2186,20 @@ export type SeoServiceInstance = Node & {
   service_definition: ServiceDefinition;
   slug: Maybe<Scalars['String']['output']>;
   tags: Maybe<Array<ServiceInstanceTag>>;
+};
+
+export enum SeoServiceInstanceLanguage {
+  En = 'en',
+  Fr = 'fr',
+  Ja = 'ja'
+}
+
+export type SeoServiceInstanceMetadata = {
+  __typename?: 'SeoServiceInstanceMetadata';
+  language: SeoServiceInstanceLanguage;
+  meta_description: Scalars['String']['output'];
+  meta_title: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
 };
 
 export type ServiceCapability = Node & {

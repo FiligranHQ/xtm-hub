@@ -1,0 +1,33 @@
+enum SeoServiceInstanceLanguage {
+  en
+  fr
+  ja
+}
+
+type SeoServiceInstanceMetadata {
+  service_instance_id: ServiceInstanceId!
+  language: SeoServiceInstanceLanguage!
+  meta_title: String!
+  meta_description: String!
+}
+
+input EditSeoServiceInstanceInput {
+  meta_title: String!
+  meta_description: String!
+}
+
+type Query {
+  seoServiceInstanceMetadata(
+    service_instance_id: ServiceInstanceId!
+    language: SeoServiceInstanceLanguage
+  ): [SeoServiceInstanceMetadata!]!
+}
+
+type Mutation {
+  editSeoServiceInstance(
+    service_instance_id: ServiceInstanceId!
+    language: SeoServiceInstanceLanguage!
+    input: EditSeoServiceInstanceInput!
+  ): SeoServiceInstanceMetadata!
+    @auth(portalCapa: [BYPASS, MODIFY_SERVICE_METADATA])
+}

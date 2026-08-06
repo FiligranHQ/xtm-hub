@@ -34,3 +34,20 @@ export const SeoServiceInstanceQuery = graphql`
     }
   }
 `;
+
+export const SeoServiceInstanceMetadataQuery = graphql`
+  query seoServiceInstanceMetadataQuery(
+    $service_instance_id: ServiceInstanceId!
+    $language: SeoServiceInstanceLanguage!
+  ) {
+    seoServiceInstanceMetadata(
+      service_instance_id: $service_instance_id
+      language: $language
+    ) {
+      service_instance_id
+      language
+      meta_title
+      meta_description
+    }
+  }
+`;
