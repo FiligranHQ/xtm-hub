@@ -1,3 +1,5 @@
+import { LicenseType } from '../../../__generated__/resolvers-types';
+
 export interface ManifestContract {
   id: string;
   title: string;
@@ -12,7 +14,7 @@ export interface ManifestContract {
   source_code: string | null;
   manager_supported: boolean;
   support_version: string | null;
-  license_type: string | null;
+  license_type: LicenseType | null;
   contact: string | null;
   solution_categories: string[];
   version: string | null;

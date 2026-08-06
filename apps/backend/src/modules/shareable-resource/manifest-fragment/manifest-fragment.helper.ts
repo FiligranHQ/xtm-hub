@@ -9,7 +9,6 @@ export const TAG_LATEST_LTS = 'latest-lts';
 export const TAG_DECOUPLING = 'decoupling';
 export const MAX_SHORT_DESCRIPTION_LENGTH = 250;
 export const MAX_CONTACT_LENGTH = 254;
-export const LICENSE_TYPES: readonly string[] = ['Free', 'Commercial'];
 
 export type ConnectorMetadataSnapshot = {
   datasheet_url?: string;
@@ -127,20 +126,6 @@ export const ManifestFragmentHelper = {
     version: string;
   }): string => {
     return `${title}-${version}-logo.png`;
-  },
-
-  parseLicenseType: (value: string | null | undefined): string | undefined => {
-    const normalized = ManifestFragmentHelper.normalizeOptionalText(value);
-    if (normalized === undefined) {
-      return undefined;
-    }
-    const canonical = LICENSE_TYPES.find(
-      (licenseType) => licenseType.toLowerCase() === normalized.toLowerCase()
-    );
-    if (!canonical) {
-      throw new Error(BadRequestErrorCode.InvalidLicenseType);
-    }
-    return canonical;
   },
 
   parseContact: (value: string | null | undefined): string | undefined => {

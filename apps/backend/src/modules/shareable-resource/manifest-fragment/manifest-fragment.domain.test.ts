@@ -3,6 +3,7 @@ import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
+  LicenseType,
   ManifestType,
   PortalCapability,
   type ManifestFragmentInput,
@@ -93,7 +94,7 @@ describe('manifestFragmentDomain', () => {
       image_type: 'EXTERNAL_IMPORT',
       platform: 'OpenCTI',
       integration_type: integrationType,
-      license_type: 'Commercial',
+      license_type: LicenseType.Commercial,
       contact: 'https://github.com/some-contributor',
       additional_properties: {
         max_confidence_level: 50,
@@ -321,26 +322,6 @@ describe('manifestFragmentDomain', () => {
       // Then
       await expect(call).rejects.toThrow(
         BadRequestErrorCode.ShortDescriptionTooLong
-      );
-
-      const createdDocument = await TestHelper.document.load({ slug });
-      expect(createdDocument).toBeUndefined();
-    });
-
-    it('throws when license_type is not an allowed value', async () => {
-      // Given
-      const slug = 'misp-invalid-license-type';
-      const fragment = buildManifestFragment(ManifestType.Connector, {
-        slug,
-      });
-      fragment.license_type = 'freemium';
-
-      // When
-      const call = ManifestFragmentDomain.ingestManifestFragment(fragment);
-
-      // Then
-      await expect(call).rejects.toThrow(
-        BadRequestErrorCode.InvalidLicenseType
       );
 
       const createdDocument = await TestHelper.document.load({ slug });

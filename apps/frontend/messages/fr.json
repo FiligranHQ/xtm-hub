@@ -243,7 +243,6 @@
       "INVALID_ACTION_SIZE": "Une erreur inconnue s'est produite",
       "INVALID_EMAIL": "L'email doit être dans un format valide.",
       "INVALID_IMAGE_URL": "L'URL de l'image n'est pas valide",
-      "INVALID_LICENSE_TYPE": "Le type de licence doit être Free ou Commercial",
       "INVALID_MANIFEST_VERSION_FORMAT": "Le format de version du manifest n'est pas valide",
       "INVALID_PLATFORM_CONFIGURATION": "La configuration de la plateforme n'est pas valide",
       "INVALID_PLATFORM_ID": "Une erreur inconnue s'est produite",

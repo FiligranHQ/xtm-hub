@@ -1316,7 +1316,7 @@ input ManifestFragmentInput {
   integration_type: String!
   additional_properties: JSON!
   config_schema: JSON!
-  license_type: String
+  license_type: LicenseType
   contact: String
   solution_categories: [String!]
 }
@@ -1457,7 +1457,7 @@ interface Integration implements Node & Document {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type IntegrationHack implements Node & Document & Integration {
@@ -1487,7 +1487,7 @@ type IntegrationHack implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type CsvFeed implements Node & Document & Integration {
@@ -1518,7 +1518,7 @@ type CsvFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type Connector implements Node & Document & Integration {
@@ -1557,7 +1557,7 @@ type Connector implements Node & Document & Integration {
   blogpost_url: String
   demo_url: String
   minimum_deployable_version: String
-  license_type: String
+  license_type: LicenseType
   contact: String
 }
 
@@ -1590,7 +1590,7 @@ type TaxiiFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type RssFeed implements Node & Document & Integration {
@@ -1622,7 +1622,7 @@ type RssFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type Stream implements Node & Document & Integration {
@@ -1654,7 +1654,7 @@ type Stream implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type ThirdPartyIntegration implements Node & Document & Integration {
@@ -1688,7 +1688,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type OpenCTIPlaybook implements Document & Node {

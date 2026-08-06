@@ -4,6 +4,7 @@ import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
   IntegrationType,
+  LicenseType,
   ManifestType,
   type ManifestFragmentInput,
 } from '../../../__generated__/resolvers-types';
@@ -85,7 +86,7 @@ const createConnectorDocument = async ({
     ConnectorWithMetadata,
     'datasheet_url' | 'blogpost_url' | 'demo_url'
   >;
-  licenseType?: string;
+  licenseType?: LicenseType;
   contact?: string;
 }): Promise<ConnectorV2> => {
   const createdConnector =
@@ -166,9 +167,7 @@ export const ManifestFragmentDomain = {
     ManifestFragmentHelper.validateShortDescriptionLength(
       fragment.short_description
     );
-    const licenseType = ManifestFragmentHelper.parseLicenseType(
-      fragment.license_type
-    );
+    const licenseType = fragment.license_type ?? undefined;
     const contact = ManifestFragmentHelper.parseContact(fragment.contact);
     const formattedVersion =
       ManifestFragmentHelper.validateAndFormatManifestVersion(fragment.version);

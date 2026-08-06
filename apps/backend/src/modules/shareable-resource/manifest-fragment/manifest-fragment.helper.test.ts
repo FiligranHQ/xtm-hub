@@ -245,49 +245,6 @@ describe('normalizeOptionalText', () => {
   );
 });
 
-describe('parseLicenseType', () => {
-  it.each`
-    value           | expected        | description
-    ${'Free'}       | ${'Free'}       | ${'the canonical free license'}
-    ${'Commercial'} | ${'Commercial'} | ${'the canonical commercial license'}
-    ${'free'}       | ${'Free'}       | ${'a lower-cased value'}
-    ${'COMMERCIAL'} | ${'Commercial'} | ${'an upper-cased value'}
-    ${'  free  '}   | ${'Free'}       | ${'a padded value'}
-  `(
-    'should return $expected when given $description',
-    ({ value, expected }: { value: string; expected: string }) => {
-      // Given an allowed license type, possibly padded
-      // When it is validated and normalized
-      const result = ManifestFragmentHelper.parseLicenseType(value);
-      // Then the canonical form is returned, so both write paths agree
-      expect(result).toBe(expected);
-    }
-  );
-
-  it('should throw when the license type is outside the allowed list', () => {
-    // Given a value that is not one of the allowed members
-    // When it is parsed
-    const parse = () => ManifestFragmentHelper.parseLicenseType('freemium');
-    // Then the ingestion is rejected
-    expect(parse).toThrow(BadRequestErrorCode.InvalidLicenseType);
-  });
-
-  it.each([
-    { value: '', description: 'an empty string' },
-    { value: null, description: 'null' },
-    { value: undefined, description: 'undefined' },
-  ])(
-    'should return undefined when the license type is $description',
-    ({ value }: { value: string | null | undefined }) => {
-      // Given no license type, which is optional in the fragment contract
-      // When it is validated
-      const result = ManifestFragmentHelper.parseLicenseType(value);
-      // Then no error is raised and nothing is stored
-      expect(result).toBeUndefined();
-    }
-  );
-});
-
 describe('parseContact', () => {
   it.each`
     length                    | description

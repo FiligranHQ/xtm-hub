@@ -19,7 +19,7 @@ input ManifestFragmentInput {
   integration_type: String!
   additional_properties: JSON!
   config_schema: JSON!
-  license_type: String
+  license_type: LicenseType
   contact: String
   solution_categories: [String!]
 }

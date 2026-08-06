@@ -1,6 +1,7 @@
 import {
   DocumentMetadataKeyCode,
   IntegrationType,
+  LicenseType,
 } from '../../../../__generated__/resolvers-types';
 import Document from '../../../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
@@ -23,7 +24,7 @@ export type Integration = Document & {
   datasheet_url?: string;
   blogpost_url?: string;
   demo_url?: string;
-  license_type?: string;
+  license_type?: LicenseType;
   contact?: string;
 };
 export type CsvFeed = Integration & {

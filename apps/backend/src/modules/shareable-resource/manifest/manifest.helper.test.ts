@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
+  LicenseType,
   ManifestType,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -64,7 +65,7 @@ const buildConnector = (overrides: Partial<ConnectorV2> = {}): ConnectorV2 =>
     last_verified_date: '2025-01-15',
     additional_properties: '{"key":"value"}',
     config_schema: '{"type":"object"}',
-    license_type: 'Commercial',
+    license_type: LicenseType.Commercial,
     contact: 'https://github.com/some-contributor',
     ...overrides,
   }) as unknown as ConnectorV2;
@@ -381,7 +382,7 @@ describe('manifestHelper', () => {
         );
         expect(contract.manager_supported).toBe(true);
         expect(contract.support_version).toBe('7.260507.0');
-        expect(contract.license_type).toBe('Commercial');
+        expect(contract.license_type).toBe(LicenseType.Commercial);
         expect(contract.contact).toBe('https://github.com/some-contributor');
         expect(contract.solution_categories).toEqual([]);
         expect(contract.version).toBe('6.5.1');

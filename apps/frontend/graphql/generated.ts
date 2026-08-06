@@ -181,7 +181,7 @@ export type Connector = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   manager_supported: Scalars['Boolean']['output'];
   minimum_deployable_version: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -275,7 +275,7 @@ export type CsvFeed = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -798,7 +798,7 @@ export type Integration = {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -829,7 +829,7 @@ export type IntegrationHack = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -927,7 +927,7 @@ export type ManifestFragmentInput = {
   image_type: Scalars['String']['input'];
   integration_type: Scalars['String']['input'];
   last_verified_date: Scalars['String']['input'];
-  license_type: InputMaybe<Scalars['String']['input']>;
+  license_type: InputMaybe<LicenseType>;
   logo: Scalars['String']['input'];
   manager_supported: Scalars['Boolean']['input'];
   min_version: Scalars['String']['input'];
@@ -2120,7 +2120,7 @@ export type RssFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2349,7 +2349,7 @@ export type Stream = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2469,7 +2469,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2521,7 +2521,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   remover_id: Maybe<Scalars['ID']['output']>;
