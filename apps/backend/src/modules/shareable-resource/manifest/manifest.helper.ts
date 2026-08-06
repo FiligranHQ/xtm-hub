@@ -105,7 +105,7 @@ export const ManifestHelper = {
 
     let images: WithParentId<DocumentImage>[];
     try {
-      images = await DocumentChildrenDomain.buildImagesByDocumentIdQuery<
+      images = await DocumentChildrenDomain.loadImagesByParentIds<
         WithParentId<DocumentImage>
       >(connectorIds, { isDataLoader: true });
     } catch (error) {
