@@ -7,11 +7,11 @@ import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { ServiceInstanceApp } from './service-instance.app';
-import {
-  createOrganizationServiceInstanceKey,
-  createServiceInstanceUserOrganizationKey,
-} from './service-instance.dataloader';
 import { ServiceInstanceDomain } from './service-instance.domain';
+import {
+  organizationServiceInstanceKey,
+  serviceInstanceUserOrganizationKey,
+} from './service-instance.keys';
 
 const resolvers: Resolvers = {
   ServiceInstanceId: createRelayIdScalar<ServiceInstanceId>('ServiceInstance'),
@@ -26,14 +26,14 @@ const resolvers: Resolvers = {
       ),
     organization_subscribed: ({ id }, _, context) =>
       context.dataLoaders.serviceInstance.organizationSubscribedLoader.load(
-        createOrganizationServiceInstanceKey({
+        organizationServiceInstanceKey.create({
           organizationId: context.user.selected_organization_id,
           serviceInstanceId: id as ServiceInstanceId,
         })
       ),
     capabilities: ({ id }, _, context) =>
       context.dataLoaders.serviceInstance.capabilitiesLoader.load(
-        createServiceInstanceUserOrganizationKey({
+        serviceInstanceUserOrganizationKey.create({
           serviceInstanceId: id as ServiceInstanceId,
           userId: context.user.id,
           organizationId: context.user.selected_organization_id,
@@ -41,7 +41,7 @@ const resolvers: Resolvers = {
       ),
     user_joined: ({ id }, _, context) =>
       context.dataLoaders.serviceInstance.userJoinedLoader.load(
-        createServiceInstanceUserOrganizationKey({
+        serviceInstanceUserOrganizationKey.create({
           serviceInstanceId: id as ServiceInstanceId,
           userId: context.user.id,
           organizationId: context.user.selected_organization_id,
@@ -49,7 +49,7 @@ const resolvers: Resolvers = {
       ),
     subscriptions: ({ id }, _, context) =>
       context.dataLoaders.serviceInstance.subscriptionsByServiceInstanceLoader.load(
-        createOrganizationServiceInstanceKey({
+        organizationServiceInstanceKey.create({
           organizationId: context.user.selected_organization_id,
           serviceInstanceId: id as ServiceInstanceId,
         })

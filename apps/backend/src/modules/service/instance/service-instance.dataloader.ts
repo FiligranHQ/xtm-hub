@@ -4,64 +4,17 @@ import {
   ServiceLink,
   SubscriptionModel,
 } from '../../../__generated__/resolvers-types';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import { requestContext } from '../../../context/request.context';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { UserId } from '../../../model/kanel/public/User';
+import { isUserAdminPlatform } from '../../../security/access';
 import { UserServiceCapabilityHelper } from '../../security-management/user-service-capability/user-service-capability.helper';
 import { ServiceInstanceDomain } from './service-instance.domain';
-
-const KEY_SEPARATOR = ':';
-
-// `organization_subscribed` and `subscriptions` share the same key shape.
-type OrganizationServiceInstanceKey =
-  `${OrganizationId}${typeof KEY_SEPARATOR}${ServiceInstanceId}`;
-
-export const createOrganizationServiceInstanceKey = ({
-  organizationId,
-  serviceInstanceId,
-}: {
-  organizationId: OrganizationId;
-  serviceInstanceId: ServiceInstanceId;
-}): OrganizationServiceInstanceKey =>
-  `${organizationId}${KEY_SEPARATOR}${serviceInstanceId}`;
-
-const parseOrganizationServiceInstanceKey = (
-  key: OrganizationServiceInstanceKey
-): { organizationId: OrganizationId; serviceInstanceId: ServiceInstanceId } => {
-  const [organizationId, serviceInstanceId] = key.split(KEY_SEPARATOR) as [
-    OrganizationId,
-    ServiceInstanceId,
-  ];
-  return { organizationId, serviceInstanceId };
-};
-
-// `capabilities` and `user_joined` share the same key shape.
-type ServiceInstanceUserOrganizationKey =
-  `${ServiceInstanceId}${typeof KEY_SEPARATOR}${UserId}${typeof KEY_SEPARATOR}${OrganizationId}`;
-
-export const createServiceInstanceUserOrganizationKey = ({
-  serviceInstanceId,
-  userId,
-  organizationId,
-}: {
-  serviceInstanceId: ServiceInstanceId;
-  userId: UserId;
-  organizationId: OrganizationId;
-}): ServiceInstanceUserOrganizationKey =>
-  `${serviceInstanceId}${KEY_SEPARATOR}${userId}${KEY_SEPARATOR}${organizationId}`;
-
-const parseServiceInstanceUserOrganizationKey = (
-  key: ServiceInstanceUserOrganizationKey
-): {
-  serviceInstanceId: ServiceInstanceId;
-  userId: UserId;
-  organizationId: OrganizationId;
-} => {
-  const [serviceInstanceId, userId, organizationId] = key.split(
-    KEY_SEPARATOR
-  ) as [ServiceInstanceId, UserId, OrganizationId];
-  return { serviceInstanceId, userId, organizationId };
-};
+import {
+  OrganizationServiceInstanceKey,
+  organizationServiceInstanceKey,
+  ServiceInstanceUserOrganizationKey,
+  serviceInstanceUserOrganizationKey,
+} from './service-instance.keys';
 
 export interface ServiceInstanceDataLoaders {
   linksByServiceInstanceLoader: DataLoader<ServiceInstanceId, ServiceLink[]>;
@@ -114,12 +67,12 @@ export const ServiceInstanceDataLoader = {
   batchLoadOrganizationSubscribed: async (
     keys: readonly OrganizationServiceInstanceKey[]
   ): Promise<boolean[]> => {
-    const parsedKeys = keys.map(parseOrganizationServiceInstanceKey);
+    const parsedKeys = keys.map(organizationServiceInstanceKey.parse);
     const rows = await ServiceInstanceDomain.loadIsSubscribedByKeys(parsedKeys);
 
     const subscribedKeys = new Set(
       rows.map((row) =>
-        createOrganizationServiceInstanceKey({
+        organizationServiceInstanceKey.create({
           organizationId: row.organization_id,
           serviceInstanceId: row.service_instance_id,
         })
@@ -131,20 +84,20 @@ export const ServiceInstanceDataLoader = {
   batchLoadCapabilities: async (
     keys: readonly ServiceInstanceUserOrganizationKey[]
   ): Promise<string[][]> => {
-    const parsedKeys = keys.map(parseServiceInstanceUserOrganizationKey);
+    const parsedKeys = keys.map(serviceInstanceUserOrganizationKey.parse);
     return UserServiceCapabilityHelper.loadCapabilitiesByKeys(parsedKeys);
   },
 
   batchLoadUserJoined: async (
     keys: readonly ServiceInstanceUserOrganizationKey[]
   ): Promise<boolean[]> => {
-    const parsedKeys = keys.map(parseServiceInstanceUserOrganizationKey);
+    const parsedKeys = keys.map(serviceInstanceUserOrganizationKey.parse);
     const rows =
       await ServiceInstanceDomain.loadJoinedUserServiceKeys(parsedKeys);
 
     const joinedKeys = new Set(
       rows.map((row) =>
-        createServiceInstanceUserOrganizationKey({
+        serviceInstanceUserOrganizationKey.create({
           serviceInstanceId: row.service_instance_id,
           userId: row.user_id,
           organizationId: row.organization_id,
@@ -157,7 +110,7 @@ export const ServiceInstanceDataLoader = {
   batchLoadSubscriptions: async (
     keys: readonly OrganizationServiceInstanceKey[]
   ): Promise<SubscriptionModel[][]> => {
-    const parsedKeys = keys.map(parseOrganizationServiceInstanceKey);
+    const parsedKeys = keys.map(organizationServiceInstanceKey.parse);
     const serviceInstanceIds = [
       ...new Set(parsedKeys.map(({ serviceInstanceId }) => serviceInstanceId)),
     ];
@@ -166,16 +119,34 @@ export const ServiceInstanceDataLoader = {
         serviceInstanceIds
       );
 
+    // A platform admin is allowed to see every organization subscribed to a
+    // service instance, so the `organizationId` part of the key is not a filter
+    // for them and rows are grouped by service instance only. Every other user
+    // only gets the subscriptions of the organization carried by the key.
+    const isAdmin = isUserAdminPlatform(requestContext.requireUser());
+
     const map = new Map<string, SubscriptionModel[]>();
     for (const row of rows) {
-      const existing = map.get(row.service_instance_id) ?? [];
+      const groupKey = isAdmin
+        ? row.service_instance_id
+        : organizationServiceInstanceKey.create({
+            organizationId: row.organization_id,
+            serviceInstanceId: row.service_instance_id,
+          });
+      const existing = map.get(groupKey) ?? [];
       existing.push(row as unknown as SubscriptionModel);
-      map.set(row.service_instance_id, existing);
+      map.set(groupKey, existing);
     }
 
-    return parsedKeys.map(
-      ({ serviceInstanceId }) => map.get(serviceInstanceId) ?? []
-    );
+    return parsedKeys.map(({ organizationId, serviceInstanceId }) => {
+      const groupKey = isAdmin
+        ? serviceInstanceId
+        : organizationServiceInstanceKey.create({
+            organizationId,
+            serviceInstanceId,
+          });
+      return map.get(groupKey) ?? [];
+    });
   },
 
   create: (): ServiceInstanceDataLoaders => ({

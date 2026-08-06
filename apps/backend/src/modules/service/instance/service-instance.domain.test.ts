@@ -662,6 +662,9 @@ describe('service instance domain', () => {
       await TestHelper.user_Service.delete({
         user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
       });
+      await TestHelper.user_Service.delete({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+      });
     });
 
     it('should only return keys for which the user actually joined the service', async () => {
@@ -697,6 +700,52 @@ describe('service instance domain', () => {
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       });
     });
+
+    it('should not match a key built from the cross product of the requested keys', async () => {
+      // Given
+      const integrationsSubscription = await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+      await TestHelper.user_Service.create({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        subscription_id: integrationsSubscription!.id,
+      });
+
+      const scenariosSubscription = await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+      });
+      await TestHelper.user_Service.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        subscription_id: scenariosSubscription!.id,
+      });
+
+      // When
+      const result = await loadJoinedUserServiceKeys([
+        {
+          userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          serviceInstanceId: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        },
+        {
+          userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        },
+      ]);
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return an empty array when no key is provided', async () => {
+      // When
+      const result = await loadJoinedUserServiceKeys([]);
+
+      // Then
+      expect(result).toEqual([]);
+    });
   });
 
   describe('loadIsSubscribedByKeys', () => {
@@ -725,6 +774,33 @@ describe('service instance domain', () => {
         organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       });
+    });
+
+    it('should not match a key built from the cross product of the requested keys', async () => {
+      // Given
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+      });
+
+      // When
+      const result = await loadIsSubscribedByKeys([
+        {
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          serviceInstanceId: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        },
+        {
+          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        },
+      ]);
+
+      // Then
+      expect(result).toEqual([]);
     });
 
     it('should return an empty array when no organization or service instance ids are provided', async () => {

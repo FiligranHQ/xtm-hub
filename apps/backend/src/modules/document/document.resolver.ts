@@ -23,7 +23,7 @@ import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../shareable-resource/opencti/pl
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { DocumentApp } from './document.app';
-import { createSubscriptionByServiceInstanceLoaderKey } from './document.dataloader';
+import { subscriptionByServiceInstanceLoaderKey } from './document.dataloader';
 import { DocumentHelper } from './document.helper';
 import { DocumentDomain } from './domain/document.domain';
 
@@ -196,7 +196,7 @@ const resolvers: Resolvers = {
       if (!service_instance_id) return null;
       const subscription =
         await context.dataLoaders.document.subscriptionByServiceInstanceLoader.load(
-          createSubscriptionByServiceInstanceLoaderKey({
+          subscriptionByServiceInstanceLoaderKey.create({
             organizationId: context.user.selected_organization_id,
             serviceInstanceId: service_instance_id,
           })

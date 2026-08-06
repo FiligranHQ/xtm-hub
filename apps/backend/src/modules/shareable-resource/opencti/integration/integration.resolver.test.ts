@@ -99,7 +99,7 @@ describe('integration field resolvers', () => {
         const documentId = uuidv4();
         const expected = { id: uuidv4(), name: 'Case Management', product: [] };
         vi.spyOn(
-          contextSimpleUserFiligran2.dataLoaders
+          contextSimpleUserFiligran2.dataLoaders.document
             .solutionCategoryByDocumentIdLoader,
           'load'
         ).mockResolvedValue(expected as unknown as SolutionCategory | null);
@@ -113,7 +113,7 @@ describe('integration field resolvers', () => {
         );
 
         expect(
-          contextSimpleUserFiligran2.dataLoaders
+          contextSimpleUserFiligran2.dataLoaders.document
             .solutionCategoryByDocumentIdLoader.load
         ).toHaveBeenCalledWith(documentId);
         expect(result).toEqual(expected);

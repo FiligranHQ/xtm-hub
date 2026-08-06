@@ -12,7 +12,9 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { GenericServiceCapabilityId } from '../../../model/kanel/public/GenericServiceCapability';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../../model/kanel/public/Organization';
 import {
   default as PlatformConfigurationModel,
   PlatformConfigurationMutator,
@@ -34,6 +36,7 @@ import { isUserAdminPlatform } from '../../../security/access';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
 import { logApp } from '../../../utils/app-logger.util';
+import { buildTupleFilter } from '../../../utils/batch-query.util';
 import {
   NotFoundErrorCode,
   UnknownErrorCode,
@@ -209,20 +212,23 @@ export const ServiceInstanceDomain = {
   ): Promise<
     Pick<Subscription, 'organization_id' | 'service_instance_id'>[]
   > => {
-    const organizationIds = [
-      ...new Set(keys.map(({ organizationId }) => organizationId)),
-    ];
-    const serviceInstanceIds = [
-      ...new Set(keys.map(({ serviceInstanceId }) => serviceInstanceId)),
-    ];
+    const { columns, tuples } = buildTupleFilter(keys, [
+      {
+        column: 'Subscription.organization_id',
+        value: (key) => key.organizationId,
+      },
+      {
+        column: 'Subscription.service_instance_id',
+        value: (key) => key.serviceInstanceId,
+      },
+    ]);
 
-    if (organizationIds.length === 0 || serviceInstanceIds.length === 0) {
+    if (tuples.length === 0) {
       return [];
     }
 
     return db<Subscription>('Subscription')
-      .whereIn('Subscription.organization_id', organizationIds)
-      .whereIn('Subscription.service_instance_id', serviceInstanceIds)
+      .whereIn(columns, tuples)
       .select(
         'Subscription.organization_id',
         'Subscription.service_instance_id'
@@ -241,7 +247,7 @@ export const ServiceInstanceDomain = {
 
   loadServiceInstanceSubscriptionsByIds: async (
     ids: readonly ServiceInstanceId[]
-  ) => {
+  ): Promise<(Subscription & { organization: Organization | null })[]> => {
     if (ids.length === 0) {
       return [];
     }
@@ -318,32 +324,30 @@ export const ServiceInstanceDomain = {
       user_id: UserId;
     }[]
   > => {
-    const userIds = [...new Set(keys.map(({ userId }) => userId))];
-    const organizationIds = [
-      ...new Set(keys.map(({ organizationId }) => organizationId)),
-    ];
-    const serviceInstanceIds = [
-      ...new Set(keys.map(({ serviceInstanceId }) => serviceInstanceId)),
-    ];
+    const { columns, tuples } = buildTupleFilter(keys, [
+      {
+        column: 'Subscription.service_instance_id',
+        value: (key) => key.serviceInstanceId,
+      },
+      {
+        column: 'Subscription.organization_id',
+        value: (key) => key.organizationId,
+      },
+      { column: 'User_Service.user_id', value: (key) => key.userId },
+    ]);
 
-    if (
-      userIds.length === 0 ||
-      organizationIds.length === 0 ||
-      serviceInstanceIds.length === 0
-    ) {
+    if (tuples.length === 0) {
       return [];
     }
 
     return db<Subscription>('Subscription')
-      .whereIn('Subscription.service_instance_id', serviceInstanceIds)
-      .whereIn('Subscription.organization_id', organizationIds)
       .join(
         'User_Service',
         'User_Service.subscription_id',
         '=',
         'Subscription.id'
       )
-      .whereIn('User_Service.user_id', userIds)
+      .whereIn(columns, tuples)
       .select(
         'Subscription.service_instance_id',
         'Subscription.organization_id',

@@ -31,7 +31,7 @@ import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/sc
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
 import { DocumentApp } from './document.app';
-import { createSubscriptionByServiceInstanceLoaderKey } from './document.dataloader';
+import { subscriptionByServiceInstanceLoaderKey } from './document.dataloader';
 import { DocumentHelper } from './document.helper';
 import documentResolver from './document.resolver';
 import { DocumentDomain } from './domain/document.domain';
@@ -465,7 +465,7 @@ describe('document field resolvers', () => {
       contextSimpleUserFiligran2.dataLoaders.document
         .subscriptionByServiceInstanceLoader.load
     ).toHaveBeenCalledWith(
-      createSubscriptionByServiceInstanceLoaderKey({
+      subscriptionByServiceInstanceLoaderKey.create({
         organizationId:
           contextSimpleUserFiligran2.user.selected_organization_id,
         serviceInstanceId,

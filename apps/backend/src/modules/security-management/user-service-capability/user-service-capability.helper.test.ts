@@ -138,4 +138,29 @@ describe('loadCapabilitiesByKeys', () => {
 
     expect(results).toEqual([[], ['MANAGE_ACCESS']]);
   });
+
+  it('should not match a key built from the cross product of the requested keys', async () => {
+    const results = await UserServiceCapabilityHelper.loadCapabilitiesByKeys([
+      {
+        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      },
+      {
+        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      },
+    ]);
+
+    expect(results).toEqual([[], []]);
+  });
+
+  it('should return an empty array when no key is provided', async () => {
+    const results = await UserServiceCapabilityHelper.loadCapabilitiesByKeys(
+      []
+    );
+
+    expect(results).toEqual([]);
+  });
 });

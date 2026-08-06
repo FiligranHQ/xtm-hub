@@ -15,7 +15,9 @@ import UserServiceCapability, {
   UserServiceCapabilityId,
   UserServiceCapabilityInitializer,
 } from '../../../model/kanel/public/UserServiceCapability';
+import { buildTupleFilter } from '../../../utils/batch-query.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { serviceInstanceUserOrganizationKey } from '../../service/instance/service-instance.keys';
 import { GenericServiceCapabilityHelper } from '../service-capability/generic-service-capability.helper';
 import { ServiceCapabilityDomain } from '../service-capability/service-capability.domain';
 import { SubscriptionCapabilityDomain } from '../subscription-capability/subscription-capability.domain';
@@ -125,13 +127,21 @@ export const UserServiceCapabilityHelper = {
       organizationId: OrganizationId;
     }[]
   ): Promise<string[][]> => {
-    const serviceInstanceIds = [
-      ...new Set(keys.map(({ serviceInstanceId }) => serviceInstanceId)),
-    ];
-    const organizationIds = [
-      ...new Set(keys.map(({ organizationId }) => organizationId)),
-    ];
-    const userIds = [...new Set(keys.map(({ userId }) => userId))];
+    const { columns, tuples } = buildTupleFilter(keys, [
+      {
+        column: 'Subscription.service_instance_id',
+        value: (key) => key.serviceInstanceId,
+      },
+      {
+        column: 'Subscription.organization_id',
+        value: (key) => key.organizationId,
+      },
+      { column: 'User_Service.user_id', value: (key) => key.userId },
+    ]);
+
+    if (tuples.length === 0) {
+      return [];
+    }
 
     const rows: {
       service_instance_id: ServiceInstanceId;
@@ -139,15 +149,13 @@ export const UserServiceCapabilityHelper = {
       user_id: UserId;
       capability: string | null;
     }[] = await db<Subscription>('Subscription')
-      .whereIn('Subscription.service_instance_id', serviceInstanceIds)
-      .whereIn('Subscription.organization_id', organizationIds)
       .join(
         'User_Service',
         'User_Service.subscription_id',
         '=',
         'Subscription.id'
       )
-      .whereIn('User_Service.user_id', userIds)
+      .whereIn(columns, tuples)
       .leftJoin(
         'UserService_Capability',
         'UserService_Capability.user_service_id',
@@ -186,7 +194,11 @@ export const UserServiceCapabilityHelper = {
       if (!row.capability) {
         continue;
       }
-      const key = `${row.service_instance_id}:${row.user_id}:${row.organization_id}`;
+      const key = serviceInstanceUserOrganizationKey.create({
+        serviceInstanceId: row.service_instance_id,
+        userId: row.user_id,
+        organizationId: row.organization_id,
+      });
       const capabilities = map.get(key) ?? [];
       capabilities.push(row.capability);
       map.set(key, capabilities);
@@ -194,7 +206,13 @@ export const UserServiceCapabilityHelper = {
 
     return keys.map(
       ({ serviceInstanceId, userId, organizationId }) =>
-        map.get(`${serviceInstanceId}:${userId}:${organizationId}`) ?? []
+        map.get(
+          serviceInstanceUserOrganizationKey.create({
+            serviceInstanceId,
+            userId,
+            organizationId,
+          })
+        ) ?? []
     );
   },
 

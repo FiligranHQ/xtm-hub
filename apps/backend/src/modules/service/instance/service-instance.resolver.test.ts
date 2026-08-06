@@ -16,9 +16,9 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { ErrorType } from '../../../utils/error/error.type';
 import { ServiceInstanceApp } from './service-instance.app';
 import {
-  createOrganizationServiceInstanceKey,
-  createServiceInstanceUserOrganizationKey,
-} from './service-instance.dataloader';
+  organizationServiceInstanceKey,
+  serviceInstanceUserOrganizationKey,
+} from './service-instance.keys';
 import serviceInstanceResolver from './service-instance.resolver';
 
 describe('serviceInstance field resolvers', () => {
@@ -98,7 +98,7 @@ describe('serviceInstance field resolvers', () => {
     );
 
     expect(load).toHaveBeenCalledWith(
-      createOrganizationServiceInstanceKey({
+      organizationServiceInstanceKey.create({
         organizationId:
           contextSimpleUserFiligran2.user.selected_organization_id,
         serviceInstanceId: id,
@@ -128,7 +128,7 @@ describe('serviceInstance field resolvers', () => {
     );
 
     expect(load).toHaveBeenCalledWith(
-      createServiceInstanceUserOrganizationKey({
+      serviceInstanceUserOrganizationKey.create({
         serviceInstanceId: id,
         userId: contextSimpleUserFiligran2.user.id,
         organizationId:
@@ -157,7 +157,7 @@ describe('serviceInstance field resolvers', () => {
     );
 
     expect(load).toHaveBeenCalledWith(
-      createServiceInstanceUserOrganizationKey({
+      serviceInstanceUserOrganizationKey.create({
         serviceInstanceId: id,
         userId: contextSimpleUserFiligran2.user.id,
         organizationId:
@@ -188,7 +188,7 @@ describe('serviceInstance field resolvers', () => {
     );
 
     expect(load).toHaveBeenCalledWith(
-      createOrganizationServiceInstanceKey({
+      organizationServiceInstanceKey.create({
         organizationId:
           contextSimpleUserFiligran2.user.selected_organization_id,
         serviceInstanceId: id,
