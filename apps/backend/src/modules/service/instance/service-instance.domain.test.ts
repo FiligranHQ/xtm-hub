@@ -40,9 +40,14 @@ const {
   getUserJoined,
   grantServiceAccess,
   loadLinks,
+  loadLinksByServiceInstanceIds,
+  loadIsSubscribedByKeys,
+  loadJoinedUserServiceKeys,
   loadPlatformConfigurationByServiceInstanceId,
   loadPlatformServiceInstance,
+  loadServiceDefinitionsByServiceInstanceIds,
   loadServiceInstanceSubscriptions,
+  loadServiceInstanceSubscriptionsByIds,
   loadServiceInstancesByIds,
   loadSubscribedServiceInstancesByIdentifier,
   loadSubscriptionByServiceInstanceAndOrganization,
@@ -166,6 +171,46 @@ describe('service instance domain', () => {
       const links = await loadLinks(generateId);
       // Then
       expect(links).toHaveLength(0);
+    });
+  });
+
+  describe('loadLinksByServiceInstanceIds', () => {
+    it('should return one row per link tagged with its service instance id and nothing for instances without links', async () => {
+      // When
+      const results = await loadLinksByServiceInstanceIds([
+        SERVICES.INSTANCES.EPIC.ID,
+        SERVICES.INSTANCES.VAULT.ID,
+      ]);
+
+      // Then
+      const epicLinks = results.filter(
+        (link) => link.service_instance_id === SERVICES.INSTANCES.EPIC.ID
+      );
+      const vaultLinks = results.filter(
+        (link) => link.service_instance_id === SERVICES.INSTANCES.VAULT.ID
+      );
+      expect(epicLinks).toHaveLength(0);
+      expect(vaultLinks).toHaveLength(1);
+      expect(vaultLinks[0]?.service_instance_id).toBe(
+        SERVICES.INSTANCES.VAULT.ID
+      );
+    });
+  });
+
+  describe('loadServiceDefinitionsByServiceInstanceIds', () => {
+    it('should return one row per requested service instance id, tagged accordingly', async () => {
+      // When
+      const results = await loadServiceDefinitionsByServiceInstanceIds([
+        SERVICES.INSTANCES.VAULT.ID,
+        SERVICES.INSTANCES.EPIC.ID,
+      ]);
+
+      // Then
+      expect(results).toHaveLength(2);
+      const vaultRow = results.find(
+        (row) => row.service_instance_id === SERVICES.INSTANCES.VAULT.ID
+      );
+      expect(vaultRow?.id).toBe(SERVICES.DEFINITIONS.VAULT.ID);
     });
   });
 
@@ -482,8 +527,8 @@ describe('service instance domain', () => {
     it('should create user_service linked to the correct subscription', async () => {
       // When
       const result = await grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        GenericServiceCapabilityIds.AccessId,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         secondOrgaSubscriptionId
       );
 
@@ -507,8 +552,8 @@ describe('service instance domain', () => {
     it('should not link user_service to a different organization subscription', async () => {
       // When
       const result = await grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        GenericServiceCapabilityIds.AccessId,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         secondOrgaSubscriptionId
       );
 
@@ -529,8 +574,8 @@ describe('service instance domain', () => {
       const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
       // When
       await grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        GenericServiceCapabilityIds.AccessId,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         secondOrgaSubscriptionId
       );
 
@@ -562,8 +607,8 @@ describe('service instance domain', () => {
 
       // When
       await grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
+        GenericServiceCapabilityIds.AccessId,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
         subscription!.id
       );
       // Then
@@ -609,6 +654,197 @@ describe('service instance domain', () => {
 
       // Then
       expect(result).toBe(false);
+    });
+  });
+
+  describe('loadJoinedUserServiceKeys', () => {
+    afterAll(async () => {
+      await TestHelper.user_Service.delete({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+      });
+      await TestHelper.user_Service.delete({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+      });
+    });
+
+    it('should only return keys for which the user actually joined the service', async () => {
+      // Given
+      const subscription = await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+      await TestHelper.user_Service.create({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        subscription_id: subscription!.id,
+      });
+
+      // When
+      const result = await loadJoinedUserServiceKeys([
+        {
+          userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        },
+        {
+          userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        },
+      ]);
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+    });
+
+    it('should not match a key built from the cross product of the requested keys', async () => {
+      // Given
+      const integrationsSubscription = await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+      await TestHelper.user_Service.create({
+        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        subscription_id: integrationsSubscription!.id,
+      });
+
+      const scenariosSubscription = await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+      });
+      await TestHelper.user_Service.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        subscription_id: scenariosSubscription!.id,
+      });
+
+      // When
+      const result = await loadJoinedUserServiceKeys([
+        {
+          userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          serviceInstanceId: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        },
+        {
+          userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        },
+      ]);
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return an empty array when no key is provided', async () => {
+      // When
+      const result = await loadJoinedUserServiceKeys([]);
+
+      // Then
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('loadIsSubscribedByKeys', () => {
+    it('should only return keys with an actual subscription', async () => {
+      // Given
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+
+      // When
+      const result = await loadIsSubscribedByKeys([
+        {
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        },
+        {
+          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        },
+      ]);
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+    });
+
+    it('should not match a key built from the cross product of the requested keys', async () => {
+      // Given
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+      });
+
+      // When
+      const result = await loadIsSubscribedByKeys([
+        {
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          serviceInstanceId: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        },
+        {
+          organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        },
+      ]);
+
+      // Then
+      expect(result).toEqual([]);
+    });
+
+    it('should return an empty array when no organization or service instance ids are provided', async () => {
+      // When
+      const result = await loadIsSubscribedByKeys([]);
+
+      // Then
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('loadServiceInstanceSubscriptionsByIds', () => {
+    it('should group subscriptions per requested service instance id', async () => {
+      // Given
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+      await TestHelper.subscription.create({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+      });
+
+      requestContext.set(requestContextAdminUser);
+
+      // When
+      const result = await loadServiceInstanceSubscriptionsByIds([
+        SERVICES.INSTANCES.INTEGRATIONS.ID,
+        SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+      ]);
+
+      // Then
+      const integrationSubscriptions = result.filter(
+        (subscription) =>
+          subscription.service_instance_id ===
+          SERVICES.INSTANCES.INTEGRATIONS.ID
+      );
+      const scenarioSubscriptions = result.filter(
+        (subscription) =>
+          subscription.service_instance_id ===
+          SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID
+      );
+      expect(integrationSubscriptions).toHaveLength(1);
+      expect(scenarioSubscriptions).toHaveLength(1);
     });
   });
 

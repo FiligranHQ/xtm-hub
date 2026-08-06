@@ -12,7 +12,9 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
 import { GenericServiceCapabilityId } from '../../../model/kanel/public/GenericServiceCapability';
-import { OrganizationId } from '../../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../../model/kanel/public/Organization';
 import {
   default as PlatformConfigurationModel,
   PlatformConfigurationMutator,
@@ -25,15 +27,15 @@ import ServiceInstance, {
 } from '../../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
-  SubscriptionMutator,
 } from '../../../model/kanel/public/Subscription';
-import { UserId, UserMutator } from '../../../model/kanel/public/User';
+import { UserId } from '../../../model/kanel/public/User';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { isUserAdminPlatform } from '../../../security/access';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
 import { logApp } from '../../../utils/app-logger.util';
+import { buildTupleFilter } from '../../../utils/batch-query.util';
 import {
   NotFoundErrorCode,
   UnknownErrorCode,
@@ -201,31 +203,35 @@ export const ServiceInstanceDomain = {
     }));
   },
 
-  loadIsSubscribed: async (
-    organizationId: OrganizationId,
-    id: ServiceInstanceId
-  ) => {
-    const serviceInstance = await db<{
-      organization_subscribed: boolean;
-    }>('ServiceInstance')
-      .where('ServiceInstance.id', '=', id)
-      .leftJoin('Subscription as subscription', function () {
-        this.on(
-          'subscription.service_instance_id',
-          '=',
-          'ServiceInstance.id'
-        ).andOnVal('subscription.organization_id', '=', organizationId);
-      })
+  loadIsSubscribedByKeys: async (
+    keys: readonly {
+      organizationId: OrganizationId;
+      serviceInstanceId: ServiceInstanceId;
+    }[]
+  ): Promise<
+    Pick<Subscription, 'organization_id' | 'service_instance_id'>[]
+  > => {
+    const { columns, tuples } = buildTupleFilter(keys, [
+      {
+        column: 'Subscription.organization_id',
+        value: (key) => key.organizationId,
+      },
+      {
+        column: 'Subscription.service_instance_id',
+        value: (key) => key.serviceInstanceId,
+      },
+    ]);
+
+    if (tuples.length === 0) {
+      return [];
+    }
+
+    return db<Subscription>('Subscription')
+      .whereIn(columns, tuples)
       .select(
-        dbRaw(`
-          CASE
-            WHEN "subscription"."id" IS NOT NULL THEN true
-            ELSE false
-          END AS organization_subscribed
-          `)
-      )
-      .first();
-    return serviceInstance?.organization_subscribed ?? false;
+        'Subscription.organization_id',
+        'Subscription.service_instance_id'
+      );
   },
 
   loadServiceInstances: async (opts: QueryOpts) => {
@@ -238,11 +244,17 @@ export const ServiceInstanceDomain = {
     });
   },
 
-  loadServiceInstanceSubscriptions: async (id: ServiceInstanceId) => {
+  loadServiceInstanceSubscriptionsByIds: async (
+    ids: readonly ServiceInstanceId[]
+  ): Promise<(Subscription & { organization: Organization | null })[]> => {
+    if (ids.length === 0) {
+      return [];
+    }
+
     const user = requestContext.requireUser();
 
     const queryBuilder = db<Subscription>('Subscription')
-      .where('Subscription.service_instance_id', '=', id)
+      .whereIn('Subscription.service_instance_id', ids)
       .leftJoin(
         'Organization',
         'Organization.id',
@@ -267,6 +279,10 @@ export const ServiceInstanceDomain = {
         })
       ),
     ]);
+  },
+
+  loadServiceInstanceSubscriptions: async (id: ServiceInstanceId) => {
+    return ServiceInstanceDomain.loadServiceInstanceSubscriptionsByIds([id]);
   },
 
   loadSubscriptionByServiceInstanceAndOrganization: async (
@@ -294,30 +310,59 @@ export const ServiceInstanceDomain = {
       .first();
   },
 
+  loadJoinedUserServiceKeys: async (
+    keys: readonly {
+      userId: UserId;
+      organizationId: OrganizationId;
+      serviceInstanceId: ServiceInstanceId;
+    }[]
+  ): Promise<
+    {
+      service_instance_id: ServiceInstanceId;
+      organization_id: OrganizationId;
+      user_id: UserId;
+    }[]
+  > => {
+    const { columns, tuples } = buildTupleFilter(keys, [
+      {
+        column: 'Subscription.service_instance_id',
+        value: (key) => key.serviceInstanceId,
+      },
+      {
+        column: 'Subscription.organization_id',
+        value: (key) => key.organizationId,
+      },
+      { column: 'User_Service.user_id', value: (key) => key.userId },
+    ]);
+
+    if (tuples.length === 0) {
+      return [];
+    }
+
+    return db<Subscription>('Subscription')
+      .join(
+        'User_Service',
+        'User_Service.subscription_id',
+        '=',
+        'Subscription.id'
+      )
+      .whereIn(columns, tuples)
+      .select(
+        'Subscription.service_instance_id',
+        'Subscription.organization_id',
+        'User_Service.user_id'
+      );
+  },
+
   getUserJoined: async (
     userId: UserId,
     organizationId: OrganizationId,
     id: ServiceInstanceId
   ) => {
-    const result = await db<{ user_joined: boolean }>('ServiceInstance')
-      .where('ServiceInstance.id', '=', id)
-      .leftJoin(
-        'Subscription',
-        'ServiceInstance.id',
-        'Subscription.service_instance_id'
-      )
-      .leftJoin('User_Service', function () {
-        this.on('Subscription.id', 'User_Service.subscription_id').andOnVal(
-          'User_Service.user_id',
-          '=',
-          userId
-        );
-      })
-      .select(dbRaw(`"User_Service".id IS NOT NULL AS user_joined`))
-      .where('Subscription.organization_id', '=', organizationId)
-      .first();
-
-    return result?.user_joined === true;
+    const joined = await ServiceInstanceDomain.loadJoinedUserServiceKeys([
+      { userId, organizationId, serviceInstanceId: id },
+    ]);
+    return joined.length > 0;
   },
 
   loadServiceInstanceBy: async (
@@ -349,27 +394,23 @@ export const ServiceInstanceDomain = {
   },
 
   grantServiceAccess: async (
-    capabilitiesIds: string[],
-    usersId: UserId[],
+    capabilityId: string,
+    userId: UserId,
     subscriptionId: SubscriptionId
   ) => {
-    const dataUserServices = usersId.map((userId) => ({
+    const dataUserService = {
       id: uuidv4() as UserServiceId,
       user_id: userId,
       subscription_id: subscriptionId,
-    }));
-    const insertedUserServices =
-      await UserServiceDomain.insertUserService(dataUserServices);
+    };
+    const [insertedUserService] =
+      await UserServiceDomain.insertUserService(dataUserService);
+    if (!insertedUserService) {
+      throw new Error(UnknownErrorCode.AddUserServiceError);
+    }
 
-    const [subscription] =
-      await SubscriptionDomain.loadSubscriptionWithOrganizationAndCapabilitiesBy(
-        {
-          'Subscription.id': subscriptionId,
-        } as SubscriptionMutator
-      );
-    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
-      id: subscription.service_instance_id,
-    });
+    const serviceInstance =
+      await loadServiceInstanceBySubscriptionId(subscriptionId);
     if (!serviceInstance) {
       throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
     }
@@ -382,70 +423,67 @@ export const ServiceInstanceDomain = {
       throw new Error(NotFoundErrorCode.ServiceDefinitionNotFound);
     }
 
-    for (const userId of usersId) {
-      const user = await UserDomain.loadUserBy({
-        'User.id': userId,
-      } as UserMutator);
+    await notifyUserServiceAccessGranted(
+      userId,
+      serviceInstance,
+      service_definition.identifier
+    );
 
-      if (!user) {
-        logApp.warn(`User ${userId} not found, skipping mail notification`);
-        continue;
-      }
-
-      const mailTemplate = ServiceIdentifierToMailTemplate.get(
-        service_definition.identifier
-      );
-      if (mailTemplate) {
-        await sendMail({
-          to: user.email,
-          template: mailTemplate,
-          params: {
-            name: user.email,
-            serviceLink: buildServiceLink({
-              serviceDefinitionIdentifier: service_definition.identifier,
-              serviceInstanceId: serviceInstance.id,
-            }),
-            serviceName: serviceInstance.name,
-          },
-        });
-      }
-    }
-
-    for (const capabilityId of capabilitiesIds) {
-      const dataServiceCapabilities = insertedUserServices.map(
-        (insertedUserService) => ({
-          id: uuidv4() as UserServiceCapabilityId,
-          user_service_id: insertedUserService.id,
-          generic_service_capability_id:
-            capabilityId as GenericServiceCapabilityId,
-        })
-      );
-      await ServiceCapabilityHelper.insertServiceCapability(
-        dataServiceCapabilities
-      );
-    }
-    return insertedUserServices;
+    await ServiceCapabilityHelper.insertServiceCapability([
+      {
+        id: uuidv4() as UserServiceCapabilityId,
+        user_service_id: insertedUserService.id,
+        generic_service_capability_id:
+          capabilityId as GenericServiceCapabilityId,
+      },
+    ]);
+    return [insertedUserService];
   },
 
-  loadLinks: (id: ServiceInstanceId) => {
-    return db<ServiceLink[]>('Service_Link')
-      .where('Service_Link.service_instance_id', '=', id)
-      .select('*');
+  loadLinksByServiceInstanceIds: async (
+    ids: readonly ServiceInstanceId[]
+  ): Promise<ServiceLink[]> => {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    return db<ServiceLink>('Service_Link')
+      .whereIn('Service_Link.service_instance_id', ids)
+      .select(['*']);
   },
 
-  loadServiceDefinitionByServiceInstance: async (
-    service_instance_id: ServiceInstanceId
-  ): Promise<ServiceDefinition | undefined> => {
+  loadLinks: async (id: ServiceInstanceId) => {
+    return ServiceInstanceDomain.loadLinksByServiceInstanceIds([id]);
+  },
+
+  loadServiceDefinitionsByServiceInstanceIds: async (
+    ids: readonly ServiceInstanceId[]
+  ): Promise<
+    (ServiceDefinition & { service_instance_id: ServiceInstanceId })[]
+  > => {
+    if (ids.length === 0) {
+      return [];
+    }
+
     return db<ServiceDefinition>('ServiceInstance')
-      .where('ServiceInstance.id', '=', service_instance_id)
+      .whereIn('ServiceInstance.id', ids)
       .leftJoin(
         'ServiceDefinition as service_def',
         'service_def.id',
         '=',
         'ServiceInstance.service_definition_id'
       )
-      .select('service_def.*')
-      .first();
+      .select('service_def.*', 'ServiceInstance.id as service_instance_id');
+  },
+
+  loadServiceDefinitionByServiceInstance: async (
+    service_instance_id: ServiceInstanceId
+  ): Promise<ServiceDefinition | undefined> => {
+    const [serviceDefinition] =
+      await ServiceInstanceDomain.loadServiceDefinitionsByServiceInstanceIds([
+        service_instance_id,
+      ]);
+    return serviceDefinition;
   },
 
   loadSeoServiceInstances: async (): Promise<SeoServiceInstance[]> => {
@@ -525,12 +563,6 @@ export const ServiceInstanceDomain = {
       )
       .where('ServiceInstance.slug', '=', slug)
       .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
-      .first();
-  },
-
-  getServiceInstance: async (id: ServiceInstanceId) => {
-    return db<ServiceInstance>('ServiceInstance')
-      .where('ServiceInstance.id', '=', id)
       .first();
   },
 
@@ -620,4 +652,56 @@ export const ServiceInstanceDomain = {
       .delete('*');
     return deletedServiceInstance;
   },
+};
+
+const loadServiceInstanceBySubscriptionId = async (
+  subscriptionId: SubscriptionId
+): Promise<ServiceInstance | undefined> => {
+  const subscription = await SubscriptionDomain.loadSubscriptionBy({
+    id: subscriptionId,
+  });
+  if (!subscription) {
+    return undefined;
+  }
+  return ServiceInstanceDomain.loadServiceInstanceBy({
+    id: subscription.service_instance_id,
+  });
+};
+
+const notifyUserServiceAccessGranted = async (
+  userId: UserId,
+  serviceInstance: ServiceInstance,
+  serviceDefinitionIdentifier: ServiceDefinitionIdentifier
+): Promise<void> => {
+  const mailTemplate = ServiceIdentifierToMailTemplate.get(
+    serviceDefinitionIdentifier
+  );
+  if (!mailTemplate) {
+    return;
+  }
+
+  const [user] = await UserDomain.loadUser({ id: userId });
+  if (!user) {
+    logApp.warn(`User ${userId} not found, skipping mail notification`);
+    return;
+  }
+
+  const serviceLink = buildServiceLink({
+    serviceDefinitionIdentifier,
+    serviceInstanceId: serviceInstance.id,
+  });
+
+  try {
+    await sendMail({
+      to: user.email,
+      template: mailTemplate,
+      params: {
+        name: user.email,
+        serviceLink,
+        serviceName: serviceInstance.name,
+      },
+    });
+  } catch (error) {
+    logApp.error('Failed to send service access granted mail', { error });
+  }
 };
