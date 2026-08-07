@@ -24,9 +24,8 @@ export enum ServiceGroupName {
   Observer = 'Observer',
 }
 
-export const GROUPS_BY_PLATFORM_IDENTIFIER: Record<
-  PlatformIdentifier,
-  readonly ServiceGroupName[]
+export const GROUPS_BY_PLATFORM_IDENTIFIER: Partial<
+  Record<PlatformIdentifier, readonly ServiceGroupName[]>
 > = {
   [PlatformIdentifier.Opencti]: [
     ServiceGroupName.Admin,
@@ -199,6 +198,9 @@ export const ServiceGroupDomain = {
     platformIdentifier: PlatformIdentifier = PlatformIdentifier.Opencti
   ) => {
     const groups = GROUPS_BY_PLATFORM_IDENTIFIER[platformIdentifier];
+    if (!groups) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
     const rolesToInsert = groups.map((groupName) => ({
       name: groupName,
       service_instance_id: serviceInstancesId,

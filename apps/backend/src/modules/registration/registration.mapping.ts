@@ -10,6 +10,7 @@ export const serviceDefinitionIdentifierMappedByPlatformIdentifier: Record<
 > = {
   [PlatformIdentifier.Opencti]: ServiceDefinitionIdentifier.OpenctiRegistration,
   [PlatformIdentifier.Openaev]: ServiceDefinitionIdentifier.OpenaevRegistration,
+  [PlatformIdentifier.Xtmone]: ServiceDefinitionIdentifier.XtmoneRegistration,
 };
 
 export const platformIdentifierMappedByServiceDefinitionIdentifier: Partial<
@@ -17,6 +18,7 @@ export const platformIdentifierMappedByServiceDefinitionIdentifier: Partial<
 > = {
   [ServiceDefinitionIdentifier.OpenctiRegistration]: PlatformIdentifier.Opencti,
   [ServiceDefinitionIdentifier.OpenaevRegistration]: PlatformIdentifier.Openaev,
+  [ServiceDefinitionIdentifier.XtmoneRegistration]: PlatformIdentifier.Xtmone,
 };
 
 export const serviceInstanceNameMappedByPlatformIdentifier: Record<
@@ -25,6 +27,7 @@ export const serviceInstanceNameMappedByPlatformIdentifier: Record<
 > = {
   [PlatformIdentifier.Opencti]: 'OpenCTI Platform',
   [PlatformIdentifier.Openaev]: 'OpenAEV Platform',
+  [PlatformIdentifier.Xtmone]: 'XTM One Product',
 };
 
 export const serviceInstanceTagMappedByPlatformIdentifier: Record<
@@ -33,4 +36,11 @@ export const serviceInstanceTagMappedByPlatformIdentifier: Record<
 > = {
   [PlatformIdentifier.Opencti]: ServiceInstanceTag.OpenCti,
   [PlatformIdentifier.Openaev]: ServiceInstanceTag.OpenAev,
+  [PlatformIdentifier.Xtmone]: ServiceInstanceTag.XtmOne,
 };
+
+// xtmone excluded: not registrable yet.
+export const REGISTRABLE_PLATFORM_IDENTIFIERS: PlatformIdentifier[] = [
+  PlatformIdentifier.Opencti,
+  PlatformIdentifier.Openaev,
+];

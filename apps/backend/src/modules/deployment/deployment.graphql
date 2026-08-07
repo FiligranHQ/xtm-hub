@@ -9,6 +9,7 @@ enum DeploymentRequestPlatformRegion {
 
 enum DeploymentRequestDeploymentType {
   trial
+  bundle
 }
 
 enum DeploymentRequestHubStatus {
@@ -139,6 +140,8 @@ type DeploymentRequest implements Node {
   cancellation_reason: String
   platform_id: String
   platform_url: String
+  parent_id: DeploymentRequestId
+  url: String
 }
 
 type PlatformDeploymentRequest {

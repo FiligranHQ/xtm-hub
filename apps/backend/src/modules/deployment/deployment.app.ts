@@ -50,6 +50,7 @@ import { OrganizationDomain } from '../organization-management/organization/orga
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import { RegistrationDomain } from '../registration/registration.domain';
+import { REGISTRABLE_PLATFORM_IDENTIFIERS } from '../registration/registration.mapping';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
@@ -727,7 +728,7 @@ export const DeploymentApp = {
     );
 
     const requestedIdentifiers =
-      input.platformIdentifiers ?? Object.values(PlatformIdentifier);
+      input.platformIdentifiers ?? REGISTRABLE_PLATFORM_IDENTIFIERS;
     const availableTrials = requestedIdentifiers.filter(
       (identifier) => !deployedIdentifiers.has(identifier)
     );

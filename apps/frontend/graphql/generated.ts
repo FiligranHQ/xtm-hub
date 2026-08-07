@@ -407,6 +407,7 @@ export type DeploymentRequest = Node & {
   ordering: Scalars['Int']['output'];
   organization_name: Maybe<Scalars['String']['output']>;
   organization_requester_id: Scalars['OrganizationId']['output'];
+  parent_id: Maybe<Scalars['DeploymentRequestId']['output']>;
   platform_id: Maybe<Scalars['String']['output']>;
   platform_identifier: PlatformIdentifier;
   platform_url: Maybe<Scalars['String']['output']>;
@@ -416,6 +417,7 @@ export type DeploymentRequest = Node & {
   service_instance_id: Scalars['ServiceInstanceId']['output'];
   start_date: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
+  url: Maybe<Scalars['String']['output']>;
   use_case: Maybe<DeploymentRequestUseCase>;
 };
 
@@ -459,6 +461,7 @@ export type DeploymentRequestConnection = {
 };
 
 export enum DeploymentRequestDeploymentType {
+  Bundle = 'bundle',
   Trial = 'trial'
 }
 
@@ -1629,7 +1632,8 @@ export type PlatformDeploymentRequestEdge = {
 
 export enum PlatformIdentifier {
   Openaev = 'openaev',
-  Opencti = 'opencti'
+  Opencti = 'opencti',
+  Xtmone = 'xtmone'
 }
 
 export type PlatformInput = {
@@ -2196,7 +2200,8 @@ export enum ServiceDefinitionIdentifier {
   OpenctiPlaybooks = 'opencti_playbooks',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault',
-  XtmPlatformRoadmap = 'xtm_platform_roadmap'
+  XtmPlatformRoadmap = 'xtm_platform_roadmap',
+  XtmoneRegistration = 'xtmone_registration'
 }
 
 export type ServiceGroup = Node & {
@@ -2269,7 +2274,8 @@ export enum ServiceInstanceTag {
   OpenAev = 'openAEV',
   OpenCti = 'openCTI',
   Others = 'others',
-  Trial = 'trial'
+  Trial = 'trial',
+  XtmOne = 'xtmOne'
 }
 
 export type ServiceLink = Node & {
