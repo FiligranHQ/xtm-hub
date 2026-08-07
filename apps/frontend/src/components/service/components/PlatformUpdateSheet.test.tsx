@@ -1,6 +1,7 @@
 import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
 import testRender from '@/utils/test/test-render';
 import { ServiceDefinitionIdentifier } from '@graphql/generated';
+import { QueryClient } from '@tanstack/react-query';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { createMockEnvironment } from 'relay-test-utils';
@@ -9,7 +10,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const testState = vi.hoisted(() => ({
   commitMutation: vi.fn(),
   lastVariables: null as Record<string, unknown> | null,
+  invalidatePrivateNavigationQueries: vi.fn(),
 }));
+
+vi.mock(
+  '@/components/menu/navigation/private/private-navigation-query-invalidation',
+  () => ({
+    invalidatePrivateNavigationQueries:
+      testState.invalidatePrivateNavigationQueries,
+  })
+);
 
 vi.mock('@/components/ui/SheetWithPreventingDialog', () => ({
   SheetWithPreventingDialog: ({
@@ -45,6 +55,7 @@ describe('PlatformUpdateSheet', () => {
   beforeEach(() => {
     testState.lastVariables = null;
     testState.commitMutation.mockReset();
+    testState.invalidatePrivateNavigationQueries.mockReset();
     testState.commitMutation.mockImplementation(
       (opts: {
         variables: Record<string, unknown>;
@@ -98,5 +109,20 @@ describe('PlatformUpdateSheet', () => {
     expect(
       (testState.lastVariables as { input: Record<string, unknown> }).input
     ).not.toHaveProperty('url');
+  });
+
+  it('invalidates the private navigation queries after a successful update', async () => {
+    const { user } = testRender(<PlatformUpdateSheet {...defaultProps} />, {
+      relayConfig: createMockEnvironment(),
+    });
+
+    expect(testState.invalidatePrivateNavigationQueries).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: 'Utils.Update' }));
+
+    expect(testState.invalidatePrivateNavigationQueries).toHaveBeenCalledOnce();
+    expect(testState.invalidatePrivateNavigationQueries).toHaveBeenCalledWith(
+      expect.any(QueryClient)
+    );
   });
 });
