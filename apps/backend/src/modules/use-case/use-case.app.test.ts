@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import { UseCaseId } from '../../model/kanel/public/UseCase';
+import { logApp } from '../../utils/app-logger.util';
 import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseApp } from './use-case.app';
 import { useCaseDomain } from './use-case.domain';
@@ -142,15 +143,38 @@ describe('use Case app', () => {
       expect(links).toHaveLength(0);
     });
 
-    it('should create new use cases and link them to the given object', async () => {
+    it('should log a warning and skip linking when the use case does not exist', async () => {
       const objectId = uuidv4() as ObjectUseCaseObjectId;
+      const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
 
-      await useCaseApp.linkUseCasesByNameToObject(objectId, ['New UseCase']);
+      await useCaseApp.linkUseCasesByNameToObject(objectId, [
+        'Unknown UseCase',
+      ]);
 
-      const useCase = await useCaseDomain.loadUseCaseBy({
-        name: 'New UseCase',
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+
+      const links = await TestHelper.objectUseCase.load({
+        object_id: objectId,
       });
-      expect(useCase).toBeDefined();
+      expect(links).toHaveLength(0);
+
+      warnSpy.mockRestore();
+    });
+
+    it('should link existing use cases and skip missing ones within the same call', async () => {
+      const existingUseCase = await TestHelper.useCase.create({
+        name: 'Present UseCase',
+        color: '#aaaaaa',
+      });
+      const objectId = uuidv4() as ObjectUseCaseObjectId;
+      const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
+
+      await useCaseApp.linkUseCasesByNameToObject(objectId, [
+        'Present UseCase',
+        'Missing UseCase',
+      ]);
+
+      expect(warnSpy).toHaveBeenCalledTimes(1);
 
       const links = await TestHelper.objectUseCase.load({
         object_id: objectId,
@@ -158,12 +182,14 @@ describe('use Case app', () => {
       expect(links).toHaveLength(1);
       expect(links?.[0]).toMatchObject({
         object_id: objectId,
-        use_case_id: useCase?.id,
+        use_case_id: existingUseCase.id,
       });
+
+      warnSpy.mockRestore();
     });
 
     it('should reuse an existing use case (case-insensitive) instead of duplicating it', async () => {
-      const existingUseCase = await useCaseApp.loadOrCreateUseCase({
+      const existingUseCase = await TestHelper.useCase.create({
         name: 'Existing UseCase',
         color: '#aaaaaa',
       });
@@ -191,6 +217,14 @@ describe('use Case app', () => {
     });
 
     it('should link multiple use-case names to the same object without duplicates', async () => {
+      await TestHelper.useCase.create({
+        name: 'UseCase A',
+        color: '#111111',
+      });
+      await TestHelper.useCase.create({
+        name: 'UseCase B',
+        color: '#222222',
+      });
       const objectId = uuidv4() as ObjectUseCaseObjectId;
 
       await useCaseApp.linkUseCasesByNameToObject(objectId, [
@@ -208,6 +242,10 @@ describe('use Case app', () => {
     });
 
     it('should allow the same use-case name to be linked to two different objects', async () => {
+      await TestHelper.useCase.create({
+        name: 'Shared UseCase',
+        color: '#333333',
+      });
       const firstObjectId = uuidv4() as ObjectUseCaseObjectId;
       const secondObjectId = uuidv4() as ObjectUseCaseObjectId;
 

@@ -296,4 +296,32 @@ describe('manifestFragmentApp', () => {
       expect(createdDocument).toBeUndefined();
     });
   });
+
+  describe('use case linking', () => {
+    beforeEach(() => {
+      requestContext.set({ user: manifestIngestionUser });
+    });
+
+    it('should not create an unknown use case referenced by the manifest fragment', async () => {
+      const args = buildArgs({ slug: 'misp-unknown-usecase' });
+      args.manifestFragments[0]!.use_cases = ['Nonexistent UseCase XYZ'];
+
+      await ManifestFragmentApp.ingestManifestFragments(args);
+
+      const createdDocument = await TestHelper.document.load({
+        slug: 'misp-unknown-usecase',
+      });
+      createdDocumentIds.push(createdDocument!.id);
+
+      const useCase = await TestHelper.useCase.load({
+        name: 'Nonexistent UseCase XYZ',
+      });
+      expect(useCase).toBeUndefined();
+
+      const links = await TestHelper.objectUseCase.load({
+        object_id: createdDocument!.id,
+      });
+      expect(links).toHaveLength(0);
+    });
+  });
 });
