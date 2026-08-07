@@ -221,7 +221,7 @@ export type CreateCompetitorInput = {
 export type CreateDeploymentRequestInput = {
   activity_sector: InputMaybe<DeploymentRequestActivitySector>;
   job_title: InputMaybe<DeploymentRequestJobTitle>;
-  platform_identifier: PlatformIdentifier;
+  products: Array<PlatformIdentifier>;
   region: DeploymentRequestPlatformRegion;
   source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;

@@ -4,6 +4,7 @@ import {
   CreateDeploymentRequestInput,
   DeploymentAvailability,
   DeploymentRequest,
+  DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
   DeploymentRequestOrdering,
@@ -69,6 +70,17 @@ export const DeploymentApp = {
     input: CreateDeploymentRequestInput
   ): Promise<DeploymentRequest> => {
     const user = requestContext.requireUser();
+
+    const [platformIdentifier] = input.products;
+    if (
+      input.type !== DeploymentRequestDeploymentType.Trial ||
+      input.products.length !== 1 ||
+      !platformIdentifier ||
+      platformIdentifier === PlatformIdentifier.Xtmone
+    ) {
+      throw new Error(BadRequestErrorCode.InvalidProductsForDeploymentType);
+    }
+
     const chosenOrganization = await OrganizationDomain.loadOrganizationBy({
       id: user.selected_organization_id,
     });
@@ -91,12 +103,12 @@ export const DeploymentApp = {
 
     await DeploymentHelper.assertFreeTrialsLimit(
       user.selected_organization_id,
-      input.platform_identifier
+      platformIdentifier
     );
 
     const serviceDefinition =
       await ServiceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
-        input.platform_identifier
+        platformIdentifier
       );
     if (!serviceDefinition) {
       throw new Error(ErrorCode.ServiceDefinitionNotFound);
@@ -106,13 +118,13 @@ export const DeploymentApp = {
       const createdDeploymentRequest =
         await DeploymentQuotaDomain.withLockedQuotaTransaction(
           {
-            platformIdentifier: input.platform_identifier,
+            platformIdentifier,
             region: input.region,
           },
           async () => {
             const { isPlaceAvailable } =
               await DeploymentQuotaDomain.reservePlace(
-                input.platform_identifier,
+                platformIdentifier,
                 input.region
               );
             const hubStatus = isPlaceAvailable
@@ -120,7 +132,7 @@ export const DeploymentApp = {
               : DeploymentRequestHubStatus.Queued;
             const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
               hub_status: hubStatus,
-              platform_identifier: input.platform_identifier,
+              platform_identifier: platformIdentifier,
             });
             const ordering = (maxOrdering ?? 0) + 1;
 
@@ -128,7 +140,7 @@ export const DeploymentApp = {
               await RegistrationDomain.registerNewPlatform({
                 serviceDefinitionId: serviceDefinition.id,
                 organizationId: user.selected_organization_id,
-                platformIdentifier: input.platform_identifier,
+                platformIdentifier,
                 serviceInstanceCreationStatus:
                   ServiceInstanceCreationStatus.Pending,
               });
@@ -146,7 +158,7 @@ export const DeploymentApp = {
               actual_state: DeploymentRequestPlatformState.Unprovisioned,
               ordering,
               type: input.type,
-              platform_identifier: input.platform_identifier,
+              platform_identifier: platformIdentifier,
               region: input.region,
               job_title: input.job_title,
               use_case: input.use_case,
@@ -162,7 +174,7 @@ export const DeploymentApp = {
           TelemetryHelper.buildCreateDeploymentEvent(
             chosenOrganization,
             user.id,
-            input.platform_identifier,
+            platformIdentifier,
             input.source,
             {
               region: createdDeploymentRequest.region,
@@ -194,7 +206,7 @@ export const DeploymentApp = {
           template: mailTemplate,
           params: {
             firstName: formatName(user.first_name ?? ''),
-            platformIdentifier: input.platform_identifier,
+            platformIdentifier,
           },
         });
       } catch (error) {
@@ -222,7 +234,7 @@ export const DeploymentApp = {
             region: input.region,
             activitySector: input.activity_sector ?? undefined,
             useCase: input.use_case ?? undefined,
-            platformIdentifier: input.platform_identifier,
+            platformIdentifier,
             deploymentType: ucfirst(input.type),
           },
         });
