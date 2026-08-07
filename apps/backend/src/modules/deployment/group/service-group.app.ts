@@ -99,8 +99,10 @@ export const ServiceGroupApp = {
           if (
             platformConfiguration &&
             deploymentRequest.type === DeploymentRequestDeploymentType.Trial &&
+            deploymentRequest.platform_identifier &&
             deploymentRequest.end_date
           ) {
+            const platformIdentifier = deploymentRequest.platform_identifier;
             const addedUsers = await UserDomain.loadUsers(addedUserIds);
             const trialEndDate = deploymentRequest.end_date.toLocaleDateString(
               'en-US',
@@ -118,7 +120,7 @@ export const ServiceGroupApp = {
                   params: {
                     firstName: formatName(addedUser.first_name),
                     platformUrl: platformConfiguration.platform_url,
-                    platformIdentifier: deploymentRequest.platform_identifier,
+                    platformIdentifier: platformIdentifier,
                     adminEmail: user.email,
                     trialEndDate: trialEndDate,
                   },

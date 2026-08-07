@@ -11,7 +11,7 @@ import { ErrorCode } from '../../../utils/error/error.code';
 
 export const DeploymentQuotaDomain = {
   reservePlace: async (
-    platformIdentifier: PlatformIdentifier,
+    platformIdentifier: PlatformIdentifier | null,
     region: DeploymentRequestPlatformRegion
   ): Promise<{ isPlaceAvailable: boolean }> => {
     return DeploymentQuotaDomain.withLockedQuotaTransaction(
@@ -34,7 +34,7 @@ export const DeploymentQuotaDomain = {
   },
 
   freePlace: async (
-    platformIdentifier: PlatformIdentifier,
+    platformIdentifier: PlatformIdentifier | null,
     region: DeploymentRequestPlatformRegion
   ): Promise<void> => {
     await DeploymentQuotaDomain.withLockedQuotaTransaction(
@@ -84,7 +84,7 @@ export const DeploymentQuotaDomain = {
       platformIdentifier,
       region,
     }: {
-      platformIdentifier: PlatformIdentifier;
+      platformIdentifier: PlatformIdentifier | null;
       region: DeploymentRequestPlatformRegion;
     },
     callback: (quota: DeploymentRequestQuota) => Promise<T>
@@ -98,9 +98,13 @@ export const DeploymentQuotaDomain = {
 };
 
 const lockQuota = async (
-  platformIdentifier: PlatformIdentifier,
+  platformIdentifier: PlatformIdentifier | null,
   region: DeploymentRequestPlatformRegion
 ): Promise<DeploymentRequestQuota> => {
+  if (!platformIdentifier) {
+    throw new Error(ErrorCode.DeploymentRequestQuotaNotFound);
+  }
+
   const quota = await db<DeploymentRequestQuota>('DeploymentRequestQuota')
     .where({
       region: region,

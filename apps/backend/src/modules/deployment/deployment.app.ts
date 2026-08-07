@@ -533,7 +533,7 @@ export const DeploymentApp = {
       const [requester] = await UserDomain.loadUser({
         id: updatedDeploymentRequest.user_requester_id,
       });
-      if (requester) {
+      if (requester && updatedDeploymentRequest.platform_identifier) {
         await sendMail({
           to: requester.email,
           template: 'free_trial_cancelled',
@@ -542,7 +542,7 @@ export const DeploymentApp = {
             platformIdentifier: updatedDeploymentRequest.platform_identifier,
           },
         });
-      } else {
+      } else if (!requester) {
         logApp.warn('Requester not found for trial cancellation mail', {
           deploymentRequestId: updatedDeploymentRequest.id,
         });
@@ -618,7 +618,7 @@ export const DeploymentApp = {
           const [requester] = await UserDomain.loadUser({
             id: trial.user_requester_id,
           });
-          if (requester) {
+          if (requester && trial.platform_identifier) {
             await sendMail({
               to: requester.email,
               template: 'free_trial_expired',
@@ -627,7 +627,7 @@ export const DeploymentApp = {
                 platformIdentifier: trial.platform_identifier,
               },
             });
-          } else {
+          } else if (!requester) {
             logApp.warn('Requester not found for trial expiration mail', {
               trialId: trial.id,
             });
@@ -665,7 +665,7 @@ export const DeploymentApp = {
 
   releaseDeploymentRequestPlace: async (
     previousHubStatus: DeploymentRequestHubStatus,
-    platformIdentifier: PlatformIdentifier,
+    platformIdentifier: PlatformIdentifier | null,
     region: DeploymentRequestPlatformRegion
   ) => {
     const isRequestCountedInQuotas = [
@@ -730,12 +730,20 @@ export const DeploymentApp = {
 
     return {
       availableTrials: availableTrials,
-      deployed: deploymentRequests.map((deployment) => {
-        return {
-          serviceInstanceId: deployment.service_instance_id,
-          platformIdentifier: deployment.platform_identifier,
-        };
-      }),
+      deployed: deploymentRequests
+        .filter(
+          (
+            deployment
+          ): deployment is DeploymentRequestModel & {
+            platform_identifier: PlatformIdentifier;
+          } => deployment.platform_identifier !== null
+        )
+        .map((deployment) => {
+          return {
+            serviceInstanceId: deployment.service_instance_id,
+            platformIdentifier: deployment.platform_identifier,
+          };
+        }),
       isBlacklisted:
         await CompetitorApp.isOrganizationBlacklisted(organization),
     };
@@ -907,6 +915,10 @@ const sendProvisioningPlatformEmail = async (
   deploymentRequest: DeploymentRequestModel
 ) => {
   try {
+    if (!deploymentRequest.platform_identifier) {
+      return;
+    }
+
     const [user] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
@@ -936,6 +948,10 @@ const sendActivePlatformEmail = async (
   deploymentRequest: FullyQualifiedDeploymentRequest
 ) => {
   try {
+    if (!deploymentRequest.platform_identifier) {
+      return;
+    }
+
     if (!deploymentRequest.platform_id) {
       logApp.error('Unable to send mail after deployment request is active', {
         error: 'platform_id not set for active platform',
