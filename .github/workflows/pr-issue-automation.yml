@@ -33,8 +33,8 @@ jobs:
           private-key: ${{ secrets.FILIGRANHQ_PROJECT_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - name: Check if PR is from Renovate
-        id: check_renovate
+      - name: Check if PR is from Renovate or Dependabot
+        id: check_dependency_bot
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v9
         with:
@@ -42,18 +42,20 @@ jobs:
           result-encoding: string
           script: |
             const pr = context.payload.pull_request;
-            const isRenovate = pr.user.login === 'renovate[bot]' ||
-                               pr.user.login === 'renovate-bot' ||
-                               pr.user.type === 'Bot' && pr.user.login.includes('renovate');
+            const login = pr.user.login.toLowerCase();
+            const isDependencyBot = login === 'renovate[bot]' ||
+              login === 'renovate-bot' ||
+              login === 'dependabot[bot]' ||
+              (pr.user.type === 'Bot' && (login.includes('renovate') || login.includes('dependabot')));
 
-            if (isRenovate) {
-              console.log('🤖 This is a Renovate PR - skipping issue status management');
+            if (isDependencyBot) {
+              console.log('🤖 This is a Renovate/Dependabot PR - skipping issue status management');
               return 'true';
             }
             return 'false';
 
       - name: Assign PR to creator
-        if: github.event_name == 'pull_request' && github.event.action == 'opened' && steps.check_renovate.outputs.result != 'true'
+        if: github.event_name == 'pull_request' && github.event.action == 'opened' && steps.check_dependency_bot.outputs.result != 'true'
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -154,13 +156,15 @@ jobs:
             console.log(`Processing PR #${prNumber}: ${pullRequest.title}`);
             const issueNumbers = new Set();
 
-            // Check if this is a Renovate PR
-            const isRenovate = pullRequest.user.login === 'renovate[bot]' ||
-                               pullRequest.user.login === 'renovate-bot' ||
-                               pullRequest.user.type === 'Bot' && pullRequest.user.login.includes('renovate');
+            // Check if this is a Renovate or Dependabot PR
+            const login = pullRequest.user.login.toLowerCase();
+            const isDependencyBot = login === 'renovate[bot]' ||
+              login === 'renovate-bot' ||
+              login === 'dependabot[bot]' ||
+              (pullRequest.user.type === 'Bot' && (login.includes('renovate') || login.includes('dependabot')));
 
-            if (isRenovate) {
-              console.log('🤖 Renovate PR detected - skipping issue extraction');
+            if (isDependencyBot) {
+              console.log('🤖 Renovate/Dependabot PR detected - skipping issue extraction');
               core.setOutput('issue_numbers', '');
               core.setOutput('pr_number', prNumber.toString());
               return [];
