@@ -177,6 +177,7 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
   { key: DocumentMetadataKeyCode.LicenseType, optional: true },
+  { key: DocumentMetadataKeyCode.Contact, optional: true },
 ];
 
 export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [

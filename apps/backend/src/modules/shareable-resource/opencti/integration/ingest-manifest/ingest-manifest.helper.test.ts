@@ -6,6 +6,7 @@ import {
   IntegrationType,
   LicenseType,
 } from '../../../../../__generated__/resolvers-types';
+import { MAX_CONTACT_LENGTH } from '../../../manifest-fragment/manifest-fragment.helper';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integration.model';
 import {
   IngestManifestHelper,
@@ -15,6 +16,29 @@ import sampleManifest from './test/sample-manifest.json';
 
 describe('ingest manifest helper', () => {
   describe('extractManifestInfo', () => {
+    const baseContract = {
+      title: 'Base Contract',
+      slug: 'base-contract',
+      description: 'A contract used for field-level cases',
+      short_description: 'Base contract',
+      logo: 'https://example.com/logo.png',
+      use_cases: ['test'],
+      verified: true,
+      container_image: 'docker.io/example/base:latest',
+      container_type: IntegrationSubType.InternalEnrichment,
+      source_code: 'https://github.com/example/base',
+      subscription_link: '',
+      manager_supported: true,
+      playbook_supported: false,
+    };
+
+    const buildManifest = (overrides: Record<string, unknown>) => ({
+      id: 'contract-manifest',
+      name: 'Contract Manifest',
+      description: 'Field-level cases',
+      version: '1.0.0',
+      contracts: [{ ...baseContract, ...overrides }],
+    });
     describe('with valid manifest data', () => {
       it('should extract manifest information from valid JSON', () => {
         const result =
@@ -41,6 +65,7 @@ describe('ingest manifest helper', () => {
           source_type: DocumentSourceType.External,
           service_instance_id: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
           license_type: LicenseType.Commercial,
+          contact: 'contributor@example.com',
         });
         expect(result.validContracts[1]).toEqual({
           product_version: '1.0.0',
@@ -123,30 +148,6 @@ describe('ingest manifest helper', () => {
     });
 
     describe('with license_type values', () => {
-      const baseContract = {
-        title: 'License Contract',
-        slug: 'license-contract',
-        description: 'A contract used for license_type cases',
-        short_description: 'License contract',
-        logo: 'https://example.com/logo.png',
-        use_cases: ['test'],
-        verified: true,
-        container_image: 'docker.io/example/license:latest',
-        container_type: IntegrationSubType.InternalEnrichment,
-        source_code: 'https://github.com/example/license',
-        subscription_link: '',
-        manager_supported: true,
-        playbook_supported: false,
-      };
-
-      const buildManifest = (licenseType: unknown) => ({
-        id: 'license-manifest',
-        name: 'License Manifest',
-        description: 'License type cases',
-        version: '1.0.0',
-        contracts: [{ ...baseContract, license_type: licenseType }],
-      });
-
       it.each`
         input           | expected                  | description
         ${'Commercial'} | ${LicenseType.Commercial} | ${'canonical value'}
@@ -156,12 +157,31 @@ describe('ingest manifest helper', () => {
         ${'OpenSource'} | ${undefined}              | ${'unknown value falls back'}
       `('should map $description to $expected', ({ input, expected }) => {
         const result = IngestManifestHelper.extractManifestInformation(
-          buildManifest(input)
+          buildManifest({ license_type: input })
         );
 
         expect(result.validContracts).toHaveLength(1);
         expect(result.errors).toHaveLength(0);
         expect(result.validContracts[0]?.license_type).toBe(expected);
+      });
+    });
+
+    describe('with contact values', () => {
+      it.each`
+        input                                 | expected                     | description
+        ${'contributor@example.com'}          | ${'contributor@example.com'} | ${'a plain contact'}
+        ${'  contributor@example.com  '}      | ${'contributor@example.com'} | ${'surrounding whitespace'}
+        ${''}                                 | ${undefined}                 | ${'empty string'}
+        ${null}                               | ${undefined}                 | ${'explicit null from manifest'}
+        ${'a'.repeat(MAX_CONTACT_LENGTH + 1)} | ${undefined}                 | ${'above the length limit'}
+      `('should map $description to $expected', ({ input, expected }) => {
+        const result = IngestManifestHelper.extractManifestInformation(
+          buildManifest({ contact: input })
+        );
+
+        expect(result.validContracts).toHaveLength(1);
+        expect(result.errors).toHaveLength(0);
+        expect(result.validContracts[0]?.contact).toBe(expected);
       });
     });
 

@@ -12,6 +12,7 @@ import { getErrorMessage } from '../../../../../utils/error/error-guard.util';
 import { fetchWithCacheForLocalTesting } from '../../../../../utils/fetch-with-cache';
 import { isValidVersion } from '../../../../../utils/versioning';
 import { Upload } from '../../../../document/document.uploads.helper';
+import { MAX_CONTACT_LENGTH } from '../../../manifest-fragment/manifest-fragment.helper';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -44,6 +45,7 @@ const ContractSchema = z.object({
   manager_supported: z.boolean(),
   playbook_supported: z.boolean(),
   license_type: z.nativeEnum(LicenseType).nullish().catch(undefined),
+  contact: z.string().trim().max(MAX_CONTACT_LENGTH).nullish().catch(undefined),
 });
 
 const ManifestSchema = z.object({
@@ -142,6 +144,7 @@ export const IngestManifestHelper = {
           manager_supported: validContract.manager_supported,
           playbook_supported: validContract.playbook_supported,
           license_type: validContract.license_type ?? undefined,
+          contact: validContract.contact || undefined,
           /*Use case and picture*/
           use_cases: validContract.use_cases,
           logo: validContract.logo,

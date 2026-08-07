@@ -18,7 +18,8 @@
       "subscription_link": "https://example.com/subscribe",
       "manager_supported": true,
       "playbook_supported": false,
-      "license_type": "Commercial"
+      "license_type": "Commercial",
+      "contact": "contributor@example.com"
     },
     {
       "title": "Contract Two",
@@ -34,7 +35,8 @@
       "subscription_link": "https://example.com/subscribe2",
       "manager_supported": false,
       "playbook_supported": true,
-      "license_type": null
+      "license_type": null,
+      "contact": null
     }
   ]
 }
