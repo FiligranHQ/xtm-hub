@@ -45,12 +45,12 @@ describe('XtmPlatform', () => {
   });
 
   it('uses translated interpolated label when welcomeName is provided', async () => {
-    render(await XtmPlatform({ welcomeName: 'Jane Doe' }));
+    render(await XtmPlatform({ welcomeName: 'Jane' }));
 
     expect(mockTranslate).toHaveBeenCalledWith('LabelWithName', {
-      name: 'Jane Doe',
+      name: 'Jane',
     });
-    expect(screen.getByText('t-LabelWithName-Jane Doe')).toBeTruthy();
+    expect(screen.getByText('t-LabelWithName-Jane')).toBeTruthy();
     expect(screen.queryByText('t-Label')).toBeNull();
   });
 });
