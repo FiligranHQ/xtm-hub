@@ -1,4 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  MockInstance,
+  vi,
+} from 'vitest';
 import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
@@ -6,6 +14,7 @@ import {
   IntegrationType,
   LicenseType,
 } from '../../../../../__generated__/resolvers-types';
+import { logApp } from '../../../../../utils/app-logger.util';
 import { MAX_CONTACT_LENGTH } from '../../../manifest-fragment/manifest-fragment.helper';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integration.model';
 import {
@@ -16,6 +25,16 @@ import sampleManifest from './test/sample-manifest.json';
 
 describe('ingest manifest helper', () => {
   describe('extractManifestInfo', () => {
+    let warnSpy: MockInstance;
+
+    beforeEach(() => {
+      warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warnSpy.mockRestore();
+    });
+
     const baseContract = {
       title: 'Base Contract',
       slug: 'base-contract',
@@ -66,6 +85,10 @@ describe('ingest manifest helper', () => {
           service_instance_id: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
           license_type: LicenseType.Commercial,
           contact: 'contributor@example.com',
+          solution_categories: [
+            'Threat Intelligence Feed',
+            'Endpoint Detection & Response',
+          ],
         });
         expect(result.validContracts[1]).toEqual({
           product_version: '1.0.0',
@@ -149,40 +172,97 @@ describe('ingest manifest helper', () => {
 
     describe('with license_type values', () => {
       it.each`
-        input           | expected                  | description
-        ${'Commercial'} | ${LicenseType.Commercial} | ${'canonical value'}
-        ${'Free'}       | ${LicenseType.Free}       | ${'other canonical value'}
-        ${null}         | ${undefined}              | ${'explicit null from manifest'}
-        ${undefined}    | ${undefined}              | ${'field absent'}
-        ${'OpenSource'} | ${undefined}              | ${'unknown value falls back'}
-      `('should map $description to $expected', ({ input, expected }) => {
-        const result = IngestManifestHelper.extractManifestInformation(
-          buildManifest({ license_type: input })
-        );
+        input           | expected                  | warns    | description
+        ${'Commercial'} | ${LicenseType.Commercial} | ${false} | ${'canonical value'}
+        ${'Free'}       | ${LicenseType.Free}       | ${false} | ${'other canonical value'}
+        ${null}         | ${undefined}              | ${false} | ${'explicit null from manifest'}
+        ${undefined}    | ${undefined}              | ${false} | ${'field absent'}
+        ${'OpenSource'} | ${undefined}              | ${true}  | ${'unknown value falls back'}
+      `(
+        'should map $description to $expected',
+        ({ input, expected, warns }) => {
+          const result = IngestManifestHelper.extractManifestInformation(
+            buildManifest({ license_type: input })
+          );
 
-        expect(result.validContracts).toHaveLength(1);
-        expect(result.errors).toHaveLength(0);
-        expect(result.validContracts[0]?.license_type).toBe(expected);
-      });
+          expect(result.validContracts).toHaveLength(1);
+          expect(result.errors).toHaveLength(0);
+          expect(result.validContracts[0]?.license_type).toBe(expected);
+
+          if (warns) {
+            expect(warnSpy).toHaveBeenCalledWith(
+              'Invalid license_type in manifest contract, field ignored',
+              { input }
+            );
+          } else {
+            expect(warnSpy).not.toHaveBeenCalled();
+          }
+        }
+      );
     });
 
     describe('with contact values', () => {
       it.each`
-        input                                 | expected                     | description
-        ${'contributor@example.com'}          | ${'contributor@example.com'} | ${'a plain contact'}
-        ${'  contributor@example.com  '}      | ${'contributor@example.com'} | ${'surrounding whitespace'}
-        ${''}                                 | ${undefined}                 | ${'empty string'}
-        ${null}                               | ${undefined}                 | ${'explicit null from manifest'}
-        ${'a'.repeat(MAX_CONTACT_LENGTH + 1)} | ${undefined}                 | ${'above the length limit'}
-      `('should map $description to $expected', ({ input, expected }) => {
-        const result = IngestManifestHelper.extractManifestInformation(
-          buildManifest({ contact: input })
-        );
+        input                                 | expected                     | warns    | description
+        ${'contributor@example.com'}          | ${'contributor@example.com'} | ${false} | ${'a plain contact'}
+        ${'  contributor@example.com  '}      | ${'contributor@example.com'} | ${false} | ${'surrounding whitespace'}
+        ${''}                                 | ${undefined}                 | ${false} | ${'empty string'}
+        ${null}                               | ${undefined}                 | ${false} | ${'explicit null from manifest'}
+        ${'a'.repeat(MAX_CONTACT_LENGTH + 1)} | ${undefined}                 | ${true}  | ${'above the length limit'}
+      `(
+        'should map $description to $expected',
+        ({ input, expected, warns }) => {
+          const result = IngestManifestHelper.extractManifestInformation(
+            buildManifest({ contact: input })
+          );
 
-        expect(result.validContracts).toHaveLength(1);
-        expect(result.errors).toHaveLength(0);
-        expect(result.validContracts[0]?.contact).toBe(expected);
-      });
+          expect(result.validContracts).toHaveLength(1);
+          expect(result.errors).toHaveLength(0);
+          expect(result.validContracts[0]?.contact).toBe(expected);
+
+          if (warns) {
+            // no second argument asserted: the contact value (PII) must not be logged
+            expect(warnSpy).toHaveBeenCalledWith(
+              'Invalid contact in manifest contract, field ignored'
+            );
+          } else {
+            expect(warnSpy).not.toHaveBeenCalled();
+          }
+        }
+      );
+    });
+
+    describe('with solution_categories values', () => {
+      it.each`
+        input                   | expected                | warns    | description
+        ${['Network Security']} | ${['Network Security']} | ${false} | ${'a valid list'}
+        ${[]}                   | ${[]}                   | ${false} | ${'an empty list'}
+        ${null}                 | ${undefined}            | ${false} | ${'explicit null from manifest'}
+        ${'not-an-array'}       | ${undefined}            | ${true}  | ${'a non-array value'}
+        ${[123]}                | ${undefined}            | ${true}  | ${'a list with a non-string element'}
+      `(
+        'should map $description to $expected',
+        ({ input, expected, warns }) => {
+          const result = IngestManifestHelper.extractManifestInformation(
+            buildManifest({ solution_categories: input })
+          );
+
+          expect(result.validContracts).toHaveLength(1);
+          expect(result.errors).toHaveLength(0);
+          expect(result.validContracts[0]?.solution_categories).toEqual(
+            expected
+          );
+
+          if (warns) {
+            expect(warnSpy).toHaveBeenCalledWith(
+              'Invalid solution_categories in manifest contract, field ignored',
+              { input }
+            );
+          } else {
+            expect(warnSpy).not.toHaveBeenCalled();
+          }
+        }
+      );
     });
 
     describe('with invalid manifest data', () => {

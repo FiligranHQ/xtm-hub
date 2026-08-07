@@ -61,6 +61,7 @@ export type DocumentData<
 > = Omit<Partial<T>, 'use_cases'> & {
   use_cases?: TUseCase[];
   solution_category?: TSolutionCategory;
+  solution_categories?: string[];
   parent_document_id?: DocumentId;
 };
 
@@ -88,6 +89,7 @@ export const DocumentDomain = {
           'parent_document_id',
           'use_cases',
           'solution_category',
+          'solution_categories',
           ...metadataKeys,
         ]),
         active: documentData.active ?? true,
@@ -461,6 +463,8 @@ export const DocumentDomain = {
       ...omit(documentData, [
         'parent_document_id',
         'use_cases',
+        'solution_category',
+        'solution_categories',
         ...metadataKeys,
       ]),
       uploader_id: user.id,

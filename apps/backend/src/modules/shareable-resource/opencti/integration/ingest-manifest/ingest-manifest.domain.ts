@@ -70,7 +70,7 @@ export const IngestManifestDomain = {
         const doc =
           await DocumentApp.upsertDocumentWithExternalImage<Connector>(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-            { ...omit(connector, ['logo']) } as Connector,
+            { ...omit(connector, ['logo']) },
             uploadLogo,
             INTEGRATION_CONNECTOR_METADATA_KEYS
           );

@@ -19,7 +19,11 @@
       "manager_supported": true,
       "playbook_supported": false,
       "license_type": "Commercial",
-      "contact": "contributor@example.com"
+      "contact": "contributor@example.com",
+      "solution_categories": [
+        "Threat Intelligence Feed",
+        "Endpoint Detection & Response"
+      ]
     },
     {
       "title": "Contract Two",
@@ -36,7 +40,8 @@
       "manager_supported": false,
       "playbook_supported": true,
       "license_type": null,
-      "contact": null
+      "contact": null,
+      "solution_categories": null
     }
   ]
 }

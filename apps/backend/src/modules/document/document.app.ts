@@ -25,6 +25,7 @@ import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { RegistrationApp } from '../registration/registration.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
 import { objectSolutionCategoryDomain } from '../solution-category/object-solution-category/object-solution-category.domain';
+import { solutionCategoryApp } from '../solution-category/solution-category.app';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
@@ -502,7 +503,7 @@ export const DocumentApp = {
 
   upsertDocumentWithExternalImage: async <T extends DocumentModel>(
     type: string,
-    input: Partial<T>,
+    input: DocumentData<T, string>,
     externalImageUpload: Upload,
     metadataKeys: DocumentMetadataKeys<T>
   ) => {
@@ -810,6 +811,19 @@ const upsertDocument = async <T extends DocumentModel>(
         toObjectUseCaseObjectId(document.id),
         documentData.use_cases
       );
+    }
+
+    if (documentData.solution_categories !== undefined) {
+      if (documentWasUpdated) {
+        await objectSolutionCategoryDomain.deleteObjectSolutionCategoryBy({
+          object_id: toObjectSolutionCategoryObjectId(document.id),
+        });
+      }
+      await solutionCategoryApp.linkSolutionCategoriesByNameToObject({
+        objectId: toObjectSolutionCategoryObjectId(document.id),
+        names: documentData.solution_categories,
+        product: PlatformIdentifier.Opencti,
+      });
     }
 
     if (metadataKeys.length > 0) {
