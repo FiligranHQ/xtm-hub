@@ -54,7 +54,7 @@ export const UserOrganizationApp = {
 
     const [existingUser] = await UserDomain.loadUser({ email: input.email });
 
-    const user = await withTransaction(async () => {
+    const { user, pendingRemoved } = await withTransaction(async () => {
       const user = existingUser
         ? existingUser
         : await UserHelper.createUserWithPersonalSpace({
@@ -70,10 +70,17 @@ export const UserOrganizationApp = {
         userExists: !!existingUser,
       });
 
-      await UserHelper.removePendingAndDispatch(user, chosenOrganization.id);
+      const pendingRemoved = await UserHelper.removePending(
+        user,
+        chosenOrganization.id
+      );
 
-      return user;
+      return { user, pendingRemoved };
     });
+
+    if (pendingRemoved) {
+      await UserHelper.dispatchPendingDeleted(user, chosenOrganization.id);
+    }
 
     const updatedUser = await UserDomain.loadUserBy({
       'User.id': user.id,

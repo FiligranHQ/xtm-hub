@@ -483,20 +483,34 @@ export const UserHelper = {
     }
   },
 
-  removePendingAndDispatch: async (
+  removePending: async (
     user: User | UserLoadUserBy | UserWithOrganizationsAndRole,
     organization_id: OrganizationId
-  ) => {
+  ): Promise<boolean> => {
     const deleted = await UserOrganizationDomain.removeUserFromPendingList({
       user_id: user.id,
       organization_id,
     });
-    if (deleted.length > 0) {
-      const userPendingPayload: GraphqlUser = {
-        ...UserHelper.mapUserToGraphqlUser(user),
-        pending_organization_id: organization_id,
-      };
-      await dispatch('UserPending', 'delete', userPendingPayload, 'User');
+    return deleted.length > 0;
+  },
+
+  dispatchPendingDeleted: async (
+    user: User | UserLoadUserBy | UserWithOrganizationsAndRole,
+    organization_id: OrganizationId
+  ) => {
+    const userPendingPayload: GraphqlUser = {
+      ...UserHelper.mapUserToGraphqlUser(user),
+      pending_organization_id: organization_id,
+    };
+    await dispatch('UserPending', 'delete', userPendingPayload, 'User');
+  },
+
+  removePendingAndDispatch: async (
+    user: User | UserLoadUserBy | UserWithOrganizationsAndRole,
+    organization_id: OrganizationId
+  ) => {
+    if (await UserHelper.removePending(user, organization_id)) {
+      await UserHelper.dispatchPendingDeleted(user, organization_id);
     }
   },
 

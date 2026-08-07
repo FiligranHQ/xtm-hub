@@ -214,6 +214,7 @@ describe('users admin app', () => {
     });
 
     afterEach(async () => {
+      vi.restoreAllMocks();
       await UserHelper.removeUser({ email });
     });
 
@@ -273,6 +274,36 @@ describe('users admin app', () => {
           organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         });
       expect(pendingAfter).toHaveLength(0);
+    });
+
+    it('should not notify the deletion when the transaction rolls back', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const dispatchSpy = vi.spyOn(UserHelper, 'dispatchPendingDeleted');
+      vi.spyOn(UserDomain, 'loadUserBy').mockRejectedValueOnce(
+        new Error('boom')
+      );
+
+      const call = UserAdminApp.addUser({
+        email,
+        organization_capabilities: [
+          {
+            organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            capabilities: [],
+          },
+        ],
+      });
+
+      await expect(call).rejects.toThrow('boom');
+      expect(dispatchSpy).not.toHaveBeenCalled();
+
+      // the pending request must survive the rollback
+      const pendingAfter =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: createdUser.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+      expect(pendingAfter).toHaveLength(1);
     });
   });
 
