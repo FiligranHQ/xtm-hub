@@ -4,6 +4,7 @@ import {
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
+  LicenseType,
 } from '../../../../../__generated__/resolvers-types';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../integration.model';
 import {
@@ -39,6 +40,7 @@ describe('ingest manifest helper', () => {
           playbook_supported: false,
           source_type: DocumentSourceType.External,
           service_instance_id: '0f4aad4b-bdd6-4084-8b1f-82c9c66578cc',
+          license_type: LicenseType.Commercial,
         });
         expect(result.validContracts[1]).toEqual({
           product_version: '1.0.0',
@@ -117,6 +119,49 @@ describe('ingest manifest helper', () => {
         if (firstItem.subscription_link !== undefined) {
           expect(typeof firstItem.subscription_link).toBe('string');
         }
+      });
+    });
+
+    describe('with license_type values', () => {
+      const baseContract = {
+        title: 'License Contract',
+        slug: 'license-contract',
+        description: 'A contract used for license_type cases',
+        short_description: 'License contract',
+        logo: 'https://example.com/logo.png',
+        use_cases: ['test'],
+        verified: true,
+        container_image: 'docker.io/example/license:latest',
+        container_type: IntegrationSubType.InternalEnrichment,
+        source_code: 'https://github.com/example/license',
+        subscription_link: '',
+        manager_supported: true,
+        playbook_supported: false,
+      };
+
+      const buildManifest = (licenseType: unknown) => ({
+        id: 'license-manifest',
+        name: 'License Manifest',
+        description: 'License type cases',
+        version: '1.0.0',
+        contracts: [{ ...baseContract, license_type: licenseType }],
+      });
+
+      it.each`
+        input           | expected                  | description
+        ${'Commercial'} | ${LicenseType.Commercial} | ${'canonical value'}
+        ${'Free'}       | ${LicenseType.Free}       | ${'other canonical value'}
+        ${null}         | ${undefined}              | ${'explicit null from manifest'}
+        ${undefined}    | ${undefined}              | ${'field absent'}
+        ${'OpenSource'} | ${undefined}              | ${'unknown value falls back'}
+      `('should map $description to $expected', ({ input, expected }) => {
+        const result = IngestManifestHelper.extractManifestInformation(
+          buildManifest(input)
+        );
+
+        expect(result.validContracts).toHaveLength(1);
+        expect(result.errors).toHaveLength(0);
+        expect(result.validContracts[0]?.license_type).toBe(expected);
       });
     });
 

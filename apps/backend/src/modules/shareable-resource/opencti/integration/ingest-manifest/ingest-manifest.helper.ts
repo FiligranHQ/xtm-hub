@@ -5,6 +5,7 @@ import {
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
+  LicenseType,
 } from '../../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../../utils/app-logger.util';
 import { getErrorMessage } from '../../../../../utils/error/error-guard.util';
@@ -42,6 +43,7 @@ const ContractSchema = z.object({
   subscription_link: z.string().url().or(z.literal('')).nullish(),
   manager_supported: z.boolean(),
   playbook_supported: z.boolean(),
+  license_type: z.nativeEnum(LicenseType).nullish().catch(undefined),
 });
 
 const ManifestSchema = z.object({
@@ -139,6 +141,7 @@ export const IngestManifestHelper = {
           subscription_link: validContract.subscription_link,
           manager_supported: validContract.manager_supported,
           playbook_supported: validContract.playbook_supported,
+          license_type: validContract.license_type ?? undefined,
           /*Use case and picture*/
           use_cases: validContract.use_cases,
           logo: validContract.logo,
