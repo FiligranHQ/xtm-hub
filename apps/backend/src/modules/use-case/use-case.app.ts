@@ -19,7 +19,7 @@ export const useCaseApp = {
     name,
     color = '#0099cc',
   }: UseCaseInitializer): Promise<UseCase> => {
-    const existing = await useCaseDomain.loadUseCaseByLikeName(name);
+    const existing = await useCaseDomain.loadUseCaseByNameCaseInsensitive(name);
     if (existing) {
       return existing;
     }
@@ -37,7 +37,8 @@ export const useCaseApp = {
 
     const insertObjectUseCase: ObjectUseCaseInitializer[] = [];
     for (const name of useCaseNames) {
-      const useCase = await useCaseDomain.loadUseCaseByLikeName(name);
+      const useCase =
+        await useCaseDomain.loadUseCaseByNameCaseInsensitive(name);
       if (!useCase) {
         logApp.warn(`Use case "${name}" not found, skipping link to object`, {
           name,

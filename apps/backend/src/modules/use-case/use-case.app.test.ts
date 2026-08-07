@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import { UseCaseId } from '../../model/kanel/public/UseCase';
@@ -125,11 +125,18 @@ describe('use Case app', () => {
   });
 
   describe('linkUseCasesByNameToObject', () => {
+    let warnSpy: ReturnType<typeof vi.spyOn>;
+
     beforeEach(async () => {
       // Object_UseCase rows must be cleared first: UseCase deletion is
       // blocked by the foreign key while links still reference it.
       await TestHelper.objectUseCase.delete({});
       await TestHelper.useCase.delete({});
+      warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warnSpy.mockRestore();
     });
 
     it('should not create any link when useCaseNames is empty', async () => {
@@ -145,7 +152,6 @@ describe('use Case app', () => {
 
     it('should log a warning and skip linking when the use case does not exist', async () => {
       const objectId = uuidv4() as ObjectUseCaseObjectId;
-      const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
 
       await useCaseApp.linkUseCasesByNameToObject(objectId, [
         'Unknown UseCase',
@@ -157,8 +163,6 @@ describe('use Case app', () => {
         object_id: objectId,
       });
       expect(links).toHaveLength(0);
-
-      warnSpy.mockRestore();
     });
 
     it('should link existing use cases and skip missing ones within the same call', async () => {
@@ -167,7 +171,6 @@ describe('use Case app', () => {
         color: '#aaaaaa',
       });
       const objectId = uuidv4() as ObjectUseCaseObjectId;
-      const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
 
       await useCaseApp.linkUseCasesByNameToObject(objectId, [
         'Present UseCase',
@@ -184,8 +187,6 @@ describe('use Case app', () => {
         object_id: objectId,
         use_case_id: existingUseCase.id,
       });
-
-      warnSpy.mockRestore();
     });
 
     it('should reuse an existing use case (case-insensitive) instead of duplicating it', async () => {

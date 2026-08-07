@@ -104,4 +104,36 @@ describe('useCaseDomain', () => {
       expect(Number(result.totalCount)).toBe(2);
     });
   });
+
+  describe('loadUseCaseByNameCaseInsensitive', () => {
+    beforeEach(async () => {
+      await TestHelper.useCase.delete({});
+    });
+
+    it('should find a use case regardless of casing', async () => {
+      const created = await TestHelper.useCase.create({
+        name: 'Existing UseCase',
+        color: '#aaaaaa',
+      });
+
+      const found =
+        await useCaseDomain.loadUseCaseByNameCaseInsensitive(
+          'existing usecase'
+        );
+
+      expect(found?.id).toBe(created.id);
+    });
+
+    it('should not treat % and _ in the provided name as SQL wildcards', async () => {
+      await TestHelper.useCase.create({
+        name: 'AutomationX',
+        color: '#aaaaaa',
+      });
+
+      const found =
+        await useCaseDomain.loadUseCaseByNameCaseInsensitive('Automation_');
+
+      expect(found).toBeUndefined();
+    });
+  });
 });
