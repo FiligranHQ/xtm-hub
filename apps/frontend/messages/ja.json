@@ -702,7 +702,7 @@
       "Theme": "テーマ"
     },
     "PlatformsEditionDialog": {
-      "ConfirmSentence": "姓と名は OpenCTI と OpenAEV プラットフォームで更新される可能性があります。"
+      "ConfirmSentence": "姓と名は OpenCTI と OpenAEV 製品で更新される可能性があります。"
     },
     "Title": "プロフィール",
     "UpdatePicture": "画像を更新",

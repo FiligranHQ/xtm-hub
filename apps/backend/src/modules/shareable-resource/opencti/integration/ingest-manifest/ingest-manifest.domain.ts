@@ -51,7 +51,8 @@ export const IngestManifestDomain = {
             !existingConnector.minimum_deployable_version &&
             connector.manager_supported
           ) {
-            connector.minimum_deployable_version = connector.product_version;
+            connector.minimum_deployable_version =
+              existingConnector.product_version || connector.product_version;
           }
 
           if (existingConnector.datasheet_url) {
