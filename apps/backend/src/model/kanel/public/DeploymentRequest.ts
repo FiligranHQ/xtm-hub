@@ -27,7 +27,7 @@ export default interface DeploymentRequest {
 
   end_date: Date | null;
 
-  platform_identifier: PlatformIdentifier;
+  platform_identifier: PlatformIdentifier | null;
 
   region: DeploymentRequestPlatformRegion;
 
@@ -85,7 +85,7 @@ export interface DeploymentRequestInitializer {
 
   end_date?: Date | null;
 
-  platform_identifier: PlatformIdentifier;
+  platform_identifier?: PlatformIdentifier | null;
 
   region: DeploymentRequestPlatformRegion;
 
@@ -144,7 +144,7 @@ export interface DeploymentRequestMutator {
 
   end_date?: Date | null;
 
-  platform_identifier?: PlatformIdentifier;
+  platform_identifier?: PlatformIdentifier | null;
 
   region?: DeploymentRequestPlatformRegion;
 

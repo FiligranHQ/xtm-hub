@@ -175,7 +175,7 @@ export const DeploymentRequestDomain = {
   },
 
   setFirstQueuedRequestAsPending: async (
-    platformIdentifier: PlatformIdentifier,
+    platformIdentifier: PlatformIdentifier | null,
     region: DeploymentRequestPlatformRegion
   ): Promise<DeploymentRequest | undefined> => {
     const request = await db<DeploymentRequest>('DeploymentRequest')
@@ -240,8 +240,12 @@ export const DeploymentRequestDomain = {
 
   initialiseServiceGroup: async (
     id: DeploymentRequestId,
-    platformIdentifier: PlatformIdentifier
+    platformIdentifier: PlatformIdentifier | null
   ) => {
+    if (!platformIdentifier) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
+
     const fullDeploymentRequest =
       await DeploymentRequestDomain.loadFullDeploymentRequest({ id });
 

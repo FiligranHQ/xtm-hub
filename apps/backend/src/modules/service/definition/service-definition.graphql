@@ -10,6 +10,7 @@ enum ServiceDefinitionIdentifier {
   openaev_registration
   xtmone_registration
   xtm_platform_roadmap
+  xtm_platform_bundle
 }
 
 type ServiceDefinition implements Node {
