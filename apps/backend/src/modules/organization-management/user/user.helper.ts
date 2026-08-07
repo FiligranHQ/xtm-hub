@@ -483,6 +483,23 @@ export const UserHelper = {
     }
   },
 
+  removePendingAndDispatch: async (
+    user: User | UserLoadUserBy | UserWithOrganizationsAndRole,
+    organization_id: OrganizationId
+  ) => {
+    const deleted = await UserOrganizationDomain.removeUserFromPendingList({
+      user_id: user.id,
+      organization_id,
+    });
+    if (deleted.length > 0) {
+      const userPendingPayload: GraphqlUser = {
+        ...UserHelper.mapUserToGraphqlUser(user),
+        pending_organization_id: organization_id,
+      };
+      await dispatch('UserPending', 'delete', userPendingPayload, 'User');
+    }
+  },
+
   acceptPendingUserWithCapabilities: async ({
     user_id,
     organization_id,

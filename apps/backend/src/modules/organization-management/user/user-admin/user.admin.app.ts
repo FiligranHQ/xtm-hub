@@ -67,6 +67,12 @@ export const UserAdminApp = {
         input.organization_capabilities
       );
 
+      await Promise.all(
+        (input.organization_capabilities ?? []).map((orgCapa) =>
+          UserHelper.removePendingAndDispatch(user, orgCapa.organization_id)
+        )
+      );
+
       return await UserDomain.loadUserBy({
         'User.id': user.id,
       });
@@ -147,6 +153,11 @@ export const UserAdminApp = {
     const user = await UserDomain.loadUserDetails({
       'User.id': userId,
     });
+    await Promise.all(
+      (organization_capabilities ?? []).map((orgCapa) =>
+        UserHelper.removePendingAndDispatch(user, orgCapa.organization_id)
+      )
+    );
     updateUserSession(user);
 
     const userMapped = UserHelper.mapUserToGraphqlUser(user);
