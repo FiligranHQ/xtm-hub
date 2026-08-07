@@ -23,7 +23,7 @@ import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../shareable-resource/opencti/pl
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { DocumentApp } from './document.app';
-import { createSubscriptionByServiceInstanceLoaderKey } from './document.dataloader';
+import { subscriptionByServiceInstanceLoaderKey } from './document.dataloader';
 import { DocumentHelper } from './document.helper';
 import { DocumentDomain } from './domain/document.domain';
 
@@ -155,7 +155,9 @@ const resolvers: Resolvers = {
         return mappedType;
       } else if (document.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         const integrationType =
-          await context.dataLoaders.integrationTypeLoader.load(document.id);
+          await context.dataLoaders.document.integrationTypeLoader.load(
+            document.id
+          );
         if (integrationType) {
           const responseType =
             INTEGRATION_MAPPINGS[
@@ -173,19 +175,19 @@ const resolvers: Resolvers = {
     },
 
     children_documents: async ({ id }, _, context) =>
-      (await context.dataLoaders.childrenDocumentsLoader.load(
+      (await context.dataLoaders.document.childrenDocumentsLoader.load(
         id
       )) as ShareableResource[],
     use_cases: ({ id }, _, context) =>
-      context.dataLoaders.useCasesByDocumentIdLoader.load(id),
+      context.dataLoaders.document.useCasesByDocumentIdLoader.load(id),
     uploader: ({ id }, _, context) =>
-      context.dataLoaders.uploaderLoader.load(id),
+      context.dataLoaders.document.uploaderLoader.load(id),
     uploader_organization: ({ id }, _, context) =>
-      context.dataLoaders.uploaderOrganizationLoader.load(id),
+      context.dataLoaders.document.uploaderOrganizationLoader.load(id),
     service_instance: async ({ service_instance_id }, _, context) => {
       if (!service_instance_id) return null;
       const serviceInstance =
-        await context.dataLoaders.serviceInstanceByIdLoader.load(
+        await context.dataLoaders.document.serviceInstanceByIdLoader.load(
           service_instance_id
         );
       return serviceInstance as unknown as ServiceInstanceModel;
@@ -193,8 +195,8 @@ const resolvers: Resolvers = {
     subscription: async ({ service_instance_id }, _, context) => {
       if (!service_instance_id) return null;
       const subscription =
-        await context.dataLoaders.subscriptionByServiceInstanceLoader.load(
-          createSubscriptionByServiceInstanceLoaderKey({
+        await context.dataLoaders.document.subscriptionByServiceInstanceLoader.load(
+          subscriptionByServiceInstanceLoaderKey.create({
             organizationId: context.user.selected_organization_id,
             serviceInstanceId: service_instance_id,
           })
@@ -209,7 +211,7 @@ const resolvers: Resolvers = {
         deployedById: string | null;
       };
       return deployedById
-        ? context.dataLoaders.userLoader.load(deployedById)
+        ? context.dataLoaders.document.userLoader.load(deployedById)
         : null;
     },
   },

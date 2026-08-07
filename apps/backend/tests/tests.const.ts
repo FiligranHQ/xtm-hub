@@ -19,6 +19,7 @@ import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
 import { UserId } from '../src/model/kanel/public/User';
 import { PortalContext } from '../src/model/portal-context';
 import type { DocumentDataLoaders } from '../src/modules/document/document.dataloader';
+import type { ServiceInstanceDataLoaders } from '../src/modules/service/instance/service-instance.dataloader';
 import {
   CAPABILITY_BYPASS,
   PLATFORM_ORGANIZATION_UUID,
@@ -365,16 +366,32 @@ export const contextSimpleUserFiligran2: PortalContext = {
     roles_portal: [],
   },
   dataLoaders: {
-    uploaderLoader: { load: () => Promise.resolve(null) },
-    uploaderOrganizationLoader: { load: () => Promise.resolve(null) },
-    childrenDocumentsLoader: { load: () => Promise.resolve([]) },
-    imagesByDocumentIdLoader: { load: () => Promise.resolve([]) },
-    useCasesByDocumentIdLoader: { load: () => Promise.resolve([]) },
-    solutionCategoryByDocumentIdLoader: { load: () => Promise.resolve(null) },
-    integrationTypeLoader: { load: () => Promise.resolve(null) },
-    serviceInstanceByIdLoader: { load: () => Promise.resolve(undefined) },
-    subscriptionByServiceInstanceLoader: { load: () => Promise.resolve(null) },
-  } as unknown as DocumentDataLoaders,
+    document: {
+      uploaderLoader: { load: () => Promise.resolve(null) },
+      uploaderOrganizationLoader: { load: () => Promise.resolve(null) },
+      childrenDocumentsLoader: { load: () => Promise.resolve([]) },
+      imagesByDocumentIdLoader: { load: () => Promise.resolve([]) },
+      useCasesByDocumentIdLoader: { load: () => Promise.resolve([]) },
+      solutionCategoryByDocumentIdLoader: { load: () => Promise.resolve(null) },
+      integrationTypeLoader: { load: () => Promise.resolve(null) },
+      serviceInstanceByIdLoader: { load: () => Promise.resolve(undefined) },
+      subscriptionByServiceInstanceLoader: {
+        load: () => Promise.resolve(null),
+      },
+    } as unknown as DocumentDataLoaders,
+    serviceInstance: {
+      linksByServiceInstanceLoader: { load: () => Promise.resolve([]) },
+      serviceDefinitionByServiceInstanceLoader: {
+        load: () => Promise.resolve(undefined),
+      },
+      organizationSubscribedLoader: { load: () => Promise.resolve(false) },
+      capabilitiesLoader: { load: () => Promise.resolve([]) },
+      userJoinedLoader: { load: () => Promise.resolve(false) },
+      subscriptionsByServiceInstanceLoader: {
+        load: () => Promise.resolve([]),
+      },
+    } as unknown as ServiceInstanceDataLoaders,
+  },
 } as unknown as PortalContext;
 
 export const requestContextSimpleUserFiligran2 = {

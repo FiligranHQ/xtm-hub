@@ -12,6 +12,10 @@ import ServiceInstance, {
 import Subscription from '../../model/kanel/public/Subscription';
 import UseCase from '../../model/kanel/public/UseCase';
 import User, { UserId } from '../../model/kanel/public/User';
+import {
+  CompositeKey,
+  defineCompositeKey,
+} from '../../utils/dataloader-key.util';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { solutionCategoryDomain } from '../solution-category/solution-category.domain';
@@ -23,35 +27,19 @@ import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
 
-const SUBSCRIPTION_KEY_SEPARATOR = ':';
+interface SubscriptionByServiceInstanceFields extends Record<string, string> {
+  organizationId: OrganizationId;
+  serviceInstanceId: ServiceInstanceId;
+}
+
 type SubscriptionByServiceInstanceLoaderKey =
-  `${OrganizationId}:${ServiceInstanceId}`;
+  CompositeKey<SubscriptionByServiceInstanceFields>;
 
-export const createSubscriptionByServiceInstanceLoaderKey = ({
-  organizationId,
-  serviceInstanceId,
-}: {
-  organizationId: OrganizationId;
-  serviceInstanceId: ServiceInstanceId;
-}): SubscriptionByServiceInstanceLoaderKey =>
-  `${organizationId}${SUBSCRIPTION_KEY_SEPARATOR}${serviceInstanceId}`;
-
-const parseSubscriptionByServiceInstanceLoaderKey = (
-  key: SubscriptionByServiceInstanceLoaderKey
-): {
-  organizationId: OrganizationId;
-  serviceInstanceId: ServiceInstanceId;
-} => {
-  const separatorIndex = key.indexOf(SUBSCRIPTION_KEY_SEPARATOR);
-  if (separatorIndex <= 0 || separatorIndex >= key.length - 1) {
-    throw new Error(`Invalid subscription loader key: ${key}`);
-  }
-
-  const organizationId = key.slice(0, separatorIndex) as OrganizationId;
-  const serviceInstanceId = key.slice(separatorIndex + 1) as ServiceInstanceId;
-
-  return { organizationId, serviceInstanceId };
-};
+export const subscriptionByServiceInstanceLoaderKey =
+  defineCompositeKey<SubscriptionByServiceInstanceFields>([
+    'organizationId',
+    'serviceInstanceId',
+  ]);
 
 export interface DocumentDataLoaders {
   userLoader: DataLoader<string, User | null>;
@@ -209,7 +197,7 @@ export const DocumentDataLoader = {
   batchLoadSubscriptionsByServiceInstance: async (
     keys: readonly SubscriptionByServiceInstanceLoaderKey[]
   ): Promise<(Subscription | null)[]> => {
-    const parsedKeys = keys.map(parseSubscriptionByServiceInstanceLoaderKey);
+    const parsedKeys = keys.map(subscriptionByServiceInstanceLoaderKey.parse);
     const organizationIds = [
       ...new Set(parsedKeys.map(({ organizationId }) => organizationId)),
     ];
@@ -227,7 +215,7 @@ export const DocumentDataLoader = {
 
     const map = new Map<string, Subscription>(
       subscriptions.map((subscription) => [
-        createSubscriptionByServiceInstanceLoaderKey({
+        subscriptionByServiceInstanceLoaderKey.create({
           organizationId: subscription.organization_id,
           serviceInstanceId: subscription.service_instance_id,
         }),
@@ -236,7 +224,7 @@ export const DocumentDataLoader = {
     );
 
     return parsedKeys.map(({ organizationId, serviceInstanceId }) => {
-      const key = createSubscriptionByServiceInstanceLoaderKey({
+      const key = subscriptionByServiceInstanceLoaderKey.create({
         organizationId,
         serviceInstanceId,
       });

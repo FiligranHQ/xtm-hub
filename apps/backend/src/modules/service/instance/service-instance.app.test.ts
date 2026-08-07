@@ -51,7 +51,7 @@ import { ServiceInstanceDomain } from './service-instance.domain';
 describe('service Instance app', () => {
   describe('loadServiceInstance', () => {
     let loadSubscriptionBySpy: MockInstance;
-    let loadUserServiceBySpy: MockInstance;
+    let doesUserServiceExistSpy: MockInstance;
     let loadServiceInstanceBySpy: MockInstance;
     let grantServiceAccessSpy: MockInstance;
 
@@ -68,13 +68,6 @@ describe('service Instance app', () => {
       end_date: null,
     };
 
-    const mockUserService = {
-      id: uuidv4(),
-      user_id: mockUserId,
-      subscription_id: mockSubscriptionId,
-      service_capability_id: GenericServiceCapabilityIds.AccessId,
-    };
-
     const mockServiceInstance = {
       id: mockServiceInstanceId,
       name: 'Service instance 1',
@@ -89,7 +82,10 @@ describe('service Instance app', () => {
         SubscriptionDomain,
         'loadSubscriptionBy'
       );
-      loadUserServiceBySpy = vi.spyOn(UserServiceDomain, 'loadUserServiceBy');
+      doesUserServiceExistSpy = vi.spyOn(
+        UserServiceDomain,
+        'doesUserServiceExist'
+      );
       loadServiceInstanceBySpy = vi.spyOn(
         ServiceInstanceDomain,
         'loadServiceInstanceBy'
@@ -104,7 +100,7 @@ describe('service Instance app', () => {
       // Given
       requestContext.set(requestContextSimpleUserSecondOrga);
       loadSubscriptionBySpy.mockResolvedValueOnce(mockSubscription);
-      loadUserServiceBySpy.mockResolvedValueOnce([mockUserService]);
+      doesUserServiceExistSpy.mockResolvedValueOnce(true);
       loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
 
       // When
@@ -118,10 +114,10 @@ describe('service Instance app', () => {
         organization_id:
           contextSimpleUserSecondOrga.user.selected_organization_id,
       });
-      expect(loadUserServiceBySpy).toHaveBeenCalledWith({
-        subscription_id: mockSubscriptionId,
-        user_id: mockUserId,
-      });
+      expect(doesUserServiceExistSpy).toHaveBeenCalledWith(
+        mockUserId,
+        mockSubscriptionId
+      );
       expect(loadServiceInstanceBySpy).toHaveBeenCalledWith({
         id: mockServiceInstanceId,
       });
@@ -132,7 +128,7 @@ describe('service Instance app', () => {
       // Given
       requestContext.set(requestContextSimpleUserSecondOrga);
       loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
-      loadUserServiceBySpy.mockResolvedValue([]);
+      doesUserServiceExistSpy.mockResolvedValue(false);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
       grantServiceAccessSpy.mockResolvedValue(undefined);
 
@@ -143,8 +139,8 @@ describe('service Instance app', () => {
 
       // Then
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
-        [GenericServiceCapabilityIds.AccessId],
-        [mockUserId],
+        GenericServiceCapabilityIds.AccessId,
+        mockUserId,
         mockSubscriptionId
       );
     });
@@ -184,7 +180,7 @@ describe('service Instance app', () => {
         return Promise.resolve(otherOrgSubscription);
       });
 
-      loadUserServiceBySpy.mockResolvedValue([]);
+      doesUserServiceExistSpy.mockResolvedValue(false);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
       grantServiceAccessSpy.mockResolvedValue(undefined);
 
@@ -200,8 +196,8 @@ describe('service Instance app', () => {
       });
 
       expect(grantServiceAccessSpy).toHaveBeenCalledWith(
-        [GenericServiceCapabilityIds.AccessId],
-        [mockUserId],
+        GenericServiceCapabilityIds.AccessId,
+        mockUserId,
         userOrgSubscriptionId
       );
       expect(loadServiceInstanceBySpy).toHaveBeenCalledBefore(
@@ -209,19 +205,11 @@ describe('service Instance app', () => {
       );
     });
 
-    it('should handle multiple user services', async () => {
+    it('should not grant access again when the user service already exists', async () => {
       // Given
       requestContext.set(requestContextSimpleUserSecondOrga);
-      const multipleUserServices = [
-        mockUserService,
-        {
-          ...mockUserService,
-          id: uuidv4(),
-          service_capability_id: uuidv4(),
-        },
-      ];
       loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
-      loadUserServiceBySpy.mockResolvedValue(multipleUserServices);
+      doesUserServiceExistSpy.mockResolvedValue(true);
       loadServiceInstanceBySpy.mockResolvedValue(mockServiceInstance);
 
       // When
@@ -248,7 +236,7 @@ describe('service Instance app', () => {
       ).rejects.toThrow('Error');
 
       // Then
-      expect(loadUserServiceBySpy).not.toHaveBeenCalled();
+      expect(doesUserServiceExistSpy).not.toHaveBeenCalled();
       expect(grantServiceAccessSpy).not.toHaveBeenCalled();
     });
 
@@ -258,7 +246,7 @@ describe('service Instance app', () => {
       loadServiceInstanceBySpy.mockResolvedValueOnce(mockServiceInstance);
       const error = new Error('Other error');
       loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
-      loadUserServiceBySpy.mockResolvedValue([]);
+      doesUserServiceExistSpy.mockResolvedValue(false);
       grantServiceAccessSpy.mockRejectedValue(error);
 
       // When
