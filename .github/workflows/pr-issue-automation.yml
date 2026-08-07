@@ -28,6 +28,13 @@ jobs:
     steps:
       - uses: actions/create-github-app-token@v3
         id: app-token
+        if: >
+          github.event_name != 'pull_request' ||
+          (
+            github.event.pull_request.user.login != 'renovate[bot]' &&
+            github.event.pull_request.user.login != 'renovate-bot' &&
+            github.event.pull_request.user.login != 'dependabot[bot]'
+          )
         with:
           app-id: ${{ vars.FILIGRANHQ_PROJECT_APP_ID }}
           private-key: ${{ secrets.FILIGRANHQ_PROJECT_APP_PRIVATE_KEY }}
