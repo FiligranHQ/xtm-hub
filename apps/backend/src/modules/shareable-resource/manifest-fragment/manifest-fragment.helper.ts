@@ -8,6 +8,7 @@ export const TAG_LATEST = 'latest';
 export const TAG_LATEST_LTS = 'latest-lts';
 export const TAG_DECOUPLING = 'decoupling';
 export const MAX_SHORT_DESCRIPTION_LENGTH = 250;
+export const MAX_CONTACT_LENGTH = 254;
 
 export type ConnectorMetadataSnapshot = {
   datasheet_url?: string;
@@ -125,5 +126,20 @@ export const ManifestFragmentHelper = {
     version: string;
   }): string => {
     return `${title}-${version}-logo.png`;
+  },
+
+  parseContact: (value: string | null | undefined): string | undefined => {
+    const normalized = ManifestFragmentHelper.normalizeOptionalText(value);
+    if (normalized !== undefined && normalized.length > MAX_CONTACT_LENGTH) {
+      throw new Error(BadRequestErrorCode.ContactTooLong);
+    }
+    return normalized;
+  },
+
+  normalizeOptionalText(value: string | null | undefined): string | undefined {
+    if (value === null || value === undefined || value.trim() === '') {
+      return undefined;
+    }
+    return value.trim();
   },
 };

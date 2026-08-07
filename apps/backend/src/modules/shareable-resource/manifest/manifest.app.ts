@@ -11,6 +11,7 @@ import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { BadRequestError } from '../../../utils/error/error.util';
 import { isLtsVersion } from '../../../utils/versioning';
 import { DocumentDomain } from '../../document/domain/document.domain';
+import { solutionCategoryDomain } from '../../solution-category/solution-category.domain';
 import { useCaseDomain } from '../../use-case/use-case.domain';
 import {
   ManifestFragmentHelper,
@@ -206,6 +207,18 @@ export const ManifestApp = {
       useCasesByConnectorId.set(row._document_id, existing);
     }
 
+    const solutionCategoryRows =
+      await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+        connectors.map((c) => c.id as string)
+      );
+    const solutionCategoriesByConnectorId = new Map<string, string[]>();
+    for (const row of solutionCategoryRows) {
+      const existing =
+        solutionCategoriesByConnectorId.get(row._document_id) ?? [];
+      existing.push(row.name);
+      solutionCategoriesByConnectorId.set(row._document_id, existing);
+    }
+
     const logoByConnectorId = await ManifestHelper.loadConnectorLogosBase64(
       connectors.map((c) => c.id)
     );
@@ -215,7 +228,8 @@ export const ManifestApp = {
       connectors as ConnectorV2[],
       now,
       useCasesByConnectorId,
-      logoByConnectorId
+      logoByConnectorId,
+      solutionCategoriesByConnectorId
     );
 
     const minioFileName = ManifestHelper.buildManifestFileNameWithPath(

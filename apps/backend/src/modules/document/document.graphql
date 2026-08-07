@@ -43,6 +43,7 @@ enum DocumentMetadataKeyCode {
   entity_types
   solution_category
   license_type
+  contact
 }
 
 type ShareableResource {

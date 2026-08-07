@@ -170,6 +170,7 @@ export type Connector = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   blogpost_url: Maybe<Scalars['String']['output']>;
   children_documents: Maybe<Array<ShareableResource>>;
+  contact: Maybe<Scalars['String']['output']>;
   container_image: Maybe<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url: Maybe<Scalars['String']['output']>;
@@ -180,7 +181,7 @@ export type Connector = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   manager_supported: Scalars['Boolean']['output'];
   minimum_deployable_version: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -274,7 +275,7 @@ export type CsvFeed = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -625,6 +626,7 @@ export enum DocumentMetadataKeyCode {
   AdditionalProperties = 'additional_properties',
   BlogpostUrl = 'blogpost_url',
   ConfigSchema = 'config_schema',
+  Contact = 'contact',
   ContainerImage = 'container_image',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
@@ -796,7 +798,7 @@ export type Integration = {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -827,7 +829,7 @@ export type IntegrationHack = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -918,18 +920,21 @@ export enum LogicalOperator {
 export type ManifestFragmentInput = {
   additional_properties: Scalars['JSON']['input'];
   config_schema: Scalars['JSON']['input'];
+  contact: InputMaybe<Scalars['String']['input']>;
   description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   image_name: Scalars['String']['input'];
   image_type: Scalars['String']['input'];
   integration_type: Scalars['String']['input'];
   last_verified_date: Scalars['String']['input'];
+  license_type: InputMaybe<LicenseType>;
   logo: Scalars['String']['input'];
   manager_supported: Scalars['Boolean']['input'];
   min_version: Scalars['String']['input'];
   platform: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  solution_categories: InputMaybe<Array<Scalars['String']['input']>>;
   source_code: Scalars['String']['input'];
   subscription_link: Scalars['String']['input'];
   title: Scalars['String']['input'];
@@ -2115,7 +2120,7 @@ export type RssFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2344,7 +2349,7 @@ export type Stream = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2464,7 +2469,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2516,7 +2521,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   remover_id: Maybe<Scalars['ID']['output']>;
