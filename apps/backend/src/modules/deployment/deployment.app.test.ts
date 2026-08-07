@@ -230,10 +230,40 @@ describe('deployment app', () => {
     it('should throw when service definition is not found', async () => {
       const call = DeploymentApp.createDeploymentRequest({
         ...TEST_DEPLOYMENT,
-        platform_identifier: 'unknown-platform' as PlatformIdentifier,
+        products: ['unknown-platform' as PlatformIdentifier],
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it.each([
+      [[PlatformIdentifier.Xtmone]],
+      [[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]],
+      [[]],
+    ])(
+      'should throw InvalidProductsForDeploymentType for a trial with products %s',
+      async (products) => {
+        const call = DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          products,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.InvalidProductsForDeploymentType
+        );
+      }
+    );
+
+    it('should throw InvalidProductsForDeploymentType for a bundle (not yet supported)', async () => {
+      const call = DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        type: DeploymentRequestDeploymentType.Bundle,
+        products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+      });
+
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.InvalidProductsForDeploymentType
+      );
     });
   });
   describe('domains blacklist', () => {
@@ -298,7 +328,7 @@ describe('deployment app', () => {
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
             use_case: DeploymentRequestUseCase.ThreatHunting,
-            platform_identifier: product,
+            products: [product],
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
             source,

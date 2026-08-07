@@ -230,7 +230,7 @@ export const mockCreateDeploymentRequestInput = (overrides?: Partial<CreateDeplo
     return {
         activity_sector: overrides && overrides.hasOwnProperty('activity_sector') ? overrides.activity_sector! : DeploymentRequestActivitySector.ComputerGames,
         job_title: overrides && overrides.hasOwnProperty('job_title') ? overrides.job_title! : DeploymentRequestJobTitle.ApplicationSecuritySpecialist,
-        platform_identifier: overrides && overrides.hasOwnProperty('platform_identifier') ? overrides.platform_identifier! : PlatformIdentifier.Openaev,
+        products: overrides && overrides.hasOwnProperty('products') ? overrides.products! : [PlatformIdentifier.Openaev],
         region: overrides && overrides.hasOwnProperty('region') ? overrides.region! : DeploymentRequestPlatformRegion.ApacAu,
         source: overrides && overrides.hasOwnProperty('source') ? overrides.source! : DeploymentRequestSource.OpenaevDemo,
         type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : DeploymentRequestDeploymentType.Bundle,

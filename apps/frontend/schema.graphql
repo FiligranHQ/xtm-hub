@@ -399,7 +399,7 @@ type PlatformDeploymentRequest {
 }
 
 input CreateDeploymentRequestInput {
-  platform_identifier: PlatformIdentifier!
+  products: [PlatformIdentifier!]!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
