@@ -98,6 +98,7 @@ export const TelemetryTargetProductMappedByPlatformIdentifier = new Map<
 >([
   [PlatformIdentifier.Opencti, TelemetryTargetProduct.OPEN_CTI],
   [PlatformIdentifier.Openaev, TelemetryTargetProduct.OPEN_AEV],
+  [PlatformIdentifier.Xtmone, TelemetryTargetProduct.XTM_ONE],
 ]);
 
 const IntegrationTypeToEventServiceType = new Map<

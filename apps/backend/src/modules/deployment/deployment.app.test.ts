@@ -64,6 +64,7 @@ import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
   TelemetrySource,
+  TelemetryTargetProduct,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import {
@@ -370,9 +371,19 @@ describe('deployment app', () => {
           )
         );
 
-        // xtmone has no telemetry target-product mapping yet (pre-existing gap,
-        // silently caught) — only opencti/openaev children send telemetry.
-        expect(telemetrySpy).toHaveBeenCalledTimes(2);
+        expect(telemetrySpy).toHaveBeenCalledTimes(3);
+        [
+          TelemetryTargetProduct.XTM_ONE,
+          TelemetryTargetProduct.OPEN_CTI,
+          TelemetryTargetProduct.OPEN_AEV,
+        ].forEach((target_product) => {
+          expect(telemetrySpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+              event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+              target_product,
+            })
+          );
+        });
         expect(mockSendMail).toHaveBeenCalledTimes(6);
       });
 
