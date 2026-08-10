@@ -1372,6 +1372,211 @@ describe('deployment app', () => {
         expect(mockSendMail).not.toHaveBeenCalled();
       });
     });
+
+    describe('bundle updates', () => {
+      it('should update actual_state and platform_id only, ignoring bundle-unsupported fields', async () => {
+        const bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              start_date: null,
+              end_date: null,
+              ordering: 1,
+              url: null,
+            }
+          );
+
+        const updated = await DeploymentApp.updateDeploymentRequest({
+          id: bundle.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: 'bundle-platform-id',
+          start_date: new Date(2025, 1, 1),
+          end_date: new Date(2025, 2, 1),
+          ordering: 99,
+          url: 'https://should-be-ignored.example.com',
+        });
+
+        expect(updated).toMatchObject({
+          actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: 'bundle-platform-id',
+          // hub_status is not resolved from actual_state for a bundle: it is
+          // only ever set by recomputeBundleHubStatusAndDates from its children.
+          hub_status: DeploymentRequestHubStatus.Pending,
+          start_date: null,
+          end_date: null,
+          ordering: 1,
+          url: null,
+        });
+      });
+
+      it('should not initialise a service group for a bundle', async () => {
+        const bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              actual_state: DeploymentRequestPlatformState.Unprovisioned,
+            }
+          );
+
+        await DeploymentApp.updateDeploymentRequest({
+          id: bundle.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: 'bundle-platform-id',
+        });
+
+        const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
+          service_instance_id: bundle.service_instance_id,
+        });
+        expect(serviceGroups).toHaveLength(0);
+      });
+    });
+
+    describe('cascade to parent bundle', () => {
+      let bundle: DeploymentRequest;
+      let childA: DeploymentRequest;
+      let childB: DeploymentRequest;
+
+      beforeEach(async () => {
+        bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              start_date: null,
+              end_date: null,
+            }
+          );
+
+        childA =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id as DeploymentRequestId,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status: DeploymentRequestHubStatus.Provisioning,
+              actual_state: DeploymentRequestPlatformState.Provisioning,
+              start_date: new Date(2025, 1, 1),
+              end_date: new Date(2025, 6, 1),
+            }
+          );
+
+        childB =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id as DeploymentRequestId,
+              platform_identifier: PlatformIdentifier.Openaev,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              start_date: new Date(2025, 2, 1),
+              end_date: new Date(2025, 5, 1),
+              platform_id: 'child-b-platform-id',
+            }
+          );
+      });
+
+      it('should recompute the bundle as Active with aggregated dates once all children are Active', async () => {
+        await DeploymentApp.updateDeploymentRequest({
+          id: childA.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          start_date: childA.start_date as Date,
+          end_date: childA.end_date as Date,
+          platform_id: 'child-a-platform-id',
+          url: 'https://child-a.example.com',
+        });
+
+        const updatedBundle =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: bundle.id as DeploymentRequestId,
+          });
+        expect(updatedBundle).toMatchObject({
+          hub_status: DeploymentRequestHubStatus.Active,
+          start_date: new Date(2025, 1, 1),
+          end_date: new Date(2025, 6, 1),
+        });
+
+        const updatedChildA =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: childA.id as DeploymentRequestId,
+          });
+        expect(updatedChildA?.url).toBe('https://child-a.example.com');
+      });
+
+      it('should recompute the bundle as Failed when any child is Failed, regardless of other children updates', async () => {
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          childA.id as DeploymentRequestId,
+          { hub_status: DeploymentRequestHubStatus.Failed }
+        );
+
+        await DeploymentApp.updateDeploymentRequest({
+          id: childB.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Removing,
+        });
+
+        const updatedBundle =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: bundle.id as DeploymentRequestId,
+          });
+        expect(updatedBundle?.hub_status).toBe(
+          DeploymentRequestHubStatus.Failed
+        );
+      });
+
+      it('should not update sibling children when the bundle itself is updated', async () => {
+        await DeploymentApp.updateDeploymentRequest({
+          id: bundle.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: 'bundle-platform-id',
+        });
+
+        const untouchedChildA =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: childA.id as DeploymentRequestId,
+          });
+        const untouchedChildB =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: childB.id as DeploymentRequestId,
+          });
+        expect(untouchedChildA?.hub_status).toBe(
+          DeploymentRequestHubStatus.Provisioning
+        );
+        expect(untouchedChildB?.hub_status).toBe(
+          DeploymentRequestHubStatus.Active
+        );
+      });
+
+      it.each([
+        [DeploymentRequestHubStatus.Cancelled],
+        [DeploymentRequestHubStatus.Expired],
+      ])(
+        'should not revert a %s bundle back to a computed status when a child is updated afterward',
+        async (terminalHubStatus) => {
+          await DeploymentRequestDomain.updateDeploymentRequestById(
+            bundle.id as DeploymentRequestId,
+            { hub_status: terminalHubStatus }
+          );
+
+          await DeploymentApp.updateDeploymentRequest({
+            id: childA.id as DeploymentRequestId,
+            actual_state: DeploymentRequestPlatformState.Active,
+            start_date: childA.start_date as Date,
+            end_date: childA.end_date as Date,
+            platform_id: 'child-a-platform-id',
+          });
+
+          const updatedBundle =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({
+              id: bundle.id as DeploymentRequestId,
+            });
+          expect(updatedBundle?.hub_status).toBe(terminalHubStatus);
+        }
+      );
+    });
   });
   describe('loadTrialDeployments', () => {
     it('should return all available when no DeploymentRequest and no PlatformIdentifier specified', async () => {
