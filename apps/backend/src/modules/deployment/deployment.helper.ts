@@ -165,6 +165,45 @@ export const DeploymentHelper = {
     );
   },
 
+  computeBundleHubStatus: (
+    children: DeploymentRequestModel[]
+  ): DeploymentRequestHubStatus => {
+    const statuses = new Set(children.map((child) => child.hub_status));
+    if (statuses.has(DeploymentRequestHubStatus.Failed)) {
+      return DeploymentRequestHubStatus.Failed;
+    }
+    if (
+      statuses.size === 1 &&
+      statuses.has(DeploymentRequestHubStatus.Active)
+    ) {
+      return DeploymentRequestHubStatus.Active;
+    }
+    if (statuses.has(DeploymentRequestHubStatus.Provisioning)) {
+      return DeploymentRequestHubStatus.Provisioning;
+    }
+    if (statuses.has(DeploymentRequestHubStatus.Pending)) {
+      return DeploymentRequestHubStatus.Pending;
+    }
+    return DeploymentRequestHubStatus.Queued;
+  },
+
+  computeBundleDates: (
+    children: DeploymentRequestModel[]
+  ): { start_date: Date | null; end_date: Date | null } => {
+    const startTimes = children.flatMap((child) =>
+      child.start_date ? [child.start_date.getTime()] : []
+    );
+    const endTimes = children.flatMap((child) =>
+      child.end_date ? [child.end_date.getTime()] : []
+    );
+
+    return {
+      start_date:
+        startTimes.length === 0 ? null : new Date(Math.min(...startTimes)),
+      end_date: endTimes.length === 0 ? null : new Date(Math.max(...endTimes)),
+    };
+  },
+
   computeHubStatus: (
     currentHubStatus: DeploymentRequestHubStatus,
     actualState: DeploymentRequestPlatformState | null | undefined
