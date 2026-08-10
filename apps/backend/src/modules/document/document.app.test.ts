@@ -1690,6 +1690,43 @@ describe('documentApp', () => {
         });
         expect(links).toHaveLength(2);
       });
+
+      it('should clear previous links when the update provides only unknown categories', async () => {
+        // Given — first create with two valid categories
+        const input = {
+          ...documentData,
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          slug: 'solution-category-unknown-update-slug',
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          solution_categories: [
+            'Threat Intelligence Feed',
+            'Endpoint Detection & Response',
+          ],
+        };
+        const doc1 = await DocumentApp.upsertDocumentWithExternalImage(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          input,
+          mockUpload,
+          metadataKeys
+        );
+
+        // When — update with a name that resolves to nothing (e.g. an upstream typo)
+        const doc2 = await DocumentApp.upsertDocumentWithExternalImage(
+          OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          { ...input, solution_categories: ['Not A Real Category'] },
+          mockUpload,
+          metadataKeys
+        );
+
+        // Then — deliberate: the resolved manifest set is the new truth, even when
+        // empty. The previous links are cleared; the only trace is the "unknown
+        // solution categories" warning emitted by the resolver.
+        expect(doc2.id).toBe(doc1.id);
+        const links = await TestHelper.objectSolutionCategory.load({
+          object_id: doc2.id,
+        });
+        expect(links).toHaveLength(0);
+      });
     });
   });
 
