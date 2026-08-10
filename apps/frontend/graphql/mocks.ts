@@ -1167,6 +1167,7 @@ export const mockPlatformDeploymentRequest = (overrides?: Partial<PlatformDeploy
         ordering: overrides && overrides.hasOwnProperty('ordering') ? overrides.ordering! : 4529,
         organization_domains: overrides && overrides.hasOwnProperty('organization_domains') ? overrides.organization_domains! : ['ustulo'],
         organization_name: overrides && overrides.hasOwnProperty('organization_name') ? overrides.organization_name! : 'complectus',
+        parent_id: overrides && overrides.hasOwnProperty('parent_id') ? overrides.parent_id! : 'ago',
         platform_id: overrides && overrides.hasOwnProperty('platform_id') ? overrides.platform_id! : 'voluntarius',
         platform_identifier: overrides && overrides.hasOwnProperty('platform_identifier') ? overrides.platform_identifier! : PlatformIdentifier.Openaev,
         platform_token: overrides && overrides.hasOwnProperty('platform_token') ? overrides.platform_token! : 'totam',
@@ -1178,6 +1179,7 @@ export const mockPlatformDeploymentRequest = (overrides?: Partial<PlatformDeploy
         start_date: overrides && overrides.hasOwnProperty('start_date') ? overrides.start_date! : '2021-03-19T10:43:53.476Z',
         target_state: overrides && overrides.hasOwnProperty('target_state') ? overrides.target_state! : DeploymentRequestPlatformState.Active,
         type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : DeploymentRequestDeploymentType.Bundle,
+        url: overrides && overrides.hasOwnProperty('url') ? overrides.url! : 'amiculum',
         use_case: overrides && overrides.hasOwnProperty('use_case') ? overrides.use_case! : DeploymentRequestUseCase.AttackSimulation,
     };
 };
@@ -1977,6 +1979,7 @@ export const mockUpdateDeploymentRequestInput = (overrides?: Partial<UpdateDeplo
         ordering: overrides && overrides.hasOwnProperty('ordering') ? overrides.ordering! : 1432,
         platform_id: overrides && overrides.hasOwnProperty('platform_id') ? overrides.platform_id! : 'coaegresco',
         start_date: overrides && overrides.hasOwnProperty('start_date') ? overrides.start_date! : '2021-06-08T15:40:58.723Z',
+        url: overrides && overrides.hasOwnProperty('url') ? overrides.url! : 'capio',
     };
 };
 

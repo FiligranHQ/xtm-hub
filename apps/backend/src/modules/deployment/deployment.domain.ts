@@ -48,6 +48,14 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
+  loadDeploymentRequestsBy: async (
+    conditions: DeploymentRequestMutator
+  ): Promise<DeploymentRequest[]> => {
+    return db<DeploymentRequest[]>('DeploymentRequest')
+      .where(conditions)
+      .select('*');
+  },
+
   loadTrialsForOrganization: async (
     organizationId: OrganizationId,
     identifiers?: PlatformIdentifier[]

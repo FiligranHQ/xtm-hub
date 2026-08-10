@@ -62,6 +62,37 @@ describe('deploymentRequestDomain', () => {
         DeploymentRequestHubStatus.Active
       );
     });
+    it('should expose parent_id and url on returned deployment requests', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      const child =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            url: 'https://xtmone.example.com',
+          }
+        );
+
+      const deploymentRequests =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+          }
+        );
+
+      const childNode = deploymentRequests.edges.find(
+        (edge) => edge?.node?.id === child.id
+      )?.node;
+      expect(childNode?.parent_id).toBe(bundle?.id);
+      expect(childNode?.url).toBe('https://xtmone.example.com');
+    });
     it('should filter deployment requests when searchTerm is specified ', async () => {
       const deployment =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -174,6 +205,52 @@ describe('deploymentRequestDomain', () => {
       expect(deploymentRequests.totalCount).toBe('2');
       expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment1?.id);
       expect(deploymentRequests.edges[1]?.node?.id).toBe(deployment2?.id);
+    });
+  });
+
+  describe('loadDeploymentRequestsBy', () => {
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
+      await TestHelper.subscription.delete({});
+    });
+
+    it('should return all deployment requests matching the given conditions', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      const child1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { parent_id: bundle.id }
+        );
+      const child2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { parent_id: bundle.id }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { parent_id: null }
+      );
+
+      const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+        parent_id: bundle.id,
+      });
+
+      expect(children).toHaveLength(2);
+      expect(children.map((child) => child.id).sort()).toEqual(
+        [child1?.id, child2?.id].sort()
+      );
+    });
+
+    it('should return an empty array when no deployment request matches', async () => {
+      const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+        parent_id: uuidv4() as DeploymentRequestId,
+      });
+
+      expect(children).toEqual([]);
     });
   });
 

@@ -1603,6 +1603,7 @@ export type PlatformDeploymentRequest = {
   ordering: Scalars['Int']['output'];
   organization_domains: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
+  parent_id: Maybe<Scalars['DeploymentRequestId']['output']>;
   platform_id: Maybe<Scalars['String']['output']>;
   platform_identifier: Maybe<PlatformIdentifier>;
   platform_token: Scalars['String']['output'];
@@ -1614,6 +1615,7 @@ export type PlatformDeploymentRequest = {
   start_date: Maybe<Scalars['Date']['output']>;
   target_state: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
+  url: Maybe<Scalars['String']['output']>;
   use_case: Maybe<DeploymentRequestUseCase>;
 };
 
@@ -2594,6 +2596,7 @@ export type UpdateDeploymentRequestInput = {
   ordering: InputMaybe<Scalars['Int']['input']>;
   platform_id: InputMaybe<Scalars['String']['input']>;
   start_date: InputMaybe<Scalars['Date']['input']>;
+  url: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateDocumentInput = {
