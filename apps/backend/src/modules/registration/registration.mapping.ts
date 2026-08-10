@@ -27,7 +27,7 @@ export const serviceInstanceNameMappedByPlatformIdentifier: Record<
 > = {
   [PlatformIdentifier.Opencti]: 'OpenCTI Platform',
   [PlatformIdentifier.Openaev]: 'OpenAEV Platform',
-  [PlatformIdentifier.Xtmone]: 'XTM One Product',
+  [PlatformIdentifier.Xtmone]: 'XTM One Platform',
 };
 
 export const serviceInstanceTagMappedByPlatformIdentifier: Record<

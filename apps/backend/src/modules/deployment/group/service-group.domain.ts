@@ -14,7 +14,10 @@ import ServiceGroupUser, {
 } from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
-import { UnknownErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  UnknownErrorCode,
+} from '../../../utils/error/error.code';
 
 export enum ServiceGroupName {
   Admin = 'Admin',
@@ -199,7 +202,7 @@ export const ServiceGroupDomain = {
   ) => {
     const groups = GROUPS_BY_PLATFORM_IDENTIFIER[platformIdentifier];
     if (!groups) {
-      throw new Error(UnknownErrorCode.UnknownError);
+      throw new Error(BadRequestErrorCode.InvalidPlatformIdentifier);
     }
     const rolesToInsert = groups.map((groupName) => ({
       name: groupName,
