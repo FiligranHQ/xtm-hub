@@ -37,7 +37,9 @@ import {
   PlatformContract,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
+  ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
+  ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
@@ -75,9 +77,13 @@ import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import { PortalContext } from '../../model/portal-context';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
-import { DeploymentApp } from './deployment.app';
+import {
+  DeploymentApp,
+  XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
+} from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
@@ -252,16 +258,183 @@ describe('deployment app', () => {
       }
     );
 
-    it('should throw InvalidProductsForDeploymentType for a bundle (not yet supported)', async () => {
+    it.each([
+      [[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]],
+      [[PlatformIdentifier.Xtmone]],
+      [[PlatformIdentifier.Xtmone, PlatformIdentifier.Xtmone]],
+    ])(
+      'should throw InvalidProductsForDeploymentType for a bundle with products %s',
+      async (products) => {
+        const call = DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.InvalidProductsForDeploymentType
+        );
+      }
+    );
+
+    it("should throw when a bundle product's service definition is not found", async () => {
       const call = DeploymentApp.createDeploymentRequest({
         ...TEST_DEPLOYMENT,
         type: DeploymentRequestDeploymentType.Bundle,
-        products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        products: [
+          PlatformIdentifier.Xtmone,
+          'unknown-platform' as PlatformIdentifier,
+        ],
       });
 
-      await expect(call).rejects.toThrow(
-        BadRequestErrorCode.InvalidProductsForDeploymentType
-      );
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    describe('bundle creation', () => {
+      beforeEach(() => {
+        requestContext.set(requestContextRegistererUserSecondOrga);
+        vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
+          isPlaceAvailable: true,
+        });
+      });
+
+      it('should create a bundle deployment request with a child trial deployment request per product', async () => {
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [
+            PlatformIdentifier.Xtmone,
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+        });
+
+        expect(bundle).toMatchObject({
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          parent_id: null,
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+        });
+
+        const bundleServiceInstance = await TestHelper.serviceInstance.load({
+          id: bundle.service_instance_id,
+        });
+        expect(bundleServiceInstance).toMatchObject({
+          public: false,
+          creation_status: ServiceInstanceCreationStatus.Pending,
+        });
+        expect(bundleServiceInstance?.tags).toEqual(
+          expect.arrayContaining([
+            ServiceInstanceTag.Trial,
+            ServiceInstanceTag.XtmOne,
+            ServiceInstanceTag.OpenCti,
+            ServiceInstanceTag.OpenAev,
+          ])
+        );
+
+        const bundleServiceDefinition = await TestHelper.serviceDefinition.load(
+          { id: bundleServiceInstance?.service_definition_id }
+        );
+        expect(bundleServiceDefinition?.identifier).toBe(
+          ServiceDefinitionIdentifier.XtmPlatformBundle
+        );
+
+        const bundleSubscription = await TestHelper.subscription.load({
+          service_instance_id: bundle.service_instance_id,
+        });
+        expect(bundleSubscription).toMatchObject({
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          end_date: null,
+        });
+
+        const children = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+        });
+        expect(children).toHaveLength(3);
+        expect(children).toEqual(
+          expect.arrayContaining(
+            [
+              PlatformIdentifier.Xtmone,
+              PlatformIdentifier.Opencti,
+              PlatformIdentifier.Openaev,
+            ].map((platformIdentifier) =>
+              expect.objectContaining({
+                type: DeploymentRequestDeploymentType.Trial,
+                platform_identifier: platformIdentifier,
+                parent_id: bundle.id,
+              })
+            )
+          )
+        );
+
+        // xtmone has no telemetry target-product mapping yet (pre-existing gap,
+        // silently caught) — only opencti/openaev children send telemetry.
+        expect(telemetrySpy).toHaveBeenCalledTimes(2);
+        expect(mockSendMail).toHaveBeenCalledTimes(6);
+      });
+
+      it('should bypass the free trial limit check for bundle products', async () => {
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            organization_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            platform_identifier: PlatformIdentifier.Opencti,
+            hub_status: DeploymentRequestHubStatus.Active,
+            counts_in_orga_quota: true,
+          }
+        );
+
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+
+        expect(bundle.id).toBeDefined();
+        const children = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+        });
+        expect(children).toHaveLength(2);
+      });
+
+      it('should roll back the whole bundle when a child fails to be created', async () => {
+        const originalRegisterNewPlatform =
+          RegistrationDomain.registerNewPlatform;
+        let callCount = 0;
+        const registerNewPlatformSpy = vi
+          .spyOn(RegistrationDomain, 'registerNewPlatform')
+          .mockImplementation(async (args) => {
+            callCount += 1;
+            if (callCount === 2) {
+              throw new Error('boom');
+            }
+            return originalRegisterNewPlatform(args);
+          });
+
+        const call = DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [
+            PlatformIdentifier.Xtmone,
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+        });
+
+        await expect(call).rejects.toThrow('boom');
+        expect(registerNewPlatformSpy).toHaveBeenCalledTimes(2);
+
+        const deploymentRequests = await TestHelper.deploymentRequest.loadMany(
+          {}
+        );
+        expect(deploymentRequests).toHaveLength(0);
+
+        const serviceInstances = await TestHelper.serviceInstance.load({
+          name: XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
+        });
+        expect(serviceInstances).toBeUndefined();
+      });
     });
   });
   describe('domains blacklist', () => {
