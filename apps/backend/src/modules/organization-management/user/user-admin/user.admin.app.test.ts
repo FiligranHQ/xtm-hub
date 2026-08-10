@@ -19,6 +19,7 @@ import { UserLoadUserBy } from '../../../../model/user';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
+import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import { UserHelper } from '../user.helper';
 import { UserAdminApp } from './user.admin.app';
 
@@ -194,6 +195,115 @@ describe('users admin app', () => {
           ErrorCode.CantRemoveLastAdministrator
         );
       });
+    });
+  });
+
+  describe('pending request cleanup', () => {
+    const email = 'testPendingCleanup@second-orga.com';
+    let createdUser: User;
+
+    beforeEach(async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+      const secondOrga = (await OrganizationDomain.loadOrganizationBy({
+        id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      }))!;
+      createdUser = await UserHelper.createNewUserWithPendingOrga(
+        { email, first_name: 'pending', last_name: 'cleanup', picture: null },
+        secondOrga
+      );
+    });
+
+    afterEach(async () => {
+      vi.restoreAllMocks();
+      await UserHelper.removeUser({ email });
+    });
+
+    it('should remove the pending request when an admin adds the user directly to the organization', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const pendingBefore =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: createdUser.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+      expect(pendingBefore).toHaveLength(1);
+
+      await UserAdminApp.addUser({
+        email,
+        organization_capabilities: [
+          {
+            organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            capabilities: [],
+          },
+        ],
+      });
+
+      const pendingAfter =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: createdUser.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+      expect(pendingAfter).toHaveLength(0);
+    });
+
+    it('should remove the pending request when an admin edits the user into the organization', async () => {
+      requestContext.set(requestContextAdminUser);
+
+      const pendingBefore =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: createdUser.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+      expect(pendingBefore).toHaveLength(1);
+
+      await UserAdminApp.editUser({
+        userId: createdUser.id,
+        input: {
+          organization_capabilities: [
+            {
+              organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+              capabilities: [],
+            },
+          ],
+        },
+      });
+
+      const pendingAfter =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: createdUser.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+      expect(pendingAfter).toHaveLength(0);
+    });
+
+    it('should not notify the deletion when the transaction rolls back', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+
+      const dispatchSpy = vi.spyOn(UserHelper, 'dispatchPendingDeleted');
+      vi.spyOn(UserDomain, 'loadUserBy').mockRejectedValueOnce(
+        new Error('boom')
+      );
+
+      const call = UserAdminApp.addUser({
+        email,
+        organization_capabilities: [
+          {
+            organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            capabilities: [],
+          },
+        ],
+      });
+
+      await expect(call).rejects.toThrow('boom');
+      expect(dispatchSpy).not.toHaveBeenCalled();
+
+      // the pending request must survive the rollback
+      const pendingAfter =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: createdUser.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+      expect(pendingAfter).toHaveLength(1);
     });
   });
 
