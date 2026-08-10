@@ -29,6 +29,10 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { SolutionCategoryId } from '../../../model/kanel/public/SolutionCategory';
 import type { UseCaseId } from '../../../model/kanel/public/UseCase';
 import {
+  PLATFORM_ORGANIZATION_UUID,
+  SYSTEM_USER_UUID,
+} from '../../../portal.const';
+import {
   restrictDocumentToActive,
   restrictDocumentToUserOrganization,
 } from '../../../security/restriction/document';
@@ -74,6 +78,23 @@ export type DocumentData<
 };
 
 export const DocumentDomain = {
+  reassignUserDocumentsToSystemUser: async (userId: UserId): Promise<void> => {
+    await db<DocumentModel>('Document')
+      .where('uploader_id', '=', userId)
+      .update({
+        uploader_id: SYSTEM_USER_UUID,
+        uploader_organization_id: PLATFORM_ORGANIZATION_UUID,
+      });
+
+    await db<DocumentModel>('Document')
+      .where('remover_id', '=', userId)
+      .update({ remover_id: SYSTEM_USER_UUID });
+
+    await db<DocumentModel>('Document')
+      .where('updater_id', '=', userId)
+      .update({ updater_id: SYSTEM_USER_UUID });
+  },
+
   deactivateDocuments: async (documentIds: DocumentId[]) => {
     const user = requestContext.requireUser();
 

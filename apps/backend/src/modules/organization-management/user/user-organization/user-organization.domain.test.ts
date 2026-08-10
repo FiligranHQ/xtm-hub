@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
+import { TestHelper } from '../../../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import { UserHelper } from '../user.helper';
@@ -54,6 +55,39 @@ describe('userOrganizationDomain', () => {
         );
 
       expect(user_orgs).toHaveLength(1);
+    });
+  });
+
+  describe('countUsersInOrganization', () => {
+    it('should count users linked to the organization, ignoring other organizations', async () => {
+      const organization = await TestHelper.organization.create({
+        personal_space: false,
+      });
+      const user1 = await UserHelper.createUserWithPersonalSpace(
+        { email: `count-users-in-organization-${uuidv4()}@filigran.io` },
+        { sendWelcomeEmail: false }
+      );
+      const user2 = await UserHelper.createUserWithPersonalSpace(
+        { email: `count-users-in-organization-${uuidv4()}@filigran.io` },
+        { sendWelcomeEmail: false }
+      );
+
+      expect(
+        await UserOrganizationDomain.countUsersInOrganization(organization.id)
+      ).toBe(0);
+
+      await UserOrganizationDomain.createUserOrganizationRelation({
+        user_id: user1.id,
+        organizations_id: [organization.id],
+      });
+      await UserOrganizationDomain.createUserOrganizationRelation({
+        user_id: user2.id,
+        organizations_id: [TEST_ORGANIZATIONS.FILIGRAN.ID],
+      });
+
+      expect(
+        await UserOrganizationDomain.countUsersInOrganization(organization.id)
+      ).toBe(1);
     });
   });
 });

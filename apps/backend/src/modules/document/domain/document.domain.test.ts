@@ -39,7 +39,11 @@ import Document from '../../../model/kanel/public/Document';
 import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { UseCaseId } from '../../../model/kanel/public/UseCase';
-import { ADMIN_UUID } from '../../../portal.const';
+import {
+  ADMIN_UUID,
+  PLATFORM_ORGANIZATION_UUID,
+  SYSTEM_USER_UUID,
+} from '../../../portal.const';
 import { DocumentUploadsHelper } from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
 
@@ -85,6 +89,69 @@ describe('document domain', () => {
       expect(document).toMatchObject({
         active: false,
         remover_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+      });
+    });
+  });
+
+  describe('reassignUserDocumentsToSystemUser', () => {
+    it('should reassign every user reference of the documents to the system user', async () => {
+      const userId = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID;
+      const uploaded = await DocumentDomain.createDocument(
+        {
+          name: 'reassign-uploaded',
+          slug: 'reassign-uploaded',
+          type: 'test-type',
+          uploader_id: userId,
+          uploader_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        },
+        []
+      );
+      const touched = await DocumentDomain.createDocument(
+        {
+          name: 'reassign-touched',
+          slug: 'reassign-touched',
+          type: 'test-type',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          remover_id: userId,
+          updater_id: userId,
+        },
+        []
+      );
+
+      await DocumentDomain.reassignUserDocumentsToSystemUser(userId);
+
+      expect(await TestHelper.document.load({ id: uploaded.id })).toMatchObject(
+        {
+          uploader_id: SYSTEM_USER_UUID,
+          uploader_organization_id: PLATFORM_ORGANIZATION_UUID,
+        }
+      );
+      expect(await TestHelper.document.load({ id: touched.id })).toMatchObject({
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        remover_id: SYSTEM_USER_UUID,
+        updater_id: SYSTEM_USER_UUID,
+      });
+    });
+
+    it('should leave documents of other users untouched', async () => {
+      const otherDocument = await DocumentDomain.createDocument(
+        {
+          name: 'reassign-other',
+          slug: 'reassign-other',
+          type: 'test-type',
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        },
+        []
+      );
+
+      await DocumentDomain.reassignUserDocumentsToSystemUser(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID
+      );
+
+      expect(
+        await TestHelper.document.load({ id: otherDocument.id })
+      ).toMatchObject({
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
       });
     });
   });

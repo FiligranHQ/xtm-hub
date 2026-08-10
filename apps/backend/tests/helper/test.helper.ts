@@ -37,6 +37,8 @@ import OneClickDeployment, {
   OneClickDeploymentMutator,
 } from '../../src/model/kanel/public/OneClickDeployment';
 import Organization, {
+  OrganizationId,
+  OrganizationInitializer,
   OrganizationMutator,
 } from '../../src/model/kanel/public/Organization';
 import Subscription, {
@@ -101,6 +103,19 @@ export const TestHelper = {
     },
   },
   organization: {
+    create: async (
+      data?: Partial<OrganizationInitializer>
+    ): Promise<Organization> => {
+      const [organization] = await db<Organization>('Organization')
+        .insert({
+          id: uuidv4() as OrganizationId,
+          name: `test-organization-${uuidv4()}`,
+          personal_space: false,
+          ...data,
+        })
+        .returning('*');
+      return organization!;
+    },
     load: async (
       field: OrganizationMutator
     ): Promise<Organization | undefined> => {

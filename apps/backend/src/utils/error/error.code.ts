@@ -20,6 +20,18 @@ export enum ForbiddenErrorCode {
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
   IntegrationTypeNotManageable = 'INTEGRATION_TYPE_NOT_MANAGEABLE',
   ServiceNotManageable = 'SERVICE_NOT_MANAGEABLE',
+  CantDeleteYourself = 'CANT_DELETE_YOURSELF',
+  CantDeleteBuiltinUser = 'CANT_DELETE_BUILTIN_USER',
+  DeleteUserBlockedByTransferRequest = 'DELETE_USER_BLOCKED_BY_TRANSFER_REQUEST',
+  DeleteUserBlockedByDeploymentRequest = 'DELETE_USER_BLOCKED_BY_DEPLOYMENT_REQUEST',
+  DeleteUserBlockedByCancellationRecord = 'DELETE_USER_BLOCKED_BY_CANCELLATION_RECORD',
+  DeleteUserBlockedByPendingUsers = 'DELETE_USER_BLOCKED_BY_PENDING_USERS',
+  DeleteUserBlockedByPlatformRegistration = 'DELETE_USER_BLOCKED_BY_PLATFORM_REGISTRATION',
+  DeleteUserBlockedByLastOrganizationMember = 'DELETE_USER_BLOCKED_BY_LAST_ORGANIZATION_MEMBER',
+  DeleteUserBlockedByLinkedData = 'DELETE_USER_BLOCKED_BY_LINKED_DATA',
+  DeleteOrganizationPendingUsers = 'DELETE_ORGANIZATION_PENDING_USERS',
+  DeleteOrganizationRequiresSingleUser = 'DELETE_ORGANIZATION_REQUIRES_SINGLE_USER',
+  DeleteOrganizationBlockedByConnectedProduct = 'DELETE_ORGANIZATION_BLOCKED_BY_CONNECTED_PRODUCT',
 }
 
 export enum BadRequestErrorCode {
@@ -74,6 +86,7 @@ export enum UnknownErrorCode {
   AddUserServiceError = 'ADD_USER_SERVICE_ERROR',
   AddingUserError = 'ADDING_USER_ERROR',
   EditUserError = 'EDIT_USER_ERROR',
+  DeleteUserError = 'DELETE_USER_ERROR',
   EditMeUserError = 'EDIT_ME_USER_ERROR',
   UploadUserPictureError = 'UPLOAD_USER_PICTURE_ERROR',
   TransferMeError = 'TRANSFER_ME_ERROR',

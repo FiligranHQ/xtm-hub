@@ -1,11 +1,12 @@
 import { MemoryStore, SessionData } from 'express-session';
 import { Knex } from 'knex';
 import { v4 as uuidv4 } from 'uuid';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { getDbTestConnection } from '../tests/config-test';
 import { UserId } from './model/kanel/public/User';
 import { UserWithOrganizationsAndRole } from './model/user';
 import {
+  destroyUserSessions,
   getSessionStoreInstance,
   updateUserSession,
 } from './session-store-manager';
@@ -75,6 +76,71 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
       expect(() => {
         updateUserSession(testUser);
       }).not.toThrow();
+    });
+
+    describe('destroyUserSessions functionality', () => {
+      it('should destroy all active sessions for the given user', async () => {
+        const userId = 'destroy-target-' + uuidv4();
+        const store = getSessionStoreInstance();
+        const allSpy = vi.spyOn(store, 'all').mockImplementation((callback) => {
+          callback(null, {
+            sessionA: { user: { id: userId } },
+            sessionB: { user: { id: 'another-user' } },
+            sessionC: { user: { id: userId } },
+          } as unknown as Record<string, SessionData>);
+        });
+        const destroySpy = vi
+          .spyOn(store, 'destroy')
+          .mockImplementation((_sessionId, callback) => {
+            callback?.();
+          });
+
+        await destroyUserSessions(userId);
+
+        expect(destroySpy).toHaveBeenCalledTimes(2);
+        expect(destroySpy).toHaveBeenCalledWith(
+          'sessionA',
+          expect.any(Function)
+        );
+        expect(destroySpy).toHaveBeenCalledWith(
+          'sessionC',
+          expect.any(Function)
+        );
+        allSpy.mockRestore();
+        destroySpy.mockRestore();
+      });
+
+      it('should resolve gracefully when session listing fails', async () => {
+        const store = getSessionStoreInstance();
+        const allSpy = vi.spyOn(store, 'all').mockImplementation((callback) => {
+          callback(new Error('cannot list sessions'), null);
+        });
+        const destroySpy = vi.spyOn(store, 'destroy');
+
+        await expect(
+          destroyUserSessions('error-user-' + uuidv4())
+        ).resolves.toBeUndefined();
+        expect(destroySpy).not.toHaveBeenCalled();
+        allSpy.mockRestore();
+        destroySpy.mockRestore();
+      });
+
+      it('should resolve without destroying sessions when none match the user', async () => {
+        const store = getSessionStoreInstance();
+        const allSpy = vi.spyOn(store, 'all').mockImplementation((callback) => {
+          callback(null, {
+            sessionA: { user: { id: 'different-user' } },
+          } as unknown as Record<string, SessionData>);
+        });
+        const destroySpy = vi.spyOn(store, 'destroy');
+
+        await expect(
+          destroyUserSessions('missing-user-' + uuidv4())
+        ).resolves.toBeUndefined();
+        expect(destroySpy).not.toHaveBeenCalled();
+        allSpy.mockRestore();
+        destroySpy.mockRestore();
+      });
     });
 
     it('should work with actual session data in PostgreSQL store', async () => {

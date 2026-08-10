@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
   SERVICES,
+  TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
   PlatformConfigurationStatus,
@@ -11,6 +12,7 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
 import { PlatformConfigurationDomain } from './platform-configuration.domain';
 
 describe('platformConfigurationDomain', () => {
@@ -36,6 +38,135 @@ describe('platformConfigurationDomain', () => {
         await PlatformConfigurationDomain.isPlatformConfigurationValid({});
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('countConfigurationsByRegisterer', () => {
+    beforeAll(async () => {
+      await TestHelper.platformConfiguration.delete({});
+    });
+
+    afterEach(async () => {
+      await TestHelper.platformConfiguration.delete({});
+    });
+
+    it('should return 0 when the user registered no platform', async () => {
+      const count =
+        await PlatformConfigurationDomain.countConfigurationsByRegisterer(
+          uuidv4() as UserId
+        );
+
+      expect(count).toBe(0);
+    });
+
+    it.each`
+      status                                  | description
+      ${PlatformConfigurationStatus.Active}   | ${'an active configuration'}
+      ${PlatformConfigurationStatus.Inactive} | ${'an inactive configuration'}
+    `(
+      'should count $description registered by the user',
+      async ({ status }) => {
+        const registererId = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID;
+        await TestHelper.platformConfiguration.create({
+          service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          status,
+          registerer_id: registererId,
+        });
+
+        const count =
+          await PlatformConfigurationDomain.countConfigurationsByRegisterer(
+            registererId
+          );
+
+        expect(count).toBe(1);
+      }
+    );
+
+    it('should not count configurations registered by another user', async () => {
+      await TestHelper.platformConfiguration.create({
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        registerer_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      });
+
+      const count =
+        await PlatformConfigurationDomain.countConfigurationsByRegisterer(
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID
+        );
+
+      expect(count).toBe(0);
+    });
+  });
+
+  describe('countConfigurationsByOrganization', () => {
+    let serviceInstanceId: ServiceInstanceId;
+
+    beforeEach(async () => {
+      await TestHelper.platformConfiguration.delete({});
+      const serviceInstance = await TestHelper.serviceInstance.create();
+      serviceInstanceId = serviceInstance.id;
+    });
+
+    afterEach(async () => {
+      await TestHelper.platformConfiguration.delete({});
+      await TestHelper.subscription.delete({
+        service_instance_id: serviceInstanceId,
+      });
+      await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
+    });
+
+    it('should return 0 when the organization has no connected product', async () => {
+      await TestHelper.platformConfiguration.create({
+        service_instance_id: serviceInstanceId,
+      });
+
+      const count =
+        await PlatformConfigurationDomain.countConfigurationsByOrganization(
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+        );
+
+      expect(count).toBe(0);
+    });
+
+    it.each`
+      status                                  | description
+      ${PlatformConfigurationStatus.Active}   | ${'an active configuration'}
+      ${PlatformConfigurationStatus.Inactive} | ${'an inactive configuration'}
+    `(
+      'should count $description linked through a subscription',
+      async ({ status }) => {
+        await TestHelper.platformConfiguration.create({
+          service_instance_id: serviceInstanceId,
+          status,
+        });
+        await TestHelper.subscription.create({
+          service_instance_id: serviceInstanceId,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+
+        const count =
+          await PlatformConfigurationDomain.countConfigurationsByOrganization(
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+          );
+
+        expect(count).toBe(1);
+      }
+    );
+
+    it('should not count a configuration subscribed by another organization', async () => {
+      await TestHelper.platformConfiguration.create({
+        service_instance_id: serviceInstanceId,
+      });
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+
+      const count =
+        await PlatformConfigurationDomain.countConfigurationsByOrganization(
+          TEST_ORGANIZATIONS.FILIGRAN.ID
+        );
+
+      expect(count).toBe(0);
     });
   });
 

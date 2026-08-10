@@ -15,6 +15,7 @@ import DeploymentRequest, {
   DeploymentRequestMutator,
 } from '../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
@@ -169,6 +170,24 @@ export const DeploymentRequestDomain = {
     return db<DeploymentRequest>('DeploymentRequest')
       .where(conditions)
       .delete();
+  },
+
+  countDeploymentRequestsForUser: async (userId: UserId): Promise<number> => {
+    const result = await db<DeploymentRequest>('DeploymentRequest')
+      .where('user_requester_id', '=', userId)
+      .count<[{ count: string }]>('id as count')
+      .first();
+    return Number(result?.count ?? 0);
+  },
+
+  countDeploymentRequestsCancelledByUser: async (
+    userId: UserId
+  ): Promise<number> => {
+    const result = await db<DeploymentRequest>('DeploymentRequest')
+      .where('cancellation_user_id', '=', userId)
+      .count<[{ count: string }]>('id as count')
+      .first();
+    return Number(result?.count ?? 0);
   },
 
   updateDeploymentRequestById: async (

@@ -5,11 +5,13 @@ import {
   PlatformContract,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import PlatformConfiguration, {
   PlatformConfigurationMutator,
 } from '../../../model/kanel/public/PlatformConfiguration';
 import ServiceDefinition from '../../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatRawObject } from '../../../utils/query-raw.util';
@@ -89,6 +91,32 @@ const buildJoinedConfigurationQuery = () =>
     ]);
 
 export const PlatformConfigurationDomain = {
+  countConfigurationsByRegisterer: async (userId: UserId): Promise<number> => {
+    const result = await db<PlatformConfiguration>('PlatformConfiguration')
+      .where('registerer_id', '=', userId)
+      .count<[{ count: string }]>('service_instance_id as count')
+      .first();
+    return Number(result?.count ?? 0);
+  },
+
+  countConfigurationsByOrganization: async (
+    organizationId: OrganizationId
+  ): Promise<number> => {
+    const result = await db<PlatformConfiguration>('PlatformConfiguration')
+      .join(
+        'Subscription',
+        'Subscription.service_instance_id',
+        '=',
+        'PlatformConfiguration.service_instance_id'
+      )
+      .where('Subscription.organization_id', '=', organizationId)
+      .count<[{ count: string }]>(
+        'PlatformConfiguration.service_instance_id as count'
+      )
+      .first();
+    return Number(result?.count ?? 0);
+  },
+
   isPlatformConfigurationValid: async (
     config: Record<string, unknown>
   ): Promise<boolean> => {
