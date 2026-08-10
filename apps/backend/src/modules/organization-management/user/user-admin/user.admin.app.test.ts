@@ -1,27 +1,45 @@
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node';
+import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestHelper } from '../../../../../tests/helper/test.helper';
 import {
-  TEST_ORGANIZATIONS,
   requestContextAdminSecondOrga,
   // eslint-disable-next-line no-restricted-imports -- needed to test platform admin bypass behavior in editUser authorization
   requestContextAdminUser,
+  requestContextSimpleUserFiligran2,
   requestContextSimpleUserSecondOrga,
+  TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
 import {
+  DeploymentRequestHubStatus,
   FilterKey,
   OrganizationCapability,
+  PlatformConfigurationStatus,
 } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
-import User from '../../../../model/kanel/public/User';
+import User, { UserId } from '../../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../../model/user';
+import {
+  ADMIN_UUID,
+  CRONS_USER_UUID,
+  PLATFORM_ORGANIZATION_UUID,
+  PLATFORM_USER_UUID,
+  SYSTEM_USER_UUID,
+} from '../../../../portal.const';
+import * as pub from '../../../../pub';
+import * as sessionStoreManager from '../../../../session-store-manager';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
+import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
+import { UserTransferRequestDomain } from '../user-transferRequest/user-transfer-request.domain';
 import { UserHelper } from '../user.helper';
 import { UserAdminApp } from './user.admin.app';
+
+const personalSpaceIdOf = (user: User) => user.id as unknown as OrganizationId;
 
 describe('users admin app', () => {
   describe('editUser', () => {
@@ -219,8 +237,6 @@ describe('users admin app', () => {
     });
 
     it('should remove the pending request when an admin adds the user directly to the organization', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
-
       const pendingBefore =
         await UserOrganizationPendingDomain.loadUserOrganizationPending({
           user_id: createdUser.id,
@@ -277,8 +293,6 @@ describe('users admin app', () => {
     });
 
     it('should not notify the deletion when the transaction rolls back', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
-
       const dispatchSpy = vi.spyOn(UserHelper, 'dispatchPendingDeleted');
       vi.spyOn(UserDomain, 'loadUserBy').mockRejectedValueOnce(
         new Error('boom')
@@ -313,6 +327,7 @@ describe('users admin app', () => {
       typeof UserHelper.acceptPendingUserWithCapabilities
     >;
     beforeEach(async () => {
+      requestContext.set(requestContextAdminSecondOrga);
       createdUsers = [];
       mockAcceptPendingUser = vi.spyOn(
         UserHelper,
@@ -365,7 +380,6 @@ describe('users admin app', () => {
     });
 
     it('should throw if user is not allowed on orga', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
       const userToRemove = createdUsers[0];
 
       const call = UserAdminApp.bulkAcceptPendingUserInOrganization(
@@ -380,7 +394,6 @@ describe('users admin app', () => {
       );
     });
     it('should accept users by id', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
       const userToRemove = createdUsers[0];
       await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
@@ -398,7 +411,6 @@ describe('users admin app', () => {
     });
 
     it('should accept users by filter', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
       await UserAdminApp.bulkAcceptPendingUserInOrganization(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         [],
@@ -429,7 +441,6 @@ describe('users admin app', () => {
       });
     });
     it('should accept users by filters and excludedIds', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
       const excludedUser = createdUsers[0];
 
       await UserAdminApp.bulkAcceptPendingUserInOrganization(
@@ -457,7 +468,6 @@ describe('users admin app', () => {
       });
     });
     it('should accept users by searchTerm', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
       const acceptedUser = createdUsers.find(
         (user) => user.email === 'testOne@second-orga.com'
       );
@@ -478,7 +488,6 @@ describe('users admin app', () => {
     });
 
     it('should accept users by searchTerm and excludedIds', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
       const acceptedUser = createdUsers.find(
         (user) => user.email === 'testTwo@second-orga.com'
       );
@@ -502,7 +511,6 @@ describe('users admin app', () => {
     });
 
     it('should accept users by filter, searchTerm and excludedIds', async () => {
-      requestContext.set(requestContextAdminSecondOrga);
       const acceptedUser = createdUsers.find(
         (user) => user.email === 'testTwo@second-orga.com'
       );
@@ -534,6 +542,7 @@ describe('users admin app', () => {
       });
     });
     it('should accept only users from the specified organization', async () => {
+      requestContext.set(requestContextAdminUser);
       const acceptedUser = createdUsers.find(
         (user) => user.email === 'testFiligran@filigran.io'
       );
@@ -602,6 +611,628 @@ describe('users admin app', () => {
       await expect(call).rejects.toThrow(
         ErrorCode.MissingCapabilityOnOrganization
       );
+    });
+  });
+
+  describe('deleteUser', () => {
+    beforeEach(() => {
+      requestContext.set(requestContextSimpleUserFiligran2);
+    });
+
+    describe('success', () => {
+      it('should delete the user and its personal space organization', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+
+        const deletedUser = await UserAdminApp.deleteUser(user.id);
+
+        expect(deletedUser.id).toBe(user.id);
+        expect(await UserDomain.loadUser({ id: user.id })).toEqual([]);
+        expect(
+          await TestHelper.organization.load({ id: personalSpaceIdOf(user) })
+        ).toBeUndefined();
+      });
+
+      describe('with a non personal organization shared by two users', () => {
+        let user: User;
+        let otherUser: User;
+        let organization: Awaited<
+          ReturnType<typeof TestHelper.organization.create>
+        >;
+
+        beforeEach(async () => {
+          user = await UserHelper.createUserWithPersonalSpace(
+            { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+            { sendWelcomeEmail: false }
+          );
+          otherUser = await UserHelper.createUserWithPersonalSpace(
+            { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+            { sendWelcomeEmail: false }
+          );
+          organization = await TestHelper.organization.create({
+            personal_space: false,
+          });
+          await TestHelper.user_Organization.create({
+            user_id: user.id,
+            organization_id: organization.id,
+          });
+          await TestHelper.user_Organization.create({
+            user_id: otherUser.id,
+            organization_id: organization.id,
+          });
+        });
+
+        it('should keep a non personal organization and only remove the membership', async () => {
+          await UserAdminApp.deleteUser(user.id);
+
+          expect(
+            await TestHelper.organization.load({ id: organization.id })
+          ).toBeDefined();
+          expect(
+            await UserOrganizationDomain.countUsersInOrganization(
+              organization.id
+            )
+          ).toBe(1);
+        });
+
+        it('should cascade delete the organization capabilities granted to the user', async () => {
+          const userOrganization =
+            await UserOrganizationDomain.loadUserOrganization({
+              user_id: user.id,
+              organization_id: organization.id,
+            });
+          await TestHelper.user_OrganizationCapability.create({
+            user_organization_id: userOrganization[0]!.id,
+            name: OrganizationCapability.ManageAccess,
+          });
+
+          await UserAdminApp.deleteUser(user.id);
+
+          expect(
+            await TestHelper.user_OrganizationCapability.loadAll({
+              user_organization_id: userOrganization[0]!.id,
+            })
+          ).toEqual([]);
+        });
+      });
+
+      it('should cascade delete the RolePortal assignments of the user', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const rolePortal = await TestHelper.rolePortal.create({
+          name: `delete-user-role-${uuidv4()}`,
+        });
+        await TestHelper.user_RolePortal.create({
+          user_id: user.id,
+          role_portal_id: rolePortal!.id,
+        });
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(
+          await TestHelper.user_RolePortal.loadAll({ user_id: user.id })
+        ).toEqual([]);
+      });
+
+      it('should cascade delete the service capabilities granted through the user service subscription', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const serviceInstance = await TestHelper.serviceInstance.create();
+        const subscription = await TestHelper.subscription.create({
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          service_instance_id: serviceInstance.id,
+        });
+        const userService = await TestHelper.user_Service.create({
+          user_id: user.id,
+          subscription_id: subscription.id,
+        });
+        await TestHelper.user_ServiceCapability.create({
+          user_service_id: userService!.id,
+        });
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(
+          await TestHelper.user_ServiceCapability.loadAll({
+            user_service_id: userService!.id,
+          })
+        ).toEqual([]);
+
+        await TestHelper.subscription.delete({ id: subscription.id });
+        await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
+      });
+
+      it('should cascade delete the ServiceGroup membership of the user', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const serviceInstance = await TestHelper.serviceInstance.create();
+        const serviceGroup = await TestHelper.serviceGroup.create({
+          service_instance_id: serviceInstance.id,
+        });
+        await TestHelper.serviceGroupUser.create({
+          group_id: serviceGroup.id,
+          user_id: user.id,
+        });
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(
+          await TestHelper.serviceGroupUser.load({ user_id: user.id })
+        ).toEqual([]);
+
+        await TestHelper.serviceGroup.delete({ id: serviceGroup.id });
+        await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
+      });
+
+      it('should delete the user while leaving OneClickDeployment.user_id dangling (no FK guard)', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const oneClickDeployment = await TestHelper.oneClickDeployment.insert({
+          resource_id: uuidv4(),
+          user_id: user.id,
+        });
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(await UserDomain.loadUser({ id: user.id })).toEqual([]);
+        expect(
+          await TestHelper.oneClickDeployment.loadAll({
+            resource_id: oneClickDeployment.resource_id,
+          })
+        ).toMatchObject([{ user_id: user.id }]);
+
+        await TestHelper.oneClickDeployment.deleteAll();
+      });
+
+      it('should reassign the documents of the user to the system user', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const uploaded = await TestHelper.document.create({
+          uploader_id: user.id,
+          uploader_organization_id: personalSpaceIdOf(user),
+        });
+        const touched = await TestHelper.document.create({
+          uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          remover_id: user.id,
+          updater_id: user.id,
+        });
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(
+          await TestHelper.document.load({ id: uploaded.id })
+        ).toMatchObject({
+          uploader_id: SYSTEM_USER_UUID,
+          uploader_organization_id: PLATFORM_ORGANIZATION_UUID,
+        });
+        expect(
+          await TestHelper.document.load({ id: touched.id })
+        ).toMatchObject({
+          remover_id: SYSTEM_USER_UUID,
+          updater_id: SYSTEM_USER_UUID,
+        });
+
+        await TestHelper.document.delete({ id: uploaded.id });
+        await TestHelper.document.delete({ id: touched.id });
+      });
+
+      it('should reassign the epics of the user to the system user', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const epic = await TestHelper.epic.create({
+          uploader_id: user.id,
+          updater_id: user.id,
+        });
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(await TestHelper.epic.load({ id: epic!.id })).toMatchObject({
+          uploader_id: SYSTEM_USER_UUID,
+          updater_id: SYSTEM_USER_UUID,
+        });
+
+        await TestHelper.epic.delete({ id: epic!.id });
+      });
+
+      it('should destroy the sessions of the deleted user', async () => {
+        const destroySpy = vi
+          .spyOn(sessionStoreManager, 'destroyUserSessions')
+          .mockResolvedValue(undefined);
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(destroySpy).toHaveBeenCalledWith(user.id);
+      });
+
+      it('should delete the picture of the deleted user', async () => {
+        const deletePictureSpy = vi.spyOn(UserHelper, 'deleteUserPicture');
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(deletePictureSpy).toHaveBeenCalledWith(user.picture_minio);
+      });
+
+      it('should dispatch a delete event for the user and its personal space', async () => {
+        const dispatchSpy = vi.spyOn(pub, 'dispatch');
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+
+        await UserAdminApp.deleteUser(user.id);
+
+        expect(dispatchSpy).toHaveBeenCalledWith(
+          'User',
+          'delete',
+          expect.objectContaining({ id: user.id })
+        );
+        expect(dispatchSpy).toHaveBeenCalledWith(
+          'MeUser',
+          'delete',
+          expect.objectContaining({ id: user.id }),
+          'User'
+        );
+        expect(dispatchSpy).toHaveBeenCalledWith(
+          'Organization',
+          'delete',
+          expect.objectContaining({ id: personalSpaceIdOf(user) })
+        );
+      });
+
+      it('should not fail the deletion when dispatching the delete events throws', async () => {
+        const dispatchSpy = vi
+          .spyOn(pub, 'dispatch')
+          .mockRejectedValueOnce(new Error('subscriber unavailable'));
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+
+        const deletedUser = await UserAdminApp.deleteUser(user.id);
+
+        expect(deletedUser.id).toBe(user.id);
+        expect(await UserDomain.loadUser({ id: user.id })).toEqual([]);
+        expect(dispatchSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('guards', () => {
+      it('should map foreign key violations to a blocked-by-linked-data error', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const deleteUserBySpy = vi
+          .spyOn(UserDomain, 'deleteUserBy')
+          .mockRejectedValueOnce({ code: '23503' } as never);
+
+        await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+          ErrorCode.DeleteUserBlockedByLinkedData
+        );
+        expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
+
+        deleteUserBySpy.mockRestore();
+        await UserHelper.removeUser({ id: user.id });
+      });
+
+      it('should reject an unknown user', async () => {
+        await expect(
+          UserAdminApp.deleteUser(uuidv4() as UserId)
+        ).rejects.toThrow(ErrorCode.UserNotFound);
+      });
+
+      it('should reject the deletion of the requesting user', async () => {
+        await expect(
+          UserAdminApp.deleteUser(TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID)
+        ).rejects.toThrow(ErrorCode.CantDeleteYourself);
+      });
+
+      it.each`
+        builtinUserId         | description
+        ${ADMIN_UUID}         | ${'the platform administrator'}
+        ${SYSTEM_USER_UUID}   | ${'the system user'}
+        ${PLATFORM_USER_UUID} | ${'the platform user'}
+        ${CRONS_USER_UUID}    | ${'the crons user'}
+      `(
+        'should reject the deletion of $description',
+        async ({ builtinUserId }) => {
+          await expect(UserAdminApp.deleteUser(builtinUserId)).rejects.toThrow(
+            ErrorCode.CantDeleteBuiltinUser
+          );
+        }
+      );
+
+      it.each`
+        direction      | description
+        ${'from_user'} | ${'the user initiated the transfer'}
+        ${'to_user'}   | ${'the user is the transfer target'}
+      `(
+        'should reject when a transfer request exists and $description',
+        async ({ direction }) => {
+          const user = await UserHelper.createUserWithPersonalSpace(
+            { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+            { sendWelcomeEmail: false }
+          );
+          const counterpart = await UserHelper.createUserWithPersonalSpace(
+            { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+            { sendWelcomeEmail: false }
+          );
+          await UserTransferRequestDomain.insertNewUserTransfer(
+            direction === 'from_user'
+              ? { from_user_id: user.id, to_user_id: counterpart.id }
+              : { from_user_id: counterpart.id, to_user_id: user.id }
+          );
+
+          await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+            ErrorCode.DeleteUserBlockedByTransferRequest
+          );
+
+          expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
+          expect(
+            await TestHelper.organization.load({ id: personalSpaceIdOf(user) })
+          ).toBeDefined();
+        }
+      );
+
+      it.each`
+        hubStatus
+        ${DeploymentRequestHubStatus.Queued}
+        ${DeploymentRequestHubStatus.Pending}
+        ${DeploymentRequestHubStatus.Provisioning}
+        ${DeploymentRequestHubStatus.Active}
+        ${DeploymentRequestHubStatus.Expired}
+        ${DeploymentRequestHubStatus.Failed}
+        ${DeploymentRequestHubStatus.Cancelled}
+      `(
+        'should reject when a $hubStatus deployment request references the user',
+        async ({ hubStatus }) => {
+          const user = await UserHelper.createUserWithPersonalSpace(
+            { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+            { sendWelcomeEmail: false }
+          );
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              user_requester_id: user.id,
+              organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+              hub_status: hubStatus,
+            }
+          );
+
+          await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+            ErrorCode.DeleteUserBlockedByDeploymentRequest
+          );
+
+          expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
+        }
+      );
+
+      it('should reject when the user cancelled a deployment request on behalf of someone else', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const requester = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            user_requester_id: requester.id,
+            organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            cancellation_user_id: user.id,
+          }
+        );
+
+        await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+          ErrorCode.DeleteUserBlockedByCancellationRecord
+        );
+
+        expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
+      });
+
+      it.each`
+        status                                  | description
+        ${PlatformConfigurationStatus.Active}   | ${'an active platform'}
+        ${PlatformConfigurationStatus.Inactive} | ${'an inactive platform'}
+      `(
+        'should reject when the user registered $description',
+        async ({ status }) => {
+          const user = await UserHelper.createUserWithPersonalSpace(
+            { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+            { sendWelcomeEmail: false }
+          );
+          const serviceInstance = await TestHelper.serviceInstance.create();
+          await TestHelper.platformConfiguration.create({
+            service_instance_id: serviceInstance.id,
+            registerer_id: user.id,
+            status,
+          });
+
+          await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+            ErrorCode.DeleteUserBlockedByPlatformRegistration
+          );
+
+          expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
+          expect(
+            await TestHelper.organization.load({ id: personalSpaceIdOf(user) })
+          ).toBeDefined();
+        }
+      );
+
+      it('should reject when the user is the last member of a non personal organization', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const organization = await TestHelper.organization.create({
+          personal_space: false,
+        });
+        await TestHelper.user_Organization.create({
+          user_id: user.id,
+          organization_id: organization.id,
+        });
+
+        await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+          ErrorCode.DeleteUserBlockedByLastOrganizationMember
+        );
+
+        expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
+        expect(
+          await TestHelper.organization.load({ id: organization.id })
+        ).toBeDefined();
+        expect(
+          await TestHelper.organization.load({ id: personalSpaceIdOf(user) })
+        ).toBeDefined();
+      });
+
+      describe('with a non personal organization shared by two users', () => {
+        let user: User;
+        let otherUser: User;
+        let organization: Awaited<
+          ReturnType<typeof TestHelper.organization.create>
+        >;
+
+        beforeEach(async () => {
+          user = await UserHelper.createUserWithPersonalSpace(
+            { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+            { sendWelcomeEmail: false }
+          );
+          otherUser = await UserHelper.createUserWithPersonalSpace(
+            { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+            { sendWelcomeEmail: false }
+          );
+          organization = await TestHelper.organization.create({
+            personal_space: false,
+          });
+          await TestHelper.user_Organization.create({
+            user_id: user.id,
+            organization_id: organization.id,
+          });
+          await TestHelper.user_Organization.create({
+            user_id: otherUser.id,
+            organization_id: organization.id,
+          });
+        });
+
+        it('should reject when the user is the last administrator of a non personal organization', async () => {
+          const userOrganization = await TestHelper.user_Organization.load({
+            user_id: user.id,
+            organization_id: organization.id,
+          });
+          await TestHelper.user_OrganizationCapability.create({
+            user_organization_id: userOrganization.id,
+            name: OrganizationCapability.AdministrateOrganization,
+          });
+
+          await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+            ErrorCode.CantRemoveLastAdministrator
+          );
+
+          expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
+          expect(
+            await TestHelper.organization.load({ id: organization.id })
+          ).toBeDefined();
+        });
+
+        it('should allow deletion when another administrator remains in the organization', async () => {
+          const userOrganization = await TestHelper.user_Organization.load({
+            user_id: user.id,
+            organization_id: organization.id,
+          });
+          await TestHelper.user_OrganizationCapability.create({
+            user_organization_id: userOrganization.id,
+            name: OrganizationCapability.AdministrateOrganization,
+          });
+          const otherUserOrganization = await TestHelper.user_Organization.load(
+            {
+              user_id: otherUser.id,
+              organization_id: organization.id,
+            }
+          );
+          await TestHelper.user_OrganizationCapability.create({
+            user_organization_id: otherUserOrganization.id,
+            name: OrganizationCapability.AdministrateOrganization,
+          });
+
+          await expect(UserAdminApp.deleteUser(user.id)).resolves.toMatchObject(
+            {
+              id: user.id,
+            }
+          );
+        });
+      });
+
+      it('should reject when the personal space organization has pending users', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const pendingUser = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
+          user_id: pendingUser.id,
+          organization_id: personalSpaceIdOf(user),
+        });
+
+        await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+          ErrorCode.DeleteUserBlockedByPendingUsers
+        );
+
+        expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
+      });
+
+      it('should not reassign the documents when the deletion is blocked', async () => {
+        const user = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const counterpart = await UserHelper.createUserWithPersonalSpace(
+          { email: `delete-user-${uuidv4()}@delete-user-test.io` },
+          { sendWelcomeEmail: false }
+        );
+        const document = await TestHelper.document.create({
+          uploader_id: user.id,
+        });
+        await UserTransferRequestDomain.insertNewUserTransfer({
+          from_user_id: user.id,
+          to_user_id: counterpart.id,
+        });
+
+        await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(
+          ErrorCode.DeleteUserBlockedByTransferRequest
+        );
+
+        expect(
+          await TestHelper.document.load({ id: document.id })
+        ).toMatchObject({ uploader_id: user.id });
+
+        await TestHelper.document.delete({ id: document.id });
+      });
     });
   });
 });

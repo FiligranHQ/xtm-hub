@@ -588,6 +588,53 @@ describe('user mutation resolver', () => {
     });
   });
 
+  describe('deleteUser', () => {
+    it('should delegate to UserAdminApp.deleteUser and map the deleted user', async () => {
+      const deletedUser = {
+        id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        email: 'deleted-user@test.io',
+        selected_organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      } as UserLoadUserBy;
+      const deleteUserSpy = vi
+        .spyOn(UserAdminApp, 'deleteUser')
+        .mockResolvedValue(deletedUser as never);
+
+      // @ts-expect-error deleteUser is not considered as callable
+      const result = await usersResolver.Mutation!.deleteUser!(
+        undefined,
+        { id: deletedUser.id },
+        contextBypassUser,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      expect(deleteUserSpy).toHaveBeenCalledWith(deletedUser.id);
+      expect(result).toMatchObject({
+        id: deletedUser.id,
+        email: deletedUser.email,
+      });
+
+      deleteUserSpy.mockRestore();
+    });
+
+    it('should propagate a mapped graphql error when deletion fails', async () => {
+      const deleteUserSpy = vi
+        .spyOn(UserAdminApp, 'deleteUser')
+        .mockRejectedValue(new Error('boom'));
+
+      // @ts-expect-error deleteUser is not considered as callable
+      const call = usersResolver.Mutation!.deleteUser!(
+        undefined,
+        { id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID },
+        contextBypassUser,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      await expect(call).rejects.toBeInstanceOf(Error);
+
+      deleteUserSpy.mockRestore();
+    });
+  });
+
   describe('editUserCapabilities', () => {
     let secondOrgaUser: UserLoadUserBy;
 

@@ -125,6 +125,14 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error, UnknownErrorCode.EditUserError);
       }
     },
+    deleteUser: async (_, { id }) => {
+      try {
+        const deletedUser = await UserAdminApp.deleteUser(id as UserId);
+        return UserHelper.mapUserToGraphqlUser(deletedUser);
+      } catch (error) {
+        throw mapToGraphQLError(error, UnknownErrorCode.DeleteUserError);
+      }
+    },
 
     editMeUser: async (_, { input }, context) => {
       try {
