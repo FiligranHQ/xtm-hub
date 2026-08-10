@@ -17,6 +17,7 @@ import {
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
+  LicenseType,
   PlatformIdentifier,
   QueryPublicDocumentsArgs,
   ServiceDefinitionIdentifier,
@@ -35,6 +36,7 @@ import {
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import {
+  INTEGRATION_CONNECTOR_METADATA_KEYS,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
 } from '../shareable-resource/opencti/integration/integration.model';
@@ -1341,6 +1343,40 @@ describe('documentApp', () => {
         source_type: DocumentSourceType.External,
         file_name: 'new-image.png',
       });
+    });
+
+    it('should persist license_type and contact as document metadata', async () => {
+      // Given
+      const input = {
+        ...documentData,
+        uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        slug: 'metadata-persistence-slug',
+        service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        license_type: LicenseType.Commercial,
+        contact: 'contributor@example.com',
+      };
+
+      // When
+      const doc = await DocumentApp.upsertDocumentWithExternalImage(
+        OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        input,
+        mockUpload,
+        INTEGRATION_CONNECTOR_METADATA_KEYS
+      );
+
+      // Then — the values landed in Document_Metadata
+      const [licenseTypeFromDb, contactFromDb] = await Promise.all([
+        DocumentMetadataDomain.loadMetadataValueByKey(
+          doc.id,
+          DocumentMetadataKeyCode.LicenseType
+        ),
+        DocumentMetadataDomain.loadMetadataValueByKey(
+          doc.id,
+          DocumentMetadataKeyCode.Contact
+        ),
+      ]);
+      expect(licenseTypeFromDb).toBe(LicenseType.Commercial);
+      expect(contactFromDb).toBe('contributor@example.com');
     });
 
     describe('use_cases linking', () => {

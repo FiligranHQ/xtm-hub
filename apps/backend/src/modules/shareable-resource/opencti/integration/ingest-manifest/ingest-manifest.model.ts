@@ -1,4 +1,4 @@
-import { DocumentData } from '../../../../document/domain/document.domain';
+import type { DocumentData } from '../../../../document/domain/document.domain';
 import { Connector } from '../integration.model';
 
 export interface ManifestInformation
