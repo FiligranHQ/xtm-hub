@@ -51,6 +51,8 @@ export const UserAdminApp = {
 
     const [existingUser] = await UserDomain.loadUser({ email: input.email });
 
+    const organizationsWithRemovedPending: OrganizationId[] = [];
+
     const finalUser = await withTransaction(async () => {
       const user = existingUser
         ? existingUser
@@ -67,6 +69,12 @@ export const UserAdminApp = {
         input.organization_capabilities
       );
 
+      for (const orgCapa of input.organization_capabilities ?? []) {
+        if (await UserHelper.removePending(user, orgCapa.organization_id)) {
+          organizationsWithRemovedPending.push(orgCapa.organization_id);
+        }
+      }
+
       return await UserDomain.loadUserBy({
         'User.id': user.id,
       });
@@ -75,6 +83,12 @@ export const UserAdminApp = {
     if (!finalUser) {
       throw new Error(ErrorCode.UserNotFound);
     }
+
+    await Promise.all(
+      organizationsWithRemovedPending.map((organizationId) =>
+        UserHelper.dispatchPendingDeleted(finalUser, organizationId)
+      )
+    );
 
     await dispatch('User', 'add', finalUser);
 
@@ -147,6 +161,11 @@ export const UserAdminApp = {
     const user = await UserDomain.loadUserDetails({
       'User.id': userId,
     });
+    await Promise.all(
+      (organization_capabilities ?? []).map((orgCapa) =>
+        UserHelper.removePendingAndDispatch(user, orgCapa.organization_id)
+      )
+    );
     updateUserSession(user);
 
     const userMapped = UserHelper.mapUserToGraphqlUser(user);
