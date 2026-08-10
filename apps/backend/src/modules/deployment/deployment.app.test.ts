@@ -1129,6 +1129,35 @@ describe('deployment app', () => {
       expect(userObserverGroup).toHaveLength(0);
     });
 
+    it('with Active status for XTM One, it should not create any ServiceGroup', async () => {
+      const xtmoneDeployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: PlatformIdentifier.Xtmone,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+          }
+        )) as DeploymentRequest;
+
+      const deployment = await DeploymentApp.updateDeploymentRequest({
+        id: xtmoneDeployment.id as DeploymentRequestId,
+        actual_state: DeploymentRequestPlatformState.Active,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        platform_id: 'fake xtmone instance id',
+        failure_reason: 'not failed',
+      });
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
+        service_instance_id: dbDeploymentRequest!.service_instance_id,
+      });
+      expect(serviceGroups).toHaveLength(0);
+    });
+
     it('should set platform registration status to inactive when actual state is removed', async () => {
       await TestHelper.platformConfiguration.create({
         service_instance_id: initialDeployment.service_instance_id,

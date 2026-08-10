@@ -1105,7 +1105,9 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
         input.actual_state
       );
 
-      if (newStatus === DeploymentRequestHubStatus.Active) {
+      const isXtmone =
+        deploymentRequest.platform_identifier === PlatformIdentifier.Xtmone;
+      if (newStatus === DeploymentRequestHubStatus.Active && !isXtmone) {
         await DeploymentRequestDomain.initialiseServiceGroup(
           deploymentRequestId,
           deploymentRequest.platform_identifier
