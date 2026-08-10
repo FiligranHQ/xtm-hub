@@ -1,3 +1,5 @@
+import { canDeleteUserRow } from '@/components/admin/user/delete-user.utils';
+import { DeleteUser } from '@/components/admin/user/DeleteUser';
 import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import { getUserListContext } from '@/components/admin/user/UserListPage';
@@ -11,13 +13,16 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
 import useAdminPath from '@/hooks/use-admin-path';
 import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { useUsersList } from '@/hooks/use-users-list';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
+import { MoreVertIcon } from '@filigran/icon';
 import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import {
   UserList_fragment$data,
@@ -112,10 +117,14 @@ const UserList = ({ organization }: UserListProps) => {
   } = useUserListLocalstorage();
 
   const isAdminPath = useAdminPath();
+  const canDeleteUser = useAdminByPass();
   const { me } = useContext(PortalContext);
   const [userEdit, setUserEdit] = useState<UserList_fragment$data | undefined>(
     undefined
   );
+  const [userToDelete, setUserToDelete] = useState<
+    UserList_fragment$data | undefined
+  >(undefined);
 
   const [filter, setFilter] = useState<{
     search?: string;
@@ -285,8 +294,41 @@ const UserList = ({ organization }: UserListProps) => {
               },
             },
           ]),
+      ...(isAdminPath && canDeleteUser
+        ? [
+            {
+              id: 'actions',
+              size: 100,
+              enableHiding: false,
+              enableSorting: false,
+              enableResizing: false,
+              cell: ({ row }: { row: Row<UserList_fragment$data> }) => {
+                const canDelete = canDeleteUserRow(row.original.id, me?.id);
+                return (
+                  <div
+                    className="flex items-center justify-end"
+                    onClick={(event) => event.stopPropagation()}>
+                    <IconActions
+                      icon={
+                        <>
+                          <MoreVertIcon className="h-4 w-4 text-primary" />
+                          <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                        </>
+                      }>
+                      <IconActionsItem
+                        disabled={!canDelete}
+                        onClick={() => setUserToDelete(row.original)}>
+                        {t('Utils.Delete')}
+                      </IconActionsItem>
+                    </IconActions>
+                  </div>
+                );
+              },
+            },
+          ]
+        : []),
     ],
-    [isAdminPath, me?.selected_organization_id, t]
+    [canDeleteUser, isAdminPath, me?.id, me?.selected_organization_id, t]
   );
 
   useEffect(() => {
@@ -407,6 +449,9 @@ const UserList = ({ organization }: UserListProps) => {
           pagination,
           columnOrder,
           columnVisibility,
+          columnPinning: {
+            right: ['actions'],
+          },
         }}
       />
       {data.users.totalCount === 0 && (
@@ -422,6 +467,19 @@ const UserList = ({ organization }: UserListProps) => {
           onCloseSheet={() =>
             useExecuteAfterAnimation(() => setUserEdit(undefined))
           }
+        />
+      )}
+      {userToDelete && (
+        <DeleteUser
+          key={userToDelete.id}
+          user={userToDelete}
+          onUserDeleted={() => refetch({}, { fetchPolicy: 'network-only' })}
+          open={!!userToDelete}
+          setOpen={(open) => {
+            if (!open) {
+              setUserToDelete(undefined);
+            }
+          }}
         />
       )}
     </>
