@@ -8,6 +8,7 @@ enum ServiceDefinitionIdentifier {
   openaev_scenarios
   opencti_registration
   openaev_registration
+  xtmone_registration
   xtm_platform_roadmap
 }
 

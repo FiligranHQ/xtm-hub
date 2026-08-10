@@ -1,4 +1,8 @@
-import { OpenAevIconIcon, OpenCtiIconIcon } from '@filigran/icon';
+import {
+  LogoFiligranIcon,
+  OpenAevIconIcon,
+  OpenCtiIconIcon,
+} from '@filigran/icon';
 import { ServiceDefinitionIdentifier as ServiceDefinitionIdentifierFragment } from '@generated/serviceInstance_fragment.graphql';
 import {
   PlatformContract,
@@ -37,6 +41,15 @@ export const PlatformMetadataMapping: Record<
     docUrl: 'https://docs.openaev.io/latest/administration/hub/',
     Icon: ({ className }) => <OpenAevIconIcon className={className} />,
   },
+  // Placeholder: xtmone has no trial UI yet, replace when built.
+  [PlatformIdentifier.Xtmone]: {
+    name: 'XTM One',
+    learnMorePublicUrl: '',
+    learnMorePrivateUrl: '',
+    logoUrl: '',
+    docUrl: '',
+    Icon: ({ className }) => <LogoFiligranIcon className={className} />,
+  },
 };
 
 export const CONTRACT_LABEL_BY_CONTRACT: Record<PlatformContract, string> = {
@@ -69,16 +82,18 @@ export const serviceInstanceTagByPlatformIdentifier: Record<
 > = {
   [PlatformIdentifier.Opencti]: ServiceInstanceTag.OpenCti,
   [PlatformIdentifier.Openaev]: ServiceInstanceTag.OpenAev,
+  [PlatformIdentifier.Xtmone]: ServiceInstanceTag.XtmOne,
 };
 
 export const getRegisteredPlatformServiceIdentifier = (
   platformIdentifier: PlatformIdentifier
-): ServiceDefinitionIdentifier | undefined => {
+): ServiceDefinitionIdentifier => {
   const mapping: Record<PlatformIdentifier, ServiceDefinitionIdentifier> = {
     [PlatformIdentifier.Opencti]:
       ServiceDefinitionIdentifier.OpenctiRegistration,
     [PlatformIdentifier.Openaev]:
       ServiceDefinitionIdentifier.OpenaevRegistration,
+    [PlatformIdentifier.Xtmone]: ServiceDefinitionIdentifier.XtmoneRegistration,
   };
 
   return mapping[platformIdentifier];

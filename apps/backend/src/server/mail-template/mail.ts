@@ -78,6 +78,7 @@ export interface PlatformUnregisteredModel {
 export const PlatformIdentifierToString: Record<PlatformIdentifier, string> = {
   [PlatformIdentifier.Opencti]: 'OpenCTI',
   [PlatformIdentifier.Openaev]: 'OpenAEV',
+  [PlatformIdentifier.Xtmone]: 'XTM One',
 };
 
 export const ServiceIdentifierToMailTemplate = new Map<

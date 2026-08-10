@@ -238,6 +238,7 @@ enum DeploymentRequestPlatformRegion {
 
 enum DeploymentRequestDeploymentType {
   trial
+  bundle
 }
 
 enum DeploymentRequestHubStatus {
@@ -368,6 +369,8 @@ type DeploymentRequest implements Node {
   cancellation_reason: String
   platform_id: String
   platform_url: String
+  parent_id: DeploymentRequestId
+  url: String
 }
 
 type PlatformDeploymentRequest {
@@ -969,6 +972,7 @@ input PlatformInput {
 enum PlatformIdentifier {
   opencti
   openaev
+  xtmone
 }
 
 input RegisterPlatformInput {
@@ -1156,6 +1160,7 @@ enum ServiceDefinitionIdentifier {
   openaev_scenarios
   opencti_registration
   openaev_registration
+  xtmone_registration
   xtm_platform_roadmap
 }
 
@@ -1189,6 +1194,7 @@ enum ServiceInstanceCreationStatus {
 enum ServiceInstanceTag {
   openCTI
   openAEV
+  xtmOne
   trial
   others
 }
