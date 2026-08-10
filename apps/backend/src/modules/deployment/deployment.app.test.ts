@@ -49,6 +49,8 @@ import {
   XTM_HUB_SUPPORT_EMAIL,
 } from '../../portal.const';
 import * as mailService from '../../server/mail-service';
+import { auth0ClientMock } from '../../thirdparty/auth0/mock';
+import { logApp } from '../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
@@ -1549,6 +1551,49 @@ describe('deployment app', () => {
         },
       });
     });
+
+    it.each`
+      platformIdentifier            | expectedLevel
+      ${PlatformIdentifier.Openaev} | ${'warn'}
+      ${PlatformIdentifier.Opencti} | ${'error'}
+    `(
+      'should log a $expectedLevel when deleting a missing audience (404) for $platformIdentifier',
+      async ({ platformIdentifier, expectedLevel }) => {
+        vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
+          statusCode: 404,
+        });
+        const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
+        const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
+
+        const deployment =
+          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              platform_id: uuidv4(),
+              platform_identifier: platformIdentifier,
+            }
+          )) as DeploymentRequest;
+
+        await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+
+        if (expectedLevel === 'warn') {
+          expect(warnSpy).toHaveBeenCalledWith(
+            'No Auth0 audience to delete for OpenAEV trial',
+            expect.objectContaining({ deploymentRequestId: deployment.id })
+          );
+          expect(errorSpy).not.toHaveBeenCalledWith(
+            'Unable to delete audience',
+            expect.anything()
+          );
+        } else {
+          expect(errorSpy).toHaveBeenCalledWith(
+            'Unable to delete audience',
+            expect.objectContaining({ deploymentRequestId: deployment.id })
+          );
+        }
+      }
+    );
   });
 
   describe('updateDeploymentQuotaCapacity', () => {
