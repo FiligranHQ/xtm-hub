@@ -14,6 +14,7 @@ import Document, {
   DocumentId,
   default as DocumentModel,
 } from '../../model/kanel/public/Document';
+import { ObjectSolutionCategoryObjectId } from '../../model/kanel/public/ObjectSolutionCategory';
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
@@ -23,6 +24,7 @@ import { ForbiddenAccess } from '../../utils/error/error.util';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
 import { RegistrationApp } from '../registration/registration.app';
 import { ServiceDefinitionDomain } from '../service/definition/service-definition.domain';
+import { objectSolutionCategoryDomain } from '../solution-category/object-solution-category/object-solution-category.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { objectUseCaseDomain } from '../use-case/object-use-case/object-use-case.domain';
@@ -50,6 +52,9 @@ type DocumentWithDynamicMetadata = DocumentModel &
 
 const toObjectUseCaseObjectId = (id: string): ObjectUseCaseObjectId =>
   id as ObjectUseCaseObjectId;
+const toObjectSolutionCategoryObjectId = (
+  id: string
+): ObjectSolutionCategoryObjectId => id as ObjectSolutionCategoryObjectId;
 
 const setDocumentMetadataValue = (
   document: DocumentModel,
@@ -108,6 +113,12 @@ export const DocumentApp = {
         value: JSON.stringify(input.entity_types),
       });
     }
+    if (input.license_type != null) {
+      documentMetadata.push({
+        key: DocumentMetadataKeyCode.LicenseType,
+        value: input.license_type,
+      });
+    }
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
@@ -130,9 +141,15 @@ export const DocumentApp = {
       documentMetadata,
     });
 
+    const {
+      entity_types: _entityTypes,
+      license_type: _licenseType,
+      ...documentColumnInput
+    } = input;
     const documentData: DocumentData<Document> = {
-      ...input,
+      ...documentColumnInput,
       use_cases: input.use_cases ?? undefined,
+      solution_category: input.solution_category ?? undefined,
       service_instance_id: serviceInstanceId,
       type: documentType,
       ...(sourceDocumentFile && isDocumentFileRequired
@@ -187,6 +204,13 @@ export const DocumentApp = {
             use_case_id: id,
           }))
         );
+      }
+
+      if (documentData.solution_category) {
+        await objectSolutionCategoryDomain.insertObjectSolutionCategory({
+          object_id: toObjectSolutionCategoryObjectId(document.id),
+          solution_category_id: documentData.solution_category,
+        });
       }
 
       return document;
@@ -305,6 +329,15 @@ export const DocumentApp = {
         },
       ];
     }
+    if (input.license_type != null) {
+      documentMetadata = [
+        ...documentMetadata,
+        {
+          key: DocumentMetadataKeyCode.LicenseType,
+          value: input.license_type,
+        },
+      ];
+    }
 
     DocumentHelper.assertMetadataIsNotMissing(
       serviceDefinition.identifier as ManageableServiceDefinitionIdentifier,
@@ -323,8 +356,12 @@ export const DocumentApp = {
         ? sourceDocumentFile
         : undefined;
 
-      // entity_types is persisted as metadata (see above), not as a Document column.
-      const { entity_types: _entityTypes, ...documentColumnData } = input;
+      // entity_types and license_type are persisted as metadata (see above), not as Document columns.
+      const {
+        entity_types: _entityTypes,
+        license_type: _licenseType,
+        ...documentColumnData
+      } = input;
       const doc = await DocumentDomain.updateDocument({
         parentDocumentId,
         document: {
@@ -354,6 +391,17 @@ export const DocumentApp = {
             }))
           );
         }
+      }
+
+      if (input.solution_category) {
+        await objectSolutionCategoryDomain.deleteObjectSolutionCategoryBy({
+          object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
+        });
+
+        await objectSolutionCategoryDomain.insertObjectSolutionCategory({
+          object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
+          solution_category_id: input.solution_category,
+        });
       }
 
       if (documentMetadata.length) {

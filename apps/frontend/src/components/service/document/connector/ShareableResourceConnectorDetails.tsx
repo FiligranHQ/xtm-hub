@@ -25,6 +25,7 @@ export interface ShareableResourceConnectorDetailsProps {
     blogpost_url?: string | null;
     demo_url?: string | null;
     minimum_deployable_version?: string | null;
+    contact?: string | null;
   };
   compatibilityItem?: React.ReactNode;
 }
@@ -147,6 +148,12 @@ export const ShareableResourceConnectorDetails = ({
         label={t('Service.ShareableResources.Details.Shares')}>
         <span>{roundToNearest(connectorDetails.share_number)}</span>
       </ShareableResourceDetailItem>
+      {connectorDetails.contact && (
+        <ShareableResourceDetailItem
+          label={t('Service.ShareableResources.Details.ContributorContact')}>
+          <span>{connectorDetails.contact}</span>
+        </ShareableResourceDetailItem>
+      )}
     </ShareableResourceBasicInformation>
   );
 };

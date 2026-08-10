@@ -5,6 +5,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import ServiceCapability from '../../model/kanel/public/ServiceCapability';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
   SubscriptionInitializer,
@@ -127,6 +128,22 @@ export const SubscriptionDomain = {
     ids: SubscriptionId[]
   ): Promise<Subscription[]> => {
     return db<Subscription>('Subscription').whereIn('id', ids);
+  },
+
+  loadSubscriptionsByOrganizationAndServiceInstanceIds: async ({
+    organizationIds,
+    serviceInstanceIds,
+  }: {
+    organizationIds: OrganizationId[];
+    serviceInstanceIds: ServiceInstanceId[];
+  }): Promise<Subscription[]> => {
+    if (organizationIds.length === 0 || serviceInstanceIds.length === 0) {
+      return [];
+    }
+
+    return db<Subscription>('Subscription')
+      .whereIn('organization_id', organizationIds)
+      .whereIn('service_instance_id', serviceInstanceIds);
   },
 
   updateSubscriptionBy: async (

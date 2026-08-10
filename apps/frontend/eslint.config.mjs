@@ -180,8 +180,83 @@ const localI18nRulesPlugin = {
   },
 };
 
-const fixedTailwindColorClassPattern =
-  /(?:^|[\s'"`])(?:[a-z-]+:)*(?:text-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|black|white)(?:-\d{1,3})?(?:\/(?:\d{1,3}|\[[^\]]+\]))?|bg-(?:white|gray-500)(?:\/(?:\d{1,3}|\[[^\]]+\]))?)(?=$|[\s'"`])/u;
+const fixedTailwindTextColors = new Set([
+  'slate',
+  'gray',
+  'zinc',
+  'neutral',
+  'stone',
+  'red',
+  'orange',
+  'amber',
+  'yellow',
+  'lime',
+  'green',
+  'emerald',
+  'teal',
+  'cyan',
+  'sky',
+  'blue',
+  'indigo',
+  'violet',
+  'purple',
+  'fuchsia',
+  'pink',
+  'rose',
+  'black',
+  'white',
+]);
+
+const tailwindOpacityPattern = /^(?:\d{1,3}|\[[^\]]+\])$/u;
+const tailwindColorWithOptionalScalePattern = /^([a-z]+)(?:-(\d{1,3}))?$/u;
+
+const isFixedTailwindTextClass = (baseClass) => {
+  if (!baseClass.startsWith('text-')) {
+    return false;
+  }
+
+  const textColorPart = baseClass.slice(5);
+  const [colorWithScale, opacity] = textColorPart.split('/', 2);
+  if (opacity && !tailwindOpacityPattern.test(opacity)) {
+    return false;
+  }
+
+  const match = tailwindColorWithOptionalScalePattern.exec(colorWithScale);
+  if (!match) {
+    return false;
+  }
+
+  const [, colorName] = match;
+  return fixedTailwindTextColors.has(colorName);
+};
+
+const isFixedTailwindBgClass = (baseClass) => {
+  if (!baseClass.startsWith('bg-')) {
+    return false;
+  }
+
+  const bgColorPart = baseClass.slice(3);
+  const [bgColor, opacity] = bgColorPart.split('/', 2);
+  if (opacity && !tailwindOpacityPattern.test(opacity)) {
+    return false;
+  }
+
+  return bgColor === 'white' || bgColor === 'gray-500';
+};
+
+const containsFixedTailwindColorClass = (classNameSourceCodeValue) =>
+  classNameSourceCodeValue.split(/[\s'"`]+/u).some((token) => {
+    if (!token) {
+      return false;
+    }
+
+    const baseClass = token.includes(':')
+      ? token.slice(token.lastIndexOf(':') + 1)
+      : token;
+    return (
+      isFixedTailwindTextClass(baseClass) || isFixedTailwindBgClass(baseClass)
+    );
+  });
 
 const localThemeRulesPlugin = {
   rules: {
@@ -206,7 +281,7 @@ const localThemeRulesPlugin = {
             }
 
             const classNameValue = context.sourceCode.getText(node.value);
-            if (fixedTailwindColorClassPattern.test(classNameValue)) {
+            if (containsFixedTailwindColorClass(classNameValue)) {
               context.report({
                 node: node.value,
                 message:

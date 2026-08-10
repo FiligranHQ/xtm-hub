@@ -89,6 +89,11 @@ export const publicDocumentByServiceSlugItem = graphql`
       datasheet_url
       blogpost_url
       demo_url
+      solution_category {
+        id
+        name
+      }
+      license_type
     }
 
     ... on CustomDashboard {
@@ -129,6 +134,7 @@ export const publicDocumentByServiceSlugItem = graphql`
       manager_supported
       playbook_supported
       minimum_deployable_version
+      contact
     }
 
     ... on OpenAEVScenario {
@@ -183,6 +189,11 @@ export const publicDocumentBySlugItem = graphql`
       datasheet_url
       blogpost_url
       demo_url
+      solution_category {
+        id
+        name
+      }
+      license_type
     }
 
     ... on CustomDashboard {
@@ -223,6 +234,7 @@ export const publicDocumentBySlugItem = graphql`
       manager_supported
       playbook_supported
       minimum_deployable_version
+      contact
     }
 
     ... on OpenAEVScenario {

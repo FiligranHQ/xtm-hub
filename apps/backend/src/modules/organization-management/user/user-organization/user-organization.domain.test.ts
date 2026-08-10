@@ -2,14 +2,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { describe, expect, it } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../../../tests/tests.const';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
-import { createNewUserFromInvitation } from '../user.helper';
+import { UserHelper } from '../user.helper';
 import { UserOrganizationDomain } from './user-organization.domain';
 
 describe('userOrganizationDomain', () => {
   describe('createUserOrganizationRelationAndRemovePending', () => {
     it('should delete pending organization before adding an organization', async () => {
       const testMail = `createUserOrganizationRelationAndRemovePending${uuidv4()}@filigran.io`;
-      const user = await createNewUserFromInvitation({
+      const user = await UserHelper.createNewUserFromInvitation({
         email: testMail,
       });
       const initialPendingOrg =
@@ -36,7 +36,7 @@ describe('userOrganizationDomain', () => {
 
     it('should not fail if there is no organization to remove', async () => {
       const testMail = `createUserOrganizationRelationAndRemovePending${uuidv4()}@whatever.io`;
-      const user = await createNewUserFromInvitation({
+      const user = await UserHelper.createNewUserFromInvitation({
         email: testMail,
       });
       const initialPendingOrg =

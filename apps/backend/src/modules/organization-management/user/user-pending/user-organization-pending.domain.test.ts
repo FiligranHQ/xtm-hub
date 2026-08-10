@@ -11,33 +11,32 @@ import { requestContext } from '../../../../context/request.context';
 import User from '../../../../model/kanel/public/User';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { OrganizationDomain } from '../../organization/organization.domain';
-import { createNewUserWithPendingOrga, removeUser } from '../user.helper';
-import { insertUser, linkUsersToOrganization } from '../user.test.utils';
+import { UserHelper } from '../user.helper';
 import { UserOrganizationPendingDomain } from './user-organization-pending.domain';
 
 describe('userOrganizationPendingDomain', () => {
   describe('loadOrganizationsWithPendingUsers', () => {
     it('should return list of pending organizations with their pending users', async () => {
       const secondOrgaUsers = [
-        await insertUser({
+        await TestHelper.user.insert({
           selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           email: 'user1@second-orga.com',
         }),
-        await insertUser({
+        await TestHelper.user.insert({
           selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
           email: 'user2@second-orga.com',
         }),
       ];
-      await linkUsersToOrganization(
+      await TestHelper.user_OrganizationPending.linkUsersToOrganization(
         secondOrgaUsers,
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
       );
 
       const filigranUsers = [
-        await insertUser({ email: 'user1@filigran.io' }),
-        await insertUser({ email: 'user2@filigran.io' }),
+        await TestHelper.user.insert({ email: 'user1@filigran.io' }),
+        await TestHelper.user.insert({ email: 'user2@filigran.io' }),
       ];
-      await linkUsersToOrganization(
+      await TestHelper.user_OrganizationPending.linkUsersToOrganization(
         filigranUsers,
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
@@ -94,13 +93,15 @@ describe('userOrganizationPendingDomain', () => {
       }))!;
 
       createdUsers = await Promise.all(
-        userList.map((user) => createNewUserWithPendingOrga(user, secondOrga))
+        userList.map((user) =>
+          UserHelper.createNewUserWithPendingOrga(user, secondOrga)
+        )
       );
 
       const filigranOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.FILIGRAN.ID,
       }))!;
-      const filigranUser = await createNewUserWithPendingOrga(
+      const filigranUser = await UserHelper.createNewUserWithPendingOrga(
         {
           email: 'testFiligran@filigran.io',
           first_name: 'test',
@@ -115,7 +116,7 @@ describe('userOrganizationPendingDomain', () => {
       await TestHelper.user_OrganizationPending.delete({});
 
       await Promise.all(
-        createdUsers.map((user) => removeUser({ email: user.email }))
+        createdUsers.map((user) => UserHelper.removeUser({ email: user.email }))
       );
     });
     it('should remove users by id', async () => {
@@ -304,7 +305,7 @@ describe('userOrganizationPendingDomain', () => {
       const secondOrga = (await OrganizationDomain.loadOrganizationBy({
         id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
       }))!;
-      createdUser = await createNewUserWithPendingOrga(
+      createdUser = await UserHelper.createNewUserWithPendingOrga(
         {
           email: 'testRemovePending@second-orga.com',
           first_name: 'test',
@@ -317,7 +318,7 @@ describe('userOrganizationPendingDomain', () => {
 
     afterEach(async () => {
       await TestHelper.user_OrganizationPending.delete({});
-      await removeUser({ email: createdUser.email });
+      await UserHelper.removeUser({ email: createdUser.email });
     });
 
     it('should remove the pending user when user has the required capability', async () => {

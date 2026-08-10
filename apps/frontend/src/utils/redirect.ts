@@ -2,6 +2,10 @@ import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { getClientEnvironment } from '@/relay/environment/registry';
 
 export const isSafeRedirect = (url: string): boolean => {
+  // Browsers normalise a backslash to a forward slash, so `/\evil.com` would
+  // become the protocol-relative `//evil.com`. A backslash is never legitimate
+  // in a path we generate, so reject it wherever it appears.
+  if (url.includes('\\')) return false;
   return url.startsWith('/') && !url.startsWith('//');
 };
 

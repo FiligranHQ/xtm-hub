@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
-import { ManifestFragmentHelper } from './manifest-fragment.helper';
+import {
+  ManifestFragmentHelper,
+  MAX_CONTACT_LENGTH,
+} from './manifest-fragment.helper';
 
 describe('validateAndFormatManifestVersion', () => {
   it.each`
@@ -206,4 +209,89 @@ describe('assertHomogeneousLtsBatch', () => {
       ])
     ).toThrow(BadRequestErrorCode.MixedLtsManifestFragments);
   });
+});
+
+describe('normalizeOptionalText', () => {
+  it.each`
+    value          | expected     | description
+    ${'free'}      | ${'free'}    | ${'a plain value'}
+    ${'  free  '}  | ${'free'}    | ${'surrounding whitespace'}
+    ${'a@b.com\n'} | ${'a@b.com'} | ${'a trailing newline'}
+  `(
+    'should return $expected when given $description',
+    ({ value, expected }: { value: string; expected: string }) => {
+      // Given a raw optional text value
+      // When it is normalized
+      const result = ManifestFragmentHelper.normalizeOptionalText(value);
+      // Then the trimmed value is returned
+      expect(result).toBe(expected);
+    }
+  );
+
+  it.each([
+    { value: '', description: 'an empty string' },
+    { value: '   ', description: 'whitespace only' },
+    { value: null, description: 'null' },
+    { value: undefined, description: 'undefined' },
+  ])(
+    'should return undefined when the value is $description',
+    ({ value }: { value: string | null | undefined }) => {
+      // Given a blank or absent value
+      // When it is normalized
+      const result = ManifestFragmentHelper.normalizeOptionalText(value);
+      // Then it is treated as absent
+      expect(result).toBeUndefined();
+    }
+  );
+});
+
+describe('parseContact', () => {
+  it.each`
+    length                    | description
+    ${MAX_CONTACT_LENGTH - 1} | ${'just below the limit'}
+    ${MAX_CONTACT_LENGTH}     | ${'exactly at the limit'}
+  `(
+    'should return the contact when its length is $length ($description)',
+    ({ length }: { length: number }) => {
+      // Given a contact within the allowed length
+      const contact = 'a'.repeat(length);
+      // When it is validated and normalized
+      const result = ManifestFragmentHelper.parseContact(contact);
+      // Then it is returned unchanged
+      expect(result).toBe(contact);
+    }
+  );
+
+  it('should measure the length after trimming', () => {
+    // Given a contact at the limit, padded with whitespace
+    const contact = 'a'.repeat(MAX_CONTACT_LENGTH);
+    // When it is validated and normalized
+    const result = ManifestFragmentHelper.parseContact(`  ${contact}  `);
+    // Then the padding is not counted against the limit
+    expect(result).toBe(contact);
+  });
+
+  it('should throw when the contact exceeds the maximum length', () => {
+    // Given a contact one character over the limit
+    const contact = 'a'.repeat(MAX_CONTACT_LENGTH + 1);
+    // When it is validated
+    const validate = () => ManifestFragmentHelper.parseContact(contact);
+    // Then the ingestion is rejected
+    expect(validate).toThrow(BadRequestErrorCode.ContactTooLong);
+  });
+
+  it.each([
+    { value: '', description: 'an empty string' },
+    { value: null, description: 'null' },
+    { value: undefined, description: 'undefined' },
+  ])(
+    'should return undefined when the contact is $description',
+    ({ value }: { value: string | null | undefined }) => {
+      // Given no contact, which is the case for Filigran-supported integrations
+      // When it is validated
+      const result = ManifestFragmentHelper.parseContact(value);
+      // Then no error is raised and nothing is stored
+      expect(result).toBeUndefined();
+    }
+  );
 });

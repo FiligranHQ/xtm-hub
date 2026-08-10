@@ -24,7 +24,7 @@ import UserServiceCapability, {
 } from '../../model/kanel/public/UserServiceCapability';
 import * as mailService from '../../server/mail-service';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
-import { removeUser } from '../organization-management/user/user.helper';
+import { UserHelper } from '../organization-management/user/user.helper';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { UserServiceDomain } from './user-service.domain';
@@ -307,7 +307,7 @@ describe('userServiceDomain', () => {
       expect(result[0]!.user_id).toBe(createdUser!.id);
 
       await cleanupUserServices(sub.id);
-      await removeUser({ email: newEmail });
+      await UserHelper.removeUser({ email: newEmail });
     });
 
     it('should reuse an existing user when the email is already in the DB', async () => {
@@ -658,6 +658,50 @@ describe('userServiceDomain', () => {
       expect(returnedUserIds).toContain(
         TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
       );
+    });
+  });
+
+  describe('doesUserServiceExist', () => {
+    const sub = useSubscription();
+
+    it('should return true when the user already has access to the subscription', async () => {
+      await insertUserService(SIMPLE.ID, sub.id);
+
+      const result = await UserServiceDomain.doesUserServiceExist(
+        SIMPLE.ID,
+        sub.id
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when the user has no access to the subscription', async () => {
+      const result = await UserServiceDomain.doesUserServiceExist(
+        SIMPLE.ID,
+        sub.id
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it('should not match a user service belonging to another subscription', async () => {
+      const otherSubscriptionId = await createTestSubscription({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        start_date: new Date(),
+        end_date: undefined,
+      });
+      await insertUserService(SIMPLE.ID, otherSubscriptionId);
+
+      const result = await UserServiceDomain.doesUserServiceExist(
+        SIMPLE.ID,
+        sub.id
+      );
+
+      await cleanupUserServices(otherSubscriptionId);
+      await TestHelper.subscription.delete({ id: otherSubscriptionId });
+
+      expect(result).toBe(false);
     });
   });
 });

@@ -1,4 +1,3 @@
-import MeLoaderQuery from '@generated/meLoaderQuery.graphql';
 import {
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
@@ -9,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const {
   mockRegisteredPlatformsFetcher,
   mockServiceInstancesFetcher,
-  mockServerFetchGraphQL,
+  mockMeFirstNameFetcher,
   mockNewestResources,
   mockMostDeployedResources,
   mockPrivateHomepageRoadmapSection,
@@ -19,7 +18,7 @@ const {
 } = vi.hoisted(() => ({
   mockRegisteredPlatformsFetcher: vi.fn(),
   mockServiceInstancesFetcher: vi.fn(),
-  mockServerFetchGraphQL: vi.fn(),
+  mockMeFirstNameFetcher: vi.fn(),
   mockNewestResources: vi.fn(() => <div data-testid="newest-resources" />),
   mockMostDeployedResources: vi.fn(() => (
     <div data-testid="most-deployed-resources" />
@@ -46,12 +45,11 @@ vi.mock('@graphql/generated', async (importOriginal) => {
     useServiceInstancesListQuery: {
       fetcher: mockServiceInstancesFetcher,
     },
+    useMeFirstNameQuery: {
+      fetcher: mockMeFirstNameFetcher,
+    },
   };
 });
-
-vi.mock('@/relay/server-portal-api-fetch', () => ({
-  serverFetchGraphQL: mockServerFetchGraphQL,
-}));
 
 vi.mock('next-intl/server', () => ({
   getLocale: vi.fn().mockResolvedValue('en'),
@@ -101,12 +99,18 @@ const mockRegisteredPlatformsResponses = (registeredPlatforms: unknown[]) => {
   );
 };
 
+const mockMeFirstNameResponse = (first_name: string | null) => {
+  mockMeFirstNameFetcher.mockReturnValue(() =>
+    Promise.resolve({ me: first_name === null ? null : { first_name } })
+  );
+};
+
 describe('PrivateHomepage', () => {
   beforeEach(() => {
     mockRegisteredPlatformsFetcher.mockClear();
     mockServiceInstancesFetcher.mockClear();
-    mockServerFetchGraphQL.mockClear();
-    mockServerFetchGraphQL.mockResolvedValue({ data: { me: null } });
+    mockMeFirstNameFetcher.mockClear();
+    mockMeFirstNameResponse(null);
     mockNewestResources.mockClear();
     mockMostDeployedResources.mockClear();
     mockPrivateHomepageRoadmapSection.mockClear();
@@ -142,7 +146,7 @@ describe('PrivateHomepage', () => {
 
     expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
-    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
+    expect(mockMeFirstNameFetcher).toHaveBeenCalled();
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsFetcher.mock.calls[0]?.[1]).toEqual({
@@ -218,7 +222,7 @@ describe('PrivateHomepage', () => {
 
     expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
-    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
+    expect(mockMeFirstNameFetcher).toHaveBeenCalled();
     expect(mockXtmPlatform).not.toHaveBeenCalled();
 
     expect(mockRegisteredPlatformsSection).toHaveBeenCalledWith(
@@ -266,7 +270,7 @@ describe('PrivateHomepage', () => {
 
     expect(mockRegisteredPlatformsFetcher).toHaveBeenCalledTimes(2);
     expect(mockServiceInstancesFetcher).not.toHaveBeenCalled();
-    expect(mockServerFetchGraphQL).toHaveBeenCalledWith(MeLoaderQuery);
+    expect(mockMeFirstNameFetcher).toHaveBeenCalled();
     expect(mockXtmPlatform).toHaveBeenCalledWith(
       expect.objectContaining({ welcomeName: undefined }),
       undefined
@@ -288,35 +292,21 @@ describe('PrivateHomepage', () => {
     );
   });
 
-  it('passes personalized welcome name when me has names', async () => {
+  it('passes personalized welcome name when me has a first name', async () => {
     mockRegisteredPlatformsResponses([]);
-    mockServerFetchGraphQL.mockResolvedValue({
-      data: {
-        me: {
-          first_name: 'Jane',
-          last_name: 'Doe',
-        },
-      },
-    });
+    mockMeFirstNameResponse('Jane');
 
     render(await PrivateHomepage());
 
     expect(mockXtmPlatform).toHaveBeenCalledWith(
-      expect.objectContaining({ welcomeName: 'Jane Doe' }),
+      expect.objectContaining({ welcomeName: 'Jane' }),
       undefined
     );
   });
 
-  it('falls back to default XtmPlatform label when me has no names', async () => {
+  it('falls back to default XtmPlatform label when me has no first name', async () => {
     mockRegisteredPlatformsResponses([]);
-    mockServerFetchGraphQL.mockResolvedValue({
-      data: {
-        me: {
-          first_name: ' ',
-          last_name: null,
-        },
-      },
-    });
+    mockMeFirstNameResponse(' ');
 
     render(await PrivateHomepage());
 

@@ -3,6 +3,7 @@ import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
+  LicenseType,
   ManifestType,
   PortalCapability,
   type ManifestFragmentInput,
@@ -10,6 +11,7 @@ import {
 import { requestContext } from '../../../context/request.context';
 import type { DocumentId } from '../../../model/kanel/public/Document';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
+import { ObjectSolutionCategoryObjectId } from '../../../model/kanel/public/ObjectSolutionCategory';
 import { SYSTEM_USER_CONTEXT } from '../../../portal.const';
 import { minioInit } from '../../../server/initialize';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
@@ -19,6 +21,8 @@ import {
 } from '../opencti/integration/integration.model';
 import { ManifestFragmentDomain } from './manifest-fragment.domain';
 
+const SEEDED_SOLUTION_CATEGORY_ID = '8d121337-1a45-4b8b-ba73-f4e879c2e16a';
+const SEEDED_SOLUTION_CATEGORY_NAME = 'SolutionCategory';
 describe('manifestFragmentDomain', () => {
   beforeAll(async () => {
     await minioInit();
@@ -90,6 +94,8 @@ describe('manifestFragmentDomain', () => {
       image_type: 'EXTERNAL_IMPORT',
       platform: 'OpenCTI',
       integration_type: integrationType,
+      license_type: LicenseType.Commercial,
+      contact: 'https://github.com/some-contributor',
       additional_properties: {
         max_confidence_level: 50,
       },
@@ -190,6 +196,77 @@ describe('manifestFragmentDomain', () => {
       expect(metadataByKey.get(DocumentMetadataKeyCode.ConfigSchema)).toBe(
         JSON.stringify(fragment.config_schema)
       );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.LicenseType)).toBe(
+        fragment.license_type
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.Contact)).toBe(
+        fragment.contact
+      );
+    });
+
+    it('does not store a contact when the fragment leaves it empty', async () => {
+      // Given a Filigran-supported integration, which carries no contact
+      const slug = 'misp-without-contact';
+      const fragment = buildManifestFragment(ManifestType.Connector, { slug });
+      fragment.contact = undefined;
+
+      // When
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
+
+      // Then
+      const createdDocument = await TestHelper.document.load({ slug });
+      _createdDocumentIds.push(createdDocument!.id);
+
+      const metadataRows = await TestHelper.documentMetadata.loadAll({
+        document_id: createdDocument!.id,
+      });
+      const metadataByKey = new Map(
+        metadataRows.map((metadata) => [metadata.key as string, metadata.value])
+      );
+      expect(metadataByKey.get(DocumentMetadataKeyCode.Contact)).toBeNull();
+    });
+
+    it('links the fragment solution categories to the created connector', async () => {
+      // Given the seeded category, scoped to opencti
+      const slug = 'misp-with-categories';
+      const fragment = buildManifestFragment(ManifestType.Connector, { slug });
+      fragment.solution_categories = [SEEDED_SOLUTION_CATEGORY_NAME];
+      // When the fragment is ingested, its platform being 'OpenCTI' in mixed case
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
+
+      // Then the category is linked, so the product lookup is case-insensitive
+      const createdDocument = await TestHelper.document.load({ slug });
+      _createdDocumentIds.push(createdDocument!.id);
+
+      const links = await TestHelper.objectSolutionCategory.load({
+        object_id: createdDocument!
+          .id as unknown as ObjectSolutionCategoryObjectId,
+      });
+      expect(links).toHaveLength(1);
+      expect(links[0]!.solution_category_id).toBe(SEEDED_SOLUTION_CATEGORY_ID);
+    });
+
+    it('ignores an unknown solution category and still links the known one', async () => {
+      // Given a fragment declaring one seeded category and one that does not exist
+      const slug = 'misp-unknown-category';
+      const fragment = buildManifestFragment(ManifestType.Connector, { slug });
+      fragment.solution_categories = [
+        SEEDED_SOLUTION_CATEGORY_NAME,
+        'Quantum Threat Divination',
+      ];
+      // When the fragment is ingested
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
+
+      // Then the ingestion succeeds and only the known category is linked
+      const createdDocument = await TestHelper.document.load({ slug });
+      _createdDocumentIds.push(createdDocument!.id);
+
+      const links = await TestHelper.objectSolutionCategory.load({
+        object_id: createdDocument!
+          .id as unknown as ObjectSolutionCategoryObjectId,
+      });
+      expect(links).toHaveLength(1);
+      expect(links[0]!.solution_category_id).toBe(SEEDED_SOLUTION_CATEGORY_ID);
     });
 
     it('throws when integration_type is not connector', async () => {

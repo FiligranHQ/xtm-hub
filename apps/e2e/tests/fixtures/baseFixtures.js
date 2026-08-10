@@ -8,7 +8,6 @@ const test = testBase.extend({
     async ({ page }, use) => {
       const activateCoverage = process.env.E2E_COVERAGE;
 
-      // console.log('autoTestFixture setup...');
       // coverage API is chromium only
       if (activateCoverage) {
         await Promise.all([
@@ -39,7 +38,6 @@ const test = testBase.extend({
 
       await use('autoTestFixture');
 
-      // console.log('autoTestFixture teardown...');
       if (activateCoverage) {
         const [jsCoverage, cssCoverage] = await Promise.all([
           page.coverage.stopJSCoverage(),

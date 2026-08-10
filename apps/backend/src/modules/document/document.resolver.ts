@@ -1,6 +1,7 @@
 import {
   IntegrationType,
   Resolvers,
+  ServiceInstance as ServiceInstanceModel,
   ShareableResource,
   SubscriptionModel,
 } from '../../__generated__/resolvers-types';
@@ -19,10 +20,10 @@ import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/op
 import { OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-view/custom-view.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
 import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../shareable-resource/opencti/playbook/playbook.model';
-import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { DocumentApp } from './document.app';
+import { subscriptionByServiceInstanceLoaderKey } from './document.dataloader';
 import { DocumentHelper } from './document.helper';
 import { DocumentDomain } from './domain/document.domain';
 
@@ -154,7 +155,9 @@ const resolvers: Resolvers = {
         return mappedType;
       } else if (document.type === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
         const integrationType =
-          await context.dataLoaders.integrationTypeLoader.load(document.id);
+          await context.dataLoaders.document.integrationTypeLoader.load(
+            document.id
+          );
         if (integrationType) {
           const responseType =
             INTEGRATION_MAPPINGS[
@@ -172,23 +175,32 @@ const resolvers: Resolvers = {
     },
 
     children_documents: async ({ id }, _, context) =>
-      (await context.dataLoaders.childrenDocumentsLoader.load(
+      (await context.dataLoaders.document.childrenDocumentsLoader.load(
         id
       )) as ShareableResource[],
+    use_cases: ({ id }, _, context) =>
+      context.dataLoaders.document.useCasesByDocumentIdLoader.load(id),
     uploader: ({ id }, _, context) =>
-      context.dataLoaders.uploaderLoader.load(id),
+      context.dataLoaders.document.uploaderLoader.load(id),
     uploader_organization: ({ id }, _, context) =>
-      context.dataLoaders.uploaderOrganizationLoader.load(id),
-    service_instance: ({ service_instance_id }, _) => {
+      context.dataLoaders.document.uploaderOrganizationLoader.load(id),
+    service_instance: async ({ service_instance_id }, _, context) => {
       if (!service_instance_id) return null;
-      return ServiceInstanceDomain.getServiceInstance(service_instance_id);
+      const serviceInstance =
+        await context.dataLoaders.document.serviceInstanceByIdLoader.load(
+          service_instance_id
+        );
+      return serviceInstance as unknown as ServiceInstanceModel;
     },
     subscription: async ({ service_instance_id }, _, context) => {
       if (!service_instance_id) return null;
-      const subscription = await SubscriptionDomain.loadSubscriptionBy({
-        service_instance_id,
-        organization_id: context.user.selected_organization_id,
-      });
+      const subscription =
+        await context.dataLoaders.document.subscriptionByServiceInstanceLoader.load(
+          subscriptionByServiceInstanceLoaderKey.create({
+            organizationId: context.user.selected_organization_id,
+            serviceInstanceId: service_instance_id,
+          })
+        );
 
       return subscription as unknown as SubscriptionModel;
     },
@@ -199,7 +211,7 @@ const resolvers: Resolvers = {
         deployedById: string | null;
       };
       return deployedById
-        ? context.dataLoaders.userLoader.load(deployedById)
+        ? context.dataLoaders.document.userLoader.load(deployedById)
         : null;
     },
   },

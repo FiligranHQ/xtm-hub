@@ -33,4 +33,8 @@ performance bottlenecks and security weaknesses before delivering it.
 - When touching a component that still uses Relay, only migrate it to `@tanstack/react-query` when the task scope explicitly includes migration or the change is small and low-risk.
 - After removing a component's last Relay usage, confirm no other files still depend on its generated Relay artifacts before deleting them.
 
+## Routing & Links
+- **Disable prefetch on side-effecting links** — Next.js `<Link>` prefetches its `href` in the background as soon as it enters the viewport (or on hover). Any `href` that resolves to a route with real side effects — e.g. paths under `/auth/*`, `/document/*`, `/user/picture`, or App Router `route.ts` handlers that authenticate, mutate data, or trigger redirects with business logic (like `app/redirect/[identifier]/route.ts`) — must use `<Link href="..." prefetch={false}>`. Plain `<a href="...">` tags are unaffected and don't need this.
+- When adding or reviewing any `<Link>`, check whether its target is a passive page/RSC route or a side-effecting endpoint before deciding on `prefetch`.
+
 Default posture: implement like a maintainer of this codebase, not a generic generator.

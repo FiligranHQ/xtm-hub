@@ -3,16 +3,43 @@ import { toGlobalId } from 'graphql-relay/node/node.js';
 import {
   IntegrationType,
   Organization,
+  SolutionCategory,
 } from '../../__generated__/resolvers-types';
+import { OrganizationId } from '../../model/kanel/public/Organization';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
+import Subscription from '../../model/kanel/public/Subscription';
 import UseCase from '../../model/kanel/public/UseCase';
 import User, { UserId } from '../../model/kanel/public/User';
+import {
+  CompositeKey,
+  defineCompositeKey,
+} from '../../utils/dataloader-key.util';
 import { UserDomain } from '../organization-management/user/user-domain/user.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
+import { solutionCategoryDomain } from '../solution-category/solution-category.domain';
+import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { useCaseDomain } from '../use-case/use-case.domain';
 import { Document, WithDocumentId, WithParentId } from './document.helper';
 import { DOCUMENT_IMAGE_METADATA_KEYS } from './document.model';
 import { DocumentChildrenDomain } from './domain/document.children.domain';
 import { DocumentDomain } from './domain/document.domain';
 import { DocumentMetadataDomain } from './domain/document.metadata.domain';
+
+interface SubscriptionByServiceInstanceFields extends Record<string, string> {
+  organizationId: OrganizationId;
+  serviceInstanceId: ServiceInstanceId;
+}
+
+type SubscriptionByServiceInstanceLoaderKey =
+  CompositeKey<SubscriptionByServiceInstanceFields>;
+
+export const subscriptionByServiceInstanceLoaderKey =
+  defineCompositeKey<SubscriptionByServiceInstanceFields>([
+    'organizationId',
+    'serviceInstanceId',
+  ]);
 
 export interface DocumentDataLoaders {
   userLoader: DataLoader<string, User | null>;
@@ -21,7 +48,16 @@ export interface DocumentDataLoaders {
   childrenDocumentsLoader: DataLoader<string, Document[]>;
   imagesByDocumentIdLoader: DataLoader<string, Document[]>;
   useCasesByDocumentIdLoader: DataLoader<string, UseCase[]>;
+  solutionCategoryByDocumentIdLoader: DataLoader<
+    string,
+    SolutionCategory | null
+  >;
   integrationTypeLoader: DataLoader<string, IntegrationType | null>;
+  serviceInstanceByIdLoader: DataLoader<string, ServiceInstance | undefined>;
+  subscriptionByServiceInstanceLoader: DataLoader<
+    SubscriptionByServiceInstanceLoaderKey,
+    Subscription | null
+  >;
 }
 
 export const DocumentDataLoader = {
@@ -59,7 +95,7 @@ export const DocumentDataLoader = {
     ids: readonly string[]
   ): Promise<Document[][]> => {
     const rows: WithParentId<Document>[] =
-      await DocumentChildrenDomain.buildChildrenDocumentsQuery<
+      await DocumentChildrenDomain.loadChildrenDocumentsByParentIds<
         WithParentId<Document>
       >(ids, {
         isDataLoader: true,
@@ -79,7 +115,7 @@ export const DocumentDataLoader = {
     ids: readonly string[]
   ): Promise<Document[][]> => {
     const rows: WithParentId<Document>[] =
-      await DocumentChildrenDomain.buildImagesByDocumentIdQuery<
+      await DocumentChildrenDomain.loadImagesByParentIds<
         WithParentId<Document>
       >(ids, {
         isDataLoader: true,
@@ -113,6 +149,20 @@ export const DocumentDataLoader = {
     return ids.map((id) => map.get(id) ?? []);
   },
 
+  batchLoadSolutionCategoryByDocumentId: async (
+    ids: readonly string[]
+  ): Promise<(SolutionCategory | null)[]> => {
+    const rows: WithDocumentId<SolutionCategory>[] =
+      await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+        ids
+      );
+
+    const map = new Map<string, SolutionCategory>(
+      rows.map((row) => [row._document_id, row])
+    );
+    return ids.map((id) => map.get(id) ?? null);
+  },
+
   batchLoadIntegrationTypes: async (
     ids: readonly string[]
   ): Promise<(IntegrationType | null)[]> => {
@@ -124,6 +174,62 @@ export const DocumentDataLoader = {
       rows.map((row) => [row.document_id, row.value])
     );
     return ids.map((id) => map.get(id) ?? null);
+  },
+
+  batchLoadServiceInstances: async (
+    ids: readonly string[]
+  ): Promise<(ServiceInstance | undefined)[]> => {
+    const serviceInstances =
+      await ServiceInstanceDomain.loadServiceInstancesByIds(
+        ids as ServiceInstanceId[]
+      );
+
+    const map = new Map<string, ServiceInstance>(
+      serviceInstances.map((serviceInstance) => [
+        serviceInstance.id,
+        serviceInstance,
+      ])
+    );
+
+    return ids.map((id) => map.get(id));
+  },
+
+  batchLoadSubscriptionsByServiceInstance: async (
+    keys: readonly SubscriptionByServiceInstanceLoaderKey[]
+  ): Promise<(Subscription | null)[]> => {
+    const parsedKeys = keys.map(subscriptionByServiceInstanceLoaderKey.parse);
+    const organizationIds = [
+      ...new Set(parsedKeys.map(({ organizationId }) => organizationId)),
+    ];
+    const serviceInstanceIds = [
+      ...new Set(parsedKeys.map(({ serviceInstanceId }) => serviceInstanceId)),
+    ];
+
+    const subscriptions =
+      await SubscriptionDomain.loadSubscriptionsByOrganizationAndServiceInstanceIds(
+        {
+          organizationIds,
+          serviceInstanceIds,
+        }
+      );
+
+    const map = new Map<string, Subscription>(
+      subscriptions.map((subscription) => [
+        subscriptionByServiceInstanceLoaderKey.create({
+          organizationId: subscription.organization_id,
+          serviceInstanceId: subscription.service_instance_id,
+        }),
+        subscription,
+      ])
+    );
+
+    return parsedKeys.map(({ organizationId, serviceInstanceId }) => {
+      const key = subscriptionByServiceInstanceLoaderKey.create({
+        organizationId,
+        serviceInstanceId,
+      });
+      return map.get(key) ?? null;
+    });
   },
 
   create: (): DocumentDataLoaders => ({
@@ -141,8 +247,17 @@ export const DocumentDataLoader = {
     useCasesByDocumentIdLoader: new DataLoader(
       DocumentDataLoader.batchLoadUseCasesByDocumentId
     ),
+    solutionCategoryByDocumentIdLoader: new DataLoader(
+      DocumentDataLoader.batchLoadSolutionCategoryByDocumentId
+    ),
     integrationTypeLoader: new DataLoader(
       DocumentDataLoader.batchLoadIntegrationTypes
+    ),
+    serviceInstanceByIdLoader: new DataLoader(
+      DocumentDataLoader.batchLoadServiceInstances
+    ),
+    subscriptionByServiceInstanceLoader: new DataLoader(
+      DocumentDataLoader.batchLoadSubscriptionsByServiceInstance
     ),
   }),
 };

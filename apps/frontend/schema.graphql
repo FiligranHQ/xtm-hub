@@ -31,6 +31,8 @@ enum FilterKey {
   feed_url
   verified
   entity_type
+  license_type
+  solution_category
 }
 
 enum LogicalOperator {
@@ -537,6 +539,11 @@ enum DocumentImageType {
   image
 }
 
+enum LicenseType {
+  Commercial
+  Free
+}
+
 enum DocumentMetadataKeyCode {
   feed_url
   integration_type
@@ -563,6 +570,9 @@ enum DocumentMetadataKeyCode {
   config_schema
   manifest_fragment_id
   entity_types
+  solution_category
+  license_type
+  contact
 }
 
 type ShareableResource {
@@ -648,6 +658,8 @@ input CreateDocumentInput {
   description: String!
   active: Boolean!
   use_cases: [UseCaseId!]!
+  solution_category: SolutionCategoryId
+  license_type: LicenseType
   entity_types: [String!]
   uploader_id: UserId!
 }
@@ -658,6 +670,8 @@ input UpdateDocumentInput {
   description: String
   active: Boolean
   use_cases: [UseCaseId!]
+  solution_category: SolutionCategoryId
+  license_type: LicenseType
   entity_types: [String!]
   uploader_organization_id: OrganizationId
   uploader_id: UserId
@@ -1302,6 +1316,9 @@ input ManifestFragmentInput {
   integration_type: String!
   additional_properties: JSON!
   config_schema: JSON!
+  license_type: LicenseType
+  contact: String
+  solution_categories: [String!]
 }
 
 enum ManifestType {
@@ -1430,6 +1447,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
+  solution_category: SolutionCategory
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1439,6 +1457,7 @@ interface Integration implements Node & Document {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: LicenseType
 }
 
 type IntegrationHack implements Node & Document & Integration {
@@ -1458,6 +1477,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
+  solution_category: SolutionCategory
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1467,6 +1487,7 @@ type IntegrationHack implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: LicenseType
 }
 
 type CsvFeed implements Node & Document & Integration {
@@ -1486,6 +1507,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
+  solution_category: SolutionCategory
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1496,6 +1518,7 @@ type CsvFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: LicenseType
 }
 
 type Connector implements Node & Document & Integration {
@@ -1515,6 +1538,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
+  solution_category: SolutionCategory
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1533,6 +1557,8 @@ type Connector implements Node & Document & Integration {
   blogpost_url: String
   demo_url: String
   minimum_deployable_version: String
+  license_type: LicenseType
+  contact: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {
@@ -1552,6 +1578,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
+  solution_category: SolutionCategory
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1563,6 +1590,7 @@ type TaxiiFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: LicenseType
 }
 
 type RssFeed implements Node & Document & Integration {
@@ -1582,6 +1610,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
+  solution_category: SolutionCategory
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1593,6 +1622,7 @@ type RssFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: LicenseType
 }
 
 type Stream implements Node & Document & Integration {
@@ -1612,6 +1642,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
+  solution_category: SolutionCategory
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1623,6 +1654,7 @@ type Stream implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: LicenseType
 }
 
 type ThirdPartyIntegration implements Node & Document & Integration {
@@ -1642,6 +1674,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
+  solution_category: SolutionCategory
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1655,6 +1688,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
+  license_type: LicenseType
 }
 
 type OpenCTIPlaybook implements Document & Node {

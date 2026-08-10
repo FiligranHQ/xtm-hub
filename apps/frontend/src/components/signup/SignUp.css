@@ -332,11 +332,6 @@
   color: hsl(var(--muted-foreground));
 }
 
-#hubspot-form form .hs-richtext a,
-#hubspot-form form .hs-richtext p a {
-  font-weight: 500;
-}
-
 #hubspot-form form .field.hs-fieldtype-checkbox,
 #hubspot-form
   form

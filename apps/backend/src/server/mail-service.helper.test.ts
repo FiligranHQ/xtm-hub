@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { PlatformIdentifier } from '../__generated__/resolvers-types';
 import * as producer from '../thirdparty/pgboss/producer';
 import { clearTemplateCache, renderEmail, sendMail } from './mail-service';
+import { templateSubjects } from './mail-template/mail';
 
 vi.mock('config', async (importOriginal) => {
   const mod = await importOriginal<{ default: typeof config }>();
@@ -49,6 +50,21 @@ describe('renderEmail', () => {
       expect(html).not.toContain('{{ base_url_front }}');
       expect(html).not.toContain('{{ contactEmail }}');
       expect(html).toContain('xtm-hub-support@filigran.io');
+    });
+
+    it('should use template subject for title and aria-label', async () => {
+      const params = {
+        organizationName: 'Filigran',
+        userName: 'Alice',
+        invitedName: 'Bob',
+      };
+      const expectedTitle = templateSubjects.new_user_organization(params);
+      const escapedExpectedTitle = expectedTitle.replaceAll("'", '&#x27;');
+
+      const html = await renderEmail('new_user_organization', params);
+
+      expect(html).toContain(`<title>${escapedExpectedTitle}</title>`);
+      expect(html).toContain(`aria-label="${escapedExpectedTitle}"`);
     });
   });
 

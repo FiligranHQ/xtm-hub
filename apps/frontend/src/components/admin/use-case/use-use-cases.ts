@@ -6,16 +6,17 @@ import {
   UseCaseOrdering,
   useUseCasesListQuery,
 } from '@graphql/generated';
+import { useMemo } from 'react';
 
-interface GetUseCasesOptions {
+interface UseUseCasesOptions {
   documentType?: string;
   product?: FiligranProduct;
 }
 
-export const getUseCases = ({
+export const useUseCases = ({
   documentType,
   product,
-}: GetUseCasesOptions = {}) => {
+}: UseUseCasesOptions = {}) => {
   const variables = {
     count: 500,
     orderBy: UseCaseOrdering.Name,
@@ -24,11 +25,14 @@ export const getUseCases = ({
     product: product ?? null,
   };
   const { data } = useUseCasesListQuery(portalGraphqlClient, variables);
-  return (data?.useCases?.edges ?? [])
-    .map(({ node }) => node)
-    .map(({ id, name, color }) => ({
-      id,
-      name: formatName(name),
-      color,
-    }));
+
+  return useMemo(
+    () =>
+      (data?.useCases?.edges ?? []).map(({ node }) => ({
+        id: node.id,
+        name: formatName(node.name),
+        color: node.color,
+      })),
+    [data]
+  );
 };

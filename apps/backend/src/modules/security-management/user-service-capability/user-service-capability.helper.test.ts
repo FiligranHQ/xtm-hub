@@ -81,3 +81,86 @@ describe('insertUserServiceCapability', () => {
     );
   });
 });
+
+describe('loadCapabilitiesByKeys', () => {
+  let subscriptionId: SubscriptionId | undefined;
+  let userServiceId: UserServiceId | undefined;
+
+  beforeEach(async () => {
+    const subscription = await TestHelper.subscription.create({
+      organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+      start_date: new Date(),
+    });
+    subscriptionId = subscription.id;
+
+    const userService = await TestHelper.user_Service.create({
+      user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+      subscription_id: subscriptionId,
+    });
+    userServiceId = userService?.id;
+
+    await TestHelper.user_ServiceCapability.create({
+      id: uuidv4() as UserServiceCapabilityId,
+      user_service_id: userServiceId,
+      generic_service_capability_id:
+        GenericServiceCapabilityIds.ManageAccessId as GenericServiceCapabilityId,
+      subscription_capability_id: null,
+    });
+  });
+
+  afterEach(async () => {
+    if (userServiceId) {
+      await TestHelper.user_ServiceCapability.delete({
+        user_service_id: userServiceId,
+      });
+      await TestHelper.user_Service.delete({ id: userServiceId });
+    }
+
+    if (subscriptionId) {
+      await TestHelper.subscription.delete({ id: subscriptionId });
+    }
+  });
+
+  it('should return capabilities matching each key and default to an empty array for missing keys, preserving input order', async () => {
+    const results = await UserServiceCapabilityHelper.loadCapabilitiesByKeys([
+      {
+        serviceInstanceId: SERVICES.INSTANCES.OPENAEV_SCENARIOS.ID,
+        userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      },
+      {
+        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      },
+    ]);
+
+    expect(results).toEqual([[], ['MANAGE_ACCESS']]);
+  });
+
+  it('should not match a key built from the cross product of the requested keys', async () => {
+    const results = await UserServiceCapabilityHelper.loadCapabilitiesByKeys([
+      {
+        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      },
+      {
+        serviceInstanceId: SERVICES.INSTANCES.VAULT.ID,
+        userId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      },
+    ]);
+
+    expect(results).toEqual([[], []]);
+  });
+
+  it('should return an empty array when no key is provided', async () => {
+    const results = await UserServiceCapabilityHelper.loadCapabilitiesByKeys(
+      []
+    );
+
+    expect(results).toEqual([]);
+  });
+});

@@ -102,6 +102,7 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
             {t('AlreadyHaveAccount')}
             <Link
               href={oidcHref}
+              prefetch={false}
               className="text-primary underline">
               {t('LogIn')}
             </Link>

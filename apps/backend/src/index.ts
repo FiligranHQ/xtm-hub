@@ -27,6 +27,7 @@ import { documentDownloadEndpoint } from './modules/document/document-download-e
 import { DocumentDataLoader } from './modules/document/document.dataloader';
 import { documentVisualizeEndpoint } from './modules/document/visualize-document-endpoint';
 import { initAuthPlatform } from './modules/security-management/authentication/auth-platform';
+import { ServiceInstanceDataLoader } from './modules/service/instance/service-instance.dataloader';
 import { TelemetrySnapshotApp } from './modules/telemetry/telemetry-snapshot.app';
 import { errorLoggingPlugin } from './server/apollo-plugins/log';
 import {
@@ -340,7 +341,10 @@ const middlewareExpress = expressMiddleware(server, {
       user: user as UserLoadUserBy,
       req,
       res,
-      dataLoaders: DocumentDataLoader.create(),
+      dataLoaders: {
+        document: DocumentDataLoader.create(),
+        serviceInstance: ServiceInstanceDataLoader.create(),
+      },
     };
 
     return portalContext;

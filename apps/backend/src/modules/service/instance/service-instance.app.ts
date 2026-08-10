@@ -31,16 +31,17 @@ export const ServiceInstanceApp = {
   ): Promise<ServiceInstance> => {
     const user = requestContext.requireUser();
 
-    const service = await ServiceInstanceDomain.loadServiceInstanceBy({
-      id: serviceInstanceId,
-    });
+    const [service, existingSubscription] = await Promise.all([
+      ServiceInstanceDomain.loadServiceInstanceBy({ id: serviceInstanceId }),
+      SubscriptionDomain.loadSubscriptionBy({
+        service_instance_id: serviceInstanceId,
+        organization_id: user.selected_organization_id,
+      }),
+    ]);
     if (!service) {
       throw new Error(ErrorCode.ServiceInstanceNotFound);
     }
-    let subscription = await SubscriptionDomain.loadSubscriptionBy({
-      service_instance_id: serviceInstanceId,
-      organization_id: user.selected_organization_id,
-    });
+    let subscription = existingSubscription;
 
     if (!subscription) {
       const [createdSubscription] =
@@ -56,14 +57,14 @@ export const ServiceInstanceApp = {
       }
       subscription = createdSubscription;
     }
-    const userService = await UserServiceDomain.loadUserServiceBy({
-      subscription_id: subscription.id,
-      user_id: user.id,
-    });
-    if (userService.length === 0) {
+    const userService = await UserServiceDomain.doesUserServiceExist(
+      user.id,
+      subscription.id
+    );
+    if (!userService) {
       await ServiceInstanceDomain.grantServiceAccess(
-        [GenericServiceCapabilityIds.AccessId],
-        [user.id],
+        GenericServiceCapabilityIds.AccessId,
+        user.id,
         subscription.id
       );
     }
