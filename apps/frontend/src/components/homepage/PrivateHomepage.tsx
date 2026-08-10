@@ -8,15 +8,11 @@ import PrivateHomepageRoadmapSection from '@/components/homepage/roadmap/Private
 import XtmPlatform from '@/components/homepage/xtm-platform/XtmPlatform';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { APP_PATH } from '@/utils/path/constant';
-import MeLoaderQuery, { meLoaderQuery } from '@generated/meLoaderQuery.graphql';
-import { useRegisteredPlatformsQuery } from '@graphql/generated';
-
-type MeNameData = {
-  first_name?: string | null;
-  last_name?: string | null;
-};
+import {
+  useMeFirstNameQuery,
+  useRegisteredPlatformsQuery,
+} from '@graphql/generated';
 
 const breadcrumbValue = [
   {
@@ -46,7 +42,7 @@ export const PrivateHomepage = async () => {
           hasDeployedResources: true,
         },
       })(),
-      serverFetchGraphQL<meLoaderQuery>(MeLoaderQuery),
+      useMeFirstNameQuery.fetcher(authenticatedClient, {})(),
     ]);
 
   const platformIdentifiers =
@@ -54,11 +50,7 @@ export const PrivateHomepage = async () => {
       registeredPlatformsData.registeredPlatforms
     );
 
-  const me = meData.data.me as MeNameData | null | undefined;
-  const firstName = me?.first_name?.trim() ?? '';
-  const lastName = me?.last_name?.trim() ?? '';
-
-  const welcomeName = `${firstName} ${lastName}`.trim() || undefined;
+  const welcomeName = meData.me?.first_name?.trim() || undefined;
 
   return (
     <>

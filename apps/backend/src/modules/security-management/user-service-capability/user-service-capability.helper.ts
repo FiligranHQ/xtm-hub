@@ -15,7 +15,9 @@ import UserServiceCapability, {
   UserServiceCapabilityId,
   UserServiceCapabilityInitializer,
 } from '../../../model/kanel/public/UserServiceCapability';
+import { buildTupleFilter } from '../../../utils/batch-query.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { serviceInstanceUserOrganizationKey } from '../../service/instance/service-instance.keys';
 import { GenericServiceCapabilityHelper } from '../service-capability/generic-service-capability.helper';
 import { ServiceCapabilityDomain } from '../service-capability/service-capability.domain';
 import { SubscriptionCapabilityDomain } from '../subscription-capability/subscription-capability.domain';
@@ -118,21 +120,42 @@ export const UserServiceCapabilityHelper = {
       .returning('*');
   },
 
-  loadCapabilities: async (
-    serviceInstanceId: ServiceInstanceId,
-    userId: UserId,
-    orgaId: OrganizationId
-  ) => {
-    const [subscriptionWithCapabilities] = await db<Subscription>(
-      'Subscription'
-    )
-      .where('Subscription.service_instance_id', '=', serviceInstanceId)
-      .where('Subscription.organization_id', '=', orgaId)
-      .leftJoin('User_Service', function () {
-        this.on('User_Service.subscription_id', '=', 'Subscription.id')
+  loadCapabilitiesByKeys: async (
+    keys: readonly {
+      serviceInstanceId: ServiceInstanceId;
+      userId: UserId;
+      organizationId: OrganizationId;
+    }[]
+  ): Promise<string[][]> => {
+    const { columns, tuples } = buildTupleFilter(keys, [
+      {
+        column: 'Subscription.service_instance_id',
+        value: (key) => key.serviceInstanceId,
+      },
+      {
+        column: 'Subscription.organization_id',
+        value: (key) => key.organizationId,
+      },
+      { column: 'User_Service.user_id', value: (key) => key.userId },
+    ]);
 
-          .andOnVal('User_Service.user_id', '=', userId);
-      })
+    if (tuples.length === 0) {
+      return [];
+    }
+
+    const rows: {
+      service_instance_id: ServiceInstanceId;
+      organization_id: OrganizationId;
+      user_id: UserId;
+      capability: string | null;
+    }[] = await db<Subscription>('Subscription')
+      .join(
+        'User_Service',
+        'User_Service.subscription_id',
+        '=',
+        'Subscription.id'
+      )
+      .whereIn(columns, tuples)
       .leftJoin(
         'UserService_Capability',
         'UserService_Capability.user_service_id',
@@ -158,14 +181,50 @@ export const UserServiceCapabilityHelper = {
         'Generic_Service_Capability.id'
       )
       .select(
+        'Subscription.service_instance_id',
+        'Subscription.organization_id',
+        'User_Service.user_id',
         dbRaw(
-          `COALESCE(
-          json_agg(
-            COALESCE("Generic_Service_Capability".name, "Service_Capability".name)
-          ), '[]'::json
-        ) AS capabilities`
+          `COALESCE("Generic_Service_Capability".name, "Service_Capability".name) AS capability`
         )
       );
-    return subscriptionWithCapabilities.capabilities;
+
+    const map = new Map<string, string[]>();
+    for (const row of rows) {
+      if (!row.capability) {
+        continue;
+      }
+      const key = serviceInstanceUserOrganizationKey.create({
+        serviceInstanceId: row.service_instance_id,
+        userId: row.user_id,
+        organizationId: row.organization_id,
+      });
+      const capabilities = map.get(key) ?? [];
+      capabilities.push(row.capability);
+      map.set(key, capabilities);
+    }
+
+    return keys.map(
+      ({ serviceInstanceId, userId, organizationId }) =>
+        map.get(
+          serviceInstanceUserOrganizationKey.create({
+            serviceInstanceId,
+            userId,
+            organizationId,
+          })
+        ) ?? []
+    );
+  },
+
+  loadCapabilities: async (
+    serviceInstanceId: ServiceInstanceId,
+    userId: UserId,
+    orgaId: OrganizationId
+  ) => {
+    const [capabilities] =
+      await UserServiceCapabilityHelper.loadCapabilitiesByKeys([
+        { serviceInstanceId, userId, organizationId: orgaId },
+      ]);
+    return capabilities;
   },
 };

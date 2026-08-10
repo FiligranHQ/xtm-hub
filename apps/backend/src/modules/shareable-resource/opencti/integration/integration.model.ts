@@ -1,6 +1,7 @@
 import {
   DocumentMetadataKeyCode,
   IntegrationType,
+  LicenseType,
 } from '../../../../__generated__/resolvers-types';
 import Document from '../../../../model/kanel/public/Document';
 import type { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
@@ -23,7 +24,8 @@ export type Integration = Document & {
   datasheet_url?: string;
   blogpost_url?: string;
   demo_url?: string;
-  license_type?: string;
+  license_type?: LicenseType;
+  contact?: string;
 };
 export type CsvFeed = Integration & {
   feed_url: string;
@@ -199,6 +201,7 @@ export const INTEGRATION_CONNECTOR_V2_METADATA: ConnectorV2Metadata = [
   { key: DocumentMetadataKeyCode.ManifestFragmentId },
   { key: DocumentMetadataKeyCode.VersionPadded },
   { key: DocumentMetadataKeyCode.LicenseType, optional: true },
+  { key: DocumentMetadataKeyCode.Contact, optional: true },
 ];
 export const INTEGRATION_CONNECTOR_METADATA_KEYS =
   INTEGRATION_CONNECTOR_METADATA.map(({ key }) => key);

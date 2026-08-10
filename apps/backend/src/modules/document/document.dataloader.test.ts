@@ -25,7 +25,7 @@ describe('documentDataLoader', () => {
   it('should group children documents by parent id', async () => {
     vi.spyOn(
       DocumentChildrenDomain,
-      'buildChildrenDocumentsQuery'
+      'loadChildrenDocumentsByParentIds'
     ).mockResolvedValue([
       {
         id: 'child-1',
@@ -58,19 +58,18 @@ describe('documentDataLoader', () => {
   });
 
   it('should convert image ids to global ids and keep grouping by parent id', async () => {
-    vi.spyOn(
-      DocumentChildrenDomain,
-      'buildImagesByDocumentIdQuery'
-    ).mockResolvedValue([
-      {
-        id: 'image-1',
-        _parent_id: 'doc-1',
-      },
-      {
-        id: 'image-2',
-        _parent_id: 'doc-2',
-      },
-    ] as never);
+    vi.spyOn(DocumentChildrenDomain, 'loadImagesByParentIds').mockResolvedValue(
+      [
+        {
+          id: 'image-1',
+          _parent_id: 'doc-1',
+        },
+        {
+          id: 'image-2',
+          _parent_id: 'doc-2',
+        },
+      ] as never
+    );
 
     const result = await DocumentDataLoader.batchLoadImagesByDocumentId([
       'doc-1',

@@ -37,7 +37,6 @@ import { UserDomain } from '../organization-management/user/user-domain/user.dom
 import { UserOrganizationDomain } from '../organization-management/user/user-organization/user-organization.domain';
 import { UserHelper } from '../organization-management/user/user.helper';
 import { GenericServiceCapabilityIds } from '../security-management/service-capability/generic-service-capability.const';
-import { ServiceCapabilityHelper } from '../security-management/service-capability/service-capability.helper';
 import { UserServiceCapabilityHelper } from '../security-management/user-service-capability/user-service-capability.helper';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { SubscriptionDomain } from '../subscription/subscription.domain';
@@ -74,37 +73,6 @@ export const UserServiceDomain = {
       }
       return userServices;
     });
-  },
-
-  addAdminAccess: async (
-    adminId: UserId,
-    subscriptionId: SubscriptionId,
-    isPersonalSpace: boolean = false
-  ) => {
-    const dataUserService = {
-      id: uuidv4() as UserServiceId,
-      user_id: adminId,
-      subscription_id: subscriptionId,
-    };
-    const [userService] =
-      await UserServiceDomain.insertUserService(dataUserService);
-
-    if (!userService) {
-      throw new Error(UnknownErrorCode.AddUserServiceError);
-    }
-
-    const capabilitiesId = isPersonalSpace
-      ? [GenericServiceCapabilityIds.AccessId]
-      : [
-          GenericServiceCapabilityIds.AccessId,
-          GenericServiceCapabilityIds.ManageAccessId,
-        ];
-    const dataCapabilities = capabilitiesId.map((capabilityId) => ({
-      id: uuidv4() as UserServiceCapabilityId,
-      user_service_id: userService.id,
-      generic_service_capability_id: capabilityId as GenericServiceCapabilityId,
-    }));
-    await ServiceCapabilityHelper.insertServiceCapability(dataCapabilities);
   },
 
   createUserServiceAccess: async ({
@@ -569,12 +537,11 @@ export const UserServiceDomain = {
   doesUserServiceExist: async (
     user_id: UserId,
     subscription_id: SubscriptionId
-  ) => {
-    const [existingUserService] =
-      await UserServiceDomain.loadUserServiceWithCapabilitiesBy({
-        user_id,
-        subscription_id,
-      });
+  ): Promise<boolean> => {
+    const existingUserService = await db<UserService>('User_Service')
+      .where({ user_id, subscription_id })
+      .select('User_Service.id')
+      .first();
     return !!existingUserService;
   },
 };

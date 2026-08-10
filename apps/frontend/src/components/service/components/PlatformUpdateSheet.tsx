@@ -1,5 +1,6 @@
 'use client';
 
+import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation/private/private-navigation-query-invalidation';
 import { translateServiceDefinitionIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
@@ -20,6 +21,7 @@ import {
 import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment.graphql';
 import { serviceUpdatePlatformServiceMetadataMutation } from '@generated/serviceUpdatePlatformServiceMetadataMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
@@ -49,6 +51,7 @@ export const PlatformUpdateSheet = ({
 }: PlatformUpdateSheetProps) => {
   const t = useTranslations();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const [updatePlatformMetadata] =
     useMutation<serviceUpdatePlatformServiceMetadataMutation>(
@@ -82,6 +85,7 @@ export const PlatformUpdateSheet = ({
       uploadables,
       onCompleted: () => {
         setOpen(false);
+        invalidatePrivateNavigationQueries(queryClient);
         toast({
           title: t('Utils.Success'),
           description: t('Platform.Updated', {

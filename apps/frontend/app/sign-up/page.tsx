@@ -7,6 +7,7 @@ import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import { UnauthenticatedError } from '@/lib/graphql-fetch.utils';
 import { getMetadataBase } from '@/utils/metadata';
 import { APP_PATH } from '@/utils/path/constant';
+import { decodeSafeRedirect } from '@/utils/redirect';
 import { hasLocalProvider } from '@/utils/settings.service';
 import { useMeCheckQuery } from '@graphql/generated';
 import { Metadata } from 'next';
@@ -22,13 +23,21 @@ export const generateMetadata = async (): Promise<Metadata> => {
 
 export const dynamic = 'force-dynamic';
 
-const Page = async () => {
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+const Page = async ({ searchParams }: PageProps) => {
+  const params = await searchParams;
+  const redirectParam =
+    typeof params.redirect === 'string' ? params.redirect : undefined;
+
   try {
     const client = await getAuthenticatedGraphqlClient();
     const data = await useMeCheckQuery.fetcher(client)();
 
     if (data.me) {
-      redirect(`/${APP_PATH}`);
+      redirect(decodeSafeRedirect(redirectParam) ?? `/${APP_PATH}`);
     }
   } catch (_error) {
     if (_error instanceof UnauthenticatedError) {

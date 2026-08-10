@@ -105,7 +105,7 @@ export const ManifestHelper = {
 
     let images: WithParentId<DocumentImage>[];
     try {
-      images = await DocumentChildrenDomain.buildImagesByDocumentIdQuery<
+      images = await DocumentChildrenDomain.loadImagesByParentIds<
         WithParentId<DocumentImage>
       >(connectorIds, { isDataLoader: true });
     } catch (error) {
@@ -217,7 +217,8 @@ export const ManifestHelper = {
     connectors: ConnectorV2[],
     now: Date = new Date(),
     useCasesByConnectorId: Map<string, string[]>,
-    logoByConnectorId: Map<DocumentId, string | null> = new Map()
+    logoByConnectorId: Map<DocumentId, string | null> = new Map(),
+    solutionCategoriesByConnectorId: Map<string, string[]> = new Map()
   ): ManifestOutput => {
     const contracts: ManifestContract[] = connectors.map((connector) => ({
       id: connector.manifest_fragment_id,
@@ -227,12 +228,16 @@ export const ManifestHelper = {
       short_description: connector.short_description ?? '',
       logo: logoByConnectorId.get(connector.id) ?? null,
       use_cases: useCasesByConnectorId.get(connector.id as string) ?? [],
+      solution_categories:
+        solutionCategoriesByConnectorId.get(connector.id as string) ?? [],
       verified: connector.verified,
       last_verified_date: connector.last_verified_date,
       subscription_link: connector.subscription_link ?? null,
       source_code: connector.source_code ?? null,
       manager_supported: connector.manager_supported,
       support_version: connector.minimum_deployable_version ?? null,
+      license_type: connector.license_type ?? null,
+      contact: connector.contact ?? null,
       version: connector.version ?? null,
       image_name: connector.image_name ?? null,
       image_type: connector.image_type,

@@ -170,6 +170,7 @@ export type Connector = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   blogpost_url: Maybe<Scalars['String']['output']>;
   children_documents: Maybe<Array<ShareableResource>>;
+  contact: Maybe<Scalars['String']['output']>;
   container_image: Maybe<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url: Maybe<Scalars['String']['output']>;
@@ -180,7 +181,7 @@ export type Connector = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   manager_supported: Scalars['Boolean']['output'];
   minimum_deployable_version: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -274,7 +275,7 @@ export type CsvFeed = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -625,6 +626,7 @@ export enum DocumentMetadataKeyCode {
   AdditionalProperties = 'additional_properties',
   BlogpostUrl = 'blogpost_url',
   ConfigSchema = 'config_schema',
+  Contact = 'contact',
   ContainerImage = 'container_image',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
@@ -768,11 +770,13 @@ export enum FilterKey {
   IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   Label = 'label',
+  LicenseType = 'license_type',
   ManagerSupported = 'manager_supported',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
   ProductVersion = 'product_version',
   Slug = 'slug',
+  SolutionCategory = 'solution_category',
   Verified = 'verified'
 }
 
@@ -794,7 +798,7 @@ export type Integration = {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -825,7 +829,7 @@ export type IntegrationHack = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -916,18 +920,21 @@ export enum LogicalOperator {
 export type ManifestFragmentInput = {
   additional_properties: Scalars['JSON']['input'];
   config_schema: Scalars['JSON']['input'];
+  contact: InputMaybe<Scalars['String']['input']>;
   description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   image_name: Scalars['String']['input'];
   image_type: Scalars['String']['input'];
   integration_type: Scalars['String']['input'];
   last_verified_date: Scalars['String']['input'];
+  license_type: InputMaybe<LicenseType>;
   logo: Scalars['String']['input'];
   manager_supported: Scalars['Boolean']['input'];
   min_version: Scalars['String']['input'];
   platform: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
+  solution_categories: InputMaybe<Array<Scalars['String']['input']>>;
   source_code: Scalars['String']['input'];
   subscription_link: Scalars['String']['input'];
   title: Scalars['String']['input'];
@@ -2113,7 +2120,7 @@ export type RssFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2342,7 +2349,7 @@ export type Stream = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2462,7 +2469,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   remover_id: Maybe<Scalars['ID']['output']>;
   service_instance: Maybe<ServiceInstance>;
@@ -2514,7 +2521,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   id: Scalars['ID']['output'];
   integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
-  license_type: Maybe<Scalars['String']['output']>;
+  license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
   product_version: Maybe<Scalars['String']['output']>;
   remover_id: Maybe<Scalars['ID']['output']>;
@@ -2844,6 +2851,11 @@ export type MeCheckQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeCheckQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string } | null };
+
+export type MeFirstNameQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeFirstNameQuery = { __typename?: 'Query', me: { __typename?: 'User', first_name: string | null } | null };
 
 export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -3259,6 +3271,59 @@ export const useInfiniteMeCheckQuery = <
 useInfiniteMeCheckQuery.getKey = (variables?: MeCheckQueryVariables) => variables === undefined ? ['meCheck.infinite'] : ['meCheck.infinite', variables];
 useInfiniteMeCheckQuery.getRootKey = () => ['meCheck.infinite'] as const;
 useMeCheckQuery.fetcher = (client: GraphQLClient, variables?: MeCheckQueryVariables, headers?: RequestInit['headers']) => fetcher<MeCheckQuery, MeCheckQueryVariables>(client, MeCheckDocument, variables, headers);
+
+export const MeFirstNameDocument = `
+    query MeFirstName {
+  me {
+    first_name
+  }
+}
+    `;
+
+export const useMeFirstNameQuery = <
+      TData = MeFirstNameQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: MeFirstNameQueryVariables,
+      options?: Omit<UseQueryOptions<MeFirstNameQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<MeFirstNameQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<MeFirstNameQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['MeFirstName'] : ['MeFirstName', variables],
+    queryFn: fetcher<MeFirstNameQuery, MeFirstNameQueryVariables>(client, MeFirstNameDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useMeFirstNameQuery.getKey = (variables?: MeFirstNameQueryVariables) => variables === undefined ? ['MeFirstName'] : ['MeFirstName', variables];
+useMeFirstNameQuery.getRootKey = () => ['MeFirstName'] as const;
+export const useInfiniteMeFirstNameQuery = <
+      TData = InfiniteData<MeFirstNameQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: MeFirstNameQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<MeFirstNameQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<MeFirstNameQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<MeFirstNameQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['MeFirstName.infinite'] : ['MeFirstName.infinite', variables],
+      queryFn: (metaData) => fetcher<MeFirstNameQuery, MeFirstNameQueryVariables>(client, MeFirstNameDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteMeFirstNameQuery.getKey = (variables?: MeFirstNameQueryVariables) => variables === undefined ? ['MeFirstName.infinite'] : ['MeFirstName.infinite', variables];
+useInfiniteMeFirstNameQuery.getRootKey = () => ['MeFirstName.infinite'] as const;
+useMeFirstNameQuery.fetcher = (client: GraphQLClient, variables?: MeFirstNameQueryVariables, headers?: RequestInit['headers']) => fetcher<MeFirstNameQuery, MeFirstNameQueryVariables>(client, MeFirstNameDocument, variables, headers);
 
 export const OrganizationSubscribedServicesBreadcrumbDocument = `
     query OrganizationSubscribedServicesBreadcrumb($id: ID!) {

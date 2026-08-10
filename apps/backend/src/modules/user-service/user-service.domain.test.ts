@@ -660,4 +660,48 @@ describe('userServiceDomain', () => {
       );
     });
   });
+
+  describe('doesUserServiceExist', () => {
+    const sub = useSubscription();
+
+    it('should return true when the user already has access to the subscription', async () => {
+      await insertUserService(SIMPLE.ID, sub.id);
+
+      const result = await UserServiceDomain.doesUserServiceExist(
+        SIMPLE.ID,
+        sub.id
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when the user has no access to the subscription', async () => {
+      const result = await UserServiceDomain.doesUserServiceExist(
+        SIMPLE.ID,
+        sub.id
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it('should not match a user service belonging to another subscription', async () => {
+      const otherSubscriptionId = await createTestSubscription({
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        service_instance_id: SERVICES.INSTANCES.VAULT.ID,
+        start_date: new Date(),
+        end_date: undefined,
+      });
+      await insertUserService(SIMPLE.ID, otherSubscriptionId);
+
+      const result = await UserServiceDomain.doesUserServiceExist(
+        SIMPLE.ID,
+        sub.id
+      );
+
+      await cleanupUserServices(otherSubscriptionId);
+      await TestHelper.subscription.delete({ id: otherSubscriptionId });
+
+      expect(result).toBe(false);
+    });
+  });
 });
