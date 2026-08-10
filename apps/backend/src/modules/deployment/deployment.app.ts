@@ -801,6 +801,7 @@ const sendDeploymentRequestCreatedNotifications = async ({
         email: user.email,
         deployment_id: deploymentRequest.id,
         deployment_type: deploymentRequest.type,
+        parent_id: deploymentRequest.parent_id ?? undefined,
       }
     );
     await TelemetryApp.sendTelemetryEvent(createDeploymentEvent);
@@ -941,6 +942,30 @@ const createBundleDeploymentRequest = async ({
         source: input.source,
         parent_id: null,
       });
+
+    try {
+      const createDeploymentEvent = TelemetryHelper.buildCreateDeploymentEvent(
+        chosenOrganization,
+        user.id,
+        undefined,
+        input.source,
+        {
+          region: bundleDeploymentRequest.region,
+          status: bundleDeploymentRequest.hub_status,
+          activity_sector: bundleDeploymentRequest.activity_sector,
+          job_title: bundleDeploymentRequest.job_title,
+          use_case: bundleDeploymentRequest.use_case,
+          email: user.email,
+          deployment_id: bundleDeploymentRequest.id,
+          deployment_type: bundleDeploymentRequest.type,
+        }
+      );
+      await TelemetryApp.sendTelemetryEvent(createDeploymentEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event', {
+        error,
+      });
+    }
 
     for (const platformIdentifier of products) {
       const childDeploymentRequest = await createSingleDeploymentRequest({
@@ -1096,10 +1121,20 @@ const recomputeBundleHubStatusAndDates = async (
     parent_id: bundleId,
   });
 
-  await DeploymentRequestDomain.updateDeploymentRequestById(bundleId, {
-    hub_status: DeploymentHelper.computeBundleHubStatus(children),
-    ...DeploymentHelper.computeBundleDates(children),
-  });
+  const updatedBundle =
+    await DeploymentRequestDomain.updateDeploymentRequestById(bundleId, {
+      hub_status: DeploymentHelper.computeBundleHubStatus(children),
+      ...DeploymentHelper.computeBundleDates(children),
+    });
+  if (!updatedBundle) {
+    throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+  }
+
+  await sendUpdateDeploymentTelemetryEvent(
+    updatedBundle,
+    updatedBundle.user_requester_id,
+    bundle
+  );
 };
 
 const applyDeploymentRequestUpdateInQuotaTransaction = async ({
@@ -1301,6 +1336,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
         end_date: deploymentRequest.end_date,
         deployment_id: deploymentRequest.id,
         deployment_type: deploymentRequest.type,
+        parent_id: deploymentRequest.parent_id ?? undefined,
         platform_id: deploymentRequest.platform_id,
         cancellation_reason:
           deploymentRequest.hub_status === DeploymentRequestHubStatus.Cancelled

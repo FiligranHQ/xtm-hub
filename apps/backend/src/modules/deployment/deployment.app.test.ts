@@ -371,7 +371,17 @@ describe('deployment app', () => {
           )
         );
 
-        expect(telemetrySpy).toHaveBeenCalledTimes(3);
+        expect(telemetrySpy).toHaveBeenCalledTimes(4);
+        const bundleEventCall = telemetrySpy.mock.calls.find(
+          ([event]) => event.deployment_id === bundle.id
+        );
+        expect(bundleEventCall?.[0]).toMatchObject({
+          event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+          deployment_id: bundle.id,
+          deployment_type: DeploymentRequestDeploymentType.Bundle,
+          target_product: undefined,
+        });
+        expect(bundleEventCall?.[0]).not.toHaveProperty('parent_id');
         [
           TelemetryTargetProduct.XTM_ONE,
           TelemetryTargetProduct.OPEN_CTI,
@@ -380,6 +390,8 @@ describe('deployment app', () => {
           expect(telemetrySpy).toHaveBeenCalledWith(
             expect.objectContaining({
               event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+              deployment_type: DeploymentRequestDeploymentType.Trial,
+              parent_id: bundle.id,
               target_product,
             })
           );
@@ -538,6 +550,7 @@ describe('deployment app', () => {
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             target_product: targetProduct,
+            parent_id: undefined,
           });
         }
       );
@@ -1268,6 +1281,7 @@ describe('deployment app', () => {
           start_date,
           end_date,
           status: DeploymentRequestHubStatus.Active,
+          parent_id: undefined,
         });
       });
 
@@ -1516,6 +1530,17 @@ describe('deployment app', () => {
             id: childA.id as DeploymentRequestId,
           });
         expect(updatedChildA?.url).toBe('https://child-a.example.com');
+
+        expect(telemetrySpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+            deployment_id: bundle.id,
+            deployment_type: DeploymentRequestDeploymentType.Bundle,
+            user_id: bundle.user_requester_id,
+            parent_id: undefined,
+            status: DeploymentRequestHubStatus.Active,
+          })
+        );
       });
 
       it('should recompute the bundle as Failed when any child is Failed, regardless of other children updates', async () => {
@@ -1571,6 +1596,7 @@ describe('deployment app', () => {
             bundle.id as DeploymentRequestId,
             { hub_status: terminalHubStatus }
           );
+          telemetrySpy.mockClear();
 
           await DeploymentApp.updateDeploymentRequest({
             id: childA.id as DeploymentRequestId,
@@ -1585,6 +1611,13 @@ describe('deployment app', () => {
               id: bundle.id as DeploymentRequestId,
             });
           expect(updatedBundle?.hub_status).toBe(terminalHubStatus);
+
+          expect(telemetrySpy).not.toHaveBeenCalledWith(
+            expect.objectContaining({
+              deployment_id: bundle.id,
+              deployment_type: DeploymentRequestDeploymentType.Bundle,
+            })
+          );
         }
       );
     });
@@ -1976,6 +2009,7 @@ describe('deployment app', () => {
         end_date: null,
         platform_id: null,
         cancellation_reason: 'CancellationReason',
+        parent_id: undefined,
       });
     });
 
@@ -2251,6 +2285,7 @@ describe('deployment app', () => {
           end_date: null,
           start_date: null,
           status: DeploymentRequestHubStatus.Pending,
+          parent_id: undefined,
         });
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -2266,6 +2301,7 @@ describe('deployment app', () => {
           end_date: null,
           start_date: null,
           status: DeploymentRequestHubStatus.Pending,
+          parent_id: undefined,
         });
       });
     });
@@ -2480,6 +2516,7 @@ describe('deployment app', () => {
           end_date: null,
           start_date: null,
           status: DeploymentRequestHubStatus.Queued,
+          parent_id: undefined,
         });
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -2495,6 +2532,7 @@ describe('deployment app', () => {
           end_date: null,
           start_date: null,
           status: DeploymentRequestHubStatus.Queued,
+          parent_id: undefined,
         });
       });
     });
@@ -2657,6 +2695,7 @@ describe('deployment app', () => {
         start_date,
         end_date,
         status: DeploymentRequestHubStatus.Expired,
+        parent_id: undefined,
       });
     });
   });
@@ -2823,6 +2862,7 @@ describe('deployment app', () => {
           start_date: null,
           end_date: null,
           status: DeploymentRequestHubStatus.Pending,
+          parent_id: undefined,
         });
       });
     });
