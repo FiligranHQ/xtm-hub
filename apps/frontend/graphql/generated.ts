@@ -2852,6 +2852,11 @@ export type MeCheckQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeCheckQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string } | null };
 
+export type MeFirstNameQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeFirstNameQuery = { __typename?: 'Query', me: { __typename?: 'User', first_name: string | null } | null };
+
 export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -3266,6 +3271,59 @@ export const useInfiniteMeCheckQuery = <
 useInfiniteMeCheckQuery.getKey = (variables?: MeCheckQueryVariables) => variables === undefined ? ['meCheck.infinite'] : ['meCheck.infinite', variables];
 useInfiniteMeCheckQuery.getRootKey = () => ['meCheck.infinite'] as const;
 useMeCheckQuery.fetcher = (client: GraphQLClient, variables?: MeCheckQueryVariables, headers?: RequestInit['headers']) => fetcher<MeCheckQuery, MeCheckQueryVariables>(client, MeCheckDocument, variables, headers);
+
+export const MeFirstNameDocument = `
+    query MeFirstName {
+  me {
+    first_name
+  }
+}
+    `;
+
+export const useMeFirstNameQuery = <
+      TData = MeFirstNameQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: MeFirstNameQueryVariables,
+      options?: Omit<UseQueryOptions<MeFirstNameQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<MeFirstNameQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<MeFirstNameQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['MeFirstName'] : ['MeFirstName', variables],
+    queryFn: fetcher<MeFirstNameQuery, MeFirstNameQueryVariables>(client, MeFirstNameDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useMeFirstNameQuery.getKey = (variables?: MeFirstNameQueryVariables) => variables === undefined ? ['MeFirstName'] : ['MeFirstName', variables];
+useMeFirstNameQuery.getRootKey = () => ['MeFirstName'] as const;
+export const useInfiniteMeFirstNameQuery = <
+      TData = InfiniteData<MeFirstNameQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: MeFirstNameQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<MeFirstNameQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<MeFirstNameQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<MeFirstNameQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['MeFirstName.infinite'] : ['MeFirstName.infinite', variables],
+      queryFn: (metaData) => fetcher<MeFirstNameQuery, MeFirstNameQueryVariables>(client, MeFirstNameDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteMeFirstNameQuery.getKey = (variables?: MeFirstNameQueryVariables) => variables === undefined ? ['MeFirstName.infinite'] : ['MeFirstName.infinite', variables];
+useInfiniteMeFirstNameQuery.getRootKey = () => ['MeFirstName.infinite'] as const;
+useMeFirstNameQuery.fetcher = (client: GraphQLClient, variables?: MeFirstNameQueryVariables, headers?: RequestInit['headers']) => fetcher<MeFirstNameQuery, MeFirstNameQueryVariables>(client, MeFirstNameDocument, variables, headers);
 
 export const OrganizationSubscribedServicesBreadcrumbDocument = `
     query OrganizationSubscribedServicesBreadcrumb($id: ID!) {
