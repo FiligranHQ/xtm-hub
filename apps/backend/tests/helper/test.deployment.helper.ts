@@ -37,6 +37,13 @@ export const TestDeploymentHelper = {
     update: async (field: DeploymentRequestMutator) => {
       await db<DeploymentRequest>('DeploymentRequest').update(field);
     },
+    loadMany: async (
+      field: DeploymentRequestMutator
+    ): Promise<DeploymentRequest[]> => {
+      return db<DeploymentRequest[]>('DeploymentRequest')
+        .where(field)
+        .select('*');
+    },
     create: async (
       data?: DeploymentRequestMutator
     ): Promise<DeploymentRequest | undefined> => {

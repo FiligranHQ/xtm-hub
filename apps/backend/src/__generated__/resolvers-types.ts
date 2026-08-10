@@ -213,7 +213,7 @@ export type CreateCompetitorInput = {
 export type CreateDeploymentRequestInput = {
   activity_sector?: InputMaybe<DeploymentRequestActivitySector>;
   job_title?: InputMaybe<DeploymentRequestJobTitle>;
-  platform_identifier: PlatformIdentifier;
+  products: Array<PlatformIdentifier>;
   region: DeploymentRequestPlatformRegion;
   source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
@@ -401,7 +401,7 @@ export type DeploymentRequest = Node & {
   organization_requester_id: Scalars['OrganizationId']['output'];
   parent_id?: Maybe<Scalars['DeploymentRequestId']['output']>;
   platform_id?: Maybe<Scalars['String']['output']>;
-  platform_identifier: PlatformIdentifier;
+  platform_identifier?: Maybe<PlatformIdentifier>;
   platform_url?: Maybe<Scalars['String']['output']>;
   region: DeploymentRequestPlatformRegion;
   request_date: Scalars['Date']['output'];
@@ -1596,7 +1596,7 @@ export type PlatformDeploymentRequest = {
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
   platform_id?: Maybe<Scalars['String']['output']>;
-  platform_identifier: PlatformIdentifier;
+  platform_identifier?: Maybe<PlatformIdentifier>;
   platform_token: Scalars['String']['output'];
   platform_url?: Maybe<Scalars['String']['output']>;
   region: DeploymentRequestPlatformRegion;
@@ -2192,6 +2192,7 @@ export enum ServiceDefinitionIdentifier {
   OpenctiPlaybooks = 'opencti_playbooks',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault',
+  XtmPlatformBundle = 'xtm_platform_bundle',
   XtmPlatformRoadmap = 'xtm_platform_roadmap',
   XtmoneRegistration = 'xtmone_registration'
 }
@@ -3541,7 +3542,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   organization_requester_id?: Resolver<ResolversTypes['OrganizationId'], ParentType, ContextType>;
   parent_id?: Resolver<Maybe<ResolversTypes['DeploymentRequestId']>, ParentType, ContextType>;
   platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
+  platform_identifier?: Resolver<Maybe<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   platform_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['DeploymentRequestPlatformRegion'], ParentType, ContextType>;
   request_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -3976,7 +3977,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
+  platform_identifier?: Resolver<Maybe<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   platform_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   platform_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<ResolversTypes['DeploymentRequestPlatformRegion'], ParentType, ContextType>;

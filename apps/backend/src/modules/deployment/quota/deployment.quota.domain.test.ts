@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
   DeploymentRequestPlatformRegion,
@@ -91,6 +91,18 @@ describe('deploymentQuotaDomain', () => {
       expect(updatedRequestQuota).toBeDefined();
       expect(updatedRequestQuota!.availability).toBe(0);
     });
+
+    it.each([[PlatformIdentifier.Xtmone], [null]])(
+      'should return that place is available without a quota row for %s',
+      async (nonQuotaManagedIdentifier) => {
+        const result = await DeploymentQuotaDomain.reservePlace(
+          nonQuotaManagedIdentifier,
+          region
+        );
+
+        expect(result.isPlaceAvailable).toBe(true);
+      }
+    );
   });
 
   describe('freePlace', () => {
@@ -124,6 +136,15 @@ describe('deploymentQuotaDomain', () => {
       expect(updatedRequestQuota).toBeDefined();
       expect(updatedRequestQuota!.availability).toBe(1);
     });
+
+    it.each([[PlatformIdentifier.Xtmone], [null]])(
+      'should be a no-op without a quota row for %s',
+      async (nonQuotaManagedIdentifier) => {
+        await expect(
+          DeploymentQuotaDomain.freePlace(nonQuotaManagedIdentifier, region)
+        ).resolves.toBeUndefined();
+      }
+    );
   });
 
   describe('updateQuotaCapacity', () => {
@@ -176,6 +197,23 @@ describe('deploymentQuotaDomain', () => {
           availability: expectedAvailability,
         });
         expect(result.newAvailability).toBe(expectedAvailability);
+      }
+    );
+  });
+
+  describe('withLockedQuotaTransaction', () => {
+    it.each([[PlatformIdentifier.Xtmone], [null]])(
+      'should call back with null and not throw without a quota row for %s',
+      async (nonQuotaManagedIdentifier) => {
+        const callback = vi.fn().mockResolvedValue('result');
+
+        const result = await DeploymentQuotaDomain.withLockedQuotaTransaction(
+          { platformIdentifier: nonQuotaManagedIdentifier, region },
+          callback
+        );
+
+        expect(callback).toHaveBeenCalledWith(null);
+        expect(result).toBe('result');
       }
     );
   });

@@ -348,7 +348,7 @@ enum DeploymentRequestJobTitle {
 
 type DeploymentRequest implements Node {
   id: ID!
-  platform_identifier: PlatformIdentifier!
+  platform_identifier: PlatformIdentifier
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
@@ -375,7 +375,7 @@ type DeploymentRequest implements Node {
 
 type PlatformDeploymentRequest {
   id: ID!
-  platform_identifier: PlatformIdentifier!
+  platform_identifier: PlatformIdentifier
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   platform_token: String!
@@ -399,7 +399,7 @@ type PlatformDeploymentRequest {
 }
 
 input CreateDeploymentRequestInput {
-  platform_identifier: PlatformIdentifier!
+  products: [PlatformIdentifier!]!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
@@ -1162,6 +1162,7 @@ enum ServiceDefinitionIdentifier {
   openaev_registration
   xtmone_registration
   xtm_platform_roadmap
+  xtm_platform_bundle
 }
 
 type ServiceDefinition implements Node {

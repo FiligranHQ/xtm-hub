@@ -221,7 +221,7 @@ export type CreateCompetitorInput = {
 export type CreateDeploymentRequestInput = {
   activity_sector: InputMaybe<DeploymentRequestActivitySector>;
   job_title: InputMaybe<DeploymentRequestJobTitle>;
-  platform_identifier: PlatformIdentifier;
+  products: Array<PlatformIdentifier>;
   region: DeploymentRequestPlatformRegion;
   source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
@@ -409,7 +409,7 @@ export type DeploymentRequest = Node & {
   organization_requester_id: Scalars['OrganizationId']['output'];
   parent_id: Maybe<Scalars['DeploymentRequestId']['output']>;
   platform_id: Maybe<Scalars['String']['output']>;
-  platform_identifier: PlatformIdentifier;
+  platform_identifier: Maybe<PlatformIdentifier>;
   platform_url: Maybe<Scalars['String']['output']>;
   region: DeploymentRequestPlatformRegion;
   request_date: Scalars['Date']['output'];
@@ -1604,7 +1604,7 @@ export type PlatformDeploymentRequest = {
   organization_domains: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
   platform_id: Maybe<Scalars['String']['output']>;
-  platform_identifier: PlatformIdentifier;
+  platform_identifier: Maybe<PlatformIdentifier>;
   platform_token: Scalars['String']['output'];
   platform_url: Maybe<Scalars['String']['output']>;
   region: DeploymentRequestPlatformRegion;
@@ -2200,6 +2200,7 @@ export enum ServiceDefinitionIdentifier {
   OpenctiPlaybooks = 'opencti_playbooks',
   OpenctiRegistration = 'opencti_registration',
   Vault = 'vault',
+  XtmPlatformBundle = 'xtm_platform_bundle',
   XtmPlatformRoadmap = 'xtm_platform_roadmap',
   XtmoneRegistration = 'xtmone_registration'
 }

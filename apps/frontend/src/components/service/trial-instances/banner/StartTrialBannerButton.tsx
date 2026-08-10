@@ -97,7 +97,7 @@ export const StartTrialBannerButton = () => {
       variables: {
         input: {
           ...valuesWithoutAcceptTerms,
-          platform_identifier: platformIdentifier,
+          products: [platformIdentifier],
           type: DeploymentRequestDeploymentType.Trial,
           source: DeploymentRequestSource.Xtmhub,
         },

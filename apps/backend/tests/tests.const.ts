@@ -163,7 +163,7 @@ export const TEST_DEPLOYMENT = {
   activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
   job_title: DeploymentRequestJobTitle.CLevel,
   use_case: DeploymentRequestUseCase.ThreatHunting,
-  platform_identifier: PlatformIdentifier.Opencti,
+  products: [PlatformIdentifier.Opencti],
   region: DeploymentRequestPlatformRegion.UsEast,
   type: DeploymentRequestDeploymentType.Trial,
   source: DeploymentRequestSource.Xtmhub,
