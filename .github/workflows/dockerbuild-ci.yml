@@ -183,7 +183,7 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  run-e2e-tests:
+  run-e2e-tests-shards:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -290,8 +290,8 @@ jobs:
           retention-days: 30
 
   publish-e2e-test-report:
-    needs: run-e2e-tests
-    if: always() && needs.run-e2e-tests.result != 'skipped'
+    needs: run-e2e-tests-shards
+    if: always() && needs.run-e2e-tests-shards.result != 'skipped'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -320,7 +320,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  run-front-unit-tests:
+  run-front-unit-tests-shards:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -367,7 +367,7 @@ jobs:
           name: frontend-shard-${{ matrix.shard }}
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  run-api-unit-tests:
+  run-api-unit-tests-shards:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -418,6 +418,48 @@ jobs:
           flags: backend-shard-${{ matrix.shard }}
           name: backend-shard-${{ matrix.shard }}
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  run-e2e-tests:
+    needs:
+      - run-e2e-tests-shards
+      - publish-e2e-test-report
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Finalize e2e shards
+        run: |
+          if [ "${{ needs.run-e2e-tests-shards.result }}" != "success" ]; then
+            echo "E2E shard job failed with result: ${{ needs.run-e2e-tests-shards.result }}"
+            exit 1
+          fi
+          if [ "${{ needs.publish-e2e-test-report.result }}" != "success" ] && [ "${{ needs.publish-e2e-test-report.result }}" != "skipped" ]; then
+            echo "E2E report publishing failed with result: ${{ needs.publish-e2e-test-report.result }}"
+            exit 1
+          fi
+
+  run-front-unit-tests:
+    needs: run-front-unit-tests-shards
+    if: always() && contains(github.ref , 'refs/tags/') == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Finalize frontend shards
+        run: |
+          if [ "${{ needs.run-front-unit-tests-shards.result }}" != "success" ]; then
+            echo "Frontend shard job failed with result: ${{ needs.run-front-unit-tests-shards.result }}"
+            exit 1
+          fi
+
+  run-api-unit-tests:
+    needs: run-api-unit-tests-shards
+    if: always() && contains(github.ref , 'refs/tags/') == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Finalize backend shards
+        run: |
+          if [ "${{ needs.run-api-unit-tests-shards.result }}" != "success" ]; then
+            echo "Backend shard job failed with result: ${{ needs.run-api-unit-tests-shards.result }}"
+            exit 1
+          fi
 
   deploy-feature-branch:
     needs: build-images-tests
