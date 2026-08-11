@@ -366,12 +366,12 @@ const handler = createHandler({
 
   onConnect: async (req) => {
     sseActiveConnectionsGauge.inc({
-      subscription: req.context.res.req.body.operationName ?? 'Unknown',
+      subscription: req.context.res.req.body?.operationName ?? 'Unknown',
     });
   },
   onComplete: async (_ctx, msg) => {
     sseActiveConnectionsGauge.dec({
-      subscription: msg.context.res.req.body.operationName ?? 'Unknown',
+      subscription: msg.context.res.req.body?.operationName ?? 'Unknown',
     });
   },
   onSubscribe: async (_ctx, msg) => {
@@ -381,7 +381,7 @@ const handler = createHandler({
   },
   onNext: async (_ctx, req) => {
     sseMessageCounter.inc({
-      subscription: req.context.res.req.body.operationName ?? 'Unknown',
+      subscription: req.context.res.req.body?.operationName ?? 'Unknown',
     });
   },
 });
