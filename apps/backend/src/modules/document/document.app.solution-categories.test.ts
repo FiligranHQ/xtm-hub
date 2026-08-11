@@ -73,12 +73,12 @@ describe('solution_categories linking', () => {
     vi.spyOn(MinIOClient, 'deleteFile').mockResolvedValue();
   });
 
-  afterEach(async () => {
-    await TestHelper.document.delete({});
-  });
-
   beforeEach(async () => {
     await TestHelper.objectSolutionCategory.delete({});
+  });
+
+  afterEach(async () => {
+    await TestHelper.document.delete({});
   });
 
   it('should link solution categories by name when creating a new document', async () => {
