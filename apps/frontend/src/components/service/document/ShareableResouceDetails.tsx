@@ -105,13 +105,17 @@ const ShareableResourceDetails = ({
               </span>
             </div>
           </ShareableResourceDetailItem>
-          {documentData.solution_category && (
+          {!!documentData.solution_categories?.length && (
             <ShareableResourceDetailItem
               label={t(
                 'Service.ShareableResources.Details.IntegrationSolutionCategory'
               )}>
               <div className="flex items-center gap-s">
-                <span>{documentData.solution_category.name}</span>
+                <span>
+                  {documentData.solution_categories
+                    .map((category) => category.name)
+                    .join(', ')}
+                </span>
               </div>
             </ShareableResourceDetailItem>
           )}

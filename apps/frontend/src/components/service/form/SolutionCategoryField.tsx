@@ -30,11 +30,15 @@ export const ServiceFormSolutionCategoryField = ({
 }: ServiceFormSolutionCategoryFieldProps) => {
   const t = useTranslations();
   const categories = useSolutionCategories(product);
-  const selectedCategoryId = field.value ?? document?.solution_category?.id;
+  // The form input is still single-select while the API now returns a list:
+  // take the first ingested category as the default, pending the product
+  // decision on form cardinality.
+  const selectedCategoryId =
+    field.value ?? document?.solution_categories?.[0]?.id;
+  const selectedCategoryName = document?.solution_categories?.[0]?.name;
   const hasSelectedCategoryInOptions = categories.some(
     (category) => category.id === selectedCategoryId
   );
-  const selectedCategoryName = document?.solution_category?.name;
 
   return (
     <FormItem>

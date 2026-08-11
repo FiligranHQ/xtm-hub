@@ -94,18 +94,20 @@ describe('integration field resolvers', () => {
       expect(result).toEqual(expected);
     });
 
-    describe('integration.solution_category', () => {
-      it('should load solution category by document id', async () => {
+    describe('integration.solution_categories', () => {
+      it('should load solution categories by document id', async () => {
         const documentId = uuidv4();
-        const expected = { id: uuidv4(), name: 'Case Management', product: [] };
+        const expected = [
+          { id: uuidv4(), name: 'Case Management', product: [] },
+        ];
         vi.spyOn(
           contextSimpleUserFiligran2.dataLoaders.document
-            .solutionCategoryByDocumentIdLoader,
+            .solutionCategoriesByDocumentIdLoader,
           'load'
-        ).mockResolvedValue(expected as unknown as SolutionCategory | null);
+        ).mockResolvedValue(expected as unknown as SolutionCategory[]);
 
         const result = await integrationResolver.Integration!
-          .solution_category!(
+          .solution_categories!(
           { id: documentId } as unknown as Connector,
           {},
           contextSimpleUserFiligran2,
@@ -114,7 +116,7 @@ describe('integration field resolvers', () => {
 
         expect(
           contextSimpleUserFiligran2.dataLoaders.document
-            .solutionCategoryByDocumentIdLoader.load
+            .solutionCategoriesByDocumentIdLoader.load
         ).toHaveBeenCalledWith(documentId);
         expect(result).toEqual(expected);
       });

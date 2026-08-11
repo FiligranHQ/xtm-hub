@@ -73,7 +73,7 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
         images: transformToFileList(DocumentImageType.Image, document),
         logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((label) => label.id),
-        solution_category: document?.solution_category?.id,
+        solution_category: document?.solution_categories?.[0]?.id,
         license_type: document?.license_type ?? undefined,
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:

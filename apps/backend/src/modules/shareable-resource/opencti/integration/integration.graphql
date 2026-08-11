@@ -50,7 +50,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -86,7 +86,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -121,7 +121,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -157,7 +157,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -202,7 +202,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -238,7 +238,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -275,7 +275,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -312,7 +312,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
