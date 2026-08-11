@@ -3,6 +3,7 @@ import {
   DocumentImageType,
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
+  FiligranProduct,
   MutationUpdateDocumentArgs as MutationUpdateDocumentArgsResolverType,
   PlatformIdentifier,
   QueryDocumentsArgs,
@@ -505,7 +506,8 @@ export const DocumentApp = {
     type: string,
     input: DocumentData<T, string>,
     externalImageUpload: Upload,
-    metadataKeys: DocumentMetadataKeys<T>
+    metadataKeys: DocumentMetadataKeys<T>,
+    product: FiligranProduct
   ) => {
     return withTransaction(async () => {
       const doc = await upsertDocument<T>(
@@ -513,7 +515,8 @@ export const DocumentApp = {
           ...input,
           type,
         },
-        metadataKeys
+        metadataKeys,
+        product
       );
 
       await DocumentChildrenDomain.upsertExternalImage(
@@ -776,7 +779,8 @@ export const DocumentApp = {
 
 const upsertDocument = async <T extends DocumentModel>(
   documentData: DocumentData<T, string>,
-  metadataKeys: DocumentMetadataKeys<T> = []
+  metadataKeys: DocumentMetadataKeys<T>,
+  product: FiligranProduct
 ): Promise<T> => {
   return await withTransaction(async () => {
     // Prepare the data to insert
@@ -822,7 +826,7 @@ const upsertDocument = async <T extends DocumentModel>(
       await solutionCategoryApp.linkSolutionCategoriesByNameToObject({
         objectId: toObjectSolutionCategoryObjectId(document.id),
         names: documentData.solution_categories,
-        product: PlatformIdentifier.Opencti,
+        product,
       });
     }
 

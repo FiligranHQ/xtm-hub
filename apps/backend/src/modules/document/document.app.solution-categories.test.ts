@@ -4,6 +4,7 @@ import { TestHelper } from '../../../tests/helper/test.helper';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
+  FiligranProduct,
   LicenseType,
 } from '../../__generated__/resolvers-types';
 import {
@@ -99,7 +100,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // Then
@@ -137,7 +139,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // When — update with a single category
@@ -145,7 +148,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       { ...input, solution_categories: ['Network Security'] },
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // Then
@@ -176,7 +180,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // Then — the document exists, no link was created
@@ -203,7 +208,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // When — update with an empty list (manifest cleared the categories)
@@ -211,7 +217,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       { ...input, solution_categories: [] },
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // Then — the previous links are gone
@@ -238,7 +245,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // When — update without solution_categories at all
@@ -253,7 +261,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       inputWithoutCategories,
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // Then — the original two links are still present
@@ -280,7 +289,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // When — update with a name that resolves to nothing (e.g. an upstream typo)
@@ -288,7 +298,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       { ...input, solution_categories: ['Not A Real Category'] },
       mockUpload,
-      metadataKeys
+      metadataKeys,
+      FiligranProduct.Opencti
     );
 
     // Then — deliberate: the resolved manifest set is the new truth, even when
@@ -316,7 +327,8 @@ describe('solution_categories linking', () => {
       OPENCTI_INTEGRATION_DOCUMENT_TYPE,
       input,
       mockUpload,
-      INTEGRATION_CONNECTOR_METADATA_KEYS
+      INTEGRATION_CONNECTOR_METADATA_KEYS,
+      FiligranProduct.Opencti
     );
 
     // Then — the values landed in Document_Metadata
