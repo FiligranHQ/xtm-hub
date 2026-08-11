@@ -290,37 +290,6 @@ jobs:
           path: logs/
           retention-days: 30
 
-  publish-e2e-test-report:
-    needs: run-e2e-tests-shards
-    if: always() && needs.run-e2e-tests-shards.result != 'skipped'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - name: Download CTRF artifacts
-        uses: actions/download-artifact@v5
-        with:
-          pattern: ctrf-shard-*
-          path: ctrf
-          merge-multiple: false
-
-      - name: Publish Test Report
-        if: always()
-        uses: ctrf-io/github-test-reporter@v1
-        with:
-          report-path: "./ctrf/**/*.json"
-          pull-request: true
-          summary-report: true
-          failed-report: true
-          flaky-report: true
-          insights-report: true
-          suite-folded-report: true
-          overwrite-comment: true
-          report-order: "summary-report,failed-report,flaky-report,insights-report,test-report"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   run-front-unit-tests-shards:
     needs: build-images-tests
     runs-on: ubuntu-latest
@@ -423,9 +392,11 @@ jobs:
   run-e2e-tests:
     needs:
       - run-e2e-tests-shards
-      - publish-e2e-test-report
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Finalize e2e shards
         run: |
@@ -433,10 +404,30 @@ jobs:
             echo "E2E shard job failed with result: ${{ needs.run-e2e-tests-shards.result }}"
             exit 1
           fi
-          if [ "${{ needs.publish-e2e-test-report.result }}" != "success" ] && [ "${{ needs.publish-e2e-test-report.result }}" != "skipped" ]; then
-            echo "E2E report publishing failed with result: ${{ needs.publish-e2e-test-report.result }}"
-            exit 1
-          fi
+
+      - name: Download CTRF artifacts
+        if: always() && needs.run-e2e-tests-shards.result != 'skipped'
+        uses: actions/download-artifact@v5
+        with:
+          pattern: ctrf-shard-*
+          path: ctrf
+          merge-multiple: false
+
+      - name: Publish Test Report
+        if: always() && needs.run-e2e-tests-shards.result != 'skipped'
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: "./ctrf/**/*.json"
+          pull-request: true
+          summary-report: true
+          failed-report: true
+          flaky-report: true
+          insights-report: true
+          suite-folded-report: true
+          overwrite-comment: true
+          report-order: "summary-report,failed-report,flaky-report,insights-report,test-report"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   run-front-unit-tests:
     needs: run-front-unit-tests-shards
