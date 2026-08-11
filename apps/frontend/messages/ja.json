@@ -346,15 +346,12 @@
     }
   },
   "PublicHomePage": {
-    "Title": "リソースと専門知識の発見",
     "XtmPlatform": {
       "Label": "XTM Hubへようこそ",
       "LabelWithName": "ようこそ {name}",
       "ConnectedProducts": "{count, plural, one {コネクテッド製品} other {コネクテッド製品}}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
-      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM プラットフォームでの体験をさらに充実させることができます。",
-      "Cta": "製品を連携する",
-      "ImageAlt": "XTM Platformの図解"
+      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM プラットフォームでの体験をさらに充実させることができます。"
     },
     "XtmRoadmap": {
       "Title": "XTM Platform Roadmap",

@@ -346,15 +346,12 @@
     }
   },
   "PublicHomePage": {
-    "Title": "Discover resources and expertise",
     "XtmPlatform": {
       "Label": "Welcome to XTM Hub",
       "LabelWithName": "Welcome {name}",
       "ConnectedProducts": "{count, plural, one {Connected product} other {Connected products}}",
       "Title": "Extend and scale your XTM Platform",
-      "Description": "Connect your OpenCTI or OpenAEV to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM Platform experience.",
-      "Cta": "Connect your product",
-      "ImageAlt": "XTM Platform illustration"
+      "Description": "Connect your OpenCTI or OpenAEV to deploy pre-built content in one click, stay up to date with product newsfeeds, start free trials, and simply get more out of your XTM Platform experience."
     },
     "XtmRoadmap": {
       "Title": "XTM Platform Roadmap",
@@ -362,9 +359,9 @@
       "Description": "Explore what we're building, what's coming next, and where the XTM Platform is headed. Full transparency. No surprises.",
       "SeeMore": "See more",
       "ImageAlt": "XTM Platform Roadmap space illustration",
-      "Now": "Now",
       "Next": "Next",
-      "UnderConsideration": "Under Consideration"
+      "Now": "Now",
+      "UnderConsideration": "Under consideration"
     }
   },
   "PublicPathError": {
