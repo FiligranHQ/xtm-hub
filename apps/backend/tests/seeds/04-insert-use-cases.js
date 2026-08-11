@@ -11,31 +11,31 @@ export async function seed(knex) {
         id: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e01',
         name: 'Automation',
         color: '#0099cc',
-        product: ['opencti', 'openaev'],
+        product: ['opencti'],
       },
       {
         id: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e02',
         name: 'Integration',
         color: '#ff6600',
-        product: ['opencti', 'openaev'],
+        product: ['opencti'],
       },
       {
         id: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e03',
         name: 'Monitoring',
         color: '#7c4dff',
-        product: ['opencti', 'openaev'],
+        product: ['opencti'],
       },
       {
         id: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e04',
         name: 'Detection',
         color: '#0099cc',
-        product: ['opencti', 'openaev'],
+        product: ['opencti'],
       },
       {
         id: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e05',
         name: 'Response',
         color: '#0099cc',
-        product: ['opencti', 'openaev'],
+        product: ['opencti'],
       },
     ])
     .onConflict('id')

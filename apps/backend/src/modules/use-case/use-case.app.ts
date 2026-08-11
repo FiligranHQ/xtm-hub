@@ -5,7 +5,6 @@ import {
 } from '../../model/kanel/public/ObjectUseCase';
 import UseCase, {
   UseCaseId,
-  UseCaseInitializer,
   UseCaseMutator,
 } from '../../model/kanel/public/UseCase';
 import { logApp } from '../../utils/app-logger.util';
@@ -15,18 +14,6 @@ import { objectUseCaseDomain } from './object-use-case/object-use-case.domain';
 import { useCaseDomain } from './use-case.domain';
 
 export const useCaseApp = {
-  loadOrCreateUseCase: async ({
-    name,
-    color = '#0099cc',
-  }: UseCaseInitializer): Promise<UseCase> => {
-    const existing = await useCaseDomain.loadUseCaseByNameCaseInsensitive(name);
-    if (existing) {
-      return existing;
-    }
-
-    return useCaseDomain.insertUseCase({ name, color });
-  },
-
   linkUseCasesByNameToObject: async (
     objectId: ObjectUseCaseObjectId,
     useCaseNames: string[]
@@ -52,9 +39,6 @@ export const useCaseApp = {
       });
     }
 
-    if (!insertObjectUseCase.length) {
-      return;
-    }
     await objectUseCaseDomain.insertObjectUseCase(insertObjectUseCase);
   },
 
