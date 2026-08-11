@@ -1595,7 +1595,7 @@ export type PlatformDeploymentRequest = {
   ordering: Scalars['Int']['output'];
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
-  parent_id?: Maybe<Scalars['DeploymentRequestId']['output']>;
+  parent_id?: Maybe<Scalars['String']['output']>;
   platform_id?: Maybe<Scalars['String']['output']>;
   platform_identifier?: Maybe<PlatformIdentifier>;
   platform_token: Scalars['String']['output'];
@@ -3979,7 +3979,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  parent_id?: Resolver<Maybe<ResolversTypes['DeploymentRequestId']>, ParentType, ContextType>;
+  parent_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<Maybe<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   platform_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
