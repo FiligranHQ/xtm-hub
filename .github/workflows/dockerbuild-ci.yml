@@ -324,6 +324,10 @@ jobs:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     permissions:
       contents: read
       packages: write
@@ -346,16 +350,21 @@ jobs:
 
       - name: Run front unit tests
         run: |
-          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
+          export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
+            VITEST_SHARD="${{ matrix.shard }}/8"
           mkdir -p coverage
           docker run --rm \
+            -e VITEST_SHARD \
             -v $(pwd)/coverage:/app/apps/frontend/coverage \
-            filigran/portal-front-test:${IMAGE_TAGS}
+            filigran/portal-front-test:${IMAGE_TAGS} \
+            sh -lc "yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: false
+          flags: frontend-shard-${{ matrix.shard }}
+          name: frontend-shard-${{ matrix.shard }}
           token: ${{ secrets.CODECOV_TOKEN }}
 
   run-api-unit-tests:
