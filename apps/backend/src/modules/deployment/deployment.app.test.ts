@@ -37,7 +37,9 @@ import {
   PlatformContract,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
+  ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
+  ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
 import DeploymentRequest, {
   DeploymentRequestId,
@@ -49,6 +51,8 @@ import {
   XTM_HUB_SUPPORT_EMAIL,
 } from '../../portal.const';
 import * as mailService from '../../server/mail-service';
+import { auth0ClientMock } from '../../thirdparty/auth0/mock';
+import { logApp } from '../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
   ErrorCode,
@@ -60,6 +64,7 @@ import { TelemetryApp } from '../telemetry/telemetry.app';
 import {
   TelemetryOrganizationType,
   TelemetrySource,
+  TelemetryTargetProduct,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
 import {
@@ -75,9 +80,13 @@ import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import { PortalContext } from '../../model/portal-context';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
-import { DeploymentApp } from './deployment.app';
+import {
+  DeploymentApp,
+  XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
+} from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
@@ -228,10 +237,229 @@ describe('deployment app', () => {
     it('should throw when service definition is not found', async () => {
       const call = DeploymentApp.createDeploymentRequest({
         ...TEST_DEPLOYMENT,
-        platform_identifier: 'unknown-platform' as PlatformIdentifier,
+        products: ['unknown-platform' as PlatformIdentifier],
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    it.each([
+      [[PlatformIdentifier.Xtmone]],
+      [[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]],
+      [[]],
+    ])(
+      'should throw InvalidProductsForDeploymentType for a trial with products %s',
+      async (products) => {
+        const call = DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          products,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.InvalidProductsForDeploymentType
+        );
+      }
+    );
+
+    it.each([
+      [[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]],
+      [[PlatformIdentifier.Xtmone]],
+      [[PlatformIdentifier.Xtmone, PlatformIdentifier.Xtmone]],
+    ])(
+      'should throw InvalidProductsForDeploymentType for a bundle with products %s',
+      async (products) => {
+        const call = DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products,
+        });
+
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.InvalidProductsForDeploymentType
+        );
+      }
+    );
+
+    it("should throw when a bundle product's service definition is not found", async () => {
+      const call = DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        type: DeploymentRequestDeploymentType.Bundle,
+        products: [
+          PlatformIdentifier.Xtmone,
+          'unknown-platform' as PlatformIdentifier,
+        ],
+      });
+
+      await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
+    });
+
+    describe('bundle creation', () => {
+      beforeEach(() => {
+        requestContext.set(requestContextRegistererUserSecondOrga);
+        vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
+          isPlaceAvailable: true,
+        });
+      });
+
+      it('should create a bundle deployment request with a child trial deployment request per product', async () => {
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [
+            PlatformIdentifier.Xtmone,
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+        });
+
+        expect(bundle).toMatchObject({
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          parent_id: null,
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+        });
+
+        const bundleServiceInstance = await TestHelper.serviceInstance.load({
+          id: bundle.service_instance_id,
+        });
+        expect(bundleServiceInstance).toMatchObject({
+          public: false,
+          creation_status: ServiceInstanceCreationStatus.Pending,
+        });
+        expect(bundleServiceInstance?.tags).toEqual(
+          expect.arrayContaining([
+            ServiceInstanceTag.Trial,
+            ServiceInstanceTag.XtmOne,
+            ServiceInstanceTag.OpenCti,
+            ServiceInstanceTag.OpenAev,
+          ])
+        );
+
+        const bundleServiceDefinition = await TestHelper.serviceDefinition.load(
+          { id: bundleServiceInstance?.service_definition_id }
+        );
+        expect(bundleServiceDefinition?.identifier).toBe(
+          ServiceDefinitionIdentifier.XtmPlatformBundle
+        );
+
+        const bundleSubscription = await TestHelper.subscription.load({
+          service_instance_id: bundle.service_instance_id,
+        });
+        expect(bundleSubscription).toMatchObject({
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          end_date: null,
+        });
+
+        const children = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+        });
+        expect(children).toHaveLength(3);
+        expect(children).toEqual(
+          expect.arrayContaining(
+            [
+              PlatformIdentifier.Xtmone,
+              PlatformIdentifier.Opencti,
+              PlatformIdentifier.Openaev,
+            ].map((platformIdentifier) =>
+              expect.objectContaining({
+                type: DeploymentRequestDeploymentType.Trial,
+                platform_identifier: platformIdentifier,
+                parent_id: bundle.id,
+              })
+            )
+          )
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledTimes(4);
+        const bundleEventCall = telemetrySpy.mock.calls.find(
+          ([event]) => event.deployment_id === bundle.id
+        );
+        expect(bundleEventCall?.[0]).toMatchObject({
+          event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+          deployment_id: bundle.id,
+          deployment_type: DeploymentRequestDeploymentType.Bundle,
+          target_product: undefined,
+        });
+        expect(bundleEventCall?.[0]).not.toHaveProperty('parent_id');
+        [
+          TelemetryTargetProduct.XTM_ONE,
+          TelemetryTargetProduct.OPEN_CTI,
+          TelemetryTargetProduct.OPEN_AEV,
+        ].forEach((target_product) => {
+          expect(telemetrySpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+              event_type: TelemetryEventType.CREATE_DEPLOYMENT,
+              deployment_type: DeploymentRequestDeploymentType.Trial,
+              parent_id: bundle.id,
+              target_product,
+            })
+          );
+        });
+        expect(mockSendMail).toHaveBeenCalledTimes(6);
+      });
+
+      it('should bypass the free trial limit check for bundle products', async () => {
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            organization_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            platform_identifier: PlatformIdentifier.Opencti,
+            hub_status: DeploymentRequestHubStatus.Active,
+            counts_in_orga_quota: true,
+          }
+        );
+
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+
+        expect(bundle.id).toBeDefined();
+        const children = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+        });
+        expect(children).toHaveLength(2);
+      });
+
+      it('should roll back the whole bundle when a child fails to be created', async () => {
+        const originalRegisterNewPlatform =
+          RegistrationDomain.registerNewPlatform;
+        let callCount = 0;
+        const registerNewPlatformSpy = vi
+          .spyOn(RegistrationDomain, 'registerNewPlatform')
+          .mockImplementation(async (args) => {
+            callCount += 1;
+            if (callCount === 2) {
+              throw new Error('boom');
+            }
+            return originalRegisterNewPlatform(args);
+          });
+
+        const call = DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [
+            PlatformIdentifier.Xtmone,
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+        });
+
+        await expect(call).rejects.toThrow('boom');
+        expect(registerNewPlatformSpy).toHaveBeenCalledTimes(2);
+
+        const deploymentRequests = await TestHelper.deploymentRequest.loadMany(
+          {}
+        );
+        expect(deploymentRequests).toHaveLength(0);
+
+        const serviceInstances = await TestHelper.serviceInstance.load({
+          name: XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
+        });
+        expect(serviceInstances).toBeUndefined();
+      });
     });
   });
   describe('domains blacklist', () => {
@@ -296,7 +524,7 @@ describe('deployment app', () => {
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
             use_case: DeploymentRequestUseCase.ThreatHunting,
-            platform_identifier: product,
+            products: [product],
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
             source,
@@ -322,6 +550,7 @@ describe('deployment app', () => {
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             target_product: targetProduct,
+            parent_id: undefined,
           });
         }
       );
@@ -924,6 +1153,35 @@ describe('deployment app', () => {
       expect(userObserverGroup).toHaveLength(0);
     });
 
+    it('with Active status for XTM One, it should not create any ServiceGroup', async () => {
+      const xtmoneDeployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: PlatformIdentifier.Xtmone,
+            hub_status: DeploymentRequestHubStatus.Pending,
+            target_state: DeploymentRequestPlatformState.Active,
+            actual_state: DeploymentRequestPlatformState.Provisioning,
+          }
+        )) as DeploymentRequest;
+
+      const deployment = await DeploymentApp.updateDeploymentRequest({
+        id: xtmoneDeployment.id as DeploymentRequestId,
+        actual_state: DeploymentRequestPlatformState.Active,
+        start_date: new Date(2025, 1, 3),
+        end_date: new Date(2025, 2, 3),
+        platform_id: 'fake xtmone instance id',
+        failure_reason: 'not failed',
+      });
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: deployment.id as DeploymentRequestId,
+        });
+      const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
+        service_instance_id: dbDeploymentRequest!.service_instance_id,
+      });
+      expect(serviceGroups).toHaveLength(0);
+    });
+
     it('should set platform registration status to inactive when actual state is removed', async () => {
       await TestHelper.platformConfiguration.create({
         service_instance_id: initialDeployment.service_instance_id,
@@ -1023,6 +1281,7 @@ describe('deployment app', () => {
           start_date,
           end_date,
           status: DeploymentRequestHubStatus.Active,
+          parent_id: undefined,
         });
       });
 
@@ -1137,6 +1396,230 @@ describe('deployment app', () => {
         });
         expect(mockSendMail).not.toHaveBeenCalled();
       });
+    });
+
+    describe('bundle updates', () => {
+      it('should update actual_state and platform_id only, ignoring bundle-unsupported fields', async () => {
+        const bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              start_date: null,
+              end_date: null,
+              ordering: 1,
+              url: null,
+            }
+          );
+
+        const updated = await DeploymentApp.updateDeploymentRequest({
+          id: bundle.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: 'bundle-platform-id',
+          start_date: new Date(2025, 1, 1),
+          end_date: new Date(2025, 2, 1),
+          ordering: 99,
+          url: 'https://should-be-ignored.example.com',
+        });
+
+        expect(updated).toMatchObject({
+          actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: 'bundle-platform-id',
+          // hub_status is not resolved from actual_state for a bundle: it is
+          // only ever set by recomputeBundleHubStatusAndDates from its children.
+          hub_status: DeploymentRequestHubStatus.Pending,
+          start_date: null,
+          end_date: null,
+          ordering: 1,
+          url: null,
+        });
+      });
+
+      it('should not initialise a service group for a bundle', async () => {
+        const bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              actual_state: DeploymentRequestPlatformState.Unprovisioned,
+            }
+          );
+
+        await DeploymentApp.updateDeploymentRequest({
+          id: bundle.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: 'bundle-platform-id',
+        });
+
+        const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
+          service_instance_id: bundle.service_instance_id,
+        });
+        expect(serviceGroups).toHaveLength(0);
+      });
+    });
+
+    describe('cascade to parent bundle', () => {
+      let bundle: DeploymentRequest;
+      let childA: DeploymentRequest;
+      let childB: DeploymentRequest;
+
+      beforeEach(async () => {
+        bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              start_date: null,
+              end_date: null,
+            }
+          );
+
+        childA =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id as DeploymentRequestId,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status: DeploymentRequestHubStatus.Provisioning,
+              actual_state: DeploymentRequestPlatformState.Provisioning,
+              start_date: new Date(2025, 1, 1),
+              end_date: new Date(2025, 6, 1),
+            }
+          );
+
+        childB =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id as DeploymentRequestId,
+              platform_identifier: PlatformIdentifier.Openaev,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              start_date: new Date(2025, 2, 1),
+              end_date: new Date(2025, 5, 1),
+              platform_id: 'child-b-platform-id',
+            }
+          );
+      });
+
+      it('should recompute the bundle as Active with aggregated dates once all children are Active', async () => {
+        await DeploymentApp.updateDeploymentRequest({
+          id: childA.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          start_date: childA.start_date as Date,
+          end_date: childA.end_date as Date,
+          platform_id: 'child-a-platform-id',
+          url: 'https://child-a.example.com',
+        });
+
+        const updatedBundle =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: bundle.id as DeploymentRequestId,
+          });
+        expect(updatedBundle).toMatchObject({
+          hub_status: DeploymentRequestHubStatus.Active,
+          start_date: new Date(2025, 1, 1),
+          end_date: new Date(2025, 6, 1),
+        });
+
+        const updatedChildA =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: childA.id as DeploymentRequestId,
+          });
+        expect(updatedChildA?.url).toBe('https://child-a.example.com');
+
+        expect(telemetrySpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+            deployment_id: bundle.id,
+            deployment_type: DeploymentRequestDeploymentType.Bundle,
+            user_id: bundle.user_requester_id,
+            parent_id: undefined,
+            status: DeploymentRequestHubStatus.Active,
+          })
+        );
+      });
+
+      it('should recompute the bundle as Failed when any child is Failed, regardless of other children updates', async () => {
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          childA.id as DeploymentRequestId,
+          { hub_status: DeploymentRequestHubStatus.Failed }
+        );
+
+        await DeploymentApp.updateDeploymentRequest({
+          id: childB.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Removing,
+        });
+
+        const updatedBundle =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: bundle.id as DeploymentRequestId,
+          });
+        expect(updatedBundle?.hub_status).toBe(
+          DeploymentRequestHubStatus.Failed
+        );
+      });
+
+      it('should not update sibling children when the bundle itself is updated', async () => {
+        await DeploymentApp.updateDeploymentRequest({
+          id: bundle.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          platform_id: 'bundle-platform-id',
+        });
+
+        const untouchedChildA =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: childA.id as DeploymentRequestId,
+          });
+        const untouchedChildB =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: childB.id as DeploymentRequestId,
+          });
+        expect(untouchedChildA?.hub_status).toBe(
+          DeploymentRequestHubStatus.Provisioning
+        );
+        expect(untouchedChildB?.hub_status).toBe(
+          DeploymentRequestHubStatus.Active
+        );
+      });
+
+      it.each([
+        [DeploymentRequestHubStatus.Cancelled],
+        [DeploymentRequestHubStatus.Expired],
+      ])(
+        'should not revert a %s bundle back to a computed status when a child is updated afterward',
+        async (terminalHubStatus) => {
+          await DeploymentRequestDomain.updateDeploymentRequestById(
+            bundle.id as DeploymentRequestId,
+            { hub_status: terminalHubStatus }
+          );
+          telemetrySpy.mockClear();
+
+          await DeploymentApp.updateDeploymentRequest({
+            id: childA.id as DeploymentRequestId,
+            actual_state: DeploymentRequestPlatformState.Active,
+            start_date: childA.start_date as Date,
+            end_date: childA.end_date as Date,
+            platform_id: 'child-a-platform-id',
+          });
+
+          const updatedBundle =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({
+              id: bundle.id as DeploymentRequestId,
+            });
+          expect(updatedBundle?.hub_status).toBe(terminalHubStatus);
+
+          expect(telemetrySpy).not.toHaveBeenCalledWith(
+            expect.objectContaining({
+              deployment_id: bundle.id,
+              deployment_type: DeploymentRequestDeploymentType.Bundle,
+            })
+          );
+        }
+      );
     });
   });
   describe('loadTrialDeployments', () => {
@@ -1497,9 +1980,9 @@ describe('deployment app', () => {
     });
     it('should send a telemetry event', async () => {
       const deployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
-        )) as DeploymentRequest;
+        );
 
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
@@ -1526,6 +2009,7 @@ describe('deployment app', () => {
         end_date: null,
         platform_id: null,
         cancellation_reason: 'CancellationReason',
+        parent_id: undefined,
       });
     });
 
@@ -1549,6 +2033,49 @@ describe('deployment app', () => {
         },
       });
     });
+
+    it.each`
+      platformIdentifier            | expectedLevel
+      ${PlatformIdentifier.Openaev} | ${'warn'}
+      ${PlatformIdentifier.Opencti} | ${'error'}
+    `(
+      'should log a $expectedLevel when deleting a missing audience (404) for $platformIdentifier',
+      async ({ platformIdentifier, expectedLevel }) => {
+        vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
+          statusCode: 404,
+        });
+        const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
+        const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
+
+        const deployment =
+          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              platform_id: uuidv4(),
+              platform_identifier: platformIdentifier,
+            }
+          )) as DeploymentRequest;
+
+        await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+
+        if (expectedLevel === 'warn') {
+          expect(warnSpy).toHaveBeenCalledWith(
+            'No Auth0 audience to delete for OpenAEV trial',
+            expect.objectContaining({ deploymentRequestId: deployment.id })
+          );
+          expect(errorSpy).not.toHaveBeenCalledWith(
+            'Unable to delete audience',
+            expect.anything()
+          );
+        } else {
+          expect(errorSpy).toHaveBeenCalledWith(
+            'Unable to delete audience',
+            expect.objectContaining({ deploymentRequestId: deployment.id })
+          );
+        }
+      }
+    );
   });
 
   describe('updateDeploymentQuotaCapacity', () => {
@@ -1758,6 +2285,7 @@ describe('deployment app', () => {
           end_date: null,
           start_date: null,
           status: DeploymentRequestHubStatus.Pending,
+          parent_id: undefined,
         });
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -1773,6 +2301,7 @@ describe('deployment app', () => {
           end_date: null,
           start_date: null,
           status: DeploymentRequestHubStatus.Pending,
+          parent_id: undefined,
         });
       });
     });
@@ -1987,6 +2516,7 @@ describe('deployment app', () => {
           end_date: null,
           start_date: null,
           status: DeploymentRequestHubStatus.Queued,
+          parent_id: undefined,
         });
         expect(telemetrySpy).toHaveBeenCalledWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
@@ -2002,6 +2532,7 @@ describe('deployment app', () => {
           end_date: null,
           start_date: null,
           status: DeploymentRequestHubStatus.Queued,
+          parent_id: undefined,
         });
       });
     });
@@ -2164,6 +2695,7 @@ describe('deployment app', () => {
         start_date,
         end_date,
         status: DeploymentRequestHubStatus.Expired,
+        parent_id: undefined,
       });
     });
   });
@@ -2330,6 +2862,7 @@ describe('deployment app', () => {
           start_date: null,
           end_date: null,
           status: DeploymentRequestHubStatus.Pending,
+          parent_id: undefined,
         });
       });
     });

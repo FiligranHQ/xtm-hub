@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
@@ -15,8 +15,10 @@ import {
 } from '../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
+import { auth0Client } from '../../thirdparty/auth0/client';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { DeploymentRequestDomain } from './deployment.domain';
+import { ServiceGroupDomain } from './group/service-group.domain';
 
 describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
@@ -59,6 +61,37 @@ describe('deploymentRequestDomain', () => {
       expect(deploymentRequests.edges[0]?.node?.hub_status).toBe(
         DeploymentRequestHubStatus.Active
       );
+    });
+    it('should expose parent_id and url on returned deployment requests', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      const child =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            url: 'https://xtmone.example.com',
+          }
+        );
+
+      const deploymentRequests =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+          }
+        );
+
+      const childNode = deploymentRequests.edges.find(
+        (edge) => edge?.node?.id === child.id
+      )?.node;
+      expect(childNode?.parent_id).toBe(bundle?.id);
+      expect(childNode?.url).toBe('https://xtmone.example.com');
     });
     it('should filter deployment requests when searchTerm is specified ', async () => {
       const deployment =
@@ -172,6 +205,52 @@ describe('deploymentRequestDomain', () => {
       expect(deploymentRequests.totalCount).toBe('2');
       expect(deploymentRequests.edges[0]?.node?.id).toBe(deployment1?.id);
       expect(deploymentRequests.edges[1]?.node?.id).toBe(deployment2?.id);
+    });
+  });
+
+  describe('loadDeploymentRequestsBy', () => {
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
+      await TestHelper.subscription.delete({});
+    });
+
+    it('should return all deployment requests matching the given conditions', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      const child1 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { parent_id: bundle.id }
+        );
+      const child2 =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { parent_id: bundle.id }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { parent_id: null }
+      );
+
+      const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+        parent_id: bundle.id,
+      });
+
+      expect(children).toHaveLength(2);
+      expect(children.map((child) => child.id).sort()).toEqual(
+        [child1?.id, child2?.id].sort()
+      );
+    });
+
+    it('should return an empty array when no deployment request matches', async () => {
+      const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+        parent_id: uuidv4() as DeploymentRequestId,
+      });
+
+      expect(children).toEqual([]);
     });
   });
 
@@ -1131,6 +1210,60 @@ describe('deploymentRequestDomain', () => {
           hub_status: DeploymentRequestHubStatus.Queued,
         }
       );
+    });
+  });
+
+  describe('initialiseServiceGroup', () => {
+    afterEach(async () => {
+      vi.restoreAllMocks();
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
+      await TestHelper.subscription.delete({});
+    });
+
+    const createDeploymentRequest = (platformIdentifier: PlatformIdentifier) =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        platform_identifier: platformIdentifier,
+        platform_id: uuidv4(),
+        hub_status: DeploymentRequestHubStatus.Active,
+        type: DeploymentRequestDeploymentType.Trial,
+      });
+
+    const spyOnAuth0AndServiceGroup = () => {
+      const createAudienceSpy = vi
+        .spyOn(auth0Client, 'createAudienceAPI')
+        .mockResolvedValue();
+      vi.spyOn(auth0Client, 'updateUserRBACInstance').mockResolvedValue();
+      vi.spyOn(ServiceGroupDomain, 'initGroupWithAdmin').mockResolvedValue();
+      return { createAudienceSpy };
+    };
+
+    it('should NOT create an Auth0 audience for an OpenAEV instance', async () => {
+      const deployment = await createDeploymentRequest(
+        PlatformIdentifier.Openaev
+      );
+      const { createAudienceSpy } = spyOnAuth0AndServiceGroup();
+
+      await DeploymentRequestDomain.initialiseServiceGroup(
+        deployment!.id,
+        PlatformIdentifier.Openaev
+      );
+
+      expect(createAudienceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should create an Auth0 audience for an OpenCTI instance', async () => {
+      const deployment = await createDeploymentRequest(
+        PlatformIdentifier.Opencti
+      );
+      const { createAudienceSpy } = spyOnAuth0AndServiceGroup();
+
+      await DeploymentRequestDomain.initialiseServiceGroup(
+        deployment!.id,
+        PlatformIdentifier.Opencti
+      );
+
+      expect(createAudienceSpy).toHaveBeenCalledOnce();
     });
   });
 });

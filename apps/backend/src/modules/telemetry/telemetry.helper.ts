@@ -98,6 +98,7 @@ export const TelemetryTargetProductMappedByPlatformIdentifier = new Map<
 >([
   [PlatformIdentifier.Opencti, TelemetryTargetProduct.OPEN_CTI],
   [PlatformIdentifier.Openaev, TelemetryTargetProduct.OPEN_AEV],
+  [PlatformIdentifier.Xtmone, TelemetryTargetProduct.XTM_ONE],
 ]);
 
 const IntegrationTypeToEventServiceType = new Map<
@@ -364,7 +365,7 @@ export const TelemetryHelper = {
   buildCreateDeploymentEvent: (
     organization: Organization,
     user_id: UserId,
-    platform_identifier: PlatformIdentifier,
+    platform_identifier: PlatformIdentifier | undefined,
     source: DeploymentRequestSource,
     additional_data: Omit<
       CreateDeploymentEvent,
@@ -383,10 +384,12 @@ export const TelemetryHelper = {
       ...baseEvent,
       ...additional_data,
       event_type: TelemetryEventType.CREATE_DEPLOYMENT,
-      target_product: getOrThrow(
-        TelemetryTargetProductMappedByPlatformIdentifier,
-        platform_identifier
-      ),
+      target_product: platform_identifier
+        ? getOrThrow(
+            TelemetryTargetProductMappedByPlatformIdentifier,
+            platform_identifier
+          )
+        : undefined,
     };
   },
 
