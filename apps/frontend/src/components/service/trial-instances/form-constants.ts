@@ -22,4 +22,5 @@ export const USE_CASES_BY_PLATFORM_IDENTIFIER: Record<
   [PlatformIdentifier.Opencti]: Object.values(DeploymentRequestUseCase).filter(
     (v) => !v.startsWith('oaev_')
   ),
+  [PlatformIdentifier.Xtmone]: [],
 };

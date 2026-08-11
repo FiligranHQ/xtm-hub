@@ -6,6 +6,7 @@ import {
   DeploymentRequestPlatformRegion,
   DeploymentRequestUseCase,
 } from '../../__generated__/resolvers-types';
+import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
@@ -134,15 +135,17 @@ export interface CreateDeploymentEvent extends BaseTelemetryEvent {
   email: string;
   event_type: TelemetryEventType.CREATE_DEPLOYMENT;
   job_title: DeploymentRequestJobTitle | null;
+  parent_id?: DeploymentRequestId;
   region: DeploymentRequestPlatformRegion;
   status: DeploymentRequestHubStatus;
   use_case: DeploymentRequestUseCase | null;
-  target_product: TelemetryTargetProduct;
+  target_product?: TelemetryTargetProduct;
 }
 
 export interface UpdateDeploymentEvent extends BaseTelemetryEvent {
   deployment_id: string;
   deployment_type: DeploymentRequestDeploymentType;
+  parent_id?: DeploymentRequestId;
   start_date: Date | null;
   end_date: Date | null;
   platform_id: string | null;

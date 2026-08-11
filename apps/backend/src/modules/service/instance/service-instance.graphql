@@ -16,6 +16,7 @@ enum ServiceInstanceCreationStatus {
 enum ServiceInstanceTag {
   openCTI
   openAEV
+  xtmOne
   trial
   others
 }

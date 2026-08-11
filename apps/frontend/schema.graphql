@@ -238,6 +238,7 @@ enum DeploymentRequestPlatformRegion {
 
 enum DeploymentRequestDeploymentType {
   trial
+  bundle
 }
 
 enum DeploymentRequestHubStatus {
@@ -347,7 +348,7 @@ enum DeploymentRequestJobTitle {
 
 type DeploymentRequest implements Node {
   id: ID!
-  platform_identifier: PlatformIdentifier!
+  platform_identifier: PlatformIdentifier
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
@@ -368,11 +369,13 @@ type DeploymentRequest implements Node {
   cancellation_reason: String
   platform_id: String
   platform_url: String
+  parent_id: DeploymentRequestId
+  url: String
 }
 
 type PlatformDeploymentRequest {
   id: ID!
-  platform_identifier: PlatformIdentifier!
+  platform_identifier: PlatformIdentifier
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   platform_token: String!
@@ -393,10 +396,12 @@ type PlatformDeploymentRequest {
   platform_id: String
   platform_url: String
   failure_reason: String
+  parent_id: DeploymentRequestId
+  url: String
 }
 
 input CreateDeploymentRequestInput {
-  platform_identifier: PlatformIdentifier!
+  products: [PlatformIdentifier!]!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
@@ -413,6 +418,7 @@ input UpdateDeploymentRequestInput {
   failure_reason: String
   actual_state: DeploymentRequestPlatformState
   ordering: Int
+  url: String
 }
 
 enum DeploymentRequestFilterKey {
@@ -969,6 +975,7 @@ input PlatformInput {
 enum PlatformIdentifier {
   opencti
   openaev
+  xtmone
 }
 
 input RegisterPlatformInput {
@@ -1156,7 +1163,9 @@ enum ServiceDefinitionIdentifier {
   openaev_scenarios
   opencti_registration
   openaev_registration
+  xtmone_registration
   xtm_platform_roadmap
+  xtm_platform_bundle
 }
 
 type ServiceDefinition implements Node {
@@ -1189,6 +1198,7 @@ enum ServiceInstanceCreationStatus {
 enum ServiceInstanceTag {
   openCTI
   openAEV
+  xtmOne
   trial
   others
 }

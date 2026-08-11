@@ -14,7 +14,10 @@ import ServiceGroupUser, {
 } from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
-import { UnknownErrorCode } from '../../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  UnknownErrorCode,
+} from '../../../utils/error/error.code';
 
 export enum ServiceGroupName {
   Admin = 'Admin',
@@ -24,9 +27,8 @@ export enum ServiceGroupName {
   Observer = 'Observer',
 }
 
-export const GROUPS_BY_PLATFORM_IDENTIFIER: Record<
-  PlatformIdentifier,
-  readonly ServiceGroupName[]
+export const GROUPS_BY_PLATFORM_IDENTIFIER: Partial<
+  Record<PlatformIdentifier, readonly ServiceGroupName[]>
 > = {
   [PlatformIdentifier.Opencti]: [
     ServiceGroupName.Admin,
@@ -199,6 +201,9 @@ export const ServiceGroupDomain = {
     platformIdentifier: PlatformIdentifier = PlatformIdentifier.Opencti
   ) => {
     const groups = GROUPS_BY_PLATFORM_IDENTIFIER[platformIdentifier];
+    if (!groups) {
+      throw new Error(BadRequestErrorCode.InvalidPlatformIdentifier);
+    }
     const rolesToInsert = groups.map((groupName) => ({
       name: groupName,
       service_instance_id: serviceInstancesId,

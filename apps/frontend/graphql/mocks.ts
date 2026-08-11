@@ -230,10 +230,10 @@ export const mockCreateDeploymentRequestInput = (overrides?: Partial<CreateDeplo
     return {
         activity_sector: overrides && overrides.hasOwnProperty('activity_sector') ? overrides.activity_sector! : DeploymentRequestActivitySector.ComputerGames,
         job_title: overrides && overrides.hasOwnProperty('job_title') ? overrides.job_title! : DeploymentRequestJobTitle.ApplicationSecuritySpecialist,
-        platform_identifier: overrides && overrides.hasOwnProperty('platform_identifier') ? overrides.platform_identifier! : PlatformIdentifier.Openaev,
+        products: overrides && overrides.hasOwnProperty('products') ? overrides.products! : [PlatformIdentifier.Openaev],
         region: overrides && overrides.hasOwnProperty('region') ? overrides.region! : DeploymentRequestPlatformRegion.ApacAu,
         source: overrides && overrides.hasOwnProperty('source') ? overrides.source! : DeploymentRequestSource.OpenaevDemo,
-        type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : DeploymentRequestDeploymentType.Trial,
+        type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : DeploymentRequestDeploymentType.Bundle,
         use_case: overrides && overrides.hasOwnProperty('use_case') ? overrides.use_case! : DeploymentRequestUseCase.AttackSimulation,
     };
 };
@@ -456,6 +456,7 @@ export const mockDeploymentRequest = (overrides?: Partial<DeploymentRequest>, _r
         ordering: overrides && overrides.hasOwnProperty('ordering') ? overrides.ordering! : 3841,
         organization_name: overrides && overrides.hasOwnProperty('organization_name') ? overrides.organization_name! : 'bibo',
         organization_requester_id: overrides && overrides.hasOwnProperty('organization_requester_id') ? overrides.organization_requester_id! : 'titulus',
+        parent_id: overrides && overrides.hasOwnProperty('parent_id') ? overrides.parent_id! : 'desino',
         platform_id: overrides && overrides.hasOwnProperty('platform_id') ? overrides.platform_id! : 'arca',
         platform_identifier: overrides && overrides.hasOwnProperty('platform_identifier') ? overrides.platform_identifier! : PlatformIdentifier.Openaev,
         platform_url: overrides && overrides.hasOwnProperty('platform_url') ? overrides.platform_url! : 'deleniti',
@@ -464,7 +465,8 @@ export const mockDeploymentRequest = (overrides?: Partial<DeploymentRequest>, _r
         requester_email: overrides && overrides.hasOwnProperty('requester_email') ? overrides.requester_email! : 'veritatis',
         service_instance_id: overrides && overrides.hasOwnProperty('service_instance_id') ? overrides.service_instance_id! : 'tumultus',
         start_date: overrides && overrides.hasOwnProperty('start_date') ? overrides.start_date! : '2021-05-11T01:52:30.491Z',
-        type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : DeploymentRequestDeploymentType.Trial,
+        type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : DeploymentRequestDeploymentType.Bundle,
+        url: overrides && overrides.hasOwnProperty('url') ? overrides.url! : 'adnuo',
         use_case: overrides && overrides.hasOwnProperty('use_case') ? overrides.use_case! : DeploymentRequestUseCase.AttackSimulation,
     };
 };
@@ -1165,6 +1167,7 @@ export const mockPlatformDeploymentRequest = (overrides?: Partial<PlatformDeploy
         ordering: overrides && overrides.hasOwnProperty('ordering') ? overrides.ordering! : 4529,
         organization_domains: overrides && overrides.hasOwnProperty('organization_domains') ? overrides.organization_domains! : ['ustulo'],
         organization_name: overrides && overrides.hasOwnProperty('organization_name') ? overrides.organization_name! : 'complectus',
+        parent_id: overrides && overrides.hasOwnProperty('parent_id') ? overrides.parent_id! : 'ago',
         platform_id: overrides && overrides.hasOwnProperty('platform_id') ? overrides.platform_id! : 'voluntarius',
         platform_identifier: overrides && overrides.hasOwnProperty('platform_identifier') ? overrides.platform_identifier! : PlatformIdentifier.Openaev,
         platform_token: overrides && overrides.hasOwnProperty('platform_token') ? overrides.platform_token! : 'totam',
@@ -1175,7 +1178,8 @@ export const mockPlatformDeploymentRequest = (overrides?: Partial<PlatformDeploy
         requester_last_name: overrides && overrides.hasOwnProperty('requester_last_name') ? overrides.requester_last_name! : 'conspergo',
         start_date: overrides && overrides.hasOwnProperty('start_date') ? overrides.start_date! : '2021-03-19T10:43:53.476Z',
         target_state: overrides && overrides.hasOwnProperty('target_state') ? overrides.target_state! : DeploymentRequestPlatformState.Active,
-        type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : DeploymentRequestDeploymentType.Trial,
+        type: overrides && overrides.hasOwnProperty('type') ? overrides.type! : DeploymentRequestDeploymentType.Bundle,
+        url: overrides && overrides.hasOwnProperty('url') ? overrides.url! : 'amiculum',
         use_case: overrides && overrides.hasOwnProperty('use_case') ? overrides.use_case! : DeploymentRequestUseCase.AttackSimulation,
     };
 };
@@ -1975,6 +1979,7 @@ export const mockUpdateDeploymentRequestInput = (overrides?: Partial<UpdateDeplo
         ordering: overrides && overrides.hasOwnProperty('ordering') ? overrides.ordering! : 1432,
         platform_id: overrides && overrides.hasOwnProperty('platform_id') ? overrides.platform_id! : 'coaegresco',
         start_date: overrides && overrides.hasOwnProperty('start_date') ? overrides.start_date! : '2021-06-08T15:40:58.723Z',
+        url: overrides && overrides.hasOwnProperty('url') ? overrides.url! : 'capio',
     };
 };
 
