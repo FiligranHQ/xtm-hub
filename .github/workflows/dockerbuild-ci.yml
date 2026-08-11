@@ -225,6 +225,7 @@ jobs:
            GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
            GITHUB_RUN_ID="${{ github.run_id }}" \
            PLAYWRIGHT_SHARD="${{ matrix.shard }}/8"
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml pull --include-deps e2e
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
            -e PLAYWRIGHT_SHARD \
            e2e sh -lc "yarn test:e2e --shard=${PLAYWRIGHT_SHARD}" || TEST_EXIT_CODE=$?
