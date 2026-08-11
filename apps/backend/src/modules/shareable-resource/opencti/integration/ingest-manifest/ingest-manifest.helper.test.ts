@@ -1,12 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  MockInstance,
-  vi,
-} from 'vitest';
+import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest';
 import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
@@ -29,10 +21,6 @@ describe('ingest manifest helper', () => {
 
     beforeEach(() => {
       warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      warnSpy.mockRestore();
     });
 
     const baseContract = {
