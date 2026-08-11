@@ -1936,9 +1936,9 @@ describe('deployment app', () => {
     });
     it('should send a telemetry event', async () => {
       const deployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
-        )) as DeploymentRequest;
+        );
 
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
