@@ -1595,6 +1595,7 @@ export type PlatformDeploymentRequest = {
   ordering: Scalars['Int']['output'];
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
+  parent_id?: Maybe<Scalars['DeploymentRequestId']['output']>;
   platform_id?: Maybe<Scalars['String']['output']>;
   platform_identifier?: Maybe<PlatformIdentifier>;
   platform_token: Scalars['String']['output'];
@@ -1606,6 +1607,7 @@ export type PlatformDeploymentRequest = {
   start_date?: Maybe<Scalars['Date']['output']>;
   target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
+  url?: Maybe<Scalars['String']['output']>;
   use_case?: Maybe<DeploymentRequestUseCase>;
 };
 
@@ -2586,6 +2588,7 @@ export type UpdateDeploymentRequestInput = {
   ordering?: InputMaybe<Scalars['Int']['input']>;
   platform_id?: InputMaybe<Scalars['String']['input']>;
   start_date?: InputMaybe<Scalars['Date']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateDocumentInput = {
@@ -3976,6 +3979,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parent_id?: Resolver<Maybe<ResolversTypes['DeploymentRequestId']>, ParentType, ContextType>;
   platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<Maybe<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   platform_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3987,6 +3991,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

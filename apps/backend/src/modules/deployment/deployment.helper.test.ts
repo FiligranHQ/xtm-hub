@@ -538,3 +538,119 @@ describe('hasDeploymentTelemetryDataChanged', () => {
     ).toBe(false);
   });
 });
+
+describe('computeBundleHubStatus', () => {
+  it.each([
+    {
+      description: 'all children Active',
+      childStatuses: [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Active,
+      ],
+      expected: DeploymentRequestHubStatus.Active,
+    },
+    {
+      description: 'a child Failed, regardless of other children states',
+      childStatuses: [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Failed,
+      ],
+      expected: DeploymentRequestHubStatus.Failed,
+    },
+    {
+      description: 'no child failed and at least one Provisioning',
+      childStatuses: [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Provisioning,
+      ],
+      expected: DeploymentRequestHubStatus.Provisioning,
+    },
+    {
+      description: 'no child failed or provisioning and at least one Pending',
+      childStatuses: [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Pending,
+      ],
+      expected: DeploymentRequestHubStatus.Pending,
+    },
+    {
+      description: 'no child matches other rules',
+      childStatuses: [
+        DeploymentRequestHubStatus.Queued,
+        DeploymentRequestHubStatus.Cancelled,
+      ],
+      expected: DeploymentRequestHubStatus.Queued,
+    },
+  ])(
+    'should return $expected when $description',
+    ({ childStatuses, expected }) => {
+      const children = childStatuses.map((hub_status) =>
+        buildDeploymentRequest({ hub_status })
+      );
+
+      expect(DeploymentHelper.computeBundleHubStatus(children)).toBe(expected);
+    }
+  );
+
+  it('should return Active for an xtmone child in Active status, same as any other child', () => {
+    const children = [
+      buildDeploymentRequest({
+        platform_identifier: PlatformIdentifier.Xtmone,
+        hub_status: DeploymentRequestHubStatus.Active,
+      }),
+      buildDeploymentRequest({ hub_status: DeploymentRequestHubStatus.Active }),
+    ];
+
+    expect(DeploymentHelper.computeBundleHubStatus(children)).toBe(
+      DeploymentRequestHubStatus.Active
+    );
+  });
+});
+
+describe('computeBundleDates', () => {
+  it.each([
+    {
+      description: 'the min start_date and max end_date across children',
+      childDates: [
+        {
+          start_date: new Date('2025-02-01'),
+          end_date: new Date('2025-05-01'),
+        },
+        {
+          start_date: new Date('2025-01-01'),
+          end_date: new Date('2025-06-01'),
+        },
+      ],
+      expected: {
+        start_date: new Date('2025-01-01'),
+        end_date: new Date('2025-06-01'),
+      },
+    },
+    {
+      description: 'the dates of the children with null dates ignored',
+      childDates: [
+        { start_date: null, end_date: null },
+        {
+          start_date: new Date('2025-01-01'),
+          end_date: new Date('2025-06-01'),
+        },
+      ],
+      expected: {
+        start_date: new Date('2025-01-01'),
+        end_date: new Date('2025-06-01'),
+      },
+    },
+    {
+      description: 'null dates when all children have null dates',
+      childDates: [
+        { start_date: null, end_date: null },
+        { start_date: null, end_date: null },
+      ],
+      expected: { start_date: null, end_date: null },
+    },
+  ])('should return $description', ({ childDates, expected }) => {
+    const children = childDates.map((dates) => buildDeploymentRequest(dates));
+
+    expect(DeploymentHelper.computeBundleDates(children)).toEqual(expected);
+  });
+});
