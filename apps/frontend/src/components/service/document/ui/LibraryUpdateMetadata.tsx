@@ -2,11 +2,8 @@
 
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
-import {
-  EditSeoServiceInstanceMutation,
-  SeoServiceInstanceMetadataByIdQuery,
-} from '@/components/service/service.graphql';
 import { Locale, locales } from '@/i18n/config';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { EditIcon } from '@filigran/icon';
 import {
   AutoForm,
@@ -18,15 +15,15 @@ import {
   DialogTitle,
 } from '@filigran/ui';
 import { toast } from '@filigran/ui/clients';
-import { libraryUpdateEditSeoServiceInstanceMutation } from '@generated/libraryUpdateEditSeoServiceInstanceMutation.graphql';
-import { libraryUpdateSeoServiceInstanceMetadataQuery } from '@generated/libraryUpdateSeoServiceInstanceMetadataQuery.graphql';
 import {
   PortalCapability,
   SeoServiceInstanceLanguage,
+  useEditSeoServiceInstanceMetadataMutation,
+  useServiceInstanceSeoMetadataByIdQuery,
 } from '@graphql/generated';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { z } from 'zod';
 
 const SEO_METADATA_MAX_LENGTH = 155;
@@ -82,42 +79,49 @@ const libraryUpdateDefaultValues = SEO_LOCALES.reduce(
   {} as LibraryUpdateFormValues
 );
 
-const libraryUpdateFieldConfig = SEO_LOCALES.reduce(
-  (acc, { titleField, descriptionField, label }) => {
-    acc[titleField] = {
-      label: `Meta-title (${label})`,
-      inputProps: { maxLength: SEO_METADATA_MAX_LENGTH },
+type LibraryUpdateFieldConfig = Record<
+  string,
+  {
+    label: string;
+    inputProps: {
+      maxLength: number;
     };
-    acc[descriptionField] = {
-      label: `Meta-description (${label})`,
-      inputProps: { maxLength: SEO_METADATA_MAX_LENGTH },
-    };
-    return acc;
-  },
-  {} as Record<
-    string,
-    {
-      label: string;
-      inputProps: {
-        maxLength: number;
-      };
-    }
-  >
-);
+  }
+>;
 
-export const LibraryUpdateMetadatas = () => {
+export const LibraryUpdateMetadata = () => {
   const t = useTranslations();
   const { serviceInstance } = useServiceContext();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-  const { seoServiceInstanceMetadata } =
-    useLazyLoadQuery<libraryUpdateSeoServiceInstanceMetadataQuery>(
-      SeoServiceInstanceMetadataByIdQuery,
-      {
-        service_instance_id: serviceInstance.id,
-      }
-    );
+  const libraryUpdateFieldConfig = useMemo(
+    () =>
+      SEO_LOCALES.reduce((acc, { titleField, descriptionField, label }) => {
+        acc[titleField] = {
+          label: `${t('Metadata.SeoMetaTitle')} (${label})`,
+          inputProps: { maxLength: SEO_METADATA_MAX_LENGTH },
+        };
+        acc[descriptionField] = {
+          label: `${t('Metadata.SeoMetaDescription')} (${label})`,
+          inputProps: { maxLength: SEO_METADATA_MAX_LENGTH },
+        };
+        return acc;
+      }, {} as LibraryUpdateFieldConfig),
+    [t]
+  );
+  const seoMetadataVariables = useMemo(
+    () => ({
+      service_instance_id: serviceInstance.id,
+    }),
+    [serviceInstance.id]
+  );
+  const { data } = useServiceInstanceSeoMetadataByIdQuery(
+    portalGraphqlClient,
+    seoMetadataVariables
+  );
 
   const existingSeoMetadataByLocale = useMemo(() => {
+    const seoServiceInstanceMetadata = data?.seoServiceInstanceMetadata ?? [];
     return seoServiceInstanceMetadata.reduce(
       (acc, metadata) => {
         const matchingLocale = SEO_LOCALES.find(
@@ -133,32 +137,42 @@ export const LibraryUpdateMetadatas = () => {
       },
       { ...libraryUpdateDefaultValues }
     );
-  }, [seoServiceInstanceMetadata]);
+  }, [data?.seoServiceInstanceMetadata]);
 
-  const [editSeoServiceInstance] =
-    useMutation<libraryUpdateEditSeoServiceInstanceMutation>(
-      EditSeoServiceInstanceMutation
-    );
+  const { mutateAsync: editSeoServiceInstance } =
+    useEditSeoServiceInstanceMetadataMutation(portalGraphqlClient);
 
-  const updateSeoServiceInstance = (
-    language: SeoServiceInstanceLanguage,
-    metaTitle: string | undefined,
-    metaDescription: string | undefined
-  ) => {
-    return new Promise<void>((resolve, reject) => {
-      editSeoServiceInstance({
-        variables: {
-          service_instance_id: serviceInstance.id,
-          language,
-          input: {
-            meta_title: metaTitle ?? '',
-            meta_description: metaDescription ?? '',
-          },
-        },
-        onCompleted: () => resolve(),
-        onError: (error) => reject(error),
+  const handleSubmit = async (values: LibraryUpdateFormValues) => {
+    try {
+      await Promise.all(
+        SEO_LOCALES.map(({ language, titleField, descriptionField }) =>
+          editSeoServiceInstance({
+            service_instance_id: serviceInstance.id,
+            language,
+            input: {
+              meta_title: values[titleField] ?? '',
+              meta_description: values[descriptionField] ?? '',
+            },
+          })
+        )
+      );
+      setIsOpen(false);
+      void queryClient.invalidateQueries({
+        queryKey:
+          useServiceInstanceSeoMetadataByIdQuery.getKey(seoMetadataVariables),
       });
-    });
+      toast({
+        title: t('Utils.Success'),
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'UNKNOWN_ERROR';
+      toast({
+        variant: 'destructive',
+        title: t('Utils.Error'),
+        description: t(`Error.Server.${errorMessage}`),
+      });
+    }
   };
 
   return (
@@ -183,32 +197,7 @@ export const LibraryUpdateMetadatas = () => {
               formSchema={libraryUpdateSchema}
               values={existingSeoMetadataByLocale}
               fieldConfig={libraryUpdateFieldConfig}
-              onSubmit={async (values) => {
-                try {
-                  await Promise.all(
-                    SEO_LOCALES.map(
-                      ({ language, titleField, descriptionField }) =>
-                        updateSeoServiceInstance(
-                          language,
-                          values[titleField],
-                          values[descriptionField]
-                        )
-                    )
-                  );
-                  toast({
-                    title: t('Utils.Success'),
-                  });
-                  setIsOpen(false);
-                } catch (error) {
-                  const errorMessage =
-                    error instanceof Error ? error.message : 'UNKNOWN_ERROR';
-                  toast({
-                    variant: 'destructive',
-                    title: t('Utils.Error'),
-                    description: t(`Error.Server.${errorMessage}`),
-                  });
-                }
-              }}>
+              onSubmit={handleSubmit}>
               <DialogFooter className="pt-s">
                 <Button
                   variant="secondary"

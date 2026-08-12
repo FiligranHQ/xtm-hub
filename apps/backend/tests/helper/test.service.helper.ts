@@ -1,9 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { expect } from 'vitest';
 import { db } from '../../knexfile';
-import { ServiceDefinitionIdentifier } from '../../src/__generated__/resolvers-types';
+import {
+  SeoServiceInstanceLanguage,
+  ServiceDefinitionIdentifier,
+} from '../../src/__generated__/resolvers-types';
 import SEOServiceInstance, {
-  SEOServiceInstanceLanguage,
   SEOServiceInstanceMutator,
 } from '../../src/model/kanel/public/SEOServiceInstance';
 import ServiceCapability, {
@@ -113,7 +115,7 @@ export const TestServiceHelper = {
     create: async (
       data: Partial<SEOServiceInstance> & {
         service_instance_id: ServiceInstanceId;
-        language: SEOServiceInstanceLanguage;
+        language: SeoServiceInstanceLanguage;
       }
     ): Promise<SEOServiceInstance> => {
       const [seoServiceInstance] = await db<SEOServiceInstance>(

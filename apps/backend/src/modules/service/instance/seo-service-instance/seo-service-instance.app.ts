@@ -3,11 +3,7 @@ import {
   QuerySeoServiceInstanceMetadataArgs,
   SeoServiceInstanceMetadata,
 } from '../../../../__generated__/resolvers-types';
-import {
-  SEOServiceInstanceLanguage,
-  SEOServiceInstanceMutator,
-} from '../../../../model/kanel/public/SEOServiceInstance';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import { SEOServiceInstanceMutator } from '../../../../model/kanel/public/SEOServiceInstance';
 import { SeoServiceInstanceDomain } from './seo-service-instance.domain';
 
 export const SeoServiceInstanceApp = {
@@ -18,10 +14,10 @@ export const SeoServiceInstanceApp = {
     SeoServiceInstanceMetadata[]
   > => {
     const field: SEOServiceInstanceMutator = {
-      service_instance_id: service_instance_id as ServiceInstanceId,
+      service_instance_id: service_instance_id,
     };
     if (language != null) {
-      field.language = language as SEOServiceInstanceLanguage;
+      field.language = language;
     }
     return SeoServiceInstanceDomain.loadSeoServiceInstancesBy(field);
   },

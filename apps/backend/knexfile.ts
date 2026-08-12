@@ -55,7 +55,6 @@ type BaseDatabaseType =
   | 'Organization'
   | 'ServiceInstance'
   | 'ServiceDefinition'
-  | 'SEO_ServiceInstance'
   | 'User_RolePortal'
   | 'RolePortal'
   | 'CapabilityPortal'

@@ -19,7 +19,6 @@ import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.typ
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceMetadataQuery, {
-  SeoServiceInstanceLanguage,
   seoServiceInstanceMetadataQuery,
 } from '@generated/seoServiceInstanceMetadataQuery.graphql';
 import SeoServiceInstanceQuery, {
@@ -56,7 +55,7 @@ const getPageData = cache(async (slug: string, locale: PublicLocale) => {
       SeoServiceInstanceMetadataQuery,
       {
         service_instance_id: serviceInstance.id,
-        language: locale as SeoServiceInstanceLanguage,
+        language: locale,
       },
       { cache: undefined, next: { revalidate: 3600 } }
     );
@@ -90,7 +89,7 @@ export async function generateMetadata({
     baseUrl,
     locale,
     pathname,
-    title: seoMetadata?.meta_title || serviceInstance.name,
+    title: seoMetadata?.meta_title || `${serviceInstance.name} | XTM Hub`,
     description:
       seoMetadata?.meta_description || serviceInstance.description || '',
     imageAlt: serviceInstance.name,

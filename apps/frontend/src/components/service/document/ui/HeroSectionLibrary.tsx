@@ -1,5 +1,5 @@
 import { localizedCardDescription, localizedCardName } from '@/utils/services';
-import { LibraryUpdateMetadatas } from './LibraryUpdateMetadatas';
+import { LibraryUpdateMetadata } from './LibraryUpdateMetadata';
 
 export const heroSectionLibraryTranslationKeys = {
   eyebrow: 'Service.LibraryHero.Eyebrow',
@@ -46,7 +46,7 @@ export const HeroSectionLibrary = ({
           <h1 className="heading-2xl">{name}</h1>
           {showLibraryUpdate && (
             <div className="justify-self-start">
-              <LibraryUpdateMetadatas />
+              <LibraryUpdateMetadata />
             </div>
           )}
         </div>

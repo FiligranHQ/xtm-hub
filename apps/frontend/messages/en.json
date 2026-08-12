@@ -541,7 +541,9 @@
     "DocumentFallbackDescriptionScenario": "Explore this OpenAEV attack scenario to strengthen your adversary emulation and security validation.",
     "DocumentFallbackDescriptionGeneric": "Explore this resource on XTM Hub by Filigran to enhance your cybersecurity posture.",
     "ResourcePreviewAlt": "{name} - Resource Preview",
-    "SeoMetadata": "SEO Metadata"
+    "SeoMetadata": "SEO Metadata",
+    "SeoMetaTitle": "Meta-title",
+    "SeoMetaDescription": "Meta-description"
   },
   "CompetitorListPage": {
     "Name": "Name",

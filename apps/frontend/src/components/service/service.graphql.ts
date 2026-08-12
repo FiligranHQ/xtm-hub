@@ -28,38 +28,6 @@ export const UpdatePlatformServiceMetadata = graphql`
   }
 `;
 
-export const EditSeoServiceInstanceMutation = graphql`
-  mutation libraryUpdateEditSeoServiceInstanceMutation(
-    $service_instance_id: ServiceInstanceId!
-    $language: SeoServiceInstanceLanguage!
-    $input: EditSeoServiceInstanceInput!
-  ) {
-    editSeoServiceInstance(
-      service_instance_id: $service_instance_id
-      language: $language
-      input: $input
-    ) {
-      service_instance_id
-      language
-      meta_title
-      meta_description
-    }
-  }
-`;
-
-export const SeoServiceInstanceMetadataByIdQuery = graphql`
-  query libraryUpdateSeoServiceInstanceMetadataQuery(
-    $service_instance_id: ServiceInstanceId!
-  ) {
-    seoServiceInstanceMetadata(service_instance_id: $service_instance_id) {
-      service_instance_id
-      language
-      meta_title
-      meta_description
-    }
-  }
-`;
-
 export const ServiceById = graphql`
   query serviceByIdQuery($service_instance_id: ServiceInstanceId!) {
     serviceInstanceByIdAndGrantAccess(

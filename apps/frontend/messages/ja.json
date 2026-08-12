@@ -541,7 +541,9 @@
     "DocumentFallbackDescriptionScenario": "敵対者エミュレーションとセキュリティ検証を強化するこのOpenAEV攻撃シナリオをご覧ください。",
     "DocumentFallbackDescriptionGeneric": "サイバーセキュリティ体制を強化するために、XTM Hub by Filigran のこのリソースをご覧ください。",
     "ResourcePreviewAlt": "{name} - リソースプレビュー",
-    "SeoMetadata": "SEO Metadata"
+    "SeoMetadata": "SEO Metadata",
+    "SeoMetaTitle": "メタタイトル",
+    "SeoMetaDescription": "メタディスクリプション"
   },
   "CompetitorListPage": {
     "Name": "製品名",
