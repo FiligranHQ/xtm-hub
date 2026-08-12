@@ -11,6 +11,7 @@ import {
 import { withTransaction } from '../../../context/database.context';
 import Document from '../../../model/kanel/public/Document';
 import { ObjectSolutionCategoryObjectId } from '../../../model/kanel/public/ObjectSolutionCategory';
+import { logApp } from '../../../utils/app-logger.util';
 import { isUniqueConstraintViolation } from '../../../utils/error/error-guard.util';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
@@ -18,6 +19,7 @@ import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
 import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../document/domain/document.domain';
 import { solutionCategoryApp } from '../../solution-category/solution-category.app';
+import { isFiligranProduct } from '../../solution-category/solution-category.utils';
 import { IngestManifestHelper } from '../opencti/integration/ingest-manifest/ingest-manifest.helper';
 import {
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
@@ -239,11 +241,19 @@ export const ManifestFragmentDomain = {
           contact,
         });
 
-        await solutionCategoryApp.linkSolutionCategoriesByNameToObject({
-          objectId: toObjectSolutionCategoryObjectId(connector.id),
-          names: fragment.solution_categories ?? [],
-          product: fragment.platform.trim().toLowerCase(),
-        });
+        const platform = fragment.platform.trim().toLowerCase();
+        if (isFiligranProduct(platform)) {
+          await solutionCategoryApp.linkSolutionCategoriesByNameToObject({
+            objectId: toObjectSolutionCategoryObjectId(connector.id),
+            names: fragment.solution_categories ?? [],
+            product: platform,
+          });
+        } else {
+          logApp.warn(
+            'Unknown platform for solution-category linking, skipping',
+            { platform }
+          );
+        }
       } catch (error) {
         // Backstop for brand-new connectors: no existing rows for the lock above.
         if (

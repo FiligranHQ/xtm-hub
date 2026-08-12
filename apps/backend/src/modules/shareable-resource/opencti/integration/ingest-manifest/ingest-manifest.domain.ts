@@ -1,5 +1,6 @@
 import {
   DocumentMetadataKeyCode,
+  FiligranProduct,
   IntegrationType,
 } from '../../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../../utils/app-logger.util';
@@ -70,9 +71,10 @@ export const IngestManifestDomain = {
         const doc =
           await DocumentApp.upsertDocumentWithExternalImage<Connector>(
             OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-            { ...omit(connector, ['logo']) } as Connector,
+            { ...omit(connector, ['logo']) },
             uploadLogo,
-            INTEGRATION_CONNECTOR_METADATA_KEYS
+            INTEGRATION_CONNECTOR_METADATA_KEYS,
+            FiligranProduct.Opencti
           );
         const newDocIsCreated = !doc.updated_at;
         if (newDocIsCreated) {

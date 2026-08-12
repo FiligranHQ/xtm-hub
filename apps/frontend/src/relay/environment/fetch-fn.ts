@@ -76,6 +76,7 @@ export async function networkFetch({
 
 const subscriptionsClient = createClient({
   url: '/graphql-sse',
+  singleConnection: true,
 });
 
 export function fetchOrSubscribe(

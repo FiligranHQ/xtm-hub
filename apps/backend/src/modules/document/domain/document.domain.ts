@@ -60,7 +60,16 @@ export type DocumentData<
   TSolutionCategory extends SolutionCategoryValue = SolutionCategoryId,
 > = Omit<Partial<T>, 'use_cases'> & {
   use_cases?: TUseCase[];
+  /** Single category id — form/drawer path, inserted directly as the FK. */
   solution_category?: TSolutionCategory;
+  /**
+   * Category names as shipped by the manifest (both ingestion paths speak
+   * names; only the form path speaks ids), resolved at link time via
+   * linkSolutionCategoriesByNameToObject. Deliberately not TSolutionCategory[]:
+   * the ingestion instantiates DocumentData<T, string>, so the generic would
+   * default to the branded SolutionCategoryId and reject the extracted strings.
+   */
+  solution_categories?: string[];
   parent_document_id?: DocumentId;
 };
 
@@ -88,6 +97,7 @@ export const DocumentDomain = {
           'parent_document_id',
           'use_cases',
           'solution_category',
+          'solution_categories',
           ...metadataKeys,
         ]),
         active: documentData.active ?? true,
@@ -461,6 +471,8 @@ export const DocumentDomain = {
       ...omit(documentData, [
         'parent_document_id',
         'use_cases',
+        'solution_category',
+        'solution_categories',
         ...metadataKeys,
       ]),
       uploader_id: user.id,

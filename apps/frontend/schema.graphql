@@ -396,7 +396,7 @@ type PlatformDeploymentRequest {
   platform_id: String
   platform_url: String
   failure_reason: String
-  parent_id: DeploymentRequestId
+  parent_id: String
   url: String
 }
 
@@ -1457,7 +1457,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1487,7 +1487,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1517,7 +1517,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1548,7 +1548,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1588,7 +1588,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1620,7 +1620,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1652,7 +1652,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1684,7 +1684,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel

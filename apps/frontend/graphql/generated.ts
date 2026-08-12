@@ -193,7 +193,7 @@ export type Connector = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category: Maybe<SolutionCategory>;
+  solution_categories: Maybe<Array<SolutionCategory>>;
   source_code: Maybe<Scalars['String']['output']>;
   subscription: Maybe<SubscriptionModel>;
   subscription_link: Maybe<Scalars['String']['output']>;
@@ -283,7 +283,7 @@ export type CsvFeed = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category: Maybe<SolutionCategory>;
+  solution_categories: Maybe<Array<SolutionCategory>>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -809,7 +809,7 @@ export type Integration = {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category: Maybe<SolutionCategory>;
+  solution_categories: Maybe<Array<SolutionCategory>>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -840,7 +840,7 @@ export type IntegrationHack = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category: Maybe<SolutionCategory>;
+  solution_categories: Maybe<Array<SolutionCategory>>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -1603,7 +1603,7 @@ export type PlatformDeploymentRequest = {
   ordering: Scalars['Int']['output'];
   organization_domains: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
-  parent_id: Maybe<Scalars['DeploymentRequestId']['output']>;
+  parent_id: Maybe<Scalars['String']['output']>;
   platform_id: Maybe<Scalars['String']['output']>;
   platform_identifier: Maybe<PlatformIdentifier>;
   platform_token: Scalars['String']['output'];
@@ -2134,7 +2134,7 @@ export type RssFeed = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category: Maybe<SolutionCategory>;
+  solution_categories: Maybe<Array<SolutionCategory>>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -2366,7 +2366,7 @@ export type Stream = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category: Maybe<SolutionCategory>;
+  solution_categories: Maybe<Array<SolutionCategory>>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -2486,7 +2486,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category: Maybe<SolutionCategory>;
+  solution_categories: Maybe<Array<SolutionCategory>>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
@@ -2539,7 +2539,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   share_number: Maybe<Scalars['Int']['output']>;
   short_description: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category: Maybe<SolutionCategory>;
+  solution_categories: Maybe<Array<SolutionCategory>>;
   subscription: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;

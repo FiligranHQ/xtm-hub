@@ -1,4 +1,7 @@
-import { EditSolutionCategoryInput } from '../../__generated__/resolvers-types';
+import {
+  EditSolutionCategoryInput,
+  FiligranProduct,
+} from '../../__generated__/resolvers-types';
 import { ObjectSolutionCategoryObjectId } from '../../model/kanel/public/ObjectSolutionCategory';
 import SolutionCategory, {
   SolutionCategoryId,
@@ -58,7 +61,7 @@ export const solutionCategoryApp = {
   }: {
     objectId: ObjectSolutionCategoryObjectId;
     names: readonly string[];
-    product: string;
+    product: FiligranProduct;
   }): Promise<void> => {
     if (names.length === 0) {
       return;

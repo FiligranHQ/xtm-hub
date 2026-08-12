@@ -89,7 +89,7 @@ export const publicDocumentByServiceSlugItem = graphql`
       datasheet_url
       blogpost_url
       demo_url
-      solution_category {
+      solution_categories {
         id
         name
       }
@@ -189,7 +189,7 @@ export const publicDocumentBySlugItem = graphql`
       datasheet_url
       blogpost_url
       demo_url
-      solution_category {
+      solution_categories {
         id
         name
       }

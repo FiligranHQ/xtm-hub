@@ -27,8 +27,10 @@ const resolvers: Resolvers = {
 
       return resolvedType;
     },
-    solution_category: ({ id }, _, context) =>
-      context.dataLoaders.document.solutionCategoryByDocumentIdLoader.load(id),
+    solution_categories: ({ id }, _, context) =>
+      context.dataLoaders.document.solutionCategoriesByDocumentIdLoader.load(
+        id
+      ),
     children_documents: async ({ id }, _, context) =>
       (await context.dataLoaders.document.imagesByDocumentIdLoader.load(
         id

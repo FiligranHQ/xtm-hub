@@ -22,6 +22,63 @@ describe('documentDataLoader', () => {
     expect(result).toEqual([{ id: 'user-1' }, null]);
   });
 
+  it('should map solution categories by document id and return an empty array when missing', async () => {
+    vi.spyOn(
+      solutionCategoryDomain,
+      'buildSolutionCategoriesByDocumentIdQuery'
+    ).mockResolvedValue([
+      {
+        id: 'cat-1',
+        name: 'Threat Intelligence',
+        _document_id: 'doc-1',
+      },
+      {
+        id: 'cat-2',
+        name: 'Network Security',
+        _document_id: 'doc-1',
+      },
+    ] as never);
+
+    const result =
+      await DocumentDataLoader.batchLoadSolutionCategoriesByDocumentId([
+        'doc-1',
+        'doc-2',
+      ]);
+
+    expect(result).toEqual([
+      [
+        { id: 'cat-1', name: 'Threat Intelligence', _document_id: 'doc-1' },
+        { id: 'cat-2', name: 'Network Security', _document_id: 'doc-1' },
+      ],
+      [],
+    ]);
+  });
+
+  it('should convert image ids to global ids and keep grouping by parent id', async () => {
+    vi.spyOn(DocumentChildrenDomain, 'loadImagesByParentIds').mockResolvedValue(
+      [
+        {
+          id: 'image-1',
+          _parent_id: 'doc-1',
+        },
+        {
+          id: 'image-2',
+          _parent_id: 'doc-2',
+        },
+      ] as never
+    );
+
+    const result = await DocumentDataLoader.batchLoadImagesByDocumentId([
+      'doc-1',
+      'doc-2',
+    ]);
+
+    expect(result).toEqual([
+      [{ id: toGlobalId('Document', 'image-1'), _parent_id: 'doc-1' }],
+      [{ id: toGlobalId('Document', 'image-2'), _parent_id: 'doc-2' }],
+    ]);
+  });
+
   it('should group children documents by parent id', async () => {
     vi.spyOn(
       DocumentChildrenDomain,
@@ -54,59 +111,6 @@ describe('documentDataLoader', () => {
       ],
       [{ id: 'child-3', _parent_id: 'doc-2' }],
       [],
-    ]);
-  });
-
-  it('should convert image ids to global ids and keep grouping by parent id', async () => {
-    vi.spyOn(DocumentChildrenDomain, 'loadImagesByParentIds').mockResolvedValue(
-      [
-        {
-          id: 'image-1',
-          _parent_id: 'doc-1',
-        },
-        {
-          id: 'image-2',
-          _parent_id: 'doc-2',
-        },
-      ] as never
-    );
-
-    const result = await DocumentDataLoader.batchLoadImagesByDocumentId([
-      'doc-1',
-      'doc-2',
-    ]);
-
-    expect(result).toEqual([
-      [{ id: toGlobalId('Document', 'image-1'), _parent_id: 'doc-1' }],
-      [{ id: toGlobalId('Document', 'image-2'), _parent_id: 'doc-2' }],
-    ]);
-  });
-
-  it('should map solution category by document id and return null when missing', async () => {
-    vi.spyOn(
-      solutionCategoryDomain,
-      'buildSolutionCategoriesByDocumentIdQuery'
-    ).mockResolvedValue([
-      {
-        id: 'cat-1',
-        name: 'Threat Intelligence',
-        _document_id: 'doc-1',
-      },
-    ] as never);
-
-    const result =
-      await DocumentDataLoader.batchLoadSolutionCategoryByDocumentId([
-        'doc-1',
-        'doc-2',
-      ]);
-
-    expect(result).toEqual([
-      {
-        id: 'cat-1',
-        name: 'Threat Intelligence',
-        _document_id: 'doc-1',
-      },
-      null,
     ]);
   });
 
