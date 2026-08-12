@@ -33,6 +33,8 @@ import { UserOrganizationPendingDomain } from '../user-pending/user-organization
 import { UserHelper } from '../user.helper';
 import { UserAdminGuard } from './user.admin.guard';
 
+// PostgreSQL error code for foreign_key_violation
+// (see https://www.postgresql.org/docs/current/errcodes-appendix.html).
 const FOREIGN_KEY_VIOLATION_CODE = '23503';
 
 const isForeignKeyViolation = (error: unknown): boolean =>

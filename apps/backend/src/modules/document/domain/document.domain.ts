@@ -8,6 +8,7 @@ import {
   QueryDocumentsArgs,
   UpdateDocumentInput,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import {
   DocumentId,
   default as DocumentModel,
@@ -79,20 +80,22 @@ export type DocumentData<
 
 export const DocumentDomain = {
   reassignUserDocumentsToSystemUser: async (userId: UserId): Promise<void> => {
-    await db<DocumentModel>('Document')
-      .where('uploader_id', '=', userId)
-      .update({
-        uploader_id: SYSTEM_USER_UUID,
-        uploader_organization_id: PLATFORM_ORGANIZATION_UUID,
-      });
+    return withTransaction(async () => {
+      await db<DocumentModel>('Document')
+        .where('uploader_id', '=', userId)
+        .update({
+          uploader_id: SYSTEM_USER_UUID,
+          uploader_organization_id: PLATFORM_ORGANIZATION_UUID,
+        });
 
-    await db<DocumentModel>('Document')
-      .where('remover_id', '=', userId)
-      .update({ remover_id: SYSTEM_USER_UUID });
+      await db<DocumentModel>('Document')
+        .where('remover_id', '=', userId)
+        .update({ remover_id: SYSTEM_USER_UUID });
 
-    await db<DocumentModel>('Document')
-      .where('updater_id', '=', userId)
-      .update({ updater_id: SYSTEM_USER_UUID });
+      await db<DocumentModel>('Document')
+        .where('updater_id', '=', userId)
+        .update({ updater_id: SYSTEM_USER_UUID });
+    });
   },
 
   deactivateDocuments: async (documentIds: DocumentId[]) => {

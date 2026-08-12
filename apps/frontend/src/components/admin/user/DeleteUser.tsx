@@ -58,31 +58,26 @@ export const DeleteUser = ({
     deleteUserMutation({ id: user.id });
   };
 
-  return (
-    <>
-      {!blockedReasonKey && (
-        <AlertDialogComponent
-          actionButtonText={t('Utils.Delete')}
-          variantName={'destructive'}
-          AlertTitle={t('UserActions.DeleteUser')}
-          isOpen={open}
-          onOpenChange={setOpen}
-          onClickContinue={onDeleteUser}>
-          {t('UserActions.SureDeleteUser', { email: user.email })}
-        </AlertDialogComponent>
-      )}
-      {blockedReasonKey && (
-        <DialogInformative
-          isOpen={true}
-          onClose={() => {
-            setBlockedReasonKey(null);
-            setOpen(false);
-          }}
-          title={t('UserActions.DeletionBlocked')}
-          description={t(blockedReasonKey)}>
-          {null}
-        </DialogInformative>
-      )}
-    </>
+  return blockedReasonKey ? (
+    <DialogInformative
+      isOpen={true}
+      onClose={() => {
+        setBlockedReasonKey(null);
+        setOpen(false);
+      }}
+      title={t('UserActions.DeletionBlocked')}
+      description={t(blockedReasonKey)}>
+      {null}
+    </DialogInformative>
+  ) : (
+    <AlertDialogComponent
+      actionButtonText={t('Utils.Delete')}
+      variantName={'destructive'}
+      AlertTitle={t('UserActions.DeleteUser')}
+      isOpen={open}
+      onOpenChange={setOpen}
+      onClickContinue={onDeleteUser}>
+      {t('UserActions.SureDeleteUser', { email: user.email })}
+    </AlertDialogComponent>
   );
 };

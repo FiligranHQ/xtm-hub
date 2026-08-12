@@ -3,10 +3,9 @@ import { UserOrganizationDomain } from '../user/user-organization/user-organizat
 import { UserOrganizationPendingDomain } from '../user/user-pending/user-organization-pending.domain';
 
 /**
- * Shared invariant checks reused by both the "delete this organization"
- * (OrganizationApp) and "would removing this user break this organization"
- * (UserAdminApp) flows, so the two paths can't drift on the underlying
- * membership/pending-users thresholds.
+ * Shared membership invariant checks (last-member and pending-users
+ * thresholds) for organization deletion flows, kept in one place so every
+ * caller enforces the same rules and can't drift from one another.
  */
 
 export const organizationWouldLoseLastMember = async (

@@ -872,7 +872,7 @@ describe('deploymentRequestDomain', () => {
           }
         );
       deploymentRequestId1 = deploymentRequest1!.id;
-      platformIdentifier = deploymentRequest1!.platform_identifier;
+      platformIdentifier = deploymentRequest1!.platform_identifier!;
       region = deploymentRequest1!.region;
 
       const deploymentRequest2 =
@@ -1267,7 +1267,7 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
-  describe('countDeploymentRequestsForUser', () => {
+  describe('countDeploymentRequestsBy', () => {
     const REQUESTER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID;
     const OTHER_USER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID;
 
@@ -1277,86 +1277,36 @@ describe('deploymentRequestDomain', () => {
       await TestHelper.subscription.delete({});
     });
 
-    it('should return 0 when the user has no deployment request', async () => {
-      const count =
-        await DeploymentRequestDomain.countDeploymentRequestsForUser(
-          REQUESTER_ID
-        );
+    it('should return 0 when no deployment request matches the given conditions', async () => {
+      const count = await DeploymentRequestDomain.countDeploymentRequestsBy({
+        user_requester_id: uuidv4() as UserId,
+      });
 
       expect(count).toBe(0);
     });
 
-    it('should return 0 for an unknown user', async () => {
+    it('should count only deployment requests matching the given conditions', async () => {
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { user_requester_id: REQUESTER_ID }
-      );
-
-      const count =
-        await DeploymentRequestDomain.countDeploymentRequestsForUser(
-          uuidv4() as UserId
-        );
-
-      expect(count).toBe(0);
-    });
-
-    it('should count every deployment request of the user', async () => {
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { user_requester_id: REQUESTER_ID }
+        { user_requester_id: REQUESTER_ID, cancellation_user_id: null }
       );
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { user_requester_id: OTHER_USER_ID }
+        { user_requester_id: REQUESTER_ID, cancellation_user_id: REQUESTER_ID }
       );
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { user_requester_id: REQUESTER_ID }
-      );
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { user_requester_id: OTHER_USER_ID }
+        { user_requester_id: OTHER_USER_ID, cancellation_user_id: REQUESTER_ID }
       );
 
-      const count =
-        await DeploymentRequestDomain.countDeploymentRequestsForUser(
-          REQUESTER_ID
-        );
+      const countByRequester =
+        await DeploymentRequestDomain.countDeploymentRequestsBy({
+          user_requester_id: REQUESTER_ID,
+        });
+      const countByCanceller =
+        await DeploymentRequestDomain.countDeploymentRequestsBy({
+          cancellation_user_id: REQUESTER_ID,
+        });
 
-      expect(count).toBe(2);
-    });
-  });
-
-  describe('countDeploymentRequestsCancelledByUser', () => {
-    const CANCELLING_USER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID;
-    const OTHER_USER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID;
-
-    afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
-    });
-
-    it('should return 0 when there is no cancellation, an unknown user, and count only requests cancelled by the given user', async () => {
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { cancellation_user_id: null }
-      );
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { cancellation_user_id: OTHER_USER_ID }
-      );
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { cancellation_user_id: CANCELLING_USER_ID }
-      );
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { cancellation_user_id: CANCELLING_USER_ID }
-      );
-
-      const countForUnknownUser =
-        await DeploymentRequestDomain.countDeploymentRequestsCancelledByUser(
-          uuidv4() as UserId
-        );
-      const countForCancellingUser =
-        await DeploymentRequestDomain.countDeploymentRequestsCancelledByUser(
-          CANCELLING_USER_ID
-        );
-
-      expect(countForUnknownUser).toBe(0);
-      expect(countForCancellingUser).toBe(2);
+      expect(countByRequester).toBe(2);
+      expect(countByCanceller).toBe(2);
     });
   });
 });

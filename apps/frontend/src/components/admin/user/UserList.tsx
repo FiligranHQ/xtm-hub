@@ -118,6 +118,7 @@ const UserList = ({ organization }: UserListProps) => {
 
   const isAdminPath = useAdminPath();
   const canDeleteUser = useAdminByPass();
+  const hasActionsColumn = isAdminPath && canDeleteUser;
   const { me } = useContext(PortalContext);
   const [userEdit, setUserEdit] = useState<UserList_fragment$data | undefined>(
     undefined
@@ -294,7 +295,7 @@ const UserList = ({ organization }: UserListProps) => {
               },
             },
           ]),
-      ...(isAdminPath && canDeleteUser
+      ...(hasActionsColumn
         ? [
             {
               id: 'actions',
@@ -328,7 +329,7 @@ const UserList = ({ organization }: UserListProps) => {
           ]
         : []),
     ],
-    [canDeleteUser, isAdminPath, me?.id, me?.selected_organization_id, t]
+    [hasActionsColumn, isAdminPath, me?.id, me?.selected_organization_id, t]
   );
 
   useEffect(() => {
@@ -450,7 +451,7 @@ const UserList = ({ organization }: UserListProps) => {
           columnOrder,
           columnVisibility,
           columnPinning: {
-            right: ['actions'],
+            right: hasActionsColumn ? ['actions'] : [],
           },
         }}
       />

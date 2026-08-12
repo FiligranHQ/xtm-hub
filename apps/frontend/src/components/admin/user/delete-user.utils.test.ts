@@ -15,6 +15,7 @@ describe('getDeletionBlockedReasonKey', () => {
     ${'DELETE_USER_BLOCKED_BY_LINKED_DATA'}              | ${'Error.Server.DELETE_USER_BLOCKED_BY_LINKED_DATA'}              | ${'other linked data'}
     ${'CANT_DELETE_YOURSELF'}                            | ${'Error.Server.CANT_DELETE_YOURSELF'}                            | ${'self deletion'}
     ${'CANT_DELETE_BUILTIN_USER'}                        | ${'Error.Server.CANT_DELETE_BUILTIN_USER'}                        | ${'a builtin user'}
+    ${'CANT_REMOVE_LAST_ADMINISTRATOR'}                  | ${'Error.Server.CANT_REMOVE_LAST_ADMINISTRATOR'}                  | ${'the last administrator of an organization'}
     ${'DELETE_USER_ERROR'}                               | ${null}                                                           | ${'a generic backend failure'}
     ${'USER_NOT_FOUND'}                                  | ${null}                                                           | ${'a missing user'}
     ${'DELETE_ORGANIZATION_REQUIRES_SINGLE_USER'}        | ${null}                                                           | ${'an organization-scoped guard'}

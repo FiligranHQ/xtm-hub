@@ -28,7 +28,7 @@ describe('userAdminGuard', () => {
   it('should throw when user has deployment requests', async () => {
     vi.spyOn(
       DeploymentRequestDomain,
-      'countDeploymentRequestsForUser'
+      'countDeploymentRequestsBy'
     ).mockResolvedValue(1);
 
     await expect(

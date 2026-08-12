@@ -32,14 +32,13 @@ import * as pub from '../../../../pub';
 import * as sessionStoreManager from '../../../../session-store-manager';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { OrganizationDomain } from '../../organization/organization.domain';
+import { OrganizationHelper } from '../../organization/organization.helper';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import { UserTransferRequestDomain } from '../user-transferRequest/user-transfer-request.domain';
 import { UserHelper } from '../user.helper';
 import { UserAdminApp } from './user.admin.app';
-
-const personalSpaceIdOf = (user: User) => user.id as unknown as OrganizationId;
 
 describe('users admin app', () => {
   describe('editUser', () => {
@@ -631,7 +630,9 @@ describe('users admin app', () => {
         expect(deletedUser.id).toBe(user.id);
         expect(await UserDomain.loadUser({ id: user.id })).toEqual([]);
         expect(
-          await TestHelper.organization.load({ id: personalSpaceIdOf(user) })
+          await TestHelper.organization.load({
+            id: OrganizationHelper.personalSpaceIdOf(user),
+          })
         ).toBeUndefined();
       });
 
@@ -801,7 +802,7 @@ describe('users admin app', () => {
         );
         const uploaded = await TestHelper.document.create({
           uploader_id: user.id,
-          uploader_organization_id: personalSpaceIdOf(user),
+          uploader_organization_id: OrganizationHelper.personalSpaceIdOf(user),
         });
         const touched = await TestHelper.document.create({
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
@@ -897,7 +898,9 @@ describe('users admin app', () => {
         expect(dispatchSpy).toHaveBeenCalledWith(
           'Organization',
           'delete',
-          expect.objectContaining({ id: personalSpaceIdOf(user) })
+          expect.objectContaining({
+            id: OrganizationHelper.personalSpaceIdOf(user),
+          })
         );
       });
 
@@ -991,7 +994,9 @@ describe('users admin app', () => {
 
           expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
           expect(
-            await TestHelper.organization.load({ id: personalSpaceIdOf(user) })
+            await TestHelper.organization.load({
+              id: OrganizationHelper.personalSpaceIdOf(user),
+            })
           ).toBeDefined();
         }
       );
@@ -1077,7 +1082,9 @@ describe('users admin app', () => {
 
           expect(await UserDomain.loadUser({ id: user.id })).toHaveLength(1);
           expect(
-            await TestHelper.organization.load({ id: personalSpaceIdOf(user) })
+            await TestHelper.organization.load({
+              id: OrganizationHelper.personalSpaceIdOf(user),
+            })
           ).toBeDefined();
         }
       );
@@ -1104,7 +1111,9 @@ describe('users admin app', () => {
           await TestHelper.organization.load({ id: organization.id })
         ).toBeDefined();
         expect(
-          await TestHelper.organization.load({ id: personalSpaceIdOf(user) })
+          await TestHelper.organization.load({
+            id: OrganizationHelper.personalSpaceIdOf(user),
+          })
         ).toBeDefined();
       });
 
@@ -1196,7 +1205,7 @@ describe('users admin app', () => {
         );
         await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
           user_id: pendingUser.id,
-          organization_id: personalSpaceIdOf(user),
+          organization_id: OrganizationHelper.personalSpaceIdOf(user),
         });
 
         await expect(UserAdminApp.deleteUser(user.id)).rejects.toThrow(

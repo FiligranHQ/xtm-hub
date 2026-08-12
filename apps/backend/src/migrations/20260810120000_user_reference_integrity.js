@@ -22,24 +22,7 @@ const danglingReferences = (knex, { table, column }) =>
  * @returns { Promise<void> }
  */
 export async function up(knex) {
-  const systemUser = await knex('User').where({ id: SYSTEM_USER_UUID }).first();
-
   for (const reference of USER_REFERENCE_COLUMNS) {
-    const [{ count }] = await danglingReferences(knex, reference).count(
-      '* as count'
-    );
-    const danglingCount = Number(count);
-
-    if (danglingCount === 0) {
-      continue;
-    }
-
-    if (!systemUser) {
-      throw new Error(
-        `Cannot backfill ${danglingCount} dangling "${reference.table}"."${reference.column}" reference(s): system user ${SYSTEM_USER_UUID} does not exist`
-      );
-    }
-
     await danglingReferences(knex, reference).update({
       [reference.column]: SYSTEM_USER_UUID,
     });

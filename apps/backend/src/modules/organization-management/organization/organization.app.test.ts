@@ -12,6 +12,7 @@ import { UserOrganizationDomain } from '../user/user-organization/user-organizat
 import { UserOrganizationPendingDomain } from '../user/user-pending/user-organization-pending.domain';
 import { UserHelper } from '../user/user.helper';
 import { OrganizationApp } from './organization.app';
+import { OrganizationHelper } from './organization.helper';
 
 describe('organizationApp', () => {
   afterEach(async () => {
@@ -266,7 +267,7 @@ describe('organizationApp', () => {
         { email: `delete-orga-${uuidv4()}@delete-orga-test.io` },
         { sendWelcomeEmail: false }
       );
-      const personalSpaceId = user.id as unknown as OrganizationId;
+      const personalSpaceId = OrganizationHelper.personalSpaceIdOf(user);
       const pendingUser = await UserHelper.createUserWithPersonalSpace(
         { email: `delete-orga-${uuidv4()}@delete-orga-test.io` },
         { sendWelcomeEmail: false }

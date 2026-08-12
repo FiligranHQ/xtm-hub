@@ -34,7 +34,9 @@ export const UserAdminGuard = {
 
   assertUserHasNoDeploymentRequest: async (userId: UserId) => {
     const deploymentRequestCount =
-      await DeploymentRequestDomain.countDeploymentRequestsForUser(userId);
+      await DeploymentRequestDomain.countDeploymentRequestsBy({
+        user_requester_id: userId,
+      });
     if (deploymentRequestCount > 0) {
       throw new Error(ErrorCode.DeleteUserBlockedByDeploymentRequest);
     }
@@ -42,9 +44,9 @@ export const UserAdminGuard = {
 
   assertUserHasNoCancellationRecord: async (userId: UserId) => {
     const cancellationRecordCount =
-      await DeploymentRequestDomain.countDeploymentRequestsCancelledByUser(
-        userId
-      );
+      await DeploymentRequestDomain.countDeploymentRequestsBy({
+        cancellation_user_id: userId,
+      });
     if (cancellationRecordCount > 0) {
       throw new Error(ErrorCode.DeleteUserBlockedByCancellationRecord);
     }
