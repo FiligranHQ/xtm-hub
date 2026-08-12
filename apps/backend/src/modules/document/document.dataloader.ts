@@ -48,10 +48,7 @@ export interface DocumentDataLoaders {
   childrenDocumentsLoader: DataLoader<string, Document[]>;
   imagesByDocumentIdLoader: DataLoader<string, Document[]>;
   useCasesByDocumentIdLoader: DataLoader<string, UseCase[]>;
-  solutionCategoryByDocumentIdLoader: DataLoader<
-    string,
-    SolutionCategory | null
-  >;
+  solutionCategoriesByDocumentIdLoader: DataLoader<string, SolutionCategory[]>;
   integrationTypeLoader: DataLoader<string, IntegrationType | null>;
   serviceInstanceByIdLoader: DataLoader<string, ServiceInstance | undefined>;
   subscriptionByServiceInstanceLoader: DataLoader<
@@ -149,18 +146,21 @@ export const DocumentDataLoader = {
     return ids.map((id) => map.get(id) ?? []);
   },
 
-  batchLoadSolutionCategoryByDocumentId: async (
+  batchLoadSolutionCategoriesByDocumentId: async (
     ids: readonly string[]
-  ): Promise<(SolutionCategory | null)[]> => {
+  ): Promise<SolutionCategory[][]> => {
     const rows: WithDocumentId<SolutionCategory>[] =
       await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
         ids
       );
 
-    const map = new Map<string, SolutionCategory>(
-      rows.map((row) => [row._document_id, row])
-    );
-    return ids.map((id) => map.get(id) ?? null);
+    const map = new Map<string, SolutionCategory[]>();
+    for (const row of rows) {
+      const existing = map.get(row._document_id) ?? [];
+      existing.push(row);
+      map.set(row._document_id, existing);
+    }
+    return ids.map((id) => map.get(id) ?? []);
   },
 
   batchLoadIntegrationTypes: async (
@@ -247,8 +247,8 @@ export const DocumentDataLoader = {
     useCasesByDocumentIdLoader: new DataLoader(
       DocumentDataLoader.batchLoadUseCasesByDocumentId
     ),
-    solutionCategoryByDocumentIdLoader: new DataLoader(
-      DocumentDataLoader.batchLoadSolutionCategoryByDocumentId
+    solutionCategoriesByDocumentIdLoader: new DataLoader(
+      DocumentDataLoader.batchLoadSolutionCategoriesByDocumentId
     ),
     integrationTypeLoader: new DataLoader(
       DocumentDataLoader.batchLoadIntegrationTypes

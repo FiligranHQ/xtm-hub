@@ -5,12 +5,14 @@ import {
   DocumentSourceType,
   IntegrationSubType,
   IntegrationType,
+  LicenseType,
 } from '../../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../../utils/app-logger.util';
 import { getErrorMessage } from '../../../../../utils/error/error-guard.util';
 import { fetchWithCacheForLocalTesting } from '../../../../../utils/fetch-with-cache';
 import { isValidVersion } from '../../../../../utils/versioning';
 import { Upload } from '../../../../document/document.uploads.helper';
+import { MAX_CONTACT_LENGTH } from '../../../manifest-fragment/manifest-fragment.helper';
 import {
   INTEGRATION_SERVICE_INSTANCE_ID,
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -42,6 +44,37 @@ const ContractSchema = z.object({
   subscription_link: z.string().url().or(z.literal('')).nullish(),
   manager_supported: z.boolean(),
   playbook_supported: z.boolean(),
+  license_type: z
+    .nativeEnum(LicenseType)
+    .nullish()
+    .catch(({ input }) => {
+      logApp.warn('Invalid license_type in manifest contract, field ignored', {
+        input,
+      });
+      return undefined;
+    }),
+  contact: z
+    .string()
+    .trim()
+    .max(MAX_CONTACT_LENGTH)
+    .nullish()
+    .catch(() => {
+      // input not logged: a contact is likely an email address (PII)
+      logApp.warn('Invalid contact in manifest contract, field ignored');
+      return undefined;
+    }),
+  solution_categories: z
+    .array(z.string())
+    .nullish()
+    .catch(({ input }) => {
+      logApp.warn(
+        'Invalid solution_categories in manifest contract, field ignored',
+        {
+          input,
+        }
+      );
+      return undefined;
+    }),
 });
 
 const ManifestSchema = z.object({
@@ -139,8 +172,12 @@ export const IngestManifestHelper = {
           subscription_link: validContract.subscription_link,
           manager_supported: validContract.manager_supported,
           playbook_supported: validContract.playbook_supported,
+          license_type: validContract.license_type ?? undefined,
+          // || (not ??): a trimmed-empty contact must not produce a metadata value
+          contact: validContract.contact || undefined,
           /*Use case and picture*/
           use_cases: validContract.use_cases,
+          solution_categories: validContract.solution_categories ?? undefined,
           logo: validContract.logo,
         });
       }
