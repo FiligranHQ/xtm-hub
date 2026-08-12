@@ -183,14 +183,17 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  run-e2e-tests:
+  run-e2e-tests-shards:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     permissions:
       contents: read
       packages: write
-      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -220,27 +223,23 @@ jobs:
            TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
            GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
            GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
-           GITHUB_RUN_ID="${{ github.run_id }}"
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run e2e || TEST_EXIT_CODE=$?
+           GITHUB_RUN_ID="${{ github.run_id }}" \
+           PLAYWRIGHT_SHARD="${{ matrix.shard }}/8"
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml pull --include-deps e2e
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
+           -e PLAYWRIGHT_SHARD \
+           e2e sh -lc "yarn test:e2e --shard=${PLAYWRIGHT_SHARD}" || TEST_EXIT_CODE=$?
           CONTAINER_ID=$(docker ps -a --filter "name=e2e-run" --format "{{.ID}}" | head -1)
           docker cp $CONTAINER_ID:/app/apps/e2e/ctrf/. ./ctrf/
           exit ${TEST_EXIT_CODE:-0}
 
-      - name: Publish Test Report
+      - name: Upload CTRF artifact
         if: always()
-        uses: ctrf-io/github-test-reporter@v1
+        uses: actions/upload-artifact@v7
         with:
-          report-path: "./ctrf/*.json"
-          pull-request: true
-          summary-report: true
-          failed-report: true
-          flaky-report: true
-          insights-report: true
-          suite-folded-report: true
-          overwrite-comment: true
-          report-order: "summary-report,failed-report,flaky-report,insights-report,test-report"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ctrf-shard-${{ matrix.shard }}
+          path: ctrf/
+          retention-days: 30
 
       - name: Collect service logs on failure
         if: failure()
@@ -287,14 +286,18 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: service-logs-${{ github.run_id }}
+          name: service-logs-${{ github.run_id }}-shard-${{ matrix.shard }}
           path: logs/
           retention-days: 30
 
-  run-front-unit-tests:
+  run-front-unit-tests-shards:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     permissions:
       contents: read
       packages: write
@@ -317,22 +320,31 @@ jobs:
 
       - name: Run front unit tests
         run: |
-          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
+          export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
+            VITEST_SHARD="${{ matrix.shard }}/8"
           mkdir -p coverage
           docker run --rm \
+            -e VITEST_SHARD \
             -v $(pwd)/coverage:/app/apps/frontend/coverage \
-            filigran/portal-front-test:${IMAGE_TAGS}
+            filigran/portal-front-test:${IMAGE_TAGS} \
+            sh -lc "yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: false
+          flags: frontend-shard-${{ matrix.shard }}
+          name: frontend-shard-${{ matrix.shard }}
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  run-api-unit-tests:
+  run-api-unit-tests-shards:
     needs: build-images-tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     permissions:
       contents: read
       packages: write
@@ -353,17 +365,93 @@ jobs:
       - name: Install docker
         uses: docker/setup-docker-action@v5
 
+      - name: Run backend type-check
+        if: matrix.shard == 1
+        run: |
+          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
+            backend-test sh -lc "yarn check-ts"
+
       - name: Launch docker compose
         run: |
           mkdir -p coverage
-          export IMAGE_TAGS=${{ needs.build-images-tests.outputs.docker-tags }}
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run backend-test
+          export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
+            VITEST_SHARD="${{ matrix.shard }}/8"
+          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
+            -e VITEST_SHARD \
+            backend-test sh -lc "VITEST_MODE=true yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
           fail_ci_if_error: false
+          flags: backend-shard-${{ matrix.shard }}
+          name: backend-shard-${{ matrix.shard }}
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  run-e2e-tests:
+    needs:
+      - run-e2e-tests-shards
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Finalize e2e shards
+        run: |
+          if [ "${{ needs.run-e2e-tests-shards.result }}" != "success" ]; then
+            echo "E2E shard job failed with result: ${{ needs.run-e2e-tests-shards.result }}"
+            exit 1
+          fi
+
+      - name: Download CTRF artifacts
+        if: always() && needs.run-e2e-tests-shards.result != 'skipped'
+        uses: actions/download-artifact@v5
+        with:
+          pattern: ctrf-shard-*
+          path: ctrf
+          merge-multiple: false
+
+      - name: Publish Test Report
+        if: always() && needs.run-e2e-tests-shards.result != 'skipped'
+        uses: ctrf-io/github-test-reporter@v1
+        with:
+          report-path: "./ctrf/**/*.json"
+          pull-request: true
+          summary-report: true
+          failed-report: true
+          flaky-report: true
+          insights-report: true
+          suite-folded-report: true
+          overwrite-comment: true
+          report-order: "summary-report,failed-report,flaky-report,insights-report,test-report"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  run-front-unit-tests:
+    needs: run-front-unit-tests-shards
+    if: always() && contains(github.ref , 'refs/tags/') == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Finalize frontend shards
+        run: |
+          if [ "${{ needs.run-front-unit-tests-shards.result }}" != "success" ]; then
+            echo "Frontend shard job failed with result: ${{ needs.run-front-unit-tests-shards.result }}"
+            exit 1
+          fi
+
+  run-api-unit-tests:
+    needs: run-api-unit-tests-shards
+    if: always() && contains(github.ref , 'refs/tags/') == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Finalize backend shards
+        run: |
+          if [ "${{ needs.run-api-unit-tests-shards.result }}" != "success" ]; then
+            echo "Backend shard job failed with result: ${{ needs.run-api-unit-tests-shards.result }}"
+            exit 1
+          fi
 
   deploy-feature-branch:
     needs: build-images-tests

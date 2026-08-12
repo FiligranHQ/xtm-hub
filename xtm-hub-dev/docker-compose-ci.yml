@@ -113,7 +113,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    image: postgres:17.2
+    image: postgres:17.2-alpine
     environment:
       - POSTGRES_USER=portal
       - POSTGRES_PASSWORD=portal-password
