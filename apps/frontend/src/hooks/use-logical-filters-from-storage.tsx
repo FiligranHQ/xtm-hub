@@ -25,12 +25,17 @@ type IntegrationFiltersParams = {
   verified: LogicalMultiSelectSelection;
   integrationTypes: LogicalMultiSelectSelection;
   productVersions: LogicalMultiSelectSelection;
+  licenseTypes?: LogicalMultiSelectSelection;
+  solutionCategories?: LogicalMultiSelectSelection;
 };
 
 export type LogicalFiltersParams =
   SimpleFiltersParams | IntegrationFiltersParams;
 
-export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
+export const useLogicalFiltersFromStorage = (
+  params: LogicalFiltersParams,
+  isSolutionCategoriesEnabled: boolean
+) => {
   const { serviceInstanceSlug, labels } = params;
   const entityTypes = 'entityTypes' in params ? params.entityTypes : undefined;
   const deployable = 'deployable' in params ? params.deployable : undefined;
@@ -40,6 +45,10 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
     'integrationTypes' in params ? params.integrationTypes : undefined;
   const productVersions =
     'productVersions' in params ? params.productVersions : undefined;
+  const licenseTypes =
+    'licenseTypes' in params ? params.licenseTypes : undefined;
+  const solutionCategories =
+    'solutionCategories' in params ? params.solutionCategories : undefined;
 
   return useMemo(() => {
     if (serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS) {
@@ -69,6 +78,22 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
               value: Object.keys(productVersions!),
             },
           },
+          ...(isSolutionCategoriesEnabled
+            ? [
+                {
+                  leaf: {
+                    key: FilterKey.SolutionCategory,
+                    value: Object.keys(solutionCategories ?? {}),
+                  },
+                },
+                {
+                  leaf: {
+                    key: FilterKey.LicenseType,
+                    value: Object.keys(licenseTypes ?? {}),
+                  },
+                },
+              ]
+            : []),
         ],
       };
     }
@@ -98,5 +123,8 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
     verified,
     integrationTypes,
     productVersions,
+    licenseTypes,
+    solutionCategories,
+    isSolutionCategoriesEnabled,
   ]);
 };

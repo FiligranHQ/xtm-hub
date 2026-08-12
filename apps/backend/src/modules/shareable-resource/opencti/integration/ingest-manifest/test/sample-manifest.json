@@ -17,7 +17,13 @@
       "source_code": "https://github.com/example/repo",
       "subscription_link": "https://example.com/subscribe",
       "manager_supported": true,
-      "playbook_supported": false
+      "playbook_supported": false,
+      "license_type": "Commercial",
+      "contact": "contributor@example.com",
+      "solution_categories": [
+        "Threat Intelligence Feed",
+        "Endpoint Detection & Response"
+      ]
     },
     {
       "title": "Contract Two",
@@ -32,7 +38,10 @@
       "source_code": "https://github.com/example/repo2",
       "subscription_link": "https://example.com/subscribe2",
       "manager_supported": false,
-      "playbook_supported": true
+      "playbook_supported": true,
+      "license_type": null,
+      "contact": null,
+      "solution_categories": null
     }
   ]
 }

@@ -15,6 +15,7 @@ import {
   DocumentImageType,
   DocumentMetadataKeyCode,
   DocumentSourceType,
+  FiligranProduct,
   IntegrationSubType,
   IntegrationType,
   PlatformIdentifier,
@@ -90,6 +91,7 @@ describe('documentApp', () => {
     name: 'name',
     description: 'description',
     active: true,
+    use_cases: [],
   };
 
   const documentUpdateData = {
@@ -171,9 +173,11 @@ describe('documentApp', () => {
         sourceDocument: mockUpload,
       });
 
+      const { use_cases: _use_cases, ...expected } = documentData;
+
       // Then
       expect(result).toMatchObject({
-        ...documentData,
+        ...expected,
         integration_type: IntegrationType.ThirdPartyIntegration,
         integration_subtype: IntegrationSubType.Orchestration,
         vendor_url: 'https://example.com',
@@ -1157,7 +1161,6 @@ describe('documentApp', () => {
       );
     });
   });
-
   describe('createDocumentWithChildrenAndMetadata', () => {
     beforeEach(async () => {
       await TestHelper.objectUseCase.delete({});
@@ -1276,7 +1279,8 @@ describe('documentApp', () => {
         OPENCTI_INTEGRATION_DOCUMENT_TYPE,
         input,
         mockUpload,
-        metadataKeys
+        metadataKeys,
+        FiligranProduct.Opencti
       );
       const children = await DocumentChildrenDomain.loadChildrenDocuments(
         doc.id
@@ -1318,14 +1322,16 @@ describe('documentApp', () => {
         'integration',
         input,
         mockUpload,
-        metadataKeys
+        metadataKeys,
+        FiligranProduct.Opencti
       );
       // Update with new image
       const doc2 = await DocumentApp.upsertDocumentWithExternalImage(
         'integration',
         input,
         newFileUpload,
-        metadataKeys
+        metadataKeys,
+        FiligranProduct.Opencti
       );
       const children = await DocumentChildrenDomain.loadChildrenDocuments(
         doc2.id
@@ -1362,7 +1368,8 @@ describe('documentApp', () => {
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           input,
           mockUpload,
-          metadataKeys
+          metadataKeys,
+          FiligranProduct.Opencti
         );
 
         // Then
@@ -1392,7 +1399,8 @@ describe('documentApp', () => {
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           input,
           mockUpload,
-          metadataKeys
+          metadataKeys,
+          FiligranProduct.Opencti
         );
 
         // When — update with "Response" instead
@@ -1400,7 +1408,8 @@ describe('documentApp', () => {
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           { ...input, use_cases: ['Response'] },
           mockUpload,
-          metadataKeys
+          metadataKeys,
+          FiligranProduct.Opencti
         );
 
         // Then
@@ -1431,7 +1440,8 @@ describe('documentApp', () => {
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           input,
           mockUpload,
-          metadataKeys
+          metadataKeys,
+          FiligranProduct.Opencti
         );
 
         // When — update without use_cases at all
@@ -1444,7 +1454,8 @@ describe('documentApp', () => {
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           inputWithoutUseCases,
           mockUpload,
-          metadataKeys
+          metadataKeys,
+          FiligranProduct.Opencti
         );
 
         // Then — the original "Detection" link is still present

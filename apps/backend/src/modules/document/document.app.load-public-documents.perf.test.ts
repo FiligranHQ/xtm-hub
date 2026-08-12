@@ -1,10 +1,5 @@
-import { v4 as uuidv4 } from 'uuid';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import {
-  measureAvgDuration,
-  seedDocuments,
-  TestHelper,
-} from '../../../tests/helper/test.helper';
+import { measureAvgDuration } from '../../../tests/helper/test.helper';
 import { SERVICES } from '../../../tests/tests.const';
 import {
   DocumentOrdering,
@@ -12,87 +7,41 @@ import {
   OrderingMode,
   QueryPublicDocumentsArgs,
   ServiceDefinitionIdentifier,
-  ServiceInstanceCreationStatus,
 } from '../../__generated__/resolvers-types';
-import { DocumentId } from '../../model/kanel/public/Document';
 import { ServiceDefinitionId } from '../../model/kanel/public/ServiceDefinition';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../model/kanel/public/ServiceInstance';
+import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { logApp } from '../../utils/app-logger.util';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
 import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../shareable-resource/opencti/integration/integration.model';
 import { DocumentApp } from './document.app';
+import {
+  PerfAssertions,
+  createPerfSuiteHelpers,
+  describePerf,
+} from './document.app.perf.shared';
 
-// Unique run prefix — keeps slugs and names from colliding with other test runs
-const RUN_PREFIX = `perf-${uuidv4().slice(0, 8)}`;
-
-// Track all created resources for teardown
-const allCreatedDocumentIds: DocumentId[] = [];
-const allCreatedImageDocumentIds: DocumentId[] = [];
-const allCreatedServiceInstanceIds: ServiceInstanceId[] = [];
-
-// ---------------------------------------------------------------------------
-// Service-instance helper
-// ---------------------------------------------------------------------------
-
-async function createTestServiceInstance(opts: {
-  serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
-  serviceDefinitionId: ServiceDefinitionId;
-  slugSuffix: string;
-}): Promise<ServiceInstance> {
-  const slug = `${RUN_PREFIX}-${opts.slugSuffix}`;
-  const instance = await TestHelper.serviceInstance.create({
-    name: `perf-${opts.slugSuffix}-${RUN_PREFIX}`,
-    slug,
-    service_definition_id: opts.serviceDefinitionId,
-    creation_status: ServiceInstanceCreationStatus.Ready,
-    public: true,
-    tags: [],
-    ordering: 99,
-  });
-  allCreatedServiceInstanceIds.push(instance.id);
-  return instance;
-}
-
-async function seed(
-  count: number,
-  opts: Omit<Parameters<typeof seedDocuments>[1], 'runPrefix'>
-): Promise<void> {
-  const { documentIds, imageDocumentIds } = await seedDocuments(count, {
-    ...opts,
-    runPrefix: RUN_PREFIX,
-  });
-  allCreatedDocumentIds.push(...documentIds);
-  allCreatedImageDocumentIds.push(...imageDocumentIds);
-}
-
-const describePerf = describe.runIf(process.env.RUN_PERF_TESTS === 'true');
+const PERF_ASSERTIONS: PerfAssertions = {
+  small: {
+    datasetSize: 20,
+    pageSize: 20,
+    maxAvgMs: 30,
+  },
+  large: {
+    datasetSize: 500,
+    pageSize: 20,
+    maxAvgMs: 50,
+  },
+};
 
 describePerf('loadPublicDocuments — performance benchmarks', () => {
+  const { createTestServiceInstance, seed, cleanup } = createPerfSuiteHelpers();
+  const { small, large } = PERF_ASSERTIONS;
+
   afterAll(async () => {
-    await Promise.all(
-      allCreatedImageDocumentIds.map((id) =>
-        TestHelper.documentChildren.delete({ child_document_id: id })
-      )
-    );
-    await Promise.all(
-      allCreatedImageDocumentIds.map((id) => TestHelper.document.delete({ id }))
-    );
-    await Promise.all(
-      allCreatedDocumentIds.map((id) => TestHelper.document.delete({ id }))
-    );
-    await Promise.all(
-      allCreatedServiceInstanceIds.map((id) =>
-        TestHelper.serviceInstance.delete({ id })
-      )
-    );
+    await cleanup();
   });
 
-  // =========================================================================
-  // OPENCTI INTEGRATIONS (connectors)
-  // =========================================================================
   describe('opencti integrations (connector)', () => {
     let integrationServiceInstance: ServiceInstance;
 
@@ -105,13 +54,13 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
       });
     });
 
-    describe('small dataset — 20 documents', () => {
+    describe(`small dataset — ${small.datasetSize} documents`, () => {
       beforeAll(async () => {
-        await seed(20, {
+        await seed(small.datasetSize, {
           serviceInstanceId: integrationServiceInstance.id,
           documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           namePrefix: 'connector-integration',
-          managerSupportedCount: 20,
+          managerSupportedCount: small.datasetSize,
           groupTag: 'int-small',
           metadataVariant: 'integration',
         });
@@ -121,7 +70,7 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: integrationServiceInstance.id,
           slug: integrationServiceInstance.slug!,
-          first: 20,
+          first: small.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
         };
@@ -131,14 +80,14 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Integration S1 – baseline (small): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(30);
+        expect(avgMs).toBeLessThan(small.maxAvgMs);
       });
 
       it('should cover scenario 2 — with search term "connector"', async () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: integrationServiceInstance.id,
           slug: integrationServiceInstance.slug!,
-          first: 20,
+          first: small.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
           searchTerm: 'connector',
@@ -149,14 +98,14 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Integration S2 – search (small): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(30);
+        expect(avgMs).toBeLessThan(small.maxAvgMs);
       });
 
       it('should cover scenario 3 — with metadata filter (manager_supported: true)', async () => {
         const input = {
           serviceInstanceId: integrationServiceInstance.id,
           slug: integrationServiceInstance.slug!,
-          first: 20,
+          first: small.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
           filters: [{ key: FilterKey.ManagerSupported, value: ['true'] }],
@@ -167,17 +116,17 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Integration S3 – metadata filter (small): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(30);
+        expect(avgMs).toBeLessThan(small.maxAvgMs);
       });
     });
 
-    describe('large dataset — +500 documents', () => {
+    describe(`large dataset — +${large.datasetSize} documents`, () => {
       beforeAll(async () => {
-        await seed(500, {
+        await seed(large.datasetSize, {
           serviceInstanceId: integrationServiceInstance.id,
           documentType: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           namePrefix: 'connector-integration',
-          managerSupportedCount: 500,
+          managerSupportedCount: large.datasetSize,
           groupTag: 'int-large',
           metadataVariant: 'integration',
         });
@@ -187,7 +136,7 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: integrationServiceInstance.id,
           slug: integrationServiceInstance.slug!,
-          first: 20,
+          first: large.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
         };
@@ -197,14 +146,14 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Integration S4 – baseline (large): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(50);
+        expect(avgMs).toBeLessThan(large.maxAvgMs);
       });
 
       it('should cover scenario 5 — large dataset: search + metadata filter combined', async () => {
         const input = {
           serviceInstanceId: integrationServiceInstance.id,
           slug: integrationServiceInstance.slug!,
-          first: 20,
+          first: large.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
           searchTerm: 'connector',
@@ -216,14 +165,11 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Integration S5 – search + filter (large): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(50);
+        expect(avgMs).toBeLessThan(large.maxAvgMs);
       });
     });
   });
 
-  // =========================================================================
-  // OPENAEV SCENARIOS
-  // =========================================================================
   describe('openaev scenarios', () => {
     let scenarioServiceInstance: ServiceInstance;
 
@@ -237,9 +183,9 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
       });
     });
 
-    describe('small dataset — 20 documents', () => {
+    describe(`small dataset — ${small.datasetSize} documents`, () => {
       beforeAll(async () => {
-        await seed(20, {
+        await seed(small.datasetSize, {
           serviceInstanceId: scenarioServiceInstance.id,
           documentType: OPENAEV_SCENARIO_DOCUMENT_TYPE,
           namePrefix: 'openaev-scenario',
@@ -252,7 +198,7 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: scenarioServiceInstance.id,
           slug: scenarioServiceInstance.slug!,
-          first: 20,
+          first: small.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
         };
@@ -262,14 +208,14 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Scenario S1 – baseline (small): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(30);
+        expect(avgMs).toBeLessThan(small.maxAvgMs);
       });
 
       it('should cover scenario 2 — with search term "openaev"', async () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: scenarioServiceInstance.id,
           slug: scenarioServiceInstance.slug!,
-          first: 20,
+          first: small.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
           searchTerm: 'openaev',
@@ -280,13 +226,13 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Scenario S2 – search (small): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(30);
+        expect(avgMs).toBeLessThan(small.maxAvgMs);
       });
     });
 
-    describe('large dataset — +500 documents', () => {
+    describe(`large dataset — +${large.datasetSize} documents`, () => {
       beforeAll(async () => {
-        await seed(500, {
+        await seed(large.datasetSize, {
           serviceInstanceId: scenarioServiceInstance.id,
           documentType: OPENAEV_SCENARIO_DOCUMENT_TYPE,
           namePrefix: 'openaev-scenario',
@@ -299,7 +245,7 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: scenarioServiceInstance.id,
           slug: scenarioServiceInstance.slug!,
-          first: 20,
+          first: large.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
         };
@@ -309,14 +255,14 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Scenario S3 – baseline (large): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(50);
+        expect(avgMs).toBeLessThan(large.maxAvgMs);
       });
 
       it('should cover scenario 4 — large dataset: search + product_version filter', async () => {
         const input = {
           serviceInstanceId: scenarioServiceInstance.id,
           slug: scenarioServiceInstance.slug!,
-          first: 20,
+          first: large.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
           searchTerm: 'openaev',
@@ -328,14 +274,11 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Scenario S4 – search + version filter (large): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(50);
+        expect(avgMs).toBeLessThan(large.maxAvgMs);
       });
     });
   });
 
-  // =========================================================================
-  // OPENCTI CUSTOM DASHBOARDS
-  // =========================================================================
   describe('opencti custom dashboards', () => {
     let dashboardServiceInstance: ServiceInstance;
 
@@ -349,9 +292,9 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
       });
     });
 
-    describe('small dataset — 20 documents', () => {
+    describe(`small dataset — ${small.datasetSize} documents`, () => {
       beforeAll(async () => {
-        await seed(20, {
+        await seed(small.datasetSize, {
           serviceInstanceId: dashboardServiceInstance.id,
           documentType: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           namePrefix: 'custom-dashboard',
@@ -364,7 +307,7 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: dashboardServiceInstance.id,
           slug: dashboardServiceInstance.slug!,
-          first: 20,
+          first: small.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
         };
@@ -374,14 +317,14 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Dashboard S1 – baseline (small): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(30);
+        expect(avgMs).toBeLessThan(small.maxAvgMs);
       });
 
       it('should cover scenario 2 — with search term "dashboard"', async () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: dashboardServiceInstance.id,
           slug: dashboardServiceInstance.slug!,
-          first: 20,
+          first: small.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
           searchTerm: 'dashboard',
@@ -392,13 +335,13 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Dashboard S2 – search (small): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(30);
+        expect(avgMs).toBeLessThan(small.maxAvgMs);
       });
     });
 
-    describe('large dataset — +500 documents', () => {
+    describe(`large dataset — +${large.datasetSize} documents`, () => {
       beforeAll(async () => {
-        await seed(500, {
+        await seed(large.datasetSize, {
           serviceInstanceId: dashboardServiceInstance.id,
           documentType: OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
           namePrefix: 'custom-dashboard',
@@ -411,7 +354,7 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         const input: QueryPublicDocumentsArgs = {
           serviceInstanceId: dashboardServiceInstance.id,
           slug: dashboardServiceInstance.slug!,
-          first: 20,
+          first: large.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
         };
@@ -421,14 +364,14 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Dashboard S3 – baseline (large): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(50);
+        expect(avgMs).toBeLessThan(large.maxAvgMs);
       });
 
       it('should cover scenario 4 — large dataset: search + product_version filter', async () => {
         const input = {
           serviceInstanceId: dashboardServiceInstance.id,
           slug: dashboardServiceInstance.slug!,
-          first: 20,
+          first: large.pageSize,
           orderBy: DocumentOrdering.CreatedAt,
           orderMode: OrderingMode.Desc,
           searchTerm: 'dashboard',
@@ -440,7 +383,7 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         logApp.info(
           `[perf] Dashboard S4 – search + version filter (large): avg=${avgMs.toFixed(2)}ms`
         );
-        expect(avgMs).toBeLessThan(50);
+        expect(avgMs).toBeLessThan(large.maxAvgMs);
       });
     });
   });

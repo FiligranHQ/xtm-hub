@@ -24,6 +24,7 @@ export enum TelemetryEventServiceType {
 export enum TelemetryTargetProduct {
   OPEN_CTI = 'open-cti',
   OPEN_AEV = 'open-aev',
+  XTM_ONE = 'xtmone',
 }
 
 export enum TelemetryOrganizationType {

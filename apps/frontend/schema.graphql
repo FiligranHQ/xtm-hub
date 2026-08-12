@@ -31,6 +31,8 @@ enum FilterKey {
   feed_url
   verified
   entity_type
+  license_type
+  solution_category
 }
 
 enum LogicalOperator {
@@ -236,6 +238,7 @@ enum DeploymentRequestPlatformRegion {
 
 enum DeploymentRequestDeploymentType {
   trial
+  bundle
 }
 
 enum DeploymentRequestHubStatus {
@@ -345,7 +348,7 @@ enum DeploymentRequestJobTitle {
 
 type DeploymentRequest implements Node {
   id: ID!
-  platform_identifier: PlatformIdentifier!
+  platform_identifier: PlatformIdentifier
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
@@ -366,11 +369,13 @@ type DeploymentRequest implements Node {
   cancellation_reason: String
   platform_id: String
   platform_url: String
+  parent_id: DeploymentRequestId
+  url: String
 }
 
 type PlatformDeploymentRequest {
   id: ID!
-  platform_identifier: PlatformIdentifier!
+  platform_identifier: PlatformIdentifier
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   platform_token: String!
@@ -391,10 +396,12 @@ type PlatformDeploymentRequest {
   platform_id: String
   platform_url: String
   failure_reason: String
+  parent_id: String
+  url: String
 }
 
 input CreateDeploymentRequestInput {
-  platform_identifier: PlatformIdentifier!
+  products: [PlatformIdentifier!]!
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
@@ -411,6 +418,7 @@ input UpdateDeploymentRequestInput {
   failure_reason: String
   actual_state: DeploymentRequestPlatformState
   ordering: Int
+  url: String
 }
 
 enum DeploymentRequestFilterKey {
@@ -570,6 +578,7 @@ enum DocumentMetadataKeyCode {
   entity_types
   solution_category
   license_type
+  contact
 }
 
 type ShareableResource {
@@ -966,6 +975,7 @@ input PlatformInput {
 enum PlatformIdentifier {
   opencti
   openaev
+  xtmone
 }
 
 input RegisterPlatformInput {
@@ -1153,7 +1163,9 @@ enum ServiceDefinitionIdentifier {
   openaev_scenarios
   opencti_registration
   openaev_registration
+  xtmone_registration
   xtm_platform_roadmap
+  xtm_platform_bundle
 }
 
 type ServiceDefinition implements Node {
@@ -1186,6 +1198,7 @@ enum ServiceInstanceCreationStatus {
 enum ServiceInstanceTag {
   openCTI
   openAEV
+  xtmOne
   trial
   others
 }
@@ -1313,6 +1326,9 @@ input ManifestFragmentInput {
   integration_type: String!
   additional_properties: JSON!
   config_schema: JSON!
+  license_type: LicenseType
+  contact: String
+  solution_categories: [String!]
 }
 
 enum ManifestType {
@@ -1441,7 +1457,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1451,7 +1467,7 @@ interface Integration implements Node & Document {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type IntegrationHack implements Node & Document & Integration {
@@ -1471,7 +1487,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1481,7 +1497,7 @@ type IntegrationHack implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type CsvFeed implements Node & Document & Integration {
@@ -1501,7 +1517,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1512,7 +1528,7 @@ type CsvFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type Connector implements Node & Document & Integration {
@@ -1532,7 +1548,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1551,7 +1567,8 @@ type Connector implements Node & Document & Integration {
   blogpost_url: String
   demo_url: String
   minimum_deployable_version: String
-  license_type: String
+  license_type: LicenseType
+  contact: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {
@@ -1571,7 +1588,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1583,7 +1600,7 @@ type TaxiiFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type RssFeed implements Node & Document & Integration {
@@ -1603,7 +1620,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1615,7 +1632,7 @@ type RssFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type Stream implements Node & Document & Integration {
@@ -1635,7 +1652,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1647,7 +1664,7 @@ type Stream implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type ThirdPartyIntegration implements Node & Document & Integration {
@@ -1667,7 +1684,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance
   subscription: SubscriptionModel
@@ -1681,7 +1698,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type OpenCTIPlaybook implements Document & Node {

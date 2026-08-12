@@ -468,9 +468,14 @@ export const RegistrationApp = {
 
     assertValidDeploymentRequest(deploymentRequest, input.platform.id);
 
+    if (!deploymentRequest.platform_identifier) {
+      throw new Error(BadRequestErrorCode.InvalidPlatformIdentifier);
+    }
+    const platformIdentifier = deploymentRequest.platform_identifier;
+
     if (
       RegistrationHelper.isTenantIdRequired(
-        deploymentRequest.platform_identifier,
+        platformIdentifier,
         input.platform.version
       ) &&
       !input.platform.tenantId
@@ -509,7 +514,7 @@ export const RegistrationApp = {
         const registerEvent = TelemetryHelper.buildRegisterEvent(
           selectedOrga,
           deploymentRequest.user_requester_id,
-          deploymentRequest.platform_identifier,
+          platformIdentifier,
           input.platform.id,
           input.platform.contract,
           input.platform.version,

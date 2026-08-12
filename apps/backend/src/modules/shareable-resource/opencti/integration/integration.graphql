@@ -50,7 +50,7 @@ interface Integration implements Node & Document {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -62,7 +62,7 @@ interface Integration implements Node & Document {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 # Strictly equal to Integration. Otherwise we have typing issues because no type overlaps
@@ -86,7 +86,7 @@ type IntegrationHack implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -98,7 +98,7 @@ type IntegrationHack implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type CsvFeed implements Node & Document & Integration {
@@ -121,7 +121,7 @@ type CsvFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -134,7 +134,7 @@ type CsvFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type Connector implements Node & Document & Integration {
@@ -157,7 +157,7 @@ type Connector implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -178,7 +178,8 @@ type Connector implements Node & Document & Integration {
   blogpost_url: String
   demo_url: String
   minimum_deployable_version: String
-  license_type: String
+  license_type: LicenseType
+  contact: String
 }
 
 type TaxiiFeed implements Node & Document & Integration {
@@ -201,7 +202,7 @@ type TaxiiFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -215,7 +216,7 @@ type TaxiiFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 type RssFeed implements Node & Document & Integration {
   # Node
@@ -237,7 +238,7 @@ type RssFeed implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -251,7 +252,7 @@ type RssFeed implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type Stream implements Node & Document & Integration {
@@ -274,7 +275,7 @@ type Stream implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -288,7 +289,7 @@ type Stream implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }
 
 type ThirdPartyIntegration implements Node & Document & Integration {
@@ -311,7 +312,7 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   share_number: Int
   slug: String!
   use_cases: [UseCase!]
-  solution_category: SolutionCategory
+  solution_categories: [SolutionCategory!]
   service_instance_id: ServiceInstanceId
   service_instance: ServiceInstance @auth
   subscription: SubscriptionModel @auth
@@ -327,5 +328,5 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   datasheet_url: String
   blogpost_url: String
   demo_url: String
-  license_type: String
+  license_type: LicenseType
 }

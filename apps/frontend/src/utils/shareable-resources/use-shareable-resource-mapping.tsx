@@ -7,6 +7,8 @@ import {
 } from '@/components/service/components/header/ServiceListHeader';
 import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
 import { IntegrationFilters } from '@/components/ui/shareable-resource/integration/IntegrationFilters';
+import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationLicenseTypeFilter';
+import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-resource/integration/IntegrationSolutionCategoryFilter';
 import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
 import {
   ServiceListLocalStorageKey,
@@ -17,7 +19,10 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 
-export const useShareableResourceMapping = (slug: ServiceSlug) => {
+export const useShareableResourceMapping = (
+  slug: ServiceSlug,
+  isSolutionCategoriesEnabled: boolean
+) => {
   const localStorageKeyMapping: Record<
     ServiceSlug,
     ServiceListLocalStorageKey
@@ -47,6 +52,8 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const {
     removeLabels,
     removeIntegrationTypes,
+    removeLicenseTypes,
+    removeSolutionCategories,
     removeDeployable,
     removeVerified,
     removeEntityTypes,
@@ -66,7 +73,11 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     [ServiceSlug.OPEN_CTI_INTEGRATIONS]: {
       [ServiceListFilterKey.Label]: labelFilter,
       [ServiceListFilterKey.IntegrationType]: {
-        node: <IntegrationFilters />,
+        node: (
+          <IntegrationFilters
+            isSolutionCategoriesEnabled={isSolutionCategoriesEnabled}
+          />
+        ),
         reset: removeIntegrationTypes,
       },
       [ServiceListFilterKey.ManagerSupported]: {
@@ -77,6 +88,18 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
         node: <IntegrationVerifiedFilter />,
         reset: removeVerified,
       },
+      ...(isSolutionCategoriesEnabled
+        ? {
+            [ServiceListFilterKey.SolutionCategory]: {
+              node: <IntegrationSolutionCategoryFilter />,
+              reset: removeSolutionCategories,
+            },
+            [ServiceListFilterKey.LicenseType]: {
+              node: <IntegrationLicenseTypeFilter />,
+              reset: removeLicenseTypes,
+            },
+          }
+        : {}),
     },
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
       [ServiceListFilterKey.Label]: labelFilter,

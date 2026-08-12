@@ -48,6 +48,14 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
+  loadDeploymentRequestsBy: async (
+    conditions: DeploymentRequestMutator
+  ): Promise<DeploymentRequest[]> => {
+    return db<DeploymentRequest[]>('DeploymentRequest')
+      .where(conditions)
+      .select('*');
+  },
+
   loadTrialsForOrganization: async (
     organizationId: OrganizationId,
     identifiers?: PlatformIdentifier[]
@@ -175,7 +183,7 @@ export const DeploymentRequestDomain = {
   },
 
   setFirstQueuedRequestAsPending: async (
-    platformIdentifier: PlatformIdentifier,
+    platformIdentifier: PlatformIdentifier | null,
     region: DeploymentRequestPlatformRegion
   ): Promise<DeploymentRequest | undefined> => {
     const request = await db<DeploymentRequest>('DeploymentRequest')
@@ -240,8 +248,12 @@ export const DeploymentRequestDomain = {
 
   initialiseServiceGroup: async (
     id: DeploymentRequestId,
-    platformIdentifier: PlatformIdentifier
+    platformIdentifier: PlatformIdentifier | null
   ) => {
+    if (!platformIdentifier) {
+      throw new Error(UnknownErrorCode.UnknownError);
+    }
+
     const fullDeploymentRequest =
       await DeploymentRequestDomain.loadFullDeploymentRequest({ id });
 
@@ -260,10 +272,15 @@ export const DeploymentRequestDomain = {
       throw new Error(ErrorCode.InvalidPlatformId);
     }
 
-    try {
-      await auth0Client.createAudienceAPI(organization_name, platform_id);
-    } catch (error) {
-      logApp.warn(`Auth0 Create Audience: ${error}`);
+    if (platformIdentifier !== PlatformIdentifier.Openaev) {
+      try {
+        await auth0Client.createAudienceAPI(organization_name, platform_id);
+      } catch (error) {
+        logApp.warn('Unable to create audience', {
+          error,
+          deploymentRequestId: id,
+        });
+      }
     }
 
     const serviceGroup = await ServiceGroupDomain.loadServiceGroups({

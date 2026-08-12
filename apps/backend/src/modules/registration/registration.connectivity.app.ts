@@ -68,6 +68,10 @@ const resolveStatusWhenNoConfiguration = ({
       platform_identifier
     ];
 
+  if (!requiredVersionForNotFoundStatus) {
+    return { status: PlatformRegistrationConnectivityStatus.Inactive };
+  }
+
   const shouldSendNotFoundStatus = doesVersionSatisfy({
     givenVersion: platform_version,
     requiredVersion: requiredVersionForNotFoundStatus,

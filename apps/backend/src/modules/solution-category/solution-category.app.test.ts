@@ -5,6 +5,7 @@ import SolutionCategory, {
   SolutionCategoryId,
 } from '../../model/kanel/public/SolutionCategory';
 import { ErrorCode } from '../../utils/error/error.code';
+import { objectSolutionCategoryDomain } from './object-solution-category/object-solution-category.domain';
 import { solutionCategoryApp } from './solution-category.app';
 import { solutionCategoryDomain } from './solution-category.domain';
 
@@ -62,6 +63,14 @@ describe('solution-category.app', () => {
       solutionCategoryDomain,
       'deleteSolutionCategory'
     ).mockResolvedValue(expected);
+    vi.spyOn(
+      solutionCategoryDomain,
+      'loadSolutionCategoryBy'
+    ).mockResolvedValue(expected);
+    vi.spyOn(
+      objectSolutionCategoryDomain,
+      'deleteObjectSolutionCategoryBy'
+    ).mockResolvedValue(undefined);
 
     // When
     const result = await solutionCategoryApp.deleteSolutionCategoryBy({ id });
@@ -74,16 +83,43 @@ describe('solution-category.app', () => {
   });
 
   it('should throw when deleting a non-existing solution category', async () => {
-    // Given
+    // Given a category that does not exist
     const id = uuidv4() as SolutionCategoryId;
     vi.spyOn(
       solutionCategoryDomain,
-      'deleteSolutionCategory'
-    ).mockResolvedValue(undefined);
+      'loadSolutionCategoryBy'
+    ).mockResolvedValue(null);
 
-    // Then
+    // Then the deletion is rejected before any unlinking happens
     await expect(
       solutionCategoryApp.deleteSolutionCategoryBy({ id })
     ).rejects.toThrow(ErrorCode.SolutionCategoryNotFound);
+  });
+
+  it('should unlink the category from its objects before deleting it', async () => {
+    // Given an existing category, possibly linked to ingested connectors
+    const id = uuidv4() as SolutionCategoryId;
+    const expected = {
+      id,
+      name: 'Category',
+      product: [FiligranProduct.Opencti],
+    } as SolutionCategory;
+    vi.spyOn(
+      solutionCategoryDomain,
+      'loadSolutionCategoryBy'
+    ).mockResolvedValue(expected);
+    vi.spyOn(
+      solutionCategoryDomain,
+      'deleteSolutionCategory'
+    ).mockResolvedValue(expected);
+    const unlinkSpy = vi
+      .spyOn(objectSolutionCategoryDomain, 'deleteObjectSolutionCategoryBy')
+      .mockResolvedValue(undefined);
+
+    // When the category is deleted
+    await solutionCategoryApp.deleteSolutionCategoryBy({ id });
+
+    // Then its links are removed first, since the FK has no ON DELETE CASCADE
+    expect(unlinkSpy).toHaveBeenCalledWith({ solution_category_id: id });
   });
 });

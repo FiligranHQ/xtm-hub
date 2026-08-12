@@ -97,7 +97,7 @@ export const StartTrialButton = ({
       variables: {
         input: {
           ...valuesWithoutAcceptTerms,
-          platform_identifier: platformIdentifier,
+          products: [platformIdentifier],
           type: DeploymentRequestDeploymentType.Trial,
           source,
         },

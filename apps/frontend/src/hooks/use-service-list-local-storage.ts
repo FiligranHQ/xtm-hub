@@ -99,6 +99,24 @@ export const useServiceListLocalStorage = (
       }
     );
 
+  const [licenseTypes, setLicenseTypes, removeLicenseTypes] =
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `licenseType${pagePrefix}${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
+
+  const [solutionCategories, setSolutionCategories, removeSolutionCategories] =
+    useLocalStorage<LogicalMultiSelectSelection>(
+      `solutionCategory${pagePrefix}${serviceName}List`,
+      {},
+      {
+        deserializer: deserializeLogicalMultiSelectSelection,
+      }
+    );
+
   const [entityTypes, setEntityTypes, removeEntityTypes] =
     useLocalStorage<LogicalMultiSelectSelection>(
       `entityType${pagePrefix}${serviceName}List`,
@@ -156,6 +174,8 @@ export const useServiceListLocalStorage = (
     removeSelectedFilters();
     removeIntegrationTypes();
     removeProductVersions();
+    removeLicenseTypes();
+    removeSolutionCategories();
     removeEntityTypes();
     removeDeployable();
     removeVerified();
@@ -169,6 +189,8 @@ export const useServiceListLocalStorage = (
     removeSelectedFilters,
     removeIntegrationTypes,
     removeProductVersions,
+    removeLicenseTypes,
+    removeSolutionCategories,
     removeEntityTypes,
     removeDeployable,
     removeVerified,
@@ -197,6 +219,12 @@ export const useServiceListLocalStorage = (
     productVersions,
     setProductVersions,
     removeProductVersions,
+    licenseTypes,
+    setLicenseTypes,
+    removeLicenseTypes,
+    solutionCategories,
+    setSolutionCategories,
+    removeSolutionCategories,
     entityTypes,
     setEntityTypes,
     removeEntityTypes,

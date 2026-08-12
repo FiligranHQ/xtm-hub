@@ -3,23 +3,13 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   GRAPHQL_RESOLVE_INFO,
-  SERVICES,
 } from '../../../../../tests/tests.const';
 import {
   Connector,
   IntegrationType,
-  Organization,
   SolutionCategory,
-  SubscriptionModel,
 } from '../../../../__generated__/resolvers-types';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../../../model/kanel/public/ServiceInstance';
-import UseCase from '../../../../model/kanel/public/UseCase';
-import User from '../../../../model/kanel/public/User';
 import { logApp } from '../../../../utils/app-logger.util';
-import { ServiceInstanceDomain } from '../../../service/instance/service-instance.domain';
-import { subscriptionApp } from '../../../subscription/subscription.app';
 import { Integration } from './integration.model';
 import integrationResolver from './integration.resolver';
 
@@ -74,40 +64,18 @@ describe('integration.__resolveType', () => {
 });
 
 describe('integration field resolvers', () => {
-  describe('integration.use_cases', () => {
-    it('should load use cases by document id', async () => {
-      const documentId = uuidv4();
-      const expected = [{ id: uuidv4(), name: 'Use Case A' }];
-      vi.spyOn(
-        contextSimpleUserFiligran2.dataLoaders.useCasesByDocumentIdLoader,
-        'load'
-      ).mockResolvedValue(expected as unknown as UseCase[]);
-
-      const result = await integrationResolver.Integration!.use_cases!(
-        { id: documentId } as unknown as Connector,
-        {},
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(
-        contextSimpleUserFiligran2.dataLoaders.useCasesByDocumentIdLoader.load
-      ).toHaveBeenCalledWith(documentId);
-      expect(result).toEqual(expected);
-    });
-  });
-
   describe('integration.children_documents', () => {
     it('should load children images by document id', async () => {
       const documentId = uuidv4();
       const expected = [{ id: uuidv4() }];
       vi.spyOn(
-        contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader,
+        contextSimpleUserFiligran2.dataLoaders.document
+          .imagesByDocumentIdLoader,
         'load'
       ).mockResolvedValue(
         expected as unknown as Awaited<
           ReturnType<
-            typeof contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader.load
+            typeof contextSimpleUserFiligran2.dataLoaders.document.imagesByDocumentIdLoader.load
           >
         >
       );
@@ -120,23 +88,26 @@ describe('integration field resolvers', () => {
       );
 
       expect(
-        contextSimpleUserFiligran2.dataLoaders.imagesByDocumentIdLoader.load
+        contextSimpleUserFiligran2.dataLoaders.document.imagesByDocumentIdLoader
+          .load
       ).toHaveBeenCalledWith(documentId);
       expect(result).toEqual(expected);
     });
 
-    describe('integration.solution_category', () => {
-      it('should load solution category by document id', async () => {
+    describe('integration.solution_categories', () => {
+      it('should load solution categories by document id', async () => {
         const documentId = uuidv4();
-        const expected = { id: uuidv4(), name: 'Case Management', product: [] };
+        const expected = [
+          { id: uuidv4(), name: 'Case Management', product: [] },
+        ];
         vi.spyOn(
-          contextSimpleUserFiligran2.dataLoaders
-            .solutionCategoryByDocumentIdLoader,
+          contextSimpleUserFiligran2.dataLoaders.document
+            .solutionCategoriesByDocumentIdLoader,
           'load'
-        ).mockResolvedValue(expected as unknown as SolutionCategory | null);
+        ).mockResolvedValue(expected as unknown as SolutionCategory[]);
 
         const result = await integrationResolver.Integration!
-          .solution_category!(
+          .solution_categories!(
           { id: documentId } as unknown as Connector,
           {},
           contextSimpleUserFiligran2,
@@ -144,104 +115,11 @@ describe('integration field resolvers', () => {
         );
 
         expect(
-          contextSimpleUserFiligran2.dataLoaders
-            .solutionCategoryByDocumentIdLoader.load
+          contextSimpleUserFiligran2.dataLoaders.document
+            .solutionCategoriesByDocumentIdLoader.load
         ).toHaveBeenCalledWith(documentId);
         expect(result).toEqual(expected);
       });
-    });
-  });
-
-  describe('integration.uploader', () => {
-    it('should load uploader by document id', async () => {
-      const documentId = uuidv4();
-      const expected = { id: uuidv4(), email: 'user@test.com' };
-      vi.spyOn(
-        contextSimpleUserFiligran2.dataLoaders.uploaderLoader,
-        'load'
-      ).mockResolvedValue(expected as unknown as User | null);
-
-      const result = await integrationResolver.Integration!.uploader!(
-        { id: documentId } as unknown as Connector,
-        {},
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(
-        contextSimpleUserFiligran2.dataLoaders.uploaderLoader.load
-      ).toHaveBeenCalledWith(documentId);
-      expect(result).toEqual(expected);
-    });
-  });
-
-  describe('integration.uploader_organization', () => {
-    it('should load uploader organization by document id', async () => {
-      const documentId = uuidv4();
-      const expected = { id: uuidv4(), name: 'Org A' };
-      vi.spyOn(
-        contextSimpleUserFiligran2.dataLoaders.uploaderOrganizationLoader,
-        'load'
-      ).mockResolvedValue(expected as unknown as Organization | null);
-
-      const result = await integrationResolver.Integration!
-        .uploader_organization!(
-        { id: documentId } as unknown as Connector,
-        {},
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(
-        contextSimpleUserFiligran2.dataLoaders.uploaderOrganizationLoader.load
-      ).toHaveBeenCalledWith(documentId);
-      expect(result).toEqual(expected);
-    });
-  });
-
-  describe('integration.service_instance', () => {
-    it('should load service instance by service_instance_id', async () => {
-      const serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS.ID;
-      const expected = { id: serviceInstanceId, name: 'integrations' };
-      vi.spyOn(ServiceInstanceDomain, 'getServiceInstance').mockResolvedValue(
-        expected as unknown as ServiceInstance | undefined
-      );
-
-      const result = await integrationResolver.Integration!.service_instance!(
-        { service_instance_id: serviceInstanceId } as unknown as Connector,
-        {},
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(ServiceInstanceDomain.getServiceInstance).toHaveBeenCalledWith(
-        serviceInstanceId
-      );
-      expect(result).toEqual(expected);
-    });
-  });
-
-  describe('integration.subscription', () => {
-    it('should load subscription model using context user and service_instance_id', async () => {
-      const serviceInstanceId = SERVICES.INSTANCES.INTEGRATIONS
-        .ID as ServiceInstanceId;
-      const expected = { id: uuidv4() } as unknown as SubscriptionModel;
-      vi.spyOn(subscriptionApp, 'loadSubscriptionModel').mockResolvedValue(
-        expected
-      );
-
-      const result = await integrationResolver.Integration!.subscription!(
-        { service_instance_id: serviceInstanceId } as unknown as Connector,
-        {},
-        contextSimpleUserFiligran2,
-        GRAPHQL_RESOLVE_INFO
-      );
-
-      expect(subscriptionApp.loadSubscriptionModel).toHaveBeenCalledWith(
-        contextSimpleUserFiligran2.user,
-        serviceInstanceId
-      );
-      expect(result).toEqual(expected);
     });
   });
 });

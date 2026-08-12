@@ -141,7 +141,7 @@ export const documentItem = graphql`
       datasheet_url
       blogpost_url
       demo_url
-      solution_category {
+      solution_categories {
         id
         name
       }
@@ -184,6 +184,7 @@ export const documentItem = graphql`
       manager_supported
       playbook_supported
       minimum_deployable_version
+      contact
     }
 
     ... on OpenAEVScenario {

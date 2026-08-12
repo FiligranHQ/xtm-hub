@@ -1,5 +1,4 @@
-import { Knex } from 'knex';
-import { db, dbRaw } from '../../../../knexfile';
+import { db } from '../../../../knexfile';
 import {
   DocumentMetadataKeyCode,
   DocumentMetadata as DocumentMetadataResolverType,
@@ -140,42 +139,67 @@ export const DocumentMetadataDomain = {
     await qb.delete();
   },
 
-  addIncludeMetadataQuery: (
-    qb: Knex.QueryBuilder,
+  /**
+   * Projects metadata onto already-selected documents. Preferred way to expose
+   * metadata: the pivot runs over the returned rows instead of every matching
+   * document, keeping the main query lean.
+   */
+  hydrateMetadata: async <T extends { id: string }>(
+    documents: T[],
     include_metadata: DocumentMetadataKeyCode[] = []
-  ) => {
-    if (!include_metadata.length) return;
+  ): Promise<T[]> => {
+    if (!include_metadata.length || !documents.length) {
+      return documents;
+    }
 
-    // Single JOIN filtered to the keys we need — avoids N separate LEFT JOINs.
-    // Using andOnIn so the filter is part of the JOIN condition (not WHERE),
-    // preserving LEFT JOIN semantics for documents with no metadata rows.
-    qb.leftJoin({ dm_pivot: 'Document_Metadata' }, function () {
-      this.on('dm_pivot.document_id', '=', 'Document.id').andOnIn(
-        'dm_pivot.key',
-        include_metadata
-      );
-    });
+    const rows = await db<DocumentMetadata[]>('Document_Metadata')
+      .select('*')
+      .whereIn(
+        'document_id',
+        documents.map(({ id }) => id)
+      )
+      .whereIn('key', include_metadata);
 
-    // Pivot each key with conditional aggregation.
-    // Because these are aggregate expressions, they do NOT need to appear in
-    // GROUP BY — only the non-aggregated Document.id does (already added by
-    // the caller via .groupBy(['Document.id'])).
-    include_metadata.forEach((metaKey) => {
-      if (BOOLEAN_METADATA.includes(metaKey)) {
-        qb.select(
-          dbRaw(
-            `(MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) = 'true') as "${metaKey}"`,
-            [metaKey]
-          )
-        );
-      } else {
-        qb.select(
-          dbRaw(
-            `MAX(CASE WHEN "dm_pivot"."key" = ? THEN "dm_pivot"."value" END) as "${metaKey}"`,
-            [metaKey]
-          )
-        );
+    const valuesByDocument = new Map<string, Map<string, string | null>>();
+    for (const row of rows) {
+      let values = valuesByDocument.get(row.document_id);
+      if (!values) {
+        values = new Map<string, string | null>();
+        valuesByDocument.set(row.document_id, values);
       }
+      values.set(row.key, row.value);
+    }
+
+    return documents.map((document) => {
+      const values = valuesByDocument.get(document.id);
+      const hydrated: Record<string, unknown> = { ...document };
+
+      for (const metaKey of include_metadata) {
+        const value = values?.get(metaKey) ?? null;
+        const isBooleanMetadata = BOOLEAN_METADATA.includes(metaKey);
+        hydrated[metaKey] = isBooleanMetadata ? value === 'true' : value;
+      }
+
+      return hydrated as T;
     });
+  },
+
+  /**
+   * Single document variant of hydrateMetadata, for queries returning one row.
+   */
+  hydrateMetadataOne: async <T extends { id: string }>(
+    document: T | undefined,
+    include_metadata: DocumentMetadataKeyCode[] = []
+  ): Promise<T | undefined> => {
+    if (!document) {
+      return document;
+    }
+
+    const [hydrated] = await DocumentMetadataDomain.hydrateMetadata(
+      [document],
+      include_metadata
+    );
+
+    return hydrated;
   },
 };

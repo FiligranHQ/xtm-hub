@@ -4,17 +4,22 @@ import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
   IntegrationType,
+  LicenseType,
   ManifestType,
   type ManifestFragmentInput,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import Document from '../../../model/kanel/public/Document';
+import { ObjectSolutionCategoryObjectId } from '../../../model/kanel/public/ObjectSolutionCategory';
+import { logApp } from '../../../utils/app-logger.util';
 import { isUniqueConstraintViolation } from '../../../utils/error/error-guard.util';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
 import { DocumentApp } from '../../document/document.app';
 import { DocumentUploadsHelper } from '../../document/document.uploads.helper';
 import { DocumentChildrenDomain } from '../../document/domain/document.children.domain';
 import { DocumentDomain } from '../../document/domain/document.domain';
+import { solutionCategoryApp } from '../../solution-category/solution-category.app';
+import { isFiligranProduct } from '../../solution-category/solution-category.utils';
 import { IngestManifestHelper } from '../opencti/integration/ingest-manifest/ingest-manifest.helper';
 import {
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
@@ -30,6 +35,10 @@ type ConnectorWithMetadata = Document & {
   blogpost_url?: string;
   demo_url?: string;
 };
+
+const toObjectSolutionCategoryObjectId = (
+  id: string
+): ObjectSolutionCategoryObjectId => id as ObjectSolutionCategoryObjectId;
 
 const attachConnectorLogo = async ({
   connector,
@@ -69,6 +78,8 @@ const createConnectorDocument = async ({
   formattedVersion,
   tags,
   metadataFromExisting,
+  licenseType,
+  contact,
 }: {
   fragment: ManifestFragmentInput;
   formattedVersion: string;
@@ -77,7 +88,9 @@ const createConnectorDocument = async ({
     ConnectorWithMetadata,
     'datasheet_url' | 'blogpost_url' | 'demo_url'
   >;
-}) => {
+  licenseType?: LicenseType;
+  contact?: string;
+}): Promise<ConnectorV2> => {
   const createdConnector =
     await DocumentApp.createDocumentWithChildrenAndMetadata<ConnectorV2>(
       {
@@ -106,6 +119,8 @@ const createConnectorDocument = async ({
           ManifestFragmentHelper.validateAndFormatManifestVersion(
             fragment.min_version
           ),
+        license_type: licenseType,
+        contact,
         datasheet_url: metadataFromExisting?.datasheet_url,
         blogpost_url: metadataFromExisting?.blogpost_url,
         demo_url: metadataFromExisting?.demo_url,
@@ -115,10 +130,9 @@ const createConnectorDocument = async ({
       INTEGRATION_CONNECTOR_V2_METADATA_KEYS
     );
 
-  await attachConnectorLogo({
-    connector: createdConnector,
-    fragment,
-  });
+  await attachConnectorLogo({ connector: createdConnector, fragment });
+
+  return createdConnector;
 };
 
 const removeLatestTagFromExistingBatchConnectors = async ({
@@ -155,6 +169,8 @@ export const ManifestFragmentDomain = {
     ManifestFragmentHelper.validateShortDescriptionLength(
       fragment.short_description
     );
+    const licenseType = fragment.license_type ?? undefined;
+    const contact = ManifestFragmentHelper.parseContact(fragment.contact);
     const formattedVersion =
       ManifestFragmentHelper.validateAndFormatManifestVersion(fragment.version);
     const latestTag =
@@ -216,12 +232,28 @@ export const ManifestFragmentDomain = {
       );
 
       try {
-        await createConnectorDocument({
+        const connector = await createConnectorDocument({
           fragment,
           formattedVersion,
           tags: newDocumentTags,
           metadataFromExisting,
+          licenseType,
+          contact,
         });
+
+        const platform = fragment.platform.trim().toLowerCase();
+        if (isFiligranProduct(platform)) {
+          await solutionCategoryApp.linkSolutionCategoriesByNameToObject({
+            objectId: toObjectSolutionCategoryObjectId(connector.id),
+            names: fragment.solution_categories ?? [],
+            product: platform,
+          });
+        } else {
+          logApp.warn(
+            'Unknown platform for solution-category linking, skipping',
+            { platform }
+          );
+        }
       } catch (error) {
         // Backstop for brand-new connectors: no existing rows for the lock above.
         if (

@@ -1,7 +1,4 @@
-import {
-  IntegrationType,
-  Resolvers,
-} from '../../../__generated__/resolvers-types';
+import { Resolvers } from '../../../__generated__/resolvers-types';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { listen } from '../../../pub';
 import { getErrorMessage } from '../../../utils/error/error-guard.util';
@@ -9,75 +6,53 @@ import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
 import { mapToGraphQLError } from '../../../utils/error/error.mapping';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
-import { UserServiceCapabilityHelper } from '../../security-management/user-service-capability/user-service-capability.helper';
-import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
-import { OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
-import { OPENCTI_INTEGRATION_DOCUMENT_TYPE } from '../../shareable-resource/opencti/integration/integration.model';
-import { OPENCTI_PLAYBOOK_DOCUMENT_TYPE } from '../../shareable-resource/opencti/playbook/playbook.model';
 import { ServiceInstanceApp } from './service-instance.app';
 import { ServiceInstanceDomain } from './service-instance.domain';
+import {
+  organizationServiceInstanceKey,
+  serviceInstanceUserOrganizationKey,
+} from './service-instance.keys';
 
 const resolvers: Resolvers = {
   ServiceInstanceId: createRelayIdScalar<ServiceInstanceId>('ServiceInstance'),
   ServiceInstance: {
-    __resolveType(service_instance: {
-      type?: string;
-      integration_type?: string;
-    }) {
-      const integrationMapping: Record<string, string> = {
-        [IntegrationType.Connector]: 'Connector',
-        [IntegrationType.CsvFeed]: 'CsvFeed',
-      };
-      const typeMapping: Record<string, string> = {
-        [OPENAEV_SCENARIO_DOCUMENT_TYPE]: 'OpenAEVScenario',
-        [OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE]: 'OpenCTICustomDashboard',
-        [OPENCTI_INTEGRATION_DOCUMENT_TYPE]: 'OpenCTIIntegration',
-        [OPENCTI_PLAYBOOK_DOCUMENT_TYPE]: 'OpenCTIPlaybook',
-      };
-
-      const serviceType = service_instance.type;
-      if (!serviceType) {
-        return 'SeoServiceInstance';
-      }
-
-      if (serviceType === OPENCTI_INTEGRATION_DOCUMENT_TYPE) {
-        const integrationType = service_instance.integration_type;
-
-        if (integrationType) {
-          return (
-            integrationMapping[integrationType] ?? typeMapping[serviceType]
-          );
-        }
-        return typeMapping[serviceType];
-      }
-      return typeMapping[serviceType] ?? 'SeoServiceInstance';
-    },
-    links: ({ id }, _) =>
-      ServiceInstanceDomain.loadLinks(id as ServiceInstanceId),
-    service_definition: ({ id }, _) =>
-      ServiceInstanceDomain.loadServiceDefinitionByServiceInstance(
+    links: ({ id }, _, context) =>
+      context.dataLoaders.serviceInstance.linksByServiceInstanceLoader.load(
+        id as ServiceInstanceId
+      ),
+    service_definition: ({ id }, _, context) =>
+      context.dataLoaders.serviceInstance.serviceDefinitionByServiceInstanceLoader.load(
         id as ServiceInstanceId
       ),
     organization_subscribed: ({ id }, _, context) =>
-      ServiceInstanceDomain.loadIsSubscribed(
-        context.user.selected_organization_id,
-        id as ServiceInstanceId
+      context.dataLoaders.serviceInstance.organizationSubscribedLoader.load(
+        organizationServiceInstanceKey.create({
+          organizationId: context.user.selected_organization_id,
+          serviceInstanceId: id as ServiceInstanceId,
+        })
       ),
     capabilities: ({ id }, _, context) =>
-      UserServiceCapabilityHelper.loadCapabilities(
-        id as ServiceInstanceId,
-        context.user.id,
-        context.user.selected_organization_id
+      context.dataLoaders.serviceInstance.capabilitiesLoader.load(
+        serviceInstanceUserOrganizationKey.create({
+          serviceInstanceId: id as ServiceInstanceId,
+          userId: context.user.id,
+          organizationId: context.user.selected_organization_id,
+        })
       ),
     user_joined: ({ id }, _, context) =>
-      ServiceInstanceDomain.getUserJoined(
-        context.user.id,
-        context.user.selected_organization_id,
-        id as ServiceInstanceId
+      context.dataLoaders.serviceInstance.userJoinedLoader.load(
+        serviceInstanceUserOrganizationKey.create({
+          serviceInstanceId: id as ServiceInstanceId,
+          userId: context.user.id,
+          organizationId: context.user.selected_organization_id,
+        })
       ),
-    subscriptions: ({ id }, _) =>
-      ServiceInstanceDomain.loadServiceInstanceSubscriptions(
-        id as ServiceInstanceId
+    subscriptions: ({ id }, _, context) =>
+      context.dataLoaders.serviceInstance.subscriptionsByServiceInstanceLoader.load(
+        organizationServiceInstanceKey.create({
+          organizationId: context.user.selected_organization_id,
+          serviceInstanceId: id as ServiceInstanceId,
+        })
       ),
   },
   Query: {

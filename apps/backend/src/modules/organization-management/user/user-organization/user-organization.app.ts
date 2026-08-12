@@ -1,6 +1,5 @@
 import {
   AddUserInput,
-  User as GraphqlUser,
   OrganizationCapability,
 } from '../../../../__generated__/resolvers-types';
 import portalConfig from '../../../../config';
@@ -9,7 +8,6 @@ import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import { UserId } from '../../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../../model/user';
-import { dispatch } from '../../../../pub';
 import { isUserAdminPlatform } from '../../../../security/access';
 import { securityGuard } from '../../../../security/guard';
 import { sendMail } from '../../../../server/mail-service';
@@ -56,7 +54,7 @@ export const UserOrganizationApp = {
 
     const [existingUser] = await UserDomain.loadUser({ email: input.email });
 
-    const user = await withTransaction(async () => {
+    const { user, pendingRemoved } = await withTransaction(async () => {
       const user = existingUser
         ? existingUser
         : await UserHelper.createUserWithPersonalSpace({
@@ -72,22 +70,17 @@ export const UserOrganizationApp = {
         userExists: !!existingUser,
       });
 
-      const userIsDeletedFromPendingList =
-        await UserOrganizationDomain.removeUserFromPendingList({
-          user_id: user.id,
-          organization_id: chosenOrganization.id,
-        });
+      const pendingRemoved = await UserHelper.removePending(
+        user,
+        chosenOrganization.id
+      );
 
-      if (userIsDeletedFromPendingList.length > 0) {
-        const userPendingPayload: GraphqlUser = {
-          ...user,
-          pending_organization_id: chosenOrganization.id,
-        };
-        await dispatch('UserPending', 'delete', userPendingPayload, 'User');
-      }
-
-      return user;
+      return { user, pendingRemoved };
     });
+
+    if (pendingRemoved) {
+      await UserHelper.dispatchPendingDeleted(user, chosenOrganization.id);
+    }
 
     const updatedUser = await UserDomain.loadUserBy({
       'User.id': user.id,

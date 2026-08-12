@@ -56,13 +56,13 @@ export const DocumentChildrenDomain = {
     return children.map(({ child_document_id }) => child_document_id);
   },
 
-  buildChildrenDocumentsQuery: <T extends object = Document>(
+  loadChildrenDocumentsByParentIds: async <T extends { id: string } = Document>(
     parentIds: readonly string[],
     options: {
       isDataLoader?: boolean;
       includeMetadata?: DocumentMetadataKeyCode[];
     } = {}
-  ) => {
+  ): Promise<T[]> => {
     const { isDataLoader = false, includeMetadata = [] } = options;
     const context = requestContext.get();
     const query = db<T>('Document_Children')
@@ -91,17 +91,21 @@ export const DocumentChildrenDomain = {
       query.select('Document.*');
     }
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(query, includeMetadata);
-    return query;
+    const documents: T[] = await query;
+
+    return DocumentMetadataDomain.hydrateMetadata(documents, includeMetadata);
   },
 
   loadChildrenDocuments: async (
     documentId: string,
     include_metadata: DocumentMetadataKeyCode[] = []
   ): Promise<Document[]> => {
-    return DocumentChildrenDomain.buildChildrenDocumentsQuery([documentId], {
-      includeMetadata: include_metadata,
-    });
+    return DocumentChildrenDomain.loadChildrenDocumentsByParentIds(
+      [documentId],
+      {
+        includeMetadata: include_metadata,
+      }
+    );
   },
 
   deleteChildrenByParent: async (parentDocumentId: DocumentId) => {
@@ -142,10 +146,10 @@ export const DocumentChildrenDomain = {
     );
   },
 
-  buildImagesByDocumentIdQuery: <T extends object = Document>(
+  loadImagesByParentIds: async <T extends { id: string } = Document>(
     parentIds: readonly string[],
     options: { isDataLoader?: boolean } = {}
-  ) => {
+  ): Promise<T[]> => {
     const { isDataLoader = false } = options;
     const query = db<T>('Document')
       .join(
@@ -169,20 +173,21 @@ export const DocumentChildrenDomain = {
       query.select('Document.*');
     }
 
-    DocumentMetadataDomain.addIncludeMetadataQuery(
-      query,
+    const images: T[] = await query;
+
+    return DocumentMetadataDomain.hydrateMetadata(
+      images,
       DOCUMENT_IMAGE_METADATA_KEYS
     );
-    return query;
   },
 
   loadImagesByDocumentId: async (documentId: string) => {
-    const images = await DocumentChildrenDomain.buildImagesByDocumentIdQuery([
+    const images = await DocumentChildrenDomain.loadImagesByParentIds([
       documentId,
     ]);
 
     for (const image of images) {
-      image.id = toGlobalId('Document', image.id);
+      image.id = toGlobalId('Document', image.id) as typeof image.id;
     }
     return images;
   },

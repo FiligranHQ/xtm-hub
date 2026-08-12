@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
+  LicenseType,
   ManifestType,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
@@ -64,6 +65,8 @@ const buildConnector = (overrides: Partial<ConnectorV2> = {}): ConnectorV2 =>
     last_verified_date: '2025-01-15',
     additional_properties: '{"key":"value"}',
     config_schema: '{"type":"object"}',
+    license_type: LicenseType.Commercial,
+    contact: 'https://github.com/some-contributor',
     ...overrides,
   }) as unknown as ConnectorV2;
 
@@ -379,12 +382,53 @@ describe('manifestHelper', () => {
         );
         expect(contract.manager_supported).toBe(true);
         expect(contract.support_version).toBe('7.260507.0');
+        expect(contract.license_type).toBe(LicenseType.Commercial);
+        expect(contract.contact).toBe('https://github.com/some-contributor');
+        expect(contract.solution_categories).toEqual([]);
         expect(contract.version).toBe('6.5.1');
         expect(contract.image_name).toBe('opencti/connector-misp');
         expect(contract.image_type).toBe('EXTERNAL_IMPORT');
         expect(contract.last_verified_date).toBe('2025-01-15');
         expect(contract.additional_properties).toEqual({ key: 'value' });
         expect(contract.config_schema).toEqual({ type: 'object' });
+      });
+
+      it('should expose exactly the agreed contract keys', () => {
+        // Given a connector mapped to a manifest contract
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [buildConnector()],
+          FIXED_DATE,
+          new Map()
+        ).contracts[0]!;
+
+        // When the contract keys are listed
+        const keys = Object.keys(contract).sort();
+
+        // Then they match the published contract, so a rename cannot slip through
+        expect(keys).toEqual([
+          'additional_properties',
+          'config_schema',
+          'contact',
+          'description',
+          'id',
+          'image_name',
+          'image_type',
+          'last_verified_date',
+          'license_type',
+          'logo',
+          'manager_supported',
+          'short_description',
+          'slug',
+          'solution_categories',
+          'source_code',
+          'subscription_link',
+          'support_version',
+          'title',
+          'use_cases',
+          'verified',
+          'version',
+        ]);
       });
 
       it('sets logo to null when logoByConnectorId has no entry for the connector (also covers the default parameter)', () => {
@@ -398,7 +442,9 @@ describe('manifestHelper', () => {
       });
 
       it('populates logo from the logoByConnectorId map', () => {
-        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const connector = buildConnector({
+          id: 'connector-uuid-1' as DocumentId,
+        });
         const logoByConnectorId = new Map<DocumentId, string | null>([
           ['connector-uuid-1' as DocumentId, 'abc123base64'],
         ]);
@@ -423,7 +469,9 @@ describe('manifestHelper', () => {
       });
 
       it('populates use_cases from the useCasesByConnectorId map', () => {
-        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const connector = buildConnector({
+          id: 'connector-uuid-1' as DocumentId,
+        });
         const useCasesByConnectorId = new Map<string, string[]>([
           ['connector-uuid-1', ['automation', 'integration']],
         ]);
@@ -436,8 +484,51 @@ describe('manifestHelper', () => {
         expect(contract.use_cases).toEqual(['automation', 'integration']);
       });
 
+      it('populates solution_categories from the solutionCategoriesByConnectorId map', () => {
+        // Given a connector linked to two categories
+        const connector = buildConnector({
+          id: 'connector-uuid-1' as DocumentId,
+        });
+        const solutionCategoriesByConnectorId = new Map<string, string[]>([
+          ['connector-uuid-1', ['Threat Intelligence Feed', 'EDR/XDR']],
+        ]);
+
+        // When the contract is built
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [connector],
+          FIXED_DATE,
+          new Map(),
+          new Map(),
+          solutionCategoriesByConnectorId
+        ).contracts[0]!;
+
+        // Then both category names are exposed
+        expect(contract.solution_categories).toEqual([
+          'Threat Intelligence Feed',
+          'EDR/XDR',
+        ]);
+      });
+
+      it('sets solution_categories to empty array when the map has no entry for the connector id', () => {
+        // Given a connector with no linked category
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [buildConnector({ id: 'connector-uuid-1' as DocumentId })],
+          FIXED_DATE,
+          new Map(),
+          new Map(),
+          new Map()
+        ).contracts[0]!;
+
+        // Then the field is an empty array, never null
+        expect(contract.solution_categories).toEqual([]);
+      });
+
       it('sets use_cases to empty array when the map has no entry for the connector id', () => {
-        const connector = buildConnector({ id: 'connector-uuid-1' });
+        const connector = buildConnector({
+          id: 'connector-uuid-1' as DocumentId,
+        });
         const useCasesByConnectorId = new Map<string, string[]>([
           ['other-connector-id', ['automation']],
         ]);
@@ -618,6 +709,11 @@ describe('manifestHelper', () => {
         },
         { field: 'version' as const, override: { version: undefined } },
         { field: 'image_name' as const, override: { image_name: undefined } },
+        {
+          field: 'license_type' as const,
+          override: { license_type: undefined },
+        },
+        { field: 'contact' as const, override: { contact: undefined } },
       ])(
         'maps $field to null when the connector field is absent/null',
         ({
@@ -683,13 +779,13 @@ describe('manifestHelper', () => {
     });
 
     it('returns an empty map when given an empty list of connector ids', async () => {
-      vi.spyOn(DocumentChildrenDomain, 'buildImagesByDocumentIdQuery');
+      vi.spyOn(DocumentChildrenDomain, 'loadImagesByParentIds');
 
       const result = await ManifestHelper.loadConnectorLogosBase64([]);
 
       expect(result.size).toBe(0);
       expect(
-        DocumentChildrenDomain.buildImagesByDocumentIdQuery
+        DocumentChildrenDomain.loadImagesByParentIds
       ).not.toHaveBeenCalled();
     });
 
@@ -717,7 +813,7 @@ describe('manifestHelper', () => {
     ])('returns null when $description', async ({ images, downloadResult }) => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue(images);
       if (downloadResult !== undefined) {
         vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(downloadResult);
@@ -733,7 +829,7 @@ describe('manifestHelper', () => {
     it('returns a data URI when the logo is found', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue([buildImage({ mime_type: 'image/png' })]);
       const stream = Readable.from([Buffer.from('fake-image-bytes')]);
       vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(
@@ -754,7 +850,7 @@ describe('manifestHelper', () => {
     it('falls back to image/png when the logo document has no mime_type', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue([buildImage({ mime_type: null })]);
       const stream = Readable.from([Buffer.from('fake-image-bytes')]);
       vi.spyOn(MinIOClient, 'downloadFile').mockResolvedValue(
@@ -775,7 +871,7 @@ describe('manifestHelper', () => {
     it('isolates a single connector logo failure: other connectors still resolve', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue([
         buildImage({
           _parent_id: CONNECTOR_ID,
@@ -816,7 +912,7 @@ describe('manifestHelper', () => {
     it('returns null for every connector and logs once when the batched query throws', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockRejectedValue(new Error('DB connection lost'));
 
       const result = await ManifestHelper.loadConnectorLogosBase64([
@@ -837,7 +933,7 @@ describe('manifestHelper', () => {
     it('returns null and logs an error when the download stream errors', async () => {
       vi.spyOn(
         DocumentChildrenDomain,
-        'buildImagesByDocumentIdQuery'
+        'loadImagesByParentIds'
       ).mockResolvedValue([buildImage()]);
       const stream = new Readable({
         read() {
