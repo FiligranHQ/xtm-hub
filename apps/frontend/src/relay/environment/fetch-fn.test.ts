@@ -3,6 +3,10 @@ import { RequestParameters } from 'relay-runtime';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { networkFetch } from './fetch-fn';
 
+vi.mock('graphql-sse', () => ({
+  createClient: vi.fn(() => ({ subscribe: vi.fn() })),
+}));
+
 const mockRequest: RequestParameters = {
   id: null,
   name: 'TestQuery',
@@ -71,5 +75,20 @@ describe('networkFetch', () => {
     const result = await networkFetch({ request: mockRequest, variables: {} });
 
     expect(result).toEqual(mockData);
+  });
+});
+
+describe('subscriptionsClient', () => {
+  it('should create the graphql-sse client with singleConnection enabled to multiplex all subscriptions over one SSE connection', async () => {
+    vi.resetModules();
+    const { createClient } = await import('graphql-sse');
+    await import('./fetch-fn');
+
+    expect(createClient).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: '/graphql-sse',
+        singleConnection: true,
+      })
+    );
   });
 });

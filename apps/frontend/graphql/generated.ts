@@ -1603,7 +1603,7 @@ export type PlatformDeploymentRequest = {
   ordering: Scalars['Int']['output'];
   organization_domains: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
-  parent_id: Maybe<Scalars['DeploymentRequestId']['output']>;
+  parent_id: Maybe<Scalars['String']['output']>;
   platform_id: Maybe<Scalars['String']['output']>;
   platform_identifier: Maybe<PlatformIdentifier>;
   platform_token: Scalars['String']['output'];
