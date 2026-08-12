@@ -3,6 +3,7 @@
 .idea
 .vscode
 .copilot
+.husky
 
 **/node_modules
 **/.next
@@ -15,3 +16,4 @@
 
 xtm-hub-dev/docker-compose*.yml
 logs
+bruno
