@@ -9,9 +9,9 @@ import {
   getErrorMessage,
   toError,
 } from '../../../utils/error/error-guard.util';
-import { resolveSessionReferer } from '../../../utils/extract-referer.util';
 import { setCookieError } from '../../../utils/set-cookies.util';
-import { authenticateUser } from './auth-user';
+import { AUTHENTICATED_HOME, resolveSafeRedirect } from './auth-redirect.util';
+import { authenticateUser, isSessionUserActive } from './auth-user';
 import { initProviders } from './provider/providers';
 
 const authProviderRateLimiter = rateLimit({
@@ -24,10 +24,19 @@ const authProviderRateLimiter = rateLimit({
 export const initAuthPlatform = async (app: Express) => {
   logApp.debug('initAuthPlatform');
   const passport = await initProviders();
+
+  // Responses depend on the session cookie, so a shared cache must never reuse
+  // one visitor's redirect for another.
+  app.use('/auth', (_req: Request, res: Response, next: NextFunction) => {
+    res.set('Cache-Control', 'no-store');
+    res.vary('Cookie');
+    next();
+  });
+
   app.get(
     `/auth/:provider`,
     authProviderRateLimiter,
-    (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
         const providerParam = req.params.provider;
         const provider = Array.isArray(providerParam)
@@ -38,13 +47,19 @@ export const initAuthPlatform = async (app: Express) => {
           res.redirect('/');
           return;
         }
-        const redirect = req.query.redirect;
-        // Referer header is attacker-controlled — not trusted as redirect destination
-        req.session.referer =
-          typeof redirect === 'string'
-            ? resolveSessionReferer(redirect)
-            : undefined;
+        // Referer header is attacker-controlled — only the explicit redirect
+        // param is considered, and only after being sanitized.
+        const safeRedirect = resolveSafeRedirect(req.query.redirect);
+        req.session.referer = safeRedirect;
         requestContext.set(SYSTEM_USER_CONTEXT);
+
+        // Already signed in: skip the provider round-trip. The session snapshot
+        // is not trusted on its own, a stale one falls back to a full sign-in.
+        if (await isSessionUserActive(req.session.user)) {
+          res.redirect(safeRedirect ?? AUTHENTICATED_HOME);
+          return;
+        }
+
         passport.authenticate(provider, {}, (err: Error | null) => {
           setCookieError(res, err?.message);
           next(err);
@@ -91,7 +106,7 @@ export const initAuthPlatform = async (app: Express) => {
         });
 
         const logged = await authenticateUser(req, res, user);
-        res.redirect(logged ? (referer ?? '/app') : '/');
+        res.redirect(logged ? (referer ?? AUTHENTICATED_HOME) : '/');
       } catch (err) {
         const normalizedError = toError(err);
         logApp.error(normalizedError, { provider });

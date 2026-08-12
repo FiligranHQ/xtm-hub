@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { UserInfo } from '../../../model/user';
+import { UserInfo, UserLoadUserBy } from '../../../model/user';
 import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import {
   addRoleToUser,
@@ -64,4 +64,20 @@ export const authenticateUser = async (
   req.session.save();
   res.cookie('NEXT_LOCALE', logged.selected_language);
   return logged;
+};
+
+/**
+ * A session holds a snapshot of the user taken at login time, so it can claim
+ * an account is active long after it was disabled or deleted. Any shortcut that
+ * trusts the session instead of running the full provider flow must revalidate
+ * against the database first.
+ */
+export const isSessionUserActive = async (
+  sessionUser: UserLoadUserBy | undefined
+): Promise<boolean> => {
+  if (!sessionUser?.id) {
+    return false;
+  }
+  const [user] = await UserDomain.loadUser({ id: sessionUser.id });
+  return !!user && !user.disabled;
 };
