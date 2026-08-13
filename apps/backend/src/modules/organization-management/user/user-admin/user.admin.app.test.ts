@@ -773,7 +773,7 @@ describe('users admin app', () => {
         await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
       });
 
-      it('should delete the user while leaving OneClickDeployment.user_id dangling (no FK guard)', async () => {
+      it('should cascade delete the OneClickDeployment rows of the deleted user', async () => {
         const user = await UserHelper.createUserWithPersonalSpace(
           { email: `delete-user-${uuidv4()}@delete-user-test.io` },
           { sendWelcomeEmail: false }
@@ -790,7 +790,7 @@ describe('users admin app', () => {
           await TestHelper.oneClickDeployment.loadAll({
             resource_id: oneClickDeployment.resource_id,
           })
-        ).toMatchObject([{ user_id: user.id }]);
+        ).toEqual([]);
 
         await TestHelper.oneClickDeployment.deleteAll();
       });

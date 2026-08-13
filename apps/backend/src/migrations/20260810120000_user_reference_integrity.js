@@ -39,6 +39,19 @@ export async function up(knex) {
     table.dropForeign(['user_requester_id']);
     table.foreign('user_requester_id').references('id').inTable('User');
   });
+
+  await knex('OneClickDeployment')
+    .whereNotNull('user_id')
+    .whereNotIn('user_id', knex('User').select('id'))
+    .delete();
+
+  await knex.schema.alterTable('OneClickDeployment', (table) => {
+    table
+      .foreign('user_id')
+      .references('id')
+      .inTable('User')
+      .onDelete('CASCADE');
+  });
 }
 
 /**
@@ -46,6 +59,10 @@ export async function up(knex) {
  * @returns { Promise<void> }
  */
 export async function down(knex) {
+  await knex.schema.alterTable('OneClickDeployment', (table) => {
+    table.dropForeign(['user_id']);
+  });
+
   await knex.schema.alterTable('DeploymentRequest', (table) => {
     table.dropForeign(['user_requester_id']);
     table
