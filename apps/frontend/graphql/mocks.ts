@@ -249,7 +249,7 @@ export const mockCreateDocumentInput = (overrides?: Partial<CreateDocumentInput>
         name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : 'attollo',
         short_description: overrides && overrides.hasOwnProperty('short_description') ? overrides.short_description! : 'appono',
         slug: overrides && overrides.hasOwnProperty('slug') ? overrides.slug! : 'tutamen',
-        solution_category: overrides && overrides.hasOwnProperty('solution_category') ? overrides.solution_category! : 'atrocitas',
+        solution_categories: overrides && overrides.hasOwnProperty('solution_categories') ? overrides.solution_categories! : ['voluntarius'],
         uploader_id: overrides && overrides.hasOwnProperty('uploader_id') ? overrides.uploader_id! : 'eos',
         use_cases: overrides && overrides.hasOwnProperty('use_cases') ? overrides.use_cases! : ['deleniti'],
     };
@@ -1993,7 +1993,7 @@ export const mockUpdateDocumentInput = (overrides?: Partial<UpdateDocumentInput>
         license_type: overrides && overrides.hasOwnProperty('license_type') ? overrides.license_type! : LicenseType.Commercial,
         name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : 'pel',
         short_description: overrides && overrides.hasOwnProperty('short_description') ? overrides.short_description! : 'contra',
-        solution_category: overrides && overrides.hasOwnProperty('solution_category') ? overrides.solution_category! : 'tripudio',
+        solution_categories: overrides && overrides.hasOwnProperty('solution_categories') ? overrides.solution_categories! : ['desolo'],
         uploader_id: overrides && overrides.hasOwnProperty('uploader_id') ? overrides.uploader_id! : 'adstringo',
         uploader_organization_id: overrides && overrides.hasOwnProperty('uploader_organization_id') ? overrides.uploader_organization_id! : 'caute',
         use_cases: overrides && overrides.hasOwnProperty('use_cases') ? overrides.use_cases! : ['abduco'],

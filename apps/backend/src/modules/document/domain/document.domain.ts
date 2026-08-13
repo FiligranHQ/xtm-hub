@@ -447,7 +447,7 @@ export const DocumentDomain = {
       .where('id', '=', parentDocumentId)
       .update({
         ...stripNulls(
-          omit(completeDocumentData, ['use_cases', 'solution_category'])
+          omit(completeDocumentData, ['use_cases', 'solution_categories'])
         ),
         uploader_organization_id,
         uploader_id,

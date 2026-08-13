@@ -63,7 +63,7 @@ type AvailableFields =
   | 'uploader_id'
   | 'uploader_organization_id'
   | 'use_cases'
-  | 'solution_category'
+  | 'solution_categories'
   | 'license_type'
   | 'entity_types'
   | 'integration_subtype'
@@ -173,7 +173,7 @@ export const useServiceFormFields = ({
           />
         ),
       },
-      solution_category: {
+      solution_categories: {
         fieldType: ({
           field,
         }: {
@@ -181,8 +181,7 @@ export const useServiceFormFields = ({
         }) => (
           <ServiceFormSolutionCategoryField
             field={field}
-            document={document}
-            disabled={disabledFields.includes('solution_category')}
+            disabled={disabledFields.includes('solution_categories')}
             product={productTagByPlatform[platform]}
           />
         ),

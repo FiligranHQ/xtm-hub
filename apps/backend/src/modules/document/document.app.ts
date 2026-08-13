@@ -19,6 +19,7 @@ import { ObjectSolutionCategoryObjectId } from '../../model/kanel/public/ObjectS
 import { ObjectUseCaseObjectId } from '../../model/kanel/public/ObjectUseCase';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { SolutionCategoryId } from '../../model/kanel/public/SolutionCategory';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { ForbiddenAccess } from '../../utils/error/error.util';
@@ -151,7 +152,7 @@ export const DocumentApp = {
     const documentData: DocumentData<Document> = {
       ...documentColumnInput,
       use_cases: input.use_cases ?? undefined,
-      solution_category: input.solution_category ?? undefined,
+      solution_categories: input.solution_categories ?? undefined,
       service_instance_id: serviceInstanceId,
       type: documentType,
       ...(sourceDocumentFile && isDocumentFileRequired
@@ -208,11 +209,13 @@ export const DocumentApp = {
         );
       }
 
-      if (documentData.solution_category) {
-        await objectSolutionCategoryDomain.insertObjectSolutionCategory({
-          object_id: toObjectSolutionCategoryObjectId(document.id),
-          solution_category_id: documentData.solution_category,
-        });
+      if (documentData.solution_categories?.length) {
+        for (const solutionCategoryId of documentData.solution_categories) {
+          await objectSolutionCategoryDomain.insertObjectSolutionCategory({
+            object_id: toObjectSolutionCategoryObjectId(document.id),
+            solution_category_id: solutionCategoryId as SolutionCategoryId,
+          });
+        }
       }
 
       return document;
@@ -395,15 +398,16 @@ export const DocumentApp = {
         }
       }
 
-      if (input.solution_category) {
+      if (input.solution_categories?.length) {
         await objectSolutionCategoryDomain.deleteObjectSolutionCategoryBy({
           object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
         });
-
-        await objectSolutionCategoryDomain.insertObjectSolutionCategory({
-          object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
-          solution_category_id: input.solution_category,
-        });
+        for (const solutionCategoryId of input.solution_categories) {
+          await objectSolutionCategoryDomain.insertObjectSolutionCategory({
+            object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
+            solution_category_id: solutionCategoryId,
+          });
+        }
       }
 
       if (documentMetadata.length) {
