@@ -185,7 +185,7 @@ export type Connector = Document & Integration & Node & {
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category?: Maybe<SolutionCategory>;
+  solution_categories?: Maybe<Array<SolutionCategory>>;
   source_code?: Maybe<Scalars['String']['output']>;
   subscription?: Maybe<SubscriptionModel>;
   subscription_link?: Maybe<Scalars['String']['output']>;
@@ -275,7 +275,7 @@ export type CsvFeed = Document & Integration & Node & {
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category?: Maybe<SolutionCategory>;
+  solution_categories?: Maybe<Array<SolutionCategory>>;
   subscription?: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
@@ -801,7 +801,7 @@ export type Integration = {
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category?: Maybe<SolutionCategory>;
+  solution_categories?: Maybe<Array<SolutionCategory>>;
   subscription?: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
@@ -832,7 +832,7 @@ export type IntegrationHack = Document & Integration & Node & {
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category?: Maybe<SolutionCategory>;
+  solution_categories?: Maybe<Array<SolutionCategory>>;
   subscription?: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
@@ -1595,6 +1595,7 @@ export type PlatformDeploymentRequest = {
   ordering: Scalars['Int']['output'];
   organization_domains?: Maybe<Array<Scalars['String']['output']>>;
   organization_name: Scalars['String']['output'];
+  parent_id?: Maybe<Scalars['String']['output']>;
   platform_id?: Maybe<Scalars['String']['output']>;
   platform_identifier?: Maybe<PlatformIdentifier>;
   platform_token: Scalars['String']['output'];
@@ -1606,6 +1607,7 @@ export type PlatformDeploymentRequest = {
   start_date?: Maybe<Scalars['Date']['output']>;
   target_state?: Maybe<DeploymentRequestPlatformState>;
   type: DeploymentRequestDeploymentType;
+  url?: Maybe<Scalars['String']['output']>;
   use_case?: Maybe<DeploymentRequestUseCase>;
 };
 
@@ -2124,7 +2126,7 @@ export type RssFeed = Document & Integration & Node & {
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category?: Maybe<SolutionCategory>;
+  solution_categories?: Maybe<Array<SolutionCategory>>;
   subscription?: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
@@ -2356,7 +2358,7 @@ export type Stream = Document & Integration & Node & {
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category?: Maybe<SolutionCategory>;
+  solution_categories?: Maybe<Array<SolutionCategory>>;
   subscription?: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
@@ -2476,7 +2478,7 @@ export type TaxiiFeed = Document & Integration & Node & {
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category?: Maybe<SolutionCategory>;
+  solution_categories?: Maybe<Array<SolutionCategory>>;
   subscription?: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
@@ -2529,7 +2531,7 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   share_number?: Maybe<Scalars['Int']['output']>;
   short_description?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
-  solution_category?: Maybe<SolutionCategory>;
+  solution_categories?: Maybe<Array<SolutionCategory>>;
   subscription?: Maybe<SubscriptionModel>;
   type: Scalars['String']['output'];
   updated_at?: Maybe<Scalars['Date']['output']>;
@@ -2586,6 +2588,7 @@ export type UpdateDeploymentRequestInput = {
   ordering?: InputMaybe<Scalars['Int']['input']>;
   platform_id?: InputMaybe<Scalars['String']['input']>;
   start_date?: InputMaybe<Scalars['Date']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateDocumentInput = {
@@ -3375,7 +3378,7 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  solution_category?: Resolver<Maybe<ResolversTypes['SolutionCategory']>, ParentType, ContextType>;
+  solution_categories?: Resolver<Maybe<Array<ResolversTypes['SolutionCategory']>>, ParentType, ContextType>;
   source_code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   subscription_link?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3416,7 +3419,7 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  solution_category?: Resolver<Maybe<ResolversTypes['SolutionCategory']>, ParentType, ContextType>;
+  solution_categories?: Resolver<Maybe<Array<ResolversTypes['SolutionCategory']>>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
@@ -3678,7 +3681,7 @@ export type IntegrationResolvers<ContextType = PortalContext, ParentType extends
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  solution_category?: Resolver<Maybe<ResolversTypes['SolutionCategory']>, ParentType, ContextType>;
+  solution_categories?: Resolver<Maybe<Array<ResolversTypes['SolutionCategory']>>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
@@ -3708,7 +3711,7 @@ export type IntegrationHackResolvers<ContextType = PortalContext, ParentType ext
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  solution_category?: Resolver<Maybe<ResolversTypes['SolutionCategory']>, ParentType, ContextType>;
+  solution_categories?: Resolver<Maybe<Array<ResolversTypes['SolutionCategory']>>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
@@ -3976,6 +3979,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_domains?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   organization_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parent_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform_identifier?: Resolver<Maybe<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   platform_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3987,6 +3991,7 @@ export type PlatformDeploymentRequestResolvers<ContextType = PortalContext, Pare
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   target_state?: Resolver<Maybe<ResolversTypes['DeploymentRequestPlatformState']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   use_case?: Resolver<Maybe<ResolversTypes['DeploymentRequestUseCase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -4137,7 +4142,7 @@ export type RssFeedResolvers<ContextType = PortalContext, ParentType extends Res
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  solution_category?: Resolver<Maybe<ResolversTypes['SolutionCategory']>, ParentType, ContextType>;
+  solution_categories?: Resolver<Maybe<Array<ResolversTypes['SolutionCategory']>>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
@@ -4319,7 +4324,7 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  solution_category?: Resolver<Maybe<ResolversTypes['SolutionCategory']>, ParentType, ContextType>;
+  solution_categories?: Resolver<Maybe<Array<ResolversTypes['SolutionCategory']>>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
@@ -4411,7 +4416,7 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  solution_category?: Resolver<Maybe<ResolversTypes['SolutionCategory']>, ParentType, ContextType>;
+  solution_categories?: Resolver<Maybe<Array<ResolversTypes['SolutionCategory']>>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
@@ -4457,7 +4462,7 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
   share_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  solution_category?: Resolver<Maybe<ResolversTypes['SolutionCategory']>, ParentType, ContextType>;
+  solution_categories?: Resolver<Maybe<Array<ResolversTypes['SolutionCategory']>>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;

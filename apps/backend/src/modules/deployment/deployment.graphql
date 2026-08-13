@@ -167,6 +167,9 @@ type PlatformDeploymentRequest {
   platform_id: String
   platform_url: String
   failure_reason: String
+  #  parent_id should not be base64 encoded, so let's keep it as a String instead of DeploymentRequestId
+  parent_id: String
+  url: String
 }
 
 input CreateDeploymentRequestInput {
@@ -187,6 +190,7 @@ input UpdateDeploymentRequestInput {
   failure_reason: String
   actual_state: DeploymentRequestPlatformState
   ordering: Int
+  url: String
 }
 
 enum DeploymentRequestFilterKey {

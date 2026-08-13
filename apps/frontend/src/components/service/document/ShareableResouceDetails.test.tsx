@@ -27,10 +27,12 @@ const buildDocumentData = (
     },
     integration_type: IntegrationType.CsvFeed,
     integration_subtype: IntegrationSubType.Native,
-    solution_category: {
-      id: 'cat-1',
-      name: 'Threat Intelligence',
-    },
+    solution_categories: [
+      {
+        id: 'cat-1',
+        name: 'Threat Intelligence',
+      },
+    ],
     ...overrides,
   }) as unknown as documentItem_fragment$data;
 

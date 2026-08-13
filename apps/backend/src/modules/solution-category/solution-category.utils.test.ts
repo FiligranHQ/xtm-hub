@@ -5,6 +5,7 @@ import SolutionCategory, {
 } from '../../model/kanel/public/SolutionCategory';
 import {
   buildSolutionCategoryIndex,
+  isFiligranProduct,
   resolveSolutionCategoryNames,
 } from './solution-category.utils';
 
@@ -194,5 +195,16 @@ describe('resolveSolutionCategoryNames', () => {
 
     // Then nothing is resolved and nothing is reported
     expect(result).toEqual({ resolved: [], unknown: [] });
+  });
+});
+
+describe('isFiligranProduct', () => {
+  it.each`
+    input            | expected
+    ${'opencti'}     | ${true}
+    ${'OpenCTI'}     | ${false}
+    ${'notaproduct'} | ${false}
+  `('should return $expected for $input', ({ input, expected }) => {
+    expect(isFiligranProduct(input)).toBe(expected);
   });
 });

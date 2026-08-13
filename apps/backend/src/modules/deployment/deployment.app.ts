@@ -166,16 +166,26 @@ export const DeploymentApp = {
     const deploymentRequest =
       await loadDeploymentRequestForUpdate(deploymentRequestId);
     await checkStatusAndDataValidity(deploymentRequest, input);
-    const newStatus = resolveNextHubStatus(
-      deploymentRequest,
-      input.actual_state
-    );
 
-    await applyDeploymentRequestUpdateInQuotaTransaction({
-      deploymentRequest,
-      deploymentRequestId,
-      input,
-      newStatus,
+    const isBundle =
+      deploymentRequest.type === DeploymentRequestDeploymentType.Bundle;
+    // A bundle's hub_status is never resolved from its own actual_state:
+    // it is only recomputed from its children (see recomputeBundleHubStatusAndDates).
+    const newStatus = isBundle
+      ? deploymentRequest.hub_status
+      : resolveNextHubStatus(deploymentRequest, input.actual_state);
+
+    await withTransaction(async () => {
+      await applyDeploymentRequestUpdateInQuotaTransaction({
+        deploymentRequest,
+        deploymentRequestId,
+        input,
+        newStatus,
+      });
+
+      if (!isBundle && deploymentRequest.parent_id) {
+        await recomputeBundleHubStatusAndDates(deploymentRequest.parent_id);
+      }
     });
 
     const updatedDeploymentRequest =
@@ -791,6 +801,7 @@ const sendDeploymentRequestCreatedNotifications = async ({
         email: user.email,
         deployment_id: deploymentRequest.id,
         deployment_type: deploymentRequest.type,
+        parent_id: deploymentRequest.parent_id ?? undefined,
       }
     );
     await TelemetryApp.sendTelemetryEvent(createDeploymentEvent);
@@ -932,6 +943,30 @@ const createBundleDeploymentRequest = async ({
         parent_id: null,
       });
 
+    try {
+      const createDeploymentEvent = TelemetryHelper.buildCreateDeploymentEvent(
+        chosenOrganization,
+        user.id,
+        undefined,
+        input.source,
+        {
+          region: bundleDeploymentRequest.region,
+          status: bundleDeploymentRequest.hub_status,
+          activity_sector: bundleDeploymentRequest.activity_sector,
+          job_title: bundleDeploymentRequest.job_title,
+          use_case: bundleDeploymentRequest.use_case,
+          email: user.email,
+          deployment_id: bundleDeploymentRequest.id,
+          deployment_type: bundleDeploymentRequest.type,
+        }
+      );
+      await TelemetryApp.sendTelemetryEvent(createDeploymentEvent);
+    } catch (error) {
+      logApp.error('Unable to send telemetry event', {
+        error,
+      });
+    }
+
     for (const platformIdentifier of products) {
       const childDeploymentRequest = await createSingleDeploymentRequest({
         user,
@@ -1010,7 +1045,12 @@ const checkStatusAndDataValidity = async (
     );
   }
 
+  // Bundle dates are not carried by the input: they are recomputed from
+  // children (see computeBundleDates), so this check does not apply to bundles.
+  const isBundle =
+    deploymentRequest.type === DeploymentRequestDeploymentType.Bundle;
   const isActiveInputDataInvalid =
+    !isBundle &&
     input.actual_state == DeploymentRequestPlatformState.Active &&
     (!input.start_date || !input.end_date);
   if (isActiveInputDataInvalid) {
@@ -1058,6 +1098,45 @@ const syncPlatformRegistrationStatus = async (
   );
 };
 
+const recomputeBundleHubStatusAndDates = async (
+  bundleId: DeploymentRequestId
+) => {
+  const bundle = await DeploymentRequestDomain.loadDeploymentRequestBy({
+    id: bundleId,
+  });
+  if (!bundle) {
+    throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+  }
+
+  if (
+    [
+      DeploymentRequestHubStatus.Cancelled,
+      DeploymentRequestHubStatus.Expired,
+    ].includes(bundle.hub_status)
+  ) {
+    return;
+  }
+
+  const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+    parent_id: bundleId,
+  });
+
+  const updatedBundle =
+    await DeploymentRequestDomain.updateDeploymentRequestById(bundleId, {
+      hub_status: DeploymentHelper.computeBundleHubStatus(children),
+      ...DeploymentHelper.computeBundleDates(children),
+    });
+  if (!updatedBundle) {
+    throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+  }
+
+  await sendUpdateDeploymentTelemetryEvent(
+    updatedBundle,
+    updatedBundle.user_requester_id,
+    bundle
+  );
+};
+
 const applyDeploymentRequestUpdateInQuotaTransaction = async ({
   deploymentRequest,
   deploymentRequestId,
@@ -1075,6 +1154,18 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
       region: deploymentRequest.region,
     },
     async () => {
+      if (deploymentRequest.type === DeploymentRequestDeploymentType.Bundle) {
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          deploymentRequestId,
+          {
+            platform_id: input.platform_id,
+            failure_reason: input.failure_reason,
+            actual_state: input.actual_state,
+          }
+        );
+        return;
+      }
+
       const shouldUpdateSubscriptionDates = input.start_date || input.end_date;
       if (shouldUpdateSubscriptionDates) {
         await SubscriptionDomain.updateSubscriptionBy(
@@ -1094,6 +1185,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
         actual_state: input.actual_state,
         ordering: input.ordering ?? undefined,
         hub_status: newStatus,
+        url: input.url,
       };
 
       await DeploymentRequestDomain.updateDeploymentRequestById(
@@ -1105,7 +1197,9 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
         input.actual_state
       );
 
-      if (newStatus === DeploymentRequestHubStatus.Active) {
+      const isXtmone =
+        deploymentRequest.platform_identifier === PlatformIdentifier.Xtmone;
+      if (newStatus === DeploymentRequestHubStatus.Active && !isXtmone) {
         await DeploymentRequestDomain.initialiseServiceGroup(
           deploymentRequestId,
           deploymentRequest.platform_identifier
@@ -1242,6 +1336,7 @@ const sendUpdateDeploymentTelemetryEvent = async (
         end_date: deploymentRequest.end_date,
         deployment_id: deploymentRequest.id,
         deployment_type: deploymentRequest.type,
+        parent_id: deploymentRequest.parent_id ?? undefined,
         platform_id: deploymentRequest.platform_id,
         cancellation_reason:
           deploymentRequest.hub_status === DeploymentRequestHubStatus.Cancelled

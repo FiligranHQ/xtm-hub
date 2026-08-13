@@ -54,10 +54,12 @@ describe('ServiceFormSolutionCategoryField', () => {
     ]);
 
     const document = {
-      solution_category: {
-        id: 'cat-legacy',
-        name: 'Legacy Category',
-      },
+      solution_categories: [
+        {
+          id: 'cat-legacy',
+          name: 'Legacy Category',
+        },
+      ],
     } as unknown as documentItem_fragment$data;
 
     testRender(
@@ -77,10 +79,12 @@ describe('ServiceFormSolutionCategoryField', () => {
     ]);
 
     const document = {
-      solution_category: {
-        id: 'cat-2',
-        name: 'Threat Intelligence',
-      },
+      solution_categories: [
+        {
+          id: 'cat-2',
+          name: 'Threat Intelligence',
+        },
+      ],
     } as unknown as documentItem_fragment$data;
 
     testRender(<TestForm document={document} />);
@@ -97,10 +101,12 @@ describe('ServiceFormSolutionCategoryField', () => {
     ]);
 
     const document = {
-      solution_category: {
-        id: 'cat-2',
-        name: 'Threat Intelligence',
-      },
+      solution_categories: [
+        {
+          id: 'cat-2',
+          name: 'Threat Intelligence',
+        },
+      ],
     } as unknown as documentItem_fragment$data;
 
     testRender(

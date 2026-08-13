@@ -26,7 +26,7 @@ import Link from 'next/link';
 
 import { OrganizationCapability } from '@graphql/generated';
 import { usePathname, useRouter } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 // Component interface
@@ -52,6 +52,19 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
     ) ||
       hasOrganizationCapability(OrganizationCapability.ManageAccess));
 
+  const handleLogout = useCallback(() => {
+    commitLogoutMutation({
+      variables: {},
+      updater: (store) => {
+        store.invalidateStore();
+      },
+      onCompleted() {
+        router.push('/');
+        router.refresh();
+      },
+    });
+  }, [commitLogoutMutation, router]);
+
   const headerContent = (
     <>
       <div className="mobile:hidden flex items-center gap-s">
@@ -66,99 +79,79 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
 
       <DisplayLogo className="text-primary mr-2 h-full py-l sm:hidden" />
 
-      <div className="mobile:hidden flex items-center gap-s">
-        <ConnectedProductsDropdown />
+      <div className="flex items-center gap-s">
+        <div className="mobile:hidden flex items-center gap-s">
+          <ConnectedProductsDropdown />
+        </div>
         {canManageUser && <NotificationButton />}
-        <IconActions
-          className="rounded-full"
-          icon={
-            <>
-              <div className="my-auto [&_img]:object-cover size-6 text-primary [&_span]:bg-transparent">
-                <Avatar src={me?.picture || undefined} />
-              </div>
-              <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
-            </>
-          }>
-          <IconActionsItem asChild>
-            <Link href={`/${APP_PATH}/profile`}>{t('MenuUser.Profile')}</Link>
-          </IconActionsItem>
-          <IconActionsItem
-            onClick={() => {
-              commitLogoutMutation({
-                variables: {},
-                updater: (store) => {
-                  store.invalidateStore();
-                },
-                onCompleted() {
-                  router.push('/');
-                  router.refresh();
-                },
-              });
-            }}>
-            {t('LoginPage.Logout')}
-          </IconActionsItem>
-        </IconActions>
-      </div>
-      <div className="flex gap-xs items-center sm:hidden">
-        {canManageUser && <NotificationButton />}
-        <Sheet
-          open={open}
-          onOpenChange={setOpen}>
-          <SheetTrigger>
-            <span className="sr-only">
-              {open ? t('Header.CloseMenu') : t('Header.OpenMenu')}
-            </span>
-            <MenuIcon
-              aria-hidden={true}
-              focusable={false}
-              className="h-6 w-6"
-            />
-          </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="bg-gradient-layer-0-white">
-            <SheetHeader className="flex flex-row justify-between pl-l bg-gradient-layer-0-white">
-              <div className="flex items-center gap-s">
-                <DisplayLogo className="text-primary h-8" />
-                <SheetTitle className="sr-only">
-                  {t('Header.BrandName')}
-                </SheetTitle>
-              </div>
-            </SheetHeader>
-            <div className="flex flex-col h-full">
-              <div>
-                <PrivateNavigation open={true} />
-                <Separator className="my-s" />
-                <div className="flex flex-col gap-m pl-5">
-                  <HeaderOrganizationSwitcher fitContainer />
+        <div className="mobile:hidden flex items-center">
+          <IconActions
+            className="rounded-full"
+            icon={
+              <>
+                <div className="my-auto [&_img]:object-cover size-6 text-primary [&_span]:bg-transparent">
+                  <Avatar src={me?.picture || undefined} />
                 </div>
-              </div>
-              <div className="mt-auto pt-l pb-xl flex flex-col text-center">
-                <Link href={`/${APP_PATH}/profile`}>
-                  <div className="w-full p-2 hover:bg-hover rounded">
-                    {t('MenuUser.Profile')}
+                <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
+              </>
+            }>
+            <IconActionsItem asChild>
+              <Link href={`/${APP_PATH}/profile`}>{t('MenuUser.Profile')}</Link>
+            </IconActionsItem>
+            <IconActionsItem onClick={handleLogout}>
+              {t('LoginPage.Logout')}
+            </IconActionsItem>
+          </IconActions>
+        </div>
+        <div className="flex gap-xs items-center sm:hidden">
+          <Sheet
+            open={open}
+            onOpenChange={setOpen}>
+            <SheetTrigger>
+              <span className="sr-only">
+                {open ? t('Header.CloseMenu') : t('Header.OpenMenu')}
+              </span>
+              <MenuIcon
+                aria-hidden={true}
+                focusable={false}
+                className="h-6 w-6"
+              />
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="bg-gradient-layer-0-white">
+              <SheetHeader className="flex flex-row justify-between pl-l bg-gradient-layer-0-white">
+                <div className="flex items-center gap-s">
+                  <DisplayLogo className="text-primary h-8" />
+                  <SheetTitle className="sr-only">
+                    {t('Header.BrandName')}
+                  </SheetTitle>
+                </div>
+              </SheetHeader>
+              <div className="flex flex-col h-full">
+                <div>
+                  <PrivateNavigation open={true} />
+                  <Separator className="my-s" />
+                  <div className="flex flex-col gap-m pl-5">
+                    <HeaderOrganizationSwitcher fitContainer />
                   </div>
-                </Link>
-                <div
-                  className="p-2 hover:bg-hover rounded cursor-pointer"
-                  onClick={() => {
-                    commitLogoutMutation({
-                      variables: {},
-                      updater: (store) => {
-                        store.invalidateStore();
-                      },
-                      onCompleted() {
-                        router.push('/');
-                        router.refresh();
-                      },
-                    });
-                  }}>
-                  {t('LoginPage.Logout')}
+                </div>
+                <div className="mt-auto pt-l pb-xl flex flex-col text-center">
+                  <Link href={`/${APP_PATH}/profile`}>
+                    <div className="w-full p-2 hover:bg-hover rounded">
+                      {t('MenuUser.Profile')}
+                    </div>
+                  </Link>
+                  <div
+                    className="p-2 hover:bg-hover rounded cursor-pointer"
+                    onClick={handleLogout}>
+                    {t('LoginPage.Logout')}
+                  </div>
                 </div>
               </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </>
   );

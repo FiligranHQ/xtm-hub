@@ -1,6 +1,10 @@
+import { FiligranProduct } from '../../__generated__/resolvers-types';
 import SolutionCategory, {
   SolutionCategoryId,
 } from '../../model/kanel/public/SolutionCategory';
+
+export const isFiligranProduct = (value: string): value is FiligranProduct =>
+  Object.values(FiligranProduct).includes(value as FiligranProduct);
 
 export const normalizeSolutionCategoryName = (name: string): string =>
   name.trim().toLowerCase();

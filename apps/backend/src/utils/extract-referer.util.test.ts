@@ -82,6 +82,44 @@ describe('toSafeRedirectPath', () => {
     });
   });
 
+  describe('parser-differential payloads', () => {
+    it.each`
+      url                   | description
+      ${'/\\evil.com'}      | ${'backslash normalised to a slash by the URL parser'}
+      ${'/\\\\evil.com'}    | ${'double backslash'}
+      ${'\\\\evil.com'}     | ${'leading double backslash'}
+      ${'/\\evil.com/path'} | ${'backslash with a trailing path'}
+    `('rejects $description', ({ url }) => {
+      expect(toSafeRedirectPath(url)).toBeUndefined();
+      expect(logApp.warn).toHaveBeenCalled();
+    });
+  });
+
+  describe('control characters', () => {
+    it.each`
+      url                          | description
+      ${'/app\r\nSet-Cookie: a=b'} | ${'CRLF response splitting'}
+      ${'/app\u0000'}              | ${'NUL byte'}
+      ${'/app\tx'}                 | ${'tab'}
+      ${'/app\u007F'}              | ${'DEL'}
+    `('rejects $description', ({ url }) => {
+      expect(toSafeRedirectPath(url)).toBeUndefined();
+      expect(logApp.warn).toHaveBeenCalled();
+    });
+  });
+
+  describe('logging', () => {
+    it('truncates oversized values before logging them', () => {
+      const url = `https://evil.com/${'a'.repeat(1000)}`;
+      toSafeRedirectPath(url);
+      const [, meta] = vi.mocked(logApp.warn).mock.calls[0] as [
+        string,
+        { url: string },
+      ];
+      expect(meta.url).toHaveLength(256);
+    });
+  });
+
   describe('edge cases', () => {
     it('does not warn for valid relative paths', () => {
       toSafeRedirectPath('/app/manage/user');
