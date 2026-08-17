@@ -926,7 +926,7 @@ export type ManifestFragmentInput = {
   image_name: Scalars['String']['input'];
   image_type: Scalars['String']['input'];
   integration_type: Scalars['String']['input'];
-  last_verified_date: Scalars['String']['input'];
+  last_verified_date?: InputMaybe<Scalars['String']['input']>;
   license_type?: InputMaybe<LicenseType>;
   logo: Scalars['String']['input'];
   manager_supported: Scalars['Boolean']['input'];

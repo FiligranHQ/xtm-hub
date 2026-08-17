@@ -9,7 +9,7 @@ export interface ManifestContract {
   logo: string | null;
   use_cases: string[];
   verified: boolean;
-  last_verified_date: string;
+  last_verified_date: string | null;
   subscription_link: string | null;
   source_code: string | null;
   manager_supported: boolean;
@@ -17,8 +17,8 @@ export interface ManifestContract {
   license_type: LicenseType | null;
   contact: string | null;
   solution_categories: string[];
-  version: string | null;
-  image_name: string | null;
+  version: string;
+  image_name: string;
   image_type: string;
   additional_properties: Record<string, unknown>;
   config_schema: Record<string, unknown>;
