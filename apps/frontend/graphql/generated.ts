@@ -1734,7 +1734,6 @@ export type Query = {
   trialDeployments: TrialsDeployments;
   updateOpenCTIManifest: Success;
   useCases: Maybe<UseCaseConnection>;
-  userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
   userServiceFromSubscription: Maybe<UserServiceConnection>;
   users: UserConnection;

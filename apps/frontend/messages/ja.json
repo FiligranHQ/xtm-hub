@@ -8,7 +8,6 @@
   },
   "Badge": {
     "Disabled": "お断りします",
-    "Draft": "草案",
     "Enabled": "有効",
     "Published": "発行済み"
   },
@@ -323,9 +322,6 @@
     }
   },
   "HomePage": {
-    "Homepage": "ホームページ",
-    "Manage": "管理する",
-    "OpenManagement": "管理ページへ",
     "XtmNewestResources": {
       "Title": "新しいリソース"
     },
@@ -350,15 +346,12 @@
     }
   },
   "PublicHomePage": {
-    "Title": "リソースと専門知識の発見",
     "XtmPlatform": {
       "Label": "XTM Hubへようこそ",
       "LabelWithName": "ようこそ {name}",
       "ConnectedProducts": "{count, plural, one {コネクテッド製品} other {コネクテッド製品}}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
-      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM プラットフォームでの体験をさらに充実させることができます。",
-      "Cta": "製品を連携する",
-      "ImageAlt": "XTM Platformの図解"
+      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM プラットフォームでの体験をさらに充実させることができます。"
     },
     "XtmRoadmap": {
       "Title": "XTM Platform Roadmap",
@@ -380,8 +373,7 @@
     "Documentation": "XTM Hubのドキュメント",
     "PrivacyPolicy": "プライバシーポリシー",
     "TermsOfServices": "利用規約",
-    "Licenses": "ライセンス",
-    "Contact": "お問い合わせ"
+    "Licenses": "ライセンス"
   },
   "PublicLayout": {
     "SignIn": "サインイン",
@@ -393,14 +385,10 @@
     "Overview": "概要"
   },
   "InviteUserServiceForm": {
-    "Capabilities": "利用可能な能力",
-    "CapabilitiesDescription": "{organizationName} ユーザーが {serviceName} サービスを利用する際に、特定の機能を追加することができます。",
-    "CapabilitiesPlaceholder": "機能の選択",
     "Description": "追加機能デフォルトでは, サービスに招待されたユーザはそのサービスにアクセスできます.追加機能を付与したい場合は、付与したい機能を選択してください。",
     "DisabledCapability": "このサービスでユーザーに能力を付与したい場合は、まず組織レベルでアクティベーションを付与してください。",
     "Email": "電子メール",
     "GrantCapability": "付与能力",
-    "Organization": "組織名",
     "Title": "ユーザーを {serviceName} サービスに招待する"
   },
   "UseCaseActions": {
@@ -468,7 +456,6 @@
   "MenuActions": {
     "Continue": "続けてください",
     "Delete": "削除してください",
-    "Details": "詳細",
     "Disable": "無効にする",
     "Remove": "削除する",
     "Update": "更新する"
@@ -494,8 +481,6 @@
     "MyProducts": "私の製品"
   },
   "MenuLinks": {
-    "Backoffice": "バックオフィス",
-    "Connectors": "OpenCTI コネクタ",
     "Home": "ホーム",
     "UseCase": "使用例",
     "SolutionCategory": "ソリューションカテゴリー",
@@ -597,9 +582,6 @@
   },
   "OrganizationInServiceAction": {
     "AddOrganization": "組織を",
-    "ConfirmDelete1": "この組織を削除してもよろしいですか？",
-    "ConfirmDelete2": "をこのサービスから削除してもよろしいですか？この操作は取り消せません。",
-    "DeleteOrgFromService": "サービスから組織を削除する",
     "EndDate": "終了日（オプション）",
     "Organization": "組織名",
     "RemoveOrganization": "組織を削除",
@@ -717,10 +699,6 @@
       "Transfer": "移動",
       "TransferConfirmSentence": "パーソナルスペースを移管しますか？新しいユーザーがメールで確認していない間は、有効になりません。"
     }
-  },
-  "RedirectPage": {
-    "ExploringOurRoad": "あと3秒でロードマップをご覧いただけます。",
-    "YourFutureHub": "未来のフィリグランコミュニティハブが形作られつつあります！"
   },
   "Register": {
     "AnotherOrganization": {
@@ -959,7 +937,6 @@
       "Eyebrow": "Filigran のリソース",
       "DefaultDescription": "OpenCTI または OpenAEV 製品を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM 製品をより一層ご活用いただけます。"
     },
-    "ComingSoon": "近日公開予定",
     "Connectors": {
       "DataImport": "データインポート",
       "Description": "フィリグランチームが共有するOpenCTIコネクタの数々をご覧ください。",
@@ -1216,9 +1193,6 @@
     "Description": "出版",
     "GoTo": "サービスページへ",
     "GoToAdminLabel": "管理する",
-    "GoToLabel": "サービスページへ",
-    "GoToManagement": "サービス管理へ",
-    "HighlightedServices": "この機能を利用するには、まずハイライトされたサービスのいずれかに加入してください。",
     "List": {
       "Filter": {
         "Add": "フィルターの追加",
@@ -1271,8 +1245,6 @@
       "SearchOrganization": "組織検索"
     },
     "Name": "氏名",
-    "NoOwnedService": "まだサービスをご利用になっていません。",
-    "NoService": "サービスはありません...まだ",
     "SubscribedServices": "契約済みサービス",
     "SubscribedServicesList": {
       "ServiceName": "サービス名",
@@ -1353,9 +1325,6 @@
     "SubscribeOrganization": "組織を購読する",
     "SubscribeService": "{serviceName} サービスを購読する",
     "SubscribeSuccessful": "サービスへの登録が完了しました。これで登録したサービスにこのサービスが表示されます。",
-    "SubscriptionRequestSuccessful": "リクエストが送信されました。まもなく私たちのチームからご連絡いたします。",
-    "SureWantSubscriptionDirect": "無料の {serviceName} サービスで、フィリグランチームが作成したリソースをご覧ください。",
-    "SureWantSubscriptionUndirect": "このサービスを購読するために私たちの商業チームから連絡があります。このまま続けますか？",
     "Trials": {
       "ExploreBold": "無料トライアル",
       "ExplorePlatform": "30日間、{platformName} プラットフォームをお試しください。",
@@ -1602,8 +1571,7 @@
     "Automatic": "自動",
     "Dark": "暗い",
     "Light": "明るい",
-    "SetTheme": "セットテーマ",
-    "ToggleTheme": "テーマの切り替え"
+    "SetTheme": "セットテーマ"
   },
   "UnexpectedErrorDialog": {
     "Description": "再度ログインをお試しください。それでも問題が解決しない場合は、お問い合わせください。",
@@ -1707,9 +1675,7 @@
       "Action": "パスワード再設定",
       "Sentence": "パスワード再設定のメールをお送りします。",
       "Success": "パスワード再設定メールが送信されました。"
-    },
-    "WhoAreYou": "あなたは誰ですか？",
-    "WhoAreYouDescription": "名字と名前を教えてください"
+    }
   },
   "UserListPage": {
     "Country": "国名",
@@ -1717,7 +1683,6 @@
     "FirstName": "ファーストネーム",
     "LastLogin": "姓",
     "LastName": "姓",
-    "Never": "決して",
     "NoUsers": "ユーザーが見つかりません",
     "Organizations": "団体名",
     "Roles": "役割",
@@ -1763,7 +1728,6 @@
     "Updating": "更新中...",
     "Validate": "検証",
     "ValidateForm": "検証フォーム",
-    "Verified": "検証済み",
     "Visualize": "可視化",
     "DangerZone": "危険地帯",
     "AutomaticDeploy": "自動配備",
@@ -1790,7 +1754,6 @@
     "DocumentUpdated": "{file_name} は修正されました",
     "UpdateDocument": "ドキュメントの更新"
   },
-  "entitie(s)": "エンティティ",
   "DeploymentRequestJobTitle": {
     "ceo": "CEO",
     "ciso_cso_cio": "CISO/CSO/CIO",
