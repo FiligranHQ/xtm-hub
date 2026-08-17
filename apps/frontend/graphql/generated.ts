@@ -3024,6 +3024,13 @@ export type SolutionCategoriesListQueryVariables = Exact<{
 
 export type SolutionCategoriesListQuery = { __typename?: 'Query', solutionCategories: { __typename?: 'SolutionCategoryConnection', totalCount: number, edges: Array<{ __typename?: 'SolutionCategoryEdge', node: { __typename?: 'SolutionCategory', id: string, name: string, product: Array<FiligranProduct> } }> } | null };
 
+export type PlatformTrialStatusQueryVariables = Exact<{
+  organizationId: Scalars['OrganizationId']['input'];
+}>;
+
+
+export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null } };
+
 export type TrialDeploymentsEligibilityQueryVariables = Exact<{
   input: TrialDeploymentsInput;
 }>;
@@ -4030,6 +4037,61 @@ export const useInfiniteSolutionCategoriesListQuery = <
 useInfiniteSolutionCategoriesListQuery.getKey = (variables: SolutionCategoriesListQueryVariables) => ['SolutionCategoriesList.infinite', variables];
 useInfiniteSolutionCategoriesListQuery.getRootKey = () => ['SolutionCategoriesList.infinite'] as const;
 useSolutionCategoriesListQuery.fetcher = (client: GraphQLClient, variables: SolutionCategoriesListQueryVariables, headers?: RequestInit['headers']) => fetcher<SolutionCategoriesListQuery, SolutionCategoriesListQueryVariables>(client, SolutionCategoriesListDocument, variables, headers);
+
+export const PlatformTrialStatusDocument = `
+    query PlatformTrialStatus($organizationId: OrganizationId!) {
+  platformTrialStatus(organizationId: $organizationId) {
+    isBlacklisted
+    hub_status
+    end_date
+  }
+}
+    `;
+
+export const usePlatformTrialStatusQuery = <
+      TData = PlatformTrialStatusQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: PlatformTrialStatusQueryVariables,
+      options?: Omit<UseQueryOptions<PlatformTrialStatusQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<PlatformTrialStatusQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<PlatformTrialStatusQuery, TError, TData>(
+      {
+    queryKey: ['PlatformTrialStatus', variables],
+    queryFn: fetcher<PlatformTrialStatusQuery, PlatformTrialStatusQueryVariables>(client, PlatformTrialStatusDocument, variables, headers),
+    ...options
+  }
+    )};
+
+usePlatformTrialStatusQuery.getKey = (variables: PlatformTrialStatusQueryVariables) => ['PlatformTrialStatus', variables];
+usePlatformTrialStatusQuery.getRootKey = () => ['PlatformTrialStatus'] as const;
+export const useInfinitePlatformTrialStatusQuery = <
+      TData = InfiniteData<PlatformTrialStatusQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: PlatformTrialStatusQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<PlatformTrialStatusQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<PlatformTrialStatusQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<PlatformTrialStatusQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['PlatformTrialStatus.infinite', variables],
+      queryFn: (metaData) => fetcher<PlatformTrialStatusQuery, PlatformTrialStatusQueryVariables>(client, PlatformTrialStatusDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfinitePlatformTrialStatusQuery.getKey = (variables: PlatformTrialStatusQueryVariables) => ['PlatformTrialStatus.infinite', variables];
+useInfinitePlatformTrialStatusQuery.getRootKey = () => ['PlatformTrialStatus.infinite'] as const;
+usePlatformTrialStatusQuery.fetcher = (client: GraphQLClient, variables: PlatformTrialStatusQueryVariables, headers?: RequestInit['headers']) => fetcher<PlatformTrialStatusQuery, PlatformTrialStatusQueryVariables>(client, PlatformTrialStatusDocument, variables, headers);
 
 export const TrialDeploymentsEligibilityDocument = `
     query TrialDeploymentsEligibility($input: TrialDeploymentsInput!) {
