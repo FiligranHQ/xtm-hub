@@ -219,32 +219,6 @@ export const localizedCardDescription = (
   return instance.slug && t.has(key) ? t(key) : instance.description!;
 };
 
-export const publicServiceInstanceToInstanceCardData = (
-  instance: serviceList_fragment$data,
-  t: ReturnType<typeof useTranslations>
-): ServiceInstanceCardData => {
-  return {
-    id: instance.id,
-    isLinkDisabled:
-      instance.creation_status === ServiceInstanceCreationStatus.Pending,
-    name: localizedCardName(instance, t),
-    description: localizedCardDescription(instance, t),
-    displayLinkArrow: isExternalService(
-      instance.service_definition!.identifier as ServiceDefinitionIdentifier
-    ),
-    illustrationDocumentUrl: computeIllustrationDocumentUrl(
-      instance.id,
-      instance.illustration_document_id
-    ),
-    logoBackgroundImageUrl: buildDocumentUrl(
-      instance.id,
-      instance.logo_document_id
-    ),
-    url: computeUrl(instance),
-    ordering: instance.ordering,
-  };
-};
-
 export const seoServiceInstanceToInstanceCardData = (
   instance: seoServiceInstanceFragment$data,
   t: ReturnType<typeof useTranslations>

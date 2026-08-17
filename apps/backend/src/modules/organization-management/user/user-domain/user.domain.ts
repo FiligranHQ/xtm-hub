@@ -5,7 +5,6 @@ import {
   Organization,
   OrganizationCapability,
   QueryUsersArgs,
-  Subscription,
   UserConnection,
   User as UserGenerated,
 } from '../../../../__generated__/resolvers-types';
@@ -450,18 +449,6 @@ export const UserDomain = {
       ])
       .groupBy(['User.id'])
       .first();
-  },
-
-  userHasOrganizationWithSubscription: async () => {
-    const user = requestContext.requireUser();
-    const organizationIds = user.organizations.map((org) => org.id);
-    if (organizationIds.length === 0) {
-      return false;
-    }
-    const subscriptions: Subscription[] = await db<Subscription>(
-      'Subscription'
-    ).whereIn('organization_id', organizationIds);
-    return subscriptions.length !== 0;
   },
 
   updateUserAtLogin: async (user: UserLoadUserBy): Promise<UserLoadUserBy> => {
