@@ -16,9 +16,9 @@ import {
 } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceFormIntegrationSubtypeFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   integrationType: IntegrationType;
@@ -32,10 +32,10 @@ export const ServiceFormIntegrationSubtypeField = ({
   document,
   disabled,
 }: ServiceFormIntegrationSubtypeFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <FormItem>
-      <FormLabel>{t('Service.Form.SelectIntegrationSubType')}</FormLabel>
+      <FormLabel>{t('Service_Form_SelectIntegrationSubType')}</FormLabel>
       <Select
         disabled={disabled}
         onValueChange={field.onChange}
@@ -43,7 +43,7 @@ export const ServiceFormIntegrationSubtypeField = ({
         <FormControl>
           <SelectTrigger>
             <SelectValue
-              placeholder={t('Service.Form.SelectIntegrationSubType')}
+              placeholder={t('Service_Form_SelectIntegrationSubType')}
             />
           </SelectTrigger>
         </FormControl>

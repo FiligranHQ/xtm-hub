@@ -1,22 +1,22 @@
 import TrialsList from '@/components/trials/TrialsList';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 
 const breadcrumbValue = [
   {
-    label: 'MenuLinks.Settings',
+    label: 'MenuLinks_Settings',
   },
   {
-    label: 'MenuLinks.OpenCTITrial',
+    label: 'MenuLinks_OpenCTITrial',
   },
 ];
 const PageLoader = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.OpenCTITrial')}</h1>
+      <h1 className="sr-only">{t('MenuLinks_OpenCTITrial')}</h1>
       <TrialsList platformIdentifier={PlatformIdentifier.Opencti} />
     </>
   );

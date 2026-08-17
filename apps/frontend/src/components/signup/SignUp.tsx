@@ -3,7 +3,7 @@
 import FiligranLogo from '@public/filigran_logo.svg';
 import FiligranLogoDark from '@public/filigran_logo_dark.svg';
 import SchemeXtmHub from '@public/scheme_xtm_hub_account_creation.svg';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -13,7 +13,7 @@ const HUBSPOT_FORM_ID = '10b2ca41-4734-46d8-96dd-ac410a10a937';
 const HUBSPOT_REGION = 'eu1';
 
 const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
-  const t = useTranslations('SignUpPage');
+  const { t } = useTranslate();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect');
   const oidcHref = redirect
@@ -83,12 +83,12 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
         <div className="md:flex-1 md:min-h-0 md:overflow-y-auto pr-6 scrollbar-thin [scrollbar-color:transparent_transparent] hover:[scrollbar-color:hsl(var(--muted-foreground)/0.4)_transparent] transition-[scrollbar-color] duration-300">
           <div className="mx-auto w-full max-w-125 flex flex-col justify-start min-h-full py-6">
             <h1 className="shrink-0 mt-auto text-3xl leading-9 font-medium text-foreground">
-              {t('Title1')}
+              {t('SignUpPage_Title1')}
               <br />
-              {t('Title2')}
+              {t('SignUpPage_Title2')}
             </h1>
             <p className="shrink-0 mt-2 text-sm leading-6 font-bold text-foreground">
-              {t('Subtitle')}
+              {t('SignUpPage_Subtitle')}
             </p>
             <div
               id="hubspot-form"
@@ -99,23 +99,23 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
         {/* Footer */}
         <div className="shrink-0 flex flex-col items-center gap-1.5 text-xs pr-6">
           <p className="text-muted-foreground flex items-center gap-2">
-            {t('AlreadyHaveAccount')}
+            {t('SignUpPage_AlreadyHaveAccount')}
             <Link
               href={oidcHref}
               prefetch={false}
               className="text-primary underline">
-              {t('LogIn')}
+              {t('SignUpPage_LogIn')}
             </Link>
           </p>
           {showLocalLogin && (
             <Link
               href={loginHref}
               className="text-primary underline">
-              {t('LoginWithLocal')}
+              {t('SignUpPage_LoginWithLocal')}
             </Link>
           )}
           <div className="flex items-center gap-1 text-muted-foreground/20 text-xs">
-            {t('MadeBy')}
+            {t('SignUpPage_MadeBy')}
             <FiligranLogo className="h-4 w-auto" />
           </div>
         </div>
@@ -126,10 +126,10 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
         <div className="flex flex-col items-center gap-8 m-[clamp(2rem,5vw,8rem)]">
           <div className="shrink-0 flex flex-col gap-1">
             <p className="text-sm leading-6 font-bold text-primary">
-              {t('WelcomeTitle')}
+              {t('SignUpPage_WelcomeTitle')}
             </p>
             <h2 className="text-3xl leading-9 font-medium text-foreground">
-              {t('WelcomeSubtitle')}
+              {t('SignUpPage_WelcomeSubtitle')}
             </h2>
           </div>
           <div className="w-full flex items-start justify-center md:flex-1 md:min-h-0">

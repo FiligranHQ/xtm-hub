@@ -32,13 +32,14 @@ import { serviceInstanceByIdQuery } from '@generated/serviceInstanceByIdQuery.gr
 import { serviceInstanceForSubscriptions_fragment$key } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import React, { useMemo, useState } from 'react';
 import { PreloadedQuery, readInlineData, usePreloadedQuery } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { ServiceSlugAddCapabilities } from './ServiceSlugAddCapabilities';
 import { ServiceSlugDeleteSubscription } from './ServiceSlugDeleteSubscription';
 import { ServiceSlugSubscription } from './ServiceSlugSubscription';
+
+import { useTranslate } from '@tolgee/react';
 
 interface ServiceSlugProps {
   subscriptions: subscription_fragment$data[];
@@ -87,7 +88,7 @@ const ServiceSlug = ({
   const [selection, setSelection] =
     useState<SelectionState>(emptySelectionState);
 
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const debounceHandleInput = useDebounceCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value),
@@ -104,11 +105,11 @@ const ServiceSlug = ({
   const breadcrumbValue: BreadcrumbNavLink[] = [
     ...(isAdminPath
       ? [
-          { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
-          { label: 'MenuLinks.Settings' },
-          { label: 'MenuLinks.Service', href: `/${APP_PATH}/admin/service` },
+          { label: 'MenuLinks_Home', href: `/${APP_PATH}` },
+          { label: 'MenuLinks_Settings' },
+          { label: 'MenuLinks_Service', href: `/${APP_PATH}/admin/service` },
         ]
-      : [{ label: 'MenuLinks.Home', href: `/${APP_PATH}` }]),
+      : [{ label: 'MenuLinks_Home', href: `/${APP_PATH}` }]),
     {
       label: serviceInstance.name,
       original: true,
@@ -154,23 +155,23 @@ const ServiceSlug = ({
               icon={
                 <>
                   <MoreVertIcon className="h-4 w-4 text-primary" />
-                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                  <span className="sr-only">{t('Utils_OpenMenu')}</span>
                 </>
               }>
               <IconActionsLink
                 href={`/${APP_PATH}/admin/service/${row.id}/subscription`}>
-                {t('Service.Management.ManageUsers')}
+                {t('Service_Management_ManageUsers')}
               </IconActionsLink>
               <IconActionsItem
                 onClick={() => {
                   setUpdateSubscription(row.original);
                   setOpenEdit(true);
                 }}>
-                {t('Utils.Edit')}
+                {t('Utils_Edit')}
               </IconActionsItem>
               <IconActionsItem
                 onClick={() => setDeleteSubscriptions([row.original])}>
-                {t('Utils.Delete')}
+                {t('Utils_Delete')}
               </IconActionsItem>
             </IconActions>
           </div>
@@ -185,7 +186,7 @@ const ServiceSlug = ({
         <div className="flex-1 max-w-sm">
           <SearchInput
             id="SearchTerm"
-            placeholder={t('Service.Management.SearchOrganization')}
+            placeholder={t('Service_Management_SearchOrganization')}
             onChange={debounceHandleInput}
           />
         </div>
@@ -198,7 +199,7 @@ const ServiceSlug = ({
           <label
             htmlFor="displayPersonalSpaces"
             className="ml-s">
-            {t('Service.Management.ShowPersonalSpaces')}
+            {t('Service_Management_ShowPersonalSpaces')}
           </label>
         </div>
       </div>
@@ -273,7 +274,7 @@ const ServiceSlug = ({
       <div>
         <ServiceSlugHeader serviceInstance={serviceInstance} />
         <div className="border rounded bg-elevation-background-layer-1 p-m">
-          <h2 className="">{t('Service.Management.Description') + ':'}</h2>
+          <h2 className="">{t('Service_Management_Description') + ':'}</h2>
 
           <DataTable
             i18nKey={i18nKey(t)}
@@ -295,7 +296,7 @@ const ServiceSlug = ({
                       onClick={() => setOpenAddCapabilities(true)}>
                       <AddIcon className="h-4 w-4 m-s" />
                       {t(
-                        'Service.Management.AddSubscriptionCapabilities.Button'
+                        'Service_Management_AddSubscriptionCapabilities_Button'
                       )}
                     </Button>
                     <Button
@@ -306,7 +307,7 @@ const ServiceSlug = ({
                         setDeleteSubscriptions(selectedSubscriptions)
                       }>
                       <DeleteIcon className="h-4 w-4 m-s" />
-                      {t('Utils.Delete')}
+                      {t('Utils_Delete')}
                     </Button>
                   </>
                 ),

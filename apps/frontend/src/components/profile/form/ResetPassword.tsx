@@ -1,5 +1,4 @@
 'use client';
-
 import {
   Card,
   CardContent,
@@ -8,8 +7,8 @@ import {
   CardTitle,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 interface ProfileFormResetPasswordProps {
   onSubmit: () => void;
 }
@@ -17,18 +16,18 @@ interface ProfileFormResetPasswordProps {
 export const ProfileFormResetPassword = ({
   onSubmit,
 }: ProfileFormResetPasswordProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="heading-lg">{t('UserForm.Password')}</CardTitle>
+        <CardTitle className="heading-lg">{t('UserForm_Password')}</CardTitle>
       </CardHeader>
-      <CardContent>{t('UserForm.ResetPassword.Sentence')}</CardContent>
+      <CardContent>{t('UserForm_ResetPassword_Sentence')}</CardContent>
       <CardFooter className="flex justify-end">
         <Button
-          aria-label={t('UserForm.ResetPassword.Action')}
+          aria-label={t('UserForm_ResetPassword_Action')}
           onClick={onSubmit}>
-          {t('UserForm.ResetPassword.Action')}
+          {t('UserForm_ResetPassword_Action')}
         </Button>
       </CardFooter>
     </Card>

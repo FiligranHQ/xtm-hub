@@ -20,12 +20,12 @@ import {
   PlatformIdentifier,
   PortalCapability,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useContext, useState } from 'react';
 import { useFragment } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface RegistrationDetailsProps {
   registeredPlatform: registeredPlatformByServiceInstanceId_fragment$key;
 }
@@ -33,7 +33,7 @@ interface RegistrationDetailsProps {
 export const RegistrationDetails = ({
   registeredPlatform,
 }: RegistrationDetailsProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const searchParams = useSearchParams();
   const openForm = searchParams.get('openForm') === 'true';
 
@@ -107,24 +107,24 @@ export const RegistrationDetails = ({
       <ul className="text-sm flex flex-col gap-l">
         {platform.title && (
           <li>
-            <span className="mr-xs">{t('Register.Details.ProductName')}:</span>
+            <span className="mr-xs">{t('Register_Details_ProductName')}:</span>
             {platform.title}
           </li>
         )}
         <li>
-          <span className="mr-xs">{t('Register.Details.ProductURL')}:</span>
+          <span className="mr-xs">{t('Register_Details_ProductURL')}:</span>
           <span>{platform.url ? platform.url : '-'}</span>
         </li>
         {platform.deployment_request?.hub_status && (
           <li>
-            <span className="mr-xs">{t('Register.Details.Status')}:</span>
+            <span className="mr-xs">{t('Register_Details_Status')}:</span>
             {formatTitleCase(platform.deployment_request?.hub_status)}
             {isCancellable && (
               <Button
                 variant="link-destructive"
                 className="m-0 p-0 ml-4 h-full"
                 onClick={() => setOpenCancelSheet(true)}>
-                {t('Utils.Cancel')}
+                {t('Utils_Cancel')}
               </Button>
             )}
           </li>
@@ -132,14 +132,14 @@ export const RegistrationDetails = ({
         {isTrial ? (
           <>
             <li>
-              <span className="mr-xs">{t('Register.Details.StartDate')}:</span>
+              <span className="mr-xs">{t('Register_Details_StartDate')}:</span>
               {platform.subscription?.start_date &&
               platform.subscription.end_date
                 ? formatDate(platform.subscription.start_date)
                 : '-'}
             </li>
             <li>
-              <span className="mr-xs">{t('Register.Details.EndDate')}:</span>
+              <span className="mr-xs">{t('Register_Details_EndDate')}:</span>
               {platform.subscription?.end_date
                 ? formatDate(platform.subscription?.end_date)
                 : '-'}
@@ -149,7 +149,7 @@ export const RegistrationDetails = ({
           <>
             <li>
               <span className="mr-xs">
-                {t('Register.Details.ConnectedOn')}:
+                {t('Register_Details_ConnectedOn')}:
               </span>
               {platform.subscription?.start_date
                 ? formatDate(platform.subscription.start_date)
@@ -160,19 +160,19 @@ export const RegistrationDetails = ({
 
         {platform.deployment_request?.region && (
           <li>
-            <span className="mr-xs">{t('Register.Details.Region')}:</span>
-            {t(`Region.${platform.deployment_request.region.toUpperCase()}`)}
+            <span className="mr-xs">{t('Register_Details_Region')}:</span>
+            {t(`Region_${platform.deployment_request.region.toUpperCase()}`)}
           </li>
         )}
         <li>
-          <span className="mr-xs">{t('Register.Details.License')}:</span>
+          <span className="mr-xs">{t('Register_Details_License')}:</span>
           {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
         </li>
         {isLastConnectivityCheckDisplayed && (
           <>
             <li>
               <span className="mr-xs">
-                {t('Register.Details.ConnectionStatus.Title')}:
+                {t('Register_Details_ConnectionStatus_Title')}:
               </span>
               <span
                 className={
@@ -181,23 +181,23 @@ export const RegistrationDetails = ({
                     : 'text-destructive'
                 }>
                 {isConnectionStatusOk ? (
-                  t('Register.Details.ConnectionStatus.Connected')
+                  t('Register_Details_ConnectionStatus_Connected')
                 ) : (
                   <span>
-                    {t('Register.Details.ConnectionStatus.NotConnected')}
+                    {t('Register_Details_ConnectionStatus_NotConnected')}
                     {'. '}
                   </span>
                 )}
               </span>
               {!isConnectionStatusOk && (
                 <span>
-                  {t('Register.Details.ConnectionStatus.NotConnectedDetails')}
+                  {t('Register_Details_ConnectionStatus_NotConnectedDetails')}
                 </span>
               )}
             </li>
             <li>
               <span className="mr-xs">
-                {t('Register.Details.LastConnectionCheck')}:
+                {t('Register_Details_LastConnectionCheck')}:
               </span>
               {platform.last_connectivity_check
                 ? formatDate(platform.last_connectivity_check)
@@ -208,7 +208,7 @@ export const RegistrationDetails = ({
         {isTrialActive && (
           <li>
             <span>
-              <span className="mr-xs">{t('Register.Details.Access')}:</span>
+              <span className="mr-xs">{t('Register_Details_Access')}:</span>
               {userHasTrialAccess ? (
                 <span>
                   {(platform.myGroups ?? [])
@@ -219,9 +219,9 @@ export const RegistrationDetails = ({
               ) : (
                 <span>
                   <span className="text-destructive mr-xs">
-                    {t('RegistrationDetails.NoAccess')}
+                    {t('RegistrationDetails_NoAccess')}
                   </span>
-                  {t('RegistrationDetails.NoAccessContact', {
+                  {t('RegistrationDetails_NoAccessContact', {
                     email: platform.deployment_request?.requester_email ?? '',
                   })}
                 </span>
@@ -238,7 +238,7 @@ export const RegistrationDetails = ({
               target="_blank"
               rel="noopener noreferrer"
               href={platform.url}>
-              {t('Register.Details.Access')} {displayedIdentifier}
+              {t('Register_Details_Access')} {displayedIdentifier}
             </Link>
           </Button>
         )}
@@ -262,7 +262,7 @@ export const RegistrationDetails = ({
           <Button
             variant="secondary"
             onClick={() => setOpenPlatformSheet(true)}>
-            {t('Platform.Update')}
+            {t('Platform_Update')}
           </Button>
         )}
         <UnregisterButton platform={platform} />

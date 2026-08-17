@@ -17,10 +17,9 @@ import {
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentSourceType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { ChangeEvent, useRef } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-
 export type ServiceFormMultipleImagesFieldImages = (ExistingFile | NewFile) & {
   source_type: DocumentSourceType;
 };
@@ -44,14 +43,14 @@ export const ServiceFormMultipleImagesField = ({
   setImagesToDelete,
   setIsDirty,
 }: ServiceFormMultipleImagesFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   return (
     <>
       <FormItem>
         <FormLabel className="flex items-center h-6">
-          {t('Service.Form.ImageLabel')}
+          {t('Service_Form_ImageLabel')}
           <Button
             size="icon"
             variant="link"
@@ -84,9 +83,9 @@ export const ServiceFormMultipleImagesField = ({
               return false;
             }}
             texts={{
-              selectFile: t('Service.Form.UploadImage'),
-              noFile: t('Service.Form.NoImage'),
-              dropFiles: t('Service.Form.DropDocuments'),
+              selectFile: t('Service_Form_UploadImage'),
+              noFile: t('Service_Form_NoImage'),
+              dropFiles: t('Service_Form_DropDocuments'),
             }}
             allowedTypes={'image/jpeg, image/png'}
             ref={(e: HTMLInputElement) => {
@@ -98,7 +97,7 @@ export const ServiceFormMultipleImagesField = ({
         </FormControl>
         <FormMessage />
       </FormItem>
-      <p className="text-xs">{t('Service.Form.ImagesDisclaimer')}</p>
+      <p className="text-xs">{t('Service_Form_ImagesDisclaimer')}</p>
       {images?.length > 0 && (
         <div
           className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl"
@@ -135,7 +134,7 @@ export const ServiceFormMultipleImagesField = ({
                         <ReplayIcon className="size-4" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        {t('Service.Form.Restore')}
+                        {t('Service_Form_Restore')}
                       </TooltipContent>
                     </Tooltip>
                   </Button>
@@ -166,7 +165,7 @@ export const ServiceFormMultipleImagesField = ({
                           <DeleteIcon className="size-4" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          {t('Service.Form.DeleteSentence')}
+                          {t('Service_Form_DeleteSentence')}
                         </TooltipContent>
                       </Tooltip>
                     </Button>

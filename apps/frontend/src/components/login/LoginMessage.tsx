@@ -1,16 +1,15 @@
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import Link from 'next/link';
-
 const LoginMessage = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <div className="bg-elevation-background-layer-1 border border-border-light rounded w-full p-xl text-sm text-center">
-      {t('LoginPage.DontHaveAccount')}{' '}
+      {t('LoginPage_DontHaveAccount')}{' '}
       <Link
         className="text-primary"
         href="/sign-up">
-        {t('LoginPage.SignUp')}
+        {t('LoginPage_SignUp')}
       </Link>
     </div>
   );

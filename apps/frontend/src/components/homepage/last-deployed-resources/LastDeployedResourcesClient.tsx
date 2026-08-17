@@ -13,7 +13,7 @@ import {
 } from '@filigran/ui';
 import { Separator } from '@filigran/ui/clients';
 import { useLastDeployedOverviewQueryQuery } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { Fragment, useState } from 'react';
 
 const LAST_DEPLOYED_LIMIT = 4;
@@ -25,7 +25,7 @@ type LastDeployedResourcesClientProps = {
 const LastDeployedResourcesClient = ({
   platforms,
 }: LastDeployedResourcesClientProps) => {
-  const t = useTranslations('HomePage.LastDeployedResources');
+  const { t } = useTranslate();
 
   const [selectedServiceInstanceId, setSelectedServiceInstanceId] =
     useState<string>(platforms[0]?.serviceInstanceId ?? '');
@@ -40,13 +40,17 @@ const LastDeployedResourcesClient = ({
     <section className="w-full flex-1 min-w-0 flex flex-col gap-l">
       <div className="flex items-center gap-m">
         <h2 className="content-body-base text-text-default-primary">
-          {t('Title')}
+          {t('HomePage_LastDeployedResources_Title')}
         </h2>
         <Select
           value={selectedServiceInstanceId}
           onValueChange={setSelectedServiceInstanceId}>
           <SelectTrigger className="w-56">
-            <SelectValue placeholder={t('ProductPlaceholder')} />
+            <SelectValue
+              placeholder={t(
+                'HomePage_LastDeployedResources_ProductPlaceholder'
+              )}
+            />
           </SelectTrigger>
           <SelectContent>
             {platforms.map((platform) => {

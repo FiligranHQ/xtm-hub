@@ -15,10 +15,10 @@ import {
 } from '@graphql/generated';
 import { solutionCategoryListKeys } from '@graphql/solution-category/solution-category-list.keys';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const EditSolutionCategory = ({
   open,
   onClose,
@@ -28,7 +28,7 @@ const EditSolutionCategory = ({
   onClose: () => void;
   solutionCategory: SolutionCategoryFormModel;
 }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const queryClient = useQueryClient();
   const [openSheet, setOpenSheet] = useState<boolean>(open);
 
@@ -37,8 +37,8 @@ const EditSolutionCategory = ({
       error instanceof Error ? error.message : 'UnknownError';
     toast({
       variant: 'destructive',
-      title: t('Utils.Error'),
-      description: <>{t(`Error.Server.${errorMessage}`)}</>,
+      title: t('Utils_Error'),
+      description: <>{t(`Error_Server_${errorMessage}`)}</>,
     });
   };
 
@@ -47,7 +47,7 @@ const EditSolutionCategory = ({
     {
       onSuccess: (data: SolutionCategoryEditMutation) => {
         toast({
-          title: t('Utils.Success'),
+          title: t('Utils_Success'),
         });
         queryClient.setQueriesData<SolutionCategoriesListQuery>(
           { queryKey: solutionCategoryListKeys.all() },
@@ -64,7 +64,7 @@ const EditSolutionCategory = ({
     {
       onSuccess: (data: SolutionCategoryDeleteMutation) => {
         toast({
-          title: t('Utils.Success'),
+          title: t('Utils_Success'),
         });
         queryClient.setQueriesData<SolutionCategoriesListQuery>(
           { queryKey: solutionCategoryListKeys.all() },
@@ -104,7 +104,7 @@ const EditSolutionCategory = ({
 
   return (
     <SheetWithPreventingDialog
-      title={t('SolutionCategory.Actions.Add')}
+      title={t('SolutionCategory_Actions_Add')}
       setOpen={handleOpenSheet}
       open={openSheet}>
       <SolutionCategoryForm

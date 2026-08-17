@@ -1,6 +1,5 @@
 import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 // Component interface
 interface ShareableResourceDescriptionProps {
   shortDescription: string;
@@ -12,12 +11,12 @@ const ShareableResourceDescription = ({
   shortDescription,
   longDescription,
 }: ShareableResourceDescriptionProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <div className="flex-[3_3_0%] min-w-0">
       <h2 className="py-s txt-container-title truncate text-muted-foreground">
-        {t('Service.ShareableResources.Details.Overview')}
+        {t('Service_ShareableResources_Details_Overview')}
       </h2>
       <section className="rounded bg-elevation-background-layer-1 overflow-x-auto">
         <h3 className="p-l">{shortDescription}</h3>

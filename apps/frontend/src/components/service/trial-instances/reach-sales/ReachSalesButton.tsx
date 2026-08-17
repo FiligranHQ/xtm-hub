@@ -6,10 +6,10 @@ import { ArrowRightAltIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { Button, GradientButton } from '@filigran/ui/servers';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface ReachSalesButtonProps {
   variant: 'default' | 'gradient' | 'secondary';
   platformIdentifier: PlatformIdentifier;
@@ -21,7 +21,7 @@ export const ReachSalesButton = ({
   platformId,
   platformIdentifier,
 }: ReachSalesButtonProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [commitReachSalesMutation, isInFlight] =
     useMutation(ReachSalesMutation);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
@@ -38,8 +38,8 @@ export const ReachSalesButton = ({
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
       onCompleted() {
@@ -56,7 +56,7 @@ export const ReachSalesButton = ({
           className="bg-background dark:bg-none"
           onClick={() => setIsConfirmationDialogOpen(true)}
           disabled={isInFlight}>
-          {t('Service.Trials.ReachOutToSales')}
+          {t('Service_Trials_ReachOutToSales')}
         </GradientButton>
       );
     }
@@ -67,7 +67,7 @@ export const ReachSalesButton = ({
           onClick={() => setIsConfirmationDialogOpen(true)}
           variant="secondary"
           disabled={isInFlight}>
-          {t('Service.Trials.ReachOutToSales')}
+          {t('Service_Trials_ReachOutToSales')}
         </Button>
       );
     }
@@ -77,7 +77,7 @@ export const ReachSalesButton = ({
         onClick={() => setIsConfirmationDialogOpen(true)}
         className="ml-xl bg-background hover:bg-background text-[12px] px-2 py-0.5 min-h-0 h-auto"
         disabled={isInFlight}>
-        {t('Service.Trials.ReachOutToSales')}
+        {t('Service_Trials_ReachOutToSales')}
         <ArrowRightAltIcon className="ml-s size-4" />
       </Button>
     );
@@ -95,8 +95,8 @@ export const ReachSalesButton = ({
       <DialogInformative
         isOpen={isInformationDialogOpen}
         onClose={() => setIsInformationDialogOpen(false)}
-        title={t('Service.Trials.ReachOutToSalesSuccessTitle')}>
-        {t('Service.Trials.ReachOutToSalesSuccessMessage')}
+        title={t('Service_Trials_ReachOutToSalesSuccessTitle')}>
+        {t('Service_Trials_ReachOutToSalesSuccessMessage')}
       </DialogInformative>
     </>
   );

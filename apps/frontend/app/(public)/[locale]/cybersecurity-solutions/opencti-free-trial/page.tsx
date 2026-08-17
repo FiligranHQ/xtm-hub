@@ -32,9 +32,9 @@ export async function generateMetadata({
     baseUrl,
     locale,
     pathname: PATHNAME,
-    title: `${t('Display.opencti.Title')} | XTM Hub`,
-    description: t('Display.opencti.FreeTrialDescription'),
-    imageAlt: t('XTMPlatform.IllustrationAlt'),
+    title: `${t('Display_opencti_Title')} | XTM Hub`,
+    description: t('Display_opencti_FreeTrialDescription'),
+    imageAlt: t('XTMPlatform_IllustrationAlt'),
     imageUrl: `${baseUrl}/opencti_ecosystem.png`,
   });
 }
@@ -48,11 +48,11 @@ const Page = async ({
   const baseUrl = await getBaseUrl();
   const breadcrumbs = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${locale}`,
     },
     {
-      label: 'Service.Trials.OpenCTIPlatformBreadcrumb',
+      label: 'Service_Trials_OpenCTIPlatformBreadcrumb',
     },
   ];
   const t = await getTranslations();
@@ -60,8 +60,8 @@ const Page = async ({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: `${t('Service.Trials.Display.opencti.Title')} | XTM Hub`,
-    description: t('Service.Trials.Display.opencti.FreeTrialDescription'),
+    name: `${t('Service_Trials_Display_opencti_Title')} | XTM Hub`,
+    description: t('Service_Trials_Display_opencti_FreeTrialDescription'),
     url: `${baseUrl}${PATHNAME}`,
     image: `${baseUrl}/opencti_ecosystem.png`,
     publisher: buildFiligranOrganizationJsonLd(baseUrl),
@@ -82,7 +82,7 @@ const Page = async ({
               <Link
                 href="/redirect/create-free-trial"
                 prefetch={false}>
-                {t('Service.Trials.StartTrial')}
+                {t('Service_Trials_StartTrial')}
               </Link>
             </GradientButton>
           }

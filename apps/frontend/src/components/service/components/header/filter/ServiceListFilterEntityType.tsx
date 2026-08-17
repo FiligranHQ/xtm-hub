@@ -4,10 +4,10 @@ import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { ENTITY_TYPES } from '@/utils/shareable-resources/entity-type';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 export const ServiceListFilterEntityType = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { entityTypes, setEntityTypes, removeEntityTypes } =
     useServiceListLocalStorage(localStorageKey);
@@ -27,11 +27,11 @@ export const ServiceListFilterEntityType = () => {
     <LogicalMultiSelectFormField
       options={entityTypeOptions}
       initialValue={entityTypes}
-      placeholder={t('GenericActions.FilterEntityTypes')}
-      noResultString={t('Utils.NotFound')}
+      placeholder={t('GenericActions_FilterEntityTypes')}
+      noResultString={t('Utils_NotFound')}
       onValueChange={setEntityTypes}
       onRemove={removeEntityTypeFilter}
-      optionLabel={t('GenericActions.FilterEntityTypesLabel')}
+      optionLabel={t('GenericActions_FilterEntityTypesLabel')}
     />
   );
 };

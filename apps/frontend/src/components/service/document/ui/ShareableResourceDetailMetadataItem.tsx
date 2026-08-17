@@ -3,9 +3,8 @@ import { ShareableResourceDetailItem } from '@/components/service/document/ui/Sh
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { ReactNode, useMemo } from 'react';
-
 type Variant = 'text' | 'link';
 
 interface ShareableResourceDetailMetadataItemProps {
@@ -23,7 +22,7 @@ export const ShareableResourceDetailMetadataItem = ({
   translationMetadata,
   variant = 'text',
 }: ShareableResourceDetailMetadataItemProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const content = useMemo(() => {
     if (!docHasMetadata(documentData, metadataKey)) {
       return null;
@@ -46,7 +45,7 @@ export const ShareableResourceDetailMetadataItem = ({
   return (
     <ShareableResourceDetailItem
       label={t(
-        `Service.ShareableResources.Details.${translationKey}`,
+        `Service_ShareableResources_Details_${translationKey}`,
         translationMetadata
       )}>
       {content}

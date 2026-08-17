@@ -4,11 +4,11 @@ import { ManagedScripts } from '@/components/cookie-consent/ManagedScripts';
 import { APP_PATH } from '@/utils/path/constant';
 import { geologica, ibmPlexSans } from '@app/font';
 import { Toaster } from '@filigran/ui';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTolgee, useTranslate } from '@tolgee/react';
 import { ThemeProvider } from 'next-themes';
 import Head from 'next/head';
 import { usePathname } from 'next/navigation';
-import * as React from 'react';
+import * as React from 'react'; // Component interface
 
 // Component interface
 interface AppProps {
@@ -25,9 +25,9 @@ const isThemeSwitchablePath = (pathname: string) => {
 
 // Component
 const AppContext = ({ children }: AppProps) => {
-  const locale = useLocale();
+  const { language: locale } = useTolgee(['language']);
   const pathname = usePathname();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const forcedTheme = isThemeSwitchablePath(pathname) ? undefined : 'dark';
   return (
     <html
@@ -40,7 +40,7 @@ const AppContext = ({ children }: AppProps) => {
           href="/favicon.svg"
           type="image/svg+xml"
         />
-        <title>{t('App.Title')}</title>
+        <title>{t('App_Title')}</title>
         <meta
           name="viewport"
           content="initial-scale=1.0, width=device-width"

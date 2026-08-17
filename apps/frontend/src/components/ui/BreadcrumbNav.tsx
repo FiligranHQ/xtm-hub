@@ -8,9 +8,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Fragment } from 'react';
+
+import { useTranslate } from '@tolgee/react';
 
 interface BreadcrumbProps {
   value: BreadcrumbNavLink[];
@@ -24,12 +25,12 @@ export interface BreadcrumbNavLink {
 }
 
 export const BreadcrumbNav = ({ value }: BreadcrumbProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const renderLabel = ({ label, original, fallback }: BreadcrumbNavLink) => {
     if (original) {
       return label;
     }
-    if (fallback !== undefined && !t.has(label)) {
+    if (fallback !== undefined && !t(label)) {
       return fallback;
     }
     return t(label);

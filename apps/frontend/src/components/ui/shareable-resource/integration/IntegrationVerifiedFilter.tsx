@@ -5,13 +5,13 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 export const IntegrationVerifiedFilter = () => {
   const { verified, setVerified, removeVerified } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
   );
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { removeFilter } = useServiceListFilters();
   const removeVerifiedFilter = () => {
     removeVerified();
@@ -22,20 +22,20 @@ export const IntegrationVerifiedFilter = () => {
     <LogicalMultiSelectFormField
       options={[
         {
-          label: t('Service.OpenctiIntegrations.Filter.Verified.Verified'),
+          label: t('Service_OpenctiIntegrations_Filter_Verified_Verified'),
           value: 'true',
         },
         {
-          label: t('Service.OpenctiIntegrations.Filter.Verified.Unverified'),
+          label: t('Service_OpenctiIntegrations_Filter_Verified_Unverified'),
           value: 'false',
         },
       ]}
       initialValue={verified}
-      placeholder={t('Service.OpenctiIntegrations.Filter.Verified.Placeholder')}
-      noResultString={t('Utils.NotFound')}
+      placeholder={t('Service_OpenctiIntegrations_Filter_Verified_Placeholder')}
+      noResultString={t('Utils_NotFound')}
       onValueChange={setVerified}
       onRemove={removeVerifiedFilter}
-      optionLabel={t('Service.OpenctiIntegrations.Filter.Verified.Label')}
+      optionLabel={t('Service_OpenctiIntegrations_Filter_Verified_Label')}
     />
   );
 };

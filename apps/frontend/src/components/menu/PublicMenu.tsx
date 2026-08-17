@@ -3,12 +3,12 @@ import { MenuFooter } from '@/components/menu/MenuFooter';
 import { MenuLogo } from '@/components/menu/MenuLogo';
 import PublicNavigation from '@/components/menu/navigation/public/PublicNavigation';
 import { cn } from '@/lib/utils';
-import { useLocale } from 'next-intl';
+import { useTolgee } from '@tolgee/react';
 import { useCallback } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
 const PublicMenu = () => {
-  const locale = useLocale();
+  const { language: locale } = useTolgee(['language']);
   const [open, setOpen] = useLocalStorage<boolean>(
     'is-public-menu-open',
     true,

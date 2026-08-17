@@ -1,6 +1,5 @@
 import { RegistrationLayout } from '@/components/registration/Layout';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 interface RegisterStateSucceededProps {
   displayedIdentifier: string;
 }
@@ -8,15 +7,15 @@ interface RegisterStateSucceededProps {
 export const RegisterStateSucceeded = ({
   displayedIdentifier,
 }: RegisterStateSucceededProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <RegistrationLayout>
       <h1>
-        {t(`Register.Succeeded.Title`, {
+        {t(`Register_Succeeded_Title`, {
           platformIdentifier: displayedIdentifier,
         })}
       </h1>
-      <p>{t(`Register.Succeeded.Description`)}</p>
+      <p>{t(`Register_Succeeded_Description`)}</p>
     </RegistrationLayout>
   );
 };

@@ -4,10 +4,10 @@ import UserWithCapabilitiesInOrganizationQueryGraphql, {
   userWithCapabilitiesInOrganizationQuery,
 } from '@generated/userWithCapabilitiesInOrganizationQuery.graphql';
 import { OrganizationCapability } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface RegisterStateMissingCapabilityProps {
   cancel: () => void;
   organizationId: string;
@@ -18,7 +18,7 @@ export const RegisterStateMissingCapability = ({
   cancel,
 }: RegisterStateMissingCapabilityProps) => {
   const { capability, displayedIdentifier } = useContext(RegistrationContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
   const capabilities = [OrganizationCapability.AdministrateOrganization];
   if (capability) {
     capabilities.push(capability);
@@ -38,16 +38,16 @@ export const RegisterStateMissingCapability = ({
   return (
     <RegistrationLayout cancel={cancel}>
       <h1>
-        {t(`Register.Error.Capability.Title`, {
+        {t(`Register_Error_Capability_Title`, {
           capability: capability?.replaceAll('_', ' ') ?? '',
         })}
       </h1>
       <p>
-        {t(`Register.Error.Capability.Description`, {
+        {t(`Register_Error_Capability_Description`, {
           platformIdentifier: displayedIdentifier,
         })}
       </p>
-      <p>{t(`Register.Error.Capability.AdminListTitle`)}</p>
+      <p>{t(`Register_Error_Capability_AdminListTitle`)}</p>
       <ul className="list-disc ml-l">
         {usersWithCapabilitiesInOrganization.map((administrator) => (
           <li key={administrator.id}>

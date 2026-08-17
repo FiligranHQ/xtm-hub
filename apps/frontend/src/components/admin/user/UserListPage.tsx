@@ -12,11 +12,10 @@ import useAdminPath from '@/hooks/use-admin-path';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { userPendingListQuery } from '@generated/userPendingListQuery.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useSearchParams } from 'next/navigation';
 import { createContext, useContext, useState } from 'react';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
-
 interface UserListPageProps {
   organization?: string;
 }
@@ -40,7 +39,7 @@ const UserListContext = createContext<
 >(undefined);
 
 const UserListPage = ({ organization }: UserListPageProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const isAdminPath = useAdminPath();
   const { me } = useContext(PortalContext);
 
@@ -66,7 +65,7 @@ const UserListPage = ({ organization }: UserListPageProps) => {
   return (
     <UserListContext.Provider value={{ connectionID, setConnectionId }}>
       <div className="flex justify-between">
-        <h1>{t('UserListPage.Title')}</h1>
+        <h1>{t('UserListPage_Title')}</h1>
         <div className="col-md-6 text-right">
           {isAdminPath ? <AdminAddUser /> : <AddUser />}
         </div>
@@ -81,12 +80,12 @@ const UserListPage = ({ organization }: UserListPageProps) => {
           className="">
           <TabsList>
             <TabsTrigger value="users">
-              {t('UserListPage.TabTitle')}
+              {t('UserListPage_TabTitle')}
             </TabsTrigger>
             <TabsTrigger
               value="pendingUsers"
               disabled={!nbPendingUsers}>
-              {t('PendingUserListPage.TabTitle', {
+              {t('PendingUserListPage_TabTitle', {
                 usersCount: nbPendingUsers,
               })}
             </TabsTrigger>

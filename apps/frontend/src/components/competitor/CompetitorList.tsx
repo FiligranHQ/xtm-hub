@@ -9,7 +9,6 @@ import {
   SortingState,
   Updater,
 } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import {
   readInlineData,
@@ -44,8 +43,9 @@ import {
 } from '@generated/competitor_fragment.graphql';
 import { competitor_list_fragment$key } from '@generated/competitor_list_fragment.graphql';
 
+import { useTranslate } from '@tolgee/react';
 const CompetitorList = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [editRow, setEditRow] = useState<competitor_fragment$data | undefined>(
     undefined
   );
@@ -96,7 +96,7 @@ const CompetitorList = () => {
       {
         accessorKey: 'name',
         id: 'name',
-        header: t('CompetitorListPage.Name'),
+        header: t('CompetitorListPage_Name'),
         cell: ({ row }) => (
           <span className="truncate">{row.original.name}</span>
         ),
@@ -104,7 +104,7 @@ const CompetitorList = () => {
       {
         accessorKey: 'tier',
         id: 'tier',
-        header: t('CompetitorListPage.Tier'),
+        header: t('CompetitorListPage_Tier'),
         cell: ({ row }) => (
           <span className="truncate">
             {formatTier(row.original.tier as CompetitorTier)}
@@ -114,7 +114,7 @@ const CompetitorList = () => {
       {
         accessorKey: 'domain',
         id: 'domain',
-        header: t('CompetitorListPage.Domain'),
+        header: t('CompetitorListPage_Domain'),
         cell: ({ row }) => (
           <span className="truncate">{row.original.domain}</span>
         ),
@@ -133,11 +133,11 @@ const CompetitorList = () => {
                 setOpenEdit(true);
               }}>
               <EditIcon className="h-4 w-4" />
-              <span className="sr-only">{t('CompetitorListPage.Edit')}</span>
+              <span className="sr-only">{t('CompetitorListPage_Edit')}</span>
             </Button>
             <AlertDialogComponent
-              AlertTitle={t('CompetitorListPage.DeleteDialog.Title')}
-              actionButtonText={t('CompetitorListPage.Delete')}
+              AlertTitle={t('CompetitorListPage_DeleteDialog_Title')}
+              actionButtonText={t('CompetitorListPage_Delete')}
               variantName="destructive"
               triggerElement={
                 <Button
@@ -145,7 +145,7 @@ const CompetitorList = () => {
                   size="sm">
                   <DeleteIcon className="h-4 w-4" />
                   <span className="sr-only">
-                    {t('CompetitorListPage.Delete')}
+                    {t('CompetitorListPage_Delete')}
                   </span>
                 </Button>
               }
@@ -158,7 +158,7 @@ const CompetitorList = () => {
                   },
                 });
               }}>
-              {t('CompetitorListPage.DeleteDialog.Text', {
+              {t('CompetitorListPage_DeleteDialog_Text', {
                 name: row.original.name,
               })}
             </AlertDialogComponent>
@@ -249,7 +249,7 @@ const CompetitorList = () => {
           <div className="flex w-full items-center justify-end gap-s">
             <DataTableHeadBarOptions />
             <Button onClick={() => setOpenAdd(true)}>
-              {t('CompetitorListPage.AddCompetitor')}
+              {t('CompetitorListPage_AddCompetitor')}
             </Button>
           </div>
         }

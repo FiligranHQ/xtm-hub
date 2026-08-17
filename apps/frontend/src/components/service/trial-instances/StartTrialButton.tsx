@@ -1,8 +1,6 @@
 'use client';
-
 import { ArrowRightAltIcon } from '@filigran/icon';
 import { Button, GradientButton } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
@@ -39,6 +37,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface StartTrialButtonProps {
   openForm?: boolean;
   platformIdentifier?: PlatformIdentifier;
@@ -51,7 +50,7 @@ export const StartTrialButton = ({
   platformIdentifier = PlatformIdentifier.Opencti,
   source,
 }: StartTrialButtonProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const environment = useRelayEnvironment();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -64,7 +63,7 @@ export const StartTrialButton = ({
         /* eslint-disable-next-line xtm-hub-theme-rules/no-fixed-tailwind-color */
         className="ml-xl bg-white hover:bg-white text-[12px] px-2 py-0.5 min-h-0 h-auto"
         disabled>
-        {t('Service.Trials.StartTrial')}
+        {t('Service_Trials_StartTrial')}
         <ArrowRightAltIcon className="ml-s size-4" />
       </Button>
     );
@@ -114,8 +113,8 @@ export const StartTrialButton = ({
         invalidatePrivateNavigationQueries(queryClient);
         setOpenSheet(false);
         toast({
-          title: t('Utils.Success'),
-          description: t('Service.Trials.Form.FormRequested'),
+          title: t('Utils_Success'),
+          description: t('Service_Trials_Form_FormRequested'),
         });
 
         const serviceInstanceId =
@@ -129,8 +128,8 @@ export const StartTrialButton = ({
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -138,13 +137,13 @@ export const StartTrialButton = ({
 
   return (
     <SheetWithPreventingDialog
-      title={t('Service.Trials.StartTrial')}
+      title={t('Service_Trials_StartTrial')}
       setOpen={setOpenSheet}
       open={openSheet}
       trigger={
         availableTrials.length > 0 && (
           <GradientButton className="flex items-center">
-            {t('Service.Trials.StartTrial')}
+            {t('Service_Trials_StartTrial')}
           </GradientButton>
         )
       }>

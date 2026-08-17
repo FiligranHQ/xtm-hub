@@ -4,11 +4,10 @@ import { userAdminFormSchema } from '@/components/admin/user/forms/user-form.sch
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { Button, useToast } from '@filigran/ui';
 import { AdminAddUserMutation as AdminAddUserMutationType } from '@generated/AdminAddUserMutation.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
-
 export const AdminAddUserMutation = graphql`
   mutation AdminAddUserMutation(
     $input: AdminAddUserInput!
@@ -22,7 +21,7 @@ export const AdminAddUserMutation = graphql`
 `;
 
 export const AdminAddUser = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [openSheet, setOpenSheet] = useState(false);
 
   const { toast } = useToast();
@@ -42,15 +41,15 @@ export const AdminAddUser = () => {
       onCompleted: () => {
         setOpenSheet(false);
         toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserCreated', { email: values.email }),
+          title: t('Utils_Success'),
+          description: t('UserActions_UserCreated', { email: values.email }),
         });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -58,10 +57,10 @@ export const AdminAddUser = () => {
 
   return (
     <SheetWithPreventingDialog
-      title={t('UserActions.AddUser')}
+      title={t('UserActions_AddUser')}
       setOpen={setOpenSheet}
       open={openSheet}
-      trigger={<Button>{t('UserActions.AddUser')}</Button>}>
+      trigger={<Button>{t('UserActions_AddUser')}</Button>}>
       <UserAdminForm handleSubmit={handleSubmit} />
     </SheetWithPreventingDialog>
   );

@@ -9,8 +9,8 @@ import {
   TooltipTrigger,
 } from '@filigran/ui/clients';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 interface ShareableResourceCardVersionProps {
   requiredProductVersion?: string | null;
   product_version?: string | null;
@@ -22,7 +22,7 @@ export const ShareableResourceCardVersion = ({
   product_version,
   className,
 }: ShareableResourceCardVersionProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifier.Opencti, {
     onlyActive: true,
   });
@@ -43,7 +43,7 @@ export const ShareableResourceCardVersion = ({
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            {t(`Service.Connectors.Incompatible`, {
+            {t(`Service_Connectors_Incompatible`, {
               platformToBeUpdated,
               count: incompatiblePlatformsCount,
             })}

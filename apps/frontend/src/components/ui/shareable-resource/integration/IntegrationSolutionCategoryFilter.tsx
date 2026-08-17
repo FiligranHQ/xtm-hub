@@ -5,11 +5,11 @@ import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { FiligranProduct } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 export const IntegrationSolutionCategoryFilter = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const categories = useSolutionCategories(FiligranProduct.Opencti);
   const options = useMemo(
     () =>
@@ -38,13 +38,13 @@ export const IntegrationSolutionCategoryFilter = () => {
       options={options}
       initialValue={solutionCategories}
       placeholder={t(
-        'Service.OpenctiIntegrations.Filter.SolutionCategory.Placeholder'
+        'Service_OpenctiIntegrations_Filter_SolutionCategory_Placeholder'
       )}
-      noResultString={t('Utils.NotFound')}
+      noResultString={t('Utils_NotFound')}
       onValueChange={setSolutionCategories}
       onRemove={removeSolutionCategoryFilter}
       optionLabel={t(
-        'Service.OpenctiIntegrations.Filter.SolutionCategory.Label'
+        'Service_OpenctiIntegrations_Filter_SolutionCategory_Label'
       )}
     />
   );

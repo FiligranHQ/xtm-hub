@@ -25,7 +25,6 @@ import { newsFeedList_fragment$key } from '@generated/newsFeedList_fragment.grap
 import { newsFeedListQuery } from '@generated/newsFeedListQuery.graphql';
 import { NewsFeedItemMetadataKey } from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import {
@@ -35,6 +34,7 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 const DEFAULT_PAGE_SIZE = 25;
 
 const getUrlPath = (item: newsFeedItem_fragment$data): string | undefined =>
@@ -48,7 +48,7 @@ const NEWS_FEED_TYPE_TO_SERVICE_SLUG: Record<NewsFeedItemType, ServiceSlug> = {
 };
 
 const NewsFeedList = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<
     newsFeedItem_fragment$data | undefined
@@ -108,7 +108,7 @@ const NewsFeedList = () => {
       variables: { id: item.id },
       onCompleted: () => {
         toast({
-          title: t('NewsFeedAdminPage.DeleteSuccess', { title: item.title }),
+          title: t('NewsFeedAdminPage_DeleteSuccess', { title: item.title }),
         });
         setDeleteTarget(undefined);
         handleRefetchData();
@@ -116,7 +116,7 @@ const NewsFeedList = () => {
       onError: () => {
         toast({
           variant: 'destructive',
-          title: t('NewsFeedAdminPage.DeleteError'),
+          title: t('NewsFeedAdminPage_DeleteError'),
         });
         setDeleteTarget(undefined);
       },
@@ -128,7 +128,7 @@ const NewsFeedList = () => {
       {
         accessorKey: 'title',
         id: 'title',
-        header: t('NewsFeedAdminPage.Title'),
+        header: t('NewsFeedAdminPage_Title'),
         cell: ({ row }) => (
           <span className="truncate">{row.original.title}</span>
         ),
@@ -136,7 +136,7 @@ const NewsFeedList = () => {
       {
         accessorKey: 'type',
         id: 'library',
-        header: t('NewsFeedAdminPage.Library'),
+        header: t('NewsFeedAdminPage_Library'),
         cell: ({ row }) => {
           const slug = NEWS_FEED_TYPE_TO_SERVICE_SLUG[row.original.type];
           return <span>{localizedCardName({ slug, name: slug }, t)}</span>;
@@ -145,7 +145,7 @@ const NewsFeedList = () => {
       {
         accessorKey: 'creation_date',
         id: 'creation_date',
-        header: t('NewsFeedAdminPage.CreationDate'),
+        header: t('NewsFeedAdminPage_CreationDate'),
         cell: ({ row }) => (
           <span>{formatDate(row.original.creation_date)}</span>
         ),
@@ -153,7 +153,7 @@ const NewsFeedList = () => {
       {
         accessorKey: 'tags',
         id: 'tags',
-        header: t('NewsFeedAdminPage.Tags'),
+        header: t('NewsFeedAdminPage_Tags'),
         cell: ({ row }) => (
           <BadgeOverflowCounter
             badges={row.original.tags.map((tag) => ({
@@ -166,11 +166,11 @@ const NewsFeedList = () => {
       {
         accessorKey: 'is_deleted',
         id: 'is_deleted',
-        header: t('NewsFeedAdminPage.IsDeleted'),
+        header: t('NewsFeedAdminPage_IsDeleted'),
         cell: ({ row }) =>
           row.original.is_deleted ? (
             <Badge variant="destructive">
-              {t('NewsFeedAdminPage.IsDeletedYes')}
+              {t('NewsFeedAdminPage_IsDeletedYes')}
             </Badge>
           ) : null,
       },
@@ -189,11 +189,11 @@ const NewsFeedList = () => {
                 icon={
                   <>
                     <MoreVertIcon className="h-4 w-4 text-primary" />
-                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                    <span className="sr-only">{t('Utils_OpenMenu')}</span>
                   </>
                 }>
                 <IconActionsItem onClick={() => setDeleteTarget(row.original)}>
-                  {t('NewsFeedAdminPage.Delete')}
+                  {t('NewsFeedAdminPage_Delete')}
                 </IconActionsItem>
               </IconActions>
             </div>
@@ -226,12 +226,12 @@ const NewsFeedList = () => {
         <AlertDialogComponent
           isOpen={!!deleteTarget}
           onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-          AlertTitle={t('NewsFeedAdminPage.DeleteDialog.Title')}
-          actionButtonText={t('NewsFeedAdminPage.DeleteDialog.Confirm')}
+          AlertTitle={t('NewsFeedAdminPage_DeleteDialog_Title')}
+          actionButtonText={t('NewsFeedAdminPage_DeleteDialog_Confirm')}
           variantName="destructive"
           onClickContinue={() => handleDelete(deleteTarget)}
           continueButtonDisabled={isDeleteInFlight}>
-          {t('NewsFeedAdminPage.DeleteDialog.Text', {
+          {t('NewsFeedAdminPage_DeleteDialog_Text', {
             title: deleteTarget.title,
           })}
         </AlertDialogComponent>

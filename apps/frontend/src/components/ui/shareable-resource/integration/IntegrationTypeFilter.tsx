@@ -12,9 +12,9 @@ import {
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
 import { FeatureFlag, IntegrationType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface IntegrationTypeFilterProps {
   isSolutionCategoriesEnabled?: boolean;
 }
@@ -32,11 +32,11 @@ export const IntegrationTypeFilter = ({
   const shouldHideSubtypes =
     isSolutionCategoriesEnabled ?? isSolutionCategoriesFeatureEnabled;
   const { removeFilter } = useServiceListFilters();
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const options = useMemo(() => {
     const allOptions = Object.values(IntegrationType).map((feedType) => ({
-      label: t(`Service.OpenctiIntegrations.Type.${feedType}`),
+      label: t(`Service_OpenctiIntegrations_Type_${feedType}`),
       value: feedType.toString(),
       children: shouldHideSubtypes
         ? undefined
@@ -68,10 +68,10 @@ export const IntegrationTypeFilter = ({
     <LogicalMultiSelectFormField
       options={options}
       initialValue={integrationTypes}
-      placeholder={t('Service.OpenctiIntegrations.Filter.Type.Placeholder')}
-      noResultString={t('Utils.NotFound')}
+      placeholder={t('Service_OpenctiIntegrations_Filter_Type_Placeholder')}
+      noResultString={t('Utils_NotFound')}
       onValueChange={setIntegrationTypes}
-      optionLabel={t('Service.OpenctiIntegrations.Filter.Type.Label')}
+      optionLabel={t('Service_OpenctiIntegrations_Filter_Type_Label')}
       onRemove={removeIntegrationFilter}
     />
   );

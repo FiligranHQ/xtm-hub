@@ -11,11 +11,10 @@ import {
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentImageType, IntegrationType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-
 const csvFeedFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
@@ -43,7 +42,7 @@ interface CsvFeedFormProps {
 }
 
 export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
@@ -152,7 +151,7 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
           uploader_organization_id,
           document: isCreation
             ? {
-                label: t('Service.Form.SelectJSONFile'),
+                label: t('Service_Form_SelectJSONFile'),
                 fieldType: 'file',
                 inputProps: {
                   accept: 'application/json',

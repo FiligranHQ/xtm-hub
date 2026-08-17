@@ -1,8 +1,7 @@
 import { useOrganizationCapabilities } from '@/hooks/use-organization-capabilities';
 import { MultiSelectFormField } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useMemo } from 'react';
-
 interface CapabilityMultiSelectProps {
   value: string[];
   onChange: () => void;
@@ -12,7 +11,7 @@ export const CapabilityMultiSelect = ({
   value,
   onChange,
 }: CapabilityMultiSelectProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const organizationCapabilities = useOrganizationCapabilities();
 
   const options = useMemo(() => {
@@ -24,12 +23,12 @@ export const CapabilityMultiSelect = ({
 
   return (
     <MultiSelectFormField
-      noResultString={t('Utils.NotFound')}
+      noResultString={t('Utils_NotFound')}
       popoverContentClassName="bg-elevation-background-layer-3"
       options={options}
       defaultValue={value}
       onValueChange={onChange}
-      placeholder={t('UserForm.OrganizationsCapabilitiesPlaceholder')}
+      placeholder={t('UserForm_OrganizationsCapabilitiesPlaceholder')}
       variant="inverted"
     />
   );

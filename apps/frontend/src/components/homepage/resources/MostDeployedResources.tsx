@@ -1,13 +1,13 @@
 import HomepageResourceList from '@/components/homepage/resources/HomepageResourceList';
 import { PublicLocale } from '@/i18n/config';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
+import { getTranslate } from '@/tolgee/server';
 import {
   MostDeployedDocumentsQueryDocument,
   MostDeployedDocumentsQueryQuery,
   MostDeployedDocumentsQueryQueryVariables,
   PlatformIdentifier,
 } from '@graphql/generated';
-import { getTranslations } from 'next-intl/server';
 
 const MOST_DEPLOYED_LIMIT = 8;
 
@@ -22,7 +22,7 @@ const MostDeployedResources = async ({
   isAuthenticated = false,
   paramsLocale,
 }: MostDeployedResourcesProps) => {
-  const t = await getTranslations('HomePage.XtmMostDeployedResources');
+  const t = await getTranslate();
 
   const data = await serverGraphqlFetch<
     MostDeployedDocumentsQueryQuery,
@@ -38,7 +38,7 @@ const MostDeployedResources = async ({
 
   return (
     <HomepageResourceList
-      title={t('Title')}
+      title={t('HomePage_XtmMostDeployedResources_Title')}
       documents={data.mostDeployedDocuments}
       isAuthenticated={isAuthenticated}
       paramsLocale={paramsLocale}

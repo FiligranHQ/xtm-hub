@@ -21,12 +21,12 @@ import {
 } from '@filigran/ui';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface UserUpdateFormProps {
   user: UserList_fragment$data;
   callback: () => void;
@@ -35,7 +35,7 @@ interface UserUpdateFormProps {
 export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const { me } = useContext(PortalContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
   const isAdminPath = useAdminPath();
 
   const userOrg = user.organization_capabilities?.find(
@@ -70,16 +70,16 @@ export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
       },
       onCompleted: () => {
         toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserUpdated', { email: user.email }),
+          title: t('Utils_Success'),
+          description: t('UserActions_UserUpdated', { email: user.email }),
         });
         callback();
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -99,7 +99,7 @@ export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
           name="capabilities"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.OrganizationCapabilities')}</FormLabel>
+              <FormLabel>{t('UserForm_OrganizationCapabilities')}</FormLabel>
               <FormControl>
                 <CapabilityMultiSelect
                   value={field.value}
@@ -118,12 +118,12 @@ export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
               variant="secondary"
               type="button"
               onClick={(e) => handleCloseSheet(e)}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
             <Button
               disabled={!form.formState.isValid}
               type="submit">
-              {t('Utils.Validate')}
+              {t('Utils_Validate')}
             </Button>
           </div>
         </SheetFooter>

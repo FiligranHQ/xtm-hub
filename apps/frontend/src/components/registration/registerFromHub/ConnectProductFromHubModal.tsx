@@ -1,5 +1,4 @@
 'use client';
-
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { Administratorslist } from '@/components/registration/registerFromHub/Administratorslist';
 import ConnectFromHubForm, {
@@ -12,11 +11,12 @@ import {
   OrganizationCapability,
   useConnectProductOrganizationAdminsQuery,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
+
+import { useTranslate } from '@tolgee/react';
 
 export enum ConnectProductOrigin {
   library = 'library',
@@ -44,7 +44,7 @@ const ConnectProductFromHubModal = ({
   onOpenChange,
   origin,
 }: ConnectProductProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
   const router = useRouter();
   const organizationId = me?.selected_organization_id ?? '';
@@ -73,19 +73,19 @@ const ConnectProductFromHubModal = ({
     }
   }, [isOpen, me, router]);
 
-  const allowedMessageTitle = t('Register.ConnectFromHub.ConnectProduct');
-  const allowedMessage = t('Register.ConnectFromHub.RedirectionMessage');
+  const allowedMessageTitle = t('Register_ConnectFromHub_ConnectProduct');
+  const allowedMessage = t('Register_ConnectFromHub_RedirectionMessage');
   const allowedMessageDescription =
     origin === ConnectProductOrigin.library
-      ? `${t('Register.ConnectFromHub.ConnectedProductSentence')}. \n\n ${allowedMessage}`
+      ? `${t('Register_ConnectFromHub_ConnectedProductSentence')}. \n\n ${allowedMessage}`
       : allowedMessage;
-  const deniedMessage = t('Register.ConnectFromHub.PermissionRequired');
-  const notAllowedMessage = t('Register.ConnectFromHub.NotAllowedMessage', {
+  const deniedMessage = t('Register_ConnectFromHub_PermissionRequired');
+  const notAllowedMessage = t('Register_ConnectFromHub_NotAllowedMessage', {
     count: data?.usersWithCapabilitiesInOrganization?.length ?? 0,
   });
   const deniedMessageDescription =
     origin === ConnectProductOrigin.library
-      ? `${t('Register.ConnectFromHub.ConnectedProductSentence')}. \n\n ${notAllowedMessage}`
+      ? `${t('Register_ConnectFromHub_ConnectedProductSentence')}. \n\n ${notAllowedMessage}`
       : notAllowedMessage;
   const administratorsEmails =
     data?.usersWithCapabilitiesInOrganization?.map((user) => user.email) ?? [];
@@ -135,7 +135,7 @@ const ConnectProductFromHubModal = ({
       {canManageOrganization ? (
         <>
           <div className="text-content-body-compact whitespace-pre-line">
-            {t('Register.ConnectFromHub.MinimumVersionRequired', {
+            {t('Register_ConnectFromHub_MinimumVersionRequired', {
               openctiVersion: '7.260728.0',
               openaevVersion: '3.260729.0',
             })}

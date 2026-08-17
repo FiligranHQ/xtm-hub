@@ -3,8 +3,7 @@ import { IconActionsItem } from '@/components/ui/IconActions';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { Button } from '@filigran/ui';
 import { IntegrationType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 interface ServiceDeleteProps {
   userCanDelete?: boolean;
   onDelete?: () => void;
@@ -34,16 +33,16 @@ export const ServiceDelete = ({
   integrationType,
   type = 'button',
 }: ServiceDeleteProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const translationKey =
     INTEGRATION_TRANSLATION_KEY_MAP[integrationType] ?? 'CsvFeed';
 
   return (
     userCanDelete && (
       <AlertDialogComponent
-        actionButtonText={t('Utils.Delete')}
+        actionButtonText={t('Utils_Delete')}
         variantName={'destructive'}
-        AlertTitle={t(`Service.${translationKey}.DeleteService`, {
+        AlertTitle={t(`Service_${translationKey}_DeleteService`, {
           name: serviceName,
         })}
         triggerElement={
@@ -52,18 +51,18 @@ export const ServiceDelete = ({
               onSelect={(e) => {
                 e.preventDefault();
               }}>
-              {t('Utils.Delete')}
+              {t('Utils_Delete')}
             </IconActionsItem>
           ) : (
             <Button variant={'secondary-destructive'}>
-              {t('Utils.Delete')}
+              {t('Utils_Delete')}
             </Button>
           )
         }
         onClickContinue={() => {
           onDelete?.();
         }}>
-        {t(`Service.${translationKey}.SureDeleteService`, {
+        {t(`Service_${translationKey}_SureDeleteService`, {
           name: serviceName,
         })}
       </AlertDialogComponent>

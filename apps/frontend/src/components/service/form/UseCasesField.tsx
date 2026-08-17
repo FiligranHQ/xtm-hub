@@ -6,9 +6,9 @@ import {
   MultiSelectFormField,
 } from '@filigran/ui';
 import type { FiligranProduct } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceFormUseCasesFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   disabled?: boolean;
@@ -22,17 +22,17 @@ export const ServiceFormUseCasesField = ({
   product,
   required,
 }: ServiceFormUseCasesFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <FormItem>
       <FormLabel>
-        {t('Service.Form.UseCasesLabel')}
+        {t('Service_Form_UseCasesLabel')}
         {required ? <span className="text-sm text-destructive"> *</span> : null}
       </FormLabel>
       <FormControl>
         <MultiSelectFormField
           disabled={disabled}
-          noResultString={t('Utils.NotFound')}
+          noResultString={t('Utils_NotFound')}
           options={useUseCases({ product })}
           keyValue="id"
           keyLabel="name"
@@ -40,7 +40,7 @@ export const ServiceFormUseCasesField = ({
           value={field.value}
           onValueChange={field.onChange}
           popoverContentClassName="bg-elevation-background-layer-3"
-          placeholder={t('Service.Form.UseCasesPlaceholder')}
+          placeholder={t('Service_Form_UseCasesPlaceholder')}
           variant="inverted"
         />
       </FormControl>

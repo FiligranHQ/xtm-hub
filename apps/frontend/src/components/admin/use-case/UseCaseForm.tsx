@@ -14,10 +14,10 @@ import {
 } from '@filigran/ui';
 import { FiligranProduct } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 export interface UseCaseFormModel {
   id: string;
   name: string;
@@ -56,7 +56,7 @@ const UseCaseForm = ({
   handleSubmit: (values: z.infer<typeof useCaseFormSchema>) => void;
   onClose: () => void;
 }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const form = useForm<z.infer<typeof useCaseFormSchema>>({
     resolver: zodResolver(useCaseFormSchema),
@@ -77,10 +77,10 @@ const UseCaseForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UseCaseForm.Name')}</FormLabel>
+              <FormLabel>{t('UseCaseForm_Name')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('UseCaseForm.Name')}
+                  placeholder={t('UseCaseForm_Name')}
                   {...field}
                 />
               </FormControl>
@@ -92,7 +92,7 @@ const UseCaseForm = ({
           name="product"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UseCaseForm.Product')}</FormLabel>
+              <FormLabel>{t('UseCaseForm_Product')}</FormLabel>
               <FormControl>
                 <MultiSelectFormField
                   options={productTagOptions}
@@ -102,8 +102,8 @@ const UseCaseForm = ({
                   defaultValue={field.value}
                   value={field.value}
                   onValueChange={field.onChange}
-                  noResultString={t('Utils.NotFound')}
-                  placeholder={t('UseCaseForm.Product')}
+                  noResultString={t('Utils_NotFound')}
+                  placeholder={t('UseCaseForm_Product')}
                   variant="inverted"
                 />
               </FormControl>
@@ -116,7 +116,7 @@ const UseCaseForm = ({
           name="color"
           render={({ field: { value, onChange } }) => (
             <FormItem>
-              <FormLabel>{t('UseCaseForm.Color')}</FormLabel>
+              <FormLabel>{t('UseCaseForm_Color')}</FormLabel>
               <ColorPicker
                 value={value ?? ''}
                 onChange={onChange}
@@ -128,16 +128,16 @@ const UseCaseForm = ({
         <SheetFooter className={useCase ? 'sm:justify-between pb-0' : 'pt-2'}>
           {useCase && (
             <AlertDialogComponent
-              AlertTitle={t('MenuActions.Delete')}
-              actionButtonText={t('MenuActions.Delete')}
+              AlertTitle={t('MenuActions_Delete')}
+              actionButtonText={t('MenuActions_Delete')}
               variantName={'destructive'}
               triggerElement={
                 <Button variant="secondary-destructive">
-                  {t('MenuActions.Delete')}
+                  {t('MenuActions_Delete')}
                 </Button>
               }
               onClickContinue={() => handleDelete!()}>
-              {t('DeleteUseCaseDialog.TextDeleteUseCase', {
+              {t('DeleteUseCaseDialog_TextDeleteUseCase', {
                 name: useCase.name,
               })}
             </AlertDialogComponent>
@@ -147,12 +147,12 @@ const UseCaseForm = ({
               variant="secondary"
               type="button"
               onClick={onClose}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
             <Button
               disabled={!form.formState.isDirty}
               type="submit">
-              {t('Utils.Validate')}
+              {t('Utils_Validate')}
             </Button>
           </div>
         </SheetFooter>

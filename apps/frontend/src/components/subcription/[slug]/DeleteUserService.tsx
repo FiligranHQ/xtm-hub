@@ -2,9 +2,8 @@ import { UserServiceDeleteMutation } from '@/components/service/user_service.gra
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { userServiceDeleteMutation } from '@generated/userServiceDeleteMutation.graphql';
 import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useMutation } from 'react-relay';
-
 interface DeleteUserServiceProps {
   userServices: userServices_fragment$data[];
   isOpen: boolean;
@@ -20,7 +19,7 @@ export const DeleteUserService = ({
   connectionId,
   onDeleted,
 }: DeleteUserServiceProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [commitUserServiceDeletingMutation] =
     useMutation<userServiceDeleteMutation>(UserServiceDeleteMutation);
 
@@ -52,17 +51,17 @@ export const DeleteUserService = ({
   return (
     <AlertDialogComponent
       key={`delete-${userServices.map((userService) => userService.id).join('-')}`}
-      AlertTitle={t('Service.Management.RemoveAccess')}
-      actionButtonText={t('Service.Management.RemoveAccess')}
+      AlertTitle={t('Service_Management_RemoveAccess')}
+      actionButtonText={t('Service_Management_RemoveAccess')}
       variantName={'destructive'}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       onClickContinue={handleConfirmDelete}>
       {userServices.length > 1
-        ? t('Service.Management.AreYouSureRemoveUsersAccess', {
+        ? t('Service_Management_AreYouSureRemoveUsersAccess', {
             count: userServices.length,
           })
-        : t('Service.Management.AreYouSureRemoveAccess', {
+        : t('Service_Management_AreYouSureRemoveAccess', {
             firstname: userServices[0]?.user?.first_name ?? '',
             lastname: userServices[0]?.user?.last_name ?? '',
           })}

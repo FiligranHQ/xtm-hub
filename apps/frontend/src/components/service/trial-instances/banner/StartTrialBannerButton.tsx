@@ -1,8 +1,6 @@
 'use client';
-
 import { ArrowRightAltIcon, KeyboardArrowRightIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
@@ -46,11 +44,12 @@ import {
 } from '@graphql/generated';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { z } from 'zod';
+import { z } from 'zod'; // Component
 
+import { useTranslate } from '@tolgee/react';
 // Component
 export const StartTrialBannerButton = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const environment = useRelayEnvironment();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -66,7 +65,7 @@ export const StartTrialBannerButton = () => {
         /* eslint-disable-next-line xtm-hub-theme-rules/no-fixed-tailwind-color */
         className="ml-xl bg-white text-black text-[12px] px-2 py-0.5 min-h-0 h-auto"
         disabled>
-        {t('Service.Trials.StartTrial')}
+        {t('Service_Trials_StartTrial')}
         <KeyboardArrowRightIcon className="ml-s size-4" />
       </Button>
     );
@@ -113,8 +112,8 @@ export const StartTrialBannerButton = () => {
       onCompleted: (response) => {
         invalidatePrivateNavigationQueries(queryClient);
         toast({
-          title: t('Utils.Success'),
-          description: t('Service.Trials.Form.FormRequested'),
+          title: t('Utils_Success'),
+          description: t('Service_Trials_Form_FormRequested'),
         });
 
         const serviceInstanceId =
@@ -128,8 +127,8 @@ export const StartTrialBannerButton = () => {
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -158,7 +157,7 @@ export const StartTrialBannerButton = () => {
   };
   return (
     <SheetWithPreventingDialog
-      title={t('Service.Trials.StartTrialWithName', {
+      title={t('Service_Trials_StartTrialWithName', {
         platformName: PlatformMetadataMapping[platformIdentifier].name,
       })}
       setOpen={setOpenSheet}
@@ -174,7 +173,7 @@ export const StartTrialBannerButton = () => {
                   onClick={() => setOpenSheet(true)}
                   /* eslint-disable-next-line xtm-hub-theme-rules/no-fixed-tailwind-color */
                   className="bg-white text-black text-[12px] px-2 py-0.5 min-h-0 h-auto">
-                  {t('Service.Trials.StartTrial')}
+                  {t('Service_Trials_StartTrial')}
                   <div
                     className={`ml-s inline-flex transition-transform ${
                       menuOpen ? 'rotate-90' : 'rotate-0'
@@ -201,7 +200,7 @@ export const StartTrialBannerButton = () => {
             }}
             /* eslint-disable-next-line xtm-hub-theme-rules/no-fixed-tailwind-color */
             className="bg-white text-black text-[12px] px-s py-0.5 min-h-0 h-auto">
-            {t('Service.Trials.StartTrial')}
+            {t('Service_Trials_StartTrial')}
             <ArrowRightAltIcon className="ml-s size-4" />
           </Button>
         )

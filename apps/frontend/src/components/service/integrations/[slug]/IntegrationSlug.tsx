@@ -46,16 +46,16 @@ const IntegrationSlug = ({
 
   const breadcrumbValue = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${APP_PATH}`,
     },
     {
-      label: `Service.Cards.${serviceInstance.slug}.Name`,
+      label: `Service_Cards_${serviceInstance.slug}_Name`,
       href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       fallback: serviceInstance.name,
     },
     {
-      label: `Service.Documents.${documentData!.slug}.Name`,
+      label: `Service_Documents_${documentData!.slug}_Name`,
       fallback: documentData!.name!,
     },
   ];

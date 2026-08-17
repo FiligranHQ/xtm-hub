@@ -18,9 +18,8 @@ import {
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { z } from 'zod';
-
 interface ChoosePlatformFormProps {
   documentData: documentItem_fragment$data;
   platforms: useRegisteredPlatformsFragment$data[];
@@ -44,13 +43,13 @@ const ChoosePlatformForm = ({
   requiredProductVersion,
   requiresEe,
 }: ChoosePlatformFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <div className="flex flex-col h-full justify-between gap-m">
       <div className="space-y-m">
         <h1>
-          {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
+          {t('Service_ShareableResources_Deploy_DeployResourceDescription', {
             resourceName: documentData.name ?? '',
             resourceType:
               SHAREABLE_RESOURCE_TYPE_NAME_MAPPING[
@@ -59,7 +58,7 @@ const ChoosePlatformForm = ({
           })}
         </h1>
         <p>
-          {t('Service.ShareableResources.Deploy.DeployQuestionTag', {
+          {t('Service_ShareableResources_Deploy_DeployQuestionTag', {
             platformType: translatedPlatformIdentifier,
           })}
         </p>
@@ -121,11 +120,11 @@ const ChoosePlatformForm = ({
                             <p>
                               {isEeBlocked
                                 ? t(
-                                    'Service.ShareableResources.Deploy.EE.PlatformRequiresEE',
+                                    'Service_ShareableResources_Deploy_EE_PlatformRequiresEE',
                                     { platformTitle: platform.title }
                                   )
                                 : t(
-                                    'Service.ShareableResources.Deploy.DeployIncompatibleVersion',
+                                    'Service_ShareableResources_Deploy_DeployIncompatibleVersion',
                                     { platformTitle: platform.title }
                                   )}
                             </p>
@@ -147,14 +146,14 @@ const ChoosePlatformForm = ({
             onClick={() => {
               setIsOpen(false);
             }}>
-            {t('Utils.Cancel')}
+            {t('Utils_Cancel')}
           </Button>
 
           <Button
             onClick={() => {
               setIsOpen(false);
             }}>
-            {t('Utils.Continue')}
+            {t('Utils_Continue')}
           </Button>
         </div>
       </AutoForm>

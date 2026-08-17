@@ -25,11 +25,11 @@ import {
 } from '@generated/UserList_fragment.graphql';
 import { UserListQuery$variables } from '@generated/UserListQuery.graphql';
 import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { graphql, readInlineData, useSubscription } from 'react-relay';
-import { useDebounceCallback } from 'usehooks-ts';
+import { useDebounceCallback } from 'usehooks-ts'; // Configuration or Preloader Query
 
+import { useTranslate } from '@tolgee/react';
 // Configuration or Preloader Query
 export const UserListQuery = graphql`
   query UserListQuery(
@@ -93,7 +93,7 @@ interface UserListProps {
 
 // Component
 const UserList = ({ organization }: UserListProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const {
     pageSize,
     setPageSize,
@@ -172,7 +172,7 @@ const UserList = ({ organization }: UserListProps) => {
       {
         accessorKey: 'email',
         id: 'email',
-        header: t('UserListPage.Email'),
+        header: t('UserListPage_Email'),
         cell: ({ row }) => {
           return <span className="truncate">{row.original.email}</span>;
         },
@@ -180,7 +180,7 @@ const UserList = ({ organization }: UserListProps) => {
       {
         accessorKey: 'first_name',
         id: 'first_name',
-        header: t('UserListPage.FirstName'),
+        header: t('UserListPage_FirstName'),
         cell: ({ row }) => {
           return <span className="truncate">{row.original.first_name}</span>;
         },
@@ -188,7 +188,7 @@ const UserList = ({ organization }: UserListProps) => {
       {
         accessorKey: 'last_name',
         id: 'last_name',
-        header: t('UserListPage.LastName'),
+        header: t('UserListPage_LastName'),
         cell: ({ row }) => {
           return <span className="truncate">{row.original.last_name}</span>;
         },
@@ -198,7 +198,7 @@ const UserList = ({ organization }: UserListProps) => {
             {
               accessorKey: 'organizations',
               id: 'organizations',
-              header: t('UserListPage.Organizations'),
+              header: t('UserListPage_Organizations'),
               enableSorting: false,
               cell: ({ row }: { row: Row<UserList_fragment$data> }) => {
                 return (
@@ -214,12 +214,12 @@ const UserList = ({ organization }: UserListProps) => {
             {
               accessorKey: 'country',
               id: 'country',
-              header: t('UserListPage.Country'),
+              header: t('UserListPage_Country'),
             },
             {
               accessorKey: 'disabled',
               id: 'disabled',
-              header: t('UserListPage.Status'),
+              header: t('UserListPage_Status'),
               cell: ({
                 row: {
                   original: { disabled },
@@ -239,7 +239,7 @@ const UserList = ({ organization }: UserListProps) => {
             {
               accessorKey: 'last_login',
               id: 'last_login',
-              header: t('UserListPage.LastLogin'),
+              header: t('UserListPage_LastLogin'),
               cell: ({
                 row,
               }: {
@@ -259,7 +259,7 @@ const UserList = ({ organization }: UserListProps) => {
             {
               accessorKey: 'capability',
               id: 'capability',
-              header: t('UserListPage.Capability'),
+              header: t('UserListPage_Capability'),
               cell: ({
                 row,
               }: {
@@ -387,7 +387,7 @@ const UserList = ({ organization }: UserListProps) => {
             <div className="flex w-full items-center gap-s sm:w-auto">
               <SearchInput
                 containerClass="w-full sm:w-auto"
-                placeholder={t('UserActions.SearchUser')}
+                placeholder={t('UserActions_SearchUser')}
                 onChange={debounceHandleInput}
               />
               {isAdminPath && (
@@ -411,7 +411,7 @@ const UserList = ({ organization }: UserListProps) => {
       />
       {data.users.totalCount === 0 && (
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          {t('UserListPage.NoUsers')}
+          {t('UserListPage_NoUsers')}
         </p>
       )}
       {userEdit && (

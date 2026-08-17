@@ -5,7 +5,6 @@ import {
   VaultNewFileForm,
 } from '@/components/service/vault/VaultNewFileForm';
 import { Button, useToast } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { useContext, useState } from 'react';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
@@ -19,13 +18,15 @@ import DocumentItem_fragmentGraphql, {
 import { readInlineData, useMutation } from 'react-relay';
 import slugify from 'slugify';
 import { z } from 'zod';
+
+import { useTranslate } from '@tolgee/react';
 interface VaultFormProps {
   connectionId: string;
   userCanUpdate: boolean;
 }
 export const VaultForm = ({ connectionId, userCanUpdate }: VaultFormProps) => {
   const { toast } = useToast();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [createMutation] = useMutation<documentCreateMutation>(
     DocumentCreateMutation
   );
@@ -69,8 +70,8 @@ export const VaultForm = ({ connectionId, userCanUpdate }: VaultFormProps) => {
           response.createDocument
         );
         toast({
-          title: t('Utils.Success'),
-          description: t('VaultActions.DocumentAdded', {
+          title: t('Utils_Success'),
+          description: t('VaultActions_DocumentAdded', {
             file_name: createdDocument.file_name ?? '',
           }),
         });
@@ -78,8 +79,8 @@ export const VaultForm = ({ connectionId, userCanUpdate }: VaultFormProps) => {
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -91,8 +92,8 @@ export const VaultForm = ({ connectionId, userCanUpdate }: VaultFormProps) => {
         <SheetWithPreventingDialog
           open={openSheet}
           setOpen={setOpenSheet}
-          trigger={<Button>{t('Service.Vault.FileForm.AddFile')}</Button>}
-          title={t('Service.Vault.FileForm.AddFile')}>
+          trigger={<Button>{t('Service_Vault_FileForm_AddFile')}</Button>}
+          title={t('Service_Vault_FileForm_AddFile')}>
           <VaultNewFileForm handleSubmit={createDocument} />
         </SheetWithPreventingDialog>
       )}

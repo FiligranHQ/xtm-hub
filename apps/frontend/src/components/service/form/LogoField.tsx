@@ -13,10 +13,10 @@ import { TooltipProvider } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentSourceType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { ChangeEvent } from 'react';
 import { ControllerRenderProps, FieldValues, useWatch } from 'react-hook-form';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceFormLogoFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   document?: documentItem_fragment$data;
@@ -26,7 +26,7 @@ export const ServiceFormLogoField = ({
   document,
   field,
 }: ServiceFormLogoFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const entityTypes = useWatch<{ entity_types?: string[] }, 'entity_types'>({
     name: 'entity_types',
@@ -35,7 +35,7 @@ export const ServiceFormLogoField = ({
   return (
     <FormItem>
       <FormLabel>
-        {t('Service.Form.LogoLabel')} ({t('Service.Form.LogoDisclaimer')})
+        {t('Service_Form_LogoLabel')} ({t('Service_Form_LogoDisclaimer')})
       </FormLabel>
       <div className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3">
         {logo ? (
@@ -95,9 +95,9 @@ export const ServiceFormLogoField = ({
           }}
           disabled={logo?.source_type === DocumentSourceType.External}
           texts={{
-            selectFile: t('Service.Form.UploadLogo'),
-            noFile: t('Service.Vault.FileForm.NoDocument'),
-            dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+            selectFile: t('Service_Form_UploadLogo'),
+            noFile: t('Service_Vault_FileForm_NoDocument'),
+            dropFiles: t('Service_Vault_FileForm_DropDocuments'),
           }}
           allowedTypes={'image/jpeg, image/gif, image/png, image/svg'}
         />

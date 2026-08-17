@@ -1,5 +1,4 @@
 'use client';
-
 import { ConnectedProductsDropdown } from '@/components/connected-products/ConnectedProductsDropdown';
 import { LogoutMutation } from '@/components/logout.graphql';
 import { PortalContext } from '@/components/me/AppPortalContext';
@@ -21,14 +20,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 import { OrganizationCapability } from '@graphql/generated';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { useMutation } from 'react-relay';
+import { useMutation } from 'react-relay'; // Component interface
 
+import { useTranslate } from '@tolgee/react';
 // Component interface
 interface HeaderComponentProps {
   displayLogo?: boolean;
@@ -39,11 +38,11 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
   const router = useRouter();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
 
   // Legitimate effect: close the menu on route change.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
+
   useEffect(() => setOpen(false), [currentPath]);
   const canManageUser =
     hasOrganizationCapability &&
@@ -92,14 +91,14 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
                 <div className="my-auto [&_img]:object-cover size-6 text-primary [&_span]:bg-transparent">
                   <Avatar src={me?.picture || undefined} />
                 </div>
-                <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
+                <span className="sr-only">{t('MenuUser_ToggleUser')}</span>
               </>
             }>
             <IconActionsItem asChild>
-              <Link href={`/${APP_PATH}/profile`}>{t('MenuUser.Profile')}</Link>
+              <Link href={`/${APP_PATH}/profile`}>{t('MenuUser_Profile')}</Link>
             </IconActionsItem>
             <IconActionsItem onClick={handleLogout}>
-              {t('LoginPage.Logout')}
+              {t('LoginPage_Logout')}
             </IconActionsItem>
           </IconActions>
         </div>
@@ -109,7 +108,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
             onOpenChange={setOpen}>
             <SheetTrigger>
               <span className="sr-only">
-                {open ? t('Header.CloseMenu') : t('Header.OpenMenu')}
+                {open ? t('Header_CloseMenu') : t('Header_OpenMenu')}
               </span>
               <MenuIcon
                 aria-hidden={true}
@@ -124,7 +123,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
                 <div className="flex items-center gap-s">
                   <DisplayLogo className="text-primary h-8" />
                   <SheetTitle className="sr-only">
-                    {t('Header.BrandName')}
+                    {t('Header_BrandName')}
                   </SheetTitle>
                 </div>
               </SheetHeader>
@@ -139,13 +138,13 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
                 <div className="mt-auto pt-l pb-xl flex flex-col text-center">
                   <Link href={`/${APP_PATH}/profile`}>
                     <div className="w-full p-2 hover:bg-hover rounded">
-                      {t('MenuUser.Profile')}
+                      {t('MenuUser_Profile')}
                     </div>
                   </Link>
                   <div
                     className="p-2 hover:bg-hover rounded cursor-pointer"
                     onClick={handleLogout}>
-                    {t('LoginPage.Logout')}
+                    {t('LoginPage_Logout')}
                   </div>
                 </div>
               </div>

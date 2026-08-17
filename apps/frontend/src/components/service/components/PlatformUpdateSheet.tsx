@@ -1,5 +1,4 @@
 'use client';
-
 import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation/private/private-navigation-query-invalidation';
 import { translateServiceDefinitionIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
@@ -22,11 +21,11 @@ import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment
 import { serviceUpdatePlatformServiceMetadataMutation } from '@generated/serviceUpdatePlatformServiceMetadataMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const platformUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   illustration_document: z.custom<FileList>().optional(),
@@ -49,7 +48,7 @@ export const PlatformUpdateSheet = ({
   open,
   setOpen,
 }: PlatformUpdateSheetProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -87,8 +86,8 @@ export const PlatformUpdateSheet = ({
         setOpen(false);
         invalidatePrivateNavigationQueries(queryClient);
         toast({
-          title: t('Utils.Success'),
-          description: t('Platform.Updated', {
+          title: t('Utils_Success'),
+          description: t('Platform_Updated', {
             platformName: values.name,
           }),
         });
@@ -100,8 +99,8 @@ export const PlatformUpdateSheet = ({
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -116,7 +115,7 @@ export const PlatformUpdateSheet = ({
     <SheetWithPreventingDialog
       open={open}
       setOpen={setOpen}
-      title={t('Platform.UpdateMetadata', { platformName: getPlatformName() })}>
+      title={t('Platform_UpdateMetadata', { platformName: getPlatformName() })}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -126,10 +125,10 @@ export const PlatformUpdateSheet = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Platform.Name')}</FormLabel>
+                <FormLabel>{t('Platform_Name')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t('Platform.NamePlaceholder')}
+                    placeholder={t('Platform_NamePlaceholder')}
                     {...field}
                   />
                 </FormControl>
@@ -139,7 +138,7 @@ export const PlatformUpdateSheet = ({
           />
 
           <FormItem>
-            <FormLabel>{t('Register.Details.ProductURL')}</FormLabel>
+            <FormLabel>{t('Register_Details_ProductURL')}</FormLabel>
             <FormControl>
               <Input
                 value={platformUrl}
@@ -153,7 +152,7 @@ export const PlatformUpdateSheet = ({
             name="illustration_document"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Platform.IllustrationImage')}</FormLabel>
+                <FormLabel>{t('Platform_IllustrationImage')}</FormLabel>
                 <FormControl>
                   <FileInput
                     name="illustration_document"
@@ -172,14 +171,14 @@ export const PlatformUpdateSheet = ({
               type="button"
               variant="secondary"
               onClick={() => setOpen(false)}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
             <Button
               type="submit"
               disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting
-                ? t('Utils.Updating')
-                : t('Utils.Update')}
+                ? t('Utils_Updating')
+                : t('Utils_Update')}
             </Button>
           </SheetFooter>
         </form>

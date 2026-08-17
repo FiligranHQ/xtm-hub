@@ -1,5 +1,4 @@
 'use client';
-
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
 import { Locale, locales } from '@/i18n/config';
@@ -22,10 +21,10 @@ import {
   useServiceInstanceSeoMetadataByIdQuery,
 } from '@graphql/generated';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const SEO_METADATA_MAX_LENGTH = 155;
 const optionalSeoField = z.string().max(SEO_METADATA_MAX_LENGTH).optional();
 
@@ -90,7 +89,7 @@ type LibraryUpdateFieldConfig = Record<
 >;
 
 export const LibraryUpdateMetadata = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { serviceInstance } = useServiceContext();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
@@ -98,11 +97,11 @@ export const LibraryUpdateMetadata = () => {
     () =>
       SEO_LOCALES.reduce((acc, { titleField, descriptionField, label }) => {
         acc[titleField] = {
-          label: `${t('Metadata.SeoMetaTitle')} (${label})`,
+          label: `${t('Metadata_SeoMetaTitle')} (${label})`,
           inputProps: { maxLength: SEO_METADATA_MAX_LENGTH },
         };
         acc[descriptionField] = {
-          label: `${t('Metadata.SeoMetaDescription')} (${label})`,
+          label: `${t('Metadata_SeoMetaDescription')} (${label})`,
           inputProps: { maxLength: SEO_METADATA_MAX_LENGTH },
         };
         return acc;
@@ -162,15 +161,15 @@ export const LibraryUpdateMetadata = () => {
           useServiceInstanceSeoMetadataByIdQuery.getKey(seoMetadataVariables),
       });
       toast({
-        title: t('Utils.Success'),
+        title: t('Utils_Success'),
       });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'UNKNOWN_ERROR';
       toast({
         variant: 'destructive',
-        title: t('Utils.Error'),
-        description: t(`Error.Server.${errorMessage}`),
+        title: t('Utils_Error'),
+        description: t(`Error_Server_${errorMessage}`),
       });
     }
   };
@@ -183,14 +182,14 @@ export const LibraryUpdateMetadata = () => {
           variant="tertiary"
           onClick={() => setIsOpen(true)}>
           <EditIcon className="h-4 w-4 mr-s " />
-          {t('Utils.Edit')}
+          {t('Utils_Edit')}
         </Button>
         <Dialog
           open={isOpen}
           onOpenChange={setIsOpen}>
           <DialogContent className="max-w-3xl">
             <DialogHeader className="mb-s">
-              <DialogTitle>{t('Metadata.SeoMetadata')}</DialogTitle>
+              <DialogTitle>{t('Metadata_SeoMetadata')}</DialogTitle>
             </DialogHeader>
             <AutoForm
               className="space-y-m"
@@ -203,9 +202,9 @@ export const LibraryUpdateMetadata = () => {
                   variant="secondary"
                   type="button"
                   onClick={() => setIsOpen(false)}>
-                  {t('Utils.Cancel')}
+                  {t('Utils_Cancel')}
                 </Button>
-                <Button type="submit">{t('Utils.Validate')}</Button>
+                <Button type="submit">{t('Utils_Validate')}</Button>
               </DialogFooter>
             </AutoForm>
           </DialogContent>

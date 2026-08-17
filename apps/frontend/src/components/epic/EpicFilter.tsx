@@ -10,9 +10,9 @@ import {
   Switch,
 } from '@filigran/ui';
 import { FiligranProduct } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import React from 'react';
 
+import { useTranslate } from '@tolgee/react';
 export type EpicFilterType = 'all' | FiligranProduct;
 
 interface EpicFilterProps {
@@ -32,7 +32,7 @@ export const EpicFilter = ({
   onShowFinishedChange,
   debounceHandleInput,
 }: EpicFilterProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const products = Object.values(FiligranProduct);
 
@@ -45,7 +45,7 @@ export const EpicFilter = ({
     <div className="ml-xl pl-m grid grid-cols-1 sm:grid-cols-3 gap-l items-center">
       <div className="max-w-full sm:max-w-[100%]">
         <SearchInput
-          placeholder={t('GenericActions.Search')}
+          placeholder={t('GenericActions_Search')}
           onChange={debounceHandleInput}
         />
       </div>
@@ -57,11 +57,11 @@ export const EpicFilter = ({
             onSelectedFilterChange(value as EpicFilterType)
           }>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder={t('Epic.FilterByProduct')} />
+            <SelectValue placeholder={t('Epic_FilterByProduct')} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">
-              {t('Epic.AllProducts')} ({totalCount})
+              {t('Epic_AllProducts')} ({totalCount})
             </SelectItem>
             {products.map((product) => {
               const count = countsByProduct[product] ?? 0;
@@ -82,7 +82,7 @@ export const EpicFilter = ({
           checked={showFinished}
           onCheckedChange={onShowFinishedChange}
         />
-        <span className="text-sm">{t('Epic.ShowFinished')}</span>
+        <span className="text-sm">{t('Epic_ShowFinished')}</span>
       </div>
     </div>
   );

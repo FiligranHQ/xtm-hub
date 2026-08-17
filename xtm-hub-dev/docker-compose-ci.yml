@@ -11,7 +11,7 @@ services:
       backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://frontend:3000/health"]
+      test: [ "CMD", "wget", "-qO-", "http://frontend:3000/health" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -71,7 +71,7 @@ services:
         max-file: "3"
     image: filigran/portal-api:${IMAGE_TAGS}
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://backend:4001/health"]
+      test: [ "CMD", "wget", "-qO-", "http://backend:4001/health" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -120,7 +120,7 @@ services:
       - POSTGRES_DB=test_database
       - PGDATA=/data/postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "test_database"]
+      test: [ "CMD-SHELL", "pg_isready", "-d", "test_database" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -161,10 +161,22 @@ services:
       MINIO_ROOT_PASSWORD: changeme
     command: "minio server /data/minio"
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: [ "CMD", "mc", "ready", "local" ]
       interval: 10s
       timeout: 5s
       retries: 10
+
+  tolgee:
+    container_name: tolgee
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    image: "tolgee/tolgee"
+    environment:
+      initial_username: admin
+      initial_password: changeme
 
   e2e:
     logging:

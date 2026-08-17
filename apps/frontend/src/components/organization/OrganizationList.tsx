@@ -20,12 +20,12 @@ import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import { OrganizationsPaginationQuery$variables } from '@generated/OrganizationsPaginationQuery.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Suspense, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 const OrganizationList = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const router = useRouter();
   const pathname = usePathname();
   const [editOrganization, setEditOrganization] = useState<
@@ -39,7 +39,7 @@ const OrganizationList = () => {
       {
         accessorKey: 'name',
         id: 'name',
-        header: t('OrganizationForm.Name'),
+        header: t('OrganizationForm_Name'),
         cell: ({ row }) => {
           return <>{row.original.name}</>;
         },
@@ -47,7 +47,7 @@ const OrganizationList = () => {
       {
         accessorKey: 'domains',
         id: 'domains',
-        header: t('OrganizationForm.Domains'),
+        header: t('OrganizationForm_Domains'),
         enableSorting: false,
         cell: ({ row }) => {
           return (
@@ -75,7 +75,7 @@ const OrganizationList = () => {
               icon={
                 <>
                   <MoreVertIcon className="h-4 w-4 text-primary" />
-                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                  <span className="sr-only">{t('Utils_OpenMenu')}</span>
                 </>
               }>
               <IconActionsItem
@@ -84,15 +84,15 @@ const OrganizationList = () => {
                     `${pathname}/${encodeURIComponent(row.original.id)}/subscribed-services`
                   );
                 }}>
-                {t('Service.SubscribedServices')}
+                {t('Service_SubscribedServices')}
               </IconActionsItem>
               <IconActionsItem
                 onClick={() => setEditOrganization(row.original)}>
-                {t('Utils.Update')}
+                {t('Utils_Update')}
               </IconActionsItem>
               <IconActionsItem
                 onClick={() => setDeleteOrganization(row.original)}>
-                {t('Utils.Delete')}
+                {t('Utils_Delete')}
               </IconActionsItem>
             </IconActions>
           </div>
@@ -200,13 +200,13 @@ const OrganizationList = () => {
               <label
                 htmlFor="organization-email"
                 className="sr-only">
-                {t('OrganizationActions.SearchOrganizationWithEmail')}
+                {t('OrganizationActions_SearchOrganizationWithEmail')}
               </label>
               <SearchInput
                 id="organization-email"
                 containerClass="w-full sm:w-1/3"
                 placeholder={t(
-                  'OrganizationActions.SearchOrganizationWithEmail'
+                  'OrganizationActions_SearchOrganizationWithEmail'
                 )}
                 onChange={debounceHandleInput}
               />

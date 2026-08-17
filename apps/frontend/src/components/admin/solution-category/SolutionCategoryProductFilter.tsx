@@ -6,8 +6,7 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { FiligranProduct } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 const SolutionCategoryProductFilter = ({
   selectedProduct,
   onProductChange,
@@ -15,7 +14,7 @@ const SolutionCategoryProductFilter = ({
   selectedProduct?: FiligranProduct;
   onProductChange: (product?: FiligranProduct) => void;
 }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <Select
@@ -26,11 +25,11 @@ const SolutionCategoryProductFilter = ({
         )
       }>
       <SelectTrigger className="w-full sm:w-45">
-        <SelectValue placeholder={t('SolutionCategory.ListPage.Product')} />
+        <SelectValue placeholder={t('SolutionCategory_ListPage_Product')} />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="all">
-          {t('SolutionCategory.ListPage.AllProducts')}
+          {t('SolutionCategory_ListPage_AllProducts')}
         </SelectItem>
         {Object.values(FiligranProduct).map((product) => (
           <SelectItem

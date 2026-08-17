@@ -98,9 +98,9 @@ const freeTrialStaticData = (
 ) => {
   return {
     description: t(
-      `Service.Trials.Display.${platformIdentifier}.FreeTrialDescription`
+      `Service_Trials_Display_${platformIdentifier}_FreeTrialDescription`
     ),
-    name: t(`Service.Trials.Display.${platformIdentifier}.Title`),
+    name: t(`Service_Trials_Display_${platformIdentifier}_Title`),
     logoBackgroundImageUrl: `url(/${platformIdentifier}_free-trial-logo.png)`,
     illustrationDocumentUrl: `/opencti_free-trial-illustration.png`,
     ordering: -2,
@@ -119,7 +119,7 @@ export const freeTrialSkeletonToServiceInstanceCardData = (
   return {
     ...freeTrialStaticData(platformIdentifier, t),
     id: 'freeTrial',
-    displayedServiceStatus: t('Service.Trials.Display.New'),
+    displayedServiceStatus: t('Service_Trials_Display_New'),
     url: `/app/service/${page}`,
   };
 };
@@ -164,7 +164,7 @@ export const registeredPlatformToServiceInstanceCardData = (
   return {
     ...commonValues,
     name: platform.title,
-    description: t('Register.Details.Description'),
+    description: t('Register_Details_Description'),
     illustrationDocumentUrl: platform.illustration_document_id
       ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
       : `/${platformIdentifier}-private-platform-illustration.png`,
@@ -207,16 +207,16 @@ export const localizedCardName = (
   instance: { slug?: string | null; name: string },
   t: ReturnType<typeof useTranslations>
 ) => {
-  const key = `Service.Cards.${instance.slug}.Name`;
-  return instance.slug && t.has(key) ? t(key) : instance.name;
+  const key = `Service_Cards_${instance.slug}_Name`;
+  return instance.slug && t(key) ? t(key) : instance.name;
 };
 
 export const localizedCardDescription = (
   instance: { slug?: string | null; description?: string | null },
   t: ReturnType<typeof useTranslations>
 ) => {
-  const key = `Service.Cards.${instance.slug}.Description`;
-  return instance.slug && t.has(key) ? t(key) : instance.description!;
+  const key = `Service_Cards_${instance.slug}_Description`;
+  return instance.slug && t(key) ? t(key) : instance.description!;
 };
 
 export const seoServiceInstanceToInstanceCardData = (

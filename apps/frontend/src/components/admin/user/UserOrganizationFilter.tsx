@@ -1,7 +1,6 @@
 import { getOrganizations } from '@/components/organization/Organization.service';
 import { Combobox } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 interface OrganizationFilterOption {
   id: string;
   name: string;
@@ -17,12 +16,12 @@ export const UserOrganizationFilter = ({
   value,
   onChange,
 }: UserOrganizationFilterProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { organizationsData, refetch } = getOrganizations();
 
   const ALL_ORGANIZATIONS: OrganizationFilterOption = {
     id: '',
-    name: t('UserActions.AllOrganizations'),
+    name: t('UserActions_AllOrganizations'),
     personal_space: false,
   };
 
@@ -48,9 +47,9 @@ export const UserOrganizationFilter = ({
     <Combobox
       className="w-[200px]"
       dataTab={organizations}
-      order={t('UserActions.Organization')}
-      placeholder={t('UserActions.Organization')}
-      emptyCommand={t('Utils.NotFound')}
+      order={t('UserActions_Organization')}
+      placeholder={t('UserActions_Organization')}
+      emptyCommand={t('Utils_NotFound')}
       value={selectedOrganization}
       onValueChange={handleOnValueChange}
       keyValue={'name'}

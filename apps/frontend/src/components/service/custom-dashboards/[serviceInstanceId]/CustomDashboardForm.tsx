@@ -11,11 +11,10 @@ import {
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentImageType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-
 const customDashboardSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
@@ -44,7 +43,7 @@ export const CustomDashboardForm = ({
   document,
   handleSubmit,
 }: CustomDashboardFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const { me } = useContext(PortalContext);
@@ -138,7 +137,7 @@ export const CustomDashboardForm = ({
         uploader_organization_id,
         document: isCreation
           ? {
-              label: t('Service.Form.SelectJSONFile'),
+              label: t('Service_Form_SelectJSONFile'),
               fieldType: 'file',
               inputProps: {
                 allowedTypes: 'application/json',

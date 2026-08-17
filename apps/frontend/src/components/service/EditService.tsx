@@ -8,10 +8,9 @@ import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import { useToast } from '@filigran/ui';
 import { serviceAddPictureMutation } from '@generated/serviceAddPictureMutation.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-
 interface EditServiceProps {
   service: serviceList_fragment$data;
   open: boolean;
@@ -19,7 +18,7 @@ interface EditServiceProps {
 }
 
 export const EditService = ({ service, open, setOpen }: EditServiceProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { toast } = useToast();
 
   const [servicePictureMutation] =
@@ -39,8 +38,8 @@ export const EditService = ({ service, open, setOpen }: EditServiceProps) => {
       onCompleted: (response) => {
         setOpen(false);
         toast({
-          title: t('Utils.Success'),
-          description: t('ServiceForm.PictureUpdated', {
+          title: t('Utils_Success'),
+          description: t('ServiceForm_PictureUpdated', {
             serviceName: response.addServicePicture!.name,
           }),
         });
@@ -48,8 +47,8 @@ export const EditService = ({ service, open, setOpen }: EditServiceProps) => {
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -62,7 +61,7 @@ export const EditService = ({ service, open, setOpen }: EditServiceProps) => {
     <SheetWithPreventingDialog
       open={open}
       setOpen={setOpen}
-      title={t('ServiceForm.EditService')}>
+      title={t('ServiceForm_EditService')}>
       <ServiceForm handleSubmit={handleSubmit} />
     </SheetWithPreventingDialog>
   );

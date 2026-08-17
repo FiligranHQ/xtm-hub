@@ -7,11 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useMemo } from 'react';
 
 export const CapabilityDescription = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const buildTranslationKey = (capability: string) =>
     `CapabilityDescription.Capabilities.${capability}`;
@@ -21,7 +21,7 @@ export const CapabilityDescription = () => {
   const capabilityList = useMemo(() => {
     return organizationCapabilities
       .filter((capability) => {
-        return t.has(buildTranslationKey(capability));
+        return t(buildTranslationKey(capability));
       })
       .map((capability) => {
         return (
@@ -41,10 +41,10 @@ export const CapabilityDescription = () => {
     <Card>
       <CardHeader>
         <CardTitle className="heading-lg">
-          {t('CapabilityDescription.Title')}
+          {t('CapabilityDescription_Title')}
         </CardTitle>
         <CardDescription>
-          {t('CapabilityDescription.Description')}
+          {t('CapabilityDescription_Description')}
         </CardDescription>
         <CardContent className="p-0">
           <ul className="flex flex-col space-y-s gap-xs text-xs">

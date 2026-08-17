@@ -5,14 +5,14 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 export const IntegrationDeployableFilter = () => {
   const { deployable, setDeployable, removeDeployable } =
     useServiceListLocalStorage(
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
     );
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { removeFilter } = useServiceListFilters();
   const removeDeployableFilter = () => {
     removeDeployable();
@@ -24,26 +24,26 @@ export const IntegrationDeployableFilter = () => {
       options={[
         {
           label: t(
-            'Service.OpenctiIntegrations.Filter.ManagerSupported.AutomaticDeploy'
+            'Service_OpenctiIntegrations_Filter_ManagerSupported_AutomaticDeploy'
           ),
           value: 'true',
         },
         {
           label: t(
-            'Service.OpenctiIntegrations.Filter.ManagerSupported.ManualDeploy'
+            'Service_OpenctiIntegrations_Filter_ManagerSupported_ManualDeploy'
           ),
           value: 'false',
         },
       ]}
       initialValue={deployable}
       placeholder={t(
-        'Service.OpenctiIntegrations.Filter.ManagerSupported.Placeholder'
+        'Service_OpenctiIntegrations_Filter_ManagerSupported_Placeholder'
       )}
-      noResultString={t('Utils.NotFound')}
+      noResultString={t('Utils_NotFound')}
       onValueChange={setDeployable}
       onRemove={removeDeployableFilter}
       optionLabel={t(
-        'Service.OpenctiIntegrations.Filter.ManagerSupported.Label'
+        'Service_OpenctiIntegrations_Filter_ManagerSupported_Label'
       )}
     />
   );

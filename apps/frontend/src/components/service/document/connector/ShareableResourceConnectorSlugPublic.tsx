@@ -15,9 +15,9 @@ import { MarkdownRenderer } from '@filigran/ui/clients';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
+import { useTranslate } from '@tolgee/react';
 interface ShareableResourceConnectorSlugPublicProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
   serviceInstance:
@@ -30,7 +30,7 @@ const ShareableResourceConnectorSlugPublic = ({
   pageUrl,
   serviceInstance,
 }: ShareableResourceConnectorSlugPublicProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const logo = findDocumentLogo(documentData);
   const carouselImages = filterDocumentImages(documentData);
 
@@ -55,19 +55,19 @@ const ShareableResourceConnectorSlugPublic = ({
             {documentData.manager_supported && (
               <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100 text-alert-success-primary dark:bg-turquoise-900 rounded-lg">
                 <MotionPlayIcon className="h-5 w-5 shrink-0 mr-xs" />
-                {t('Utils.AutomaticDeploy')}
+                {t('Utils_AutomaticDeploy')}
               </div>
             )}
             <div className="flex items-center gap-s py-xs px-l font-semibold bg-alert-success-primary text-alert-success-primary dark:bg-turquoise-900 rounded-lg">
               {documentData.verified ? (
                 <>
                   <VerifiedIcon className="h-5 w-5 shrink-0 mr-xs" />
-                  {t('Service.ShareableResources.Details.SupportedByFiligran')}
+                  {t('Service_ShareableResources_Details_SupportedByFiligran')}
                 </>
               ) : (
                 <>
                   <ThreatActorGroupIcon className="h-5 w-5 shrink-0 mr-xs" />
-                  {t('Service.ShareableResources.Details.SupportedByCommunity')}
+                  {t('Service_ShareableResources_Details_SupportedByCommunity')}
                 </>
               )}
             </div>
@@ -97,7 +97,7 @@ const ShareableResourceConnectorSlugPublic = ({
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <div className="flex-[3_3_0%] min-w-0">
           <h3 className="py-s txt-container-title truncate text-muted-foreground">
-            {t('PublicResourcePage.Overview')}
+            {t('PublicResourcePage_Overview')}
           </h3>
           <section className="rounded bg-elevation-background-layer-1 overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>

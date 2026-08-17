@@ -1,8 +1,7 @@
 import countryData from '@/components/ui/country/data.json';
 import { Combobox } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useMemo } from 'react';
-
 interface CountryComboboxProps {
   value?: { name: string } | undefined;
   onValueChange: (value: { name: string } | undefined) => void;
@@ -12,7 +11,7 @@ export const CountryCombobox = ({
   value,
   onValueChange,
 }: CountryComboboxProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { countries } = countryData;
   const dataTab = useMemo(() => {
     return countries.sort((a, b) => a.name.localeCompare(b.name));
@@ -21,11 +20,11 @@ export const CountryCombobox = ({
   return (
     <Combobox
       dataTab={dataTab}
-      placeholder={t('CountryComboBox.Placeholder')}
-      order={t('CountryComboBox.Placeholder')}
+      placeholder={t('CountryComboBox_Placeholder')}
+      order={t('CountryComboBox_Placeholder')}
       onValueChange={onValueChange}
       onInputChange={() => {}}
-      emptyCommand={t('Utils.NotFound')}
+      emptyCommand={t('Utils_NotFound')}
       keyValue={'name'}
       keyLabel={'name'}
       value={value}

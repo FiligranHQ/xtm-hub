@@ -56,7 +56,7 @@ export const ConnectedProductItem = ({
             asChild>
             <Link
               href={detailPath}
-              aria-label={t('Header.ConnectedProducts.Details')}>
+              aria-label={t('Header_ConnectedProducts_Details')}>
               <TextSnippetIcon className="h-4 w-4" />
             </Link>
           </Button>
@@ -71,7 +71,7 @@ export const ConnectedProductItem = ({
               href={platform.url}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={t('Header.ConnectedProducts.GoToPlatform', {
+              aria-label={t('Header_ConnectedProducts_GoToPlatform', {
                 title:
                   platform.title ?? platformMeta?.name ?? platform.identifier,
               })}>

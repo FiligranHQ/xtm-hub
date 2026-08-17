@@ -35,7 +35,7 @@ const ClientSection = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
 
   const breadcrumbs = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${APP_PATH}`,
     },
     {

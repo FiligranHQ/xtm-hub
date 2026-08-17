@@ -1,5 +1,4 @@
 'use client';
-
 import { HomepageRegisteredPlatformCardViewModel } from '@/components/homepage/Homepage.utils';
 import {
   CONTRACT_LABEL_BY_CONTRACT,
@@ -20,6 +19,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
 
+import { useTranslate } from '@tolgee/react';
 type RegisteredPlatformCardProps = {
   platform: HomepageRegisteredPlatformCardViewModel;
 };
@@ -47,9 +47,9 @@ const resolveTrialDaysBadgeClassName = (
 
 const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
   const tRegisteredPlatformsCard = useTranslations(
-    'HomePage.RegisteredPlatformsCard'
+    'HomePage_RegisteredPlatformsCard'
   );
-  const t = useTranslations();
+  const { t } = useTranslate();
   const format = useFormatter();
 
   const registrationDate = platform.registrationDate

@@ -21,13 +21,13 @@ import {
 } from '@filigran/ui/clients';
 import { Badge, Button } from '@filigran/ui/servers';
 import { UserList_fragment$key } from '@generated/UserList_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useUsersList } from '@/hooks/use-users-list';
 import { readInlineData } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
+import { useTranslate } from '@tolgee/react';
 interface SelectUsersFormFieldProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   defaultValue?: string;
   onValueChange: (value: string) => void;
@@ -38,7 +38,7 @@ const SelectUsersFormField = React.forwardRef<
   HTMLButtonElement,
   SelectUsersFormFieldProps
 >(({ defaultValue, onValueChange, disabled, ...props }, ref) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const [selectedValues, setSelectedValues] = useState<string[]>([
     defaultValue ?? '',
@@ -278,7 +278,7 @@ const SelectUsersFormField = React.forwardRef<
                         onValueChange('');
                       }
                     }}
-                    aria-label={t('SelectUsers.ClearAllSelections')}>
+                    aria-label={t('SelectUsers_ClearAllSelections')}>
                     <CloseIcon className="mx-s h-3 cursor-pointer text-muted-foreground" />
                   </span>
                   <Separator
@@ -294,7 +294,7 @@ const SelectUsersFormField = React.forwardRef<
                   className="mx-3 text-sm text-muted-foreground normal-case"
                   role="textbox"
                   aria-readonly="true">
-                  {t('InviteUserServiceForm.Email')}
+                  {t('InviteUserServiceForm_Email')}
                 </span>
                 <KeyboardArrowDownIcon
                   className="mx-2 w-2.5 h-2.5 cursor-pointer text-muted-foreground"
@@ -313,7 +313,7 @@ const SelectUsersFormField = React.forwardRef<
             shouldFilter={false}
             onChange={handleSearchInputChange}>
             <CommandInput
-              placeholder={t('UserActions.SearchUser')}
+              placeholder={t('UserActions_SearchUser')}
               onKeyDown={handleInputKeyDown}
             />
             <CommandList
@@ -321,7 +321,7 @@ const SelectUsersFormField = React.forwardRef<
                 e.currentTarget.scrollTop += e.deltaY;
                 e.stopPropagation();
               }}>
-              <CommandEmpty>{t('Utils.NotFound')}</CommandEmpty>
+              <CommandEmpty>{t('Utils_NotFound')}</CommandEmpty>
               <CommandGroup>
                 {users.map((option) => {
                   const optionValue = String(option.value);
@@ -362,7 +362,7 @@ const SelectUsersFormField = React.forwardRef<
                           opacity: 1,
                         }}
                         className="flex-1 cursor-pointer justify-center capitalize">
-                        {t('Utils.Clear')}
+                        {t('Utils_Clear')}
                       </CommandItem>
                       <Separator
                         orientation="vertical"
@@ -378,7 +378,7 @@ const SelectUsersFormField = React.forwardRef<
                       opacity: 1,
                     }}
                     className="flex-1 cursor-pointer justify-center capitalize">
-                    {t('Utils.Close')}
+                    {t('Utils_Close')}
                   </CommandItem>
                 </div>
               </CommandGroup>

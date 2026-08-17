@@ -10,9 +10,9 @@ import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDi
 import useServiceCapability from '@/hooks/use-service-capability';
 import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceManageSheetProps {
   document?: documentItem_fragment$data;
   variant?: 'menu' | 'button';
@@ -26,7 +26,7 @@ export const ServiceManageSheet = ({
   open: externalOpen,
   setOpen: externalSetOpen,
 }: ServiceManageSheetProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [internalOpenSheet, setInternalOpenSheet] = useState(false);
 
   // Use external state if provided, otherwise use internal state
@@ -57,8 +57,8 @@ export const ServiceManageSheet = ({
     ]);
     setOpenSheet(false);
     toast({
-      title: t('Utils.Success'),
-      description: t('VaultActions.DocumentUpdated', {
+      title: t('Utils_Success'),
+      description: t('VaultActions_DocumentUpdated', {
         file_name: serviceName,
       }),
     });
@@ -66,8 +66,8 @@ export const ServiceManageSheet = ({
   function onError(error: Error) {
     toast({
       variant: 'destructive',
-      title: t('Utils.Error'),
-      description: t(`Error.Server.${error.message}`),
+      title: t('Utils_Error'),
+      description: t(`Error_Server_${error.message}`),
     });
   }
 
@@ -75,8 +75,8 @@ export const ServiceManageSheet = ({
     setOpenSheet(false);
 
     toast({
-      title: t('Utils.Success'),
-      description: t(`${translationKey}.Actions.Added`, {
+      title: t('Utils_Success'),
+      description: t(`${translationKey}_Actions_Added`, {
         name: serviceName,
       }),
     });
@@ -92,10 +92,10 @@ export const ServiceManageSheet = ({
             setOpen={setOpenSheet}
             trigger={
               variant === 'button' ? (
-                <Button variant="secondary">{t('Utils.Update')}</Button>
+                <Button variant="secondary">{t('Utils_Update')}</Button>
               ) : undefined
             }
-            title={t(`${translationKey}.UpdateService`, {
+            title={t(`${translationKey}_UpdateService`, {
               name: document.name ?? '',
             })}>
             {
@@ -121,10 +121,10 @@ export const ServiceManageSheet = ({
           setOpen={setOpenSheet}
           trigger={
             variant === 'button' ? (
-              <Button>{t(`${translationKey}.AddService`)}</Button>
+              <Button>{t(`${translationKey}_AddService`)}</Button>
             ) : undefined
           }
-          title={t(`${translationKey}.AddService`)}>
+          title={t(`${translationKey}_AddService`)}>
           {
             <ServiceForm
               handleSubmit={(values: ServiceFormValues) =>

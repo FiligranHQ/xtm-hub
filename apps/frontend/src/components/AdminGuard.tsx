@@ -1,13 +1,12 @@
 'use client';
-
 import { PortalContext } from '@/components/me/AppPortalContext';
 import useGranted from '@/hooks/use-granted';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { OrganizationCapability, PortalCapability } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import * as React from 'react';
-import { useContext } from 'react';
+import { useContext } from 'react'; // Component interface
 
+import { useTranslate } from '@tolgee/react';
 // Component interface
 interface GuardComponentProps {
   children: React.ReactNode;
@@ -38,14 +37,14 @@ const GuardCapacityComponent = ({
     isAdmin;
 
   const isPersonalSpace = currentOrganization?.personal_space ?? false;
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   if (!authorized || (shouldNotBePersonalSpace && isPersonalSpace)) {
     if (displayError) {
       return (
         <>
-          <h2 className="txt-title">{t('Utils.Error')}</h2>
-          {t('Error.YouAreNotAuthorized')}
+          <h2 className="txt-title">{t('Utils_Error')}</h2>
+          {t('Error_YouAreNotAuthorized')}
         </>
       );
     }

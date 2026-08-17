@@ -1,22 +1,22 @@
 import TrialsList from '@/components/trials/TrialsList';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 
 const breadcrumbValue = [
   {
-    label: 'MenuLinks.Settings',
+    label: 'MenuLinks_Settings',
   },
   {
-    label: 'MenuLinks.OpenAEVTrial',
+    label: 'MenuLinks_OpenAEVTrial',
   },
 ];
 const PageLoader = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.OpenAEVTrial')}</h1>
+      <h1 className="sr-only">{t('MenuLinks_OpenAEVTrial')}</h1>
       <TrialsList platformIdentifier={PlatformIdentifier.Openaev} />
     </>
   );

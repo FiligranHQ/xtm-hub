@@ -4,7 +4,7 @@ import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resourc
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { IntegrationType } from '@graphql/generated';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTolgee, useTranslate } from '@tolgee/react';
 import { Fragment, useMemo } from 'react';
 
 interface PublicShareableResourceListProps {
@@ -18,8 +18,8 @@ export const PublicShareableResourceList = ({
   serviceInstance,
   baseUrl,
 }: PublicShareableResourceListProps) => {
-  const t = useTranslations();
-  const locale = useLocale();
+  const { t } = useTranslate();
+  const { language: locale } = useTolgee(['language']);
 
   const documentsByIntegrationType = useMemo(() => {
     return documents.reduce<
@@ -41,7 +41,7 @@ export const PublicShareableResourceList = ({
 
   if (documents.length === 0) {
     return (
-      <div className="my-4 text-center">{t('Utils.DocumentNotFound')}</div>
+      <div className="my-4 text-center">{t('Utils_DocumentNotFound')}</div>
     );
   }
 
@@ -54,7 +54,7 @@ export const PublicShareableResourceList = ({
               integrationType as IntegrationType
             ) && (
               <h2 className="mt-xl">
-                {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}
+                {t(`Service_OpenctiIntegrations_Type_${integrationType}`)}
               </h2>
             )}
             <ul

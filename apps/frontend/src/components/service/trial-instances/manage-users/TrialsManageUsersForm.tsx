@@ -19,12 +19,12 @@ import ServiceGroupsByServiceInstanceIdQueryGraphql, {
 import ServiceGroupsUpdateMutationGraphql from '@generated/serviceGroupsUpdateMutation.graphql';
 import { UserList_fragment$key } from '@generated/UserList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { readInlineData, useLazyLoadQuery, useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const formSchema = z.object({
   groups: z.array(
     z.object({
@@ -48,7 +48,7 @@ export const TrialsManageUsersForm = ({
   serviceInstanceId,
   onCompleted,
 }: TrialsManageUsersFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { orderMode, orderBy, pageSize } = useUserListLocalstorage();
   const { data: availableUsers } = useUsersList({
     orderMode,
@@ -76,14 +76,14 @@ export const TrialsManageUsersForm = ({
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
       onCompleted() {
         onCompleted();
         toast({
-          title: t('Utils.Success'),
+          title: t('Utils_Success'),
         });
       },
     });
@@ -139,8 +139,8 @@ export const TrialsManageUsersForm = ({
               <MultiSelectFormField
                 options={options}
                 defaultValue={value}
-                placeholder={t('Service.Trials.ManageUsers.Email')}
-                noResultString={t('Utils.NotFound')}
+                placeholder={t('Service_Trials_ManageUsers_Email')}
+                noResultString={t('Utils_NotFound')}
                 onValueChange={onChange}
                 variant="inverted"
               />
@@ -164,12 +164,12 @@ export const TrialsManageUsersForm = ({
               variant="secondary"
               type="button"
               onClick={onCancel}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
             <Button
               disabled={!form.formState.isDirty}
               type="submit">
-              {t('Utils.Validate')}
+              {t('Utils_Validate')}
             </Button>
           </div>
         </SheetFooter>

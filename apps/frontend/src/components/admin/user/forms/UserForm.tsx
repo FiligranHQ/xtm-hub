@@ -15,10 +15,10 @@ import {
   SheetFooter,
 } from '@filigran/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface UserFormProps {
   handleSubmit: (values: z.infer<typeof userFormSchema>) => void;
   validationSchema: typeof userFormSchema;
@@ -26,7 +26,7 @@ interface UserFormProps {
 export const UserForm = ({ handleSubmit, validationSchema }: UserFormProps) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const form = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
@@ -54,10 +54,10 @@ export const UserForm = ({ handleSubmit, validationSchema }: UserFormProps) => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.Email')}</FormLabel>
+              <FormLabel>{t('UserForm_Email')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('UserForm.Email')}
+                  placeholder={t('UserForm_Email')}
                   {...field}
                 />
               </FormControl>
@@ -71,7 +71,7 @@ export const UserForm = ({ handleSubmit, validationSchema }: UserFormProps) => {
           name="capabilities"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.OrganizationCapabilities')}</FormLabel>
+              <FormLabel>{t('UserForm_OrganizationCapabilities')}</FormLabel>
               <FormControl>
                 <CapabilityMultiSelect
                   value={field.value}
@@ -88,12 +88,12 @@ export const UserForm = ({ handleSubmit, validationSchema }: UserFormProps) => {
             variant="secondary"
             type="button"
             onClick={(e) => handleCloseSheet(e)}>
-            {t('Utils.Cancel')}
+            {t('Utils_Cancel')}
           </Button>
           <Button
             disabled={!form.formState.isDirty}
             type="submit">
-            {t('Utils.Validate')}
+            {t('Utils_Validate')}
           </Button>
         </SheetFooter>
       </form>

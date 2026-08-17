@@ -2,17 +2,17 @@
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { ErrorPage } from '@/components/ui/ErrorPage';
 import { isProduction } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useRelayEnvironment } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface PublicPathErrorProps {
   error: Error & { digest?: string; componentStack?: string };
 }
 
 const PublicPathError = ({ error }: PublicPathErrorProps) => {
   const env = useRelayEnvironment();
-  const t = useTranslations();
+  const { t } = useTranslate();
   useEffect(() => {
     if (isProduction()) {
       logFrontendError(
@@ -26,7 +26,7 @@ const PublicPathError = ({ error }: PublicPathErrorProps) => {
 
   return (
     <ErrorPage>
-      <p className="text-center">{t('PublicPathError.NotFound')}</p>
+      <p className="text-center">{t('PublicPathError_NotFound')}</p>
     </ErrorPage>
   );
 };

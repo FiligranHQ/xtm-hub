@@ -16,10 +16,10 @@ import { AlertDialog, AlertDialogContent, SimpleTooltip } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { OneClickDeployMutation as OneClickDeployMutationType } from '@generated/OneClickDeployMutation.graphql';
-import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface OneClickDeployProps {
   documentData: documentItem_fragment$data;
   requiredProductVersion?: string | null;
@@ -29,7 +29,7 @@ const OneClickDeploy = ({
   documentData,
   requiredProductVersion,
 }: OneClickDeployProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
   const { platforms } = useRegisteredPlatforms(platformIdentifier, {
     onlyActive: true,
@@ -174,7 +174,7 @@ const OneClickDeploy = ({
     <Button
       disabled={isDeploymentDisabled || eeBlocked}
       onClick={() => setIsOpen(true)}>
-      {t('Service.ShareableResources.Deploy.DeployPlatform', {
+      {t('Service_ShareableResources_Deploy_DeployPlatform', {
         platformName:
           PlatformMetadataMapping[platformIdentifier].name ?? 'OpenCTI',
       })}
@@ -194,7 +194,7 @@ const OneClickDeploy = ({
 
   const container = isDeploymentDisabled ? (
     <SimpleTooltip
-      title={t('Service.Connectors.Incompatible', {
+      title={t('Service_Connectors_Incompatible', {
         platformToBeUpdated,
         count: incompatiblePlatformsCount,
       })}>

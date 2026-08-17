@@ -8,9 +8,8 @@ import {
   TooltipTrigger,
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { Fragment, ReactNode } from 'react';
-
 export interface GroupedSelection {
   parentValue: string;
   parentLabel: string;
@@ -29,14 +28,14 @@ interface RemoveFilterButtonProps {
 }
 
 export const AndSeparator = ({ className }: { className?: string }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <span
       className={cn(
         'inline-flex items-center h-9 px-2 content-body-compact-medium bg-elevation-background-layer-2 text-text-default-primary rounded-lg',
         className
       )}>
-      {t('Utils.And')}
+      {t('Utils_And')}
     </span>
   );
 };
@@ -55,14 +54,14 @@ export const FilterLabel = ({
   );
 };
 export const OrSeparator = ({ className }: { className?: string }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <span
       className={cn(
         'inline-flex items-center h-8 px-2 mx-2 content-body-compact-medium bg-elevation-surface-heading-layer-3 text-text-default-primary rounded-lg',
         className
       )}>
-      {t('Utils.Or')}
+      {t('Utils_Or')}
     </span>
   );
 };

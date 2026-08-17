@@ -1,5 +1,4 @@
 'use client';
-
 import { DocumentsListQuery } from '@/components/service/document/document.graphql';
 import DocumentList from '@/components/service/vault/[slug]/DocumentList';
 import { documentListLocalStorage } from '@/components/service/vault/document-list-localstorage';
@@ -7,41 +6,42 @@ import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
 import { DataTable } from '@filigran/ui';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import { useQueryLoader } from 'react-relay';
+
+import { useTranslate } from '@tolgee/react';
 interface PreloaderProps {
   serviceInstance: serviceInstance_fragment$data;
 }
 const PageLoader = ({ serviceInstance }: PreloaderProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const columns: ColumnDef<documentItem_fragment$data>[] = [
     {
       accessorKey: 'file_name',
       id: 'file_name',
-      header: t('Service.Vault.FileTab.FileName'),
+      header: t('Service_Vault_FileTab_FileName'),
     },
     {
       accessorKey: 'description',
       id: 'description',
       size: 300,
-      header: t('Service.Vault.FileTab.Description'),
+      header: t('Service_Vault_FileTab_Description'),
     },
     {
       id: 'created_at',
-      header: t('Service.Vault.FileTab.UploadDate'),
+      header: t('Service_Vault_FileTab_UploadDate'),
       cell: ({ row }) => <>{formatDate(row.original.created_at)}</>,
     },
     {
       accessorKey: 'download_number',
       id: 'download_number',
       size: 40,
-      header: t('Service.Vault.FileTab.NumberDownload'),
+      header: t('Service_Vault_FileTab_NumberDownload'),
     },
   ];
 

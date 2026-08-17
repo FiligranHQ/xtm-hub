@@ -4,20 +4,19 @@ import {
   VaultNewFileForm,
 } from '@/components/service/vault/VaultNewFileForm';
 import { IconActionContext } from '@/components/ui/IconActions';
-import { useToast } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
-import { useContext } from 'react';
-
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import useDecodedParams from '@/hooks/use-decoded-params';
+import { useToast } from '@filigran/ui';
 import DocumentItem_fragmentGraphql, {
   documentItem_fragment$data,
   documentItem_fragment$key,
 } from '@generated/documentItem_fragment.graphql';
 import { documentUpdateMutation } from '@generated/documentUpdateMutation.graphql';
+import { useContext } from 'react';
 import { readInlineData, useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface EditDocumentProps {
   documentData: documentItem_fragment$data;
   open: boolean;
@@ -30,7 +29,7 @@ export const EditDocument = ({
   setOpen,
 }: EditDocumentProps) => {
   const { toast } = useToast();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [updateMutation] = useMutation<documentUpdateMutation>(
     DocumentUpdateMutation
   );
@@ -65,8 +64,8 @@ export const EditDocument = ({
           response.updateDocument
         );
         toast({
-          title: t('Utils.Success'),
-          description: t('VaultActions.DocumentUpdated', {
+          title: t('Utils_Success'),
+          description: t('VaultActions_DocumentUpdated', {
             file_name: updatedDocument.file_name ?? '',
           }),
         });
@@ -74,8 +73,8 @@ export const EditDocument = ({
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -84,7 +83,7 @@ export const EditDocument = ({
     <SheetWithPreventingDialog
       open={open}
       setOpen={setOpen}
-      title={t('Service.Vault.FileForm.EditFile')}>
+      title={t('Service_Vault_FileForm_EditFile')}>
       <VaultNewFileForm
         document={documentData}
         handleSubmit={updateDocumentDescription}

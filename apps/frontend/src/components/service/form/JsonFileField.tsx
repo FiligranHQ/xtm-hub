@@ -1,9 +1,8 @@
 import FileInputWithPrevent from '@/components/ui/FileInputWithPrevent';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-
 interface ServiceFormJsonFileFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   setIsDirty: (isDirty: boolean) => void;
@@ -15,11 +14,11 @@ export const ServiceFormJsonFileField = ({
   setIsDirty,
   document,
 }: ServiceFormJsonFileFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <FormItem>
       <FormLabel>
-        {t('Service.Form.ExistingJSONFile', {
+        {t('Service_Form_ExistingJSONFile', {
           file_name: field.value?.[0].name ?? document?.file_name,
         })}
       </FormLabel>
@@ -28,9 +27,9 @@ export const ServiceFormJsonFileField = ({
           <FileInputWithPrevent
             field={field}
             texts={{
-              selectFile: t('Service.Form.UpdateJSONFile'),
-              dialogTitle: t('Service.Form.UpdateJSONFile'),
-              dialogDescription: t('Service.Form.DescriptionUpdateJSONFile'),
+              selectFile: t('Service_Form_UpdateJSONFile'),
+              dialogTitle: t('Service_Form_UpdateJSONFile'),
+              dialogDescription: t('Service_Form_DescriptionUpdateJSONFile'),
             }}
             allowedTypes="application/json"
           />

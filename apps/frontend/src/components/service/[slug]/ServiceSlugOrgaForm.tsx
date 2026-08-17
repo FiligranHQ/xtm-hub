@@ -29,13 +29,13 @@ import {
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscriptionInServiceUpdateMutation } from '@generated/subscriptionInServiceUpdateMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceSlugAddOrgaFormSheetProps {
   serviceInstance: serviceInstanceForSubscriptions_fragment$data;
   subscriptions: subscription_fragment$data[];
@@ -59,7 +59,7 @@ export const ServiceSlugOrgaForm = ({
   subscriptionConnectionId,
 }: ServiceSlugAddOrgaFormSheetProps) => {
   const { handleCloseSheet, setIsDirty, setOpenSheet } = useDialogContext();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { toast } = useToast();
   const { organizationsData, refetch } = getOrganizations();
   const organizations = useUnsubscribedOrganizations(
@@ -125,8 +125,8 @@ export const ServiceSlugOrgaForm = ({
         },
         onCompleted: (_response) => {
           toast({
-            title: t('Utils.Success'),
-            description: t('ServiceActions.OrganizationAdded', {
+            title: t('Utils_Success'),
+            description: t('ServiceActions_OrganizationAdded', {
               name: selectedOrganizationName,
               serviceName: serviceInstance.name,
             }),
@@ -136,8 +136,8 @@ export const ServiceSlugOrgaForm = ({
         onError: (error: Error) => {
           toast({
             variant: 'destructive',
-            title: t('Utils.Error'),
-            description: <>{t(`Error.Server.${error.message}`)}</>,
+            title: t('Utils_Error'),
+            description: <>{t(`Error_Server_${error.message}`)}</>,
           });
         },
       });
@@ -151,8 +151,8 @@ export const ServiceSlugOrgaForm = ({
       },
       onCompleted: (_response) => {
         toast({
-          title: t('Utils.Success'),
-          description: t('ServiceActions.OrganizationAdded', {
+          title: t('Utils_Success'),
+          description: t('ServiceActions_OrganizationAdded', {
             name: selectedOrganizationName,
             serviceName: serviceInstance.name,
           }),
@@ -162,8 +162,8 @@ export const ServiceSlugOrgaForm = ({
       onError: (error: Error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
+          title: t('Utils_Error'),
+          description: <>{t(`Error_Server_${error.message}`)}</>,
         });
       },
     });
@@ -191,7 +191,7 @@ export const ServiceSlugOrgaForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t('OrganizationInServiceAction.Organization')}
+                    {t('OrganizationInServiceAction_Organization')}
                   </FormLabel>
                   <FormControl>
                     <MultiSelectFormField
@@ -204,9 +204,9 @@ export const ServiceSlugOrgaForm = ({
                       defaultValue={field.value}
                       onValueChange={field.onChange}
                       onInputChange={handleOrganizationsInputChange}
-                      noResultString={t('Utils.NotFound')}
+                      noResultString={t('Utils_NotFound')}
                       placeholder={t(
-                        'OrganizationInServiceAction.SelectOrganization'
+                        'OrganizationInServiceAction_SelectOrganization'
                       )}
                       variant="inverted"
                     />
@@ -218,9 +218,9 @@ export const ServiceSlugOrgaForm = ({
           )}
 
           <div className="border border-primary rounded-lg p-l">
-            <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
+            <FormLabel>{t('OrganizationInServiceAction_SelectCapa')}</FormLabel>
             <p className="txt-sub-content italic">
-              {t('OrganizationInServiceAction.SelectCapaDescription')}
+              {t('OrganizationInServiceAction_SelectCapaDescription')}
             </p>
             {serviceInstance.service_definition?.service_capability
               ?.filter((sc) => !!sc)
@@ -248,7 +248,7 @@ export const ServiceSlugOrgaForm = ({
                       <label
                         htmlFor={id}
                         className="txt-sub-content cursor-pointer">
-                        {t('Service.Form.CapabilityAccessLabel', {
+                        {t('Service_Form_CapabilityAccessLabel', {
                           name: name ?? '',
                           description: description ?? '',
                         })}
@@ -266,7 +266,7 @@ export const ServiceSlugOrgaForm = ({
               <>
                 <FormItem>
                   <FormLabel>
-                    {t('OrganizationInServiceAction.StartDate')}
+                    {t('OrganizationInServiceAction_StartDate')}
                   </FormLabel>
                   <DatePicker
                     popoverContentClassName="bg-elevation-background-layer-3"
@@ -286,7 +286,7 @@ export const ServiceSlugOrgaForm = ({
               <>
                 <FormItem>
                   <FormLabel>
-                    {t('OrganizationInServiceAction.EndDate')}
+                    {t('OrganizationInServiceAction_EndDate')}
                   </FormLabel>
                   <DatePicker
                     popoverContentClassName="bg-elevation-background-layer-3"
@@ -304,12 +304,12 @@ export const ServiceSlugOrgaForm = ({
               variant="secondary"
               type="button"
               onClick={(e) => handleCloseSheet(e)}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
             <Button
               disabled={!form.formState.isValid}
               type="submit">
-              {t('Utils.Validate')}
+              {t('Utils_Validate')}
             </Button>
           </SheetFooter>
         </form>

@@ -50,9 +50,9 @@ export const RegistrationLearnMore = async ({
       <Section className="bg-blue-800/5 px-xl">
         <div className="text-center w-[70%] m-auto">
           <h2 className="text-primary text-2xl mb-l">
-            {t('Service.Trials.XTMPlatform.Title')}
+            {t('Service_Trials_XTMPlatform_Title')}
           </h2>
-          <p>{t('Service.Trials.XTMPlatform.Description', { platformName })}</p>
+          <p>{t('Service_Trials_XTMPlatform_Description', { platformName })}</p>
         </div>
         <div className="flex flex-col lg:flex-row gap-xl">
           <div className="flex flex-col gap-s basis-full">
@@ -62,18 +62,18 @@ export const RegistrationLearnMore = async ({
                   width="25"
                   height="25"
                   src="/logo_opencti_dark.png"
-                  alt={t('Service.Trials.XTMPlatform.LogoAlt', {
-                    name: t('PlatformIdentifier.opencti'),
+                  alt={t('Service_Trials_XTMPlatform_LogoAlt', {
+                    name: t('PlatformIdentifier_opencti'),
                   })}
                 />
-                {t('PlatformIdentifier.opencti')}
+                {t('PlatformIdentifier_opencti')}
               </h3>
               <p className="mb-s">
                 <strong>
-                  {t('Service.Trials.XTMPlatform.OpenCTITagline')}
+                  {t('Service_Trials_XTMPlatform_OpenCTITagline')}
                 </strong>
               </p>
-              <p>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</p>
+              <p>{t('Service_Trials_XTMPlatform_OpenCTIDescription')}</p>
             </div>
             <div className="rounded p-6 basis-full bg-elevation-background-layer-1">
               <h3 className="mb-m flex gap-s">
@@ -81,18 +81,18 @@ export const RegistrationLearnMore = async ({
                   width="25"
                   height="25"
                   src="/logo_openaev_dark.png"
-                  alt={t('Service.Trials.XTMPlatform.LogoAlt', {
-                    name: t('PlatformIdentifier.openaev'),
+                  alt={t('Service_Trials_XTMPlatform_LogoAlt', {
+                    name: t('PlatformIdentifier_openaev'),
                   })}
                 />
-                {t('PlatformIdentifier.openaev')}
+                {t('PlatformIdentifier_openaev')}
               </h3>
               <p className="mb-s">
                 <strong>
-                  {t('Service.Trials.XTMPlatform.OpenAEVTagline')}
+                  {t('Service_Trials_XTMPlatform_OpenAEVTagline')}
                 </strong>
               </p>
-              <p>{t('Service.Trials.XTMPlatform.OpenAEVDescription')}</p>
+              <p>{t('Service_Trials_XTMPlatform_OpenAEVDescription')}</p>
             </div>
           </div>
           <div className="basis-full m-auto">
@@ -106,7 +106,7 @@ export const RegistrationLearnMore = async ({
               }
               priority={false}
               loading="lazy"
-              alt={t('Service.Trials.XTMPlatform.IllustrationAlt')}
+              alt={t('Service_Trials_XTMPlatform_IllustrationAlt')}
               className="rounded w-full"
             />
           </div>
@@ -128,12 +128,12 @@ export const RegistrationLearnMore = async ({
           </div>
           <div className="order-first text-sm lg:order-last basis-full">
             <h2 className="text-primary text-2xl mb-l">
-              {t('Service.Trials.QuickStart.Title')}
+              {t('Service_Trials_QuickStart_Title')}
             </h2>
             <p className="mb-l">
-              {t('Service.Trials.QuickStart.Subtitle', { platformName })}
+              {t('Service_Trials_QuickStart_Subtitle', { platformName })}
             </p>
-            <p>{t('Service.Trials.QuickStart.Description')}</p>
+            <p>{t('Service_Trials_QuickStart_Description')}</p>
           </div>
         </div>
       </Section>

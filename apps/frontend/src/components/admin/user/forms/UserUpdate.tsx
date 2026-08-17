@@ -3,9 +3,8 @@ import { UserUpdateForm } from '@/components/admin/user/forms/UserUpdateForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import useAdminPath from '@/hooks/use-admin-path';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { ReactNode, useState } from 'react';
-
 interface EditUserProps {
   user: UserList_fragment$data;
   trigger?: ReactNode;
@@ -21,7 +20,7 @@ export const EditUser = ({
 }: EditUserProps) => {
   const isAdminPath = useAdminPath();
   const [openSheet, setOpenSheet] = useState(defaultStateOpen ?? false);
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const handleOpenSheet = (open: boolean) => {
     setOpenSheet((prevState) => {
@@ -35,7 +34,7 @@ export const EditUser = ({
 
   return (
     <SheetWithPreventingDialog
-      title={t('UserActions.UpdateUser', { email: user.email })}
+      title={t('UserActions_UpdateUser', { email: user.email })}
       open={openSheet}
       setOpen={handleOpenSheet}
       trigger={trigger}>

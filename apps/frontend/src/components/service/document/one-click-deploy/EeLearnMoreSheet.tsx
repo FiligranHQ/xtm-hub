@@ -19,13 +19,13 @@ import { Button } from '@filigran/ui/servers';
 import { reachSalesMutation as ReachSalesMutationType } from '@generated/reachSalesMutation.graphql';
 import { PlatformIdentifier } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface EeLearnMoreSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -46,9 +46,9 @@ const EeLearnMoreSheet = ({
   serviceInstanceId,
   platformIdentifier,
 }: EeLearnMoreSheetProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const defaultMessage = t(
-    'Service.ShareableResources.Deploy.EELearnMore.DefaultMessage'
+    'Service_ShareableResources_Deploy_EELearnMore_DefaultMessage'
   );
 
   const form = useForm<z.infer<typeof interestFormSchema>>({
@@ -80,14 +80,14 @@ const EeLearnMoreSheet = ({
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
       onCompleted() {
         toast({
-          title: t('Service.Trials.ReachOutToSalesSuccessTitle'),
-          description: t('Service.Trials.ReachOutToSalesSuccessMessage'),
+          title: t('Service_Trials_ReachOutToSalesSuccessTitle'),
+          description: t('Service_Trials_ReachOutToSalesSuccessMessage'),
         });
         setOpen(false);
       },
@@ -102,27 +102,27 @@ const EeLearnMoreSheet = ({
         <SheetHeader className="pl-xl">
           <div className="flex items-center gap-s">
             <SheetTitle>
-              {t('Service.ShareableResources.Deploy.EELearnMore.Title')}
+              {t('Service_ShareableResources_Deploy_EELearnMore_Title')}
             </SheetTitle>
             <EeBadge />
           </div>
           <SheetDescription>
-            {t('Service.ShareableResources.Deploy.EELearnMore.Subtitle')}
+            {t('Service_ShareableResources_Deploy_EELearnMore_Subtitle')}
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col min-h-full pb-l">
           <div className="flex flex-col gap-l">
             <p className="text-sm font-semibold">
-              {t('Service.ShareableResources.Deploy.EELearnMore.Heading')}
+              {t('Service_ShareableResources_Deploy_EELearnMore_Heading')}
             </p>
             <p className="text-sm text-text-secondary">
               {t(
-                'Service.ShareableResources.Deploy.EELearnMore.FirstParagraph'
+                'Service_ShareableResources_Deploy_EELearnMore_FirstParagraph'
               )}
             </p>
             <p className="text-sm text-text-secondary">
               {t(
-                'Service.ShareableResources.Deploy.EELearnMore.SecondParagraph'
+                'Service_ShareableResources_Deploy_EELearnMore_SecondParagraph'
               )}
             </p>
           </div>
@@ -131,12 +131,12 @@ const EeLearnMoreSheet = ({
             <div className="flex flex-col">
               <h3 className="text-sm font-semibold mb-s">
                 {t(
-                  'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionTitle'
+                  'Service_ShareableResources_Deploy_EELearnMore_EnterpriseEditionTitle'
                 )}
               </h3>
               <p className="text-sm text-text-secondary">
                 {t(
-                  'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionDescription'
+                  'Service_ShareableResources_Deploy_EELearnMore_EnterpriseEditionDescription'
                 )}
               </p>
               <Link
@@ -144,18 +144,18 @@ const EeLearnMoreSheet = ({
                 rel="noopener noreferrer"
                 href={EE_OPENCTI_LEARN_MORE_URL}
                 className="text-sm underline text-primary w-fit">
-                {t('Service.ShareableResources.Deploy.EELearnMore.Link')}
+                {t('Service_ShareableResources_Deploy_EELearnMore_Link')}
               </Link>
             </div>
             <div className="flex flex-col gap-s">
               <h3 className="text-sm font-semibold">
                 {t(
-                  'Service.ShareableResources.Deploy.EELearnMore.InterestedTitle'
+                  'Service_ShareableResources_Deploy_EELearnMore_InterestedTitle'
                 )}
               </h3>
               <p className="text-sm text-text-secondary">
                 {t(
-                  'Service.ShareableResources.Deploy.EELearnMore.InterestedSubtitle'
+                  'Service_ShareableResources_Deploy_EELearnMore_InterestedSubtitle'
                 )}
               </p>
               <Form {...form}>
@@ -183,7 +183,7 @@ const EeLearnMoreSheet = ({
                       type="submit"
                       disabled={isInFlight || !message?.trim()}>
                       {t(
-                        'Service.ShareableResources.Deploy.EELearnMore.SendButton'
+                        'Service_ShareableResources_Deploy_EELearnMore_SendButton'
                       )}
                     </Button>
                   </div>

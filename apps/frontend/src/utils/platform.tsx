@@ -41,7 +41,7 @@ export const buildPlatformHoverLinks = (
   const actions: PlatformHoverAction[] = [
     {
       id: 'platform-details',
-      label: t('Service.RegisteredPlatforms.PlatformDetails'),
+      label: t('Service_RegisteredPlatforms_PlatformDetails'),
       href: `/${APP_PATH}/service/${platform.identifier}/${platform.subscription?.service_instance?.id}`,
       variant: 'secondary',
     },
@@ -49,7 +49,7 @@ export const buildPlatformHoverLinks = (
   if (shouldDisplayPlatformLink) {
     actions.push({
       id: 'platform-link',
-      label: t('Service.RegisteredPlatforms.GoToMyPlatform'),
+      label: t('Service_RegisteredPlatforms_GoToMyPlatform'),
       href: platform.url,
       target: '_blank',
     });

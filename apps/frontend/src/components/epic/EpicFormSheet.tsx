@@ -11,12 +11,12 @@ import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import { AddIcon } from '@filigran/icon';
 import { Button, useToast } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface EpicFormSheetProps {
   epic?: epic_fragment$data;
   open?: boolean;
@@ -30,7 +30,7 @@ export const EpicFormSheet = ({
   setOpen: externalSetOpen,
   triggerElement,
 }: EpicFormSheetProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [internalOpenSheet, setInternalOpenSheet] = useState(false);
 
   const [commitEpicMutation] = useMutation(CreateEpicMutation);
@@ -59,15 +59,15 @@ export const EpicFormSheet = ({
         setOpenSheet(false);
         setSelectedProduct(inputValues.product);
         toast({
-          title: t('Utils.Success'),
-          description: t('Utils.Success'),
+          title: t('Utils_Success'),
+          description: t('Utils_Success'),
         });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -87,15 +87,15 @@ export const EpicFormSheet = ({
       onCompleted: () => {
         setOpenSheet(false);
         toast({
-          title: t('Utils.Success'),
-          description: t('Utils.Success'),
+          title: t('Utils_Success'),
+          description: t('Utils_Success'),
         });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -127,7 +127,7 @@ export const EpicFormSheet = ({
           triggerElement || (
             <Button variant="tertiary">
               <AddIcon className="size-4 mr-s" />
-              {t('Utils.Create')}
+              {t('Utils_Create')}
             </Button>
           )
         )

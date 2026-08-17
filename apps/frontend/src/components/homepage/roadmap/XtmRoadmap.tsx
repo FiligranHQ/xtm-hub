@@ -8,12 +8,13 @@ import { PublicLocale } from '@/i18n/config';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { Button } from '@filigran/ui/servers';
+import { getLanguage } from '@/tolgee/language';
+import { getTranslate } from '@/tolgee/server';
 import {
   EpicCountPerTimelineQueryDocument,
   EpicCountPerTimelineQueryQuery,
   Timeline,
 } from '@graphql/generated';
-import { getLocale, getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -34,18 +35,17 @@ const XtmRoadmap = async ({
   titleProduct = 'default',
   paramsLocale,
 }: XtmRoadmapProps) => {
-  const t = await getTranslations('PublicHomePage.XtmRoadmap');
-  const tPlatformIdentifier = await getTranslations('PlatformIdentifier');
-  const usedLocale = paramsLocale ?? (await getLocale());
+  const t = await getTranslate();
+  const usedLocale = paramsLocale ?? (await getLanguage());
 
   const title =
     titleProduct === 'default'
-      ? t('Title')
-      : t('TitleWithProduct', {
+      ? t('PublicHomePage_XtmRoadmap_Title')
+      : t('PublicHomePage_XtmRoadmap_TitleWithProduct', {
           product:
             titleProduct === 'opencti'
-              ? tPlatformIdentifier('opencti')
-              : tPlatformIdentifier('openaev'),
+              ? t('PlatformIdentifier_opencti')
+              : t('PlatformIdentifier_openaev'),
         });
 
   const data = await serverGraphqlFetch<EpicCountPerTimelineQueryQuery>(
@@ -69,14 +69,16 @@ const XtmRoadmap = async ({
       <div className="flex flex-col gap-s flex-3">
         <h2 className="heading-xl">{title}</h2>
         <p className="text-muted-foreground text-xs sm:text-sm">
-          {t('Description')}
+          {t('PublicHomePage_XtmRoadmap_Description')}
         </p>
         <div>
           <Button
             asChild
             variant="secondary"
             className="border-elevation-border-strong">
-            <Link href={seeMoreHref ?? defaultSeeMoreHref}>{t('SeeMore')}</Link>
+            <Link href={seeMoreHref ?? defaultSeeMoreHref}>
+              {t('PublicHomePage_XtmRoadmap_SeeMore')}
+            </Link>
           </Button>
         </div>
       </div>
@@ -84,7 +86,7 @@ const XtmRoadmap = async ({
       <div className="hidden min-[1330px]:block relative h-24 flex-2 rounded-lg overflow-hidden">
         <Image
           src="/xtm_roadmap_space.png"
-          alt={t('ImageAlt')}
+          alt={t('PublicHomePage_XtmRoadmap_ImageAlt')}
           fill
           sizes="33vw"
           className="object-contain"

@@ -13,10 +13,10 @@ import {
 } from '@filigran/ui';
 import { FiligranProduct } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const productValues = Object.values(FiligranProduct) as [
   FiligranProduct,
   ...FiligranProduct[],
@@ -51,7 +51,7 @@ const SolutionCategoryForm = ({
   handleDelete?: () => void;
   handleSubmit: (values: z.infer<typeof solutionCategoryFormSchema>) => void;
 }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const form = useForm<z.infer<typeof solutionCategoryFormSchema>>({
     resolver: zodResolver(solutionCategoryFormSchema),
     defaultValues: {
@@ -70,10 +70,10 @@ const SolutionCategoryForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('SolutionCategory.Form.Name')}</FormLabel>
+              <FormLabel>{t('SolutionCategory_Form_Name')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('SolutionCategory.Form.Name')}
+                  placeholder={t('SolutionCategory_Form_Name')}
                   {...field}
                 />
               </FormControl>
@@ -86,7 +86,7 @@ const SolutionCategoryForm = ({
           name="product"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('SolutionCategory.Form.Product')}</FormLabel>
+              <FormLabel>{t('SolutionCategory_Form_Product')}</FormLabel>
               <FormControl>
                 <MultiSelectFormField
                   options={productOptions}
@@ -96,8 +96,8 @@ const SolutionCategoryForm = ({
                   defaultValue={field.value}
                   value={field.value}
                   onValueChange={field.onChange}
-                  noResultString={t('Utils.NotFound')}
-                  placeholder={t('SolutionCategory.Form.Product')}
+                  noResultString={t('Utils_NotFound')}
+                  placeholder={t('SolutionCategory_Form_Product')}
                   variant="inverted"
                 />
               </FormControl>
@@ -109,16 +109,16 @@ const SolutionCategoryForm = ({
           className={solutionCategory ? 'sm:justify-between pb-0' : 'pt-2'}>
           {solutionCategory && (
             <AlertDialogComponent
-              AlertTitle={t('MenuActions.Delete')}
-              actionButtonText={t('MenuActions.Delete')}
+              AlertTitle={t('MenuActions_Delete')}
+              actionButtonText={t('MenuActions_Delete')}
               variantName="destructive"
               triggerElement={
                 <Button variant="secondary-destructive">
-                  {t('MenuActions.Delete')}
+                  {t('MenuActions_Delete')}
                 </Button>
               }
               onClickContinue={() => handleDelete!()}>
-              {t('SolutionCategory.Dialog.Text', {
+              {t('SolutionCategory_Dialog_Text', {
                 name: solutionCategory.name,
               })}
             </AlertDialogComponent>
@@ -128,12 +128,12 @@ const SolutionCategoryForm = ({
               variant="secondary"
               type="button"
               onClick={onClose}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
             <Button
               disabled={!form.formState.isDirty}
               type="submit">
-              {t('Utils.Validate')}
+              {t('Utils_Validate')}
             </Button>
           </div>
         </SheetFooter>

@@ -1,8 +1,8 @@
 import { defaultLocale, type PublicLocale, publicLocales } from '@/i18n/config';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { TolgeeBase } from '@/tolgee/shared';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
 import { cache } from 'react';
 
 const LOCALE_TAG_MAP: Record<PublicLocale, string> = {
@@ -116,34 +116,42 @@ export function buildSeoPageMetadata({
   };
 }
 
+export const getTolgeeForLocale = cache(async (locale: PublicLocale) => {
+  const tolgee = TolgeeBase().init({ language: locale });
+  await tolgee.loadRequired();
+  return tolgee;
+});
+
 export const getDefaultMetadata = async (
   locale: PublicLocale = defaultLocale,
   pathname: string = '/'
 ): Promise<Metadata> => {
-  const [settingsResponse, t] = await Promise.all([
+  const [settingsResponse, tolgee] = await Promise.all([
     serverFetchGraphQL<settingsQuery>(
       SettingsQuery,
       {},
       { cache: 'force-cache' }
     ),
-    getTranslations({ locale, namespace: 'Metadata' }),
+    getTolgeeForLocale(locale),
   ]);
+  const t = (key: string) => tolgee.t({ key });
+
   const baseUrl = settingsResponse.data.settings.base_url_front;
   return {
-    title: t('Title'),
-    description: t('Description'),
+    title: t('Metadata_Title'),
+    description: t('Metadata_Description'),
     metadataBase: new URL(baseUrl),
     openGraph: {
-      title: t('ShortTitle'),
-      description: t('Description'),
+      title: t('Metadata_ShortTitle'),
+      description: t('Metadata_Description'),
       url: `${baseUrl}${localizedPath(locale, pathname)}`,
-      siteName: t('SiteName'),
+      siteName: t('Metadata_SiteName'),
       images: [
         {
           url: `${baseUrl}/opengraph-image.png`,
           width: 1200,
           height: 630,
-          alt: t('SiteName'),
+          alt: t('Metadata_SiteName'),
         },
       ],
       locale: getLocaleTag(locale),
@@ -152,8 +160,8 @@ export const getDefaultMetadata = async (
     },
     twitter: {
       card: 'summary_large_image',
-      title: t('ShortTitle'),
-      description: t('ShortDescription'),
+      title: t('Metadata_ShortTitle'),
+      description: t('Metadata_ShortDescription'),
       images: [`${baseUrl}/opengraph-image.png`],
       creator: '@FiligranHQ',
       site: '@FiligranHQ',

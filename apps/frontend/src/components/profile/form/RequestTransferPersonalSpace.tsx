@@ -1,5 +1,4 @@
 'use client';
-
 import { MeRequestTransferPersonalSpaceMutation } from '@/components/me/me.graphql';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import {
@@ -12,12 +11,12 @@ import {
   toast,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const formSchema = z.object({
   new_email: z.string().email('This is not a valid email.'),
 });
@@ -25,7 +24,7 @@ export type RequestTransferPersonalSpaceSchema = z.infer<typeof formSchema>;
 
 export const RequestTransferPersonalSpace = () => {
   const router = useRouter();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [pendingValues, setPendingValues] =
     useState<RequestTransferPersonalSpaceSchema>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -47,14 +46,14 @@ export const RequestTransferPersonalSpace = () => {
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
       onCompleted() {
         toast({
-          title: t('Utils.Success'),
-          description: t('ProfilePage.PersonalSpace.SuccessRequest'),
+          title: t('Utils_Success'),
+          description: t('ProfilePage_PersonalSpace_SuccessRequest'),
         });
         router.push('/app');
       },
@@ -63,32 +62,32 @@ export const RequestTransferPersonalSpace = () => {
   return (
     <>
       <Separator className="my-s" />
-      <h2 className="text-destructive">{t('Utils.DangerZone')}</h2>
+      <h2 className="text-destructive">{t('Utils_DangerZone')}</h2>
       <Card className="border-2 border-red">
         <CardHeader>
           <CardTitle className="heading-lg">
-            {t('ProfilePage.PersonalSpace.TitleDangerZone')}
+            {t('ProfilePage_PersonalSpace_TitleDangerZone')}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {t('ProfilePage.PersonalSpace.TransferPersoSpaceExplanation')}
+          {t('ProfilePage_PersonalSpace_TransferPersoSpaceExplanation')}
           <AutoForm
             className="mt-xl"
             onSubmit={(values) => onSubmit(values)}
             formSchema={formSchema}
             fieldConfig={{
               new_email: {
-                label: t('UserListPage.UserForm.Email'),
+                label: t('UserListPage_UserForm_Email'),
                 inputProps: {
-                  placeholder: t('ProfilePage.PersonalSpace.EmailPlaceholder'),
+                  placeholder: t('ProfilePage_PersonalSpace_EmailPlaceholder'),
                 },
               },
             }}>
             <div className="mt-xl flex justify-end">
               <Button
                 variant={'destructive'}
-                aria-label={t('ProfilePage.PersonalSpace.TransferPersoSpace')}>
-                {t('ProfilePage.PersonalSpace.Transfer')}
+                aria-label={t('ProfilePage_PersonalSpace_TransferPersoSpace')}>
+                {t('ProfilePage_PersonalSpace_Transfer')}
               </Button>
             </div>
           </AutoForm>
@@ -96,12 +95,12 @@ export const RequestTransferPersonalSpace = () => {
       </Card>
       <AlertDialogComponent
         isOpen={isDialogOpen}
-        AlertTitle={t('DialogActions.ContinueTitle')}
-        actionButtonText={t('MenuActions.Continue')}
+        AlertTitle={t('DialogActions_ContinueTitle')}
+        actionButtonText={t('MenuActions_Continue')}
         variantName={'destructive'}
         onOpenChange={setIsDialogOpen}
         onClickContinue={confirmEdition}>
-        {t('ProfilePage.PersonalSpace.TransferConfirmSentence')}
+        {t('ProfilePage_PersonalSpace_TransferConfirmSentence')}
       </AlertDialogComponent>
     </>
   );

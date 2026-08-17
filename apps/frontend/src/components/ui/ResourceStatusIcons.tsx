@@ -1,5 +1,4 @@
 'use client';
-
 import {
   CampaignIcon,
   MotionPlayIcon,
@@ -12,9 +11,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 export interface ResourceStatusIconsProps {
   active?: boolean;
   verified?: boolean;
@@ -44,7 +43,7 @@ export const ResourceStatusIcons = ({
   displayUnverifiedIcon = false,
   iconClassName = ICON_CLASS,
 }: ResourceStatusIconsProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   if (!active && !deployable && !displayUnverifiedIcon) {
     return null;
@@ -54,25 +53,25 @@ export const ResourceStatusIcons = ({
     <TooltipProvider>
       {deployable && (
         <StatusIcon
-          label={t('Utils.AutomaticDeploy')}
+          label={t('Utils_AutomaticDeploy')}
           icon={<MotionPlayIcon className={iconClassName} />}
         />
       )}
       {verified && (
         <StatusIcon
-          label={t('Service.ShareableResources.Details.SupportedByFiligran')}
+          label={t('Service_ShareableResources_Details_SupportedByFiligran')}
           icon={<VerifiedIcon className={iconClassName} />}
         />
       )}
       {!verified && displayUnverifiedIcon && (
         <StatusIcon
-          label={t('Service.ShareableResources.Details.SupportedByCommunity')}
+          label={t('Service_ShareableResources_Details_SupportedByCommunity')}
           icon={<ThreatActorGroupIcon className={iconClassName} />}
         />
       )}
       {active && (
         <StatusIcon
-          label={t('Badge.Published')}
+          label={t('Badge_Published')}
           icon={<CampaignIcon className={iconClassName} />}
         />
       )}

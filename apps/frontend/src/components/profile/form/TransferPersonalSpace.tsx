@@ -1,11 +1,10 @@
 import { MeTransferPersonalSpaceMutation } from '@/components/me/me.graphql';
 import { FiligranLoader } from '@filigran/icon';
 import { toast } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useMutation } from 'react-relay';
-
 interface TransferPersonalSpaceProps {
   requestId: string | null;
 }
@@ -15,7 +14,7 @@ export const TransferPersonalSpace = ({
 }: TransferPersonalSpaceProps) => {
   const router = useRouter();
 
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [commitTransferPersonalSpaceMutation] = useMutation(
     MeTransferPersonalSpaceMutation
   );
@@ -28,13 +27,13 @@ export const TransferPersonalSpace = ({
         onError(error) {
           toast({
             variant: 'destructive',
-            title: t('Utils.Error'),
-            description: t(`Error.Server.${error.message}`),
+            title: t('Utils_Error'),
+            description: t(`Error_Server_${error.message}`),
           });
         },
         onCompleted() {
           toast({
-            title: t('ProfilePage.PersonalSpace.SuccessTransfer'),
+            title: t('ProfilePage_PersonalSpace_SuccessTransfer'),
           });
 
           router.push('/app');

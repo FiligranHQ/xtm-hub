@@ -4,11 +4,10 @@ import { organizationFormSchema } from '@/components/organization/OrganizationFo
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { Button, useToast } from '@filigran/ui';
 import { organizationCreateMutation } from '@generated/organizationCreateMutation.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-
 interface CreateOrganizationProps {
   connectionId: string;
 }
@@ -16,7 +15,7 @@ interface CreateOrganizationProps {
 export const CreateOrganization = ({
   connectionId,
 }: CreateOrganizationProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { toast } = useToast();
   const [commitOrganizationCreationMutation] =
     useMutation<organizationCreateMutation>(CreateOrganizationMutation);
@@ -35,8 +34,8 @@ export const CreateOrganization = ({
         }
         setOpenSheet(false);
         toast({
-          title: t('Utils.Success'),
-          description: t('OrganizationActions.OrganizationCreated', {
+          title: t('Utils_Success'),
+          description: t('OrganizationActions_OrganizationCreated', {
             name: values.name,
           }),
         });
@@ -44,13 +43,13 @@ export const CreateOrganization = ({
       onError: (error) => {
         const message =
           error.message === 'ORGANIZATION_SAME_NAME_EXISTS'
-            ? t('OrganizationActions.ErrorNameAlreadyExists', {
+            ? t('OrganizationActions_ErrorNameAlreadyExists', {
                 name: values.name,
               })
-            : t(`Error.Server.${error.message}`);
+            : t(`Error_Server_${error.message}`);
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
+          title: t('Utils_Error'),
           description: <>{message}</>,
         });
       },
@@ -62,10 +61,10 @@ export const CreateOrganization = ({
       setOpen={setOpenSheet}
       trigger={
         <Button className="truncate inline-block ">
-          {t('OrganizationForm.CreateOrganization')}
+          {t('OrganizationForm_CreateOrganization')}
         </Button>
       }
-      title={t('OrganizationForm.CreateOrganization')}>
+      title={t('OrganizationForm_CreateOrganization')}>
       <OrganizationForm handleSubmit={handleSubmit} />
     </SheetWithPreventingDialog>
   );

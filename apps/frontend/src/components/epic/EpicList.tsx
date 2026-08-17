@@ -30,11 +30,11 @@ import {
   ServiceRestriction,
   Timeline,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 
+import { useTranslate } from '@tolgee/react';
 interface EpicListProps {
   epics: epic_fragment$data[];
   serviceInstance:
@@ -55,7 +55,7 @@ export const EpicList = ({
   onFilterChange,
   onSearch,
 }: EpicListProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [openSheet, setOpenSheet] = useState(false);
   const [showFinished, setShowFinished] = useState(false);
   const detailedServiceInstance = isServiceInstanceWithSubscriptions(
@@ -143,7 +143,7 @@ export const EpicList = ({
   return (
     <>
       <div className="flex m-s">
-        <h1>{t('Epic.XTMRoadmap')}</h1>
+        <h1>{t('Epic_XTMRoadmap')}</h1>
         <div className="ml-auto flex items-center justify-center gap-s">
           {userCanUpdate && (
             <EpicFormSheet
@@ -157,7 +157,7 @@ export const EpicList = ({
               variant="secondary">
               <Link
                 href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentSubscription.id}`}>
-                {t('Service.Capabilities.ManageAccessName')}
+                {t('Service_Capabilities_ManageAccessName')}
               </Link>
             </Button>
           )}
@@ -207,13 +207,13 @@ export const EpicList = ({
                         `m-s inline-block font-semibold`,
                         timelineMetadata.textClass
                       )}>
-                      {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
+                      {t(`Epic_Timeline_${timeline.title.toLowerCase()}`)}
                     </p>
                   </TooltipTrigger>
                   <TooltipContent
                     side="bottom"
                     align="start">
-                    {t(`Epic.Timeline.Details.${timeline.title.toLowerCase()}`)}
+                    {t(`Epic_Timeline_Details_${timeline.title.toLowerCase()}`)}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

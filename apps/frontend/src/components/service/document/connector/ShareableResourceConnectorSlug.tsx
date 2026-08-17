@@ -1,10 +1,8 @@
 'use client';
-
 import {
   BreadcrumbNav,
   BreadcrumbNavLink,
 } from '@/components/ui/BreadcrumbNav';
-import { useTranslations } from 'next-intl';
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
@@ -29,8 +27,9 @@ import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
-import Link from 'next/link';
+import Link from 'next/link'; // Component interface
 
+import { useTranslate } from '@tolgee/react';
 // Component interface
 interface ShareableResourceConnectorSlugProps {
   documentData: documentItem_fragment$data;
@@ -46,7 +45,7 @@ const ShareableResourceConnectorSlug = ({
   shareUrl,
   serviceInstance,
 }: ShareableResourceConnectorSlugProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const platformIdentifier = getPlatformIdentifier(documentData.type);
   const canClickOnDeployButton = documentData.manager_supported;
 
@@ -79,7 +78,7 @@ const ShareableResourceConnectorSlug = ({
             {documentData.manager_supported && (
               <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100 text-alert-success-primary dark:bg-turquoise-900 rounded-lg">
                 <MotionPlayIcon className="h-5 w-5 shrink-0 mr-xs" />
-                {t('Utils.AutomaticDeploy')}
+                {t('Utils_AutomaticDeploy')}
               </div>
             )}
 
@@ -87,12 +86,12 @@ const ShareableResourceConnectorSlug = ({
               {documentData.verified ? (
                 <>
                   <VerifiedIcon className="h-5 w-5 shrink-0 mr-xs" />
-                  {t('Service.ShareableResources.Details.SupportedByFiligran')}
+                  {t('Service_ShareableResources_Details_SupportedByFiligran')}
                 </>
               ) : (
                 <>
                   <ThreatActorGroupIcon className="h-5 w-5 shrink-0 mr-xs" />
-                  {t('Service.ShareableResources.Details.SupportedByCommunity')}
+                  {t('Service_ShareableResources_Details_SupportedByCommunity')}
                 </>
               )}
             </div>
@@ -115,9 +114,9 @@ const ShareableResourceConnectorSlug = ({
                 />
               ) : (
                 <SimpleTooltip
-                  title={t('Service.Connectors.UnavailableDeployments')}>
+                  title={t('Service_Connectors_UnavailableDeployments')}>
                   <Button disabled={true}>
-                    {t('Service.ShareableResources.Deploy.DeployPlatform', {
+                    {t('Service_ShareableResources_Deploy_DeployPlatform', {
                       platformName:
                         PlatformMetadataMapping[platformIdentifier].name ??
                         'OpenCTI',
@@ -142,12 +141,12 @@ const ShareableResourceConnectorSlug = ({
       {documentData.verified && (
         <div className="border border-solid border-blue rounded flex items-center gap-xs p-s text-sm mt-4">
           <InfoIcon className="shrink-0 h-4 w-4 mr-xs text-primary" />
-          {t('Service.Connectors.ImproveIntegrationPrefix')}
+          {t('Service_Connectors_ImproveIntegrationPrefix')}
           <Link
             href={manifest_url}
             target="_blank"
             className="underline">
-            {t('Service.Connectors.GithubRepositoryLink')}
+            {t('Service_Connectors_GithubRepositoryLink')}
           </Link>
         </div>
       )}

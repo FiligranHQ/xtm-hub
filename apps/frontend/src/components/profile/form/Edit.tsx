@@ -1,5 +1,4 @@
 'use client';
-
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { CountryCombobox } from '@/components/ui/country/Combobox';
 import {
@@ -14,10 +13,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const formSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
@@ -34,13 +33,13 @@ interface ProfileFormEditProps {
 }
 
 export const ProfileFormEdit = ({ onSubmit }: ProfileFormEditProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="heading-lg">{t('ProfilePage.Title')}</CardTitle>
+        <CardTitle className="heading-lg">{t('ProfilePage_Title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <AutoForm
@@ -53,21 +52,21 @@ export const ProfileFormEdit = ({ onSubmit }: ProfileFormEditProps) => {
           }}
           fieldConfig={{
             first_name: {
-              label: t('UserForm.FirstName'),
+              label: t('UserForm_FirstName'),
               inputProps: {
-                placeholder: t('UserForm.FirstName'),
+                placeholder: t('UserForm_FirstName'),
               },
             },
             last_name: {
-              label: t('UserForm.LastName'),
+              label: t('UserForm_LastName'),
               inputProps: {
-                placeholder: t('UserForm.LastName'),
+                placeholder: t('UserForm_LastName'),
               },
             },
             country: {
               fieldType: ({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('UserForm.Country')}</FormLabel>
+                  <FormLabel>{t('UserForm_Country')}</FormLabel>
                   <FormControl>
                     <CountryCombobox
                       value={field.value && { name: field.value }}
@@ -80,8 +79,8 @@ export const ProfileFormEdit = ({ onSubmit }: ProfileFormEditProps) => {
             },
           }}>
           <div className="flex justify-end">
-            <Button aria-label={t('ProfilePage.UpdateProfile')}>
-              {t('Utils.Update')}
+            <Button aria-label={t('ProfilePage_UpdateProfile')}>
+              {t('Utils_Update')}
             </Button>
           </div>
         </AutoForm>

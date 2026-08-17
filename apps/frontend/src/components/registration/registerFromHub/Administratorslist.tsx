@@ -1,12 +1,11 @@
 import { ConnectProductOrganizationAdminsQuery } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 interface AdministratorslistProps {
   admins?: ConnectProductOrganizationAdminsQuery;
 }
 
 export const Administratorslist = ({ admins }: AdministratorslistProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   if (!admins) {
     return null;
@@ -14,7 +13,7 @@ export const Administratorslist = ({ admins }: AdministratorslistProps) => {
   return (
     <div className="space-y-1">
       <div className="content-body-base">
-        {t('Register.ConnectFromHub.Administrators', {
+        {t('Register_ConnectFromHub_Administrators', {
           count: admins.usersWithCapabilitiesInOrganization?.length ?? 0,
         })}
         :

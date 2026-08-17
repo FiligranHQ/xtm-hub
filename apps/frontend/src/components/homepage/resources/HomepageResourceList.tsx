@@ -1,6 +1,7 @@
 import { findLogoUrl } from '@/components/homepage/Homepage.utils';
 import HomepageResourceCard from '@/components/homepage/resources/HomepageResourceCard';
 import { PublicLocale } from '@/i18n/config';
+import { getLanguage } from '@/tolgee/language';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import {
   SHAREABLE_RESOURCE_LIBRARY_MAPPING,
@@ -11,7 +12,6 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { HomepageDocumentFragment } from '@graphql/generated';
-import { useLocale } from 'next-intl';
 
 type HomepageResourceListProps = {
   title: string;
@@ -20,14 +20,15 @@ type HomepageResourceListProps = {
   paramsLocale?: PublicLocale;
 };
 
-const HomepageResourceList = ({
+const HomepageResourceList = async ({
   title,
   documents,
   isAuthenticated = false,
   paramsLocale,
 }: HomepageResourceListProps) => {
-  const globalLocale = useLocale();
+  const globalLocale = await getLanguage();
   const usedLocale = paramsLocale ?? globalLocale;
+
   if (documents.length === 0) {
     return null;
   }

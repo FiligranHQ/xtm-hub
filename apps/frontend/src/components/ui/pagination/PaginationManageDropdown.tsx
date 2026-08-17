@@ -11,9 +11,9 @@ import {
   DropdownMenuTrigger,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface PaginationManageDropdownProps {
   pageSize: number;
   onSetPageSize: (pageSize: number) => void;
@@ -23,7 +23,7 @@ export const PaginationManageDropdown = ({
   onSetPageSize,
   pageSize,
 }: PaginationManageDropdownProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const dropdownItems = useMemo(() => {
     return [50, 100, 200, 300, 500].map((size) => (
       <DropdownMenuRadioItem
@@ -41,14 +41,14 @@ export const PaginationManageDropdown = ({
           variant="tertiary"
           size="icon"
           className="h-9 w-9 rounded-none"
-          aria-label={t('GenericActions.Paginate.Manage')}>
+          aria-label={t('GenericActions_Paginate_Manage')}>
           <TableTuneIcon className="h-[1.125rem] w-[1.125rem]" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            {t('GenericActions.Paginate.RowsPerPage')}
+            {t('GenericActions_Paginate_RowsPerPage')}
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>

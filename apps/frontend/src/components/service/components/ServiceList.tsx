@@ -1,13 +1,3 @@
-import {
-  APP_PATH,
-  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
-} from '@/utils/path/constant';
-import {
-  IntegrationType,
-  PortalCapability,
-  ServiceRestriction,
-} from '@graphql/generated';
-
 import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
   ServiceListFilterKey,
@@ -27,10 +17,19 @@ import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import {
+  APP_PATH,
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+} from '@/utils/path/constant';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import {
+  IntegrationType,
+  PortalCapability,
+  ServiceRestriction,
+} from '@graphql/generated';
 import { Fragment, useContext, useLayoutEffect } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 export interface ServiceListProps {
   active: documentItem_fragment$data[];
   draft: documentItem_fragment$data[];
@@ -49,7 +48,7 @@ const ServiceList = ({
   connectionId,
   paginationControls,
 }: ServiceListProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { settings } = useContext(SettingsContext);
   const { translationKey, serviceInstance, type } = useServiceContext();
   const userCanUpdate = useServiceCapability(
@@ -109,7 +108,7 @@ const ServiceList = ({
       {userCanUpdate && draft.length > 0 && (
         <>
           <div className="txt-category">
-            {t(`${translationKey}.NonActive`)}:
+            {t(`${translationKey}_NonActive`)}:
           </div>
           <ul
             className={
@@ -126,7 +125,7 @@ const ServiceList = ({
             ))}
           </ul>
           {active.length > 0 && (
-            <div className="txt-category">{t(`${translationKey}.Active`)}:</div>
+            <div className="txt-category">{t(`${translationKey}_Active`)}:</div>
           )}
         </>
       )}
@@ -138,7 +137,7 @@ const ServiceList = ({
               integrationType as IntegrationType
             ) && (
               <h2>
-                {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}
+                {t(`Service_OpenctiIntegrations_Type_${integrationType}`)}
               </h2>
             )}
             <ul

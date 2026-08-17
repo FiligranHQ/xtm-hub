@@ -1,23 +1,23 @@
 import NewsFeedList from '@/components/admin/news-feed/NewsFeedList';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { Suspense } from 'react';
 
 const breadcrumbValue = [
   {
-    label: 'MenuLinks.Settings',
+    label: 'MenuLinks_Settings',
   },
   {
-    label: 'MenuLinks.NewsFeed',
+    label: 'MenuLinks_NewsFeed',
   },
 ];
 
 const PageLoader = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.NewsFeed')}</h1>
+      <h1 className="sr-only">{t('MenuLinks_NewsFeed')}</h1>
       <Suspense fallback={null}>
         <NewsFeedList />
       </Suspense>

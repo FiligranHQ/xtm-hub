@@ -1,5 +1,4 @@
 'use client';
-
 import { TrialsStorageLimitation } from '@/components/service/trial-instances/TrialsStorageLimitation';
 import { cn } from '@/lib/utils';
 import {
@@ -9,10 +8,10 @@ import {
   ArrowsOutputIcon,
 } from '@filigran/icon';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
 
+import { useTranslate } from '@tolgee/react';
 const H2 = ({ children }: { children: React.ReactNode }) => (
   <h2 className="text-primary text-2xl mb-l">{children}</h2>
 );
@@ -30,7 +29,7 @@ interface H2Props {
 }
 
 export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const baseTranslationKey = `Service.Trials.LearnMore.${platformIdentifier}`;
   return (
     <>
@@ -49,12 +48,12 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             />
           </div>
           <article className="p-xl w-full md-w-[60%]">
-            <H2>{t(`${baseTranslationKey}.WhatCanYouDo.Title`)}</H2>
+            <H2>{t(`${baseTranslationKey}_WhatCanYouDo_Title`)}</H2>
             <P className="mb-l">
-              {t(`${baseTranslationKey}.WhatCanYouDo.FirstParagraph`)}
+              {t(`${baseTranslationKey}_WhatCanYouDo_FirstParagraph`)}
             </P>
             <P className="mb-l">
-              {t(`${baseTranslationKey}.WhatCanYouDo.SecondParagraph`)}
+              {t(`${baseTranslationKey}_WhatCanYouDo_SecondParagraph`)}
             </P>
             <P>
               <Link
@@ -67,7 +66,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
                 }
                 className="underline flex gap-s items-center">
                 <ArrowRightAltIcon className="size-3" />
-                {t(`${baseTranslationKey}.WhatCanYouDo.Link`)}
+                {t(`${baseTranslationKey}_WhatCanYouDo_Link`)}
               </Link>
             </P>
           </article>
@@ -78,27 +77,27 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
               <span className="p-2 bg-blue/5 rounded">
                 <ArrowsInputIcon className="size-4" />
               </span>
-              {t(`${baseTranslationKey}.Blocks.First.Title`)}
+              {t(`${baseTranslationKey}_Blocks_First_Title`)}
             </h3>
-            <P>{t(`${baseTranslationKey}.Blocks.First.Description`)}</P>
+            <P>{t(`${baseTranslationKey}_Blocks_First_Description`)}</P>
           </article>
           <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
             <h3 className="flex items-center gap-l text-primary mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <AnalyticsIcon className="size-4" />
               </span>
-              {t(`${baseTranslationKey}.Blocks.Second.Title`)}
+              {t(`${baseTranslationKey}_Blocks_Second_Title`)}
             </h3>
-            <P>{t(`${baseTranslationKey}.Blocks.Second.Description`)}</P>
+            <P>{t(`${baseTranslationKey}_Blocks_Second_Description`)}</P>
           </article>
           <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
             <h3 className="flex items-center gap-l text-primary mb-s font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <ArrowsOutputIcon className="size-4" />
               </span>
-              {t(`${baseTranslationKey}.Blocks.Third.Title`)}
+              {t(`${baseTranslationKey}_Blocks_Third_Title`)}
             </h3>
-            <P>{t(`${baseTranslationKey}.Blocks.Third.Description`)}</P>
+            <P>{t(`${baseTranslationKey}_Blocks_Third_Description`)}</P>
           </article>
         </div>
         <TrialsStorageLimitation platformIdentifier={platformIdentifier} />

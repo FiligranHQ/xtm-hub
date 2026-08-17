@@ -1,16 +1,15 @@
 'use client';
-
 import { CollapseMenuButton } from '@/components/menu/CollapseMenuButton';
 import { LogoFiligranIcon } from '@filigran/icon';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 interface PublicMenuFooterProps {
   open: boolean;
   handleOpenMenu: () => void;
 }
 
 export const MenuFooter = ({ open, handleOpenMenu }: PublicMenuFooterProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <div>
@@ -20,7 +19,7 @@ export const MenuFooter = ({ open, handleOpenMenu }: PublicMenuFooterProps) => {
       />
       {open ? (
         <div className="flex items-center px-m pb-s gap-1 text-text-default-secondary text-[10px] whitespace-nowrap">
-          {t('App.MadeBy')}
+          {t('App_MadeBy')}
           <LogoFiligranIcon className="min-h-4 size-3 shrink-0" />
           {/* eslint-disable-next-line xtm-hub-i18n-rules/no-literal-string-in-jsx */}
           {'Filigran'}

@@ -28,12 +28,12 @@ import {
   DeploymentRequestUseCase,
   PlatformIdentifier,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useContext, useState } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 export const tryFiligranProductFormSchema = z.object({
   region: z.enum(REGIONS_VALUES),
   job_title: z.enum(DeploymentRequestJobTitle),
@@ -60,7 +60,7 @@ export const TryFiligranProductForm = ({
   platformIdentifier,
 }: TryFiligranProductFormProps) => {
   const { me } = useContext(PortalContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const deploymentRequestsAvailability =
     usePreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>(
@@ -99,7 +99,7 @@ export const TryFiligranProductForm = ({
   return (
     <>
       <div>
-        {t('Service.Trials.Form.AssociatedEmail')}: {me?.email}
+        {t('Service_Trials_Form_AssociatedEmail')}: {me?.email}
         <AutoForm
           className="mt-l"
           formSchema={tryFiligranProductFormSchema}
@@ -108,11 +108,11 @@ export const TryFiligranProductForm = ({
           }}
           fieldConfig={{
             region: {
-              label: t('Service.Trials.Form.Region'),
+              label: t('Service_Trials_Form_Region'),
               fieldType: ({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    {t('Service.Trials.Form.Region')}{' '}
+                    {t('Service_Trials_Form_Region')}{' '}
                     <span className="text-sm text-destructive">*</span>
                   </FormLabel>
                   <Select
@@ -120,7 +120,7 @@ export const TryFiligranProductForm = ({
                     onValueChange={field.onChange}>
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={t('Service.Trials.Form.RegionPlaceholder')}
+                        placeholder={t('Service_Trials_Form_RegionPlaceholder')}
                       />
                     </SelectTrigger>
                     <SelectContent>
@@ -128,7 +128,7 @@ export const TryFiligranProductForm = ({
                         <SelectItem
                           key={region.value}
                           value={region.value}>
-                          {t(`Region.${region.label}`)}
+                          {t(`Region_${region.label}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -138,25 +138,25 @@ export const TryFiligranProductForm = ({
               ),
             },
             job_title: {
-              label: t('Service.Trials.Form.JobTitle'),
+              label: t('Service_Trials_Form_JobTitle'),
               fieldType: ({ field }) => (
                 <TranslatableEnumSelectField
                   field={field}
-                  label={t('Service.Trials.Form.JobTitle')}
-                  placeholder={t('Service.Trials.Form.JobTitlePlaceholder')}
+                  label={t('Service_Trials_Form_JobTitle')}
+                  placeholder={t('Service_Trials_Form_JobTitlePlaceholder')}
                   values={Object.values(DeploymentRequestJobTitle)}
                   translationNamespace="DeploymentRequestJobTitle"
                 />
               ),
             },
             activity_sector: {
-              label: t('Service.Trials.Form.ActivitySector'),
+              label: t('Service_Trials_Form_ActivitySector'),
               fieldType: ({ field }) => (
                 <TranslatableEnumSelectField
                   field={field}
-                  label={t('Service.Trials.Form.ActivitySector')}
+                  label={t('Service_Trials_Form_ActivitySector')}
                   placeholder={t(
-                    'Service.Trials.Form.ActivitySectorPlaceholder'
+                    'Service_Trials_Form_ActivitySectorPlaceholder'
                   )}
                   values={Object.values(DeploymentRequestActivitySector)}
                   translationNamespace="DeploymentRequestActivitySector"
@@ -164,12 +164,12 @@ export const TryFiligranProductForm = ({
               ),
             },
             use_case: {
-              label: t('Service.Trials.Form.UseCase'),
+              label: t('Service_Trials_Form_UseCase'),
               fieldType: ({ field }) => (
                 <TranslatableEnumSelectField
                   field={field}
-                  label={t('Service.Trials.Form.UseCase')}
-                  placeholder={t('Service.Trials.Form.UseCasePlaceholder')}
+                  label={t('Service_Trials_Form_UseCase')}
+                  placeholder={t('Service_Trials_Form_UseCasePlaceholder')}
                   values={USE_CASES_BY_PLATFORM_IDENTIFIER[platformIdentifier]}
                   translationNamespace="DeploymentRequestUseCase"
                 />
@@ -187,13 +187,13 @@ export const TryFiligranProductForm = ({
                     <label
                       htmlFor="displayPersonalSpaces"
                       className="txt-sub-content cursor-pointer">
-                      {t('Service.Trials.Form.MSSAAgreement')}{' '}
+                      {t('Service_Trials_Form_MSSAAgreement')}{' '}
                       <Link
                         target="_blank"
                         rel="noopener noreferrer"
                         className="underline text-primary"
                         href="https://filigran.io/mssa/">
-                        {t('Service.Trials.Form.MSSA')}
+                        {t('Service_Trials_Form_MSSA')}
                       </Link>
                       <span className="text-destructive">*</span>
                     </label>
@@ -210,20 +210,20 @@ export const TryFiligranProductForm = ({
               onClick={(values) => {
                 handleCloseSheet(values);
               }}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
 
-            <Button type="submit">{t('Register.Confirm')}</Button>
+            <Button type="submit">{t('Register_Confirm')}</Button>
           </div>
         </AutoForm>
       </div>
       <AlertDialogComponent
         isOpen={isDialogOpen}
-        AlertTitle={t('Service.Trials.CapacityWarning.Title')}
-        actionButtonText={t('Service.Trials.CapacityWarning.Continue')}
+        AlertTitle={t('Service_Trials_CapacityWarning_Title')}
+        actionButtonText={t('Service_Trials_CapacityWarning_Continue')}
         onOpenChange={setIsDialogOpen}
         onClickContinue={confirmSubmit}>
-        {t('Service.Trials.CapacityWarning.Content')}
+        {t('Service_Trials_CapacityWarning_Content')}
       </AlertDialogComponent>
     </>
   );

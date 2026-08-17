@@ -1,5 +1,4 @@
 'use client';
-
 import { EditionTypeMapping } from '@/components/epic/epic-item/EditionTypeMapping';
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
@@ -26,11 +25,11 @@ import {
   FiligranProduct,
   Timeline,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 export const descriptionValue =
   ' [Long Description] - no limit of chars\n' +
   '### Problem to Solve\n' +
@@ -64,7 +63,7 @@ const EpicForm = ({
   epic?: epic_fragment$data;
   handleSubmit: (values: z.infer<typeof epicFormSchema>) => void;
 }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const [isIntegration, setIsIntegration] = useState(
     epic?.epic_type === EpicType.Integration
@@ -92,13 +91,13 @@ const EpicForm = ({
       fieldConfig={{
         title: {
           inputProps: {
-            placeholder: t('Epic.Form.IsLimited', { maxChars: '160' }),
+            placeholder: t('Epic_Form_IsLimited', { maxChars: '160' }),
           },
         },
         short_description: {
-          label: t('Epic.Form.ShortDesc'),
+          label: t('Epic_Form_ShortDesc'),
           inputProps: {
-            placeholder: t('Epic.Form.IsLimited', { maxChars: '215' }),
+            placeholder: t('Epic_Form_IsLimited', { maxChars: '215' }),
           },
         },
         description: {
@@ -124,7 +123,7 @@ const EpicForm = ({
           }) => (
             <FormItem>
               <FormLabel>
-                {t('Epic.Form.FiligranProduct')}
+                {t('Epic_Form_FiligranProduct')}
                 <span className="text-sm text-destructive"> *</span>
               </FormLabel>
               <Select
@@ -134,7 +133,7 @@ const EpicForm = ({
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
-                      placeholder={t('Epic.Form.FiligranProductPlaceholder')}
+                      placeholder={t('Epic_Form_FiligranProductPlaceholder')}
                     />
                   </SelectTrigger>
                 </FormControl>
@@ -162,7 +161,7 @@ const EpicForm = ({
           }) => (
             <FormItem>
               <FormLabel>
-                {t('Epic.Form.Timeline')}
+                {t('Epic_Form_Timeline')}
                 <span className="text-sm text-destructive"> *</span>
               </FormLabel>
               <Select
@@ -170,7 +169,7 @@ const EpicForm = ({
                 defaultValue={epic?.timeline ?? Timeline.Now}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={t('Epic.Timeline.now')} />
+                    <SelectValue placeholder={t('Epic_Timeline_now')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -179,7 +178,7 @@ const EpicForm = ({
                       <SelectItem
                         key={timeline}
                         value={timeline}>
-                        {t(`Epic.Timeline.${timeline.toLowerCase()}`)}
+                        {t(`Epic_Timeline_${timeline.toLowerCase()}`)}
                       </SelectItem>
                     );
                   })}
@@ -194,14 +193,14 @@ const EpicForm = ({
             if (!isIntegration) return null;
             return (
               <FormItem>
-                <FormLabel>{t('Service.Form.Illustration')}</FormLabel>
+                <FormLabel>{t('Service_Form_Illustration')}</FormLabel>
                 <FormControl>
                   <FileInput
                     {...field}
                     texts={{
-                      selectFile: t('Service.Vault.FileForm.SelectDocument'),
-                      noFile: t('Service.Vault.FileForm.NoDocument'),
-                      dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                      selectFile: t('Service_Vault_FileForm_SelectDocument'),
+                      noFile: t('Service_Vault_FileForm_NoDocument'),
+                      dropFiles: t('Service_Vault_FileForm_DropDocuments'),
                     }}
                     allowedTypes={'image/jpeg, image/gif, image/png, image/svg'}
                   />
@@ -212,15 +211,15 @@ const EpicForm = ({
           },
         },
         active: {
-          label: t('Epic.Form.IsActive'),
+          label: t('Epic_Form_IsActive'),
         },
         is_integration: {
-          label: t('Epic.Form.Integration'),
+          label: t('Epic_Form_Integration'),
         },
         edition_type: {
           fieldType: ({ field }) => (
             <FormItem>
-              <FormLabel>{t('Epic.Form.EditionType')}</FormLabel>
+              <FormLabel>{t('Epic_Form_EditionType')}</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
@@ -245,7 +244,7 @@ const EpicForm = ({
         },
       }}>
       <div className="flex justify-end">
-        <Button>{epic ? t('Utils.Update') : t('Utils.Create')}</Button>
+        <Button>{epic ? t('Utils_Update') : t('Utils_Create')}</Button>
       </div>
     </AutoForm>
   );

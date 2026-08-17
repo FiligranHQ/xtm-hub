@@ -3,7 +3,7 @@
 import { useConsent } from '@/components/cookie-consent/CookieConsentProvider';
 import { COPILOT_SCRIPT_ID } from '@/components/external/Copilot';
 import { Button } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useEffect } from 'react';
 
 const COPILOT_HOST_SELECTOR = `div#${COPILOT_SCRIPT_ID}`;
@@ -12,7 +12,7 @@ const COPILOT_OFFSET = '130px';
 const COPILOT_POLL_MS = 300;
 
 export const CookieConsentBanner = () => {
-  const t = useTranslations('CookieConsent');
+  const { t } = useTranslate();
   const { showBanner, acceptAll, rejectAll, openPreferences } = useConsent();
 
   useEffect(() => {
@@ -63,23 +63,23 @@ export const CookieConsentBanner = () => {
           <h2
             id="cookie-consent-banner-title"
             className="heading-md">
-            {t('Title')}
+            {t('CookieConsent_Title')}
           </h2>
-          <p className="content-body-base">{t('BannerText')}</p>
+          <p className="content-body-base">{t('CookieConsent_BannerText')}</p>
         </div>
         <div className="flex flex-col gap-2 sm:shrink-0 sm:flex-row">
-          <Button onClick={acceptAll}>{t('AcceptAll')}</Button>
+          <Button onClick={acceptAll}>{t('CookieConsent_AcceptAll')}</Button>
           <Button
             variant="secondary"
             className="text-primary"
             onClick={rejectAll}>
-            {t('RejectAll')}
+            {t('CookieConsent_RejectAll')}
           </Button>
           <Button
             variant="tertiary"
             className="text-primary"
             onClick={openPreferences}>
-            {t('CookieSettings')}
+            {t('CookieConsent_CookieSettings')}
           </Button>
         </div>
       </div>

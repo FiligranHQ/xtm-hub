@@ -1,5 +1,4 @@
 'use client';
-
 import { AddIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { useState } from 'react';
@@ -7,8 +6,8 @@ import { useState } from 'react';
 import ConnectProductFromHubModal, {
   ConnectProductOrigin,
 } from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 interface ConnectProductButtonProps {
   onCloseDropdown?: () => void;
   variant?: 'default' | 'secondary';
@@ -18,7 +17,7 @@ export const ConnectProductButton = ({
   onCloseDropdown,
   variant = 'default',
 }: ConnectProductButtonProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -31,7 +30,7 @@ export const ConnectProductButton = ({
           setIsOpen(true);
         }}>
         <span>
-          {t('Header.ConnectedProducts.ConnectPlatform', {
+          {t('Header_ConnectedProducts_ConnectPlatform', {
             platformName: 'product',
           })}
         </span>

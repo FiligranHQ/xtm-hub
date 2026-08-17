@@ -1,11 +1,10 @@
 'use client';
-
 import useAdminPath from '@/hooks/use-admin-path';
 import { Callout } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 export const AdminBanner = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const isAdminPath = useAdminPath();
 
   return (

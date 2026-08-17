@@ -2,7 +2,7 @@
 
 import { CookieSettingsLink } from '@/components/cookie-consent/CookieSettingsLink';
 import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import Link from 'next/link';
 
 interface AppFooterProps {
@@ -10,7 +10,7 @@ interface AppFooterProps {
 }
 
 export const AppFooter = ({ className }: AppFooterProps) => {
-  const t = useTranslations('AppFooter');
+  const { t } = useTranslate();
 
   return (
     <footer
@@ -29,7 +29,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
             {/* eslint-disable-next-line xtm-hub-i18n-rules/no-literal-string-in-jsx */}
             © {new Date().getFullYear()} Filigran.
           </Link>{' '}
-          {t('AllRightsReserved')}
+          {t('AppFooter_AllRightsReserved')}
         </span>
         <ul className="flex flex-col md:flex-row gap-l text-content-body-compact-link">
           <li>
@@ -38,7 +38,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
               rel="noopener noreferrer"
               href="https://filigran.io/"
               className="transition-opacity hover:opacity-70">
-              {t('FiligranWebsite')}
+              {t('AppFooter_FiligranWebsite')}
             </Link>
           </li>
           <li>
@@ -47,7 +47,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
               rel="noopener noreferrer"
               href="https://docs.hub.filigran.io/latest/"
               className="transition-opacity hover:opacity-70">
-              {t('Documentation')}
+              {t('AppFooter_Documentation')}
             </Link>
           </li>
           <li>
@@ -56,7 +56,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
               rel="noopener noreferrer"
               href="https://filigran.io/privacy-policy/"
               className="transition-opacity hover:opacity-70">
-              {t('PrivacyPolicy')}
+              {t('AppFooter_PrivacyPolicy')}
             </Link>
           </li>
           <li>
@@ -68,7 +68,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
               rel="noopener noreferrer"
               href="https://filigran.io/terms-of-services/"
               className="transition-opacity hover:opacity-70">
-              {t('TermsOfServices')}
+              {t('AppFooter_TermsOfServices')}
             </Link>
           </li>
           <li>
@@ -77,7 +77,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
               rel="noopener noreferrer"
               href="https://filigran.io/licenses/"
               className="transition-opacity hover:opacity-70">
-              {t('Licenses')}
+              {t('AppFooter_Licenses')}
             </Link>
           </li>
         </ul>

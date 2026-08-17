@@ -1,15 +1,14 @@
 'use client';
-
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { cn } from '@/lib/utils';
 import { APP_PATH } from '@/utils/path/constant';
 import { ArrowDropDownIcon } from '@filigran/icon';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@filigran/ui';
 import { OrganizationSwitcherMutation as OrganizationSwitcherMutationType } from '@generated/OrganizationSwitcherMutation.graphql';
-import { useTranslations } from 'next-intl';
 import { useContext, useId, useMemo, useState } from 'react';
 import { graphql, useMutation } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 export const organizationSwitcherMutation = graphql`
   mutation OrganizationSwitcherMutation($organization_id: OrganizationId!) {
     changeSelectedOrganization(organization_id: $organization_id) {
@@ -33,7 +32,7 @@ const HeaderOrganizationSwitcher = ({
   fitContainer = false,
 }: HeaderOrganizationSwitcherProps) => {
   const { me } = useContext(PortalContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [openPopover, setOpenPopover] = useState(false);
   const listboxId = useId();
 
@@ -48,7 +47,7 @@ const HeaderOrganizationSwitcher = ({
     return me.organizations.map((org) => ({
       ...org,
       name: org.personal_space
-        ? t('OrganizationSwitcher.PersonalSpace')
+        ? t('OrganizationSwitcher_PersonalSpace')
         : org.name,
     }));
   }, [me.organizations, t]);
@@ -87,7 +86,7 @@ const HeaderOrganizationSwitcher = ({
   return (
     <div className="flex flex-row items-center gap-m text-text-default-primary">
       <span className="content-body-base whitespace-nowrap">
-        {t('OrganizationSwitcher.Workspace')}
+        {t('OrganizationSwitcher_Workspace')}
       </span>
       <Popover
         open={openPopover}
@@ -96,7 +95,7 @@ const HeaderOrganizationSwitcher = ({
           <Button
             variant="secondary"
             role="combobox"
-            aria-label={t('OrganizationSwitcher.SelectOrganization')}
+            aria-label={t('OrganizationSwitcher_SelectOrganization')}
             aria-controls={listboxId}
             aria-expanded={openPopover}
             aria-haspopup="listbox"
@@ -118,7 +117,7 @@ const HeaderOrganizationSwitcher = ({
           <ul
             id={listboxId}
             role="listbox"
-            aria-label={t('OrganizationSwitcher.SelectOrganization')}
+            aria-label={t('OrganizationSwitcher_SelectOrganization')}
             className="flex flex-col gap-xs">
             {organizationOptions.map((organization) => {
               const isSelected =

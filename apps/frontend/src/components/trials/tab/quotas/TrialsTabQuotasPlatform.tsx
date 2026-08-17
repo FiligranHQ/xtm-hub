@@ -16,7 +16,6 @@ import { trialsDeploymentRequestsAvailableList$key } from '@generated/trialsDepl
 import { trialsDeploymentRequestsAvailableQuery } from '@generated/trialsDeploymentRequestsAvailableQuery.graphql';
 import { PortalCapability } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import {
   readInlineData,
@@ -24,6 +23,7 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface TrialsTabQuotasPlatformProps {
   platformIdentifier: PlatformIdentifier;
 }
@@ -31,7 +31,7 @@ interface TrialsTabQuotasPlatformProps {
 export const TrialsTabQuotasPlatform = ({
   platformIdentifier,
 }: TrialsTabQuotasPlatformProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const userHasModifyTrialQuotaCapa = useUserHasPortalCapability([
     PortalCapability.ModifyTrialsQuota,
   ]);
@@ -70,7 +70,7 @@ export const TrialsTabQuotasPlatform = ({
       {
         accessorKey: 'region',
         id: 'region',
-        header: t('TrialsDashboard.Columns.Region'),
+        header: t('TrialsDashboard_Columns_Region'),
         enableSorting: false,
         cell: ({
           row,
@@ -80,27 +80,27 @@ export const TrialsTabQuotasPlatform = ({
           };
         }) => {
           return (
-            <span>{t(`Region.${row.original.region.toUpperCase()}`)}</span>
+            <span>{t(`Region_${row.original.region.toUpperCase()}`)}</span>
           );
         },
       },
       {
         accessorKey: 'availableCount',
         id: 'available',
-        header: t('TrialsDashboard.Columns.Available'),
+        header: t('TrialsDashboard_Columns_Available'),
         enableSorting: false,
       },
       {
         accessorFn: (originalRow) =>
           originalRow.capacity - originalRow.availableCount,
         id: 'taken',
-        header: t('TrialsDashboard.Columns.Taken'),
+        header: t('TrialsDashboard_Columns_Taken'),
         enableSorting: false,
       },
       {
         accessorKey: 'capacity',
         id: 'total',
-        header: t('TrialsDashboard.Columns.Total'),
+        header: t('TrialsDashboard_Columns_Total'),
         enableSorting: false,
       },
     ],
@@ -114,8 +114,8 @@ export const TrialsTabQuotasPlatform = ({
         id: availability.region,
       }))
       .sort((a, b) =>
-        t(`Region.${a.region.toUpperCase()}`).localeCompare(
-          t(`Region.${b.region.toUpperCase()}`)
+        t(`Region_${a.region.toUpperCase()}`).localeCompare(
+          t(`Region_${b.region.toUpperCase()}`)
         )
       );
   }, [availabilities, t]);

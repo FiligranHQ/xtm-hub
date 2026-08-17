@@ -5,10 +5,9 @@ import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { Button, useToast } from '@filigran/ui';
 import { RemoveUserFromOrgaMutation } from '@generated/RemoveUserFromOrgaMutation.graphql';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useContext } from 'react';
 import { graphql, useMutation } from 'react-relay';
-
 interface RemoveUserFromOrgaProps {
   user: UserList_fragment$data;
 }
@@ -34,7 +33,7 @@ export const RemoveUserFromOrga = ({ user }: RemoveUserFromOrgaProps) => {
   const { connectionID } = getUserListContext();
   const { setOpenSheet } = useDialogContext();
   const { toast } = useToast();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [removeUserMutation] =
     useMutation<RemoveUserFromOrgaMutation>(removeUser);
   const onRemoveUser = (user_id: string): void => {
@@ -47,32 +46,32 @@ export const RemoveUserFromOrga = ({ user }: RemoveUserFromOrgaProps) => {
       onCompleted: () => {
         setOpenSheet(false);
         toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserRemoved', { email: user.email }),
+          title: t('Utils_Success'),
+          description: t('UserActions_UserRemoved', { email: user.email }),
         });
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
   };
 
   const trigger = (
-    <Button variant="secondary-destructive">{t('MenuActions.Remove')}</Button>
+    <Button variant="secondary-destructive">{t('MenuActions_Remove')}</Button>
   );
 
   return (
     <AlertDialogComponent
-      AlertTitle={t('UserActions.RemoveUser')}
-      actionButtonText={t('MenuActions.Remove')}
+      AlertTitle={t('UserActions_RemoveUser')}
+      actionButtonText={t('MenuActions_Remove')}
       variantName={'destructive'}
       triggerElement={trigger}
       onClickContinue={() => onRemoveUser(user.id)}>
-      {t('RemoveUserOrgDialog.TextRemoveThisUser', {
+      {t('RemoveUserOrgDialog_TextRemoveThisUser', {
         email: user.email,
       })}
     </AlertDialogComponent>

@@ -1,5 +1,4 @@
 'use client';
-
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { EditIcon } from '@filigran/icon';
 import {
@@ -11,15 +10,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import React, { useContext, useRef, useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface ProfileFormPictureProps {
   onSubmit: (files: (File | null)[]) => void;
 }
 
 export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -52,7 +51,7 @@ export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="heading-lg">{t('ProfilePage.Picture')}</CardTitle>
+        <CardTitle className="heading-lg">{t('ProfilePage_Picture')}</CardTitle>
       </CardHeader>
       <CardContent className="pb-0">
         <input
@@ -71,17 +70,17 @@ export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
       <CardFooter className="flex justify-between">
         <Button
           variant="tertiary"
-          aria-label={t('Utils.Edit')}
+          aria-label={t('Utils_Edit')}
           size="sm"
           className="ml-s gap-s"
           onClick={() => inputRef.current?.click()}>
           <EditIcon className="h-4 w-4" />
-          <span>{t('Utils.Edit')}</span>
+          <span>{t('Utils_Edit')}</span>
         </Button>
         <Button
-          aria-label={t('ProfilePage.UpdatePicture')}
+          aria-label={t('ProfilePage_UpdatePicture')}
           onClick={handleSubmit}>
-          {t('Utils.Update')}
+          {t('Utils_Update')}
         </Button>
       </CardFooter>
     </Card>

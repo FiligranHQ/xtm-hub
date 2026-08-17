@@ -1,9 +1,7 @@
 import { DocumentExistsQuery } from '@/components/service/document/document.graphql';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import useDecodedParams from '@/hooks/use-decoded-params';
-import { zodResolver } from '@hookform/resolvers/zod';
-
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import useDecodedParams from '@/hooks/use-decoded-params';
 import {
   Button,
   FileInput,
@@ -19,11 +17,12 @@ import {
 } from '@filigran/ui';
 import { documentExistsQuery } from '@generated/documentExistsQuery.graphql';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { useLazyLoadQuery } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 export const newDocumentSchema = z.object({
   description: z.string().optional(),
   documentId: z.string().optional(),
@@ -39,7 +38,7 @@ export const VaultNewFileForm = ({
   document,
   handleSubmit,
 }: VaultNewFileFormSheetProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const form = useForm<z.infer<typeof newDocumentSchema>>({
     resolver: zodResolver(newDocumentSchema),
@@ -89,16 +88,16 @@ export const VaultNewFileForm = ({
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>{t('Service.Vault.FileForm.File')}</FormLabel>
+                    <FormLabel>{t('Service_Vault_FileForm_File')}</FormLabel>
                     <FormControl>
                       <FileInput
                         {...field}
                         texts={{
                           selectFile: t(
-                            'Service.Vault.FileForm.SelectDocument'
+                            'Service_Vault_FileForm_SelectDocument'
                           ),
-                          noFile: t('Service.Vault.FileForm.NoDocument'),
-                          dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                          noFile: t('Service_Vault_FileForm_NoDocument'),
+                          dropFiles: t('Service_Vault_FileForm_DropDocuments'),
                         }}
                         allowedTypes={
                           'image/jpeg, image/gif, image/png, application/pdf, image/svg, video/mp4, video/webm, .docx, .docw,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -108,7 +107,7 @@ export const VaultNewFileForm = ({
                     <FormMessage />
                     {documentExists && (
                       <FormMessage>
-                        <div>{t('Service.Vault.FileForm.AlreadyExists')}</div>
+                        <div>{t('Service_Vault_FileForm_AlreadyExists')}</div>
                       </FormMessage>
                     )}
                   </FormItem>
@@ -123,12 +122,12 @@ export const VaultNewFileForm = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.Vault.FileForm.DescriptionLabel')}
+                  {t('Service_Vault_FileForm_DescriptionLabel')}
                 </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder={t(
-                      'Service.Vault.FileForm.DescriptionPlaceholder'
+                      'Service_Vault_FileForm_DescriptionPlaceholder'
                     )}
                     {...field}
                   />
@@ -143,24 +142,24 @@ export const VaultNewFileForm = ({
               variant="secondary"
               type="button"
               onClick={(e) => handleCloseSheet(e)}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
 
             {documentExists ? (
               <AlertDialogComponent
-                AlertTitle={t('Service.Vault.FileForm.FileAlreadyExists')}
-                actionButtonText={t('Utils.Continue')}
+                AlertTitle={t('Service_Vault_FileForm_FileAlreadyExists')}
+                actionButtonText={t('Utils_Continue')}
                 triggerElement={
-                  <Button type="button">{t('Utils.Validate')}</Button>
+                  <Button type="button">{t('Utils_Validate')}</Button>
                 }
                 onClickContinue={form.handleSubmit(onSubmit)}>
-                {t('Service.Vault.FileForm.FileExistsDialog')}
+                {t('Service_Vault_FileForm_FileExistsDialog')}
               </AlertDialogComponent>
             ) : (
               <Button
                 type="submit"
                 disabled={!form.formState.isValid}>
-                {t('Utils.Validate')}
+                {t('Utils_Validate')}
               </Button>
             )}
           </SheetFooter>

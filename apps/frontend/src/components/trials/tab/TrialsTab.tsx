@@ -59,7 +59,6 @@ import {
   ReorderDeploymentRequestInQueueDirection,
 } from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   readInlineData,
@@ -69,6 +68,7 @@ import {
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
+import { useTranslate } from '@tolgee/react';
 interface TrialsTabProps {
   type: TrialsTabType;
   platformIdentifier: PlatformIdentifier;
@@ -108,7 +108,7 @@ const trialsTabConfig: Record<
 const connectionIDs = new Map<TrialsTabType, string>();
 
 const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([
     PortalCapability.ModifyTrials,
@@ -144,16 +144,16 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
         },
         onCompleted: () => {
           toast({
-            title: t('Utils.Success'),
-            description: t('TrialsDashboard.Toast.TrialsReordered'),
+            title: t('Utils_Success'),
+            description: t('TrialsDashboard_Toast_TrialsReordered'),
           });
           setReorderTrigger((prev) => prev + 1);
         },
         onError: (error) => {
           toast({
             variant: 'destructive',
-            title: t('Utils.Error'),
-            description: <>{t(`Error.Server.${error.message}`)}</>,
+            title: t('Utils_Error'),
+            description: <>{t(`Error_Server_${error.message}`)}</>,
           });
         },
       });
@@ -181,15 +181,15 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
         },
         onCompleted: () => {
           toast({
-            title: t('Utils.Success'),
-            description: t('Service.Trials.Cancellation.Toast.Admin'),
+            title: t('Utils_Success'),
+            description: t('Service_Trials_Cancellation_Toast_Admin'),
           });
         },
         onError: (error) => {
           toast({
             variant: 'destructive',
-            title: t('Utils.Error'),
-            description: t(`Error.Server.${error.message}`),
+            title: t('Utils_Error'),
+            description: t(`Error_Server_${error.message}`),
           });
         },
       });
@@ -205,7 +205,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
               accessorKey: 'ordering',
               id: 'ordering',
               enableSorting: !isReorderTrialsAllowed,
-              header: t('TrialsDashboard.Columns.Priority'),
+              header: t('TrialsDashboard_Columns_Priority'),
             },
           ]
         : []),
@@ -213,13 +213,13 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
         accessorKey: 'requester_email',
         id: 'requester_email',
         enableSorting: !isReorderTrialsAllowed,
-        header: t('TrialsDashboard.Columns.Email'),
+        header: t('TrialsDashboard_Columns_Email'),
       },
       {
         accessorKey: 'organization_name',
         id: 'organization_name',
         enableSorting: !isReorderTrialsAllowed,
-        header: t('TrialsDashboard.Columns.Organization'),
+        header: t('TrialsDashboard_Columns_Organization'),
       },
       ...(type === TrialsTabType.Waiting
         ? [
@@ -227,7 +227,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
               accessorKey: 'request_date',
               id: 'request_date',
               enableSorting: !isReorderTrialsAllowed,
-              header: t('TrialsDashboard.Columns.RequestDate'),
+              header: t('TrialsDashboard_Columns_RequestDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
                   <span className="truncate">
@@ -244,7 +244,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
               accessorKey: 'start_date',
               id: 'start_date',
               enableSorting: !isReorderTrialsAllowed,
-              header: t('TrialsDashboard.Columns.StartDate'),
+              header: t('TrialsDashboard_Columns_StartDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
                   <span className="truncate">
@@ -259,7 +259,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
               accessorKey: 'end_date',
               id: 'end_date',
               enableSorting: !isReorderTrialsAllowed,
-              header: t('TrialsDashboard.Columns.EndDate'),
+              header: t('TrialsDashboard_Columns_EndDate'),
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 return (
                   <span className="truncate">
@@ -276,7 +276,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
             {
               accessorKey: 'remainingDays',
               id: 'remainingDays',
-              header: t('TrialsDashboard.Columns.RemainingDays'),
+              header: t('TrialsDashboard_Columns_RemainingDays'),
               enableSorting: false,
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
                 if (!row.original?.end_date) return <>-</>;
@@ -291,18 +291,18 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
         accessorKey: 'hub_status',
         id: 'hub_status',
         enableSorting: !isReorderTrialsAllowed,
-        header: t('TrialsDashboard.Columns.Status'),
+        header: t('TrialsDashboard_Columns_Status'),
       },
       {
         accessorKey: 'region',
         id: 'region',
         enableSorting: !isReorderTrialsAllowed,
-        header: t('TrialsDashboard.Columns.Region'),
+        header: t('TrialsDashboard_Columns_Region'),
       },
       {
         accessorKey: 'platform_id',
         id: 'platform_id',
-        header: t('TrialsDashboard.Columns.PlatformId'),
+        header: t('TrialsDashboard_Columns_PlatformId'),
         enableSorting: false,
         cell: ({ row }: { row: { original: trials_fragment$data } }) => {
           return (
@@ -313,7 +313,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
       {
         accessorKey: 'platform_url',
         id: 'platform_url',
-        header: t('TrialsDashboard.Columns.PlatformUrl'),
+        header: t('TrialsDashboard_Columns_PlatformUrl'),
         enableSorting: false,
         cell: ({ row }: { row: { original: trials_fragment$data } }) => {
           return (
@@ -324,15 +324,15 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
       {
         accessorKey: 'registration_status',
         id: 'registration_status',
-        header: t('TrialsDashboard.Columns.RegistrationStatus'),
+        header: t('TrialsDashboard_Columns_RegistrationStatus'),
         enableSorting: false,
         cell: ({ row }: { row: { original: trials_fragment$data } }) => {
           const isRegistered = !!row.original.platform_id;
           return (
             <span className="truncate">
               {isRegistered
-                ? t('TrialsDashboard.Registered')
-                : t('TrialsDashboard.NotRegistered')}
+                ? t('TrialsDashboard_Registered')
+                : t('TrialsDashboard_NotRegistered')}
             </span>
           );
         },
@@ -340,7 +340,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
       ...(type === TrialsTabType.Cancelled
         ? [
             {
-              header: t('TrialsDashboard.Columns.CancellationDate'),
+              header: t('TrialsDashboard_Columns_CancellationDate'),
               accessorKey: 'cancellation_date',
               id: 'cancellation_date',
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
@@ -354,12 +354,12 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
               },
             },
             {
-              header: t('TrialsDashboard.Columns.CancellationOwner'),
+              header: t('TrialsDashboard_Columns_CancellationOwner'),
               accessorKey: 'cancellation_user_email',
               id: 'cancellation_user_email',
             },
             {
-              header: t('TrialsDashboard.Columns.CancellationReason'),
+              header: t('TrialsDashboard_Columns_CancellationReason'),
               accessorKey: 'cancellation_reason',
               id: 'cancellation_reason',
               cell: ({ row }: { row: { original: trials_fragment$data } }) => {
@@ -406,9 +406,9 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                     type === TrialsTabType.Waiting) && (
                     <AlertDialogComponent
                       AlertTitle={t(
-                        'Service.Trials.Cancellation.Confirmation.Title'
+                        'Service_Trials_Cancellation_Confirmation_Title'
                       )}
-                      actionButtonText={t('MenuActions.Delete')}
+                      actionButtonText={t('MenuActions_Delete')}
                       triggerElement={
                         <Button
                           variant="tertiary-destructive"
@@ -423,7 +423,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                           currentConnectionID ?? ''
                         )
                       }>
-                      {t('Service.Trials.Cancellation.Confirmation.Admin', {
+                      {t('Service_Trials_Cancellation_Confirmation_Admin', {
                         organizationName: row.original.organization_name ?? '',
                       })}
                     </AlertDialogComponent>
@@ -447,7 +447,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            {t('TrialsDashboard.Actions.MoveToTop')}
+                            {t('TrialsDashboard_Actions_MoveToTop')}
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -468,7 +468,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            {t('TrialsDashboard.Actions.MoveUp')}
+                            {t('TrialsDashboard_Actions_MoveUp')}
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -499,7 +499,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
                             />
                           </TooltipTrigger>
                           <TooltipContent>
-                            {t('Service.Trials.ManageUsers.Title')}
+                            {t('Service_Trials_ManageUsers_Title')}
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -648,12 +648,12 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
               <label
                 htmlFor="requester_email"
                 className="sr-only">
-                {t('TrialsDashboard.Actions.SearchTrials')}
+                {t('TrialsDashboard_Actions_SearchTrials')}
               </label>
               <SearchInput
                 id="requester_email"
                 containerClass="w-full sm:w-1/3"
-                placeholder={t('TrialsDashboard.Actions.SearchTrials')}
+                placeholder={t('TrialsDashboard_Actions_SearchTrials')}
                 onChange={debounceHandleInput}
               />
               <div className="flex w-full items-center justify-between gap-s sm:w-auto">
@@ -662,7 +662,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
             </div>
             <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm mt-4">
               <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
-              {t('TrialsDashboard.WarningCancellation')}
+              {t('TrialsDashboard_WarningCancellation')}
             </div>
           </div>
         }

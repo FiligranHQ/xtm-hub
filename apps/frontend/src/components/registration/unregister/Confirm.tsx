@@ -1,9 +1,8 @@
 import { getOrganization } from '@/components/organization/Organization.service';
 import { RegistrationContext } from '@/components/registration/Context';
 import { RegistrationLayout } from '@/components/registration/Layout';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useContext } from 'react';
-
 interface UnregisterConfirmProps {
   confirm: () => void;
   cancel: () => void;
@@ -16,7 +15,7 @@ export const UnregisterConfirm = ({
   organizationId,
 }: UnregisterConfirmProps) => {
   const { displayedIdentifier } = useContext(RegistrationContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
   const organization = getOrganization(organizationId);
 
   return (
@@ -24,12 +23,12 @@ export const UnregisterConfirm = ({
       confirm={confirm}
       cancel={cancel}>
       <h1>
-        {t(`Unregister.Confirm.Title`, {
+        {t(`Unregister_Confirm_Title`, {
           platformIdentifier: displayedIdentifier,
           name: organization?.name ?? '',
         })}
       </h1>
-      <p>{t(`Unregister.Confirm.Description`)}</p>
+      <p>{t(`Unregister_Confirm_Description`)}</p>
     </RegistrationLayout>
   );
 };

@@ -6,9 +6,8 @@ import { useEpicListContext } from '@/hooks/use-epic-list-context';
 import { MoreVertIcon } from '@filigran/icon';
 import { Badge } from '@filigran/ui/servers';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
-
 interface EpicAdminMenuProps {
   epic: epic_fragment$data;
   userCanDelete?: boolean;
@@ -19,7 +18,7 @@ export const EpicAdminMenu = ({
   userCanUpdate = false,
   userCanDelete = false,
 }: EpicAdminMenuProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const { connectionID } = useEpicListContext();
 
@@ -50,7 +49,7 @@ export const EpicAdminMenu = ({
           <Badge
             variant="warning"
             className="font-semibold mr-s">
-            {t('Epic.Timeline.draft')}
+            {t('Epic_Timeline_draft')}
           </Badge>
         )}
         <ShareLinkButton
@@ -62,17 +61,17 @@ export const EpicAdminMenu = ({
             icon={
               <>
                 <MoreVertIcon className="h-4 w-4 text-primary" />
-                <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                <span className="sr-only">{t('Utils_OpenMenu')}</span>
               </>
             }>
             {userCanUpdate && (
               <IconActionsItem onClick={() => setUpdateEpic(epic)}>
-                {t('Utils.Update')}
+                {t('Utils_Update')}
               </IconActionsItem>
             )}
             {userCanDelete && (
               <IconActionsItem onClick={() => setDeleteEpic(epic)}>
-                {t('Utils.Delete')}
+                {t('Utils_Delete')}
               </IconActionsItem>
             )}
           </IconActions>

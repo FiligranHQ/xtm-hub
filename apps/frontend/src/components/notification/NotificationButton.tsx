@@ -1,5 +1,3 @@
-import { IndividualIcon, NotificationsIcon } from '@filigran/icon';
-
 import {
   UserPendingListFragment,
   UserPendingListQuery,
@@ -8,6 +6,7 @@ import {
 import { UserFragment } from '@/components/admin/user/UserList';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { APP_PATH } from '@/utils/path/constant';
+import { IndividualIcon, NotificationsIcon } from '@filigran/icon';
 import {
   Popover,
   PopoverContent,
@@ -28,7 +27,6 @@ import {
   userPendingListSubscription,
   userPendingListSubscription$data,
 } from '@generated/userPendingListSubscription.graphql';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useContext, useMemo, useState } from 'react';
 import {
@@ -40,6 +38,7 @@ import {
   useSubscription,
 } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 export function notificationPendingUserQueryFilters(
   organization_id: string
 ): userPendingListQuery$variables {
@@ -52,7 +51,7 @@ export function notificationPendingUserQueryFilters(
 }
 
 export const NotificationButton = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
   const [openPopover, setOpenPopover] = useState(false);
 
@@ -128,7 +127,7 @@ export const NotificationButton = () => {
         align="end"
         className="w-120 px-0 pt-4 pb-0">
         <span className="px-4">
-          {t('Notifications.Title', {
+          {t('Notifications_Title', {
             count: nbUsers,
           })}
         </span>
@@ -143,10 +142,10 @@ export const NotificationButton = () => {
                 <IndividualIcon className="mr-4 h-4 w-4 text-muted-foreground" />
                 <div className="">
                   <span className="block text-sm">
-                    {t('Notifications.UserNotification.Title')}
+                    {t('Notifications_UserNotification_Title')}
                   </span>
                   <span className="block text-xs">
-                    {t.rich('Notifications.UserNotification.Text', {
+                    {t.rich('Notifications_UserNotification_Text', {
                       nameFormat: (chunk) => (
                         <span className="text-primary">{chunk}</span>
                       ),

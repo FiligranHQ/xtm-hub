@@ -4,10 +4,10 @@ import UserWithCapabilitiesInOrganizationQueryGraphql, {
   userWithCapabilitiesInOrganizationQuery,
 } from '@generated/userWithCapabilitiesInOrganizationQuery.graphql';
 import { OrganizationCapability } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface UnregisterMissingCapabilityProps {
   cancel: () => void;
   organizationId: string;
@@ -18,7 +18,7 @@ export const UnregisterMissingCapability = ({
   organizationId,
 }: UnregisterMissingCapabilityProps) => {
   const { capability, displayedIdentifier } = useContext(RegistrationContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
   const capabilities = [OrganizationCapability.AdministrateOrganization];
   if (capability) {
     capabilities.push(capability);
@@ -33,16 +33,16 @@ export const UnregisterMissingCapability = ({
   return (
     <RegistrationLayout cancel={cancel}>
       <h1>
-        {t(`Unregister.Error.Capability.Title`, {
+        {t(`Unregister_Error_Capability_Title`, {
           capability: capability?.replaceAll('_', ' ') ?? '',
         })}
       </h1>
       <p>
-        {t(`Unregister.Error.Capability.Description`, {
+        {t(`Unregister_Error_Capability_Description`, {
           platformIdentifier: displayedIdentifier,
         })}
       </p>
-      <p>{t(`Unregister.Error.Capability.AdminListTitle`)}</p>
+      <p>{t(`Unregister_Error_Capability_AdminListTitle`)}</p>
       <ul className="list-disc ml-l">
         {usersWithCapabilitiesInOrganization.map((administrator) => (
           <li key={administrator.id}>

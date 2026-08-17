@@ -11,11 +11,10 @@ import {
 import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentImageType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-
 export const descriptionValue =
   '### Overview\n\n' +
   'What it does and the use case it addresses\n\n' +
@@ -57,7 +56,7 @@ export const OpenctiPlaybookForm = ({
   handleSubmit,
   document,
 }: OpenCTIPlaybookFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
 
   const isCreation = !document;
@@ -151,7 +150,7 @@ export const OpenctiPlaybookForm = ({
         uploader_organization_id,
         document: isCreation
           ? {
-              label: t('Service.Form.SelectJSONFile'),
+              label: t('Service_Form_SelectJSONFile'),
               fieldType: 'file',
               inputProps: {
                 allowedTypes: 'application/json',

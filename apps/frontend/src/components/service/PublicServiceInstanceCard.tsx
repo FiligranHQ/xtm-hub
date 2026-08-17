@@ -4,7 +4,7 @@ import ServiceInstanceCard, {
   ServiceInstanceCardData,
 } from '@/components/service/ServiceInstanceCard';
 import { resolvePublicServiceInstanceLink } from '@/components/service/service-instance-link.util';
-import { useLocale } from 'next-intl';
+import { useTolgee } from '@tolgee/react';
 import { ReactNode } from 'react';
 
 interface PublicServiceInstanceCardProps {
@@ -18,7 +18,7 @@ const PublicServiceInstanceCard = ({
   rightAction,
   className,
 }: PublicServiceInstanceCardProps) => {
-  const locale = useLocale();
+  const { language: locale } = useTolgee(['language']);
   const link = resolvePublicServiceInstanceLink({
     url: serviceInstance.url,
     isLinkDisabled: serviceInstance.isLinkDisabled,

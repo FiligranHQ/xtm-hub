@@ -12,9 +12,9 @@ import {
   registerRefreshUserPlatformTokenMutation$data,
 } from '@generated/registerRefreshUserPlatformTokenMutation.graphql';
 import { IntegrationType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 const OPENCTI_URL_CONFIGS = {
   opencti_custom_dashboard: 'deploy-custom-dashboard',
   opencti_custom_view: 'deploy-custom-view',
@@ -85,7 +85,7 @@ export const useOneClickDeployTab = ({
   platformBasePath,
   documentData,
 }: Props): Return => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [refreshUserPlatformToken] =
     useMutation<registerRefreshUserPlatformTokenMutation>(
       RefreshUserPlatformTokenMutation
@@ -101,8 +101,8 @@ export const useOneClickDeployTab = ({
         onError: (error) => {
           toast({
             variant: 'destructive',
-            title: t('Utils.Error'),
-            description: <>{t(`Error.Server.${error.message}`)}</>,
+            title: t('Utils_Error'),
+            description: <>{t(`Error_Server_${error.message}`)}</>,
           });
         },
       });

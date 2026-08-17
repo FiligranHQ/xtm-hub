@@ -39,10 +39,10 @@ import {
   IntegrationType,
   LicenseType,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useContext, useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 type DocumentFormValues = ServiceFormValues & {
   entity_types?: string[] | null;
   license_type?: LicenseType | null;
@@ -84,7 +84,7 @@ export function useDocumentContext({
   const [integrationType, setIntegrationType] = useState<IntegrationType>(
     IntegrationType.CsvFeed
   );
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [createMutation] = useMutation<documentCreateMutation>(
     DocumentCreateMutation
   );
@@ -138,8 +138,8 @@ export function useDocumentContext({
         if (!response.createDocument) {
           toast({
             variant: 'destructive',
-            title: t('Utils.Error'),
-            description: t('Error.AnErrorOccured'),
+            title: t('Utils_Error'),
+            description: t('Error_AnErrorOccured'),
           });
           return;
         }

@@ -1,5 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import {
   Button,
@@ -13,10 +11,11 @@ import {
   FormMessage,
   SheetFooter,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 export const newPicturesSchema = z.object({
   illustration_document: z.custom<FileList>(),
   logo_document: z.custom<FileList>(),
@@ -27,7 +26,7 @@ interface ServiceFormProps {
 }
 
 export const ServiceForm = ({ handleSubmit }: ServiceFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { handleCloseSheet } = useDialogContext();
   const form = useForm<z.infer<typeof newPicturesSchema>>({
     resolver: zodResolver(newPicturesSchema),
@@ -56,14 +55,14 @@ export const ServiceForm = ({ handleSubmit }: ServiceFormProps) => {
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>{t('ServiceForm.Illustration')}</FormLabel>
+                  <FormLabel>{t('ServiceForm_Illustration')}</FormLabel>
                   <FormControl>
                     <FileInput
                       {...field}
                       texts={{
-                        selectFile: t('Service.Vault.FileForm.SelectDocument'),
-                        noFile: t('Service.Vault.FileForm.NoDocument'),
-                        dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                        selectFile: t('Service_Vault_FileForm_SelectDocument'),
+                        noFile: t('Service_Vault_FileForm_NoDocument'),
+                        dropFiles: t('Service_Vault_FileForm_DropDocuments'),
                       }}
                       allowedTypes={
                         'image/jpeg, image/gif, image/png, image/svg'
@@ -81,14 +80,14 @@ export const ServiceForm = ({ handleSubmit }: ServiceFormProps) => {
             render={({ field }) => {
               return (
                 <FormItem>
-                  <FormLabel>{t('ServiceForm.Logo')}</FormLabel>
+                  <FormLabel>{t('ServiceForm_Logo')}</FormLabel>
                   <FormControl>
                     <FileInput
                       {...field}
                       texts={{
-                        selectFile: t('Service.Vault.FileForm.SelectDocument'),
-                        noFile: t('Service.Vault.FileForm.NoDocument'),
-                        dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                        selectFile: t('Service_Vault_FileForm_SelectDocument'),
+                        noFile: t('Service_Vault_FileForm_NoDocument'),
+                        dropFiles: t('Service_Vault_FileForm_DropDocuments'),
                       }}
                       allowedTypes={
                         'image/jpeg, image/gif, image/png, image/svg'
@@ -106,9 +105,9 @@ export const ServiceForm = ({ handleSubmit }: ServiceFormProps) => {
               variant="secondary"
               type="button"
               onClick={(e) => handleCloseSheet(e)}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
-            <Button type="submit">{t('Utils.Validate')}</Button>
+            <Button type="submit">{t('Utils_Validate')}</Button>
           </SheetFooter>
         </form>
       </Form>

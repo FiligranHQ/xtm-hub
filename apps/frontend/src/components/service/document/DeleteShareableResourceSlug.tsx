@@ -1,10 +1,9 @@
 import { useServiceContext } from '@/components/service/components/ServiceContext';
-import { ServiceRestriction } from '@graphql/generated';
-
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
+import { ServiceRestriction } from '@graphql/generated';
 
 import {
   CardTypeEnum,
@@ -19,9 +18,9 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
+import { useTranslate } from '@tolgee/react';
 interface DeleteShareableResourceSlugProps {
   document: documentItem_fragment$data;
 }
@@ -30,7 +29,7 @@ const DeleteShareableResourceSlug = ({
   document,
 }: DeleteShareableResourceSlugProps) => {
   const router = useRouter();
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const serviceContext = useServiceContext();
 
@@ -53,8 +52,8 @@ const DeleteShareableResourceSlug = ({
       );
     });
     toast({
-      title: t('Utils.Success'),
-      description: t(`${serviceContext.translationKey}.Actions.Deleted`, {
+      title: t('Utils_Success'),
+      description: t(`${serviceContext.translationKey}_Actions_Deleted`, {
         name: document.name ?? '',
       }),
     });

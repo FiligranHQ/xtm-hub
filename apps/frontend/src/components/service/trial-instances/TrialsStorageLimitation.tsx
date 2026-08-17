@@ -1,10 +1,9 @@
 'use client';
-
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface TrialsStorageLimitationProps {
   platformIdentifier: PlatformIdentifier;
 }
@@ -12,7 +11,7 @@ interface TrialsStorageLimitationProps {
 export const TrialsStorageLimitation = ({
   platformIdentifier,
 }: TrialsStorageLimitationProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const isOpenCTI = platformIdentifier === PlatformIdentifier.Opencti;
 
   const renderLink = (chunks: ReactNode) => (
@@ -29,7 +28,7 @@ export const TrialsStorageLimitation = ({
   return (
     <div className="p-6 rounded bg-elevation-background-layer-0">
       <h2 className="text-primary text-2xl mb-l">
-        {t('Service.Trials.Storage.Title')}
+        {t('Service_Trials_Storage_Title')}
       </h2>
       <p className="text-sm mb-l">
         {t.rich(
@@ -40,7 +39,7 @@ export const TrialsStorageLimitation = ({
         )}
       </p>
       <p className="text-sm mb-l">
-        {t.rich('Service.Trials.Storage.NoSLA', { strong: renderStrong })}
+        {t.rich('Service_Trials_Storage_NoSLA', { strong: renderStrong })}
       </p>
     </div>
   );

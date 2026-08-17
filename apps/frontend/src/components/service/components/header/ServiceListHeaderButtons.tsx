@@ -8,12 +8,11 @@ import { APP_PATH } from '@/utils/path/constant';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { Button } from '@filigran/ui';
 import { OrganizationCapability, ServiceRestriction } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import Link from 'next/link';
 import { useContext, useState } from 'react';
-
 const ServiceListHeaderButtons = ({}) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { hasOrganizationCapability } = useContext(PortalContext);
 
   const {
@@ -46,7 +45,7 @@ const ServiceListHeaderButtons = ({}) => {
           <Button variant="secondary">
             <Link
               href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentUserSubscriptionId}`}>
-              {t('Service.Capabilities.ManageAccessName')}
+              {t('Service_Capabilities_ManageAccessName')}
             </Link>
           </Button>
         </>
@@ -62,7 +61,7 @@ const ServiceListHeaderButtons = ({}) => {
             />
           ) : (
             <Button onClick={() => setOpenSheet(true)}>
-              {t(`${translationKey}.AddService`)}
+              {t(`${translationKey}_AddService`)}
             </Button>
           )}
           <ServiceManageSheet

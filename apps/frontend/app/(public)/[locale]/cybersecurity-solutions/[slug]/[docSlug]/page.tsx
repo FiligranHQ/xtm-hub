@@ -41,6 +41,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+
 const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
     'Metadata.DocumentFallbackDescriptionIntegration',
@@ -108,7 +109,7 @@ export async function generateMetadata({
 
   const description = document.short_description || fallbackDescription;
   const serviceLabel = t(
-    `Service.ServiceDefinitionIdentifier.${serviceInstance.service_definition.identifier}`
+    `Service_ServiceDefinitionIdentifier_${serviceInstance.service_definition.identifier}`
   );
 
   const metadata = buildSeoPageMetadata({
@@ -118,7 +119,7 @@ export async function generateMetadata({
     title: `${document.name} | ${serviceLabel} | XTM Hub`,
     description,
     type: 'article',
-    imageAlt: t('Metadata.ResourcePreviewAlt', { name: document.name ?? '' }),
+    imageAlt: t('Metadata_ResourcePreviewAlt', { name: document.name ?? '' }),
     imageUrl:
       document.children_documents!.length > 0
         ? `${baseUrl}/document/images/${serviceInstance.id}/${document.children_documents![0]!.id}`
@@ -186,7 +187,7 @@ const Page = async ({
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
-    headline: `${document.name} | ${t(`Service.ServiceDefinitionIdentifier.${serviceInstance.service_definition.identifier}`)} | XTM Hub`,
+    headline: `${document.name} | ${t(`Service_ServiceDefinitionIdentifier_${serviceInstance.service_definition.identifier}`)} | XTM Hub`,
     description: document.short_description || fallbackDescription,
     articleBody: document.description,
     author: document.uploader
@@ -227,16 +228,16 @@ const Page = async ({
   ];
   const breadcrumbValue = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${locale}`,
     },
     {
-      label: `Service.Cards.${serviceInstance.slug}.Name`,
+      label: `Service_Cards_${serviceInstance.slug}_Name`,
       href: localizedServicePath,
       fallback: serviceInstance.name,
     },
     {
-      label: `Service.Documents.${document.slug}.Name`,
+      label: `Service_Documents_${document.slug}_Name`,
       fallback: `${document?.name}`,
     },
   ];
@@ -302,7 +303,7 @@ const Page = async ({
                   asChild
                   className="whitespace-nowrap">
                   <Link href={serviceInformation?.link ?? ''}>
-                    {t('PublicResourcePage.Download')}
+                    {t('PublicResourcePage_Download')}
                   </Link>
                 </Button>
               )}
@@ -325,7 +326,7 @@ const Page = async ({
       <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
         <div className="flex-[3_3_0%]">
           <h3 className="py-s txt-container-title truncate text-muted-foreground">
-            {t('PublicResourcePage.Overview')}
+            {t('PublicResourcePage_Overview')}
           </h3>
           <section className="rounded bg-elevation-background-layer-1">
             <h2 className="p-l">{document?.short_description}</h2>

@@ -22,11 +22,11 @@ import {
 } from '@graphql/generated';
 import { useCaseListKeys } from '@graphql/use-case/use-case-list.keys';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 const UseCases = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [useCaseEdit, setUseCaseEdit] = useState<
     UseCaseRowFragment | undefined
   >(undefined);
@@ -57,7 +57,7 @@ const UseCases = () => {
     {
       accessorKey: 'name',
       id: 'name',
-      header: t('UseCaseListPage.Name'),
+      header: t('UseCaseListPage_Name'),
       cell: ({ row }) => {
         return (
           <Badge
@@ -71,7 +71,7 @@ const UseCases = () => {
     {
       accessorKey: 'product',
       id: 'product',
-      header: t('UseCaseListPage.Product'),
+      header: t('UseCaseListPage_Product'),
       cell: ({ row }) => {
         return (
           <div className="flex flex-wrap gap-xs">
@@ -89,7 +89,7 @@ const UseCases = () => {
     {
       accessorKey: 'color',
       id: 'color',
-      header: t('UseCaseListPage.Color'),
+      header: t('UseCaseListPage_Color'),
       cell: ({ row }) => {
         return <span className="truncate">{row.original.color}</span>;
       },
@@ -104,7 +104,7 @@ const UseCases = () => {
   return (
     <>
       {isError && (
-        <div className="mb-s text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="mb-s text-sm text-destructive">{t('Utils_Error')}</div>
       )}
       <DataTable
         columns={columns}
@@ -129,11 +129,11 @@ const UseCases = () => {
                   )
                 }>
                 <SelectTrigger className="w-45">
-                  <SelectValue placeholder={t('UseCaseListPage.Product')} />
+                  <SelectValue placeholder={t('UseCaseListPage_Product')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">
-                    {t('UseCaseListPage.AllProducts')}
+                    {t('UseCaseListPage_AllProducts')}
                   </SelectItem>
                   {Object.values(FiligranProduct).map((product) => (
                     <SelectItem

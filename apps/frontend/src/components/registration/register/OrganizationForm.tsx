@@ -8,10 +8,9 @@ import {
 } from '@filigran/ui/clients';
 import { Button, Input } from '@filigran/ui/servers';
 import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useContext } from 'react';
 import { z } from 'zod';
-
 interface RegisterOrganizationFormProps {
   userOrganizationsQueryData: organizationListUserOrganizationsQuery$data;
   defaultPlatformName: string;
@@ -34,7 +33,7 @@ export const RegisterOrganizationForm = ({
     (a, b) => Number(a.personal_space) - Number(b.personal_space)
   );
   const { displayedIdentifier } = useContext(RegistrationContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const defaultOrganization = organizations[0];
 
@@ -43,7 +42,7 @@ export const RegisterOrganizationForm = ({
       <div className="flex flex-col justify-between gap-xl">
         <div className="space-y-m">
           <h1 className="txt-subtitle">
-            {t(`Register.OrganizationForm.Title`, {
+            {t(`Register_OrganizationForm_Title`, {
               platformIdentifier: displayedIdentifier,
             })}
           </h1>
@@ -59,7 +58,7 @@ export const RegisterOrganizationForm = ({
           }}
           fieldConfig={{
             platformName: {
-              label: t('Register.OrganizationForm.PlatformNameLabel'),
+              label: t('Register_OrganizationForm_PlatformNameLabel'),
               inputProps: {
                 className: 'bg-grayblue-700 border-none',
               },
@@ -68,7 +67,7 @@ export const RegisterOrganizationForm = ({
               fieldType: ({ field }) => (
                 <div className="flex flex-col gap-m">
                   <p className="text-sm font-medium leading-none">
-                    {t(`Register.OrganizationForm.Description`)}
+                    {t(`Register_OrganizationForm_Description`)}
                     <span className="text-destructive"> *</span>
                   </p>
                   <div className="flex flex-col gap-2">
@@ -105,7 +104,7 @@ export const RegisterOrganizationForm = ({
                               {!isPersonal && (
                                 <span className="italic">
                                   {' - '}
-                                  {t('Register.OrganizationForm.Recommended')}
+                                  {t('Register_OrganizationForm_Recommended')}
                                 </span>
                               )}
                             </FormLabel>
@@ -129,10 +128,10 @@ export const RegisterOrganizationForm = ({
               onClick={() => {
                 cancel();
               }}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
 
-            <Button type="submit">{t('Register.Confirm')}</Button>
+            <Button type="submit">{t('Register_Confirm')}</Button>
           </div>
         </AutoForm>
       </div>

@@ -1,5 +1,4 @@
 'use client';
-
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -11,9 +10,9 @@ import {
   AlertDialogTrigger,
   Button,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 const FileInputWithPrevent = ({
   texts,
   allowedTypes,
@@ -31,7 +30,7 @@ const FileInputWithPrevent = ({
     value?: FileList;
   };
 }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -65,11 +64,11 @@ const FileInputWithPrevent = ({
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('Utils.Cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('Utils_Cancel')}</AlertDialogCancel>
             <Button
               type="button"
               onClick={openFileDialog}>
-              {t('Utils.Continue')}
+              {t('Utils_Continue')}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

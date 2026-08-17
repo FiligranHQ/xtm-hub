@@ -33,7 +33,7 @@ const OpenctiPlaybookSlug = ({
 
   const breadcrumbValue = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${APP_PATH}`,
     },
     {

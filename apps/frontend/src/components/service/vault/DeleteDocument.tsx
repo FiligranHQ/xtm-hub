@@ -1,14 +1,14 @@
 import { DocumentDeleteMutation } from '@/components/service/document/document.graphql';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { IconActionContext } from '@/components/ui/IconActions';
+import useDecodedParams from '@/hooks/use-decoded-params';
 import { useToast } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
+import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useContext } from 'react';
 import { useMutation } from 'react-relay';
 
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import useDecodedParams from '@/hooks/use-decoded-params';
-import { documentDeleteMutation } from '@generated/documentDeleteMutation.graphql';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { useTranslate } from '@tolgee/react';
 interface DeleteDocumentProps {
   documentData: documentItem_fragment$data;
   connectionId: string;
@@ -22,7 +22,7 @@ export const DeleteDocument = ({
   open,
   setOpen,
 }: DeleteDocumentProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { toast } = useToast();
 
   const { setMenuOpen } = useContext(IconActionContext);
@@ -41,8 +41,8 @@ export const DeleteDocument = ({
       },
       onCompleted: () => {
         toast({
-          title: t('Utils.Success'),
-          description: t('VaultActions.DocumentDeleted', {
+          title: t('Utils_Success'),
+          description: t('VaultActions_DocumentDeleted', {
             file_name: documentData.file_name ?? '',
           }),
         });
@@ -51,8 +51,8 @@ export const DeleteDocument = ({
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -60,13 +60,13 @@ export const DeleteDocument = ({
 
   return (
     <AlertDialogComponent
-      AlertTitle={t('Utils.Delete')}
-      actionButtonText={t('Utils.Delete')}
+      AlertTitle={t('Utils_Delete')}
+      actionButtonText={t('Utils_Delete')}
       variantName={'destructive'}
       isOpen={open}
       onOpenChange={setOpen}
       onClickContinue={deleteDocument}>
-      {t('Service.Vault.FileForm.DeleteDialog')}
+      {t('Service_Vault_FileForm_DeleteDialog')}
     </AlertDialogComponent>
   );
 };

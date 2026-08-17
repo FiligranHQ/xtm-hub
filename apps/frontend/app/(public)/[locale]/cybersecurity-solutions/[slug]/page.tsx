@@ -1,7 +1,4 @@
-import {
-  getHeroSectionLibraryProps,
-  HeroSectionLibrary,
-} from '@/components/service/document/ui/HeroSectionLibrary';
+import { getHeroSectionLibraryProps, HeroSectionLibrary, } from '@/components/service/document/ui/HeroSectionLibrary';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
@@ -21,9 +18,7 @@ import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFr
 import SeoServiceInstanceMetadataQuery, {
   seoServiceInstanceMetadataQuery,
 } from '@generated/seoServiceInstanceMetadataQuery.graphql';
-import SeoServiceInstanceQuery, {
-  seoServiceInstanceQuery,
-} from '@generated/seoServiceInstanceQuery.graphql';
+import SeoServiceInstanceQuery, { seoServiceInstanceQuery, } from '@generated/seoServiceInstanceQuery.graphql';
 import { FeatureFlag } from '@graphql/generated';
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
@@ -184,11 +179,11 @@ const Page = async ({
 
   const breadcrumbValue = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${locale}`,
     },
     {
-      label: `Service.Cards.${serviceInstance.slug}.Name`,
+      label: `Service_Cards_${serviceInstance.slug}_Name`,
       fallback: serviceInstance.name,
     },
   ];

@@ -1,6 +1,5 @@
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import React from 'react';
-
 interface ShareableResourceBasicInformationProps {
   children: React.ReactNode;
 }
@@ -8,11 +7,11 @@ interface ShareableResourceBasicInformationProps {
 export const ShareableResourceBasicInformation = ({
   children,
 }: ShareableResourceBasicInformationProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <div className="flex-1">
       <h2 className="py-s txt-container-title truncate text-ellipsis text-muted-foreground">
-        {t('Service.ShareableResources.Details.BasicInformation')}
+        {t('Service_ShareableResources_Details_BasicInformation')}
       </h2>
       <section className="rounded bg-elevation-background-layer-1 flex space-y-xl p-l">
         <div className="space-y-xl">{children}</div>

@@ -1,7 +1,4 @@
 'use client';
-
-import { useTranslations } from 'next-intl';
-
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { LearnMoreBannerButton } from '@/components/service/trial-instances/banner/LearnMoreBannerButton';
@@ -13,6 +10,7 @@ import { Callout } from '@filigran/ui';
 import { OrganizationCapability, PlatformIdentifier } from '@graphql/generated';
 import { ReactNode, useContext } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 export const PRODUCTS_AVAILABLE_ON_TRIAL = 2;
 type BannerConfig = {
   text: ReactNode;
@@ -21,7 +19,7 @@ type BannerConfig = {
 
 // Component
 export const TryFiligranProductsBanner = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { settings } = useContext(SettingsContext);
   const { availableTrials } = useOrgaFreeTrial();
 
@@ -33,8 +31,8 @@ export const TryFiligranProductsBanner = () => {
     default: {
       text: (
         <span>
-          {t('Service.Trials.ExploreProducts')}{' '}
-          <strong>{t('Service.Trials.ExploreBold')}</strong>
+          {t('Service_Trials_ExploreProducts')}{' '}
+          <strong>{t('Service_Trials_ExploreBold')}</strong>
         </span>
       ),
       learnMore: (
@@ -48,11 +46,11 @@ export const TryFiligranProductsBanner = () => {
     openaev: {
       text: (
         <span>
-          {t('Service.Trials.ExplorePlatform', {
+          {t('Service_Trials_ExplorePlatform', {
             platformName:
               PlatformMetadataMapping[PlatformIdentifier.Openaev].name,
           })}{' '}
-          <strong>{t('Service.Trials.ExploreBold')}</strong>
+          <strong>{t('Service_Trials_ExploreBold')}</strong>
         </span>
       ),
       learnMore: (
@@ -64,11 +62,11 @@ export const TryFiligranProductsBanner = () => {
     opencti: {
       text: (
         <span>
-          {t('Service.Trials.ExplorePlatform', {
+          {t('Service_Trials_ExplorePlatform', {
             platformName:
               PlatformMetadataMapping[PlatformIdentifier.Opencti].name,
           })}{' '}
-          <strong>{t('Service.Trials.ExploreBold')}</strong>
+          <strong>{t('Service_Trials_ExploreBold')}</strong>
         </span>
       ),
       learnMore: (

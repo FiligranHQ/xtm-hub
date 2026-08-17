@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { useContext } from 'react';
 
 const TryOtherPlatformProductBlock = () => {
-  const t = useTranslations('HomePage.TryOtherPlatform');
+  const t = useTranslations();
   const { me } = useContext(PortalContext);
   const selectedOrganizationId = me?.selected_organization_id;
 
@@ -49,7 +49,7 @@ const TryOtherPlatformProductBlock = () => {
   return (
     <Card className="bg-elevation-background-layer-3 pt-l mt-xxl border-none rounded-xl">
       <CardContent className="p-l flex flex-col gap-xl md:justify-between">
-        <h2 className="heading-xs">{t('Title')}</h2>
+        <h2 className="heading-xs">{t('HomePage_TryOtherPlatform_Title')}</h2>
         <Button
           asChild
           variant="secondary"

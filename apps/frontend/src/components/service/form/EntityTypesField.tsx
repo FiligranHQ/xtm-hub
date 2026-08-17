@@ -5,9 +5,9 @@ import {
   FormLabel,
   MultiSelectFormField,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceFormEntityTypesFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   disabled?: boolean;
@@ -17,17 +17,17 @@ export const ServiceFormEntityTypesField = ({
   field,
   disabled,
 }: ServiceFormEntityTypesFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <FormItem>
       <FormLabel>
-        {t('Service.Form.EntityTypesLabel')}
+        {t('Service_Form_EntityTypesLabel')}
         <span className="text-sm text-destructive"> *</span>
       </FormLabel>
       <FormControl>
         <MultiSelectFormField
           disabled={disabled}
-          noResultString={t('Utils.NotFound')}
+          noResultString={t('Utils_NotFound')}
           options={ENTITY_TYPES}
           keyValue="id"
           keyLabel="name"
@@ -35,7 +35,7 @@ export const ServiceFormEntityTypesField = ({
           value={field.value}
           onValueChange={field.onChange}
           popoverContentClassName="bg-elevation-background-layer-3"
-          placeholder={t('Service.Form.EntityTypesPlaceholder')}
+          placeholder={t('Service_Form_EntityTypesPlaceholder')}
           variant="inverted"
         />
       </FormControl>

@@ -24,7 +24,6 @@ import {
   registerPlatformMutation,
 } from '@generated/registerPlatformMutation.graphql';
 import { PlatformRegistrationStatus } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import {
   ReactNode,
   useCallback,
@@ -42,6 +41,7 @@ import {
   usePreloadedQuery,
 } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface RegisterProps {
   platform: PlatformInput;
   queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
@@ -84,7 +84,7 @@ const initialState: State = {
 };
 
 export const Register = ({ queryRef, platform }: RegisterProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -148,8 +148,8 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
             dispatch({ type: 'SET_STATUS', payload: 'failed' });
             toast({
               variant: 'destructive',
-              title: t('Utils.Error'),
-              description: t(`Error.Server.${error.message}`),
+              title: t('Utils_Error'),
+              description: t(`Error_Server_${error.message}`),
             });
           }
         },

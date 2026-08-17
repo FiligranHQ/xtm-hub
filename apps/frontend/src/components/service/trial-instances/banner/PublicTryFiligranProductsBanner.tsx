@@ -1,18 +1,18 @@
 'use client';
-
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { Callout } from '@filigran/ui';
-import { useLocale, useTranslations } from 'next-intl';
 import { LearnMoreBannerButton } from './LearnMoreBannerButton';
 
+import { useTolgee, useTranslate } from '@tolgee/react';
+
 export const PublicTryFiligranProductsBanner = () => {
-  const t = useTranslations();
-  const locale = useLocale();
+  const { t } = useTranslate();
+  const { language: locale } = useTolgee(['language']);
 
   const bannerText = (
     <span>
-      {t('Service.Trials.ExploreProducts')}{' '}
-      <span className="font-bold">{t('Service.Trials.ExploreBold')}</span>
+      {t('Service_Trials_ExploreProducts')}{' '}
+      <span className="font-bold">{t('Service_Trials_ExploreBold')}</span>
     </span>
   );
   return (

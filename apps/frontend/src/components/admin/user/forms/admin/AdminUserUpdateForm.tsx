@@ -24,12 +24,12 @@ import {
 import { Label } from '@filigran/ui/clients';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { graphql, useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface AdminUserUpdateFormProps {
   user: UserList_fragment$data;
   callback: () => void;
@@ -47,7 +47,7 @@ export const AdminUserUpdateForm = ({
   user,
   callback,
 }: AdminUserUpdateFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
   const [userOrganization, setUserOrganization] = useState<
@@ -107,16 +107,16 @@ export const AdminUserUpdateForm = ({
       },
       onCompleted: () => {
         toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserUpdated', { email: user.email }),
+          title: t('Utils_Success'),
+          description: t('UserActions_UserUpdated', { email: user.email }),
         });
         callback();
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -131,16 +131,16 @@ export const AdminUserUpdateForm = ({
       },
       onCompleted: () => {
         toast({
-          title: t('Utils.Success'),
-          description: t('UserActions.UserUpdated', { email: user.email }),
+          title: t('Utils_Success'),
+          description: t('UserActions_UserUpdated', { email: user.email }),
         });
         callback();
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -159,10 +159,10 @@ export const AdminUserUpdateForm = ({
           name="first_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.FirstName')}</FormLabel>
+              <FormLabel>{t('UserForm_FirstName')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('UserForm.FirstName')}
+                  placeholder={t('UserForm_FirstName')}
                   {...field}
                 />
               </FormControl>
@@ -175,10 +175,10 @@ export const AdminUserUpdateForm = ({
           name="last_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.LastName')}</FormLabel>
+              <FormLabel>{t('UserForm_LastName')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('UserForm.LastName')}
+                  placeholder={t('UserForm_LastName')}
                   {...field}
                 />
               </FormControl>
@@ -188,7 +188,7 @@ export const AdminUserUpdateForm = ({
         />
         <CapabilityDescription />
         <div className="flex items-center gap-m">
-          <Label>{t('UserForm.Organizations')}</Label>
+          <Label>{t('UserForm_Organizations')}</Label>
           <AutocompleteOrganization
             selectedOrganizationCapabilities={form.getValues(
               'organization_capabilities'
@@ -247,20 +247,20 @@ export const AdminUserUpdateForm = ({
             <Button
               variant="secondary"
               onClick={() => disableUser({ disabled: false })}>
-              {t('UserActions.Enable')}
+              {t('UserActions_Enable')}
             </Button>
           ) : (
             <AlertDialogComponent
-              AlertTitle={t('MenuActions.Disable')}
-              actionButtonText={t('MenuActions.Disable')}
+              AlertTitle={t('MenuActions_Disable')}
+              actionButtonText={t('MenuActions_Disable')}
               variantName={'destructive'}
               triggerElement={
                 <Button variant="secondary-destructive">
-                  {t('UserActions.Disable')}
+                  {t('UserActions_Disable')}
                 </Button>
               }
               onClickContinue={() => disableUser({ disabled: true })}>
-              {t('DisableUserDialog.TextDisableThisUser', {
+              {t('DisableUserDialog_TextDisableThisUser', {
                 email: user.email,
               })}
             </AlertDialogComponent>
@@ -270,12 +270,12 @@ export const AdminUserUpdateForm = ({
               variant="secondary"
               type="button"
               onClick={(e) => handleCloseSheet(e)}>
-              {t('Utils.Cancel')}
+              {t('Utils_Cancel')}
             </Button>
             <Button
               disabled={!form.formState.isValid}
               type="submit">
-              {t('Utils.Validate')}
+              {t('Utils_Validate')}
             </Button>
           </div>
         </SheetFooter>

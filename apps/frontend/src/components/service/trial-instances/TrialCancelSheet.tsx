@@ -1,5 +1,4 @@
 'use client';
-
 import { SelectWithEditableField } from '@/components/service/registration/SelectWithEditableField';
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
@@ -15,11 +14,11 @@ import {
 } from '@filigran/ui';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const trialCancelSchema = z.object({
   cancellation_reason: z.string().optional(),
 });
@@ -47,10 +46,10 @@ export const TrialCancelSheet = ({
   setOpen,
   platformIdentifier,
 }: TrialCancelSheetProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const cancellationReasons = REASONS.map((reason) => ({
     value: reason,
-    label: t(`Service.Trials.CancellationReason.${reason}`),
+    label: t(`Service_Trials_CancellationReason_${reason}`),
   }));
   const { refetch } = useOrgaFreeTrial();
   const router = useRouter();
@@ -73,7 +72,7 @@ export const TrialCancelSheet = ({
           ? 'Service.Trials.Cancellation.Toast.NoNewTrialPossible'
           : 'Service.Trials.Cancellation.Toast.NewTrialPossible';
         toast({
-          title: t('Utils.Success'),
+          title: t('Utils_Success'),
           description: t(descriptionKey),
         });
         refetch({}, { fetchPolicy: 'network-only' });
@@ -84,8 +83,8 @@ export const TrialCancelSheet = ({
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -95,11 +94,11 @@ export const TrialCancelSheet = ({
     <SheetWithPreventingDialog
       open={open}
       setOpen={setOpen}
-      title={t('Service.Trials.Cancellation.ConfirmationForm.Title')}>
+      title={t('Service_Trials_Cancellation_ConfirmationForm_Title')}>
       {isCancellationDefinitive && (
         <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm mt-4">
           <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
-          {t('Service.Trials.Cancellation.ConfirmationForm.NoNewTrialPossible')}
+          {t('Service_Trials_Cancellation_ConfirmationForm_NoNewTrialPossible')}
         </div>
       )}
       <AutoForm
@@ -115,7 +114,7 @@ export const TrialCancelSheet = ({
               <FormItem>
                 <FormLabel>
                   {t(
-                    'Service.Trials.Cancellation.ConfirmationForm.CancellationReason'
+                    'Service_Trials_Cancellation_ConfirmationForm_CancellationReason'
                   )}
                   <span className="text-sm text-destructive">*</span>
                 </FormLabel>
@@ -124,13 +123,13 @@ export const TrialCancelSheet = ({
                   options={cancellationReasons}
                   labels={{
                     placeholder: t(
-                      'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonPlaceholder'
+                      'Service_Trials_Cancellation_ConfirmationForm_CancellationReasonPlaceholder'
                     ),
                     editableFieldLabel: t(
-                      'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOther'
+                      'Service_Trials_Cancellation_ConfirmationForm_CancellationReasonOther'
                     ),
                     editableFieldPlaceholder: t(
-                      'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonOtherPlaceholder'
+                      'Service_Trials_Cancellation_ConfirmationForm_CancellationReasonOtherPlaceholder'
                     ),
                   }}
                   editableFieldValue="Other"
@@ -145,10 +144,10 @@ export const TrialCancelSheet = ({
             variant="secondary"
             type="button"
             onClick={() => setOpen(false)}>
-            {t('Utils.Cancel')}
+            {t('Utils_Cancel')}
           </Button>
 
-          <Button type="submit">{t('Utils.Continue')}</Button>
+          <Button type="submit">{t('Utils_Continue')}</Button>
         </div>
       </AutoForm>
     </SheetWithPreventingDialog>

@@ -22,9 +22,9 @@ import { LogoFiligranIcon } from '@filigran/icon';
 import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface ShareableResourceDetailsProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
   downloadNumber?: number | null;
@@ -47,7 +47,7 @@ const ShareableResourceDetails = ({
   documentData,
   downloadNumber,
 }: ShareableResourceDetailsProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const platformIdentifier =
     platformIdentifierMappedByShareableResourceType[
       documentData.type as ShareableResourceType
@@ -82,25 +82,25 @@ const ShareableResourceDetails = ({
         </div>
       )}
       <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.Author')}>
+        label={t('Service_ShareableResources_Details_Author')}>
         <div className="flex items-center gap-s whitespace-nowrap">
           <UserDisplay uploader={documentData.uploader} />
         </div>
       </ShareableResourceDetailItem>
       {getEntityTypes(documentData).length > 0 && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.EntityType')}>
+          label={t('Service_ShareableResources_Details_EntityType')}>
           <ShareableResourceEntityTypes document={documentData} />
         </ShareableResourceDetailItem>
       )}
       {isIntegration && (
         <>
           <ShareableResourceDetailItem
-            label={t('Service.ShareableResources.Details.IntegrationType')}>
+            label={t('Service_ShareableResources_Details_IntegrationType')}>
             <div className="flex items-center gap-s">
               <span>
                 {t(
-                  `Service.OpenctiIntegrations.Type.${documentData.integration_type}`
+                  `Service_OpenctiIntegrations_Type_${documentData.integration_type}`
                 )}
               </span>
             </div>
@@ -108,7 +108,7 @@ const ShareableResourceDetails = ({
           {!!documentData.solution_categories?.length && (
             <ShareableResourceDetailItem
               label={t(
-                'Service.ShareableResources.Details.IntegrationSolutionCategory'
+                'Service_ShareableResources_Details_IntegrationSolutionCategory'
               )}>
               <div className="flex items-center gap-s">
                 <span>
@@ -122,7 +122,7 @@ const ShareableResourceDetails = ({
           {documentData.license_type && (
             <ShareableResourceDetailItem
               label={t(
-                'Service.ShareableResources.Details.IntegrationLicenseType'
+                'Service_ShareableResources_Details_IntegrationLicenseType'
               )}>
               <div className="flex items-center gap-s">
                 <span>{documentData.license_type}</span>
@@ -132,7 +132,7 @@ const ShareableResourceDetails = ({
           {integrationSubTypeMetadata && (
             <ShareableResourceDetailItem
               label={t(
-                'Service.ShareableResources.Details.IntegrationSubType'
+                'Service_ShareableResources_Details_IntegrationSubType'
               )}>
               <span>
                 <Badge
@@ -153,7 +153,7 @@ const ShareableResourceDetails = ({
         variant="link"
       />
       <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.LastUpdatedAt')}>
+        label={t('Service_ShareableResources_Details_LastUpdatedAt')}>
         <span>
           {formatDate(
             documentData.updated_at ?? documentData.created_at,
@@ -182,7 +182,7 @@ const ShareableResourceDetails = ({
       />
       {documentationUrl && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
+          label={t('Service_ShareableResources_Details_OpenCTIDocumentation')}>
           <ShareableResourceDetailsLink url={documentationUrl} />
         </ShareableResourceDetailItem>
       )}
@@ -206,12 +206,12 @@ const ShareableResourceDetails = ({
       />
       {isResourceDownloadable(documentData) && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.Downloads')}>
+          label={t('Service_ShareableResources_Details_Downloads')}>
           <span>{roundToNearest(downloadNumber)}</span>
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.Shares')}>
+        label={t('Service_ShareableResources_Details_Shares')}>
         <span>{roundToNearest(documentData.share_number)}</span>
       </ShareableResourceDetailItem>
     </ShareableResourceBasicInformation>

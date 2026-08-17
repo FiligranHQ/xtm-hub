@@ -3,8 +3,7 @@ import { AlertDialogTitle } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 interface OnePlatformDisplayProps {
   documentData: documentItem_fragment$data;
   platforms: useRegisteredPlatformsFragment$data[];
@@ -18,13 +17,13 @@ const OnePlatformDisplay = ({
   setIsOpen,
   oneClickDeploy,
 }: OnePlatformDisplayProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <>
       <div className="space-y-m">
         <AlertDialogTitle>
-          {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
+          {t('Service_ShareableResources_Deploy_DeployResourceDescription', {
             resourceName: documentData.name ?? '',
             resourceType:
               SHAREABLE_RESOURCE_TYPE_NAME_MAPPING[
@@ -33,7 +32,7 @@ const OnePlatformDisplay = ({
           })}
         </AlertDialogTitle>
         <p>
-          {t('Service.ShareableResources.Deploy.DeployDescriptionOnePlatform', {
+          {t('Service_ShareableResources_Deploy_DeployDescriptionOnePlatform', {
             platformName: platforms[0]?.title ?? 'OpenCTI',
           })}
         </p>
@@ -45,7 +44,7 @@ const OnePlatformDisplay = ({
           onClick={() => {
             setIsOpen(false);
           }}>
-          {t('Utils.Cancel')}
+          {t('Utils_Cancel')}
         </Button>
 
         <Button
@@ -53,7 +52,7 @@ const OnePlatformDisplay = ({
             setIsOpen(false);
             oneClickDeploy(platforms[0]?.url ?? '');
           }}>
-          {t('Utils.Continue')}
+          {t('Utils_Continue')}
         </Button>
       </div>
     </>

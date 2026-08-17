@@ -30,7 +30,7 @@ const CustomViewSlug = ({ queryRef, serviceInstance }: CustomViewSlugProps) => {
 
   const breadcrumbValue = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${APP_PATH}`,
     },
     {

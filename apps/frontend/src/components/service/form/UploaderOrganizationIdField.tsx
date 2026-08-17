@@ -11,10 +11,10 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceFormUploaderOrganizationIdFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   isCreation: boolean;
@@ -28,11 +28,11 @@ export const ServiceFormUploaderOrganizationIdField = ({
   document,
   disabled,
 }: ServiceFormUploaderOrganizationIdFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
   return (
     <FormItem hidden={isCreation}>
-      <FormLabel>{t('OrganizationInServiceAction.Organization')}</FormLabel>
+      <FormLabel>{t('OrganizationInServiceAction_Organization')}</FormLabel>
       <Select
         disabled={disabled}
         onValueChange={field.onChange}
@@ -44,7 +44,7 @@ export const ServiceFormUploaderOrganizationIdField = ({
         <FormControl>
           <SelectTrigger>
             <SelectValue
-              placeholder={t('OrganizationInServiceAction.SelectOrganization')}
+              placeholder={t('OrganizationInServiceAction_SelectOrganization')}
             />
           </SelectTrigger>
         </FormControl>

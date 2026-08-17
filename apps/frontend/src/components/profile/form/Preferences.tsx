@@ -1,5 +1,4 @@
 'use client';
-
 import { MeEditUserMutation } from '@/components/me/me.graphql';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import { Locale, locales, publicLocales } from '@/i18n/config';
@@ -15,16 +14,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@filigran/ui';
-import { useLocale, useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useContext } from 'react';
 import { useMutation } from 'react-relay';
 
+import { useTolgee, useTranslate } from '@tolgee/react';
+
 export const ProfileFormPreferences = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { settings } = useContext(SettingsContext);
   const isDevelopmentEnvSetting = settings?.environment === 'development';
-  const locale = useLocale();
+  const { language: locale } = useTolgee(['language']);
   const { theme, setTheme } = useTheme();
   const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
   const availableLocales = isDevelopmentEnvSetting ? locales : publicLocales;
@@ -40,25 +40,25 @@ export const ProfileFormPreferences = () => {
     <Card>
       <CardHeader>
         <CardTitle className="heading-lg">
-          {t('ProfilePage.Preferences.Title')}
+          {t('ProfilePage_Preferences_Title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-l">
         <div className="grid gap-s">
           <span className="txt-default">
-            {t('ProfilePage.Preferences.Theme')}
+            {t('ProfilePage_Preferences_Theme')}
           </span>
           <Select
             value={currentTheme}
             onValueChange={setTheme}>
-            <SelectTrigger aria-label={t('ThemeToggle.SetTheme')}>
-              <SelectValue placeholder={t('ThemeToggle.SetTheme')} />
+            <SelectTrigger aria-label={t('ThemeToggle_SetTheme')}>
+              <SelectValue placeholder={t('ThemeToggle_SetTheme')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="light">{t('ThemeToggle.Light')}</SelectItem>
-              <SelectItem value="dark">{t('ThemeToggle.Dark')}</SelectItem>
+              <SelectItem value="light">{t('ThemeToggle_Light')}</SelectItem>
+              <SelectItem value="dark">{t('ThemeToggle_Dark')}</SelectItem>
               <SelectItem value="system">
-                {t('ThemeToggle.Automatic')}
+                {t('ThemeToggle_Automatic')}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -66,20 +66,20 @@ export const ProfileFormPreferences = () => {
 
         <div className="grid gap-s">
           <span className="txt-default">
-            {t('ProfilePage.Preferences.Language')}
+            {t('ProfilePage_Preferences_Language')}
           </span>
           <Select
             value={locale}
             onValueChange={onLocaleChange}>
-            <SelectTrigger aria-label={t('LocaleSwitcher.Label')}>
-              <SelectValue placeholder={t('LocaleSwitcher.Label')} />
+            <SelectTrigger aria-label={t('LocaleSwitcher_Label')}>
+              <SelectValue placeholder={t('LocaleSwitcher_Label')} />
             </SelectTrigger>
             <SelectContent>
               {availableLocales.map((loc) => (
                 <SelectItem
                   key={loc}
                   value={loc}>
-                  {t(`LocaleSwitcher.${loc}`)}
+                  {t(`LocaleSwitcher_${loc}`)}
                 </SelectItem>
               ))}
             </SelectContent>

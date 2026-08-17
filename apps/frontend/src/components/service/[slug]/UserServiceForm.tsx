@@ -1,9 +1,5 @@
-import { UserFragment } from '@/components/admin/user/UserList';
-import { DEBOUNCE_TIME } from '@/utils/constant';
-import { ServiceRestriction } from '@graphql/generated';
-import { useContext, useEffect, useMemo } from 'react';
-
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
+import { UserFragment } from '@/components/admin/user/UserList';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   UserServiceCreateMutation,
@@ -11,6 +7,7 @@ import {
 } from '@/components/service/user_service.graphql';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { useUsersList } from '@/hooks/use-users-list';
+import { DEBOUNCE_TIME } from '@/utils/constant';
 import {
   Button,
   Checkbox,
@@ -33,13 +30,15 @@ import { UserList_fragment$key } from '@generated/UserList_fragment.graphql';
 import { userServiceCreateMutation } from '@generated/userServiceCreateMutation.graphql';
 import { userServiceEditMutation } from '@generated/userServiceEditMutation.graphql';
 import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
+import { ServiceRestriction } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useContext, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { readInlineData, useMutation } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface UserServiceFormProps {
   connectionId: string;
   userService?: userServices_fragment$data;
@@ -61,7 +60,7 @@ export const UserServiceForm = ({
     UserServiceCreateMutation
   );
   const { toast } = useToast();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const isUserCreation = !userService?.id;
 
   const organizationId = subscription.subscriptionById?.organization?.id;
@@ -160,8 +159,8 @@ export const UserServiceForm = ({
       },
       onCompleted() {
         toast({
-          title: t('Utils.Success'),
-          description: t('ServiceActions.UserCapabilitiesModified', {
+          title: t('Utils_Success'),
+          description: t('ServiceActions_UserCapabilitiesModified', {
             email: userService!.user!.email,
           }),
         });
@@ -170,8 +169,8 @@ export const UserServiceForm = ({
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -196,8 +195,8 @@ export const UserServiceForm = ({
       },
       onCompleted() {
         toast({
-          title: t('Utils.Success'),
-          description: t('ServiceActions.UserServiceAdded', {
+          title: t('Utils_Success'),
+          description: t('ServiceActions_UserServiceAdded', {
             email: values.email.join(', '),
             serviceName: subscription.subscriptionById!.service_instance!.name,
           }),
@@ -208,8 +207,8 @@ export const UserServiceForm = ({
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
+          title: t('Utils_Error'),
+          description: <>{t(`Error_Server_${error.message}`)}</>,
         });
       },
     });
@@ -285,7 +284,7 @@ export const UserServiceForm = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('InviteUserServiceForm.Email')}</FormLabel>
+                  <FormLabel>{t('InviteUserServiceForm_Email')}</FormLabel>
                   <FormControl>
                     <MultiSelectFormField
                       popoverContentClassName="bg-elevation-background-layer-3"
@@ -295,8 +294,8 @@ export const UserServiceForm = ({
                       value={field.value}
                       onValueChange={field.onChange}
                       onInputChange={handleUsersInputChange}
-                      noResultString={t('Utils.NotFound')}
-                      placeholder={t('Service.Management.Email')}
+                      noResultString={t('Utils_NotFound')}
+                      placeholder={t('Service_Management_Email')}
                       variant="inverted"
                     />
                   </FormControl>
@@ -308,9 +307,9 @@ export const UserServiceForm = ({
         )}
 
         <div className="border border-primary rounded-lg p-l">
-          <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
+          <FormLabel>{t('OrganizationInServiceAction_SelectCapa')}</FormLabel>
           <p className="txt-sub-content italic">
-            {t('InviteUserServiceForm.Description')}
+            {t('InviteUserServiceForm_Description')}
           </p>
           {capabilitiesData.map((capability) => (
             <FormField
@@ -349,8 +348,8 @@ export const UserServiceForm = ({
                           aria-disabled={isCapabilityDisabled(capability!.id)}
                           className="txt-sub-content cursor-pointer aria-disabled:cursor-not-allowed">
                           {capability!.name === ServiceRestriction.ManageAccess
-                            ? t('Service.Form.ManageAccessCapabilityLabel')
-                            : t('Service.Form.CapabilityAccessLabel', {
+                            ? t('Service_Form_ManageAccessCapabilityLabel')
+                            : t('Service_Form_CapabilityAccessLabel', {
                                 name: capability!.name ?? '',
                                 description: capability!.description ?? '',
                               })}
@@ -360,8 +359,8 @@ export const UserServiceForm = ({
                       <TooltipContent>
                         <p>
                           {isCapabilityDisabled(capability!.id)
-                            ? t('InviteUserServiceForm.DisabledCapability')
-                            : t('InviteUserServiceForm.GrantCapability')}
+                            ? t('InviteUserServiceForm_DisabledCapability')
+                            : t('InviteUserServiceForm_GrantCapability')}
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -377,9 +376,9 @@ export const UserServiceForm = ({
             variant="secondary"
             type="button"
             onClick={(e) => handleCloseSheet(e)}>
-            {t('Utils.Cancel')}
+            {t('Utils_Cancel')}
           </Button>
-          <Button type="submit">{t('Utils.Validate')}</Button>
+          <Button type="submit">{t('Utils_Validate')}</Button>
         </SheetFooter>
       </form>
     </Form>

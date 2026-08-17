@@ -1,5 +1,4 @@
 'use client';
-
 import { formatTier } from '@/components/competitor/competitor.utils';
 import {
   AutoForm,
@@ -17,9 +16,9 @@ import {
 } from '@filigran/ui';
 import { competitor_fragment$data } from '@generated/competitor_fragment.graphql';
 import { CompetitorTier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 export const TIER_VALUES = Object.values(CompetitorTier);
 export const TIERS = Object.values(CompetitorTier).map((tier) => ({
   value: tier,
@@ -47,7 +46,7 @@ const CompetitorForm = ({
   handleSubmit: (values: z.infer<typeof competitorFormSchema>) => void;
   onClose: () => void;
 }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const isCreation = competitor === undefined;
   return (
     <AutoForm
@@ -60,22 +59,22 @@ const CompetitorForm = ({
       onSubmit={(values) => handleSubmit(values)}
       fieldConfig={{
         name: {
-          label: t('CompetitorForm.Name'),
+          label: t('CompetitorForm_Name'),
           inputProps: {
-            placeholder: t('CompetitorForm.Name'),
+            placeholder: t('CompetitorForm_Name'),
           },
         },
         domain: {
-          label: t('CompetitorForm.Domain'),
+          label: t('CompetitorForm_Domain'),
           inputProps: {
-            placeholder: t('CompetitorForm.Domain'),
+            placeholder: t('CompetitorForm_Domain'),
           },
         },
         tier: {
           fieldType: ({ field }) => (
             <FormItem>
               <FormLabel>
-                {t('CompetitorForm.Tier')}
+                {t('CompetitorForm_Tier')}
                 <span className="text-sm text-destructive"> *</span>
               </FormLabel>
               <FormControl>
@@ -84,7 +83,7 @@ const CompetitorForm = ({
                   value={field.value}
                   defaultValue={competitor?.tier ?? CompetitorTier.Tier1}>
                   <SelectTrigger>
-                    <SelectValue placeholder={t('CompetitorForm.Tier')} />
+                    <SelectValue placeholder={t('CompetitorForm_Tier')} />
                   </SelectTrigger>
                   <SelectContent>
                     {TIERS.map((tier) => (
@@ -108,12 +107,12 @@ const CompetitorForm = ({
             variant="secondary"
             type="button"
             onClick={onClose}>
-            {t('Utils.Cancel')}
+            {t('Utils_Cancel')}
           </Button>
           <Button type="submit">
             {isCreation
-              ? t('CompetitorForm.AddButton')
-              : t('CompetitorForm.EditButton')}
+              ? t('CompetitorForm_AddButton')
+              : t('CompetitorForm_EditButton')}
           </Button>
         </div>
       </SheetFooter>

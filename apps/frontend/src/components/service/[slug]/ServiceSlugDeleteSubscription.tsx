@@ -3,10 +3,9 @@ import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { useToast } from '@filigran/ui';
 import { subscriptionDeleteMutation } from '@generated/subscriptionDeleteMutation.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { FunctionComponent } from 'react';
 import { useMutation } from 'react-relay';
-
 interface ServiceSlugDeleteSubscriptionProps {
   subscriptions: subscription_fragment$data[];
   subscriptionConnectionId: string;
@@ -23,7 +22,7 @@ export const ServiceSlugDeleteSubscription: FunctionComponent<
   );
 
   const { toast } = useToast();
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const onDeleteSubscription = () => {
     commitDeleteSubscription({
@@ -39,8 +38,8 @@ export const ServiceSlugDeleteSubscription: FunctionComponent<
           .join(', ');
 
         toast({
-          title: t('Utils.Success'),
-          description: t('ServiceActions.OrganizationDeleted', {
+          title: t('Utils_Success'),
+          description: t('ServiceActions_OrganizationDeleted', {
             name:
               organizations.length > 50
                 ? `${organizations.slice(0, 50)}...`
@@ -51,8 +50,8 @@ export const ServiceSlugDeleteSubscription: FunctionComponent<
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
+          title: t('Utils_Error'),
+          description: <>{t(`Error_Server_${error.message}`)}</>,
         });
       },
     });
@@ -61,17 +60,17 @@ export const ServiceSlugDeleteSubscription: FunctionComponent<
   return (
     <AlertDialogComponent
       key={`remove-${subscriptions.map((subscription) => subscription.id).join('-')}`}
-      AlertTitle={t('Service.Management.RemoveAccess')}
-      actionButtonText={t('Service.Management.RemoveAccess')}
+      AlertTitle={t('Service_Management_RemoveAccess')}
+      actionButtonText={t('Service_Management_RemoveAccess')}
       variantName={'destructive'}
       isOpen={open}
       onOpenChange={setOpen}
       onClickContinue={onDeleteSubscription}>
       {subscriptions && subscriptions.length > 1
-        ? t('Service.Management.AreYouSureRemoveOrganizationsAccess', {
+        ? t('Service_Management_AreYouSureRemoveOrganizationsAccess', {
             count: subscriptions.length,
           })
-        : t('Service.Management.AreYouSureRemoveOrganizationAccess', {
+        : t('Service_Management_AreYouSureRemoveOrganizationAccess', {
             organizationName: subscriptions[0]!.organization.name,
           })}
     </AlertDialogComponent>

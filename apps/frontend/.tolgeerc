@@ -1,0 +1,11 @@
+{
+  "apiUrl": "http://localhost:8080",
+  "apiKey": "tgpak_gjptm3degbrwo4zumvvgqzlfgbxtmzlpn5rdi4lwofvw6",
+  "push": {
+    "files": [
+      { "path": "messages/en.json", "language": "en" },
+      { "path": "messages/fr.json", "language": "fr" },
+      { "path": "messages/ja.json", "language": "ja" }
+    ]
+  }
+}

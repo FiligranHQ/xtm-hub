@@ -11,20 +11,21 @@ import { serviceList_fragment$data } from '@generated/serviceList_fragment.graph
 import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import { ServiceInstanceFilterKey } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+
+import { useTranslate } from '@tolgee/react';
 
 const breadcrumbValue = [
   {
-    label: 'MenuLinks.Settings',
+    label: 'MenuLinks_Settings',
   },
   {
-    label: 'MenuLinks.Service',
+    label: 'MenuLinks_Service',
   },
 ];
 
 const Page = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const queryData = useLazyLoadQuery<serviceQuery>(ServiceListQuery, {
     count: 50,
@@ -48,7 +49,7 @@ const Page = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.Service')}</h1>
+      <h1 className="sr-only">{t('MenuLinks_Service')}</h1>
       <AdminServiceTab
         serviceData={serviceData}
         refetch={refetch}

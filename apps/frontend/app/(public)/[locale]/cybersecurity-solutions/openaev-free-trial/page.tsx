@@ -32,9 +32,9 @@ export async function generateMetadata({
     baseUrl,
     locale,
     pathname: PATHNAME,
-    title: `${t('Display.openaev.Title')} | XTM Hub`,
-    description: t('Display.openaev.FreeTrialDescription'),
-    imageAlt: t('XTMPlatform.IllustrationAlt'),
+    title: `${t('Display_openaev_Title')} | XTM Hub`,
+    description: t('Display_openaev_FreeTrialDescription'),
+    imageAlt: t('XTMPlatform_IllustrationAlt'),
     imageUrl: `${baseUrl}/openaev_ecosystem.png`,
   });
 }
@@ -48,11 +48,11 @@ const Page = async ({
   const baseUrl = await getBaseUrl();
   const breadcrumbs = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${locale}`,
     },
     {
-      label: 'Service.Trials.OpenAEVPlatformBreadcrumb',
+      label: 'Service_Trials_OpenAEVPlatformBreadcrumb',
     },
   ];
   const t = await getTranslations();
@@ -60,8 +60,8 @@ const Page = async ({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: `${t('Service.Trials.Display.openaev.Title')} | XTM Hub`,
-    description: t('Service.Trials.Display.openaev.FreeTrialDescription'),
+    name: `${t('Service_Trials_Display_openaev_Title')} | XTM Hub`,
+    description: t('Service_Trials_Display_openaev_FreeTrialDescription'),
     url: `${baseUrl}${PATHNAME}`,
     image: `${baseUrl}/openaev_ecosystem.png`,
     publisher: buildFiligranOrganizationJsonLd(baseUrl),
@@ -82,7 +82,7 @@ const Page = async ({
               <Link
                 href="/redirect/create-openaev-free-trial"
                 prefetch={false}>
-                {t('Service.Trials.StartTrial')}
+                {t('Service_Trials_StartTrial')}
               </Link>
             </GradientButton>
           }

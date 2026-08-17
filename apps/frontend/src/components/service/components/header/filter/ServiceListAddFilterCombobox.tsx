@@ -1,9 +1,8 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { Combobox } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useMemo } from 'react';
-
 interface ServiceListAddFilterComboboxProps {
   filterKeys: ServiceListFilterKey[];
 }
@@ -11,7 +10,7 @@ interface ServiceListAddFilterComboboxProps {
 export const ServiceListAddFilterCombobox = ({
   filterKeys,
 }: ServiceListAddFilterComboboxProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { addFilter, selectedFilters } = useServiceListFilters();
   const availableFilterKeys = useMemo(() => {
     return filterKeys.filter((key) => !selectedFilters.includes(key));
@@ -20,7 +19,7 @@ export const ServiceListAddFilterCombobox = ({
   const dataTab = useMemo(() => {
     return availableFilterKeys.map((filterKey) => ({
       value: filterKey,
-      label: t(`Service.List.Filter.Key.${filterKey}`),
+      label: t(`Service_List_Filter_Key_${filterKey}`),
     }));
   }, [availableFilterKeys, t]);
 
@@ -28,9 +27,9 @@ export const ServiceListAddFilterCombobox = ({
     <Combobox
       className="w-[190px]"
       dataTab={dataTab}
-      order={t('Service.List.Filter.Add')}
-      placeholder={t('Service.List.Filter.Add')}
-      emptyCommand={t('Service.List.Filter.NoOptions')}
+      order={t('Service_List_Filter_Add')}
+      placeholder={t('Service_List_Filter_Add')}
+      emptyCommand={t('Service_List_Filter_NoOptions')}
       onValueChange={(v) => v?.value && addFilter(v.value)}
     />
   );

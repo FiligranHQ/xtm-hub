@@ -12,10 +12,9 @@ import {
 } from '@filigran/ui';
 import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
 import { userServicesAddCapabilitiesMutation } from '@generated/userServicesAddCapabilitiesMutation.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
-
 interface SubscriptionSlugAddCapabilitiesProps {
   selectedUserServices: userServices_fragment$data[];
   availableCapabilities: BadgeOverflow[];
@@ -33,7 +32,7 @@ export const SubscriptionSlugAddCapabilities = ({
   serviceInstanceId,
   onCompleted,
 }: SubscriptionSlugAddCapabilitiesProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [selectedCapabilityIds, setSelectedCapabilityIds] = useState<
     Set<string>
   >(new Set());
@@ -78,8 +77,8 @@ export const SubscriptionSlugAddCapabilities = ({
       onError: (error: Error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
+          title: t('Utils_Error'),
+          description: <>{t(`Error_Server_${error.message}`)}</>,
         });
       },
     });
@@ -95,12 +94,12 @@ export const SubscriptionSlugAddCapabilities = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {t('Service.Management.AddUserServiceCapabilities.Title')}
+            {t('Service_Management_AddUserServiceCapabilities_Title')}
           </DialogTitle>
         </DialogHeader>
 
         <p className="text-sm text-muted-foreground">
-          {t('Service.Management.AddUserServiceCapabilities.Description', {
+          {t('Service_Management_AddUserServiceCapabilities_Description', {
             count: selectedUserServices.length,
           })}
         </p>
@@ -108,7 +107,7 @@ export const SubscriptionSlugAddCapabilities = ({
         <div className="flex flex-col gap-s py-m">
           {availableCapabilities.length === 0 ? (
             <p className="text-sm text-muted-foreground italic">
-              {t('Service.Management.NoAvailableCapabilities')}
+              {t('Service_Management_NoAvailableCapabilities')}
             </p>
           ) : (
             availableCapabilities.map((capability) => (
@@ -129,12 +128,12 @@ export const SubscriptionSlugAddCapabilities = ({
           <Button
             variant="tertiary"
             onClick={() => resetAndClose()}>
-            {t('Utils.Cancel')}
+            {t('Utils_Cancel')}
           </Button>
           <Button
             disabled={selectedCapabilityIds.size === 0}
             onClick={handleSubmit}>
-            {t('Utils.Validate')}
+            {t('Utils_Validate')}
           </Button>
         </DialogFooter>
       </DialogContent>

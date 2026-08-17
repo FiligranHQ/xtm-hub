@@ -1,5 +1,4 @@
 'use client';
-
 import { ConnectedProductItem } from '@/components/connected-products/ConnectedProductItem';
 import { ConnectProductButton } from '@/components/connected-products/ConnectProductButton';
 import { useConnectedPlatforms } from '@/components/connected-products/useConnectedPlatforms';
@@ -13,16 +12,16 @@ import {
   DropdownMenuTrigger,
 } from '@filigran/ui';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 export const CONNECTABLE_PLATFORMS = [
   PlatformIdentifier.Opencti,
   PlatformIdentifier.Openaev,
 ];
 
 export const ConnectedProductsDropdown = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { connectedPlatforms } = useConnectedPlatforms();
 
   const [open, setOpen] = useState(false);
@@ -36,7 +35,7 @@ export const ConnectedProductsDropdown = () => {
           variant="tertiary"
           className="flex flex-row items-center gap-xs text-primary font-medium">
           <span>
-            {t('Header.ConnectedProducts.Count', {
+            {t('Header_ConnectedProducts_Count', {
               count: connectedPlatforms.length,
             })}
           </span>

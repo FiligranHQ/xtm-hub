@@ -22,10 +22,10 @@ import { MoreVertIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationType, ServiceRestriction } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceCardProps {
   document: documentItem_fragment$data;
   detailUrl: string;
@@ -40,7 +40,7 @@ const ServiceCard = ({
   shareLinkUrl,
   connectionId,
 }: ServiceCardProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const router = useRouter();
 
   const [openSheet, setOpenSheet] = useState(false);
@@ -83,8 +83,8 @@ const ServiceCard = ({
       );
     });
     toast({
-      title: t('Utils.Success'),
-      description: t(`${translationKey}.Actions.Deleted`, {
+      title: t('Utils_Success'),
+      description: t(`${translationKey}_Actions_Deleted`, {
         name: document?.name ?? '',
       }),
     });
@@ -103,12 +103,12 @@ const ServiceCard = ({
             icon={
               <>
                 <MoreVertIcon className="h-4 w-4 text-primary" />
-                <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                <span className="sr-only">{t('Utils_OpenMenu')}</span>
               </>
             }>
             {userCanUpdate && (
               <IconActionsItem onClick={() => onClickOnUpdate()}>
-                {t('MenuActions.Update')}
+                {t('MenuActions_Update')}
               </IconActionsItem>
             )}
             {userCanDelete && (

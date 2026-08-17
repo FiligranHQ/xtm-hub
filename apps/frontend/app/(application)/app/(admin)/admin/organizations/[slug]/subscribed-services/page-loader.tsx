@@ -1,19 +1,19 @@
 'use client';
-
 import OrganizationSubscribedServicesSlug from '@/components/organization/[slug]/subscribed-services/OrganizationSubscribedServices';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import { useOrganizationSubscribedServicesBreadcrumbQuery } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
+
+import { useTranslate } from '@tolgee/react';
 
 const baseBreadcrumbValue = [
   {
-    label: 'MenuLinks.Settings',
+    label: 'MenuLinks_Settings',
   },
   {
-    label: 'MenuLinks.Organization',
+    label: 'MenuLinks_Organization',
     href: `/${APP_PATH}/admin/organizations`,
   },
 ];
@@ -25,7 +25,7 @@ interface PreloaderProps {
 
 // Component
 const PageLoader = ({ id }: PreloaderProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { data: organizationData } =
     useOrganizationSubscribedServicesBreadcrumbQuery(portalGraphqlClient, {
       id,
@@ -43,7 +43,7 @@ const PageLoader = ({ id }: PreloaderProps) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('Service.SubscribedServices')}</h1>
+      <h1 className="sr-only">{t('Service_SubscribedServices')}</h1>
       <OrganizationSubscribedServicesSlug organizationId={id} />
     </>
   );

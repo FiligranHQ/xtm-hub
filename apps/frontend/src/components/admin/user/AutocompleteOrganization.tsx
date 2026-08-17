@@ -1,7 +1,6 @@
 import { getOrganizations } from '@/components/organization/Organization.service';
 import { Combobox } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 export interface UserOrganizationFormProps {
   id: string;
   name: string;
@@ -19,7 +18,7 @@ export const AutocompleteOrganization = ({
   selectedOrganizationCapabilities,
   onValueChange,
 }: AutocompleteOrganizationProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { organizationsData, refetch } = getOrganizations();
 
   const isOrganizationAlreadySelected = (id: string) => {
@@ -45,9 +44,9 @@ export const AutocompleteOrganization = ({
     <Combobox
       className="w-[180px]"
       dataTab={filteredOrganization}
-      order={t('UserForm.AddOrganization')}
-      placeholder={t('UserForm.AddOrganization')}
-      emptyCommand={t('Utils.NotFound')}
+      order={t('UserForm_AddOrganization')}
+      placeholder={t('UserForm_AddOrganization')}
+      emptyCommand={t('Utils_NotFound')}
       onValueChange={handleOnValueChange}
       keyValue={'name'}
       keyLabel={'name'}

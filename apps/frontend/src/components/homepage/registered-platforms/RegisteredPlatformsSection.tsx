@@ -28,13 +28,13 @@ export const RegisteredPlatformsSection = async ({
       <div className="flex flex-col">
         <span className="heading-xs text-filigran-brand-primary">
           {welcomeName
-            ? t('PublicHomePage.XtmPlatform.LabelWithName', {
+            ? t('PublicHomePage_XtmPlatform_LabelWithName', {
                 name: welcomeName,
               })
-            : t('PublicHomePage.XtmPlatform.Label', {})}
+            : t('PublicHomePage_XtmPlatform_Label', {})}
         </span>
         <span className="mt-l mb-s text-content-body-base text-text-default-primary">
-          {t('PublicHomePage.XtmPlatform.ConnectedProducts', {
+          {t('PublicHomePage_XtmPlatform_ConnectedProducts', {
             count: registeredProductsCount,
           })}
         </span>

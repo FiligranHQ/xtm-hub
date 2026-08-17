@@ -40,7 +40,7 @@ import {
 import { registeredPlatformsKeys } from '@graphql/registered-platforms/registered-platforms.keys';
 import { serviceInstancesKeys } from '@graphql/service-instances/service-instances.keys';
 import { trialKeys } from '@graphql/trial/trial.keys';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTolgee, useTranslate } from '@tolgee/react';
 import { useContext, useMemo } from 'react';
 
 const PRIVATE_NAVIGATION_REGISTERED_PLATFORMS_VARIABLES = {
@@ -89,9 +89,8 @@ interface SettingsLinkConfig extends SectionLink {
 export const usePrivateNavigation = (): NavigationConfig => {
   const { me, hasCapability, hasOrganizationCapability } =
     useContext(PortalContext);
-  const tMenu = useTranslations('Menu');
-  const tMenuLinks = useTranslations('MenuLinks');
-  const locale = useLocale();
+  const { t } = useTranslate();
+  const { language: locale } = useTolgee(['language']);
   const selectedOrganizationId = me?.selected_organization_id;
   const currentOrganization = me?.organizations.find(
     (organization) => organization.id === selectedOrganizationId
@@ -107,46 +106,46 @@ export const usePrivateNavigation = (): NavigationConfig => {
   const settingsLinksConfig: SettingsLinkConfig[] = [
     {
       href: `/${APP_PATH}/admin/parameters`,
-      label: tMenuLinks('Parameter'),
+      label: t('MenuLinks_Parameter'),
     },
     {
       href: `/${APP_PATH}/admin/user`,
-      label: tMenuLinks('Security'),
+      label: t('MenuLinks_Security'),
     },
     {
       href: `/${APP_PATH}/admin/use-case`,
-      label: tMenuLinks('UseCase'),
+      label: t('MenuLinks_UseCase'),
     },
     {
       href: `/${APP_PATH}/admin/solution-category`,
-      label: tMenuLinks('SolutionCategory'),
+      label: t('MenuLinks_SolutionCategory'),
     },
     {
       href: `/${APP_PATH}/admin/organizations`,
-      label: tMenuLinks('Organization'),
+      label: t('MenuLinks_Organization'),
     },
     {
       href: `/${APP_PATH}/admin/service`,
-      label: tMenuLinks('Service'),
+      label: t('MenuLinks_Service'),
     },
     {
       href: `/${APP_PATH}/admin/opencti-trials`,
-      label: tMenuLinks('OpenCTITrial'),
+      label: t('MenuLinks_OpenCTITrial'),
       restriction: [PortalCapability.ReadTrials],
     },
     {
       href: `/${APP_PATH}/admin/openaev-trials`,
-      label: tMenuLinks('OpenAEVTrial'),
+      label: t('MenuLinks_OpenAEVTrial'),
       restriction: [PortalCapability.ReadTrials],
     },
     {
       href: `/${APP_PATH}/admin/competitors`,
-      label: tMenuLinks('Competitor'),
+      label: t('MenuLinks_Competitor'),
       restriction: [PortalCapability.ModifyCompetitors],
     },
     {
       href: `/${APP_PATH}/admin/news-feed`,
-      label: tMenuLinks('NewsFeed'),
+      label: t('MenuLinks_NewsFeed'),
       restriction: [PortalCapability.Bypass],
     },
   ];
@@ -264,7 +263,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
       return [
         {
           href,
-          label: tMenu('StartFreeTrial'),
+          label: t('Menu_StartFreeTrial'),
           highlight: true,
         },
       ];
@@ -276,7 +275,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
     ) {
       return [
         {
-          label: tMenu('StartFreeTrial'),
+          label: t('Menu_StartFreeTrial'),
           highlight: true,
         },
       ];
@@ -287,13 +286,13 @@ export const usePrivateNavigation = (): NavigationConfig => {
     identifier: ServiceDefinitionIdentifier
   ): SectionLink => ({
     href: serviceHrefs.get(identifier),
-    label: tMenu(SERVICE_LINK_LABEL_KEYS[identifier] ?? identifier),
+    label: t(`Menu_${SERVICE_LINK_LABEL_KEYS[identifier] ?? identifier}`),
   });
   const xtmPlatformRoadmapHref = serviceHrefs.get(
     ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
   const getMyProductLabel = (linkedPlatformsCount: number): string =>
-    linkedPlatformsCount === 1 ? tMenu('MyProduct') : tMenu('MyProducts');
+    linkedPlatformsCount === 1 ? t('Menu_MyProduct') : t('Menu_MyProducts');
   const openctiMyProductLinks: SectionLink[] =
     openctiRegisteredPlatforms.length > 0
       ? [
@@ -325,7 +324,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
   const sections: SectionConfig[] = [
     {
       key: 'xtm-platform',
-      label: tMenu('XTMPlatform'),
+      label: t('Menu_XTMPlatform'),
       icon: HomeIcon,
       pathPrefix: `/${APP_PATH}`,
       href: `/${APP_PATH}`,
@@ -348,12 +347,12 @@ export const usePrivateNavigation = (): NavigationConfig => {
         buildServiceLink(ServiceDefinitionIdentifier.OpenctiPlaybooks),
         {
           href: 'https://demo.opencti.io',
-          label: tMenu('LiveDemo'),
+          label: t('Menu_LiveDemo'),
           external: true,
         },
         {
           href: 'https://docs.opencti.io/latest/',
-          label: tMenu('Documentation'),
+          label: t('Menu_Documentation'),
           external: true,
         },
       ],
@@ -372,12 +371,12 @@ export const usePrivateNavigation = (): NavigationConfig => {
         buildServiceLink(ServiceDefinitionIdentifier.OpenaevScenarios),
         {
           href: 'https://demo.openaev.io',
-          label: tMenu('LiveDemo'),
+          label: t('Menu_LiveDemo'),
           external: true,
         },
         {
           href: 'https://docs.openaev.io/latest',
-          label: tMenu('Documentation'),
+          label: t('Menu_Documentation'),
           external: true,
         },
       ],
@@ -390,10 +389,10 @@ export const usePrivateNavigation = (): NavigationConfig => {
       links: [
         {
           href: 'https://filigran.io/platform/xtm-one/',
-          label: tMenu('About'),
+          label: t('Menu_About'),
           external: true,
         },
-        { label: tMenu('AICatalog'), badge: tMenu('ComingSoon') },
+        { label: t('Menu_AICatalog'), badge: t('Menu_ComingSoon') },
       ],
     },
   ];
@@ -402,7 +401,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
       ? [
           {
             key: 'users',
-            label: tMenuLinks('Users'),
+            label: t('MenuLinks_Users'),
             icon: IndividualIcon,
             pathPrefix: `/${APP_PATH}/manage/user`,
             href: `/${APP_PATH}/manage/user`,
@@ -414,7 +413,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
       ? [
           {
             key: 'settings',
-            label: tMenuLinks('Settings'),
+            label: t('MenuLinks_Settings'),
             icon: SettingsIcon,
             pathPrefix: `/${APP_PATH}/admin/`,
             links: settingsLinks,
@@ -429,7 +428,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
             key: 'xtm-platform-roadmap',
             href: xtmPlatformRoadmapHref,
             icon: PapermapIcon,
-            label: tMenu('XTMRoadmap'),
+            label: t('Menu_XTMRoadmap'),
           },
         ]
       : []),
@@ -437,21 +436,21 @@ export const usePrivateNavigation = (): NavigationConfig => {
       key: 'filigran-academy',
       href: 'https://academy.filigran.io/',
       icon: SchoolIcon,
-      label: tMenu('FiligranAcademy'),
+      label: t('Menu_FiligranAcademy'),
       external: true,
     },
     {
       key: 'filigran-blog',
       href: 'https://filigran.io/our-blog/',
       icon: PostIcon,
-      label: tMenu('Blog'),
+      label: t('Menu_Blog'),
       external: true,
     },
     {
       key: 'slack',
       href: 'https://filigran-community.slack.com',
       icon: SlackIcon,
-      label: tMenu('Slack'),
+      label: t('Menu_Slack'),
       external: true,
     },
   ];

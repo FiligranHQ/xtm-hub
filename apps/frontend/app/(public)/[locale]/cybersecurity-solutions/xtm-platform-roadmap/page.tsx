@@ -90,11 +90,11 @@ const Page = async ({
 
   const breadcrumbs = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/`,
     },
     {
-      label: 'Epic.XTMRoadmap',
+      label: 'Epic_XTMRoadmap',
     },
   ];
 

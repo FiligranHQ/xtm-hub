@@ -19,7 +19,7 @@ import {
   TooltipTrigger,
 } from '@filigran/ui';
 import { Badge } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import Link from 'next/link';
 
 const BADGE_CLASS = 'border-0 bg-primary/20 p-l';
@@ -33,7 +33,7 @@ type LastDeployedResourceRowProps = {
 const LastDeployedResourceRow = ({
   resource,
 }: LastDeployedResourceRowProps) => {
-  const t = useTranslations('HomePage.LastDeployedResources');
+  const { t } = useTranslate();
   const deployedAt = formatDate(resource.deployedAt, 'DATE_MEDIUM');
 
   const { document } = resource;
@@ -80,13 +80,17 @@ const LastDeployedResourceRow = ({
         <Badge className={cn('shrink-0', BADGE_CLASS)}>
           <CalendarMonthIcon className="size-4" />
         </Badge>
-        <span className="shrink-0">{t('On')}</span>
+        <span className="shrink-0">
+          {t('HomePage_LastDeployedResources_On')}
+        </span>
         <span className="shrink-0 content-body-base text-text-default-primary">
           {deployedAt}
         </span>
         {resource.deployedBy && (
           <>
-            <span className="shrink-0">{t('By')}</span>
+            <span className="shrink-0">
+              {t('HomePage_LastDeployedResources_By')}
+            </span>
             <div className="min-w-0 shrink flex items-center gap-s">
               <UserDisplay
                 uploader={resource.deployedBy}

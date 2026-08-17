@@ -1,5 +1,4 @@
 'use client';
-
 import { LoginFormMutation } from '@/components/login/login.graphql';
 import useDecodedQuery from '@/hooks/use-decoded-query';
 import { decodeSafeRedirect } from '@/utils/redirect';
@@ -14,12 +13,12 @@ import {
   toast,
 } from '@filigran/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 const formSchema = z.object({
   email: z.email('This is not a valid email.'),
   password: z.string(),
@@ -28,7 +27,7 @@ const formSchema = z.object({
 // Component
 const LoginForm = () => {
   const router = useRouter();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { redirect } = useDecodedQuery();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,8 +43,8 @@ const LoginForm = () => {
       onError() {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Login.LoginError`),
+          title: t('Utils_Error'),
+          description: t(`Error_Login_LoginError`),
         });
       },
       onCompleted() {
@@ -69,10 +68,10 @@ const LoginForm = () => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('LoginPage.Email')}</FormLabel>
+                <FormLabel>{t('LoginPage_Email')}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t('LoginPage.Email')}
+                    placeholder={t('LoginPage_Email')}
                     {...field}
                   />
                 </FormControl>
@@ -84,11 +83,11 @@ const LoginForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('LoginPage.Password')}</FormLabel>
+                <FormLabel>{t('LoginPage_Password')}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder={t('LoginPage.Password')}
+                    placeholder={t('LoginPage_Password')}
                     {...field}
                   />
                 </FormControl>
@@ -98,7 +97,7 @@ const LoginForm = () => {
           <Button
             className="w-full"
             type="submit">
-            {t('LoginPage.SignIn')}
+            {t('LoginPage_SignIn')}
           </Button>
         </form>
       </Form>

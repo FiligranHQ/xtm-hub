@@ -19,10 +19,10 @@ import {
   FiligranProduct,
   IntegrationType,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 
+import { useTranslate } from '@tolgee/react';
 type DocumentType =
   | 'CSV Feed'
   | 'TAXII Feed'
@@ -112,7 +112,7 @@ export const useServiceFormFields = ({
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
   const { setIsDirty } = useDialogContext();
   const integrationType = integrationTypeMappedByDocumentType[documentType];
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return useMemo(
     () => ({
@@ -250,13 +250,13 @@ export const useServiceFormFields = ({
       },
       integration_type: { fieldType: () => <FormItem hidden={true} /> },
       license_type: {
-        label: t('Service.Form.LicenseTypeLabel'),
+        label: t('Service_Form_LicenseTypeLabel'),
         inputProps: {
           disabled: disabledFields.includes('license_type'),
         },
       },
       active: {
-        label: t('Service.Form.PublishedPlaceholder', {
+        label: t('Service_Form_PublishedPlaceholder', {
           documentType,
         }),
         inputProps: {
@@ -264,87 +264,87 @@ export const useServiceFormFields = ({
         },
       },
       short_description: {
-        label: t('Service.Form.ShortDescriptionLabel'),
+        label: t('Service_Form_ShortDescriptionLabel'),
         inputProps: {
-          placeholder: t('Service.Form.ShortDescriptionPlaceholder'),
+          placeholder: t('Service_Form_ShortDescriptionPlaceholder'),
           disabled: disabledFields.includes('short_description'),
         },
       },
       slug: {
-        label: t('Service.Form.SlugLabel'),
+        label: t('Service_Form_SlugLabel'),
         inputProps: {
-          placeholder: t('Service.Form.SlugPlaceholder'),
+          placeholder: t('Service_Form_SlugPlaceholder'),
           readOnly: !isCreation,
           disabled: disabledFields.includes('slug'),
           className: !isCreation ? 'opacity-50 cursor-not-allowed' : '',
         },
       },
       name: {
-        label: t(`Service.Form.NameLabel`),
+        label: t(`Service_Form_NameLabel`),
         inputProps: {
-          placeholder: t('Service.Form.NamePlaceholder', { documentType }),
+          placeholder: t('Service_Form_NamePlaceholder', { documentType }),
           disabled: disabledFields.includes('name'),
         },
       },
       vendor_url: {
-        label: t('Service.Form.VendorUrlLabel'),
+        label: t('Service_Form_VendorUrlLabel'),
         inputProps: {
-          placeholder: t('Service.Form.UrlPlaceholder'),
+          placeholder: t('Service_Form_UrlPlaceholder'),
           disabled: disabledFields.includes(DocumentMetadataKeyCode.VendorUrl),
         },
       },
       github_url: {
-        label: t('Service.Form.GithubUrlLabel'),
+        label: t('Service_Form_GithubUrlLabel'),
         inputProps: {
-          placeholder: t('Service.Form.UrlPlaceholder'),
+          placeholder: t('Service_Form_UrlPlaceholder'),
           disabled: disabledFields.includes(DocumentMetadataKeyCode.GithubUrl),
         },
       },
       datasheet_url: {
-        label: t('Service.Form.DatasheetUrlLabel'),
+        label: t('Service_Form_DatasheetUrlLabel'),
         inputProps: {
-          placeholder: t('Service.Form.UrlPlaceholder'),
+          placeholder: t('Service_Form_UrlPlaceholder'),
           disabled: disabledFields.includes(
             DocumentMetadataKeyCode.DatasheetUrl
           ),
         },
       },
       blogpost_url: {
-        label: t('Service.Form.BlogpostUrlLabel'),
+        label: t('Service_Form_BlogpostUrlLabel'),
         inputProps: {
-          placeholder: t('Service.Form.UrlPlaceholder'),
+          placeholder: t('Service_Form_UrlPlaceholder'),
           disabled: disabledFields.includes(
             DocumentMetadataKeyCode.BlogpostUrl
           ),
         },
       },
       demo_url: {
-        label: t('Service.Form.DemoUrlLabel'),
+        label: t('Service_Form_DemoUrlLabel'),
         inputProps: {
-          placeholder: t('Service.Form.UrlPlaceholder'),
+          placeholder: t('Service_Form_UrlPlaceholder'),
           disabled: disabledFields.includes(DocumentMetadataKeyCode.DemoUrl),
         },
       },
       product_version: {
-        label: t('Service.Form.ProductVersionLabel', { platform }),
+        label: t('Service_Form_ProductVersionLabel', { platform }),
         inputProps: {
-          placeholder: t('Service.Form.ProductVersionPlaceholder'),
+          placeholder: t('Service_Form_ProductVersionPlaceholder'),
           disabled: disabledFields.includes(
             DocumentMetadataKeyCode.ProductVersion
           ),
         },
       },
       minimum_deployable_version: {
-        label: t('Service.Form.MinimumDeployableVersionLabel', { platform }),
+        label: t('Service_Form_MinimumDeployableVersionLabel', { platform }),
         inputProps: {
-          placeholder: t('Service.Form.MinimumDeployableVersionPlaceholder'),
+          placeholder: t('Service_Form_MinimumDeployableVersionPlaceholder'),
           disabled: disabledFields.includes(
             DocumentMetadataKeyCode.MinimumDeployableVersion
           ),
         },
       },
       container_image: {
-        label: t('Service.Form.ContainerImageLabel'),
+        label: t('Service_Form_ContainerImageLabel'),
         inputProps: {
           disabled: disabledFields.includes(
             DocumentMetadataKeyCode.ContainerImage
@@ -352,13 +352,13 @@ export const useServiceFormFields = ({
         },
       },
       source_code: {
-        label: t('Service.Form.SourceCodeLabel'),
+        label: t('Service_Form_SourceCodeLabel'),
         inputProps: {
           disabled: disabledFields.includes(DocumentMetadataKeyCode.SourceCode),
         },
       },
       subscription_link: {
-        label: t('Service.Form.SubscriptionLinkLabel'),
+        label: t('Service_Form_SubscriptionLinkLabel'),
         inputProps: {
           disabled: disabledFields.includes(
             DocumentMetadataKeyCode.SubscriptionLink
@@ -366,13 +366,13 @@ export const useServiceFormFields = ({
         },
       },
       verified: {
-        label: t('Service.Form.VerifiedLabel'),
+        label: t('Service_Form_VerifiedLabel'),
         inputProps: {
           disabled: disabledFields.includes(DocumentMetadataKeyCode.Verified),
         },
       },
       manager_supported: {
-        label: t('Service.Form.ManagerSupportedLabel'),
+        label: t('Service_Form_ManagerSupportedLabel'),
         inputProps: {
           disabled: disabledFields.includes(
             DocumentMetadataKeyCode.ManagerSupported
@@ -380,7 +380,7 @@ export const useServiceFormFields = ({
         },
       },
       playbook_supported: {
-        label: t('Service.Form.PlaybookSupportedLabel'),
+        label: t('Service_Form_PlaybookSupportedLabel'),
         inputProps: {
           disabled: disabledFields.includes(
             DocumentMetadataKeyCode.PlaybookSupported

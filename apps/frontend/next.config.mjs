@@ -1,7 +1,3 @@
-import createNextIntlPlugin from 'next-intl/plugin';
-
-const withNextIntl = createNextIntlPlugin();
-
 const isProductionOrStaging =
   process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 
@@ -269,4 +265,4 @@ const nextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;

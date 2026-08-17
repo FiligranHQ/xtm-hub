@@ -38,10 +38,24 @@ services:
     command: 'minio server /data/minio --console-address ":8902"'
     restart: always
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: [ "CMD", "mc", "ready", "local" ]
       interval: 10s
       timeout: 5s
       retries: 10
+
+  portal-tolgee:
+    image: "tolgee/tolgee:v3.218.1"
+    ports:
+      - "8080:8080"
+    container_name: tolgee
+    environment:
+      TOLGEE_AUTHENTICATION_ENABLED: "true"
+      TOLGEE_AUTHENTICATION_INITIAL_USERNAME: admin
+      TOLGEE_AUTHENTICATION_INITIAL_PASSWORD: changeme
+      TOLGEE_AUTHENTICATION_JWT_SECRET: dGhpc0lzQVJhbmRvbUxvY2FsRGV2Snd0U2VjcmV0MzJC
+    volumes:
+      - "tolgee:/data"
+    restart: always
 
   portal-elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.18.3
@@ -90,6 +104,8 @@ volumes:
   pgadmin-data:
     driver: local
   minio:
+    driver: local
+  tolgee:
     driver: local
   elasticsearch-data:
     driver: local

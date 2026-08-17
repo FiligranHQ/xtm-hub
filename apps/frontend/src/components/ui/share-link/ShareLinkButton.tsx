@@ -10,10 +10,10 @@ import {
   TooltipTrigger,
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import { graphql, useMutation } from 'react-relay';
 import { useCopyToClipboard } from 'usehooks-ts';
 
+import { useTranslate } from '@tolgee/react';
 export interface ShareLinkButtonProps {
   url: string;
   documentId: string;
@@ -79,7 +79,7 @@ export const ShareLinkCommonButton = ({
   onClickAction,
   tooltipText,
 }: ShareLinkCommonProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [_, copy] = useCopyToClipboard();
 
   const handleCopy = (e: React.MouseEvent) => {
@@ -88,12 +88,12 @@ export const ShareLinkCommonButton = ({
       .then(() => {
         onClickAction();
         toast({
-          description: t('Service.ShareableResources.Copied'),
+          description: t('Service_ShareableResources_Copied'),
         });
       })
       .catch((error) => {
         toast({
-          title: t('Utils.FailedToCopy'),
+          title: t('Utils_FailedToCopy'),
           description: error.message,
         });
       });
@@ -116,7 +116,7 @@ export const ShareLinkCommonButton = ({
           <p>
             {tooltipText
               ? t(tooltipText)
-              : t('Service.ShareableResources.Share')}
+              : t('Service_ShareableResources_Share')}
           </p>
         </TooltipContent>
       </Tooltip>

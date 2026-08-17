@@ -1,5 +1,3 @@
-import { ReactNode, useContext, useMemo, useState } from 'react';
-
 import {
   BreadcrumbNav,
   BreadcrumbNavLink,
@@ -12,7 +10,7 @@ import {
   TooltipTrigger,
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
+import { ReactNode, useContext, useMemo, useState } from 'react';
 
 import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';
 import { OPENCTI_INTEGRATION_URL_CONFIGS } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
@@ -33,8 +31,9 @@ import { ShareableResourceType } from '@/utils/shareable-resources/shareable-res
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import Image from 'next/image';
+import Image from 'next/image'; // Component interface
 
+import { useTranslate } from '@tolgee/react';
 // Component interface
 interface ShareableResourceSlugProps {
   documentData: documentItem_fragment$data;
@@ -52,7 +51,7 @@ const ShareableResourceSlug = ({
   children,
   updateActions,
 }: ShareableResourceSlugProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { serviceInstanceId } = useDecodedParams();
   const { settings } = useContext(SettingsContext);
 
@@ -135,7 +134,7 @@ const ShareableResourceSlug = ({
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>{t('Service.ShareableResources.Download')}</p>
+                          <p>{t('Service_ShareableResources_Download')}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -151,7 +150,7 @@ const ShareableResourceSlug = ({
                         incrementDownloadNumber();
                         window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
                       }}>
-                      {t('Utils.Download')}
+                      {t('Utils_Download')}
                     </Button>
                   )}
                 </>

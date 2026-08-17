@@ -3,9 +3,8 @@ import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProd
 import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import Link from 'next/link';
-
 interface EpicItemDetailedProps {
   epic: epic_fragment$data;
   serviceInstanceId: string;
@@ -15,7 +14,7 @@ export const EpicItemDetailed = ({
   epic,
   serviceInstanceId,
 }: EpicItemDetailedProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <div className="p-l bg-elevation-background-layer-1 markdown-content flex h-full min-h-0 flex-1 flex-col">
@@ -34,7 +33,7 @@ export const EpicItemDetailed = ({
             href={FiligranProductMapping[epic.product].link}
             target="_blank"
             rel="noopener noreferrer">
-            <span className="whitespace-nowrap">{t('Epic.JoinCommunity')}</span>
+            <span className="whitespace-nowrap">{t('Epic_JoinCommunity')}</span>
           </Link>
         </p>
       </div>

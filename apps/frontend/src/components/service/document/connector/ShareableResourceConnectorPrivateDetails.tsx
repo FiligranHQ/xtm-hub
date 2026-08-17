@@ -7,8 +7,8 @@ import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibi
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { CheckIndeterminateIcon } from '@filigran/icon';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 interface ShareableResourceConnectorPrivateDetailsProps {
   connectorDetails: ShareableResourceConnectorDetailsProps['connectorDetails'];
 }
@@ -16,7 +16,7 @@ interface ShareableResourceConnectorPrivateDetailsProps {
 export const ShareableResourceConnectorPrivateDetails = ({
   connectorDetails,
 }: ShareableResourceConnectorPrivateDetailsProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifier.Opencti, {
     onlyActive: true,
   });
@@ -42,7 +42,7 @@ export const ShareableResourceConnectorPrivateDetails = ({
       />
       {incompatiblePlatformsCount > 0 && connectorDetails.manager_supported ? (
         <ShareableResourceIncompatibleWarning
-          message={t(`Service.Connectors.Incompatible`, {
+          message={t(`Service_Connectors_Incompatible`, {
             count: incompatiblePlatformsCount,
             platformToBeUpdated,
           })}

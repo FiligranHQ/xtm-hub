@@ -4,10 +4,10 @@ import {
   buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
   getBaseUrl,
+  getTolgeeForLocale,
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata({
   params,
@@ -16,7 +16,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const baseUrl = await getBaseUrl();
-  const t = await getTranslations({ locale, namespace: 'Metadata' });
+  const tolgee = await getTolgeeForLocale(locale);
+  const t = (key: string) => tolgee.t({ key: `Metadata_${key}` });
 
   return buildSeoPageMetadata({
     baseUrl,
@@ -36,13 +37,14 @@ const Page = async ({
   const { locale } = await params;
 
   const baseUrl = await getBaseUrl();
-  const tMeta = await getTranslations({ locale, namespace: 'Metadata' });
+  const tolgee = await getTolgeeForLocale(locale);
+  const t = (key: string) => tolgee.t({ key: `Metadata_${key}` });
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: tMeta('SiteName'),
-    description: tMeta('ShortDescription'),
+    name: t('SiteName'),
+    description: t('ShortDescription'),
     url: baseUrl,
     image: `${baseUrl}/seo_default.png`,
     publisher: buildFiligranOrganizationJsonLd(baseUrl),

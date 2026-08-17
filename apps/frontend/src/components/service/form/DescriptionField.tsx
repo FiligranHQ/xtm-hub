@@ -1,8 +1,7 @@
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
-
 interface ServiceFormDescriptionFieldProps {
   field: ControllerRenderProps<FieldValues, string>;
   documentType: string;
@@ -16,11 +15,11 @@ export const ServiceFormDescriptionField = ({
   disabled,
   required,
 }: ServiceFormDescriptionFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <FormItem>
       <FormLabel>
-        {t('Service.Form.DescriptionLabel')}
+        {t('Service_Form_DescriptionLabel')}
         {required ? <span className="text-sm text-destructive"> *</span> : null}
       </FormLabel>
       <FormControl>
@@ -28,7 +27,7 @@ export const ServiceFormDescriptionField = ({
           disabled={disabled}
           value={field.value}
           onChange={field.onChange}
-          placeholder={t('Service.Form.DescriptionPlaceholder', {
+          placeholder={t('Service_Form_DescriptionPlaceholder', {
             documentType,
           })}
         />

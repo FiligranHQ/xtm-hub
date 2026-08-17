@@ -5,9 +5,9 @@ import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface ProductVersionFilterProps {
   platformIdentifier: PlatformIdentifier;
 }
@@ -15,7 +15,7 @@ interface ProductVersionFilterProps {
 export const ProductVersionFilter = ({
   platformIdentifier,
 }: ProductVersionFilterProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { platforms } = useRegisteredPlatforms(platformIdentifier, {
     onlyActive: true,
   });
@@ -44,12 +44,12 @@ export const ProductVersionFilter = ({
       options={options}
       initialValue={productVersions}
       placeholder={t(
-        'Service.OpenctiIntegrations.Filter.ProductVersion.Placeholder'
+        'Service_OpenctiIntegrations_Filter_ProductVersion_Placeholder'
       )}
-      noResultString={t('Utils.NotFound')}
+      noResultString={t('Utils_NotFound')}
       onValueChange={setProductVersions}
       onRemove={removeProductVersionsFilter}
-      optionLabel={t('Service.OpenctiIntegrations.Filter.ProductVersion.Label')}
+      optionLabel={t('Service_OpenctiIntegrations_Filter_ProductVersion_Label')}
     />
   );
 };

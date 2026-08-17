@@ -1,5 +1,4 @@
 'use client';
-
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   MeEditUserMutation,
@@ -17,12 +16,12 @@ import { ProfileFormResetPassword } from '@/components/profile/form/ResetPasswor
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import { toast } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { useContext, useState } from 'react';
 import { useMutation } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 export const Profile = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
   const [commitResetPasswordMutation] = useMutation(MeResetPasswordMutation);
   const [commitEditMeUserMutation] = useMutation(MeEditUserMutation);
@@ -60,14 +59,14 @@ export const Profile = () => {
       variables: values,
       onCompleted() {
         toast({
-          title: t('Utils.Success'),
+          title: t('Utils_Success'),
         });
       },
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -79,13 +78,13 @@ export const Profile = () => {
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
       onCompleted() {
         toast({
-          title: t('Utils.Success'),
+          title: t('Utils_Success'),
         });
       },
     });
@@ -97,14 +96,14 @@ export const Profile = () => {
       onError(error) {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
       onCompleted() {
         toast({
-          title: t('Utils.Success'),
-          description: t('UserForm.ResetPassword.Success'),
+          title: t('Utils_Success'),
+          description: t('UserForm_ResetPassword_Success'),
         });
       },
     });
@@ -121,11 +120,11 @@ export const Profile = () => {
       </section>
       <AlertDialogComponent
         isOpen={isDialogOpen}
-        AlertTitle={t('DialogActions.ContinueTitle')}
-        actionButtonText={t('MenuActions.Continue')}
+        AlertTitle={t('DialogActions_ContinueTitle')}
+        actionButtonText={t('MenuActions_Continue')}
         onOpenChange={setIsDialogOpen}
         onClickContinue={confirmEdition}>
-        {t('ProfilePage.PlatformsEditionDialog.ConfirmSentence')}
+        {t('ProfilePage_PlatformsEditionDialog_ConfirmSentence')}
       </AlertDialogComponent>
     </>
   );

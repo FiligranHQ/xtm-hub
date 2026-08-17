@@ -8,9 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { ReactNode } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface DialogInformativeProps {
   isOpen: boolean;
   onClose: () => void;
@@ -34,7 +34,7 @@ export const DialogInformative = ({
   buttonText = 'Utils.Close',
   showFooter = true,
 }: DialogInformativeProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <Dialog

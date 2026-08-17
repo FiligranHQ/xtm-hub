@@ -6,8 +6,7 @@ import {
   CommandSeparator,
   Separator,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 export type FlatOption =
   | { type: 'parent'; value: string; label: string }
   | { type: 'child'; value: string; label: string; parentValue: string };
@@ -37,7 +36,7 @@ export const OptionsList = ({
   onClose,
   showClear,
 }: OptionsListProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <>
@@ -91,7 +90,7 @@ export const OptionsList = ({
                 onSelect={onClear}
                 style={{ pointerEvents: 'auto', opacity: 1 }}
                 className="flex-1 cursor-pointer justify-center">
-                {t('Utils.Clear')}
+                {t('Utils_Clear')}
               </CommandItem>
               <Separator
                 orientation="vertical"
@@ -103,7 +102,7 @@ export const OptionsList = ({
             onSelect={onClose}
             style={{ pointerEvents: 'auto', opacity: 1 }}
             className="flex-1 cursor-pointer justify-center">
-            {t('Utils.Close')}
+            {t('Utils_Close')}
           </CommandItem>
         </div>
       </CommandGroup>

@@ -21,17 +21,17 @@ import {
 } from '@filigran/ui/clients';
 import { Button, Input } from '@filigran/ui/servers';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface UserAdminFormProps {
   handleSubmit: (values: z.infer<typeof userAdminFormSchema>) => void;
 }
 export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { settings } = useContext(SettingsContext);
   const [userOrganization, setUserOrganization] = useState<
     UserOrganizationFormProps[]
@@ -84,10 +84,10 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.Email')}</FormLabel>
+              <FormLabel>{t('UserForm_Email')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('UserForm.Email')}
+                  placeholder={t('UserForm_Email')}
                   {...field}
                 />
               </FormControl>
@@ -100,10 +100,10 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
           name="first_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.FirstName')}</FormLabel>
+              <FormLabel>{t('UserForm_FirstName')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('UserForm.FirstName')}
+                  placeholder={t('UserForm_FirstName')}
                   {...field}
                 />
               </FormControl>
@@ -116,10 +116,10 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
           name="last_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('UserForm.LastName')}</FormLabel>
+              <FormLabel>{t('UserForm_LastName')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('UserForm.LastName')}
+                  placeholder={t('UserForm_LastName')}
                   {...field}
                 />
               </FormControl>
@@ -133,11 +133,11 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('UserForm.Password')}</FormLabel>
+                <FormLabel>{t('UserForm_Password')}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder={t('UserForm.Password')}
+                    placeholder={t('UserForm_Password')}
                     {...field}
                   />
                 </FormControl>
@@ -150,7 +150,7 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
         <CapabilityDescription />
 
         <div className="flex items-center gap-m">
-          <Label>{t('UserForm.Organizations')}</Label>
+          <Label>{t('UserForm_Organizations')}</Label>
           <AutocompleteOrganization
             selectedOrganizationCapabilities={form.getValues(
               'organization_capabilities'
@@ -209,12 +209,12 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
             variant="secondary"
             type="button"
             onClick={(e) => handleCloseSheet(e)}>
-            {t('Utils.Cancel')}
+            {t('Utils_Cancel')}
           </Button>
           <Button
             disabled={!form.formState.isDirty}
             type="submit">
-            {t('Utils.Validate')}
+            {t('Utils_Validate')}
           </Button>
         </SheetFooter>
       </form>

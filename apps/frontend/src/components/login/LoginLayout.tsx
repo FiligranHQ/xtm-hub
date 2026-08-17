@@ -5,10 +5,9 @@ import LoginTitleForm from '@/components/login/LoginTitle';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
 import useDecodedQuery from '@/hooks/use-decoded-query';
 import { useToast } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
-
 export const LoginLayout = ({}) => {
   const { settings } = useContext(SettingsContext);
   const router = useRouter();
@@ -16,7 +15,7 @@ export const LoginLayout = ({}) => {
   const { error, redirect } = useDecodedQuery();
   const currentPath = usePathname();
   const { toast } = useToast();
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const localProvider = settings?.platform_providers?.find(
     (p) => p.provider === 'local'
@@ -33,8 +32,8 @@ export const LoginLayout = ({}) => {
     if (error) {
       toast({
         variant: 'destructive',
-        title: t('UnexpectedErrorDialog.Title'),
-        description: t('UnexpectedErrorDialog.Description'),
+        title: t('UnexpectedErrorDialog_Title'),
+        description: t('UnexpectedErrorDialog_Description'),
       });
     }
   }, [currentPath, error, t, toast]);

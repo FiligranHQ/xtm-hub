@@ -1,5 +1,4 @@
 'use client';
-
 import { SearchInput } from '@/components/ui/SearchInput';
 import {
   handleSortingChange,
@@ -18,7 +17,6 @@ import {
 } from '@graphql/generated';
 import { organizationSubscribedServicesKeys } from '@graphql/organization-subscribed-services/organization-subscribed-services.keys';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { ChangeEvent, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 import {
@@ -26,6 +24,7 @@ import {
   useOrganizationSubscribedServicesLocalstorage,
 } from './organization-subscribed-services-localstorage';
 
+import { useTranslate } from '@tolgee/react';
 interface OrganizationSubscribedServicesProps {
   organizationId: string;
 }
@@ -33,7 +32,7 @@ interface OrganizationSubscribedServicesProps {
 const OrganizationSubscribedServicesSlug = ({
   organizationId,
 }: OrganizationSubscribedServicesProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [searchTerm, setSearchTerm] = useState('');
   const columns = useMemo<
     ColumnDef<OrganizationSubscribedServiceRowFragment>[]
@@ -42,7 +41,7 @@ const OrganizationSubscribedServicesSlug = ({
       {
         accessorFn: (row) => row.service_instance?.name,
         id: 'service_name',
-        header: t('Service.SubscribedServicesList.ServiceName'),
+        header: t('Service_SubscribedServicesList_ServiceName'),
         cell: ({ row }) => {
           return (
             <span className="font-medium">
@@ -55,14 +54,14 @@ const OrganizationSubscribedServicesSlug = ({
         accessorFn: (row) =>
           row.service_instance?.service_definition?.identifier,
         id: 'service_type',
-        header: t('Service.SubscribedServicesList.ServiceType'),
+        header: t('Service_SubscribedServicesList_ServiceType'),
         enableSorting: false,
         cell: ({ row }) => {
           const identifier =
             row.original.service_instance?.service_definition?.identifier;
           return identifier ? (
             <Badge variant="outline">
-              {t(`Service.ServiceDefinitionIdentifier.${identifier}`)}
+              {t(`Service_ServiceDefinitionIdentifier_${identifier}`)}
             </Badge>
           ) : (
             '—'
@@ -72,7 +71,7 @@ const OrganizationSubscribedServicesSlug = ({
       {
         accessorFn: (row) => row.service_instance?.creation_status,
         id: 'status',
-        header: t('Service.SubscribedServicesList.Status'),
+        header: t('Service_SubscribedServicesList_Status'),
         enableSorting: false,
         cell: ({ row }) => {
           const status = row.original.service_instance?.creation_status;
@@ -83,7 +82,7 @@ const OrganizationSubscribedServicesSlug = ({
         accessorFn: (row) =>
           row.start_date ? new Date(row.start_date).getTime() : undefined,
         id: 'start_date',
-        header: t('Service.SubscribedServicesList.StartDate'),
+        header: t('Service_SubscribedServicesList_StartDate'),
         cell: ({ row }) => {
           return row.original.start_date
             ? (formatDate(row.original.start_date) ?? '—')
@@ -93,7 +92,7 @@ const OrganizationSubscribedServicesSlug = ({
       {
         accessorKey: 'service_instance.tags',
         id: 'tags',
-        header: t('Service.SubscribedServicesList.Tags'),
+        header: t('Service_SubscribedServicesList_Tags'),
         enableSorting: false,
         cell: ({ row }) => {
           const tags = row.original.service_instance?.tags;
@@ -211,11 +210,11 @@ const OrganizationSubscribedServicesSlug = ({
   return (
     <>
       {isError && (
-        <div className="mb-s text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="mb-s text-sm text-destructive">{t('Utils_Error')}</div>
       )}
       {!isError && !isLoading && subscribedServicesData.length === 0 && (
         <div className="mb-s text-sm text-muted-foreground">
-          {t('Service.SubscribedServicesList.NoSubscribedServices')}
+          {t('Service_SubscribedServicesList_NoSubscribedServices')}
         </div>
       )}
       <DataTable
@@ -244,12 +243,12 @@ const OrganizationSubscribedServicesSlug = ({
             <label
               htmlFor="subscribed-services-search"
               className="sr-only">
-              {t('Service.SearchServices')}
+              {t('Service_SearchServices')}
             </label>
             <SearchInput
               id="subscribed-services-search"
               containerClass="w-full sm:w-1/3"
-              placeholder={t('Service.SearchServices')}
+              placeholder={t('Service_SearchServices')}
               onChange={onSearchChange}
             />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">

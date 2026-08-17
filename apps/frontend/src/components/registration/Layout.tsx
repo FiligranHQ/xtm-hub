@@ -1,8 +1,7 @@
 import { RegistrationContext } from '@/components/registration/Context';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import React, { useContext } from 'react';
-
 interface RegistrationLayoutProps {
   children: React.ReactNode;
   cancel?: () => void;
@@ -15,7 +14,7 @@ export const RegistrationLayout = ({
   confirm,
 }: RegistrationLayoutProps) => {
   const { displayedIdentifier } = useContext(RegistrationContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <div className="h-full flex flex-col justify-between gap-xl">
       <div className="flex flex-col gap-m">{children}</div>
@@ -24,13 +23,13 @@ export const RegistrationLayout = ({
           <Button
             variant="secondary"
             onClick={cancel}>
-            {t(`Register.Back`, {
+            {t(`Register_Back`, {
               platformIdentifier: displayedIdentifier,
             })}
           </Button>
         )}
         {Boolean(confirm) && (
-          <Button onClick={confirm}>{t('Utils.Confirm')}</Button>
+          <Button onClick={confirm}>{t('Utils_Confirm')}</Button>
         )}
       </div>
     </div>

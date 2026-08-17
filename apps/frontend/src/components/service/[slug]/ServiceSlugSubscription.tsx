@@ -3,10 +3,10 @@ import useAdminPath from '@/hooks/use-admin-path';
 import { Button } from '@filigran/ui';
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
 import { subscription_fragment$data } from '@generated/subscription_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import { FunctionComponent, useState } from 'react';
 import { ServiceSlugOrgaForm } from './ServiceSlugOrgaForm';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceSlugAddSubscriptionActionProps {
   serviceInstance: serviceInstanceForSubscriptions_fragment$data;
   subscriptions: subscription_fragment$data[];
@@ -27,7 +27,7 @@ export const ServiceSlugSubscription: FunctionComponent<
   setOpenEdit,
 }) => {
   const [openSheetAddOrga, setOpenSheetAddOrga] = useState(false);
-  const t = useTranslations();
+  const { t } = useTranslate();
   const isAdminPath = useAdminPath();
 
   if (!isAdminPath || !serviceInstance) {
@@ -43,9 +43,9 @@ export const ServiceSlugSubscription: FunctionComponent<
     <SheetWithPreventingDialog
       open={sheetOpen}
       setOpen={setSheetOpen}
-      trigger={<Button>{t('Service.SubscribeOrganization')}</Button>}
+      trigger={<Button>{t('Service_SubscribeOrganization')}</Button>}
       title={
-        t('OrganizationInServiceAction.AddOrganization') +
+        t('OrganizationInServiceAction_AddOrganization') +
         ' ' +
         serviceInstance.name
       }>

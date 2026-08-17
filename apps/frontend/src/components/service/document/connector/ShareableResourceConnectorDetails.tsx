@@ -7,10 +7,9 @@ import { roundToNearest } from '@/lib/utils';
 import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
 import { Badge, Button } from '@filigran/ui/servers';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import Link from 'next/link';
 import * as React from 'react';
-
 export interface ShareableResourceConnectorDetailsProps {
   connectorDetails: {
     name: string;
@@ -36,7 +35,7 @@ export const ShareableResourceConnectorDetails = ({
   connectorDetails,
   compatibilityItem,
 }: ShareableResourceConnectorDetailsProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const platformName = PlatformMetadataMapping[PlatformIdentifier.Opencti].name;
   const connectorMetadata = getIntegrationSubTypeMetadata(
     connectorDetails?.integration_subtype ?? undefined
@@ -46,7 +45,7 @@ export const ShareableResourceConnectorDetails = ({
     <ShareableResourceBasicInformation>
       {connectorDetails.source_code && (
         <ShareableResourceDetailItem
-          label={t('Service.Connectors.IntegrationDocumentationAndCode')}>
+          label={t('Service_Connectors_IntegrationDocumentationAndCode')}>
           <Button
             className="p-0"
             variant="link"
@@ -62,7 +61,7 @@ export const ShareableResourceConnectorDetails = ({
       )}
       {connectorDetails.subscription_link && (
         <ShareableResourceDetailItem
-          label={t('Service.Connectors.VisitVendor')}>
+          label={t('Service_Connectors_VisitVendor')}>
           <Button
             className="p-0 uppercase"
             variant="link"
@@ -72,18 +71,18 @@ export const ShareableResourceConnectorDetails = ({
               rel="noopener noreferrer"
               target="_blank">
               <OpenInNewIcon className="h-4 w-4 mr-s" />
-              {t('Service.Connectors.VendorContact')}
+              {t('Service_Connectors_VendorContact')}
             </Link>
           </Button>
         </ShareableResourceDetailItem>
       )}
       {connectorDetails.integration_type && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.IntegrationType')}>
+          label={t('Service_ShareableResources_Details_IntegrationType')}>
           <div className="flex items-center gap-s">
             <span>
               {t(
-                `Service.OpenctiIntegrations.Type.${connectorDetails.integration_type}`
+                `Service_OpenctiIntegrations_Type_${connectorDetails.integration_type}`
               )}
             </span>
           </div>
@@ -91,7 +90,7 @@ export const ShareableResourceConnectorDetails = ({
       )}
       {connectorMetadata && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.IntegrationSubType')}>
+          label={t('Service_ShareableResources_Details_IntegrationSubType')}>
           <span>
             <Badge
               className="mr-auto"
@@ -103,7 +102,7 @@ export const ShareableResourceConnectorDetails = ({
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.ProductVersion', {
+        label={t('Service_ShareableResources_Details_ProductVersion', {
           platform: platformName,
         })}>
         <span>{connectorDetails?.product_version}</span>
@@ -111,7 +110,7 @@ export const ShareableResourceConnectorDetails = ({
       {!!connectorDetails?.minimum_deployable_version && (
         <ShareableResourceDetailItem
           label={t(
-            'Service.ShareableResources.Details.MinimumDeployableVersion',
+            'Service_ShareableResources_Details_MinimumDeployableVersion',
             {
               platform: platformName,
             }
@@ -122,35 +121,35 @@ export const ShareableResourceConnectorDetails = ({
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
+        label={t('Service_ShareableResources_Details_OpenCTIDocumentation')}>
         <ShareableResourceDetailsLink url={CONNECTOR_DOCUMENTATION} />
       </ShareableResourceDetailItem>
 
       {connectorDetails?.datasheet_url && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.DatasheetURL')}>
+          label={t('Service_ShareableResources_Details_DatasheetURL')}>
           <ShareableResourceDetailsLink url={connectorDetails.datasheet_url} />
         </ShareableResourceDetailItem>
       )}
       {connectorDetails?.blogpost_url && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.BlogpostURL')}>
+          label={t('Service_ShareableResources_Details_BlogpostURL')}>
           <ShareableResourceDetailsLink url={connectorDetails.blogpost_url} />
         </ShareableResourceDetailItem>
       )}
       {connectorDetails?.demo_url && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.DemoURL')}>
+          label={t('Service_ShareableResources_Details_DemoURL')}>
           <ShareableResourceDetailsLink url={connectorDetails.demo_url} />
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem
-        label={t('Service.ShareableResources.Details.Shares')}>
+        label={t('Service_ShareableResources_Details_Shares')}>
         <span>{roundToNearest(connectorDetails.share_number)}</span>
       </ShareableResourceDetailItem>
       {connectorDetails.contact && (
         <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.ContributorContact')}>
+          label={t('Service_ShareableResources_Details_ContributorContact')}>
           <span>{connectorDetails.contact}</span>
         </ShareableResourceDetailItem>
       )}

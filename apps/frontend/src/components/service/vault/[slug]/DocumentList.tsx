@@ -49,7 +49,6 @@ import {
   ServiceRestriction,
 } from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
 import {
@@ -59,6 +58,8 @@ import {
   useRefetchableFragment,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
+
+import { useTranslate } from '@tolgee/react';
 
 interface ServiceProps {
   queryRef: PreloadedQuery<documentsQuery>;
@@ -70,7 +71,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
     DocumentsListQuery,
     queryRef
   );
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [editDocument, setEditDocument] = useState<
     documentItem_fragment$data | undefined
   >(undefined);
@@ -94,12 +95,12 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
     {
       accessorKey: 'file_name',
       id: 'file_name',
-      header: t('Service.Vault.FileTab.FileName'),
+      header: t('Service_Vault_FileTab_FileName'),
       size: 250,
     },
     {
       id: 'description',
-      header: t('Service.Vault.FileTab.Description'),
+      header: t('Service_Vault_FileTab_Description'),
       size: -1,
       cell: ({ row }) => (
         <TooltipProvider>
@@ -116,7 +117,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
     },
     {
       id: 'created_at',
-      header: t('Service.Vault.FileTab.UploadDate'),
+      header: t('Service_Vault_FileTab_UploadDate'),
       size: 100,
       cell: ({ row }) => <>{formatDate(row.original.created_at)}</>,
     },
@@ -124,7 +125,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
       accessorKey: 'download_number',
       id: 'download_number',
       size: 50,
-      header: t('Service.Vault.FileTab.NumberDownload'),
+      header: t('Service_Vault_FileTab_NumberDownload'),
     },
     {
       id: 'actions',
@@ -144,19 +145,19 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
                   focusable={false}
                   className="h-4 w-4 text-primary"
                 />
-                <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                <span className="sr-only">{t('Utils_OpenMenu')}</span>
               </>
             }>
             <GuardCapacityComponent displayError={false}>
               <IconActionsItem onClick={() => setEditDocument(row.original)}>
-                {t('Utils.Update')}
+                {t('Utils_Update')}
               </IconActionsItem>
             </GuardCapacityComponent>
             {serviceInstance?.capabilities.some(
               (capa) => capa?.toUpperCase() === ServiceRestriction.Upload
             ) && (
               <IconActionsItem onClick={() => setEditDocument(row.original)}>
-                {t('Utils.Update')}
+                {t('Utils_Update')}
               </IconActionsItem>
             )}
             <IconActionsItem asChild>
@@ -167,14 +168,14 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
             </IconActionsItem>
             <GuardCapacityComponent displayError={false}>
               <IconActionsItem onClick={() => setDeleteDocument(row.original)}>
-                {t('Utils.Delete')}
+                {t('Utils_Delete')}
               </IconActionsItem>
             </GuardCapacityComponent>
             {serviceInstance?.capabilities.some(
               (capa) => capa?.toUpperCase() === ServiceRestriction.Delete
             ) && (
               <IconActionsItem onClick={() => setDeleteDocument(row.original)}>
-                {t('Utils.Delete')}
+                {t('Utils_Delete')}
               </IconActionsItem>
             )}
           </IconActions>
@@ -255,11 +256,11 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
 
   const breadcrumbs = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${APP_PATH}`,
     },
     {
-      label: `Service.Cards.${serviceInstance!.slug}.Name`,
+      label: `Service_Cards_${serviceInstance!.slug}_Name`,
       fallback: serviceInstance!.name,
     },
   ];
@@ -294,7 +295,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
           <div className="flex-col-reverse sm:flex-row flex items-center justify-between gap-s">
             <SearchInput
               containerClass="w-full sm:w-1/3"
-              placeholder={t('Service.Vault.FileTab.Search')}
+              placeholder={t('Service_Vault_FileTab_Search')}
               onChange={debounceHandleInput}
             />
             <div className="justify-between flex w-full sm:w-auto items-center gap-s">
@@ -306,7 +307,7 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
                   variant="secondary">
                   <Link
                     href={`/${APP_PATH}/manage/service/${documentData[0]?.service_instance?.id}/subscription/${documentData[0]?.subscription?.id}`}>
-                    {t('Service.Vault.ManageVault')}
+                    {t('Service_Vault_ManageVault')}
                   </Link>
                 </Button>
               )}

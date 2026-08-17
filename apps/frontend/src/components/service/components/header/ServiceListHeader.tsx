@@ -7,9 +7,9 @@ import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-stora
 import { cn } from '@/lib/utils';
 import { debounceHandleInput } from '@/utils/debounce';
 import { DocumentOrdering } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import React from 'react';
 
+import { useTranslate } from '@tolgee/react';
 export enum ServiceListFilterKey {
   Label = 'label',
   EntityType = 'entity_type',
@@ -47,7 +47,7 @@ export const ServiceListHeader = ({
   actions,
   className,
 }: ServiceListHeaderProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { orderBy, orderMode, setOrderBy, setOrderMode } =
@@ -59,13 +59,13 @@ export const ServiceListHeader = ({
     DocumentOrdering.UpdatedAt,
   ].map((value) => ({
     value,
-    label: t(`DocumentOrdering.${value}`),
+    label: t(`DocumentOrdering_${value}`),
   }));
 
   const searchInput = (
     <SearchInput
       containerClass="max-sm:w-full sm:w-[20rem]"
-      placeholder={t('GenericActions.Search')}
+      placeholder={t('GenericActions_Search')}
       defaultValue={search}
       onChange={debounceHandleInput(onSearchChange)}
     />

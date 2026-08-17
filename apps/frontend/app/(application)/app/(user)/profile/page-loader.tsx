@@ -6,11 +6,11 @@ import { APP_PATH } from '@/utils/path/constant';
 
 const breadcrumbValue = [
   {
-    label: 'MenuLinks.Home',
+    label: 'MenuLinks_Home',
     href: `/${APP_PATH}`,
   },
   {
-    label: 'MenuLinks.Profile',
+    label: 'MenuLinks_Profile',
   },
 ];
 

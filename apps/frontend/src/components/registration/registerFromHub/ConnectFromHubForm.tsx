@@ -1,9 +1,8 @@
 'use client';
-
 import { AutoForm, Button } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 export enum CONNECTABLE_PRODUCTS {
   OpenCTI = 'OpenCTI',
   OpenAEV = 'OpenAEV',
@@ -18,7 +17,7 @@ interface ConnectFromHubFormProps {
 }
 
 const ConnectFromHubForm = ({ onSubmit }: ConnectFromHubFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <AutoForm
@@ -26,20 +25,20 @@ const ConnectFromHubForm = ({ onSubmit }: ConnectFromHubFormProps) => {
       onSubmit={onSubmit}
       fieldConfig={{
         product: {
-          label: t('Register.Details.Product'),
+          label: t('Register_Details_Product'),
           inputProps: {
             placeholder: CONNECTABLE_PRODUCTS.OpenCTI,
           },
         },
         productUrl: {
-          label: t('Register.Details.ProductURL'),
+          label: t('Register_Details_ProductURL'),
           inputProps: {
-            placeholder: t('Register.Details.ProductURL'),
+            placeholder: t('Register_Details_ProductURL'),
           },
         },
       }}>
       <div className="flex justify-end">
-        <Button type="submit">{t('Utils.Continue')}</Button>
+        <Button type="submit">{t('Utils_Continue')}</Button>
       </div>
     </AutoForm>
   );

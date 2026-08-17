@@ -5,8 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 const EE_GRADIENT =
   'bg-[linear-gradient(90deg,#0FBCFF_-3.68%,#00F1BD_106.62%)]';
 
@@ -15,7 +14,7 @@ interface EeBadgeProps {
 }
 
 const EeBadgeVisual = ({ interactive }: { interactive: boolean }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <span
       className={cn(
@@ -25,14 +24,14 @@ const EeBadgeVisual = ({ interactive }: { interactive: boolean }) => {
         'text-[8px] font-bold leading-none'
       )}>
       <span className={cn(EE_GRADIENT, 'bg-clip-text text-transparent')}>
-        {t('Service.ShareableResources.Deploy.EE.Tag')}
+        {t('Service_ShareableResources_Deploy_EE_Tag')}
       </span>
     </span>
   );
 };
 
 const EeBadge = ({ onClick }: EeBadgeProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   if (!onClick) {
     return (
@@ -52,10 +51,10 @@ const EeBadge = ({ onClick }: EeBadgeProps) => {
           className={cn(EE_GRADIENT)}>
           <div className="flex flex-col">
             <span className="font-medium">
-              {t('Service.ShareableResources.Deploy.EE.HoverTitle')}
+              {t('Service_ShareableResources_Deploy_EE_HoverTitle')}
             </span>
             <span>
-              {t('Service.ShareableResources.Deploy.EE.HoverSubtitle')}
+              {t('Service_ShareableResources_Deploy_EE_HoverSubtitle')}
             </span>
           </div>
         </TooltipContent>

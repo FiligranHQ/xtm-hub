@@ -33,7 +33,7 @@ const Page = async ({ params }: ServicePlaybookPageProps) => {
           }
         />
       ) : (
-        <h1>{t('Utils.DocumentNotFound')}</h1>
+        <h1>{t('Utils_DocumentNotFound')}</h1>
       )}
     </>
   );

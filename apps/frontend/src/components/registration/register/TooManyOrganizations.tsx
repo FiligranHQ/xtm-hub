@@ -1,6 +1,5 @@
 import { RegistrationLayout } from '@/components/registration/Layout';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 interface RegisterStateTooManyOrganizationsProps {
   cancel: () => void;
   confirm: () => void;
@@ -14,19 +13,19 @@ export const RegisterStateTooManyOrganizations = ({
   displayedIdentifier,
   platformTitle,
 }: RegisterStateTooManyOrganizationsProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <RegistrationLayout
       cancel={cancel}
       confirm={confirm}>
-      <h1>{t(`Register.TooManyOrganizations.Title`)}</h1>
+      <h1>{t(`Register_TooManyOrganizations_Title`)}</h1>
       <p>
-        {t(`Register.TooManyOrganizations.Description1`, {
+        {t(`Register_TooManyOrganizations_Description1`, {
           platformIdentifier: displayedIdentifier,
           platformTitle,
         })}
         <br />
-        {t(`Register.TooManyOrganizations.Description2`)}
+        {t(`Register_TooManyOrganizations_Description2`)}
       </p>
     </RegistrationLayout>
   );

@@ -5,10 +5,9 @@ import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDi
 import { useToast } from '@filigran/ui';
 import { organizationEditMutation } from '@generated/organizationEditMutation.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-
 interface EditOrganizationProps {
   organization: organizationItem_fragment$data;
   open: boolean;
@@ -20,7 +19,7 @@ export const EditOrganization = ({
   open,
   setOpen,
 }: EditOrganizationProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { toast } = useToast();
   const [commitOrganizationEditionMutation] =
     useMutation<organizationEditMutation>(OrganizationEditMutation);
@@ -37,8 +36,8 @@ export const EditOrganization = ({
       onCompleted: () => {
         setOpen(false);
         toast({
-          title: t('Utils.Success'),
-          description: t('OrganizationActions.OrganizationUpdated', {
+          title: t('Utils_Success'),
+          description: t('OrganizationActions_OrganizationUpdated', {
             name: values.name,
           }),
         });
@@ -46,8 +45,8 @@ export const EditOrganization = ({
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -56,7 +55,7 @@ export const EditOrganization = ({
     <SheetWithPreventingDialog
       open={open}
       setOpen={setOpen}
-      title={t('OrganizationForm.EditOrganization')}>
+      title={t('OrganizationForm_EditOrganization')}>
       <OrganizationForm
         organization={organization}
         handleSubmit={handleSubmit}

@@ -14,7 +14,6 @@ import RegisterCanUnregisterPlatformQueryGraphql, {
   registerCanUnregisterPlatformQuery,
 } from '@generated/registerCanUnregisterPlatformQuery.graphql';
 import { registerUnregisterPlatformMutation } from '@generated/registerUnregisterPlatformMutation.graphql';
-import { useTranslations } from 'next-intl';
 import { useContext, useState } from 'react';
 import {
   PreloadedQuery,
@@ -23,6 +22,7 @@ import {
   usePreloadedQuery,
 } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface UnregisterProps {
   platformId: string;
   tenantId?: string | null;
@@ -37,7 +37,7 @@ export const Unregister = ({
   tenantId,
 }: UnregisterProps) => {
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
-  const t = useTranslations();
+  const { t } = useTranslate();
   const canUnregisterPreloadedQuery =
     usePreloadedQuery<registerCanUnregisterPlatformQuery>(
       RegisterCanUnregisterPlatformQueryGraphql,
@@ -79,8 +79,8 @@ export const Unregister = ({
         setStatus('failed');
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -90,11 +90,11 @@ export const Unregister = ({
     return (
       <RegistrationLayout>
         <h1>
-          {t(`Unregister.Succeeded.Title`, {
+          {t(`Unregister_Succeeded_Title`, {
             platformIdentifier: displayedIdentifier,
           })}
         </h1>
-        <p>{t(`Unregister.Succeeded.Description`)}</p>
+        <p>{t(`Unregister_Succeeded_Description`)}</p>
       </RegistrationLayout>
     );
   }
@@ -102,8 +102,8 @@ export const Unregister = ({
   if (status === 'failed') {
     return (
       <RegistrationLayout>
-        <h1>{t(`Unregister.Failed.Title`)}</h1>
-        <p>{t(`Unregister.Failed.Description`)}</p>
+        <h1>{t(`Unregister_Failed_Title`)}</h1>
+        <p>{t(`Unregister_Failed_Description`)}</p>
       </RegistrationLayout>
     );
   }
@@ -116,7 +116,7 @@ export const Unregister = ({
     if (!isInOrganization) {
       return (
         <RegistrationLayout cancel={cancel}>
-          <h1>{t(`Unregister.Error.NotInOrganization.Title`)}</h1>
+          <h1>{t(`Unregister_Error_NotInOrganization_Title`)}</h1>
         </RegistrationLayout>
       );
     }

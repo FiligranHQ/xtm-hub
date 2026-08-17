@@ -8,9 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { ControllerRenderProps } from 'react-hook-form';
 
+import { useTranslate } from '@tolgee/react';
 interface TranslatableEnumSelectFieldProps {
   field: ControllerRenderProps;
   label: string;
@@ -28,7 +28,7 @@ export const TranslatableEnumSelectField = ({
   translationNamespace,
   className = 'text-sm text-destructive',
 }: TranslatableEnumSelectFieldProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   return (
     <FormItem>
       <FormLabel>
@@ -45,7 +45,7 @@ export const TranslatableEnumSelectField = ({
             <SelectItem
               key={value}
               value={value}>
-              {t(`${translationNamespace}.${value}`)}
+              {t(`${translationNamespace}_${value}`)}
             </SelectItem>
           ))}
         </SelectContent>

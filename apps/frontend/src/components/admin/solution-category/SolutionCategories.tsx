@@ -21,11 +21,11 @@ import {
 } from '@graphql/generated';
 import { solutionCategoryListKeys } from '@graphql/solution-category/solution-category-list.keys';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 const SolutionCategories = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [solutionCategoryEdit, setSolutionCategoryEdit] = useState<
     SolutionCategoryRowFragment | undefined
   >(undefined);
@@ -70,7 +70,7 @@ const SolutionCategories = () => {
     {
       accessorKey: 'name',
       id: 'name',
-      header: t('SolutionCategory.ListPage.Name'),
+      header: t('SolutionCategory_ListPage_Name'),
       cell: ({ row }) => (
         <span className="truncate">{formatName(row.original.name)}</span>
       ),
@@ -78,7 +78,7 @@ const SolutionCategories = () => {
     {
       accessorKey: 'product',
       id: 'product',
-      header: t('SolutionCategory.ListPage.Product'),
+      header: t('SolutionCategory_ListPage_Product'),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-xs">

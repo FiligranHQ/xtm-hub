@@ -15,11 +15,11 @@ import {
 } from '@filigran/ui';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface OrganizationFormSheetProps {
   organization?: organizationItem_fragment$data;
   handleSubmit: (values: z.infer<typeof organizationFormSchema>) => void;
@@ -31,7 +31,7 @@ export const OrganizationForm = ({
 }: OrganizationFormSheetProps) => {
   const { handleCloseSheet, setIsDirty } = useDialogContext();
 
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const form = useForm<z.infer<typeof organizationFormSchema>>({
     resolver: zodResolver(organizationFormSchema),
@@ -63,14 +63,14 @@ export const OrganizationForm = ({
 
     if (!domainRegex.test(tag)) {
       setError('domains', {
-        message: t('OrganizationForm.Error.DomainsInvalid'),
+        message: t('OrganizationForm_Error_DomainsInvalid'),
       });
       return false;
     } else if (
       domainsValue.some((d) => d.toLowerCase() === tag.toLowerCase())
     ) {
       setError('domains', {
-        message: t('OrganizationForm.Error.DuplicateName'),
+        message: t('OrganizationForm_Error_DuplicateName'),
       });
       return false;
     } else {
@@ -89,10 +89,10 @@ export const OrganizationForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('OrganizationForm.Name')}</FormLabel>
+              <FormLabel>{t('OrganizationForm_Name')}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t('OrganizationForm.Name')}
+                  placeholder={t('OrganizationForm_Name')}
                   {...field}
                 />
               </FormControl>
@@ -105,12 +105,12 @@ export const OrganizationForm = ({
           render={({ field }) => (
             <FormItem className="flex flex-col items-start">
               <FormLabel className="text-left">
-                {t('OrganizationForm.Domains')}
+                {t('OrganizationForm_Domains')}
               </FormLabel>
               <FormControl>
                 <TagInput
                   {...field}
-                  placeholder={t('OrganizationForm.DomainsPlaceholder')}
+                  placeholder={t('OrganizationForm_DomainsPlaceholder')}
                   tags={tags}
                   validateTag={validTagDomain}
                   className="sm:min-w-[450px]"
@@ -137,12 +137,12 @@ export const OrganizationForm = ({
             variant="secondary"
             type="button"
             onClick={(e) => handleCloseSheet(e)}>
-            {t('Utils.Cancel')}
+            {t('Utils_Cancel')}
           </Button>
           <Button
             disabled={!form.formState.isDirty}
             type="submit">
-            {t('Utils.Validate')}
+            {t('Utils_Validate')}
           </Button>
         </SheetFooter>
       </form>

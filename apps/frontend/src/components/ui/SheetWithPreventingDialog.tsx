@@ -7,9 +7,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { createContext, ReactNode, useContext, useState } from 'react';
-
 interface UserFormSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -44,7 +43,7 @@ export const SheetWithPreventingDialog = ({
   children,
   onOpenAutoFocus,
 }: UserFormSheetProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [openDialog, setOpenDialog] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
@@ -85,12 +84,12 @@ export const SheetWithPreventingDialog = ({
         </SheetContent>
       </Sheet>
       <AlertDialogComponent
-        AlertTitle={t('DialogActions.PreventSheetTitle')}
-        actionButtonText={t('MenuActions.Continue')}
+        AlertTitle={t('DialogActions_PreventSheetTitle')}
+        actionButtonText={t('MenuActions_Continue')}
         isOpen={openDialog}
         onOpenChange={setOpenDialog}
         onClickContinue={() => setOpen(false)}>
-        {t('DialogActions.PreventSheetSentence')}
+        {t('DialogActions_PreventSheetSentence')}
       </AlertDialogComponent>
     </>
   );

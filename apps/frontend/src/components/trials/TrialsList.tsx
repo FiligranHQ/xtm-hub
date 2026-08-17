@@ -5,33 +5,33 @@ import { TrialsTabQuotasPlatform } from '@/components/trials/tab/quotas/TrialsTa
 import TrialsTab from '@/components/trials/tab/TrialsTab';
 import { TrialsTabType } from '@/components/trials/trials.const';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 interface TrialsListProps {
   platformIdentifier: PlatformIdentifier;
 }
 
 const TrialsList = ({ platformIdentifier }: TrialsListProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <>
       <Tabs defaultValue={'waiting'}>
         <TabsList>
           <TabsTrigger value="cancelled">
-            {t('TrialsDashboard.TabTitle.Cancelled')}
+            {t('TrialsDashboard_TabTitle_Cancelled')}
           </TabsTrigger>
           <TabsTrigger value="expired">
-            {t('TrialsDashboard.TabTitle.Expired')}
+            {t('TrialsDashboard_TabTitle_Expired')}
           </TabsTrigger>
           <TabsTrigger value="running">
-            {t('TrialsDashboard.TabTitle.Running')}
+            {t('TrialsDashboard_TabTitle_Running')}
           </TabsTrigger>
           <TabsTrigger value="waiting">
-            {t('TrialsDashboard.TabTitle.Waiting')}
+            {t('TrialsDashboard_TabTitle_Waiting')}
           </TabsTrigger>
           <TabsTrigger value="quotas">
-            {t('TrialsDashboard.TabTitle.Quotas')}
+            {t('TrialsDashboard_TabTitle_Quotas')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="cancelled">

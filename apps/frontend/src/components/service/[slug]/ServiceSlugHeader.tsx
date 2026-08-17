@@ -4,15 +4,15 @@ import BadgeOverflowCounter, {
 import { formatName } from '@/utils/format/name';
 import { Badge } from '@filigran/ui';
 import { serviceInstanceForSubscriptions_fragment$data } from '@generated/serviceInstanceForSubscriptions_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface ServiceSlugHeaderProps {
   serviceInstance: serviceInstanceForSubscriptions_fragment$data;
 }
 
 const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const availableCapabilities: BadgeOverflow[] = useMemo(
     () =>
@@ -57,7 +57,7 @@ const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
           </p>
           <div>
             <p className="text-xs uppercase text-muted-foreground pb-xs">
-              {t('Service.Management.AvailableCapabilities')}
+              {t('Service_Management_AvailableCapabilities')}
             </p>
             {availableCapabilities.length > 0 ? (
               <div className="flex flex-wrap gap-xs">
@@ -69,7 +69,7 @@ const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                {t('Service.Management.NoAvailableCapabilities')}
+                {t('Service_Management_NoAvailableCapabilities')}
               </p>
             )}
           </div>

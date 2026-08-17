@@ -21,7 +21,6 @@ import {
 } from '@generated/userServices_fragment.graphql';
 import { OrganizationCapability, ServiceRestriction } from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 
 import { useCallback, useContext, useMemo, useState } from 'react';
 
@@ -50,6 +49,8 @@ import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragme
 import { subscriptionByIdQuery } from '@generated/subscriptionByIdQuery.graphql';
 import { userServiceFromSubscriptionQuery } from '@generated/userServiceFromSubscriptionQuery.graphql';
 
+import { useTranslate } from '@tolgee/react';
+
 interface SubscriptionSlugProps {
   queryRef: PreloadedQuery<userServiceFromSubscriptionQuery>;
   queryRefSubscription: PreloadedQuery<subscriptionByIdQuery>;
@@ -67,7 +68,7 @@ const SubscriptionSlug = ({
   queryRefSubscription,
   serviceInstance,
 }: SubscriptionSlugProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [editUserService, setEditUserService] = useState<
     userServices_fragment$data | undefined
   >(undefined);
@@ -92,21 +93,21 @@ const SubscriptionSlug = ({
   let breadcrumbValue: BreadcrumbNavLink[];
   if (serviceInstance) {
     breadcrumbValue = [
-      { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
+      { label: 'MenuLinks_Home', href: `/${APP_PATH}` },
       {
         label: `${serviceInstance.name}`,
         original: true,
         href: `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`,
       },
       {
-        label: t('Service.Management.ManageUsers'),
+        label: t('Service_Management_ManageUsers'),
       },
     ];
   } else {
     breadcrumbValue = [
-      { label: 'MenuLinks.Home', href: `/${APP_PATH}` },
-      { label: 'MenuLinks.Settings' },
-      { label: 'MenuLinks.Service', href: `/${APP_PATH}/admin/service` },
+      { label: 'MenuLinks_Home', href: `/${APP_PATH}` },
+      { label: 'MenuLinks_Settings' },
+      { label: 'MenuLinks_Service', href: `/${APP_PATH}/admin/service` },
       {
         label: queryDataSubscription.subscriptionById!.service_instance!.name,
         href: `/${APP_PATH}/admin/service/${queryDataSubscription.subscriptionById?.service_instance?.id}`,
@@ -216,7 +217,7 @@ const SubscriptionSlug = ({
       {
         id: 'capabilities',
         size: 350,
-        header: t('Service.Capabilities.CapabilitiesTitle'),
+        header: t('Service_Capabilities_CapabilitiesTitle'),
         enableSorting: false,
         cell: ({ row }) => {
           const capabilities = row.original?.user_service_capability ?? [];
@@ -260,16 +261,16 @@ const SubscriptionSlug = ({
                   icon={
                     <>
                       <MoreVertIcon className="h-4 w-4 text-primary" />
-                      <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                      <span className="sr-only">{t('Utils_OpenMenu')}</span>
                     </>
                   }>
                   <IconActionsItem
                     onClick={() => setEditUserService(row.original)}>
-                    {t('Utils.Update')}
+                    {t('Utils_Update')}
                   </IconActionsItem>
                   <IconActionsItem
                     onClick={() => setDeleteUserServices([row.original])}>
-                    {t('Utils.Delete')}
+                    {t('Utils_Delete')}
                   </IconActionsItem>
                 </IconActions>
               )}
@@ -339,7 +340,7 @@ const SubscriptionSlug = ({
                         onClick={() => setOpenAddCapabilities(true)}>
                         <AddIcon className="h-4 w-4 m-s" />
                         {t(
-                          'Service.Management.AddUserServiceCapabilities.Button'
+                          'Service_Management_AddUserServiceCapabilities_Button'
                         )}
                       </Button>
                       <Button
@@ -350,7 +351,7 @@ const SubscriptionSlug = ({
                           setDeleteUserServices(selectedUserServices)
                         }>
                         <DeleteIcon className="h-4 w-4 m-s" />
-                        {t('Utils.Delete')}
+                        {t('Utils_Delete')}
                       </Button>
                     </>
                   ),

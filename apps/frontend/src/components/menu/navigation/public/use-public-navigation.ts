@@ -13,16 +13,17 @@ import {
   SchoolIcon,
   SlackIcon,
 } from '@filigran/icon';
-import { useLocale, useTranslations } from 'next-intl';
+
+import { useTolgee, useTranslate } from '@tolgee/react';
 
 export const usePublicNavigation = (): NavigationConfig => {
-  const t = useTranslations();
-  const locale = useLocale();
+  const { t } = useTranslate();
+  const { language: locale } = useTolgee(['language']);
 
   const sections: SectionConfig[] = [
     {
       key: 'xtm-platform',
-      label: t('Menu.XTMPlatform'),
+      label: t('Menu_XTMPlatform'),
       icon: HomeIcon,
       pathPrefix: `/${locale}`,
       href: `/${locale}`,
@@ -36,33 +37,33 @@ export const usePublicNavigation = (): NavigationConfig => {
       links: [
         {
           href: `/${locale}/cybersecurity-solutions/opencti-free-trial`,
-          label: t('Menu.StartFreeTrial'),
+          label: t('Menu_StartFreeTrial'),
           highlight: true,
         },
         {
           href: `/${locale}/cybersecurity-solutions/opencti-custom-dashboards`,
-          label: t('Menu.CustomDashboards'),
+          label: t('Menu_CustomDashboards'),
         },
         {
           href: `/${locale}/cybersecurity-solutions/opencti-custom-views`,
-          label: t('Menu.CustomViews'),
+          label: t('Menu_CustomViews'),
         },
         {
           href: `/${locale}/cybersecurity-solutions/opencti-integrations`,
-          label: t('Menu.Integrations'),
+          label: t('Menu_Integrations'),
         },
         {
           href: `/${locale}/cybersecurity-solutions/opencti-playbooks`,
-          label: t('Menu.Playbooks'),
+          label: t('Menu_Playbooks'),
         },
         {
           href: 'https://demo.opencti.io',
-          label: t('Menu.LiveDemo'),
+          label: t('Menu_LiveDemo'),
           external: true,
         },
         {
           href: 'https://docs.opencti.io/latest/',
-          label: t('Menu.Documentation'),
+          label: t('Menu_Documentation'),
           external: true,
         },
       ],
@@ -75,21 +76,21 @@ export const usePublicNavigation = (): NavigationConfig => {
       links: [
         {
           href: `/${locale}/cybersecurity-solutions/openaev-free-trial`,
-          label: t('Menu.StartFreeTrial'),
+          label: t('Menu_StartFreeTrial'),
           highlight: true,
         },
         {
           href: `/${locale}/cybersecurity-solutions/openaev-scenarios`,
-          label: t('Menu.Scenarios'),
+          label: t('Menu_Scenarios'),
         },
         {
           href: 'https://demo.openaev.io',
-          label: t('Menu.LiveDemo'),
+          label: t('Menu_LiveDemo'),
           external: true,
         },
         {
           href: 'https://docs.openaev.io/latest',
-          label: t('Menu.Documentation'),
+          label: t('Menu_Documentation'),
           external: true,
         },
       ],
@@ -102,10 +103,10 @@ export const usePublicNavigation = (): NavigationConfig => {
       links: [
         {
           href: 'https://filigran.io/platform/xtm-one/',
-          label: t('Menu.About'),
+          label: t('Menu_About'),
           external: true,
         },
-        { label: t('Menu.AICatalog'), badge: t('Menu.ComingSoon') },
+        { label: t('Menu_AICatalog'), badge: t('Menu_ComingSoon') },
       ],
     },
   ];
@@ -115,27 +116,27 @@ export const usePublicNavigation = (): NavigationConfig => {
       key: 'xtm-platform-roadmap',
       href: `/${locale}/cybersecurity-solutions/xtm-platform-roadmap`,
       icon: PapermapIcon,
-      label: t('Menu.XTMRoadmap'),
+      label: t('Menu_XTMRoadmap'),
     },
     {
       key: 'filigran-academy',
       href: 'https://academy.filigran.io/',
       icon: SchoolIcon,
-      label: t('Menu.FiligranAcademy'),
+      label: t('Menu_FiligranAcademy'),
       external: true,
     },
     {
       key: 'filigran-blog',
       href: 'https://filigran.io/our-blog/',
       icon: PostIcon,
-      label: t('Menu.Blog'),
+      label: t('Menu_Blog'),
       external: true,
     },
     {
       key: 'slack',
       href: 'https://filigran-community.slack.com',
       icon: SlackIcon,
-      label: t('Menu.Slack'),
+      label: t('Menu_Slack'),
       external: true,
     },
   ];

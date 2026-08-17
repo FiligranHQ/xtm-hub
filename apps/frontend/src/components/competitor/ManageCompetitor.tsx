@@ -1,5 +1,4 @@
 'use client';
-
 import {
   CompetitorAddMutation,
   CompetitorEditMutation,
@@ -10,10 +9,10 @@ import CompetitorForm, {
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { toast } from '@filigran/ui';
 import { competitor_fragment$data } from '@generated/competitor_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
+import { useTranslate } from '@tolgee/react';
 interface ManageCompetitorProps {
   competitor?: competitor_fragment$data;
   connectionId: string;
@@ -27,7 +26,7 @@ const ManageCompetitor = ({
   open,
   setOpen,
 }: ManageCompetitorProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [createCompetitor] = useMutation(CompetitorAddMutation);
   const [editCompetitor] = useMutation(CompetitorEditMutation);
 
@@ -39,13 +38,13 @@ const ManageCompetitor = ({
       },
       onCompleted: () => {
         setOpen(false);
-        toast({ title: t('Utils.Success') });
+        toast({ title: t('Utils_Success') });
       },
       onError: (error: Error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
+          title: t('Utils_Error'),
+          description: <>{t(`Error_Server_${error.message}`)}</>,
         });
       },
     });
@@ -61,21 +60,21 @@ const ManageCompetitor = ({
       },
       onCompleted: () => {
         setOpen(false);
-        toast({ title: t('Utils.Success') });
+        toast({ title: t('Utils_Success') });
       },
       onError: (error: Error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: <>{t(`Error.Server.${error.message}`)}</>,
+          title: t('Utils_Error'),
+          description: <>{t(`Error_Server_${error.message}`)}</>,
         });
       },
     });
   };
   const isCreation = competitor === undefined;
   const title = isCreation
-    ? t('CompetitorForm.AddTitle')
-    : t('CompetitorForm.EditTitle');
+    ? t('CompetitorForm_AddTitle')
+    : t('CompetitorForm_EditTitle');
 
   return (
     <SheetWithPreventingDialog

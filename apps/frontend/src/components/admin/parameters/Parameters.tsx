@@ -6,22 +6,21 @@ import {
   CardTitle,
   Label,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
-
+import { useTranslate } from '@tolgee/react';
 export const Parameters = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || '0.0.0-dev';
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3">
       <Card className="w-1-3">
         <CardHeader>
-          <CardTitle className="heading-lg">{t('App.Title')}</CardTitle>
+          <CardTitle className="heading-lg">{t('App_Title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between border-b py-2">
-              <Label>{t('Parameters.Version')}</Label>
+              <Label>{t('Parameters_Version')}</Label>
               <div>
                 <Badge>{appVersion}</Badge>
               </div>

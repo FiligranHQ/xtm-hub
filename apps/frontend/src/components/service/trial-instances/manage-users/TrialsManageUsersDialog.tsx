@@ -2,9 +2,9 @@
 import { TrialsManageUsersForm } from '@/components/service/trial-instances/manage-users/TrialsManageUsersForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { Button } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface TrialsManageUsersDialogProps {
   serviceInstanceId: string;
   organizationId?: string;
@@ -18,18 +18,18 @@ export const TrialsManageUsersDialog = ({
   trigger,
   defaultOpen,
 }: TrialsManageUsersDialogProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [openSheet, setOpenSheet] = useState(defaultOpen ?? false);
 
   return (
     <SheetWithPreventingDialog
-      title={t('Service.Trials.ManageUsers.Title')}
+      title={t('Service_Trials_ManageUsers_Title')}
       setOpen={setOpenSheet}
       open={openSheet}
       trigger={
         trigger ?? (
           <Button variant="secondary">
-            {t('Service.Trials.ManageUsers.Title')}
+            {t('Service_Trials_ManageUsers_Title')}
           </Button>
         )
       }>

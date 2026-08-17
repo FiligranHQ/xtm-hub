@@ -20,11 +20,11 @@ import { serviceList_fragment$data } from '@generated/serviceList_fragment.graph
 import { serviceQuery } from '@generated/serviceQuery.graphql';
 import { servicesList_services$key } from '@generated/servicesList_services.graphql';
 import { ColumnDef, getSortedRowModel } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { RefetchFnDynamic } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
+import { useTranslate } from '@tolgee/react';
 interface AdminServiceTabProps {
   serviceData: serviceList_fragment$data[];
   refetch: RefetchFnDynamic<serviceQuery, servicesList_services$key>;
@@ -41,7 +41,7 @@ export const ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS = Object.values(
 );
 
 const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [open, setOpen] = useState(false);
   const [editedService, setEditedService] =
     useState<serviceList_fragment$data>();
@@ -56,12 +56,12 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
     {
       accessorKey: 'name',
       id: 'name',
-      header: t('Service.Name'),
+      header: t('Service_Name'),
     },
     {
       accessorKey: 'description',
       id: 'description',
-      header: t('Service.Description'),
+      header: t('Service_Description'),
     },
     {
       id: 'actions',
@@ -78,18 +78,18 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
                       focusable={false}
                       className="h-4 w-4 text-primary"
                     />
-                    <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                    <span className="sr-only">{t('Utils_OpenMenu')}</span>
                   </>
                 }>
                 {row.original.service_definition?.identifier !==
                   ServiceDefinitionIdentifier.Link && (
                   <IconActionsLink
                     href={`/${APP_PATH}/admin/service/${row.id}`}>
-                    {t('Service.GoToAdminLabel')}
+                    {t('Service_GoToAdminLabel')}
                   </IconActionsLink>
                 )}
                 <IconActionsItem onClick={() => editService(row.original)}>
-                  {t('ServiceForm.UpdatePictures')}
+                  {t('ServiceForm_UpdatePictures')}
                 </IconActionsItem>
               </IconActions>
             </div>
@@ -107,7 +107,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
   const getServiceDefinitionData =
     ADMIN_SERVICE_TAB_SERVICE_DEFINITION_IDENTIFIERS.map((value) => {
       return {
-        label: t(`Service.ServiceDefinitionIdentifier.${value}`),
+        label: t(`Service_ServiceDefinitionIdentifier_${value}`),
         value: value,
       };
     });
@@ -148,7 +148,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
             <SearchInput
               containerClass="w-full sm:w-1/3"
-              placeholder={t('Service.SearchServices')}
+              placeholder={t('Service_SearchServices')}
               onChange={debounceHandleInput}
             />
             <Combobox

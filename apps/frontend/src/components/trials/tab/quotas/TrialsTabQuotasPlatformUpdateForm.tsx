@@ -15,12 +15,11 @@ import { toast } from '@filigran/ui/clients';
 import { Input } from '@filigran/ui/servers';
 import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
-
 interface TrialsTabQuotasPlatformUpdateFormProps {
   quota: trialsDeploymentAvailabilityFragment$data;
   callback: () => void;
@@ -36,7 +35,7 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
   quota,
   callback,
 }: TrialsTabQuotasPlatformUpdateFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { handleCloseSheet, setIsDirty } = useDialogContext();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,16 +61,16 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
       },
       onCompleted: () => {
         toast({
-          title: t('Utils.Success'),
-          description: t('TrialsDashboard.UpdateQuotasForm.QuotasUpdated'),
+          title: t('Utils_Success'),
+          description: t('TrialsDashboard_UpdateQuotasForm_QuotasUpdated'),
         });
         callback();
       },
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -80,7 +79,7 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
   const onSubmit = (newValues: z.infer<typeof formSchema>) => {
     setValues(newValues);
   };
-  const translatedRegion = t(`Region.${quota.region.toUpperCase()}`);
+  const translatedRegion = t(`Region_${quota.region.toUpperCase()}`);
 
   return (
     <>
@@ -94,13 +93,13 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('TrialsDashboard.UpdateQuotasForm.NewCapacityLabel')}
+                  {t('TrialsDashboard_UpdateQuotasForm_NewCapacityLabel')}
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     placeholder={t(
-                      'TrialsDashboard.UpdateQuotasForm.NewCapacityLabel'
+                      'TrialsDashboard_UpdateQuotasForm_NewCapacityLabel'
                     )}
                     type="number"
                     min={0}
@@ -119,27 +118,27 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
                 variant="secondary"
                 type="button"
                 onClick={(e) => handleCloseSheet(e)}>
-                {t('Utils.Cancel')}
+                {t('Utils_Cancel')}
               </Button>
               <AlertDialogComponent
                 AlertTitle={t(
-                  'TrialsDashboard.UpdateQuotasForm.AlertDialog.ConfirmTitle',
+                  'TrialsDashboard_UpdateQuotasForm_AlertDialog_ConfirmTitle',
                   {
                     region: translatedRegion,
                   }
                 )}
-                actionButtonText={t('Utils.Validate')}
+                actionButtonText={t('Utils_Validate')}
                 triggerElement={
                   <Button
                     disabled={!form.formState.isValid}
                     type="submit">
-                    {t('Utils.Validate')}
+                    {t('Utils_Validate')}
                   </Button>
                 }
                 onClickContinue={() => updateQuota()}>
                 <p>
                   {t(
-                    'TrialsDashboard.UpdateQuotasForm.AlertDialog.ConfirmDescription',
+                    'TrialsDashboard_UpdateQuotasForm_AlertDialog_ConfirmDescription',
                     {
                       region: translatedRegion,
                       oldCapacity: quota.capacity,
@@ -148,7 +147,7 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
                   )}
                   <br />
                   {t(
-                    'TrialsDashboard.UpdateQuotasForm.AlertDialog.ConfirmSentence'
+                    'TrialsDashboard_UpdateQuotasForm_AlertDialog_ConfirmSentence'
                   )}
                 </p>
               </AlertDialogComponent>

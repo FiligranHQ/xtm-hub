@@ -26,7 +26,7 @@ import {
   DialogTitle,
   Switch,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useState } from 'react';
 
 const VISIBLE_CATEGORIES = CONSENT_CATEGORIES.filter(
@@ -34,7 +34,7 @@ const VISIBLE_CATEGORIES = CONSENT_CATEGORIES.filter(
 );
 
 export const CookieConsentPreferences = () => {
-  const t = useTranslations('CookieConsent');
+  const { t } = useTranslate();
   const { consent, isPreferencesOpen, closePreferences, save } = useConsent();
   const [draft, setDraft] = useState<ServiceConsent>(consent);
   const [openDrawers, setOpenDrawers] = useState<Record<string, boolean>>({});
@@ -77,16 +77,20 @@ export const CookieConsentPreferences = () => {
       }}>
       <DialogContent className="border-0 bg-elevation-background-layer-2">
         <DialogHeader>
-          <DialogTitle>{t('Title')}</DialogTitle>
-          <DialogDescription>{t('PreferencesIntro')}</DialogDescription>
+          <DialogTitle>{t('CookieConsent_Title')}</DialogTitle>
+          <DialogDescription>
+            {t('CookieConsent_PreferencesIntro')}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
-          <span className="body-compact">{t('PreferenceForAllServices')}</span>
+          <span className="body-compact">
+            {t('CookieConsent_PreferenceForAllServices')}
+          </span>
           <Switch
             checked={allGranted}
             onCheckedChange={setAll}
-            aria-label={t('PreferenceForAllServices')}
+            aria-label={t('CookieConsent_PreferenceForAllServices')}
           />
         </div>
 
@@ -100,17 +104,19 @@ export const CookieConsentPreferences = () => {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1">
                     <span className="body-base-medium">
-                      {t(`Categories.${category}.Title`)}
+                      {t(`Categories_${category}_Title`)}
                     </span>
                     <span className="body-base">
-                      {t(`Categories.${category}.Description`)}
+                      {t(`Categories_${category}_Description`)}
                     </span>
                     {services.length > 0 ? (
                       <Button
                         variant="link"
                         onClick={() => toggleDrawer(category)}
                         className="h-auto justify-start p-0 body-compact">
-                        {t('ManageServices', { count: services.length })}
+                        {t('CookieConsent_ManageServices', {
+                          count: services.length,
+                        })}
                       </Button>
                     ) : null}
                   </div>
@@ -118,7 +124,7 @@ export const CookieConsentPreferences = () => {
                     checked={isCategoryAllowed(draft, category)}
                     disabled={required}
                     onCheckedChange={(value) => toggleCategory(category, value)}
-                    aria-label={t(`Categories.${category}.Title`)}
+                    aria-label={t(`Categories_${category}_Title`)}
                   />
                 </div>
 
@@ -139,7 +145,7 @@ export const CookieConsentPreferences = () => {
                                 target="_blank"
                                 rel="noreferrer"
                                 className="body-compact-link">
-                                {t('ReadMore')}
+                                {t('CookieConsent_ReadMore')}
                               </a>
                             ) : null}
                             {service.officialWebsiteUrl ? (
@@ -148,7 +154,7 @@ export const CookieConsentPreferences = () => {
                                 target="_blank"
                                 rel="noreferrer"
                                 className="body-compact-link">
-                                {t('ViewOfficialWebsite')}
+                                {t('CookieConsent_ViewOfficialWebsite')}
                               </a>
                             ) : null}
                           </div>
@@ -169,7 +175,7 @@ export const CookieConsentPreferences = () => {
         </div>
 
         <DialogFooter>
-          <Button onClick={() => save(draft)}>{t('Save')}</Button>
+          <Button onClick={() => save(draft)}>{t('CookieConsent_Save')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

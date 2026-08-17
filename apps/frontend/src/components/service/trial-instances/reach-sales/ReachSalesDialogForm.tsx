@@ -10,10 +10,9 @@ import {
 } from '@filigran/ui';
 import { PlatformIdentifier } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-
 interface ReachSalesDialogFormProps {
   isDialogOpen: boolean;
   setIsDialogOpen: (isOpen: boolean) => void;
@@ -31,7 +30,7 @@ export const ReachSalesDialogForm = ({
   onSubmit,
   platformIdentifier: _platformIdentifier,
 }: ReachSalesDialogFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const form = useForm<z.infer<typeof reachSalesSchema>>({
     resolver: zodResolver(reachSalesSchema),
@@ -52,7 +51,7 @@ export const ReachSalesDialogForm = ({
 
   return (
     <AlertDialogComponent
-      AlertTitle={t('Service.Trials.ReachOutToSales')}
+      AlertTitle={t('Service_Trials_ReachOutToSales')}
       onClickContinue={form.handleSubmit(handleSubmit)}
       onOpenChange={setIsDialogOpen}
       isOpen={isDialogOpen}
@@ -65,12 +64,12 @@ export const ReachSalesDialogForm = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  {t('Service.Trials.ReachOutToSalesMessagePlaceholder')}
+                  {t('Service_Trials_ReachOutToSalesMessagePlaceholder')}
                 </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder={t(
-                      'Service.Trials.ReachOutToSalesDefaultMessage'
+                      'Service_Trials_ReachOutToSalesDefaultMessage'
                     )}
                     {...field}
                   />

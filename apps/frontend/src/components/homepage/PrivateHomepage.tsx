@@ -16,7 +16,7 @@ import {
 
 const breadcrumbValue = [
   {
-    label: 'MenuLinks.Home',
+    label: 'MenuLinks_Home',
     href: `/${APP_PATH}`,
   },
 ];

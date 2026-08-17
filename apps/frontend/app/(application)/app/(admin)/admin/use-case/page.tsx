@@ -2,27 +2,28 @@
 import UseCases from '@/components/admin/use-case/UseCases';
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { useTranslations } from 'next-intl';
+
+import { useTranslate } from '@tolgee/react';
 
 export const dynamic = 'force-dynamic';
 
 const breadcrumbValue = [
   {
-    label: 'MenuLinks.Settings',
+    label: 'MenuLinks_Settings',
   },
   {
-    label: 'MenuLinks.UseCase',
+    label: 'MenuLinks_UseCase',
   },
 ];
 
 // Component
 const Page = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <GuardCapacityComponent displayError>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('MenuLinks.UseCase')}</h1>
+      <h1 className="sr-only">{t('MenuLinks_UseCase')}</h1>
       <UseCases />
     </GuardCapacityComponent>
   );

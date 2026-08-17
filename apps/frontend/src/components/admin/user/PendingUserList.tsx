@@ -39,7 +39,6 @@ import {
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { FilterKey } from '@graphql/generated';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   graphql,
@@ -49,8 +48,9 @@ import {
   useRefetchableFragment,
   useSubscription,
 } from 'react-relay';
-import { useDebounceCallback } from 'usehooks-ts';
+import { useDebounceCallback } from 'usehooks-ts'; // Configuration or Preloader Query
 
+import { useTranslate } from '@tolgee/react';
 // Configuration or Preloader Query
 const removePendingUser = graphql`
   mutation PendingUserListRemoveUserMutation(
@@ -112,7 +112,7 @@ interface PendingUserListProps {
 
 // Component
 const PendingUserList = ({ organization }: PendingUserListProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const {
     pageSize,
     setPageSize,
@@ -205,7 +205,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
       {
         accessorKey: 'email',
         id: 'email',
-        header: t('UserListPage.Email'),
+        header: t('UserListPage_Email'),
         cell: ({ row }) => {
           return <span className="truncate">{row.original.email}</span>;
         },
@@ -213,7 +213,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
       {
         accessorKey: 'first_name',
         id: 'first_name',
-        header: t('UserListPage.FirstName'),
+        header: t('UserListPage_FirstName'),
         cell: ({ row }) => {
           return <span className="truncate">{row.original.first_name}</span>;
         },
@@ -221,7 +221,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
       {
         accessorKey: 'last_name',
         id: 'last_name',
-        header: t('UserListPage.LastName'),
+        header: t('UserListPage_LastName'),
         cell: ({ row }) => {
           return <span className="truncate">{row.original.last_name}</span>;
         },
@@ -238,10 +238,10 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
           return (
             <div className="flex items-center justify-end gap-1">
               <AlertDialogComponent
-                AlertTitle={t('PendingUserListPage.WarningUserRejection.Title')}
-                // description={t('PendingUserListPage.WarningUserRejectionDescription')}
+                AlertTitle={t('PendingUserListPage_WarningUserRejection_Title')}
+                // description={t('PendingUserListPage_WarningUserRejectionDescription')}
                 actionButtonText={t(
-                  'PendingUserListPage.WarningUserRejection.Confirm'
+                  'PendingUserListPage_WarningUserRejection_Confirm'
                 )}
                 triggerElement={
                   <Button
@@ -252,7 +252,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                   </Button>
                 }
                 onClickContinue={() => rejectUser!(row.original)}>
-                {t('PendingUserListPage.WarningUserRejection.Description')}
+                {t('PendingUserListPage_WarningUserRejection_Description')}
               </AlertDialogComponent>
               <Button
                 variant="tertiary"
@@ -391,10 +391,10 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
               <>
                 <AlertDialogComponent
                   AlertTitle={t(
-                    'PendingUserListPage.WarningUsersRejection.Title'
+                    'PendingUserListPage_WarningUsersRejection_Title'
                   )}
                   actionButtonText={t(
-                    'PendingUserListPage.WarningUsersRejection.Confirm'
+                    'PendingUserListPage_WarningUsersRejection_Confirm'
                   )}
                   triggerElement={
                     <Button
@@ -407,12 +407,12 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                   onClickContinue={() =>
                     handleBulkAction(selectionState, removeUserBulkMutation)
                   }>
-                  {t('PendingUserListPage.WarningUsersRejection.Description')}
+                  {t('PendingUserListPage_WarningUsersRejection_Description')}
                 </AlertDialogComponent>
                 <AlertDialogComponent
-                  AlertTitle={t('PendingUserListPage.WarningUsersAccept.Title')}
+                  AlertTitle={t('PendingUserListPage_WarningUsersAccept_Title')}
                   actionButtonText={t(
-                    'PendingUserListPage.WarningUsersAccept.Confirm'
+                    'PendingUserListPage_WarningUsersAccept_Confirm'
                   )}
                   triggerElement={
                     <Button
@@ -425,7 +425,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                   onClickContinue={() =>
                     handleBulkAction(selectionState, acceptUserBulkMutation)
                   }>
-                  {t('PendingUserListPage.WarningUsersAccept.Description')}
+                  {t('PendingUserListPage_WarningUsersAccept_Description')}
                 </AlertDialogComponent>
               </>
             ),
@@ -445,7 +445,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
           <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
             <SearchInput
               containerClass="w-full sm:w-1/3"
-              placeholder={t('UserActions.SearchUser')}
+              placeholder={t('UserActions_SearchUser')}
               onChange={debounceHandleInput}
             />
             <div className="flex w-full items-center justify-between gap-s sm:w-auto">

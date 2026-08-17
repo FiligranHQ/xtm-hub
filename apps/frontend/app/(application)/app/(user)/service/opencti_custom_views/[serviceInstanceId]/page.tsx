@@ -25,7 +25,7 @@ const Page = async ({ params }: ServiceCustomViewsPageProps) => {
 
   const breadcrumbs = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${APP_PATH}`,
     },
     {
@@ -51,7 +51,7 @@ const Page = async ({ params }: ServiceCustomViewsPageProps) => {
           />
         </>
       ) : (
-        <h1>{t('Utils.ServiceNotFound')}</h1>
+        <h1>{t('Utils_ServiceNotFound')}</h1>
       )}
     </>
   );

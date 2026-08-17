@@ -17,11 +17,10 @@ import {
 } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentImageType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { useContext, useMemo } from 'react';
 import slugify from 'slugify';
 import { z } from 'zod';
-
 const openAEVScenarioFormSchema = z.object({
   name: z.string().min(1, 'Required'),
   slug: z.string().min(1, 'Required'),
@@ -51,7 +50,7 @@ export const OpenaevScenarioForm = ({
   handleSubmit,
   document,
 }: OpenAEVScenarioFormProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const { me } = useContext(PortalContext);
 
   const isCreation = !document;
@@ -144,7 +143,7 @@ export const OpenaevScenarioForm = ({
         uploader_organization_id,
         document: isCreation
           ? {
-              label: t('Service.OpenAEVScenario.Form.OpenAEVScenarioFile'),
+              label: t('Service_OpenAEVScenario_Form_OpenAEVScenarioFile'),
               fieldType: 'file',
               inputProps: {
                 accept: 'application/zip',
@@ -156,7 +155,7 @@ export const OpenaevScenarioForm = ({
                 <FormItem>
                   <FormLabel>
                     {t(
-                      'Service.OpenAEVScenario.Form.ExistingOpenAEVScenarioFile',
+                      'Service_OpenAEVScenario_Form_ExistingOpenAEVScenarioFile',
                       {
                         file_name: field.value?.[0].name ?? document?.file_name,
                       }
@@ -168,13 +167,13 @@ export const OpenaevScenarioForm = ({
                         field={field}
                         texts={{
                           selectFile: t(
-                            'Service.OpenAEVScenario.Form.UpdateZIPFile'
+                            'Service_OpenAEVScenario_Form_UpdateZIPFile'
                           ),
                           dialogTitle: t(
-                            'Service.OpenAEVScenario.Form.UpdateZIPFile'
+                            'Service_OpenAEVScenario_Form_UpdateZIPFile'
                           ),
                           dialogDescription: t(
-                            'Service.OpenAEVScenario.Form.DescriptionUpdateZIPFile'
+                            'Service_OpenAEVScenario_Form_DescriptionUpdateZIPFile'
                           ),
                         }}
                         allowedTypes="application/zip"

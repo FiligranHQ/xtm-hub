@@ -1,10 +1,10 @@
 'use client';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
+import { useTranslate } from '@tolgee/react';
 export const SlackSupportButton = () => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <Button>
@@ -12,7 +12,7 @@ export const SlackSupportButton = () => {
         href="https://community.filigran.io/"
         target="_blank"
         rel="noopener noreferrer">
-        {t('Service.Trials.NeedSupport')}
+        {t('Service_Trials_NeedSupport')}
       </Link>
     </Button>
   );

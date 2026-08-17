@@ -15,16 +15,16 @@ import {
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMutation } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 interface UnregisterButtonProps {
   platform: registeredPlatformByServiceInstanceId_fragment$data;
 }
 
 export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const router = useRouter();
 
   const isTrial = platform.contract === PlatformContract.Trial;
@@ -40,8 +40,8 @@ export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
     if (!identifier || !platform.platform_id) {
       toast({
         variant: 'destructive',
-        title: t('Utils.Error'),
-        description: t(`Unregister.Failed.Description`),
+        title: t('Utils_Error'),
+        description: t(`Unregister_Failed_Description`),
       });
       return;
     }
@@ -56,8 +56,8 @@ export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
       onCompleted: () => {
         router.push('/app');
         toast({
-          title: t('Utils.Success'),
-          description: t('Unregister.Succeeded.Title', {
+          title: t('Utils_Success'),
+          description: t('Unregister_Succeeded_Title', {
             platformIdentifier: platform.title,
           }),
         });
@@ -65,8 +65,8 @@ export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
       onError: (error) => {
         toast({
           variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          title: t('Utils_Error'),
+          description: t(`Error_Server_${error.message}`),
         });
       },
     });
@@ -81,14 +81,14 @@ export const UnregisterButton = ({ platform }: UnregisterButtonProps) => {
         ]}>
         <AlertDialogComponent
           variantName={'destructive'}
-          AlertTitle={t('Unregister.Confirm.Description')}
+          AlertTitle={t('Unregister_Confirm_Description')}
           onClickContinue={unregisterPlatform}
           triggerElement={
-            <Button variant="destructive">{t('Unregister.Unregister')}</Button>
+            <Button variant="destructive">{t('Unregister_Unregister')}</Button>
           }
-          actionButtonText={t('Utils.Continue')}>
+          actionButtonText={t('Utils_Continue')}>
           <p>
-            {t('Unregister.Description', {
+            {t('Unregister_Description', {
               platformName: platform.title,
               productName:
                 PlatformMetadataMapping[

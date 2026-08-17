@@ -9,8 +9,8 @@ import {
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { OrderingMode } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 
+import { useTranslate } from '@tolgee/react';
 interface SortControlsProps {
   orderByOptions: { label: string; value: string }[];
   onOrderByChange: (value: string) => void;
@@ -28,18 +28,18 @@ export const SortControls = ({
   selectedOrderBy,
   className,
 }: SortControlsProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   return (
     <div className={cn(className, 'flex gap-s items-center')}>
       <span className="whitespace-nowrap text-sm">
-        {t('SortControls.SortBy')}
+        {t('SortControls_SortBy')}
       </span>
       <Select
         onValueChange={onOrderByChange}
         defaultValue={selectedOrderBy}>
         <SelectTrigger>
-          <SelectValue placeholder={t('SortControls.SortBy')} />
+          <SelectValue placeholder={t('SortControls_SortBy')} />
         </SelectTrigger>
         <SelectContent>
           {orderByOptions.map((option) => (
@@ -55,7 +55,7 @@ export const SortControls = ({
         size="icon"
         className="flex-none basis-9"
         variant="tertiary"
-        aria-label={`${t('SortControls.SortBy')} ${selectedOrderMode}`}
+        aria-label={`${t('SortControls_SortBy')} ${selectedOrderMode}`}
         onClick={() =>
           onOrderModeChange(
             selectedOrderMode === OrderingMode.Asc

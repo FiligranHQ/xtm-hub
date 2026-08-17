@@ -1,7 +1,5 @@
 'use client';
-
 import { LogoutMutation } from '@/components/logout.graphql';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { GraphQLSubscriptionConfig } from 'relay-runtime';
@@ -12,12 +10,13 @@ import {
   userMeSubscription$data,
   userMeSubscription as userMeSubscriptionType,
 } from '@generated/userMeSubscription.graphql';
-import { useMutation, useSubscription } from 'react-relay';
+import { useMutation, useSubscription } from 'react-relay'; // Component
 
+import { useTranslate } from '@tolgee/react';
 // Component
 const UserEventSubscription = () => {
   const [commitLogoutMutation] = useMutation(LogoutMutation);
-  const t = useTranslations();
+  const { t } = useTranslate();
 
   const router = useRouter();
 
@@ -52,11 +51,11 @@ const UserEventSubscription = () => {
     <AlertDialogComponent
       isOpen={isOpen}
       onOpenChange={setIsOpen}
-      AlertTitle={t('UpdateUserDialog.TextUpdatedUserTitle')}
+      AlertTitle={t('UpdateUserDialog_TextUpdatedUserTitle')}
       onClickContinue={() => {}}
       displayCancelButton={false}
-      actionButtonText={t('Utils.Continue')}>
-      <p>{t('UpdateUserDialog.TextUpdatedUser')}</p>
+      actionButtonText={t('Utils_Continue')}>
+      <p>{t('UpdateUserDialog_TextUpdatedUser')}</p>
     </AlertDialogComponent>
   );
 };

@@ -382,7 +382,7 @@ describe('PrivateNavigation hook behavior', () => {
     const { container } = testRender(<PrivateNavigation open={true} />);
 
     expect(container).toBeTruthy();
-    expect(screen.queryByText('MenuLinks.Settings')).not.toBeInTheDocument();
+    expect(screen.queryByText('MenuLinks_Settings')).not.toBeInTheDocument();
   });
 
   it('builds private service links using fetched service instance ids', () => {

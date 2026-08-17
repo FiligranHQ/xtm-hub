@@ -1,5 +1,4 @@
 'use client';
-
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { IconActionContext } from '@/components/ui/IconActions';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
@@ -10,11 +9,11 @@ import {
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { useTranslate } from '@tolgee/react';
 interface LearnMoreBannerButtonProps {
   getHref: (product: PlatformIdentifier) => string;
 }
@@ -22,7 +21,7 @@ interface LearnMoreBannerButtonProps {
 export const LearnMoreBannerButton = ({
   getHref,
 }: LearnMoreBannerButtonProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const getLink = (product: PlatformIdentifier) => (
@@ -50,7 +49,7 @@ export const LearnMoreBannerButton = ({
         <Button
           className="ml-s mr-s text-[12px] px-2 py-0.5 min-h-0 h-auto text-inherit border-current hover:bg-current/10 focus-visible:ring-current/70"
           variant="secondary">
-          {t('Service.Trials.LearnMore.Link')}
+          {t('Service_Trials_LearnMore_Link')}
           <div
             className={`ml-s inline-flex transition-transform ${
               menuOpen ? 'rotate-90' : 'rotate-0'

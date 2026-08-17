@@ -10,14 +10,16 @@ import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { epicsList_epics$key } from '@generated/epicsList_epics.graphql';
 import { epicsQuery } from '@generated/epicsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import { useLazyLoadQuery, useRefetchableFragment } from 'react-relay';
+
+import { useTranslate } from '@tolgee/react';
+
 interface PreloaderProps {
   serviceInstance: serviceInstance_fragment$data;
 }
 
 const PageLoader = ({ serviceInstance }: PreloaderProps) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const queryData = useLazyLoadQuery<epicsQuery>(
     EpicListQuery,
     { count: 500, orderBy: 'title', orderMode: 'asc' },
@@ -35,11 +37,11 @@ const PageLoader = ({ serviceInstance }: PreloaderProps) => {
 
   const breadcrumbValue = [
     {
-      label: 'MenuLinks.Home',
+      label: 'MenuLinks_Home',
       href: `/${APP_PATH}`,
     },
     {
-      label: 'Epic.XTMRoadmap',
+      label: 'Epic_XTMRoadmap',
     },
   ];
 
@@ -49,7 +51,7 @@ const PageLoader = ({ serviceInstance }: PreloaderProps) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <h1 className="sr-only">{t('Epic.XTMRoadmap')}</h1>
+      <h1 className="sr-only">{t('Epic_XTMRoadmap')}</h1>
       <EpicPage
         connectionID={connectionID}
         serviceInstance={serviceInstance}

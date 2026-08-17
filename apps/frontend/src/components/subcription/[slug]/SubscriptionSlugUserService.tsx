@@ -3,9 +3,8 @@ import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDi
 import { Button } from '@filigran/ui';
 import { subscriptionByIdQuery$data } from '@generated/subscriptionByIdQuery.graphql';
 import { userServices_fragment$data } from '@generated/userServices_fragment.graphql';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@tolgee/react';
 import { FunctionComponent, useState } from 'react';
-
 interface SubscriptionSlugUserServiceProps {
   connectionId: string;
   subscription: subscriptionByIdQuery$data;
@@ -23,7 +22,7 @@ export const SubscriptionSlugUserService: FunctionComponent<
   openEdit,
   setOpenEdit,
 }) => {
-  const t = useTranslations();
+  const { t } = useTranslate();
   const [openSheet, setOpenSheet] = useState(false);
   const isEditMode = !!userServiceToEdit;
   const sheetOpen = isEditMode ? (openEdit ?? false) : openSheet;
@@ -42,9 +41,9 @@ export const SubscriptionSlugUserService: FunctionComponent<
         event.preventDefault();
       }}
       trigger={
-        <Button>{t('Service.Management.InviteUser.TitleInviteUser')}</Button>
+        <Button>{t('Service_Management_InviteUser_TitleInviteUser')}</Button>
       }
-      title={t('InviteUserServiceForm.Title', {
+      title={t('InviteUserServiceForm_Title', {
         serviceName: subscription.subscriptionById!.service_instance!.name,
       })}>
       <UserServiceForm

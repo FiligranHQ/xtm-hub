@@ -1,10 +1,10 @@
 'use client';
 import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
-import { useTranslations } from 'next-intl';
 import { useContext, useEffect } from 'react';
 import { useRelayEnvironment } from 'react-relay';
 
+import { useTranslate } from '@tolgee/react';
 const AppError = ({
   error,
 }: {
@@ -14,7 +14,7 @@ const AppError = ({
   const isDevelopmentEnvSetting =
     settings?.environment && settings.environment !== 'production';
   const environment = useRelayEnvironment();
-  const t = useTranslations();
+  const { t } = useTranslate();
   useEffect(() => {
     if (isDevelopmentEnvSetting) {
       logFrontendError(
@@ -26,18 +26,18 @@ const AppError = ({
     }
   });
 
-  const getSpecificMessageError = t(`Error.Server.${error.message}`);
+  const getSpecificMessageError = t(`Error_Server_${error.message}`);
   const displayedMessage = getSpecificMessageError.startsWith('Error.Server.')
-    ? t('Error.AnErrorOccured')
+    ? t('Error_AnErrorOccured')
     : getSpecificMessageError;
 
   return (
     <div>
-      <h2>{t('Error.SomethingWentWrong')}</h2>
-      <p>{error.message ? displayedMessage : t('Error.AnErrorOccured')}</p>
+      <h2>{t('Error_SomethingWentWrong')}</h2>
+      <p>{error.message ? displayedMessage : t('Error_AnErrorOccured')}</p>
       {isDevelopmentEnvSetting && (
         <div>
-          {t(`Error.Server.${error.message}`)}
+          {t(`Error_Server_${error.message}`)}
           <pre>{error.stack}</pre>
         </div>
       )}
