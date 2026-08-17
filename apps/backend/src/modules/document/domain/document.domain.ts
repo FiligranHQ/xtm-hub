@@ -96,7 +96,6 @@ export const DocumentDomain = {
         ...omit(documentData, [
           'parent_document_id',
           'use_cases',
-          'solution_category',
           'solution_categories',
           ...metadataKeys,
         ]),
@@ -471,7 +470,6 @@ export const DocumentDomain = {
       ...omit(documentData, [
         'parent_document_id',
         'use_cases',
-        'solution_category',
         'solution_categories',
         ...metadataKeys,
       ]),

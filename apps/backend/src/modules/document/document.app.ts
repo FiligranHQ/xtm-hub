@@ -209,13 +209,13 @@ export const DocumentApp = {
         );
       }
 
-      if (documentData.solution_categories?.length) {
-        for (const solutionCategoryId of documentData.solution_categories) {
-          await objectSolutionCategoryDomain.insertObjectSolutionCategory({
+      if (input.solution_categories?.length) {
+        await objectSolutionCategoryDomain.insertObjectSolutionCategory(
+          input.solution_categories.map((solutionCategoryId) => ({
             object_id: toObjectSolutionCategoryObjectId(document.id),
-            solution_category_id: solutionCategoryId as SolutionCategoryId,
-          });
-        }
+            solution_category_id: solutionCategoryId,
+          }))
+        );
       }
 
       return document;
@@ -402,12 +402,12 @@ export const DocumentApp = {
         await objectSolutionCategoryDomain.deleteObjectSolutionCategoryBy({
           object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
         });
-        for (const solutionCategoryId of input.solution_categories) {
-          await objectSolutionCategoryDomain.insertObjectSolutionCategory({
+        await objectSolutionCategoryDomain.insertObjectSolutionCategory(
+          input.solution_categories.map((solutionCategoryId) => ({
             object_id: toObjectSolutionCategoryObjectId(parentDocumentId),
-            solution_category_id: solutionCategoryId,
-          });
-        }
+            solution_category_id: solutionCategoryId as SolutionCategoryId,
+          }))
+        );
       }
 
       if (documentMetadata.length) {
