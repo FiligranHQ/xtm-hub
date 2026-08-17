@@ -271,6 +271,7 @@
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de la suppression d'un utilisateur d'une organisation en attente",
+      "SEO_SERVICE_INSTANCE_NOT_FOUND": "Les métadonnées de l'instance du service SEO sont introuvables.",
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "Vous n'êtes pas autorisé à faire ceci",
       "SERVICE_INSTANCE_NOT_FOUND": "L'instance du service n'a pas été trouvée",
@@ -524,7 +525,10 @@
     "DocumentFallbackDescriptionIntegration": "Explorez cette intégration de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
     "DocumentFallbackDescriptionScenario": "Explorez ce scénario d'attaque OpenAEV pour renforcer votre émulation d'adversaire et votre validation de sécurité.",
     "DocumentFallbackDescriptionGeneric": "Explorez cette ressource sur XTM Hub by Filigran pour renforcer votre posture de cybersécurité.",
-    "ResourcePreviewAlt": "{name} - Aperçu de la ressource"
+    "ResourcePreviewAlt": "{name} - Aperçu de la ressource",
+    "SeoMetadata": "SEO Metadata",
+    "SeoMetaTitle": "Méta-titre",
+    "SeoMetaDescription": "Méta-description"
   },
   "CompetitorListPage": {
     "Name": "Nom",

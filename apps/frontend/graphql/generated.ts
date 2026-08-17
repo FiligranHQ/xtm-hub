@@ -677,6 +677,11 @@ export type EditMeUserInput = {
   selected_language: InputMaybe<Scalars['String']['input']>;
 };
 
+export type EditSeoServiceInstanceInput = {
+  meta_description: Scalars['String']['input'];
+  meta_title: Scalars['String']['input'];
+};
+
 export type EditServiceCapabilityInput = {
   capabilities: Array<InputMaybe<Scalars['String']['input']>>;
   user_service_id: InputMaybe<Scalars['User_ServiceId']['input']>;
@@ -1000,6 +1005,7 @@ export type Mutation = {
   deleteUserServices: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization: Maybe<Organization>;
+  editSeoServiceInstance: SeoServiceInstanceMetadata;
   editServiceCapability: Maybe<SubscriptionModel>;
   editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
@@ -1223,6 +1229,13 @@ export type MutationEditMeUserArgs = {
 export type MutationEditOrganizationArgs = {
   id: Scalars['ID']['input'];
   input: OrganizationInput;
+};
+
+
+export type MutationEditSeoServiceInstanceArgs = {
+  input: EditSeoServiceInstanceInput;
+  language: SeoServiceInstanceLanguage;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1674,6 +1687,7 @@ export enum PortalCapability {
   ManageDeployment = 'MANAGE_DEPLOYMENT',
   ManageManifestIngestions = 'MANAGE_MANIFEST_INGESTIONS',
   ModifyCompetitors = 'MODIFY_COMPETITORS',
+  ModifyServiceMetadata = 'MODIFY_SERVICE_METADATA',
   ModifyTrials = 'MODIFY_TRIALS',
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
@@ -1721,6 +1735,7 @@ export type Query = {
   registeredPlatform: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   seoServiceInstance: SeoServiceInstance;
+  seoServiceInstanceMetadata: Array<SeoServiceInstanceMetadata>;
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById: Maybe<ServiceInstance>;
@@ -1913,6 +1928,12 @@ export type QueryRegisteredPlatformsArgs = {
 
 export type QuerySeoServiceInstanceArgs = {
   slug: Scalars['String']['input'];
+};
+
+
+export type QuerySeoServiceInstanceMetadataArgs = {
+  language: InputMaybe<SeoServiceInstanceLanguage>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2164,6 +2185,20 @@ export type SeoServiceInstance = Node & {
   service_definition: ServiceDefinition;
   slug: Maybe<Scalars['String']['output']>;
   tags: Maybe<Array<ServiceInstanceTag>>;
+};
+
+export enum SeoServiceInstanceLanguage {
+  En = 'en',
+  Fr = 'fr',
+  Ja = 'ja'
+}
+
+export type SeoServiceInstanceMetadata = {
+  __typename?: 'SeoServiceInstanceMetadata';
+  language: SeoServiceInstanceLanguage;
+  meta_description: Scalars['String']['output'];
+  meta_title: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
 };
 
 export type ServiceCapability = Node & {
@@ -2918,6 +2953,22 @@ export type ServiceInstancesListQueryVariables = Exact<{
 
 
 export type ServiceInstancesListQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, name: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null } | null }> } };
+
+export type ServiceInstanceSeoMetadataByIdQueryVariables = Exact<{
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+}>;
+
+
+export type ServiceInstanceSeoMetadataByIdQuery = { __typename?: 'Query', seoServiceInstanceMetadata: Array<{ __typename?: 'SeoServiceInstanceMetadata', service_instance_id: any, language: SeoServiceInstanceLanguage, meta_title: string, meta_description: string }> };
+
+export type EditSeoServiceInstanceMetadataMutationVariables = Exact<{
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+  language: SeoServiceInstanceLanguage;
+  input: EditSeoServiceInstanceInput;
+}>;
+
+
+export type EditSeoServiceInstanceMetadataMutation = { __typename?: 'Mutation', editSeoServiceInstance: { __typename?: 'SeoServiceInstanceMetadata', service_instance_id: any, language: SeoServiceInstanceLanguage, meta_title: string, meta_description: string } };
 
 export type SolutionCategoryAddMutationVariables = Exact<{
   input: AddSolutionCategoryInput;
@@ -3708,6 +3759,98 @@ export const useInfiniteServiceInstancesListQuery = <
 useInfiniteServiceInstancesListQuery.getKey = (variables: ServiceInstancesListQueryVariables) => ['ServiceInstancesList.infinite', variables];
 useInfiniteServiceInstancesListQuery.getRootKey = () => ['ServiceInstancesList.infinite'] as const;
 useServiceInstancesListQuery.fetcher = (client: GraphQLClient, variables: ServiceInstancesListQueryVariables, headers?: RequestInit['headers']) => fetcher<ServiceInstancesListQuery, ServiceInstancesListQueryVariables>(client, ServiceInstancesListDocument, variables, headers);
+
+export const ServiceInstanceSeoMetadataByIdDocument = `
+    query ServiceInstanceSeoMetadataById($service_instance_id: ServiceInstanceId!) {
+  seoServiceInstanceMetadata(service_instance_id: $service_instance_id) {
+    service_instance_id
+    language
+    meta_title
+    meta_description
+  }
+}
+    `;
+
+export const useServiceInstanceSeoMetadataByIdQuery = <
+      TData = ServiceInstanceSeoMetadataByIdQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ServiceInstanceSeoMetadataByIdQueryVariables,
+      options?: Omit<UseQueryOptions<ServiceInstanceSeoMetadataByIdQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ServiceInstanceSeoMetadataByIdQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ServiceInstanceSeoMetadataByIdQuery, TError, TData>(
+      {
+    queryKey: ['ServiceInstanceSeoMetadataById', variables],
+    queryFn: fetcher<ServiceInstanceSeoMetadataByIdQuery, ServiceInstanceSeoMetadataByIdQueryVariables>(client, ServiceInstanceSeoMetadataByIdDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useServiceInstanceSeoMetadataByIdQuery.getKey = (variables: ServiceInstanceSeoMetadataByIdQueryVariables) => ['ServiceInstanceSeoMetadataById', variables];
+useServiceInstanceSeoMetadataByIdQuery.getRootKey = () => ['ServiceInstanceSeoMetadataById'] as const;
+export const useInfiniteServiceInstanceSeoMetadataByIdQuery = <
+      TData = InfiniteData<ServiceInstanceSeoMetadataByIdQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ServiceInstanceSeoMetadataByIdQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ServiceInstanceSeoMetadataByIdQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ServiceInstanceSeoMetadataByIdQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ServiceInstanceSeoMetadataByIdQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['ServiceInstanceSeoMetadataById.infinite', variables],
+      queryFn: (metaData) => fetcher<ServiceInstanceSeoMetadataByIdQuery, ServiceInstanceSeoMetadataByIdQueryVariables>(client, ServiceInstanceSeoMetadataByIdDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteServiceInstanceSeoMetadataByIdQuery.getKey = (variables: ServiceInstanceSeoMetadataByIdQueryVariables) => ['ServiceInstanceSeoMetadataById.infinite', variables];
+useInfiniteServiceInstanceSeoMetadataByIdQuery.getRootKey = () => ['ServiceInstanceSeoMetadataById.infinite'] as const;
+useServiceInstanceSeoMetadataByIdQuery.fetcher = (client: GraphQLClient, variables: ServiceInstanceSeoMetadataByIdQueryVariables, headers?: RequestInit['headers']) => fetcher<ServiceInstanceSeoMetadataByIdQuery, ServiceInstanceSeoMetadataByIdQueryVariables>(client, ServiceInstanceSeoMetadataByIdDocument, variables, headers);
+
+export const EditSeoServiceInstanceMetadataDocument = `
+    mutation EditSeoServiceInstanceMetadata($service_instance_id: ServiceInstanceId!, $language: SeoServiceInstanceLanguage!, $input: EditSeoServiceInstanceInput!) {
+  editSeoServiceInstance(
+    service_instance_id: $service_instance_id
+    language: $language
+    input: $input
+  ) {
+    service_instance_id
+    language
+    meta_title
+    meta_description
+  }
+}
+    `;
+
+export const useEditSeoServiceInstanceMetadataMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<EditSeoServiceInstanceMetadataMutation, TError, EditSeoServiceInstanceMetadataMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<EditSeoServiceInstanceMetadataMutation, TError, EditSeoServiceInstanceMetadataMutationVariables, TContext>(
+      {
+    mutationKey: ['EditSeoServiceInstanceMetadata'],
+    mutationFn: (variables?: EditSeoServiceInstanceMetadataMutationVariables) => fetcher<EditSeoServiceInstanceMetadataMutation, EditSeoServiceInstanceMetadataMutationVariables>(client, EditSeoServiceInstanceMetadataDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useEditSeoServiceInstanceMetadataMutation.getKey = () => ['EditSeoServiceInstanceMetadata'];
+useEditSeoServiceInstanceMetadataMutation.getRootKey = () => ['EditSeoServiceInstanceMetadata'] as const;
+useEditSeoServiceInstanceMetadataMutation.fetcher = (client: GraphQLClient, variables: EditSeoServiceInstanceMetadataMutationVariables, headers?: RequestInit['headers']) => fetcher<EditSeoServiceInstanceMetadataMutation, EditSeoServiceInstanceMetadataMutationVariables>(client, EditSeoServiceInstanceMetadataDocument, variables, headers);
 
 export const SolutionCategoryAddDocument = `
     mutation SolutionCategoryAdd($input: AddSolutionCategoryInput!) {

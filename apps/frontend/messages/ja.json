@@ -271,6 +271,7 @@
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "他の組織での登録が禁止されている",
       "REMOVE_USER_FROM_ORGA_ERROR": "組織からユーザーを削除する際にエラーが発生した",
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "保留中の組織からユーザーを削除する際にエラーが発生した",
+      "SEO_SERVICE_INSTANCE_NOT_FOUND": "SEOサービスのインスタンスのメタデータが見つかりませんでした",
       "SERVICE_DEFINITION_NOT_FOUND": "サービス定義が見つかりませんでした",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "あなたはこれを行うことはできません",
       "SERVICE_INSTANCE_NOT_FOUND": "サービスインスタンスが見つかりません",
@@ -524,7 +525,10 @@
     "DocumentFallbackDescriptionIntegration": "脅威インテリジェンスとモニタリングを強化するこのサイバーセキュリティ統合をご覧ください。",
     "DocumentFallbackDescriptionScenario": "敵対者エミュレーションとセキュリティ検証を強化するこのOpenAEV攻撃シナリオをご覧ください。",
     "DocumentFallbackDescriptionGeneric": "サイバーセキュリティ体制を強化するために、XTM Hub by Filigran のこのリソースをご覧ください。",
-    "ResourcePreviewAlt": "{name} - リソースプレビュー"
+    "ResourcePreviewAlt": "{name} - リソースプレビュー",
+    "SeoMetadata": "SEO Metadata",
+    "SeoMetaTitle": "メタタイトル",
+    "SeoMetaDescription": "メタディスクリプション"
   },
   "CompetitorListPage": {
     "Name": "製品名",

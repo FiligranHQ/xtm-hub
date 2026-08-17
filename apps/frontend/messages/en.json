@@ -271,6 +271,7 @@
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "Registration on another organization is forbidden",
       "REMOVE_USER_FROM_ORGA_ERROR": "Error while removing user from organization",
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "An error occurred while removing user from a pending organization",
+      "SEO_SERVICE_INSTANCE_NOT_FOUND": "SEO Service instance metadata was not found",
       "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "You are not allowed to do this",
       "SERVICE_INSTANCE_NOT_FOUND": "Service instance was not found",
@@ -524,7 +525,10 @@
     "DocumentFallbackDescriptionIntegration": "Explore this cybersecurity integration for enhanced threat intelligence and monitoring.",
     "DocumentFallbackDescriptionScenario": "Explore this OpenAEV attack scenario to strengthen your adversary emulation and security validation.",
     "DocumentFallbackDescriptionGeneric": "Explore this resource on XTM Hub by Filigran to enhance your cybersecurity posture.",
-    "ResourcePreviewAlt": "{name} - Resource Preview"
+    "ResourcePreviewAlt": "{name} - Resource Preview",
+    "SeoMetadata": "SEO Metadata",
+    "SeoMetaTitle": "Meta-title",
+    "SeoMetaDescription": "Meta-description"
   },
   "CompetitorListPage": {
     "Name": "Name",

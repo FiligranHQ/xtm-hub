@@ -669,6 +669,11 @@ export type EditMeUserInput = {
   selected_language?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type EditSeoServiceInstanceInput = {
+  meta_description: Scalars['String']['input'];
+  meta_title: Scalars['String']['input'];
+};
+
 export type EditServiceCapabilityInput = {
   capabilities: Array<InputMaybe<Scalars['String']['input']>>;
   user_service_id?: InputMaybe<Scalars['UserServiceId']['input']>;
@@ -992,6 +997,7 @@ export type Mutation = {
   deleteUserServices?: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
+  editSeoServiceInstance: SeoServiceInstanceMetadata;
   editServiceCapability?: Maybe<SubscriptionModel>;
   editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
@@ -1215,6 +1221,13 @@ export type MutationEditMeUserArgs = {
 export type MutationEditOrganizationArgs = {
   id: Scalars['ID']['input'];
   input: OrganizationInput;
+};
+
+
+export type MutationEditSeoServiceInstanceArgs = {
+  input: EditSeoServiceInstanceInput;
+  language: SeoServiceInstanceLanguage;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1666,6 +1679,7 @@ export enum PortalCapability {
   ManageDeployment = 'MANAGE_DEPLOYMENT',
   ManageManifestIngestions = 'MANAGE_MANIFEST_INGESTIONS',
   ModifyCompetitors = 'MODIFY_COMPETITORS',
+  ModifyServiceMetadata = 'MODIFY_SERVICE_METADATA',
   ModifyTrials = 'MODIFY_TRIALS',
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
@@ -1713,6 +1727,7 @@ export type Query = {
   registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   seoServiceInstance: SeoServiceInstance;
+  seoServiceInstanceMetadata: Array<SeoServiceInstanceMetadata>;
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById?: Maybe<ServiceInstance>;
@@ -1905,6 +1920,12 @@ export type QueryRegisteredPlatformsArgs = {
 
 export type QuerySeoServiceInstanceArgs = {
   slug: Scalars['String']['input'];
+};
+
+
+export type QuerySeoServiceInstanceMetadataArgs = {
+  language?: InputMaybe<SeoServiceInstanceLanguage>;
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2156,6 +2177,20 @@ export type SeoServiceInstance = Node & {
   service_definition: ServiceDefinition;
   slug?: Maybe<Scalars['String']['output']>;
   tags?: Maybe<Array<ServiceInstanceTag>>;
+};
+
+export enum SeoServiceInstanceLanguage {
+  En = 'en',
+  Fr = 'fr',
+  Ja = 'ja'
+}
+
+export type SeoServiceInstanceMetadata = {
+  __typename?: 'SeoServiceInstanceMetadata';
+  language: SeoServiceInstanceLanguage;
+  meta_description: Scalars['String']['output'];
+  meta_title: Scalars['String']['output'];
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
 };
 
 export type ServiceCapability = Node & {
@@ -2931,6 +2966,7 @@ export type ResolversTypes = ResolversObject<{
   DocumentOrdering: DocumentOrdering;
   DocumentSourceType: DocumentSourceType;
   EditMeUserInput: EditMeUserInput;
+  EditSeoServiceInstanceInput: EditSeoServiceInstanceInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSolutionCategoryInput: EditSolutionCategoryInput;
   EditUseCaseInput: EditUseCaseInput;
@@ -3021,6 +3057,8 @@ export type ResolversTypes = ResolversObject<{
   RssFeed: ResolverTypeWrapper<RssFeed>;
   SendTelemetryMutation: ResolverTypeWrapper<SendTelemetryMutation>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
+  SeoServiceInstanceLanguage: SeoServiceInstanceLanguage;
+  SeoServiceInstanceMetadata: ResolverTypeWrapper<SeoServiceInstanceMetadata>;
   ServiceCapability: ResolverTypeWrapper<ServiceCapability>;
   ServiceCapabilityId: ResolverTypeWrapper<Scalars['ServiceCapabilityId']['output']>;
   ServiceConnection: ResolverTypeWrapper<ServiceConnection>;
@@ -3150,6 +3188,7 @@ export type ResolversParentTypes = ResolversObject<{
   DocumentId: Scalars['DocumentId']['output'];
   DocumentMetadata: DocumentMetadata;
   EditMeUserInput: EditMeUserInput;
+  EditSeoServiceInstanceInput: EditSeoServiceInstanceInput;
   EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSolutionCategoryInput: EditSolutionCategoryInput;
   EditUseCaseInput: EditUseCaseInput;
@@ -3217,6 +3256,7 @@ export type ResolversParentTypes = ResolversObject<{
   RssFeed: RssFeed;
   SendTelemetryMutation: SendTelemetryMutation;
   SeoServiceInstance: SeoServiceInstance;
+  SeoServiceInstanceMetadata: SeoServiceInstanceMetadata;
   ServiceCapability: ServiceCapability;
   ServiceCapabilityId: Scalars['ServiceCapabilityId']['output'];
   ServiceConnection: ServiceConnection;
@@ -3791,6 +3831,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationDeleteUserServicesArgs, 'input' | 'service_instance_id'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
+  editSeoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstanceMetadata'], ParentType, ContextType, RequireFields<MutationEditSeoServiceInstanceArgs, 'input' | 'language' | 'service_instance_id'>>;
   editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editSolutionCategory?: Resolver<ResolversTypes['SolutionCategory'], ParentType, ContextType, RequireFields<MutationEditSolutionCategoryArgs, 'id' | 'input'>>;
   editUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationEditUseCaseArgs, 'id' | 'input'>>;
@@ -4055,6 +4096,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
+  seoServiceInstanceMetadata?: Resolver<Array<ResolversTypes['SeoServiceInstanceMetadata']>, ParentType, ContextType, RequireFields<QuerySeoServiceInstanceMetadataArgs, 'service_instance_id'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceByIdArgs, 'service_instance_id'>>;
@@ -4166,6 +4208,14 @@ export type SeoServiceInstanceResolvers<ContextType = PortalContext, ParentType 
   service_definition?: Resolver<ResolversTypes['ServiceDefinition'], ParentType, ContextType>;
   slug?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<ResolversTypes['ServiceInstanceTag']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SeoServiceInstanceMetadataResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SeoServiceInstanceMetadata'] = ResolversParentTypes['SeoServiceInstanceMetadata']> = ResolversObject<{
+  language?: Resolver<ResolversTypes['SeoServiceInstanceLanguage'], ParentType, ContextType>;
+  meta_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  meta_title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4672,6 +4722,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   RssFeed?: RssFeedResolvers<ContextType>;
   SendTelemetryMutation?: SendTelemetryMutationResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
+  SeoServiceInstanceMetadata?: SeoServiceInstanceMetadataResolvers<ContextType>;
   ServiceCapability?: ServiceCapabilityResolvers<ContextType>;
   ServiceCapabilityId?: GraphQLScalarType;
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;

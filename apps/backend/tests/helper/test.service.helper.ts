@@ -1,7 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { expect } from 'vitest';
 import { db } from '../../knexfile';
-import { ServiceDefinitionIdentifier } from '../../src/__generated__/resolvers-types';
+import {
+  SeoServiceInstanceLanguage,
+  ServiceDefinitionIdentifier,
+} from '../../src/__generated__/resolvers-types';
+import SEOServiceInstance, {
+  SEOServiceInstanceMutator,
+} from '../../src/model/kanel/public/SEOServiceInstance';
 import ServiceCapability, {
   ServiceCapabilityId,
   ServiceCapabilityMutator,
@@ -103,6 +109,35 @@ export const TestServiceHelper = {
         .where(field)
         .select('*')
         .first();
+    },
+  },
+  seoServiceInstance: {
+    create: async (
+      data: Partial<SEOServiceInstance> & {
+        service_instance_id: ServiceInstanceId;
+        language: SeoServiceInstanceLanguage;
+      }
+    ): Promise<SEOServiceInstance> => {
+      const [seoServiceInstance] = await db<SEOServiceInstance>(
+        'SEO_ServiceInstance'
+      )
+        .insert({
+          meta_title: 'Default meta title',
+          meta_description: 'Default meta description',
+          ...data,
+        })
+        .returning('*');
+      return seoServiceInstance!;
+    },
+    delete: async (field: SEOServiceInstanceMutator) => {
+      await db<SEOServiceInstance>('SEO_ServiceInstance').where(field).del();
+    },
+    loadAll: async (
+      field: SEOServiceInstanceMutator
+    ): Promise<SEOServiceInstance[]> => {
+      return db<SEOServiceInstance[]>('SEO_ServiceInstance')
+        .where(field)
+        .select('*');
     },
   },
   serviceGroup: {
