@@ -373,8 +373,6 @@ export const DeploymentApp = {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
-    const previousHubStatus = deploymentRequest.hub_status;
-
     if (
       !isAdmin &&
       user.selected_organization_id !==
@@ -383,54 +381,12 @@ export const DeploymentApp = {
       throw new Error(ForbiddenErrorCode.UserIsNotInOrganization);
     }
 
-    const countsInOrgaQuota =
-      isAdmin ||
-      ![
-        DeploymentRequestPlatformState.Unprovisioned,
-        DeploymentRequestPlatformState.Provisioning,
-      ].includes(
-        deploymentRequest.actual_state ??
-          DeploymentRequestPlatformState.Unprovisioned
-      );
-
-    const target_state =
-      deploymentRequest.actual_state ===
-      DeploymentRequestPlatformState.Unprovisioned
-        ? DeploymentRequestPlatformState.Unprovisioned
-        : DeploymentRequestPlatformState.Removed;
-
-    await DeploymentQuotaDomain.withLockedQuotaTransaction(
-      {
-        platformIdentifier: deploymentRequest.platform_identifier,
-        region: deploymentRequest.region,
-      },
-      async () => {
-        await DeploymentRequestDomain.updateDeploymentRequestById(
-          deploymentRequestId,
-          {
-            hub_status: DeploymentRequestHubStatus.Cancelled,
-            target_state: target_state,
-            cancellation_date: new Date(),
-            cancellation_user_id: user.id,
-            cancellation_reason: cancellationReason,
-            counts_in_orga_quota: countsInOrgaQuota,
-          }
-        );
-        if (!countsInOrgaQuota) {
-          await ServiceInstanceDomain.updateServiceInstance(
-            deploymentRequest.service_instance_id,
-            {
-              creation_status: ServiceInstanceCreationStatus.Disabled,
-            }
-          );
-        }
-        await DeploymentApp.releaseDeploymentRequestPlace(
-          previousHubStatus,
-          deploymentRequest.platform_identifier,
-          deploymentRequest.region
-        );
-      }
-    );
+    await applyCancellationToDeploymentRequest({
+      deploymentRequest,
+      userId: user.id,
+      isAdmin,
+      cancellationReason,
+    });
 
     const updatedDeploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
@@ -1023,6 +979,69 @@ const logDeleteAudienceError = (
     error,
     deploymentRequestId: deploymentRequest.id,
   });
+};
+
+const applyCancellationToDeploymentRequest = async ({
+  deploymentRequest,
+  userId,
+  isAdmin,
+  cancellationReason,
+}: {
+  deploymentRequest: DeploymentRequestModel;
+  userId: UserId;
+  isAdmin: boolean;
+  cancellationReason?: string;
+}): Promise<void> => {
+  const previousHubStatus = deploymentRequest.hub_status;
+
+  const countsInOrgaQuota =
+    isAdmin ||
+    ![
+      DeploymentRequestPlatformState.Unprovisioned,
+      DeploymentRequestPlatformState.Provisioning,
+    ].includes(
+      deploymentRequest.actual_state ??
+        DeploymentRequestPlatformState.Unprovisioned
+    );
+
+  const target_state =
+    deploymentRequest.actual_state ===
+    DeploymentRequestPlatformState.Unprovisioned
+      ? DeploymentRequestPlatformState.Unprovisioned
+      : DeploymentRequestPlatformState.Removed;
+
+  await DeploymentQuotaDomain.withLockedQuotaTransaction(
+    {
+      platformIdentifier: deploymentRequest.platform_identifier,
+      region: deploymentRequest.region,
+    },
+    async () => {
+      await DeploymentRequestDomain.updateDeploymentRequestById(
+        deploymentRequest.id,
+        {
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+          target_state: target_state,
+          cancellation_date: new Date(),
+          cancellation_user_id: userId,
+          cancellation_reason: cancellationReason,
+          counts_in_orga_quota: countsInOrgaQuota,
+        }
+      );
+      if (!countsInOrgaQuota) {
+        await ServiceInstanceDomain.updateServiceInstance(
+          deploymentRequest.service_instance_id,
+          {
+            creation_status: ServiceInstanceCreationStatus.Disabled,
+          }
+        );
+      }
+      await DeploymentApp.releaseDeploymentRequestPlace(
+        previousHubStatus,
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region
+      );
+    }
+  );
 };
 
 const checkStatusAndDataValidity = async (
