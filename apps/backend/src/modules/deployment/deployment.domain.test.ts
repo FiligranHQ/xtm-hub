@@ -254,6 +254,72 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
+  describe('loadDeploymentRequestWithChildren', () => {
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
+      await TestHelper.subscription.delete({});
+    });
+
+    it('should return the bundle first, then its children ordered by platform identifier', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      const childXtmone =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Xtmone,
+          }
+        );
+      const childOpencti =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        );
+      const childOpenaev =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        );
+
+      const family =
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(bundle);
+
+      expect(family.map(({ id }) => id)).toEqual([
+        bundle.id,
+        childOpenaev.id,
+        childOpencti.id,
+        childXtmone.id,
+      ]);
+    });
+
+    it('should return the standalone trial alone', async () => {
+      const standalone =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { platform_identifier: PlatformIdentifier.Openaev }
+      );
+
+      const family =
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+          standalone
+        );
+
+      expect(family).toEqual([standalone]);
+    });
+  });
+
   describe('loadTrialsToExpire', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});

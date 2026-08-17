@@ -56,6 +56,25 @@ export const DeploymentRequestDomain = {
       .select('*');
   },
 
+  loadDeploymentRequestWithChildren: async (
+    deploymentRequest: DeploymentRequest
+  ): Promise<DeploymentRequest[]> => {
+    if (deploymentRequest.type !== DeploymentRequestDeploymentType.Bundle) {
+      return [deploymentRequest];
+    }
+
+    const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+      parent_id: deploymentRequest.id,
+    });
+
+    return [
+      deploymentRequest,
+      ...children.sort((a, b) =>
+        (a.platform_identifier ?? '').localeCompare(b.platform_identifier ?? '')
+      ),
+    ];
+  },
+
   loadTrialsForOrganization: async (
     organizationId: OrganizationId,
     identifiers?: PlatformIdentifier[]

@@ -2137,6 +2137,115 @@ describe('deployment app', () => {
         }
       }
     );
+
+    describe('bundle cancellation', () => {
+      let bundle: DeploymentRequest;
+      let childOpencti: DeploymentRequest;
+      let childXtmone: DeploymentRequest;
+
+      beforeEach(async () => {
+        bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
+        childOpencti =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
+        childXtmone =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              platform_identifier: PlatformIdentifier.Xtmone,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
+      });
+
+      it('should cancel the bundle and all its children with the cancellation reason', async () => {
+        await DeploymentApp.cancelDeploymentRequest(
+          bundle.id,
+          false,
+          'my reason'
+        );
+
+        for (const { id } of [bundle, childOpencti, childXtmone]) {
+          const cancelled =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+          expect(cancelled).toMatchObject({
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            target_state: DeploymentRequestPlatformState.Removed,
+            cancellation_reason: 'my reason',
+            cancellation_date: expect.any(Date),
+            cancellation_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+          });
+        }
+      });
+
+      it('should send one telemetry event per deployment request', async () => {
+        await DeploymentApp.cancelDeploymentRequest(
+          bundle.id,
+          false,
+          'my reason'
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledTimes(3);
+        for (const { id } of [bundle, childOpencti, childXtmone]) {
+          expect(telemetrySpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+              event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+              deployment_id: id,
+              status: DeploymentRequestHubStatus.Cancelled,
+              cancellation_reason: 'my reason',
+            })
+          );
+        }
+      });
+
+      it('should leave the whole bundle untouched when one row fails to be cancelled', async () => {
+        const originalUpdate =
+          DeploymentRequestDomain.updateDeploymentRequestById;
+        let callCount = 0;
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'updateDeploymentRequestById'
+        ).mockImplementation(async (id, data) => {
+          callCount += 1;
+          if (callCount === 2) {
+            throw new Error('boom');
+          }
+          return originalUpdate(id, data);
+        });
+
+        const call = DeploymentApp.cancelDeploymentRequest(
+          bundle.id,
+          false,
+          'my reason'
+        );
+
+        await expect(call).rejects.toThrow('boom');
+
+        for (const { id, hub_status } of [bundle, childOpencti, childXtmone]) {
+          const untouched =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+          expect(untouched?.hub_status).toBe(hub_status);
+          expect(untouched?.cancellation_date).toBeNull();
+        }
+        expect(mockSendMail).not.toHaveBeenCalled();
+        expect(telemetrySpy).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('updateDeploymentQuotaCapacity', () => {

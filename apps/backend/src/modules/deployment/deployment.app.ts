@@ -385,63 +385,44 @@ export const DeploymentApp = {
       throw new Error(ForbiddenErrorCode.UserIsNotInOrganization);
     }
 
-    await applyCancellationToDeploymentRequest({
-      deploymentRequest,
-      userId: user.id,
-      isAdmin,
-      cancellationReason,
+    const family =
+      await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+        deploymentRequest
+      );
+
+    await withTransaction(async () => {
+      for (const request of family) {
+        await applyCancellationToDeploymentRequest({
+          deploymentRequest: request,
+          userId: user.id,
+          isAdmin,
+          cancellationReason,
+        });
+      }
     });
 
-    const updatedDeploymentRequest =
-      await DeploymentRequestDomain.loadDeploymentRequestBy({
-        id: deploymentRequestId,
-      });
+    const updatedFamily: DeploymentRequestModel[] = [];
 
+    for (const previousRequest of family) {
+      const updatedRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: previousRequest.id,
+        });
+      if (!updatedRequest) {
+        throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+      }
+      updatedFamily.push(updatedRequest);
+
+      await sendDeploymentRequestCancelledNotifications(
+        updatedRequest,
+        previousRequest,
+        user.id
+      );
+    }
+
+    const [updatedDeploymentRequest] = updatedFamily;
     if (!updatedDeploymentRequest) {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
-    }
-
-    await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
-
-    try {
-      const [requester] = await UserDomain.loadUser({
-        id: updatedDeploymentRequest.user_requester_id,
-      });
-      if (requester && updatedDeploymentRequest.platform_identifier) {
-        await sendMail({
-          to: requester.email,
-          template: 'free_trial_cancelled',
-          params: {
-            firstName: formatName(requester.first_name ?? ''),
-            platformIdentifier: updatedDeploymentRequest.platform_identifier,
-          },
-        });
-      } else if (!requester) {
-        logApp.warn('Requester not found for trial cancellation mail', {
-          deploymentRequestId: updatedDeploymentRequest.id,
-        });
-      }
-    } catch (error) {
-      logApp.error('Unable to send mail for trial cancellation', {
-        error,
-        deploymentRequestId: updatedDeploymentRequest.id,
-      });
-    }
-
-    try {
-      if (deploymentRequest.platform_id) {
-        await auth0Client.deleteAudienceAPI(
-          deploymentRequest.organization_requester_id,
-          deploymentRequest.platform_id
-        );
-      } else {
-        logApp.error('Unable to delete audience', {
-          error: 'missing platform_id',
-          deploymentRequestId: deploymentRequest.id,
-        });
-      }
-    } catch (error) {
-      logDeleteAudienceError(error, deploymentRequest);
     }
 
     return updatedDeploymentRequest;
@@ -1046,6 +1027,55 @@ const applyCancellationToDeploymentRequest = async ({
       );
     }
   );
+};
+
+const sendDeploymentRequestCancelledNotifications = async (
+  deploymentRequest: DeploymentRequestModel,
+  previousDeploymentRequest: DeploymentRequestModel,
+  userId: UserId
+): Promise<void> => {
+  await sendUpdateDeploymentTelemetryEvent(deploymentRequest, userId);
+
+  try {
+    const [requester] = await UserDomain.loadUser({
+      id: deploymentRequest.user_requester_id,
+    });
+    if (requester && deploymentRequest.platform_identifier) {
+      await sendMail({
+        to: requester.email,
+        template: 'free_trial_cancelled',
+        params: {
+          firstName: formatName(requester.first_name ?? ''),
+          platformIdentifier: deploymentRequest.platform_identifier,
+        },
+      });
+    } else if (!requester) {
+      logApp.warn('Requester not found for trial cancellation mail', {
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+  } catch (error) {
+    logApp.error('Unable to send mail for trial cancellation', {
+      error,
+      deploymentRequestId: deploymentRequest.id,
+    });
+  }
+
+  try {
+    if (previousDeploymentRequest.platform_id) {
+      await auth0Client.deleteAudienceAPI(
+        previousDeploymentRequest.organization_requester_id,
+        previousDeploymentRequest.platform_id
+      );
+    } else {
+      logApp.error('Unable to delete audience', {
+        error: 'missing platform_id',
+        deploymentRequestId: previousDeploymentRequest.id,
+      });
+    }
+  } catch (error) {
+    logDeleteAudienceError(error, previousDeploymentRequest);
+  }
 };
 
 const checkStatusAndDataValidity = async (
