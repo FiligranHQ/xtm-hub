@@ -2018,7 +2018,62 @@ describe('deployment app', () => {
         parent_id: undefined,
       });
     });
+    it.each`
+      isAdmin  | description
+      ${false} | ${'as a customer'}
+      ${true}  | ${'as a platform admin'}
+    `(
+      'should refuse to cancel a single product of a bundle $description',
+      async ({ isAdmin }) => {
+        const bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
+        const child =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id as DeploymentRequestId,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
 
+        const call = DeploymentApp.cancelDeploymentRequest(
+          child.id,
+          isAdmin,
+          'my reason'
+        );
+
+        await expect(call).rejects.toThrow(
+          ForbiddenErrorCode.CantCancelBundleProduct
+        );
+
+        const untouchedChild =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: child.id,
+          });
+        const untouchedBundle =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: bundle.id as DeploymentRequestId,
+          });
+
+        expect(untouchedChild).toMatchObject({
+          hub_status: DeploymentRequestHubStatus.Active,
+          cancellation_date: null,
+          cancellation_reason: null,
+        });
+        expect(untouchedBundle?.hub_status).toBe(
+          DeploymentRequestHubStatus.Active
+        );
+        expect(freePlaceSpy).not.toHaveBeenCalled();
+      }
+    );
     it('should send a mail to the trial requester', async () => {
       const deployment =
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(

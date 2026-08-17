@@ -373,6 +373,10 @@ export const DeploymentApp = {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
+    if (deploymentRequest.parent_id) {
+      throw new Error(ForbiddenErrorCode.CantCancelBundleProduct);
+    }
+
     if (
       !isAdmin &&
       user.selected_organization_id !==

@@ -17,6 +17,7 @@ export enum ForbiddenErrorCode {
   PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
   CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',
+  CantCancelBundleProduct = 'CANT_CANCEL_BUNDLE_PRODUCT',
   NotAllowedByDeploymentStatus = 'NOT_ALLOWED_BY_DEPLOYMENT_STATUS',
   IntegrationTypeNotManageable = 'INTEGRATION_TYPE_NOT_MANAGEABLE',
   ServiceNotManageable = 'SERVICE_NOT_MANAGEABLE',
