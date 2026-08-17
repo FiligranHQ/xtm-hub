@@ -1,4 +1,7 @@
 {
+  "UserDisplay": {
+    "DeletedUser": "Deleted user"
+  },
   "AdminBanner": "You are currently in admin mode.",
   "App": {
     "Collapse": "Collapse",

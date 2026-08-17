@@ -1,4 +1,7 @@
 {
+  "UserDisplay": {
+    "DeletedUser": "削除されたユーザー"
+  },
   "AdminBanner": "あなたは現在管理者モードです。",
   "App": {
     "Collapse": "折りたたむ",
@@ -373,8 +376,8 @@
       "Description": "開発中の機能や今後のリリース予定、XTM プラットフォームの今後の方向性をご紹介します。",
       "SeeMore": "詳細を見る",
       "ImageAlt": "XTM Platformロードマップの宇宙イラスト",
-      "Now": "開発中",
       "Next": "次のリリース予定",
+      "Now": "開発中",
       "UnderConsideration": "検討中"
     }
   },

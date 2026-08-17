@@ -1,4 +1,7 @@
 {
+  "UserDisplay": {
+    "DeletedUser": "Utilisateur supprimé"
+  },
   "AdminBanner": "Vous êtes actuellement en mode administrateur",
   "App": {
     "Collapse": "Réduire",

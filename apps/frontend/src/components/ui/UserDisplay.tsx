@@ -9,10 +9,14 @@ import {
   TooltipTrigger,
 } from '@filigran/ui/clients';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { useTranslations } from 'next-intl';
 
 interface UserDisplayProps {
   uploader:
-    documentItem_fragment$data['uploader'] | PublicDocumentData['uploader'];
+    | documentItem_fragment$data['uploader']
+    | PublicDocumentData['uploader']
+    | null
+    | undefined;
   className?: string;
   withTooltip?: boolean;
 }
@@ -22,13 +26,21 @@ export const UserDisplay = ({
   className,
   withTooltip = false,
 }: UserDisplayProps) => {
+  const t = useTranslations('UserDisplay');
   const formattedName = formatPersonNames(uploader);
   const fallbackEmail =
     uploader && 'email' in uploader ? (uploader.email ?? '') : '';
-  const displayedIdentity = formattedName || fallbackEmail;
+  const displayedIdentity = uploader
+    ? formattedName || fallbackEmail
+    : t('DeletedUser');
 
   const nameSpan = (
-    <span className={cn('truncate max-w-[220px]', className)}>
+    <span
+      className={cn(
+        'truncate max-w-[220px]',
+        !uploader && 'italic text-text-default-secondary',
+        className
+      )}>
       {displayedIdentity}
     </span>
   );
