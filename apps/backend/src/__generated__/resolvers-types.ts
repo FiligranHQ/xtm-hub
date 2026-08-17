@@ -1741,7 +1741,6 @@ export type Query = {
   trialDeployments: TrialsDeployments;
   updateOpenCTIManifest: Success;
   useCases?: Maybe<UseCaseConnection>;
-  userHasOrganizationWithSubscription: Scalars['Boolean']['output'];
   userOrganizations: Array<Organization>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   users: UserConnection;
@@ -4111,7 +4110,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   trialDeployments?: Resolver<ResolversTypes['TrialsDeployments'], ParentType, ContextType, RequireFields<QueryTrialDeploymentsArgs, 'input'>>;
   updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<QueryUpdateOpenCtiManifestArgs, 'tag'>>;
   useCases?: Resolver<Maybe<ResolversTypes['UseCaseConnection']>, ParentType, ContextType, RequireFields<QueryUseCasesArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  userHasOrganizationWithSubscription?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
