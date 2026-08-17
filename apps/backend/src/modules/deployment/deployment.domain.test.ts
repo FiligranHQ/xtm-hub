@@ -254,6 +254,61 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
+  describe('loadTrialsToExpire', () => {
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
+      await TestHelper.subscription.delete({});
+    });
+
+    it('should return expired bundles and standalone trials, but not bundle children', async () => {
+      const expiredDate = new Date(Date.UTC(2020, 0, 1));
+      const futureDate = new Date(Date.UTC(2999, 0, 1));
+
+      const expiredBundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: expiredDate,
+          }
+        );
+      const expiredChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: expiredBundle.id,
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: expiredDate,
+          }
+        );
+      const expiredStandalone =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: expiredDate,
+          }
+        );
+      const ongoingBundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: futureDate,
+          }
+        );
+
+      const toExpire = await DeploymentRequestDomain.loadTrialsToExpire();
+
+      expect(toExpire.map(({ id }) => id).sort()).toEqual(
+        [expiredBundle.id, expiredStandalone.id].sort()
+      );
+      expect(toExpire.map(({ id }) => id)).not.toContain(expiredChild.id);
+      expect(toExpire.map(({ id }) => id)).not.toContain(ongoingBundle.id);
+    });
+  });
+
   describe('loadTrialDeploymentRequestByPlatformIdentifierAndUserId', () => {
     afterEach(async () => {
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});

@@ -157,9 +157,17 @@ export const DeploymentRequestDomain = {
 
   loadTrialsToExpire: async (): Promise<DeploymentRequest[]> => {
     return db<DeploymentRequest[]>('DeploymentRequest')
-      .where('type', '=', DeploymentRequestDeploymentType.Trial)
       .where('end_date', '<', new Date())
       .where('hub_status', '=', DeploymentRequestHubStatus.Active)
+      .where((qb) => {
+        qb.where('type', '=', DeploymentRequestDeploymentType.Bundle).orWhere(
+          (subQb) => {
+            subQb
+              .where('type', '=', DeploymentRequestDeploymentType.Trial)
+              .whereNull('parent_id');
+          }
+        );
+      })
       .select('*');
   },
 
