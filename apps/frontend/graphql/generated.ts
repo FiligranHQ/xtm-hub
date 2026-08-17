@@ -756,7 +756,8 @@ export enum EpicType {
 }
 
 export enum FeatureFlag {
-  Dummy = 'DUMMY'
+  Dummy = 'DUMMY',
+  XtmPlatformTrial = 'XTM_PLATFORM_TRIAL'
 }
 
 export enum FiligranProduct {
@@ -1685,6 +1686,13 @@ export enum PlatformRegistrationStatus {
   Unregistered = 'unregistered'
 }
 
+export type PlatformTrialStatus = {
+  __typename?: 'PlatformTrialStatus';
+  end_date: Maybe<Scalars['Date']['output']>;
+  hub_status: Maybe<DeploymentRequestHubStatus>;
+  isBlacklisted: Scalars['Boolean']['output'];
+};
+
 export enum PortalCapability {
   Bypass = 'BYPASS',
   GenerateManifest = 'GENERATE_MANIFEST',
@@ -1734,6 +1742,7 @@ export type Query = {
   organizations: OrganizationConnection;
   pendingUsers: UserConnection;
   platformAssociatedOrganization: Maybe<Organization>;
+  platformTrialStatus: PlatformTrialStatus;
   publicDocumentBySlug: Maybe<Document>;
   publicDocuments: DocumentConnection;
   publicDocumentsByServiceSlug: Array<Document>;
@@ -1895,6 +1904,11 @@ export type QueryPendingUsersArgs = {
 export type QueryPlatformAssociatedOrganizationArgs = {
   platformId: Scalars['String']['input'];
   tenantId: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPlatformTrialStatusArgs = {
+  organizationId: Scalars['OrganizationId']['input'];
 };
 
 
