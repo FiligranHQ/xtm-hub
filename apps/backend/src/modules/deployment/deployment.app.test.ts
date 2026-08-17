@@ -2868,6 +2868,106 @@ describe('deployment app', () => {
         parent_id: undefined,
       });
     });
+
+    describe('bundle expiry', () => {
+      let bundle: DeploymentRequest;
+      let childOpencti: DeploymentRequest;
+      let childXtmone: DeploymentRequest;
+
+      beforeEach(async () => {
+        const expiredDate = new Date(Date.UTC(2020, 0, 1));
+
+        bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              end_date: expiredDate,
+            }
+          );
+        childOpencti =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              end_date: expiredDate,
+            }
+          );
+        childXtmone =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              platform_identifier: PlatformIdentifier.Xtmone,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              end_date: expiredDate,
+            }
+          );
+      });
+
+      it('should expire the bundle and all its children', async () => {
+        await DeploymentApp.expireTrials();
+
+        for (const { id } of [bundle, childOpencti, childXtmone]) {
+          const expired = await DeploymentRequestDomain.loadDeploymentRequestBy(
+            { id }
+          );
+          expect(expired).toMatchObject({
+            hub_status: DeploymentRequestHubStatus.Expired,
+            target_state: DeploymentRequestPlatformState.Removed,
+          });
+        }
+      });
+
+      it('should not expire a standalone trial that is still running', async () => {
+        const ongoingStandalone =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              end_date: new Date(Date.UTC(2999, 0, 1)),
+            }
+          );
+
+        await DeploymentApp.expireTrials();
+
+        const untouched = await DeploymentRequestDomain.loadDeploymentRequestBy(
+          {
+            id: ongoingStandalone.id,
+          }
+        );
+        expect(untouched?.hub_status).toBe(DeploymentRequestHubStatus.Active);
+      });
+
+      it('should leave the whole bundle untouched when one row fails to be expired', async () => {
+        const originalUpdate =
+          DeploymentRequestDomain.updateDeploymentRequestById;
+        let callCount = 0;
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'updateDeploymentRequestById'
+        ).mockImplementation(async (id, data) => {
+          callCount += 1;
+          if (callCount === 2) {
+            throw new Error('boom');
+          }
+          return originalUpdate(id, data);
+        });
+
+        await DeploymentApp.expireTrials();
+
+        for (const { id } of [bundle, childOpencti, childXtmone]) {
+          const untouched =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+          expect(untouched?.hub_status).toBe(DeploymentRequestHubStatus.Active);
+        }
+        expect(mockSendMail).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('releaseDeploymentRequestPlace', () => {

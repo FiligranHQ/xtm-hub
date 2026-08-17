@@ -433,87 +433,37 @@ export const DeploymentApp = {
       await DeploymentRequestDomain.loadTrialsToExpire();
 
     for (const trial of expiredTrials) {
-      const previousHubStatus = trial.hub_status;
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
 
+      const family =
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(trial);
+
       try {
-        await DeploymentQuotaDomain.withLockedQuotaTransaction(
-          {
-            platformIdentifier: trial.platform_identifier,
-            region: trial.region,
-          },
-          async () => {
-            const updatedDeploymentRequest =
-              await DeploymentRequestDomain.updateDeploymentRequestById(
-                trial.id,
-                {
-                  hub_status: DeploymentRequestHubStatus.Expired,
-                  target_state: DeploymentRequestPlatformState.Removed,
-                }
-              );
-
-            if (!updatedDeploymentRequest) {
-              throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
-            }
-
-            await DeploymentApp.releaseDeploymentRequestPlace(
-              previousHubStatus,
-              trial.platform_identifier,
-              trial.region
-            );
-
-            await sendUpdateDeploymentTelemetryEvent(
-              updatedDeploymentRequest,
-              SYSTEM_USER_UUID
-            );
+        await withTransaction(async () => {
+          for (const request of family) {
+            await applyExpirationToDeploymentRequest(request);
           }
-        );
-
-        try {
-          const [requester] = await UserDomain.loadUser({
-            id: trial.user_requester_id,
-          });
-          if (requester && trial.platform_identifier) {
-            await sendMail({
-              to: requester.email,
-              template: 'free_trial_expired',
-              params: {
-                firstName: formatName(requester.first_name ?? ''),
-                platformIdentifier: trial.platform_identifier,
-              },
-            });
-          } else if (!requester) {
-            logApp.warn('Requester not found for trial expiration mail', {
-              trialId: trial.id,
-            });
-          }
-        } catch (error) {
-          logApp.error('Unable to send mail for trial expiration', {
-            error,
-            deploymentRequestId: trial.id,
-          });
-        }
-
-        try {
-          if (trial.platform_id) {
-            await auth0Client.deleteAudienceAPI(
-              trial.organization_requester_id,
-              trial.platform_id
-            );
-          } else {
-            logApp.error('Unable to delete audience', {
-              error: 'missing platform_id',
-              deploymentRequestId: trial.id,
-            });
-          }
-        } catch (error) {
-          logDeleteAudienceError(error, trial);
-        }
+        });
       } catch (error) {
         logApp.error('Error during trial expiration', {
           error,
           deploymentRequestId: trial.id,
         });
+        continue;
+      }
+
+      for (const request of family) {
+        const updatedRequest =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: request.id,
+          });
+        if (!updatedRequest) {
+          continue;
+        }
+        await sendDeploymentRequestExpiredNotifications(
+          updatedRequest,
+          request
+        );
       }
     }
   },
@@ -1056,6 +1006,87 @@ const sendDeploymentRequestCancelledNotifications = async (
     }
   } catch (error) {
     logApp.error('Unable to send mail for trial cancellation', {
+      error,
+      deploymentRequestId: deploymentRequest.id,
+    });
+  }
+
+  try {
+    if (previousDeploymentRequest.platform_id) {
+      await auth0Client.deleteAudienceAPI(
+        previousDeploymentRequest.organization_requester_id,
+        previousDeploymentRequest.platform_id
+      );
+    } else {
+      logApp.error('Unable to delete audience', {
+        error: 'missing platform_id',
+        deploymentRequestId: previousDeploymentRequest.id,
+      });
+    }
+  } catch (error) {
+    logDeleteAudienceError(error, previousDeploymentRequest);
+  }
+};
+
+const applyExpirationToDeploymentRequest = async (
+  deploymentRequest: DeploymentRequestModel
+): Promise<void> => {
+  const previousHubStatus = deploymentRequest.hub_status;
+
+  await DeploymentQuotaDomain.withLockedQuotaTransaction(
+    {
+      platformIdentifier: deploymentRequest.platform_identifier,
+      region: deploymentRequest.region,
+    },
+    async () => {
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          deploymentRequest.id,
+          {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            target_state: DeploymentRequestPlatformState.Removed,
+          }
+        );
+
+      if (!updatedDeploymentRequest) {
+        throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+      }
+
+      await DeploymentApp.releaseDeploymentRequestPlace(
+        previousHubStatus,
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region
+      );
+    }
+  );
+};
+
+const sendDeploymentRequestExpiredNotifications = async (
+  deploymentRequest: DeploymentRequestModel,
+  previousDeploymentRequest: DeploymentRequestModel
+): Promise<void> => {
+  await sendUpdateDeploymentTelemetryEvent(deploymentRequest, SYSTEM_USER_UUID);
+
+  try {
+    const [requester] = await UserDomain.loadUser({
+      id: deploymentRequest.user_requester_id,
+    });
+    if (requester && deploymentRequest.platform_identifier) {
+      await sendMail({
+        to: requester.email,
+        template: 'free_trial_expired',
+        params: {
+          firstName: formatName(requester.first_name ?? ''),
+          platformIdentifier: deploymentRequest.platform_identifier,
+        },
+      });
+    } else if (!requester) {
+      logApp.warn('Requester not found for trial expiration mail', {
+        trialId: deploymentRequest.id,
+      });
+    }
+  } catch (error) {
+    logApp.error('Unable to send mail for trial expiration', {
       error,
       deploymentRequestId: deploymentRequest.id,
     });
