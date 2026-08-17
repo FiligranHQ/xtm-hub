@@ -1427,9 +1427,7 @@ describe('deployment app', () => {
         expect(updated).toMatchObject({
           actual_state: DeploymentRequestPlatformState.Active,
           platform_id: 'bundle-platform-id',
-          // hub_status is not resolved from actual_state for a bundle: it is
-          // only ever set by recomputeBundleHubStatusAndDates from its children.
-          hub_status: DeploymentRequestHubStatus.Pending,
+          hub_status: DeploymentRequestHubStatus.Active,
           start_date: null,
           end_date: null,
           ordering: 1,
@@ -1458,6 +1456,32 @@ describe('deployment app', () => {
           service_instance_id: bundle.service_instance_id,
         });
         expect(serviceGroups).toHaveLength(0);
+      });
+
+      it('should transition hub_status through the same states as a product, driven by its own actual_state', async () => {
+        const bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              actual_state: DeploymentRequestPlatformState.Unprovisioned,
+            }
+          );
+
+        const provisioning = await DeploymentApp.updateDeploymentRequest({
+          id: bundle.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Provisioning,
+        });
+        expect(provisioning.hub_status).toBe(
+          DeploymentRequestHubStatus.Provisioning
+        );
+
+        const active = await DeploymentApp.updateDeploymentRequest({
+          id: bundle.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+        });
+        expect(active.hub_status).toBe(DeploymentRequestHubStatus.Active);
       });
     });
 
@@ -1505,7 +1529,7 @@ describe('deployment app', () => {
           );
       });
 
-      it('should recompute the bundle as Active with aggregated dates once all children are Active', async () => {
+      it('should aggregate dates from children without changing the bundle hub_status', async () => {
         await DeploymentApp.updateDeploymentRequest({
           id: childA.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -1520,7 +1544,7 @@ describe('deployment app', () => {
             id: bundle.id as DeploymentRequestId,
           });
         expect(updatedBundle).toMatchObject({
-          hub_status: DeploymentRequestHubStatus.Active,
+          hub_status: DeploymentRequestHubStatus.Pending,
           start_date: new Date(2025, 1, 1),
           end_date: new Date(2025, 6, 1),
         });
@@ -1538,28 +1562,8 @@ describe('deployment app', () => {
             deployment_type: DeploymentRequestDeploymentType.Bundle,
             user_id: bundle.user_requester_id,
             parent_id: undefined,
-            status: DeploymentRequestHubStatus.Active,
+            status: DeploymentRequestHubStatus.Pending,
           })
-        );
-      });
-
-      it('should recompute the bundle as Failed when any child is Failed, regardless of other children updates', async () => {
-        await DeploymentRequestDomain.updateDeploymentRequestById(
-          childA.id as DeploymentRequestId,
-          { hub_status: DeploymentRequestHubStatus.Failed }
-        );
-
-        await DeploymentApp.updateDeploymentRequest({
-          id: childB.id as DeploymentRequestId,
-          actual_state: DeploymentRequestPlatformState.Removing,
-        });
-
-        const updatedBundle =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            id: bundle.id as DeploymentRequestId,
-          });
-        expect(updatedBundle?.hub_status).toBe(
-          DeploymentRequestHubStatus.Failed
         );
       });
 
@@ -1590,7 +1594,7 @@ describe('deployment app', () => {
         [DeploymentRequestHubStatus.Cancelled],
         [DeploymentRequestHubStatus.Expired],
       ])(
-        'should not revert a %s bundle back to a computed status when a child is updated afterward',
+        'should not recompute dates for a %s bundle when a child is updated afterward',
         async (terminalHubStatus) => {
           await DeploymentRequestDomain.updateDeploymentRequestById(
             bundle.id as DeploymentRequestId,
@@ -1611,6 +1615,8 @@ describe('deployment app', () => {
               id: bundle.id as DeploymentRequestId,
             });
           expect(updatedBundle?.hub_status).toBe(terminalHubStatus);
+          expect(updatedBundle?.start_date).toBeNull();
+          expect(updatedBundle?.end_date).toBeNull();
 
           expect(telemetrySpy).not.toHaveBeenCalledWith(
             expect.objectContaining({
