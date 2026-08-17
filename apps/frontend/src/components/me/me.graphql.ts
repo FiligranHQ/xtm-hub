@@ -84,9 +84,3 @@ export const MeQuery = graphql`
     }
   }
 `;
-
-export const meUserHasOrganizationWithSubscription = graphql`
-  query meUserHasOrganizationWithSubscription {
-    userHasOrganizationWithSubscription
-  }
-`;

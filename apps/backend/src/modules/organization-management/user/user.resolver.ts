@@ -73,9 +73,6 @@ const resolvers: Resolvers = {
         searchTerm,
       });
     },
-    userHasOrganizationWithSubscription: async (_, __) => {
-      return UserDomain.userHasOrganizationWithSubscription();
-    },
   },
   Mutation: {
     // Management

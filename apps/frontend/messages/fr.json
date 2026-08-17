@@ -8,7 +8,6 @@
   },
   "Badge": {
     "Disabled": "Désactivé",
-    "Draft": "Brouillon",
     "Enabled": "Activé",
     "Published": "Publié"
   },
@@ -285,6 +284,7 @@
       "REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN": "L'inscription à une autre organisation est interdite",
       "REMOVE_USER_FROM_ORGA_ERROR": "Erreur lors de la suppression de l'utilisateur de l'organisation",
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de la suppression d'un utilisateur d'une organisation en attente",
+      "SEO_SERVICE_INSTANCE_NOT_FOUND": "Les métadonnées de l'instance du service SEO sont introuvables.",
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "Vous n'êtes pas autorisé à faire ceci",
       "SERVICE_INSTANCE_NOT_FOUND": "L'instance du service n'a pas été trouvée",
@@ -336,9 +336,6 @@
     }
   },
   "HomePage": {
-    "Homepage": "Page d'accueil",
-    "Manage": "Gérer",
-    "OpenManagement": "Aller vers la page de management",
     "XtmNewestResources": {
       "Title": "Nouvelles ressources"
     },
@@ -363,15 +360,12 @@
     }
   },
   "PublicHomePage": {
-    "Title": "Découvrez nos ressources et notre expertise",
     "XtmPlatform": {
       "Label": "Bienvenue sur XTM Hub",
       "LabelWithName": "Bienvenue {name}",
       "ConnectedProducts": "{count, plural, one {Produit connecté} other {Produits connectés}}",
       "Title": "Développez et faites évoluer votre plateforme XTM",
-      "Description": "Connectez votre OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience de la plateforme XTM.",
-      "Cta": "Connectez votre produit",
-      "ImageAlt": "Illustration de la plateforme XTM"
+      "Description": "Connectez votre OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience de la plateforme XTM."
     },
     "XtmRoadmap": {
       "Title": "XTM Platform Roadmap",
@@ -379,8 +373,8 @@
       "Description": "Découvrez ce que nous développons, les prochaines étapes et l’orientation future de la plateforme XTM. Transparence totale. Pas de surprises.",
       "SeeMore": "En savoir plus",
       "ImageAlt": "Illustration de la feuille de route de la plateforme XTM",
-      "Now": "Actuellement",
-      "Next": "Prochainement",
+      "Next": "Actuellement",
+      "Now": "Prochainement",
       "UnderConsideration": "À l’étude"
     }
   },
@@ -393,8 +387,7 @@
     "Documentation": "Documentation du Hub XTM",
     "PrivacyPolicy": "Politique de confidentialité",
     "TermsOfServices": "Conditions d'utilisation",
-    "Licenses": "Licences",
-    "Contact": "Contact"
+    "Licenses": "Licences"
   },
   "PublicLayout": {
     "SignIn": "Connexion",
@@ -406,14 +399,10 @@
     "Overview": "Aperçu"
   },
   "InviteUserServiceForm": {
-    "Capabilities": "Capacités disponibles",
-    "CapabilitiesDescription": "Vous pouvez ajouter des capacité spécifiques aux utilisateurs de {organizationName} pour leur souscription sur {serviceName}",
-    "CapabilitiesPlaceholder": "Sélectionner les capacités",
     "Description": "Capacité additionnelle : par défaut, votre utilisateur invité aura accès au service. Si vous souhaitez lui donner des capacité supplémentaires, sélectionnez la capacité souhaitée.",
     "DisabledCapability": "Si vous voulez donner cette capacité à vos utilisateurs sur ce service, vous devez d'abord l'activer au niveau de l'organisation",
     "Email": "Email",
     "GrantCapability": "Donner cette capacité",
-    "Organization": "Organisation",
     "Title": "Inviter l'utilisateur au service {serviceName} "
   },
   "UseCaseActions": {
@@ -481,7 +470,6 @@
   "MenuActions": {
     "Continue": "Continuer",
     "Delete": "Supprimer",
-    "Details": "Détails",
     "Disable": "Désactiver",
     "Remove": "Retirer",
     "Update": "Modifier"
@@ -507,8 +495,6 @@
     "MyProducts": "Mes produits"
   },
   "MenuLinks": {
-    "Backoffice": "Backoffice",
-    "Connectors": "OpenCTI contrats Connecteurs",
     "Home": "Accueil",
     "UseCase": "Cas d'usage",
     "SolutionCategory": "Catégorie de solution",
@@ -552,7 +538,10 @@
     "DocumentFallbackDescriptionIntegration": "Explorez cette intégration de cybersécurité pour renforcer votre threat intelligence et votre supervision.",
     "DocumentFallbackDescriptionScenario": "Explorez ce scénario d'attaque OpenAEV pour renforcer votre émulation d'adversaire et votre validation de sécurité.",
     "DocumentFallbackDescriptionGeneric": "Explorez cette ressource sur XTM Hub by Filigran pour renforcer votre posture de cybersécurité.",
-    "ResourcePreviewAlt": "{name} - Aperçu de la ressource"
+    "ResourcePreviewAlt": "{name} - Aperçu de la ressource",
+    "SeoMetadata": "SEO Metadata",
+    "SeoMetaTitle": "Méta-titre",
+    "SeoMetaDescription": "Méta-description"
   },
   "CompetitorListPage": {
     "Name": "Nom",
@@ -610,9 +599,6 @@
   },
   "OrganizationInServiceAction": {
     "AddOrganization": "Abonnement de l'organisation au service",
-    "ConfirmDelete1": "Etes-vous sûr de vouloir supprimer l'organisation",
-    "ConfirmDelete2": "de ce service ? Cette action ne peut être annulée.",
-    "DeleteOrgFromService": "Supprimer l'organisation du service",
     "EndDate": "Date de fin (optionnel)",
     "Organization": "Organisation",
     "RemoveOrganization": "Supprimer l'organisation",
@@ -715,7 +701,7 @@
       "Theme": "Theme"
     },
     "PlatformsEditionDialog": {
-      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos plateformes OpenCTI et OpenAEV."
+      "ConfirmSentence": "Votre prénom et votre nom seront potentiellement mis à jour dans vos produits OpenCTI et OpenAEV."
     },
     "Title": "Profile",
     "UpdatePicture": "Mettre à jour la photo de profil",
@@ -730,10 +716,6 @@
       "Transfer": "Transférer",
       "TransferConfirmSentence": "Etes-vous sûr de vouloir transférer l'abonnement de votre espace personnel ? Si le nouvel utilisateur n'a pas confirmé par email, le transfert ne sera pas effectif."
     }
-  },
-  "RedirectPage": {
-    "ExploringOurRoad": "Préparez-vous, vous êtes à 3 secondes d'explorer notre feuille de route et d'en savoir plus.",
-    "YourFutureHub": "Votre futur centre communautaire Filigran prend forme !"
   },
   "Register": {
     "AnotherOrganization": {
@@ -972,7 +954,6 @@
       "Eyebrow": "Les ressources de Filigran",
       "DefaultDescription": "Connectez votre produit OpenCTI ou OpenAEV pour déployer du contenu préconstruit en un clic, rester à jour avec les actualités produit, démarrer des essais gratuits et tirer simplement le meilleur de votre expérience sur la plateforme XTM."
     },
-    "ComingSoon": "Bientôt disponible",
     "Connectors": {
       "DataImport": "Importation de données",
       "Description": "Explorer une gamme de connecteurs OpenCTI partagés par l'équipe Filigran",
@@ -1229,9 +1210,6 @@
     "Description": "Description",
     "GoTo": "Aller au service",
     "GoToAdminLabel": "Administrer",
-    "GoToLabel": "Consulter",
-    "GoToManagement": "Aller à la gestion des services",
-    "HighlightedServices": "Pour utiliser cette fonctionnalité, veuillez d'abord souscrire à l'un des services mis en surbrillance",
     "List": {
       "Filter": {
         "Add": "Ajouter un filtre",
@@ -1284,8 +1262,6 @@
       "SearchOrganization": "Rechercher une organisation"
     },
     "Name": "Nom",
-    "NoOwnedService": "Vous n'avez pas encore de service.",
-    "NoService": "Il n'y a pas encore de service...",
     "SubscribedServices": "Services souscrits",
     "SubscribedServicesList": {
       "ServiceName": "Nom du service",
@@ -1366,9 +1342,6 @@
     "SubscribeOrganization": "Souscrire une organisation",
     "SubscribeService": "Souscrire au service {serviceName}",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
-    "SubscriptionRequestSuccessful": "Votre requête a été envoyée. Vous serez bientôt contacté par notre équipe.",
-    "SureWantSubscriptionDirect": "Commencez avec notre service gratuit {serviceName} et explorez les ressources créées par l'équipe Filigran.",
-    "SureWantSubscriptionUndirect": "Vous allez être contacté par notre équipe commerciale pour souscrire au service. Voulez-vous continuer ?",
     "Trials": {
       "ExploreBold": "Essai gratuit !",
       "ExplorePlatform": "Explorez {platformName} pendant 30 jours",
@@ -1615,8 +1588,7 @@
     "Automatic": "Automatique",
     "Dark": "Foncé",
     "Light": "Clair",
-    "SetTheme": "Appliquer le thème",
-    "ToggleTheme": "Ouvrir menu thème"
+    "SetTheme": "Appliquer le thème"
   },
   "UnexpectedErrorDialog": {
     "Description": "Veuillez essayer de vous connecter à nouveau. Si le problème persiste, contactez-nous pour obtenir de l'aide.",
@@ -1723,9 +1695,7 @@
       "Action": "Réinitialiser",
       "Sentence": "Nous vous enverrons un e-mail pour réinitialiser votre mot de passe.",
       "Success": "L'email de réinitialisation du mot de passe a été envoyé avec succès."
-    },
-    "WhoAreYou": "Qui êtes-vous ?",
-    "WhoAreYouDescription": "Dites-nous votre prénom et votre nom"
+    }
   },
   "UserListPage": {
     "Country": "Pays",
@@ -1733,7 +1703,6 @@
     "FirstName": "Prénom",
     "LastLogin": "Dernière connexion",
     "LastName": "Nom de famille",
-    "Never": "Jamais",
     "NoUsers": "Aucun utilisateur trouvé",
     "Organizations": "Organisations",
     "Roles": "Rôles",
@@ -1779,7 +1748,6 @@
     "Updating": "Mise à jour...",
     "Validate": "Valider",
     "ValidateForm": "Valider le formulaire",
-    "Verified": "Vérifié",
     "Visualize": "Visualiser",
     "DangerZone": "Zone de danger",
     "AutomaticDeploy": "Déploiement automatique",
@@ -1806,7 +1774,6 @@
     "DocumentUpdated": "{file_name} a été modifié",
     "UpdateDocument": "Modifier le document"
   },
-  "entitie(s)": "entité(s)",
   "DeploymentRequestJobTitle": {
     "ceo": "PDG",
     "ciso_cso_cio": "RSSI/DSI/Directeur de la sécurité",

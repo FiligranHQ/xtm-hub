@@ -14,11 +14,13 @@ import {
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { localizedCardDescription, localizedCardName } from '@/utils/services';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import SeoServiceInstanceMetadataQuery, {
+  seoServiceInstanceMetadataQuery,
+} from '@generated/seoServiceInstanceMetadataQuery.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
 } from '@generated/seoServiceInstanceQuery.graphql';
@@ -32,7 +34,7 @@ import { PublicDocumentListPageLoader } from './public-document-list-page-loader
 /**
  * Fetch the data for the page with caching to avoid multiple requests
  */
-const getPageData = cache(async (slug: string) => {
+const getPageData = cache(async (slug: string, locale: PublicLocale) => {
   const baseUrl = await getBaseUrl();
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
@@ -48,10 +50,21 @@ const getPageData = cache(async (slug: string) => {
     notFound();
   }
 
+  const seoMetadataResponse =
+    await serverFetchGraphQL<seoServiceInstanceMetadataQuery>(
+      SeoServiceInstanceMetadataQuery,
+      {
+        service_instance_id: serviceInstance.id,
+        language: locale,
+      },
+      { cache: undefined, next: { revalidate: 3600 } }
+    );
+  const seoMetadata = seoMetadataResponse.data.seoServiceInstanceMetadata[0];
+
   const documents = await fetchAllDocuments(
     serviceInstance.slug as ServiceSlug
   );
-  return { baseUrl, serviceInstance, documents };
+  return { baseUrl, serviceInstance, seoMetadata, documents };
 });
 
 /**
@@ -66,20 +79,20 @@ export async function generateMetadata({
   const awaitedParams = await params;
   const { locale } = awaitedParams;
 
-  const { baseUrl, serviceInstance } = await getPageData(awaitedParams.slug);
-  const t = await getTranslations({ locale });
-
+  const { baseUrl, serviceInstance, seoMetadata } = await getPageData(
+    awaitedParams.slug,
+    locale
+  );
   const pathname = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
-  const name = localizedCardName(serviceInstance, t);
-  const description = localizedCardDescription(serviceInstance, t);
 
   return buildSeoPageMetadata({
     baseUrl,
     locale,
     pathname,
-    title: `${name} | XTM Hub`,
-    description,
-    imageAlt: name,
+    title: seoMetadata?.meta_title || `${serviceInstance.name} | XTM Hub`,
+    description:
+      seoMetadata?.meta_description || serviceInstance.description || '',
+    imageAlt: serviceInstance.name,
     imageUrl: serviceInstance.illustration_document_id
       ? `${baseUrl}/document/images/${serviceInstance.id}/${serviceInstance.illustration_document_id}`
       : undefined,
@@ -97,26 +110,22 @@ const Page = async ({
   const awaitedParams = await params;
   const { locale } = awaitedParams;
   setRequestLocale(locale);
+  const t = await getTranslations({ locale });
 
-  const { baseUrl, serviceInstance, documents } = await getPageData(
-    awaitedParams.slug
-  );
+  const { baseUrl, serviceInstance, seoMetadata, documents } =
+    await getPageData(awaitedParams.slug, locale);
+
   const isSolutionCategoriesEnabled = await isFeatureEnabled(
     FeatureFlag.SolutionCategories
   );
 
   const localizedServiceUrl = `${baseUrl}/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`;
 
-  const t = await getTranslations();
-
-  const name = localizedCardName(serviceInstance, t);
-  const description = localizedCardDescription(serviceInstance, t);
-
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: `${name} | XTM Hub`,
-    description,
+    name: seoMetadata?.meta_title || serviceInstance.name,
+    description: seoMetadata?.meta_description || serviceInstance.description,
     applicationCategory: 'SecurityApplication',
     operatingSystem: 'Web',
     aggregateRating: {

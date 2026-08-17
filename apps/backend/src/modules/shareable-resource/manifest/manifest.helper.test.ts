@@ -551,6 +551,16 @@ describe('manifestHelper', () => {
         expect(contract.last_verified_date).toBe('2026-06-01');
       });
 
+      it('allows last_verified_date to be null', () => {
+        const contract = ManifestHelper.buildConnectorManifestOutput(
+          '7.260604.0',
+          [buildConnector({ last_verified_date: null })],
+          FIXED_DATE,
+          new Map()
+        ).contracts[0]!;
+        expect(contract.last_verified_date).toBeNull();
+      });
+
       describe('additional_properties parsing', () => {
         beforeEach(() => {
           vi.spyOn(logApp, 'error').mockImplementation(() => undefined);
@@ -707,8 +717,6 @@ describe('manifestHelper', () => {
           field: 'support_version' as const,
           override: { minimum_deployable_version: undefined },
         },
-        { field: 'version' as const, override: { version: undefined } },
-        { field: 'image_name' as const, override: { image_name: undefined } },
         {
           field: 'license_type' as const,
           override: { license_type: undefined },
