@@ -62,7 +62,8 @@ export type Connector = Integration & {
 
 export type ConnectorV2 = Connector & {
   manifest_fragment_id: string;
-  last_verified_date: string;
+  last_verified_date: string | null;
+  version: string;
   image_name: string;
   image_type: string;
   additional_properties: string;
