@@ -1,0 +1,139 @@
+{{- if has .Values.gatewayApi.mode (list "dual" "cutover" "only") }}
+{{- $host := tpl .Values.xtmhub.host . }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: {{ .Release.Namespace }}-{{ .Release.Name }}-listeners
+spec:
+  parentRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: {{ .Values.gatewayApi.pool.name }}
+    namespace: {{ .Values.gatewayApi.pool.namespace }}
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: {{ $host }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: xtmhub-cert
+        {{- if .Values.gatewayApi.minTlsVersion }}
+        options:
+          kgateway.dev/min-tls-version: {{ .Values.gatewayApi.minTlsVersion | quote }}
+        {{- end }}
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+{{- if eq .Values.gatewayApi.mode "only" }}
+# in dual/cutover the Ingress cert-manager shim maintains this secret; once the
+# Ingress is gone ("only"), this explicit Certificate takes over the same secret
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: xtmhub-cert
+spec:
+  secretName: xtmhub-cert
+  issuerRef:
+    name: {{ .Values.tls_issuer }}
+    kind: ClusterIssuer
+  dnsNames:
+    - {{ $host }}
+---
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ .Release.Namespace }}-{{ .Release.Name }}-route
+  annotations:
+    # ListenerSet-parented routes are invisible to external-dns (it only resolves
+    # Gateway parents) — DNS rides the redirect route; keep this one out permanently
+    external-dns.alpha.kubernetes.io/controller: ignore
+    prometheus.io/probe: "true"
+spec:
+  hostnames:
+    - {{ $host }}
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: ListenerSet
+      name: {{ .Release.Namespace }}-{{ .Release.Name }}-listeners
+      sectionName: https
+  rules:
+    # static assets cache headers (nginx configuration-snippet equivalent)
+    - matches:
+        - path:
+            type: RegularExpression
+            value: ".*\\.(js|css|gif|jpe?g|png|svg|ico)$"
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - name: Cache-Control
+                value: "public, max-age=2592000"
+      backendRefs:
+        - name: xtmhub-front
+          port: 3000
+    - backendRefs:
+        - name: xtmhub-front
+          port: 3000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ .Release.Namespace }}-{{ .Release.Name }}-redirect
+  annotations:
+    # the redirect route is the gateway-side DNS source: it is the only route
+    # external-dns can resolve an address from (Gateway parent). Ignored in dual
+    # so the nginx Ingress stays the single DNS owner until cutover.
+    {{- if eq .Values.gatewayApi.mode "dual" }}
+    external-dns.alpha.kubernetes.io/controller: ignore
+    {{- end }}
+    external-dns.alpha.kubernetes.io/ttl: "120"
+spec:
+  hostnames:
+    - {{ $host }}
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ .Values.gatewayApi.pool.name }}
+      namespace: {{ .Values.gatewayApi.pool.namespace }}
+      sectionName: http
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: TrafficPolicy
+metadata:
+  name: {{ .Release.Namespace }}-{{ .Release.Name }}-policy
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: {{ .Release.Namespace }}-{{ .Release.Name }}-route
+  buffer:
+    maxRequestSize: 256Mi
+  retry:
+    attempts: 3
+    retryOn:
+      - connect-failure
+      - reset
+      - retriable-status-codes
+    statusCodes: [502, 503, 504]
+---
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: BackendConfigPolicy
+metadata:
+  name: {{ .Release.Namespace }}-{{ .Release.Name }}-backend
+spec:
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: xtmhub-front
+  connectTimeout: 30s
+{{- end }}
