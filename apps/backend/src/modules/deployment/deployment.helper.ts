@@ -165,28 +165,6 @@ export const DeploymentHelper = {
     );
   },
 
-  computeBundleHubStatus: (
-    children: DeploymentRequestModel[]
-  ): DeploymentRequestHubStatus => {
-    const statuses = new Set(children.map((child) => child.hub_status));
-    if (statuses.has(DeploymentRequestHubStatus.Failed)) {
-      return DeploymentRequestHubStatus.Failed;
-    }
-    if (
-      statuses.size === 1 &&
-      statuses.has(DeploymentRequestHubStatus.Active)
-    ) {
-      return DeploymentRequestHubStatus.Active;
-    }
-    if (statuses.has(DeploymentRequestHubStatus.Provisioning)) {
-      return DeploymentRequestHubStatus.Provisioning;
-    }
-    if (statuses.has(DeploymentRequestHubStatus.Pending)) {
-      return DeploymentRequestHubStatus.Pending;
-    }
-    return DeploymentRequestHubStatus.Queued;
-  },
-
   computeBundleDates: (
     children: DeploymentRequestModel[]
   ): { start_date: Date | null; end_date: Date | null } => {
