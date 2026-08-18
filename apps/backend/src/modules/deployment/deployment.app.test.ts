@@ -2967,6 +2967,34 @@ describe('deployment app', () => {
         }
         expect(mockSendMail).not.toHaveBeenCalled();
       });
+
+      it('should not re-expire a child that is already cancelled', async () => {
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          childXtmone.id,
+          {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            cancellation_date: new Date(),
+          }
+        );
+
+        await DeploymentApp.expireTrials();
+
+        const untouchedChild =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: childXtmone.id,
+          });
+        expect(untouchedChild?.hub_status).toBe(
+          DeploymentRequestHubStatus.Cancelled
+        );
+
+        const expiredBundle =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: bundle.id,
+          });
+        expect(expiredBundle?.hub_status).toBe(
+          DeploymentRequestHubStatus.Expired
+        );
+      });
     });
   });
 

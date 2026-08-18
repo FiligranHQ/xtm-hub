@@ -435,8 +435,11 @@ export const DeploymentApp = {
     for (const trial of expiredTrials) {
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
 
-      const family =
-        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(trial);
+      const family = (
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(trial)
+      ).filter(
+        ({ hub_status }) => hub_status === DeploymentRequestHubStatus.Active
+      );
 
       try {
         await withTransaction(async () => {
