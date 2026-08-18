@@ -672,9 +672,16 @@
   },
   "PendingUserListPage": {
     "TabTitle": "Requêtes utilisateurs ({usersCount})",
+    "ActionSuccessApprove": "La demande utilisateur pour {email} a été acceptée",
+    "ActionSuccessDeny": "La demande utilisateur pour {email} a été refusée",
+    "WarningUserAccept": {
+      "Confirm": "Confirmer",
+      "Description": "Vous êtes sur le point d'accepter {email} dans votre organisation. Cet utilisateur n'aura pas d'autorisations spécifiques par défaut. Si vous souhaitez attribuer ou mettre à jour des permissions, visitez l'onglet Utilisateurs. Êtes-vous sûr ?",
+      "Title": "Êtes-vous sûr?"
+    },
     "WarningUserRejection": {
       "Confirm": "Confirmer",
-      "Description": "Vous êtes sur le point de refuser cet utilisateur dans votre organisation. Cette action ne peut être annulée. Êtes-vous sûr ?",
+      "Description": "Vous êtes sur le point de refuser {email} dans votre organisation. Cette action ne peut être annulée. Êtes-vous sûr ?",
       "Title": "Êtes-vous sûr?"
     },
     "WarningUsersRejection": {

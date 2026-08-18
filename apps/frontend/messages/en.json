@@ -672,9 +672,16 @@
   },
   "PendingUserListPage": {
     "TabTitle": "Users Requests ({usersCount})",
+    "ActionSuccessApprove": "User request for {email} has been approved",
+    "ActionSuccessDeny": "User request for {email} has been denied",
+    "WarningUserAccept": {
+      "Confirm": "Confirm",
+      "Description": "You are about to accept {email} in your organization. This user won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
+      "Title": "Are you sure?"
+    },
     "WarningUserRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse this user from your organization. This action can’t be undone. Are you sure ?",
+      "Description": "You are about to refuse {email} from your organization. This action can’t be undone. Are you sure ?",
       "Title": "Are you sure?"
     },
     "WarningUsersRejection": {

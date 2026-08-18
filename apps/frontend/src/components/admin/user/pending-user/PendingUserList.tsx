@@ -1,6 +1,8 @@
 import { UserFragment } from '@/components/admin/user/UserList';
-import { EditUser } from '@/components/admin/user/forms/UserUpdate';
-import { useUserListLocalstorage } from '@/components/admin/user/pending-user-list-localstorage';
+import { PendingUserConfirmDialog } from '@/components/admin/user/pending-user/PendingUserConfirmDialog';
+import { useUserListLocalstorage } from '@/components/admin/user/pending-user/pending-user-list-localstorage';
+import { usePendingUserActions } from '@/components/admin/user/pending-user/use-pending-user-actions';
+import { usePendingUserDialog } from '@/components/admin/user/pending-user/use-pending-user-dialog';
 import {
   UserPendingListFragment,
   UserPendingListQuery,
@@ -14,7 +16,6 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { CheckIcon, CloseIcon } from '@filigran/icon';
@@ -25,9 +26,6 @@ import {
   useRowSelection,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { PendingUserListAcceptUserBulkMutation } from '@generated/PendingUserListAcceptUserBulkMutation.graphql';
-import { PendingUserListRemoveUserBulkMutation } from '@generated/PendingUserListRemoveUserBulkMutation.graphql';
-import { PendingUserListRemoveUserMutation } from '@generated/PendingUserListRemoveUserMutation.graphql';
 import {
   UserList_fragment$data,
   UserList_fragment$key,
@@ -42,75 +40,17 @@ import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
-  graphql,
   readInlineData,
   useLazyLoadQuery,
-  useMutation,
   useRefetchableFragment,
   useSubscription,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
 
-// Configuration or Preloader Query
-const removePendingUser = graphql`
-  mutation PendingUserListRemoveUserMutation(
-    $user_id: UserId!
-    $organization_id: OrganizationId!
-  ) {
-    removePendingUserFromOrganization(
-      user_id: $user_id
-      organization_id: $organization_id
-    ) {
-      ...UserList_fragment
-    }
-  }
-`;
-
-const removePendingUserBulk = graphql`
-  mutation PendingUserListRemoveUserBulkMutation(
-    $ids: [UserId!]
-    $searchTerm: String
-    $filters: [Filter!]
-    $excludedIds: [UserId!]
-  ) {
-    bulkRemovePendingUserFromOrganization(
-      input: {
-        ids: $ids
-        searchTerm: $searchTerm
-        filters: $filters
-        excludedIds: $excludedIds
-      }
-    ) {
-      success
-    }
-  }
-`;
-
-const acceptPendingUserBulk = graphql`
-  mutation PendingUserListAcceptUserBulkMutation(
-    $ids: [UserId!]
-    $searchTerm: String
-    $filters: [Filter!]
-    $excludedIds: [UserId!]
-  ) {
-    bulkAcceptPendingUserInOrganization(
-      input: {
-        ids: $ids
-        searchTerm: $searchTerm
-        filters: $filters
-        excludedIds: $excludedIds
-      }
-    ) {
-      success
-    }
-  }
-`;
-
 interface PendingUserListProps {
   organization: string;
 }
 
-// Component
 const PendingUserList = ({ organization }: PendingUserListProps) => {
   const t = useTranslations();
   const {
@@ -127,18 +67,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
     resetAll,
     removeOrder,
   } = useUserListLocalstorage();
-
   const { me } = useContext(PortalContext);
-  const [userEdit, setUserEdit] = useState<UserList_fragment$data | undefined>(
-    undefined
-  );
-
-  const [removeUserMutation] =
-    useMutation<PendingUserListRemoveUserMutation>(removePendingUser);
-  const [removeUserBulkMutation] =
-    useMutation<PendingUserListRemoveUserBulkMutation>(removePendingUserBulk);
-  const [acceptUserBulkMutation] =
-    useMutation<PendingUserListAcceptUserBulkMutation>(acceptPendingUserBulk);
 
   const [filter, setFilter] = useState<{
     search?: string;
@@ -171,9 +100,24 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
     userPendingList_users$key
   >(UserPendingListFragment, queryData);
 
-  const userData = data.pendingUsers.edges.map(({ node }) =>
-    readInlineData<UserList_fragment$key>(UserFragment, node)
+  const userData = useMemo<UserList_fragment$data[]>(
+    () =>
+      data.pendingUsers.edges.map(({ node }) =>
+        readInlineData<UserList_fragment$key>(UserFragment, node)
+      ),
+    [data]
   );
+
+  const [selection, setSelection] = useState<SelectionState>({
+    selectAll: false,
+    selectedIds: new Set<string>(),
+    excludedIds: new Set<string>(),
+  });
+  const { clearSelection } = useRowSelection(selection, setSelection);
+
+  const refreshPendingUsers = useCallback(() => {
+    refetch({}, { fetchPolicy: 'network-only' });
+  }, [refetch]);
 
   const connectionID = data?.pendingUsers?.__id;
   const pendingUserListSubscriptionConfig = useMemo(
@@ -188,17 +132,31 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
   );
   useSubscription(pendingUserListSubscriptionConfig);
 
-  const rejectUser = useCallback(
-    (row: UserList_fragment$data) => {
-      removeUserMutation({
-        variables: {
-          user_id: row.id,
-          organization_id: me!.selected_organization_id,
-        },
-      });
-    },
-    [removeUserMutation, me]
-  );
+  const handleBulkMutationCompletion = useCallback(() => {
+    clearSelection();
+    refreshPendingUsers();
+  }, [clearSelection, refreshPendingUsers]);
+
+  const { approveUser, rejectUser, handleBulkApprove, handleBulkReject } =
+    usePendingUserActions({
+      organization,
+      selectedOrganizationId: me!.selected_organization_id,
+      searchTerm: filter.search,
+      onAfterSingleMutation: refreshPendingUsers,
+      onAfterBulkMutation: handleBulkMutationCompletion,
+    });
+
+  const {
+    pendingUserDialog,
+    openApproveDialog,
+    openRejectDialog,
+    closePendingUserDialog,
+    onConfirmPendingUserAction,
+  } = usePendingUserDialog({
+    userData,
+    approveUser,
+    rejectUser,
+  });
 
   const columns: ColumnDef<UserList_fragment$data>[] = useMemo(
     () => [
@@ -237,28 +195,18 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
         cell: ({ row }) => {
           return (
             <div className="flex items-center justify-end gap-1">
-              <AlertDialogComponent
-                AlertTitle={t('PendingUserListPage.WarningUserRejection.Title')}
-                // description={t('PendingUserListPage.WarningUserRejectionDescription')}
-                actionButtonText={t(
-                  'PendingUserListPage.WarningUserRejection.Confirm'
-                )}
-                triggerElement={
-                  <Button
-                    variant="tertiary-destructive"
-                    size="icon"
-                    className="border">
-                    <CloseIcon className="h-4 w-4" />
-                  </Button>
-                }
-                onClickContinue={() => rejectUser!(row.original)}>
-                {t('PendingUserListPage.WarningUserRejection.Description')}
-              </AlertDialogComponent>
+              <Button
+                variant="tertiary-destructive"
+                size="icon"
+                className="border"
+                onClick={() => openRejectDialog(row.original)}>
+                <CloseIcon className="h-4 w-4" />
+              </Button>
               <Button
                 variant="tertiary"
                 size="icon"
                 className="border"
-                onClick={() => setUserEdit(row.original)}>
+                onClick={() => openApproveDialog(row.original)}>
                 <CheckIcon className="h-4 w-4" />
               </Button>
             </div>
@@ -266,12 +214,12 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
         },
       },
     ],
-    [t, rejectUser]
+    [openApproveDialog, openRejectDialog, t]
   );
 
   useEffect(() => {
     if (columnOrder.length === 0) {
-      const defaultColumnOrder = columns.map((c) => c.id!);
+      const defaultColumnOrder = columns.map((column) => column.id!);
       setColumnOrder(defaultColumnOrder);
     }
   }, [columnOrder.length, columns, setColumnOrder]);
@@ -289,6 +237,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
       ...args,
     });
   };
+
   const onSortingChange = (updater: unknown) => {
     handleSortingChange({
       updater,
@@ -322,57 +271,15 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
         ...prevFilter,
         search: inputValue,
       };
-      refetch({ searchTerm: updatedFilter.search }); // Use the updated filter
+      refetch({ searchTerm: updatedFilter.search });
       return updatedFilter;
     });
   };
 
   const debounceHandleInput = useDebounceCallback(
-    (e) => handleInputChange(e.target.value),
+    (event) => handleInputChange(event.target.value),
     DEBOUNCE_TIME
   );
-
-  const [selection, setSelection] = useState<SelectionState>({
-    selectAll: false,
-    selectedIds: new Set<string>(),
-    excludedIds: new Set<string>(),
-  });
-  const { clearSelection } = useRowSelection(selection, setSelection);
-
-  const buildBulkQueryVariables = (selectionState: SelectionState) => {
-    return selectionState.selectAll
-      ? {
-          ids: [],
-          searchTerm: filter.search,
-          filters: [
-            {
-              key: FilterKey.OrganizationId,
-              value: [organization],
-            },
-          ],
-          excludedIds: Array.from(selectionState.excludedIds) ?? [],
-        }
-      : {
-          ids: Array.from(selectionState.selectedIds) ?? [],
-          searchTerm: undefined,
-          filters: [],
-          excludedIds: [],
-        };
-  };
-
-  const handleBulkAction = (
-    selectionState: SelectionState,
-    mutation: typeof acceptUserBulkMutation | typeof removeUserBulkMutation
-  ) => {
-    const params = buildBulkQueryVariables(selectionState);
-    mutation({
-      variables: params,
-      onCompleted: () => {
-        clearSelection();
-        refetch({}, { fetchPolicy: 'network-only' });
-      },
-    });
-  };
 
   return (
     <>
@@ -404,9 +311,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                       <CloseIcon className="h-4 w-4" />
                     </Button>
                   }
-                  onClickContinue={() =>
-                    handleBulkAction(selectionState, removeUserBulkMutation)
-                  }>
+                  onClickContinue={() => handleBulkReject(selectionState)}>
                   {t('PendingUserListPage.WarningUsersRejection.Description')}
                 </AlertDialogComponent>
                 <AlertDialogComponent
@@ -422,9 +327,7 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                       <CheckIcon className="h-4 w-4" />
                     </Button>
                   }
-                  onClickContinue={() =>
-                    handleBulkAction(selectionState, acceptUserBulkMutation)
-                  }>
+                  onClickContinue={() => handleBulkApprove(selectionState)}>
                   {t('PendingUserListPage.WarningUsersAccept.Description')}
                 </AlertDialogComponent>
               </>
@@ -432,8 +335,8 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
           },
         }}
         tableOptions={{
-          onSortingChange: onSortingChange,
-          onPaginationChange: onPaginationChange,
+          onSortingChange,
+          onPaginationChange,
           onColumnOrderChange: setColumnOrder,
           onColumnVisibilityChange: setColumnVisibility,
           manualSorting: true,
@@ -463,19 +366,13 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
           },
         }}
       />
-      {userEdit && (
-        <EditUser
-          user={userEdit}
-          key={userEdit?.id}
-          defaultStateOpen={!!userEdit}
-          onCloseSheet={() =>
-            useExecuteAfterAnimation(() => setUserEdit(undefined))
-          }
-        />
-      )}
+      <PendingUserConfirmDialog
+        pendingUserDialog={pendingUserDialog}
+        onOpenChange={closePendingUserDialog}
+        onConfirm={onConfirmPendingUserAction}
+      />
     </>
   );
 };
 
-// Component export
 export default PendingUserList;
