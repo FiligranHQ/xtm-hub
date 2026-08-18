@@ -28,7 +28,7 @@ const thirdPartyIntegrationFormSchema = z.object({
   integration_type: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).min(1, 'Required'),
   solution_categories: z.array(z.string()).min(1, 'Required'),
-  license_type: z.enum(['Free', 'Commercial']),
+  license_type: z.enum(['Free', 'Commercial']).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   vendor_url: z.url().min(1, 'Required'),
   github_url: z.url().nullish(),

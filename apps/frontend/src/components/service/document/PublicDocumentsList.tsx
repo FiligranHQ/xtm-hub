@@ -32,14 +32,12 @@ interface PublicDocumentsListProps {
   serviceInstance: seoServiceInstanceFragment$data;
   queryRef: PreloadedQuery<publicDocumentsQuery>;
   baseUrl: string;
-  isSolutionCategoriesEnabled: boolean;
 }
 
 const PublicDocumentsList = ({
   queryRef,
   serviceInstance,
   baseUrl,
-  isSolutionCategoriesEnabled,
 }: PublicDocumentsListProps) => {
   const queryData = usePreloadedQuery<publicDocumentsQuery>(
     PublicDocumentListQuery,
@@ -63,8 +61,7 @@ const PublicDocumentsList = ({
   }, [data.publicDocuments]);
 
   const { filters, localStorageKey } = useShareableResourceMapping(
-    serviceInstance.slug as ServiceSlug,
-    isSolutionCategoriesEnabled
+    serviceInstance.slug as ServiceSlug
   );
 
   const { search, setSearch, pageSize, setPageSize } =

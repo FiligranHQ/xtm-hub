@@ -34,7 +34,7 @@ export type LogicalFiltersParams =
 
 export const useLogicalFiltersFromStorage = (
   params: LogicalFiltersParams,
-  isSolutionCategoriesEnabled: boolean
+  shouldDisplaySolutionCategoriesFilter: boolean
 ) => {
   const { serviceInstanceSlug, labels } = params;
   const entityTypes = 'entityTypes' in params ? params.entityTypes : undefined;
@@ -78,7 +78,7 @@ export const useLogicalFiltersFromStorage = (
               value: Object.keys(productVersions!),
             },
           },
-          ...(isSolutionCategoriesEnabled
+          ...(shouldDisplaySolutionCategoriesFilter
             ? [
                 {
                   leaf: {
@@ -125,6 +125,6 @@ export const useLogicalFiltersFromStorage = (
     productVersions,
     licenseTypes,
     solutionCategories,
-    isSolutionCategoriesEnabled,
+    shouldDisplaySolutionCategoriesFilter,
   ]);
 };

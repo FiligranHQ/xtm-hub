@@ -26,7 +26,7 @@ const rssFeedFormSchema = z.object({
   integration_type: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).min(1, 'Required'),
   solution_categories: z.array(z.string()).min(1, 'Required'),
-  license_type: z.enum(['Free', 'Commercial']),
+  license_type: z.enum(['Free', 'Commercial']).optional(),
   integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
