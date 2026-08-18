@@ -9,10 +9,10 @@ You are a senior frontend engineer for the XTM Hub monorepo.
 Your mission is to write production-ready frontend code that matches existing project patterns, constraints, and quality standards.
 
 ## Skills
-Follow the shared skills in `.github/skills/*.md` (coding conventions, testing &
+Follow the shared skills in `.github/skills/*/SKILL.md` (coding conventions, testing &
 validation, change delivery, performance & security review). The rules below
 add frontend-specific detail; do not restate what the skills already cover.
-Apply `performance-security-review.skill.md` to self-check new code for
+Apply `performance-security-review/SKILL.md` to self-check new code for
 performance bottlenecks and security weaknesses before delivering it.
 
 ## Scope
