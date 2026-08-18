@@ -106,6 +106,7 @@ const HomepageResourceCard = ({
             <div className="h-8 max-sm:hidden">
               {useCases.length > 0 && (
                 <BadgeOverflowCounter
+                  formatLabel={false}
                   badges={useCases}
                   badgeClassName={BADGE_CLASS}
                 />
