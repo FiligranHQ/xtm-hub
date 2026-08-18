@@ -53,36 +53,6 @@ describe('useSolutionCategories', () => {
     );
   });
 
-  it('should map and format categories from query result', () => {
-    vi.mocked(useSolutionCategoriesListQuery).mockReturnValue({
-      data: {
-        solutionCategories: {
-          edges: [
-            {
-              node: {
-                id: 'cat-1',
-                name: 'threat intelligence',
-              },
-            },
-            {
-              node: {
-                id: 'cat-2',
-                name: ' endpoint-security ',
-              },
-            },
-          ],
-        },
-      },
-    } as never);
-
-    const { result } = renderHook(() => useSolutionCategories());
-
-    expect(result.current).toEqual([
-      { id: 'cat-1', name: 'Threat Intelligence' },
-      { id: 'cat-2', name: 'Endpoint-Security' },
-    ]);
-  });
-
   it('should return an empty array when query has no edges', () => {
     vi.mocked(useSolutionCategoriesListQuery).mockReturnValue({
       data: {

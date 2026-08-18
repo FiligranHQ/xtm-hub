@@ -94,6 +94,7 @@ describe('documentApp', () => {
     description: 'description',
     active: true,
     use_cases: [],
+    solution_categories: [],
   };
 
   const documentUpdateData = {
@@ -175,7 +176,11 @@ describe('documentApp', () => {
         sourceDocument: mockUpload,
       });
 
-      const { use_cases: _use_cases, ...expected } = documentData;
+      const {
+        use_cases: _use_cases,
+        solution_categories: _solution_categories,
+        ...expected
+      } = documentData;
 
       // Then
       expect(result).toMatchObject({
@@ -239,6 +244,37 @@ describe('documentApp', () => {
         active: input.active,
       });
       expect(licenseTypeFromDb).toBe(input.license_type);
+    });
+
+    it('should link all provided solution categories when multiple are provided on create', async () => {
+      // Given
+      const category1 = await solutionCategoryDomain.insertSolutionCategory({
+        name: `category-${uuidv4()}`,
+      });
+      const category2 = await solutionCategoryDomain.insertSolutionCategory({
+        name: `category-${uuidv4()}`,
+      });
+
+      // When
+      const createdDocument = await DocumentApp.createDocument({
+        input: {
+          ...documentData,
+          slug: `create-multi-solution-categories-${uuidv4()}`,
+          solution_categories: [category1.id, category2.id],
+        },
+        metadata: integrationMetadata,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+
+      // Then
+      const links =
+        await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery([
+          createdDocument.id,
+        ]);
+      expect(links).toHaveLength(2);
+      expect(links.map(({ id }) => id)).toEqual(
+        expect.arrayContaining([category1.id, category2.id])
+      );
     });
 
     it('should not use document file when document is a third party integration', async () => {
@@ -815,8 +851,8 @@ describe('documentApp', () => {
       expect(updatedDocument.slug).toBe(originalSlug);
     });
 
-    describe('solution_category linking', () => {
-      it('should link solution category when provided on update', async () => {
+    describe('solution_categories linking', () => {
+      it('should link solution categories when provided on update', async () => {
         // Given
         const category = await solutionCategoryDomain.insertSolutionCategory({
           name: `category-${uuidv4()}`,
@@ -829,7 +865,7 @@ describe('documentApp', () => {
           metadata: integrationMetadata,
           input: {
             ...documentUpdateData,
-            solution_category: category.id,
+            solution_categories: [category.id],
           },
           existingImageIds: [],
         });
@@ -844,6 +880,38 @@ describe('documentApp', () => {
           _document_id: createdDocument!.id,
           id: category.id,
         });
+      });
+
+      it('should link all provided solution categories when multiple are provided on update', async () => {
+        // Given
+        const category1 = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+        const category2 = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_categories: [category1.id, category2.id],
+          },
+          existingImageIds: [],
+        });
+
+        // Then
+        const links =
+          await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+            [createdDocument!.id]
+          );
+        expect(links).toHaveLength(2);
+        expect(links.map(({ id }) => id)).toEqual(
+          expect.arrayContaining([category1.id, category2.id])
+        );
       });
 
       it('should replace previous solution category link on update', async () => {
@@ -861,7 +929,7 @@ describe('documentApp', () => {
           metadata: integrationMetadata,
           input: {
             ...documentUpdateData,
-            solution_category: category1.id,
+            solution_categories: [category1.id],
           },
           existingImageIds: [],
         });
@@ -873,7 +941,7 @@ describe('documentApp', () => {
           metadata: integrationMetadata,
           input: {
             ...documentUpdateData,
-            solution_category: category2.id,
+            solution_categories: [category2.id],
           },
           existingImageIds: [],
         });
@@ -890,7 +958,7 @@ describe('documentApp', () => {
         });
       });
 
-      it('should keep existing solution category link when update omits solution_category', async () => {
+      it('should keep existing solution categories link when update omits solution_categories', async () => {
         // Given
         const category = await solutionCategoryDomain.insertSolutionCategory({
           name: `category-${uuidv4()}`,
@@ -902,7 +970,7 @@ describe('documentApp', () => {
           metadata: integrationMetadata,
           input: {
             ...documentUpdateData,
-            solution_category: category.id,
+            solution_categories: [category.id],
           },
           existingImageIds: [],
         });

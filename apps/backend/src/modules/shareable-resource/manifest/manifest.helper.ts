@@ -231,15 +231,15 @@ export const ManifestHelper = {
       solution_categories:
         solutionCategoriesByConnectorId.get(connector.id as string) ?? [],
       verified: connector.verified,
-      last_verified_date: connector.last_verified_date,
+      last_verified_date: connector.last_verified_date ?? null,
       subscription_link: connector.subscription_link ?? null,
       source_code: connector.source_code ?? null,
       manager_supported: connector.manager_supported,
       support_version: connector.minimum_deployable_version ?? null,
       license_type: connector.license_type ?? null,
       contact: connector.contact ?? null,
-      version: connector.version ?? null,
-      image_name: connector.image_name ?? null,
+      version: connector.version,
+      image_name: connector.image_name,
       image_type: connector.image_type,
       additional_properties: safeParseJson(
         connector.additional_properties,

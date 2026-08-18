@@ -577,7 +577,7 @@ enum DocumentMetadataKeyCode {
   config_schema
   manifest_fragment_id
   entity_types
-  solution_category
+  solution_categories
   license_type
   contact
 }
@@ -665,7 +665,7 @@ input CreateDocumentInput {
   description: String!
   active: Boolean!
   use_cases: [UseCaseId!]!
-  solution_category: SolutionCategoryId
+  solution_categories: [SolutionCategoryId!]!
   license_type: LicenseType
   entity_types: [String!]
   uploader_id: UserId!
@@ -677,7 +677,7 @@ input UpdateDocumentInput {
   description: String
   active: Boolean
   use_cases: [UseCaseId!]
-  solution_category: SolutionCategoryId
+  solution_categories: [SolutionCategoryId!]
   license_type: LicenseType
   entity_types: [String!]
   uploader_organization_id: OrganizationId
@@ -1333,7 +1333,7 @@ input ManifestFragmentInput {
   logo: String!
   use_cases: [String!]!
   verified: Boolean
-  last_verified_date: String!
+  last_verified_date: String
   subscription_link: String!
   source_code: String!
   manager_supported: Boolean!

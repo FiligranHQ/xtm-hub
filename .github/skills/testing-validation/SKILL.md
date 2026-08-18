@@ -1,5 +1,5 @@
 ---
-name: Testing and Validation
+name: testing-validation
 description: Shared XTM Hub expectations for adding tests and validating changes.
 ---
 

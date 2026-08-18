@@ -169,11 +169,10 @@ export const DeploymentApp = {
 
     const isBundle =
       deploymentRequest.type === DeploymentRequestDeploymentType.Bundle;
-    // A bundle's hub_status is never resolved from its own actual_state:
-    // it is only recomputed from its children (see recomputeBundleHubStatusAndDates).
-    const newStatus = isBundle
-      ? deploymentRequest.hub_status
-      : resolveNextHubStatus(deploymentRequest, input.actual_state);
+    const newStatus = resolveNextHubStatus(
+      deploymentRequest,
+      input.actual_state
+    );
 
     await withTransaction(async () => {
       await applyDeploymentRequestUpdateInQuotaTransaction({
@@ -184,7 +183,7 @@ export const DeploymentApp = {
       });
 
       if (!isBundle && deploymentRequest.parent_id) {
-        await recomputeBundleHubStatusAndDates(deploymentRequest.parent_id);
+        await recomputeBundleDates(deploymentRequest.parent_id);
       }
     });
 
@@ -1098,9 +1097,7 @@ const syncPlatformRegistrationStatus = async (
   );
 };
 
-const recomputeBundleHubStatusAndDates = async (
-  bundleId: DeploymentRequestId
-) => {
+const recomputeBundleDates = async (bundleId: DeploymentRequestId) => {
   const bundle = await DeploymentRequestDomain.loadDeploymentRequestBy({
     id: bundleId,
   });
@@ -1123,7 +1120,6 @@ const recomputeBundleHubStatusAndDates = async (
 
   const updatedBundle =
     await DeploymentRequestDomain.updateDeploymentRequestById(bundleId, {
-      hub_status: DeploymentHelper.computeBundleHubStatus(children),
       ...DeploymentHelper.computeBundleDates(children),
     });
   if (!updatedBundle) {
@@ -1161,6 +1157,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
             platform_id: input.platform_id,
             failure_reason: input.failure_reason,
             actual_state: input.actual_state,
+            hub_status: newStatus,
           }
         );
         return;
