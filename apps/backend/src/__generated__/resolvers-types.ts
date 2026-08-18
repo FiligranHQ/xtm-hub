@@ -961,6 +961,7 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  acceptPendingUserInOrganization?: Maybe<User>;
   addCapabilitiesToUserServices?: Maybe<Array<Maybe<UserService>>>;
   addOrganization?: Maybe<Organization>;
   addServicePicture?: Maybe<ServiceInstance>;
@@ -1032,6 +1033,12 @@ export type Mutation = {
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription?: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
+};
+
+
+export type MutationAcceptPendingUserInOrganizationArgs = {
+  organization_id: Scalars['OrganizationId']['input'];
+  user_id: Scalars['UserId']['input'];
 };
 
 
@@ -3801,6 +3808,7 @@ export type MergeEventResolvers<ContextType = PortalContext, ParentType extends 
 }>;
 
 export type MutationResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  acceptPendingUserInOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAcceptPendingUserInOrganizationArgs, 'organization_id' | 'user_id'>>;
   addCapabilitiesToUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddCapabilitiesToUserServicesArgs, 'input' | 'service_instance_id'>>;
   addOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationAddOrganizationArgs, 'input'>>;
   addServicePicture?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<MutationAddServicePictureArgs, 'isLogo' | 'serviceInstanceId'>>;

@@ -12,6 +12,7 @@ import User, { UserId } from '../../../../model/kanel/public/User';
 import * as MailService from '../../../../server/mail-service';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
+import { UserHelper } from '../user.helper';
 import { UserOrganizationApp } from './user-organization.app';
 import { UserOrganizationDomain } from './user-organization.domain';
 
@@ -331,6 +332,111 @@ describe('usersOrganizationApp', () => {
           TEST_ORGANIZATIONS.FILIGRAN.ID
         )
       ).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+  });
+
+  describe('acceptPendingUserInOrganization', () => {
+    let createdUsers: User[] = [];
+
+    const insertTestUser = async () => {
+      const user = await TestHelper.user.insert({
+        email: `test-${uuidv4()}@filigran.io`,
+      });
+      createdUsers.push(user);
+      return user;
+    };
+
+    beforeEach(() => {
+      createdUsers = [];
+    });
+
+    afterEach(async () => {
+      await Promise.all(
+        createdUsers.map((user) => UserHelper.removeUser({ email: user.email }))
+      );
+    });
+
+    it('should accept pending user and return the user', async () => {
+      requestContext.set({
+        user: contextAdminSecondOrga.user,
+      });
+      const user = await insertTestUser();
+
+      await UserOrganizationPendingDomain.insertNewUserOrganizationPending({
+        user_id: user.id,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+
+      const acceptedUser =
+        await UserOrganizationApp.acceptPendingUserInOrganization({
+          userId: user.id,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+
+      expect(acceptedUser?.id).toBe(user.id);
+
+      const pendingUser =
+        await UserOrganizationPendingDomain.loadUserOrganizationPending({
+          user_id: user.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+      const userOrganization =
+        await UserOrganizationDomain.loadUserOrganization({
+          user_id: user.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+
+      expect(pendingUser).toHaveLength(0);
+      expect(userOrganization).toHaveLength(1);
+    });
+
+    it('should return the user when user is already member of the organization', async () => {
+      requestContext.set({
+        user: contextAdminSecondOrga.user,
+      });
+      const user = await insertTestUser();
+
+      await TestHelper.user_Organization.create({
+        user_id: user.id,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+
+      const acceptedUser =
+        await UserOrganizationApp.acceptPendingUserInOrganization({
+          userId: user.id,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+
+      expect(acceptedUser?.id).toBe(user.id);
+    });
+
+    it('should return null when user is neither pending nor member of the organization', async () => {
+      requestContext.set({
+        user: contextAdminSecondOrga.user,
+      });
+      const user = await insertTestUser();
+
+      const acceptedUser =
+        await UserOrganizationApp.acceptPendingUserInOrganization({
+          userId: user.id,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+
+      expect(acceptedUser).toBeNull();
+    });
+
+    it('should reject when user does not have enough capabilities', async () => {
+      requestContext.set({
+        user: contextSimpleUserSecondOrga.user,
+      });
+      const user = await insertTestUser();
+
+      await expect(
+        UserOrganizationApp.acceptPendingUserInOrganization({
+          userId: user.id,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        })
+      ).rejects.toThrow(ErrorCode.MissingCapabilityOnOrganization);
     });
   });
 });

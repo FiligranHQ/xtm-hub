@@ -182,6 +182,7 @@ type Mutation {
   changeSelectedOrganization(organization_id: OrganizationId!): User
   bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput!): Success
   bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput!): Success
+  acceptPendingUserInOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   removePendingUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   removeUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   editMeUser(input: EditMeUserInput!): User!
