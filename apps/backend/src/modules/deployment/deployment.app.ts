@@ -954,17 +954,21 @@ const applyCancellationToDeploymentRequest = async ({
       region: deploymentRequest.region,
     },
     async () => {
-      await DeploymentRequestDomain.updateDeploymentRequestById(
-        deploymentRequest.id,
-        {
-          hub_status: DeploymentRequestHubStatus.Cancelled,
-          target_state: target_state,
-          cancellation_date: new Date(),
-          cancellation_user_id: userId,
-          cancellation_reason: cancellationReason,
-          counts_in_orga_quota: countsInOrgaQuota,
-        }
-      );
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          deploymentRequest.id,
+          {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            target_state: target_state,
+            cancellation_date: new Date(),
+            cancellation_user_id: userId,
+            cancellation_reason: cancellationReason,
+            counts_in_orga_quota: countsInOrgaQuota,
+          }
+        );
+      if (!updatedDeploymentRequest) {
+        throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+      }
       if (!countsInOrgaQuota) {
         await ServiceInstanceDomain.updateServiceInstance(
           deploymentRequest.service_instance_id,
