@@ -16,6 +16,7 @@ import serviceCapabilityResolver from '../modules/security-management/service-ca
 import subscriptionCapabilityResolver from '../modules/security-management/subscription-capability/subscription-capability.resolver';
 import userServiceCapabilityResolver from '../modules/security-management/user-service-capability/user-service-capability.resolver';
 import ServiceDefinitionResolver from '../modules/service/definition/service-definition.resolver';
+import seoServiceInstanceResolver from '../modules/service/instance/seo-service-instance/seo-service-instance.resolver';
 import ServiceInstanceResolver from '../modules/service/instance/service-instance.resolver';
 import settingsResolver from '../modules/settings/settings.resolver';
 import manifestFragmentResolver from '../modules/shareable-resource/manifest-fragment/manifest-fragment.resolver';
@@ -44,6 +45,7 @@ const typeDefFiles = await getGlobContent('src/**/*.graphql');
 const typeDefs = mergeTypeDefs(typeDefFiles);
 
 const resolvers = mergeResolvers([
+  seoServiceInstanceResolver,
   solutionCategoryResolver,
   nodesResolver,
   ServiceInstanceResolver,

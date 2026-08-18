@@ -2,7 +2,11 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { IntegrationType, ServiceRestriction } from '@graphql/generated';
+import {
+  IntegrationType,
+  PortalCapability,
+  ServiceRestriction,
+} from '@graphql/generated';
 
 import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
@@ -19,6 +23,7 @@ import {
   HeroSectionLibrary,
 } from '@/components/service/document/ui/HeroSectionLibrary';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
@@ -51,6 +56,10 @@ const ServiceList = ({
     ServiceRestriction.Upload,
     serviceInstance
   );
+  const userIsMarketingOrBypass = useUserHasPortalCapability([
+    PortalCapability.ModifyServiceMetadata,
+    PortalCapability.Bypass,
+  ]);
 
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { removeLabels } = useServiceListLocalStorage(localStorageKey);
@@ -86,7 +95,10 @@ const ServiceList = ({
 
   return (
     <div className="flex flex-col gap-xl">
-      <HeroSectionLibrary {...heroSectionProps} />
+      <HeroSectionLibrary
+        {...heroSectionProps}
+        showLibraryUpdate={userIsMarketingOrBypass}
+      />
       <ServiceListHeader
         search={search}
         onSearchChange={onSearchChange}

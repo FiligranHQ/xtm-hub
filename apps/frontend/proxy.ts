@@ -1,5 +1,6 @@
 import { defaultLocale, publicLocales } from '@/i18n/config';
 import { manageRequest } from '@/utils/middleware/graphql-request.util';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import createMiddleware from 'next-intl/middleware';
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 
@@ -12,6 +13,10 @@ const intlMiddleware = createMiddleware({
 const PUBLIC_LOCALE_PATH = new RegExp(
   `^/(${publicLocales.join('|')})(/|$)|^/$`
 );
+const PUBLIC_CYBERSECURITY_SOLUTION_ROUTE_PATH = new RegExp(
+  `^/(${publicLocales.join('|')})/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/[^/]+(?:/[^/]+)?$`,
+  'i'
+);
 
 export async function proxy(request: NextRequest, _: NextFetchEvent) {
   const proxyResponse = await manageRequest(request);
@@ -20,6 +25,24 @@ export async function proxy(request: NextRequest, _: NextFetchEvent) {
   }
 
   const { pathname } = request.nextUrl;
+
+  const trailingBackslashMatch = pathname.match(/(?:\\|%5c)$/i);
+  if (trailingBackslashMatch) {
+    const pathnameWithoutTrailingBackslash = pathname.slice(
+      0,
+      -trailingBackslashMatch[0].length
+    );
+    if (
+      PUBLIC_CYBERSECURITY_SOLUTION_ROUTE_PATH.test(
+        pathnameWithoutTrailingBackslash
+      ) &&
+      !/(\\|%5c)/i.test(pathnameWithoutTrailingBackslash)
+    ) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = pathnameWithoutTrailingBackslash;
+      return NextResponse.redirect(redirectUrl, 308);
+    }
+  }
 
   if (PUBLIC_LOCALE_PATH.test(pathname) || !pathname.startsWith('/app')) {
     return intlMiddleware(request);

@@ -127,13 +127,13 @@ type Query {
   usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [User!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
-  userHasOrganizationWithSubscription: Boolean!
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
+  seoServiceInstanceMetadata(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage): [SeoServiceInstanceMetadata!]!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId!): ServiceInstance
@@ -201,6 +201,7 @@ type Mutation {
   editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
   addCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
+  editSeoServiceInstance(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage!, input: EditSeoServiceInstanceInput!): SeoServiceInstanceMetadata!
   addServicePicture(serviceInstanceId: ServiceInstanceId!, document: Upload, isLogo: Boolean!): ServiceInstance
   updatePlatformServiceMetadata(input: UpdatePlatformServiceMetadataInput!, document: Upload): RegisteredPlatform
   ingestManifestFragments(manifestFragments: [ManifestFragmentInput!]!): Success!
@@ -1177,6 +1178,24 @@ type ServiceDefinition implements Node {
   service_capability: [ServiceCapability]
 }
 
+enum SeoServiceInstanceLanguage {
+  en
+  fr
+  ja
+}
+
+type SeoServiceInstanceMetadata {
+  service_instance_id: ServiceInstanceId!
+  language: SeoServiceInstanceLanguage!
+  meta_title: String!
+  meta_description: String!
+}
+
+input EditSeoServiceInstanceInput {
+  meta_title: String!
+  meta_description: String!
+}
+
 """
 A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string
 """
@@ -1314,7 +1333,7 @@ input ManifestFragmentInput {
   logo: String!
   use_cases: [String!]!
   verified: Boolean
-  last_verified_date: String!
+  last_verified_date: String
   subscription_link: String!
   source_code: String!
   manager_supported: Boolean!
@@ -2030,6 +2049,7 @@ enum PortalCapability {
   MODIFY_TRIALS
   MODIFY_TRIALS_QUOTA
   MODIFY_COMPETITORS
+  MODIFY_SERVICE_METADATA
   MANAGE_DEPLOYMENT
   MANAGE_CONNECTORS_INGESTIONS
   MANAGE_MANIFEST_INGESTIONS

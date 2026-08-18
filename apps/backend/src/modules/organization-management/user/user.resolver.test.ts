@@ -6,13 +6,11 @@ import {
   afterAll,
   afterEach,
   beforeAll,
-  beforeEach,
   describe,
   expect,
   it,
   vi,
 } from 'vitest';
-import { TestHelper } from '../../../../tests/helper/test.helper';
 import { SubscriptionSpy } from '../../../../tests/test-utils';
 import {
   contextAdminSecondOrga,
@@ -25,7 +23,6 @@ import {
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
   requestContextSimpleUserSecondOrga,
-  SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
@@ -36,7 +33,6 @@ import {
   UserOrdering,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
-import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
@@ -49,58 +45,7 @@ import { UserOrganizationPendingDomain } from './user-pending/user-organization-
 import { UserHelper } from './user.helper';
 import usersResolver from './user.resolver';
 
-const SUBSCRIPTION_ID =
-  '7c6e887e-9553-439b-aeaf-a81911c399d2' as SubscriptionId;
-const RANDOM_ORGA_ID = '681fb117-e2c3-46d3-945a-0e921b5d4b6d';
-
 describe('user query resolver', () => {
-  describe('userHasOrganizationWithSubscription', () => {
-    beforeEach(async () => {
-      await TestHelper.subscription.create({
-        id: SUBSCRIPTION_ID,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        service_instance_id: SERVICES.INSTANCES.EPIC.ID,
-      });
-    });
-
-    afterEach(async () => {
-      await TestHelper.subscription.delete({
-        id: SUBSCRIPTION_ID,
-      });
-    });
-
-    it.each`
-      expected | organizations                                                                                                                                                                                     | description
-      ${true}  | ${[{ id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID, name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME, personal_space: false, domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST] }]} | ${'organization has subscription'}
-      ${false} | ${[]}                                                                                                                                                                                             | ${'has no organization'}
-      ${false} | ${[{ id: RANDOM_ORGA_ID, name: 'Other', personal_space: false, domains: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.DOMAINS.FIRST] }]}                                                                | ${'no organization has subscription'}
-    `(
-      'should return $expected if $description',
-      async ({ expected, organizations }) => {
-        const currentContext = {
-          ...contextAdminSecondOrga,
-          user: {
-            ...contextAdminSecondOrga.user,
-            organizations: organizations,
-          },
-        };
-        requestContext.set({
-          user: currentContext.user,
-        });
-
-        const response =
-          // @ts-ignore
-          await usersResolver.Query.userHasOrganizationWithSubscription(
-            undefined,
-            {},
-            currentContext
-          );
-
-        expect(response).toStrictEqual(expected);
-      }
-    );
-  });
-
   describe('listPendingUser', () => {
     it('should list pending users from any organization for bypass', async () => {
       const testContext = {

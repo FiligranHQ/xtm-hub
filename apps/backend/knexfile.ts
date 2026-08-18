@@ -85,6 +85,7 @@ type BaseDatabaseType =
   | 'DeploymentRequestQuota'
   | 'ServiceGroup'
   | 'ServiceGroup_User'
+  | 'SEO_ServiceInstance'
   | 'SSOGroup_RolePortal'
   | 'Competitor'
   | 'NewsFeedItem'
