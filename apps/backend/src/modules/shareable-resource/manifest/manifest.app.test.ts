@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
+import { TEST_USE_CASES } from '../../../../tests/tests.const';
 import {
   DocumentImageType,
   DocumentMetadataKeyCode,
@@ -11,7 +12,6 @@ import {
 import type Document from '../../../model/kanel/public/Document';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
 import type { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
-import type { UseCaseId } from '../../../model/kanel/public/UseCase';
 import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { BadRequestErrorCode } from '../../../utils/error/error.code';
@@ -103,7 +103,6 @@ describe('manifestApp', () => {
 
   afterEach(async () => {
     await TestHelper.objectUseCase.delete({});
-    await TestHelper.useCase.delete({});
     await TestHelper.manifest.delete({});
     await TestHelper.manifestRebuildQueue.delete({});
     await TestHelper.documentMetadata.delete({});
@@ -375,22 +374,14 @@ describe('manifestApp', () => {
 
       it('populates use_cases from linked use cases for each connector', async () => {
         const doc = await createConnectorDocument([TAG_LATEST]);
-        const useCase1 = await TestHelper.useCase.create({
-          name: 'automation',
-          color: '#0099cc',
-        });
-        const useCase2 = await TestHelper.useCase.create({
-          name: 'integration',
-          color: '#ff6600',
-        });
         await TestHelper.objectUseCase.insert([
           {
             object_id: doc.id as unknown as ObjectUseCaseObjectId,
-            use_case_id: useCase1.id as UseCaseId,
+            use_case_id: TEST_USE_CASES.AUTOMATION.ID,
           },
           {
             object_id: doc.id as unknown as ObjectUseCaseObjectId,
-            use_case_id: useCase2.id as UseCaseId,
+            use_case_id: TEST_USE_CASES.INTEGRATION.ID,
           },
         ]);
 
@@ -399,8 +390,12 @@ describe('manifestApp', () => {
         expect(result).not.toBeNull();
         expect(result!.contracts).toHaveLength(1);
         expect(result!.contracts[0]!.use_cases).toHaveLength(2);
-        expect(result!.contracts[0]!.use_cases).toContain('automation');
-        expect(result!.contracts[0]!.use_cases).toContain('integration');
+        expect(result!.contracts[0]!.use_cases).toContain(
+          TEST_USE_CASES.AUTOMATION.NAME
+        );
+        expect(result!.contracts[0]!.use_cases).toContain(
+          TEST_USE_CASES.INTEGRATION.NAME
+        );
       });
 
       it('sets use_cases to empty array when a connector has no linked use cases', async () => {

@@ -16,6 +16,7 @@ import { OrganizationId } from '../src/model/kanel/public/Organization';
 import { ServiceCapabilityId } from '../src/model/kanel/public/ServiceCapability';
 import { ServiceDefinitionId } from '../src/model/kanel/public/ServiceDefinition';
 import { ServiceInstanceId } from '../src/model/kanel/public/ServiceInstance';
+import { UseCaseId } from '../src/model/kanel/public/UseCase';
 import { UserId } from '../src/model/kanel/public/User';
 import { PortalContext } from '../src/model/portal-context';
 import type { DocumentDataLoaders } from '../src/modules/document/document.dataloader';
@@ -141,6 +142,32 @@ export const SERVICES = {
     EPIC: {
       ID: '3260f536-49b8-4c6f-8e87-61c8be1ae103' as ServiceInstanceId,
     },
+  },
+};
+
+// Reusable use cases seeded in tests/seeds/04-insert-use-cases.js, to avoid
+// ad hoc creation in every test file. Names are not significant to the
+// features under test.
+export const TEST_USE_CASES = {
+  AUTOMATION: {
+    ID: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e01' as UseCaseId,
+    NAME: 'Automation',
+  },
+  INTEGRATION: {
+    ID: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e02' as UseCaseId,
+    NAME: 'Integration',
+  },
+  MONITORING: {
+    ID: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e03' as UseCaseId,
+    NAME: 'Monitoring',
+  },
+  DETECTION: {
+    ID: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e04' as UseCaseId,
+    NAME: 'Detection',
+  },
+  RESPONSE: {
+    ID: '9d3a9c3d-3b9a-4b5b-8b0a-1a2b3c4d5e05' as UseCaseId,
+    NAME: 'Response',
   },
 };
 
