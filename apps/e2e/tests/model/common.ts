@@ -26,6 +26,12 @@ export async function selectUseCase(page: Page, name = 'Global') {
   await page.getByRole('option', { name, exact: true }).click();
   await page.keyboard.press('Escape');
 }
+export async function selectSolutionCategories(page: Page) {
+  await page.getByText('Add solution categories').click();
+  await page.getByRole('option', { name: 'Solutioncategory' }).click();
+  await page.getByRole('option', { name: 'Other' }).click();
+  await page.keyboard.press('Escape');
+}
 
 export async function waitForDrawerToOpen(page: Page) {
   await page.locator('body > [role="dialog"]').waitFor({ state: 'visible' });

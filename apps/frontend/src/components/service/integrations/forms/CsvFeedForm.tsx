@@ -25,7 +25,7 @@ const csvFeedFormSchema = z.object({
   uploader_organization_id: z.string().min(1, 'Required'),
   integration_type: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).min(1, 'Required'),
-  solution_category: z.string().min(1, 'Required'),
+  solution_categories: z.array(z.string()).min(1, 'Required'),
   license_type: z.enum(['Free', 'Commercial']),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
@@ -72,7 +72,9 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
         images: transformToFileList(DocumentImageType.Image, document),
         logo: transformToFileList(DocumentImageType.Logo, document),
         use_cases: document?.use_cases?.map((label) => label.id),
-        solution_category: document?.solution_categories?.[0]?.id,
+        solution_categories: document?.solution_categories?.map(
+          (label) => label.id
+        ),
         license_type: document?.license_type ?? undefined,
         uploader_id: document?.uploader?.id ?? me!.id,
         uploader_organization_id:
@@ -102,7 +104,7 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
     name,
     description,
     use_cases,
-    solution_category,
+    solution_categories,
     license_type,
     uploader_id,
     uploader_organization_id,
@@ -143,7 +145,7 @@ export const CsvFeedForm = ({ handleSubmit, document }: CsvFeedFormProps) => {
         fieldConfig={{
           description,
           use_cases,
-          solution_category,
+          solution_categories,
           license_type: {
             ...license_type,
             fieldType: 'radio',
