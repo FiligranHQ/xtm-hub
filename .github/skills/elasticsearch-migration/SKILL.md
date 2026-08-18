@@ -1,5 +1,5 @@
 ---
-name: Elasticsearch Migration
+name: elasticsearch-migration
 description: Shared XTM Hub conventions for writing and running Elasticsearch migrations in the backend.
 ---
 

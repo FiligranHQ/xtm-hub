@@ -1,5 +1,5 @@
 ---
-name: Knex Migration
+name: knex-migration
 description: Shared XTM Hub conventions for writing and running Postgres schema migrations with Knex in the backend.
 ---
 
