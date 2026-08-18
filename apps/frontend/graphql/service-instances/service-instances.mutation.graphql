@@ -1,0 +1,16 @@
+mutation EditSeoServiceInstanceMetadata(
+  $service_instance_id: ServiceInstanceId!
+  $language: SeoServiceInstanceLanguage!
+  $input: EditSeoServiceInstanceInput!
+) {
+  editSeoServiceInstance(
+    service_instance_id: $service_instance_id
+    language: $language
+    input: $input
+  ) {
+    service_instance_id
+    language
+    meta_title
+    meta_description
+  }
+}

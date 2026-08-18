@@ -50,7 +50,7 @@ export async function up(knex) {
       .foreign('user_id')
       .references('id')
       .inTable('User')
-      .onDelete('CASCADE');
+      .onDelete('SET NULL');
   });
 }
 

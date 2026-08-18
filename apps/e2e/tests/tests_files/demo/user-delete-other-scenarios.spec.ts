@@ -992,31 +992,33 @@ test.describe('Cascade delete demos: scenarios 1 to 20', () => {
     );
   });
 
-  test('scenario 15 - OneClickDeployment.user_id cascades', async ({
+  test('scenario 15 - OneClickDeployment.user_id is set to null', async ({
     page,
   }) => {
     const email = `${TEST_PREFIX}scenario-15@filigran.io`;
     const userId = await createDemoUser({ email });
+    const deploymentId = uuidv4();
+    const resourceId = uuidv4();
     await db('OneClickDeployment').insert({
-      id: uuidv4(),
-      resource_id: uuidv4(),
+      id: deploymentId,
+      resource_id: resourceId,
       platform_id: uuidv4(),
       tenant_id: null,
       user_id: userId,
       deployed_at: new Date(),
     });
     const beforeDelete = await db('OneClickDeployment')
-      .where({ user_id: userId })
+      .where({ id: deploymentId })
       .select('id', 'resource_id', 'user_id');
 
     await loginPage.navigateTo();
     await announceInitialData(
       page,
-      'Scenario 15 - OneClickDeployment cascade',
+      'Scenario 15 - OneClickDeployment user_id set to null',
       [
         `test user: ${email}`,
         'OneClickDeployment row exists with user_id = test user',
-        'expected behavior: deleting the user also deletes linked one-click deployment rows',
+        'expected behavior: deleting the user preserves the deployment row and sets user_id to null',
       ]
     );
     await loginPage.login(ADMIN_EMAIL);
@@ -1026,18 +1028,31 @@ test.describe('Cascade delete demos: scenarios 1 to 20', () => {
     await expect(
       page.getByRole('cell', { name: email, exact: true })
     ).not.toBeVisible();
+
+    await expect
+      .poll(
+        async () =>
+          (await db('OneClickDeployment').where({ id: deploymentId }).first())
+            ?.user_id
+      )
+      .toBeNull();
     await announceCheckpoint(
       page,
-      'Check: deletion succeeds and linked one-click deployment rows are removed'
+      'Check: deletion succeeds; deployment row is preserved with user_id = null'
     );
     const afterDelete = await db('OneClickDeployment')
-      .where({ user_id: userId })
+      .where({ id: deploymentId })
       .select('id', 'resource_id', 'user_id');
-    expect(afterDelete).toHaveLength(0);
+    expect(afterDelete).toHaveLength(1);
+    expect(afterDelete[0]).toMatchObject({
+      id: deploymentId,
+      resource_id: resourceId,
+      user_id: null,
+    });
     await showBeforeAfterDbCheck(
       page,
       'Scenario 15 DB verification',
-      `SELECT id, resource_id, user_id FROM "OneClickDeployment" WHERE user_id = '${userId}';`,
+      `SELECT id, resource_id, user_id FROM "OneClickDeployment" WHERE id = '${deploymentId}';`,
       beforeDelete,
       afterDelete
     );

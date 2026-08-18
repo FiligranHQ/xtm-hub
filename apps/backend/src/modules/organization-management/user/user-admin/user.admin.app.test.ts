@@ -773,7 +773,7 @@ describe('users admin app', () => {
         await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
       });
 
-      it('should cascade delete the OneClickDeployment rows of the deleted user', async () => {
+      it('should set user_id to null on the OneClickDeployment rows of the deleted user', async () => {
         const user = await UserHelper.createUserWithPersonalSpace(
           { email: `delete-user-${uuidv4()}@delete-user-test.io` },
           { sendWelcomeEmail: false }
@@ -786,11 +786,15 @@ describe('users admin app', () => {
         await UserAdminApp.deleteUser(user.id);
 
         expect(await UserDomain.loadUser({ id: user.id })).toEqual([]);
-        expect(
+        const remainingDeployments =
           await TestHelper.oneClickDeployment.loadAll({
             resource_id: oneClickDeployment.resource_id,
-          })
-        ).toEqual([]);
+          });
+        expect(remainingDeployments).toHaveLength(1);
+        expect(remainingDeployments[0]).toMatchObject({
+          resource_id: oneClickDeployment.resource_id,
+          user_id: null,
+        });
 
         await TestHelper.oneClickDeployment.deleteAll();
       });

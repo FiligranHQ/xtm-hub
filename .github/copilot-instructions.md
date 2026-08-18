@@ -2,12 +2,14 @@
 
 ## Critical Rules
 
-- **No console.log** — Use `logApp` (backend) from `src/utils/app-logger.util.ts`. `console.warn` and `console.error` are only allowed in scripts or launch code not directly related to the app.
+- **No console.log** — Use `logApp` (backend) from `src/utils/app-logger.util.ts`. `console.warn` and `console.error`
+  are only allowed in scripts or launch code not directly related to the app.
 - Unused variables must be prefixed with `_` (e.g. `_unused`).
 
 ## Repository Overview
 
-XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace for cybersecurity resources, knowledge-sharing platform, and community engagement hub. It is a full-stack TypeScript monorepo.
+XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace for cybersecurity resources,
+knowledge-sharing platform, and community engagement hub. It is a full-stack TypeScript monorepo.
 
 - **Version**: 1.5.3
 - **Architecture**: Yarn 4 workspaces monorepo
@@ -16,11 +18,11 @@ XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace fo
 
 ### Applications
 
-| Workspace          | Path                    | Stack | Dev Port |
-|--------------------|-------------------------|---|---|
-| `backend`          | `apps/backend`          | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `frontend`         | `apps/frontend`     | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 4, `@filigran/ui` | 3002 |
-| `e2e`              | `apps/e2e`              | Playwright | — |
+| Workspace  | Path            | Stack                                                                                  | Dev Port |
+|------------|-----------------|----------------------------------------------------------------------------------------|----------|
+| `backend`  | `apps/backend`  | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO              | 4002     |
+| `frontend` | `apps/frontend` | Next.js 15 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 4, `@filigran/ui` | 3002     |
+| `e2e`      | `apps/e2e`      | Playwright                                                                             | —        |
 
 ## Setup
 
@@ -73,7 +75,8 @@ yarn test                # Vitest + jsdom
 yarn test:coverage       # with V8 coverage
 ```
 
-**`yarn relay` must run after any GraphQL schema change.** The `dev` script runs relay-compiler automatically via `concurrently`.
+**`yarn relay` must run after any GraphQL schema change.** The `dev` script runs relay-compiler automatically via
+`concurrently`.
 
 ### E2E Tests (`apps/e2e`)
 
@@ -89,12 +92,16 @@ E2E runs with `workers: 1` (sequential), `retries: 2`, Chromium only. Base URL d
 This is the most important data flow to understand:
 
 1. **Schema definition**: `.graphql` files in `apps/backend/src/modules/**/` and `src/nodes/`
-2. **Backend codegen**: `yarn generate:ts` in backend → runs `graphql-codegen` → produces `src/__generated__/resolvers-types.ts`
-3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to `apps/frontend/schema.graphql`
-4. **Relay compilation**: `yarn relay` in frontend → reads `schema.graphql` → generates TypeScript artifacts in `apps/frontend/__generated__/`
+2. **Backend codegen**: `yarn generate:ts` in backend → runs `graphql-codegen` → produces
+   `src/__generated__/resolvers-types.ts`
+3. **Schema export**: When `NODE_ENV` is not production/staging/development, the API writes `schema.graphql` to
+   `apps/frontend/schema.graphql`
+4. **Relay compilation**: `yarn relay` in frontend → reads `schema.graphql` → generates TypeScript artifacts in
+   `apps/frontend/__generated__/`
 5. **Enum generation**: `yarn generate:enum` (part of `yarn relay`) → extracts enums from the schema into TypeScript
 
-GraphQL resolvers are merged in `src/server/graphql-schema.ts`. Each module typically has: `*.graphql` (schema), `*.resolver.ts`, `*.service.ts`.
+GraphQL resolvers are merged in `src/server/graphql-schema.ts`. Each module typically has: `*.graphql` (schema),
+`*.resolver.ts`, `*.service.ts`.
 
 ## Repository Structure
 
@@ -212,6 +219,7 @@ eslint.config.mjs               # ESLint flat config (typescript-eslint strict)
 test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image
 ```
+
 When you create a new file in the backend, follow the template in generate-new-module.ts.
 
 ### Frontend — `apps/frontend/`
@@ -239,7 +247,7 @@ src/
     login/                      # Login components
     menu/                       # Navigation menu
     ...
-  hooks/                        # Custom React hooks (useGranted, useDecodedParams, useIsMobile, etc.)
+  hooks/                        # Custom React hooks (useGranted, useDecodedParams, etc.)
   relay/                        # Relay client setup
     environment/                # Client + server Relay environments
     relay-provider.tsx            # SSR-compatible Relay provider with streaming
@@ -275,6 +283,7 @@ eslint.config.mjs               # ESLint config (next/core-web-vitals + prettier
 test.Dockerfile                 # Docker image for running unit tests in CI
 Dockerfile                      # Production Docker image (standalone Next.js)
 ```
+
 When you create a new file in the frontend, follow the template in generate-component.ts.
 
 ### Path Aliases (Frontend)
@@ -300,15 +309,18 @@ Dockerfile                      # E2E test Docker image
 ## Database
 
 - **SQL Query Builder**: Knex.js 3 with PostgreSQL (`pg` driver) — not an ORM
-- **Config**: `node-config` library reads from `apps/backend/config/` JSON files. Environment variables override via `custom-environment-variables.json`.
+- **Config**: `node-config` library reads from `apps/backend/config/` JSON files. Environment variables override via
+  `custom-environment-variables.json`.
 - **Migrations**: JavaScript files in `src/migrations/`. Run with `yarn migrate:latest`.
 - **Seeds**: In `src/seeds/` (production) and `tests/seeds/` (test).
 - **Test DB**: When `VITEST_MODE=true`, uses `test_database` database and `tests/seeds/` directory.
-- **Connection**: `knexconfig.ts` defines base config, `knexfile.ts` extends it with migrations/seeds paths + security layer + pagination.
+- **Connection**: `knexconfig.ts` defines base config, `knexfile.ts` extends it with migrations/seeds paths + security
+  layer + pagination.
 
 ### Database Access Pattern
 
 The `db()` function from `knexfile.ts` is the primary database accessor. It:
+
 - Accepts a `DatabaseType` (table name)
 - Supports pagination via `paginate()`
 - Uses `databaseContext` (AsyncLocalStorage) for implicit transaction support
@@ -318,12 +330,15 @@ The `db()` function from `knexfile.ts` is the primary database accessor. It:
 - **Auth providers**: OIDC (via `openid-client`), Local (form-based)
 - **Session**: `express-session` with PostgreSQL or memory store
 - **GraphQL auth**: Custom `@auth` directive transformer in `src/security/directive-graphql/`
-- **Frontend proxy**: Next.js `middleware.ts` proxies `/graphql-api`, `/graphql-sse`, `/auth/*`, `/document/*` to the backend API via `SERVER_HTTP_API` env var (default: `http://localhost:4002`)
+- **Frontend proxy**: Next.js `middleware.ts` proxies `/graphql-api`, `/graphql-sse`, `/auth/*`, `/document/*` to the
+  backend API via `SERVER_HTTP_API` env var (default: `http://localhost:4002`)
 - **Subscriptions**: GraphQL SSE via `graphql-sse` on `/graphql-sse`
 
 ## UI Component System
 
-- **Design system**: `@filigran/ui` is Filigran's in-house React component library, built to match our design system. **Always use `@filigran/ui` components first** for any UI work (buttons, inputs, tables, dialogs, etc.). Only fall back to raw TailwindCSS or shadcn/ui primitives when `@filigran/ui` does not provide the needed component.
+- **Design system**: `@filigran/ui` is Filigran's in-house React component library, built to match our design system.
+  **Always use `@filigran/ui` components first** for any UI work (buttons, inputs, tables, dialogs, etc.). Only fall
+  back to raw TailwindCSS or shadcn/ui primitives when `@filigran/ui` does not provide the needed component.
 - **Icons**: `@filigran/icon` (Filigran's icon set)
 - **Styling**: TailwindCSS 4 with `@filigran/ui`'s Tailwind plugin (`FiligranUIPlugin` in `tailwind.config.ts`)
 - **Forms**: `react-hook-form` + `zod` validation (zod v4)
@@ -333,36 +348,43 @@ The `db()` function from `knexfile.ts` is the primary database accessor. It:
 
 Main workflow: `.github/workflows/dockerbuild-ci.yml`
 
-Triggered on pushes to `main`/`development`, tags `v*`, and PRs to `main`/`development`/`issue/*` — only when `apps/**`, the workflow file, `package.json`, or `yarn.lock` change.
+Triggered on pushes to `main`/`development`, tags `v*`, and PRs to `main`/`development`/`issue/*` — only when `apps/**`,
+the workflow file, `package.json`, or `yarn.lock` change.
 
 ### Job Sequence
 
-1. **build-images-tests** (10 min) — Builds 5 Docker images in parallel: `portal-front`, `portal-api`, `portal-e2e-tests`, `portal-front-test`, `portal-api-test`
+1. **build-images-tests** (10 min) — Builds 5 Docker images in parallel: `portal-front`, `portal-api`,
+   `portal-e2e-tests`, `portal-front-test`, `portal-api-test`
 2. **run-e2e-tests** (20 min) — Playwright E2E via `docker-compose-ci.yml`
 3. **run-front-unit-tests** (10 min) — Frontend Vitest in Docker container
 4. **run-api-unit-tests** (10 min) — Backend Vitest via docker-compose (needs PostgreSQL + MinIO)
-5. **deploy-feature-branch** — Deploys an ephemeral preview environment at `https://dev-pr-{number}.hub.staging.filigran.io` after tests pass, for every PR **unless** the `skip-feature-env` label is present (opt-out)
+5. **deploy-feature-branch** — Deploys an ephemeral preview environment at
+   `https://dev-pr-{number}.hub.staging.filigran.io` after tests pass, for every PR **unless** the `skip-feature-env`
+   label is present (opt-out)
 6. **build-images-prod** — Production images (after all tests pass, only on main/development/tags)
 7. **deploy** — AWX deployment to staging/production
 
 ### Feature Environment (opt-out)
 
 A preview environment is automatically created for every PR when CI passes. To skip it:
+
 - Add the `skip-feature-env` label to the PR before or after CI runs
 - The PR checklist includes a reminder for this
 
 Behaviour controlled by label:
 
-| Label | Feature env deployed? | "Ready for merging" auto-set? |
-|---|---|---|
-| *(none)* | ✅ Yes (default) | ❌ No — requires manual testing first |
-| `skip-feature-env` | ❌ No | ✅ Yes — once checks + approval pass |
+| Label              | Feature env deployed? | "Ready for merging" auto-set?         |
+|--------------------|-----------------------|---------------------------------------|
+| *(none)*           | ✅ Yes (default)      | ❌ No — requires manual testing first |
+| `skip-feature-env` | ❌ No                 | ✅ Yes — once checks + approval pass  |
 
-Removing the `skip-feature-env` label from an already-open PR triggers an immediate re-deployment via `.github/workflows/pr-issue-automation.yml`.
+Removing the `skip-feature-env` label from an already-open PR triggers an immediate re-deployment via
+`.github/workflows/pr-issue-automation.yml`.
 
 ### CI Requirement
 
 Before Docker builds, migrations and seeds are copied to e2e-tests:
+
 ```bash
 cp -r ./apps/backend/src/migrations ./apps/e2e/migrations
 cp -r ./apps/backend/tests/seeds ./apps/e2e/seeds
@@ -378,6 +400,7 @@ Format: `[package] <type>(<scope>): Message (#issueNumber)`
 - **Scope**: optional component name
 
 Examples:
+
 - `[frontend] feat(custom-dashboards): add card component (#123)`
 - `[backend] fix(login): handle missing auth token (#456)`
 - `[frontend/backend] refactor(auth): extract shared token logic (#789)`
@@ -388,11 +411,15 @@ Examples:
 
 ### Backend (via `custom-environment-variables.json`)
 
-`DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_BASE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `MINIO_ENDPOINT`, `MINIO_PORT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET_NAME`, `MINIO_USE_SSL`, `ELASTIC_HOST`, `ELASTIC_PORT`, `NODE_ENV`, `VITEST_MODE`, `DATA_SEEDING`, `SESSION_STORE_TYPE`, `BASE_URL_FRONT`
+`DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_BASE`, `ADMIN_EMAIL`,
+`ADMIN_PASSWORD`, `MINIO_ENDPOINT`, `MINIO_PORT`, `MINIO_ACCESS_KEY`, `MINIO_SECRET_KEY`, `MINIO_BUCKET_NAME`,
+`MINIO_USE_SSL`, `ELASTIC_HOST`, `ELASTIC_PORT`, `NODE_ENV`, `VITEST_MODE`, `DATA_SEEDING`, `SESSION_STORE_TYPE`,
+`BASE_URL_FRONT`
 
 ### Frontend
 
-`SERVER_HTTP_API` (default: `http://localhost:4002`), `E2E_BASE_URL` (default: `http://localhost:3002`), `NEXT_PUBLIC_APP_VERSION`
+`SERVER_HTTP_API` (default: `http://localhost:4002`), `E2E_BASE_URL` (default: `http://localhost:3002`),
+`NEXT_PUBLIC_APP_VERSION`
 
 ## Common Patterns
 
@@ -427,7 +454,8 @@ Both apps use **Vitest**. Test files sit next to the source file they cover (`*.
 
 ### Prefer parametric tests with `it.each`
 
-When multiple cases share the same assertion logic, always use the template-literal form of `it.each` instead of duplicating `it()` blocks. This keeps tests compact and the failure output readable.
+When multiple cases share the same assertion logic, always use the template-literal form of `it.each` instead of
+duplicating `it()` blocks. This keeps tests compact and the failure output readable.
 
 ```typescript
 it.each`
@@ -435,12 +463,13 @@ it.each`
   ${'foo'}     | ${'FOO'}
   ${'bar'}     | ${'BAR'}
   ${''}        | ${''}
-`('should uppercase "$input" to "$expected"', ({ input, expected }) => {
+`('should uppercase "$input" to "$expected"', ({input, expected}) => {
   expect(toUpper(input)).toBe(expected);
 });
 ```
 
 Rules:
+
 - First row = column headers (used in the test name via `$columnName` interpolation)
 - Each subsequent row = one test case
 - Include a `description` column when the input/expected values alone are not self-explanatory (see example below)
@@ -453,7 +482,7 @@ it.each`
   ${'Other:'}                  | ${'Other'}               | ${'empty after colon'}
 `(
   'should format "$reason" as "$expected" ($description)',
-  ({ reason, expected }) => {
+  ({reason, expected}) => {
     expect(formatReason(reason)).toBe(expected);
   }
 );
@@ -461,7 +490,9 @@ it.each`
 
 ### Extracting pure utility functions for testability
 
-Avoid testing complex component internals directly. Prefer extracting logic into a **pure utility function** in a `*.utils.ts` file alongside the component, then unit-test the utility in isolation. The component simply calls the utility.
+Avoid testing complex component internals directly. Prefer extracting logic into a **pure utility function** in a
+`*.utils.ts` file alongside the component, then unit-test the utility in isolation. The component simply calls the
+utility.
 
 ```
 TrialsTab.tsx           ← calls formatCancellationReason()
@@ -493,8 +524,8 @@ trials-tab.utils.test.ts ← fast, isolated unit tests
 - **Test DB**: Backend tests use `test_database` DB (not `cloud-portal`) when `VITEST_MODE=true`
 - **Pre-commit hook**: Runs `lint-staged` in both backend and frontend sequentially
 
-
 <!-- filigran-conventions:start -->
+
 ## Commit, PR & issue conventions
 
 All commits, pull requests and issues in this repository follow the
@@ -507,32 +538,27 @@ type(scope?)!?: description (#issue)
 
 - Types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`,
   `build`, `ci`, `revert`.
-- The description starts with a lowercase letter and has no trailing period;
-  preserve acronyms and proper nouns.
-- The old `[backend]` / `[frontend]` bracket prefixes are discontinued — use a
-  Conventional Commits scope instead.
+- The description starts with a lowercase letter and has no trailing period; preserve acronyms and proper nouns.
+- The old `[backend]` / `[frontend]` bracket prefixes are discontinued — use a Conventional Commits scope instead.
 - Pull request titles **must** end with the related issue reference, e.g.
   `(#1234)`, and every pull request must be linked to an issue.
 - Sign your commits.
 
-When generating commit messages, PR titles or issue titles, always follow this
-convention. See [`.github/LABELS.md`](.github/LABELS.md) for the full title and
-label taxonomy.
+When generating commit messages, PR titles or issue titles, always follow this convention. See [
+`.github/LABELS.md`](.github/LABELS.md) for the full title and label taxonomy.
 <!-- filigran-conventions:end -->
 
 
 <!-- filigran-model-policy:start -->
+
 ## GitHub Copilot model usage
 
 To keep token consumption under control, pick the model that matches the task:
 
-- **Opus 4.6** — reserve for complex work: deep reasoning, large refactors,
-  architecture design, tricky debugging. It is significantly more
-  token-expensive, so it is not the daily driver.
-- **Sonnet / Gemini / GPT** — default for everyday tasks: autocomplete, small
-  fixes, quick questions, code explanations.
+- **Opus 4.6** — reserve for complex work: deep reasoning, large refactors, architecture design, tricky debugging. It is
+  significantly more token-expensive, so it is not the daily driver.
+- **Sonnet / Gemini / GPT** — default for everyday tasks: autocomplete, small fixes, quick questions, code explanations.
 
-We have a limited token budget — being mindful of the model you pick makes a
-real difference at scale. Think of Opus as a specialist you call in when you
-really need it.
+We have a limited token budget — being mindful of the model you pick makes a real difference at scale. Think of Opus as
+a specialist you call in when you really need it.
 <!-- filigran-model-policy:end -->

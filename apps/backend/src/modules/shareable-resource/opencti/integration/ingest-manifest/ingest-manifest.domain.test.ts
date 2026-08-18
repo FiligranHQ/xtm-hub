@@ -287,7 +287,7 @@ describe('upsertConnectors', () => {
       expect(result!.minimum_deployable_version).toBeNull();
     });
 
-    it('should set minimum_deployable_version if manager_supported is true and not set', async () => {
+    it('should set minimum_deployable_version from the stored product_version when manager_supported is true and not set', async () => {
       const manifest: ManifestInformation = {
         ...baseManifest,
         slug: 'min-deployable-true',
@@ -298,10 +298,29 @@ describe('upsertConnectors', () => {
       };
       await IngestManifestDomain.upsertConnectors([manifest]);
       const [result] = await IngestManifestDomain.upsertConnectors([
-        { ...manifest, product_version: '3.0.1-true' },
+        { ...manifest, product_version: undefined },
       ]);
       expect(result).toBeDefined();
-      expect(result!.minimum_deployable_version).toBe('3.0.1-true');
+      expect(result!.minimum_deployable_version).toBe('3.0.0-true');
+    });
+
+    it('should fall back to the incoming manifest product_version when the stored one is null', async () => {
+      const manifest: ManifestInformation = {
+        ...baseManifest,
+        slug: 'min-deployable-fallback',
+        name: 'Min Deployable Fallback',
+        product_version: undefined,
+        manager_supported: true,
+        minimum_deployable_version: undefined,
+      };
+
+      await IngestManifestDomain.upsertConnectors([manifest]);
+
+      const [result] = await IngestManifestDomain.upsertConnectors([
+        { ...manifest, product_version: '4.0.0-fallback' },
+      ]);
+      expect(result).toBeDefined();
+      expect(result!.minimum_deployable_version).toBe('4.0.0-fallback');
     });
 
     it('should not override minimum_deployable_version if already set, regardless of manager_supported', async () => {
