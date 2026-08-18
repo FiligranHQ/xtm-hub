@@ -96,6 +96,8 @@ const BadgeOverflowCounter = ({
   }
   const hiddenCount = badges.length - visibleTags;
   const firstBadge = badges[0];
+  const getBadgeLabel = (name: string) =>
+    formatLabel ? formatName(name) : name;
 
   return (
     <div
@@ -111,7 +113,7 @@ const BadgeOverflowCounter = ({
           color={firstBadge.color}
           title={firstBadge.name}>
           <span className="truncate block">
-            {formatLabel ? formatName(firstBadge.name) : firstBadge.name}
+            {getBadgeLabel(firstBadge.name)}
           </span>
         </Badge>
       )}
@@ -125,7 +127,7 @@ const BadgeOverflowCounter = ({
           aria-hidden={index >= visibleTags}
           key={id}
           color={color}>
-          {formatLabel ? formatName(name) : name}
+          {getBadgeLabel(name)}
         </Badge>
       ))}
 
@@ -135,7 +137,7 @@ const BadgeOverflowCounter = ({
           aria-hidden={true}
           key={id}
           color={color}>
-          {formatLabel ? formatName(name) : name}
+          {getBadgeLabel(name)}
         </Badge>
       ))}
 
@@ -158,7 +160,7 @@ const BadgeOverflowCounter = ({
                     key={id}
                     color={color}
                     className={badgeClassName}>
-                    {formatLabel ? formatName(name) : name}
+                    {getBadgeLabel(name)}
                   </Badge>
                 ))}
               </div>
