@@ -120,27 +120,11 @@ describe('useServiceFormFields', () => {
     );
   });
 
-  describe('solution_category field', () => {
-    it('should pass current document to solution category field', () => {
-      const { result } = renderHook(() =>
-        useServiceFormFields({
-          documentType: 'CSV Feed',
-          platform: 'OpenCTI',
-          document: existingDocument,
-        })
-      );
-
-      const element = result.current.solution_category.fieldType({
-        field: {} as never,
-      });
-
-      expect(element.props.document).toBe(existingDocument);
-    });
-
+  describe('solution_categories field', () => {
     it.each`
-      scenario                   | disabledFields           | expectedDisabled
-      ${'not in disabledFields'} | ${[]}                    | ${false}
-      ${'in disabledFields'}     | ${['solution_category']} | ${true}
+      scenario                   | disabledFields             | expectedDisabled
+      ${'not in disabledFields'} | ${[]}                      | ${false}
+      ${'in disabledFields'}     | ${['solution_categories']} | ${true}
     `(
       'should be disabled=$expectedDisabled when $scenario',
       ({ disabledFields, expectedDisabled }) => {
@@ -153,7 +137,7 @@ describe('useServiceFormFields', () => {
           })
         );
 
-        const element = result.current.solution_category.fieldType({
+        const element = result.current.solution_categories.fieldType({
           field: {} as never,
         });
 
@@ -176,7 +160,7 @@ describe('useServiceFormFields', () => {
           })
         );
 
-        const element = result.current.solution_category.fieldType({
+        const element = result.current.solution_categories.fieldType({
           field: {} as never,
         });
 

@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { selectUseCase } from './common';
+import { selectSolutionCategories, selectUseCase } from './common';
 
 const TEST_JSON_FILE = {
   path: './tests/tests_files/assets/octi_csv_feed.json',
@@ -59,10 +59,7 @@ export default class IntegrationPage {
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
-    await this.page
-      .getByRole('combobox', { name: 'Solution categories' })
-      .click();
-    await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -92,10 +89,7 @@ export default class IntegrationPage {
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
-    await this.page
-      .getByRole('combobox', { name: 'Solution categories' })
-      .click();
-    await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -128,10 +122,7 @@ export default class IntegrationPage {
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
-    await this.page
-      .getByRole('combobox', { name: 'Solution categories' })
-      .click();
-    await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -161,10 +152,7 @@ export default class IntegrationPage {
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
-    await this.page
-      .getByRole('combobox', { name: 'Solution categories' })
-      .click();
-    await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
@@ -209,10 +197,7 @@ export default class IntegrationPage {
       .fill('1.2.3');
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
-    await this.page
-      .getByRole('combobox', { name: 'Solution categories' })
-      .click();
-    await this.page.getByRole('option', { name: 'Solutioncategory' }).click();
+    await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
   }
