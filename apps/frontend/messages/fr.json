@@ -1441,6 +1441,18 @@
         "LogoAlt": "Logo {name}",
         "IllustrationAlt": "Illustration du service d'essai gratuit"
       },
+      "XtmPlatform": {
+        "NoTrial": {
+          "Text": "Démarrez votre essai gratuit de 30 jours et découvrez l'expérience complète de la XTM Platform !"
+        },
+        "Active": {
+          "Text": "Découvrez l'expérience complète de la XTM Platform pendant votre essai !"
+        },
+        "Ending": {
+          "Text": "Continuez à découvrir l'expérience complète de la XTM Platform avant la fin de votre essai."
+        },
+        "DaysLeft": "{days, plural, =1 {# jour restant} other {# jours restants}}"
+      },
       "QuickStart": {
         "Title": "Guide de démarrage rapide",
         "Subtitle": "Tirez le meilleur de votre produit {platformName} !",
