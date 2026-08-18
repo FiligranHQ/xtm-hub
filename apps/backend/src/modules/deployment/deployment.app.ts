@@ -390,34 +390,29 @@ export const DeploymentApp = {
         deploymentRequest
       );
 
-    await withTransaction(async () => {
+    const updatedFamily = await withTransaction(async () => {
+      const updated: DeploymentRequestModel[] = [];
+
       for (const request of family) {
-        await applyCancellationToDeploymentRequest({
+        const updatedRequest = await applyCancellationToDeploymentRequest({
           deploymentRequest: request,
           userId: user.id,
           isAdmin,
           cancellationReason,
         });
+        updated.push(updatedRequest);
+
+        await sendDeploymentRequestCancelledNotifications(
+          updatedRequest,
+          user.id
+        );
       }
+
+      return updated;
     });
 
-    const updatedFamily: DeploymentRequestModel[] = [];
-
     for (const previousRequest of family) {
-      const updatedRequest =
-        await DeploymentRequestDomain.loadDeploymentRequestBy({
-          id: previousRequest.id,
-        });
-      if (!updatedRequest) {
-        throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
-      }
-      updatedFamily.push(updatedRequest);
-
-      await sendDeploymentRequestCancelledNotifications(
-        updatedRequest,
-        previousRequest,
-        user.id
-      );
+      await deleteDeploymentRequestAudience(previousRequest);
     }
 
     const [updatedDeploymentRequest] = updatedFamily;
@@ -444,7 +439,10 @@ export const DeploymentApp = {
       try {
         await withTransaction(async () => {
           for (const request of family) {
-            await applyExpirationToDeploymentRequest(request);
+            const updatedRequest =
+              await applyExpirationToDeploymentRequest(request);
+
+            await sendDeploymentRequestExpiredNotifications(updatedRequest);
           }
         });
       } catch (error) {
@@ -456,17 +454,7 @@ export const DeploymentApp = {
       }
 
       for (const request of family) {
-        const updatedRequest =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            id: request.id,
-          });
-        if (!updatedRequest) {
-          continue;
-        }
-        await sendDeploymentRequestExpiredNotifications(
-          updatedRequest,
-          request
-        );
+        await deleteDeploymentRequestAudience(request);
       }
     }
   },
@@ -929,7 +917,7 @@ const applyCancellationToDeploymentRequest = async ({
   userId: UserId;
   isAdmin: boolean;
   cancellationReason?: string;
-}): Promise<void> => {
+}): Promise<DeploymentRequestModel> => {
   const previousHubStatus = deploymentRequest.hub_status;
 
   const countsInOrgaQuota =
@@ -948,7 +936,7 @@ const applyCancellationToDeploymentRequest = async ({
       ? DeploymentRequestPlatformState.Unprovisioned
       : DeploymentRequestPlatformState.Removed;
 
-  await DeploymentQuotaDomain.withLockedQuotaTransaction(
+  return DeploymentQuotaDomain.withLockedQuotaTransaction(
     {
       platformIdentifier: deploymentRequest.platform_identifier,
       region: deploymentRequest.region,
@@ -982,13 +970,14 @@ const applyCancellationToDeploymentRequest = async ({
         deploymentRequest.platform_identifier,
         deploymentRequest.region
       );
+
+      return updatedDeploymentRequest;
     }
   );
 };
 
 const sendDeploymentRequestCancelledNotifications = async (
   deploymentRequest: DeploymentRequestModel,
-  previousDeploymentRequest: DeploymentRequestModel,
   userId: UserId
 ): Promise<void> => {
   await sendUpdateDeploymentTelemetryEvent(deploymentRequest, userId);
@@ -1017,30 +1006,34 @@ const sendDeploymentRequestCancelledNotifications = async (
       deploymentRequestId: deploymentRequest.id,
     });
   }
+};
 
+const deleteDeploymentRequestAudience = async (
+  deploymentRequest: DeploymentRequestModel
+): Promise<void> => {
   try {
-    if (previousDeploymentRequest.platform_id) {
+    if (deploymentRequest.platform_id) {
       await auth0Client.deleteAudienceAPI(
-        previousDeploymentRequest.organization_requester_id,
-        previousDeploymentRequest.platform_id
+        deploymentRequest.organization_requester_id,
+        deploymentRequest.platform_id
       );
     } else {
       logApp.error('Unable to delete audience', {
         error: 'missing platform_id',
-        deploymentRequestId: previousDeploymentRequest.id,
+        deploymentRequestId: deploymentRequest.id,
       });
     }
   } catch (error) {
-    logDeleteAudienceError(error, previousDeploymentRequest);
+    logDeleteAudienceError(error, deploymentRequest);
   }
 };
 
 const applyExpirationToDeploymentRequest = async (
   deploymentRequest: DeploymentRequestModel
-): Promise<void> => {
+): Promise<DeploymentRequestModel> => {
   const previousHubStatus = deploymentRequest.hub_status;
 
-  await DeploymentQuotaDomain.withLockedQuotaTransaction(
+  return DeploymentQuotaDomain.withLockedQuotaTransaction(
     {
       platformIdentifier: deploymentRequest.platform_identifier,
       region: deploymentRequest.region,
@@ -1064,13 +1057,14 @@ const applyExpirationToDeploymentRequest = async (
         deploymentRequest.platform_identifier,
         deploymentRequest.region
       );
+
+      return updatedDeploymentRequest;
     }
   );
 };
 
 const sendDeploymentRequestExpiredNotifications = async (
-  deploymentRequest: DeploymentRequestModel,
-  previousDeploymentRequest: DeploymentRequestModel
+  deploymentRequest: DeploymentRequestModel
 ): Promise<void> => {
   await sendUpdateDeploymentTelemetryEvent(deploymentRequest, SYSTEM_USER_UUID);
 
@@ -1097,22 +1091,6 @@ const sendDeploymentRequestExpiredNotifications = async (
       error,
       deploymentRequestId: deploymentRequest.id,
     });
-  }
-
-  try {
-    if (previousDeploymentRequest.platform_id) {
-      await auth0Client.deleteAudienceAPI(
-        previousDeploymentRequest.organization_requester_id,
-        previousDeploymentRequest.platform_id
-      );
-    } else {
-      logApp.error('Unable to delete audience', {
-        error: 'missing platform_id',
-        deploymentRequestId: previousDeploymentRequest.id,
-      });
-    }
-  } catch (error) {
-    logDeleteAudienceError(error, previousDeploymentRequest);
   }
 };
 

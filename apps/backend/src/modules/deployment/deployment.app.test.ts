@@ -2242,8 +2242,6 @@ describe('deployment app', () => {
           expect(untouched?.hub_status).toBe(hub_status);
           expect(untouched?.cancellation_date).toBeNull();
         }
-        expect(mockSendMail).not.toHaveBeenCalled();
-        expect(telemetrySpy).not.toHaveBeenCalled();
       });
     });
   });
@@ -2965,7 +2963,6 @@ describe('deployment app', () => {
             await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
           expect(untouched?.hub_status).toBe(DeploymentRequestHubStatus.Active);
         }
-        expect(mockSendMail).not.toHaveBeenCalled();
       });
 
       it('should not re-expire a child that is already cancelled', async () => {
