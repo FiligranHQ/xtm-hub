@@ -19,6 +19,7 @@ import DocumentItem_fragmentGraphql, {
 import { readInlineData, useMutation } from 'react-relay';
 import slugify from 'slugify';
 import { z } from 'zod';
+
 interface VaultFormProps {
   connectionId: string;
   userCanUpdate: boolean;
@@ -53,6 +54,7 @@ export const VaultForm = ({ connectionId, userCanUpdate }: VaultFormProps) => {
           active: true,
           uploader_id: me?.id ?? '',
           use_cases: [],
+          solution_categories: [],
         },
         metadata: [],
         serviceInstanceId: slug,

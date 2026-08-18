@@ -46,7 +46,7 @@ import { useMutation } from 'react-relay';
 type DocumentFormValues = ServiceFormValues & {
   entity_types?: string[] | null;
   license_type?: LicenseType | null;
-  solution_category?: string | null;
+  solution_categories?: string[] | null;
 };
 
 const documentBaseKeys: Array<keyof DocumentFormValues> = [
@@ -57,7 +57,7 @@ const documentBaseKeys: Array<keyof DocumentFormValues> = [
   'short_description',
   'description',
   'use_cases',
-  'solution_category',
+  'solution_categories',
   'license_type',
   'entity_types',
   'active',
@@ -115,6 +115,7 @@ export function useDocumentContext({
           ...input,
           active: input.active ?? false,
           use_cases: input.use_cases ?? [],
+          solution_categories: input.solution_categories ?? [],
         },
         metadata: Object.keys(metadata)
           .map((key) => ({

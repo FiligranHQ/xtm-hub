@@ -23,6 +23,7 @@ import { DocumentApp } from '../../src/modules/document/document.app';
 import { Upload } from '../../src/modules/document/document.uploads.helper';
 import { INTEGRATION_SERVICE_INSTANCE_ID } from '../../src/modules/shareable-resource/opencti/integration/integration.model';
 import { TEST_ORGANIZATIONS } from '../tests.const';
+
 const mockFileUpload: FileUpload = {
   filename: 'test-image.png',
   mimetype: 'image/png',
@@ -73,6 +74,7 @@ export const TestDocumentHelper = {
           active,
           uploader_id,
           use_cases: [],
+          solution_categories: [],
         },
         metadata,
         serviceInstanceId,
