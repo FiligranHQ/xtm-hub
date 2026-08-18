@@ -16190,9 +16190,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monocart-reporter@npm:2.12.4":
-  version: 2.12.4
-  resolution: "monocart-reporter@npm:2.12.4"
+"monocart-reporter@npm:2.12.5":
+  version: 2.12.5
+  resolution: "monocart-reporter@npm:2.12.5"
   dependencies:
     console-grid: "npm:^2.2.4"
     eight-colors: "npm:^1.3.3"
@@ -16203,7 +16203,7 @@ __metadata:
     monocart-locator: "npm:^1.0.3"
   bin:
     monocart: lib/cli.js
-  checksum: 10/8e86dd4c895892907903edf476760943ae89c23d03522f03eb82dd6bcc5e8915f56bac49d3f44bf882fa1f7a42e75e2ea9a7918d5a7d2c8e76206ee7f3451625
+  checksum: 10/d6b7b3918f7cae2ee71702aa9cc8c9d244e3e583f579bd309761357e250112be251901ed569482e3e48224066535569abcfd56c479043a2b21bd2b6144ac7d4f
   languageName: node
   linkType: hard
 
