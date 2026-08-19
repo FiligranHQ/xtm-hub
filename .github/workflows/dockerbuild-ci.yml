@@ -377,9 +377,22 @@ jobs:
           mkdir -p coverage
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
             VITEST_SHARD="${{ matrix.shard }}/8"
-          docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
-            -e VITEST_SHARD \
-            backend-test sh -lc "VITEST_MODE=true yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false"
+          max_attempts=3
+          for i in $(seq 1 $max_attempts); do
+            if docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
+              -e VITEST_SHARD \
+              backend-test sh -lc "VITEST_MODE=true yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false"; then
+              exit 0
+            fi
+
+            if [ "$i" -lt "$max_attempts" ]; then
+              delay=$((2 ** i))
+              echo "⚠️ Attempt $i/$max_attempts failed, retrying in ${delay}s..."
+              sleep "$delay"
+            fi
+          done
+          echo "❌ Backend shard run failed after $max_attempts attempts"
+          exit 1
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
