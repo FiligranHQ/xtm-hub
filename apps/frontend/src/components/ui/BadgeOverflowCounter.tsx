@@ -14,6 +14,7 @@ interface BadgeOverflowCounterProps {
   badges: Readonly<BadgeOverflow[]>;
   className?: string;
   badgeClassName?: string;
+  formatLabel?: boolean;
 }
 
 export interface BadgeOverflow {
@@ -26,6 +27,7 @@ const BadgeOverflowCounter = ({
   badges = [],
   className,
   badgeClassName,
+  formatLabel = true,
 }: BadgeOverflowCounterProps) => {
   const [visibleTags, setVisibleTags] = useState<number>(badges?.length ?? 0);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
@@ -94,6 +96,8 @@ const BadgeOverflowCounter = ({
   }
   const hiddenCount = badges.length - visibleTags;
   const firstBadge = badges[0];
+  const getBadgeLabel = (name: string) =>
+    formatLabel ? formatName(name) : name;
 
   return (
     <div
@@ -108,7 +112,9 @@ const BadgeOverflowCounter = ({
           key={firstBadge.id}
           color={firstBadge.color}
           title={firstBadge.name}>
-          <span className="truncate block">{formatName(firstBadge.name)}</span>
+          <span className="truncate block">
+            {getBadgeLabel(firstBadge.name)}
+          </span>
         </Badge>
       )}
 
@@ -121,7 +127,7 @@ const BadgeOverflowCounter = ({
           aria-hidden={index >= visibleTags}
           key={id}
           color={color}>
-          {formatName(name)}
+          {getBadgeLabel(name)}
         </Badge>
       ))}
 
@@ -131,7 +137,7 @@ const BadgeOverflowCounter = ({
           aria-hidden={true}
           key={id}
           color={color}>
-          {formatName(name)}
+          {getBadgeLabel(name)}
         </Badge>
       ))}
 
@@ -154,7 +160,7 @@ const BadgeOverflowCounter = ({
                     key={id}
                     color={color}
                     className={badgeClassName}>
-                    {formatName(name)}
+                    {getBadgeLabel(name)}
                   </Badge>
                 ))}
               </div>

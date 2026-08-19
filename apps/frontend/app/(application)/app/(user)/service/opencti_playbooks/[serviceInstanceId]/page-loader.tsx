@@ -23,13 +23,10 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, search, labels, setSearch, orderMode, orderBy } =
     useServiceListLocalStorage(ServiceListLocalStorageKey.OpenCTIPlaybooks);
-  const logicalFilters = useLogicalFiltersFromStorage(
-    {
-      serviceInstanceSlug: ServiceSlug.OPEN_CTI_PLAYBOOKS,
-      labels,
-    },
-    false
-  );
+  const logicalFilters = useLogicalFiltersFromStorage({
+    serviceInstanceSlug: ServiceSlug.OPEN_CTI_PLAYBOOKS,
+    labels,
+  });
 
   useEffect(() => {
     loadQuery(

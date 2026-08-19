@@ -4,13 +4,11 @@ import { DocumentsListQuery } from '@/components/service/document/document.graph
 import IntegrationsList from '@/components/service/integrations/[serviceInstanceId]/IntegrationsList';
 import { useIntegrationListStorage } from '@/components/service/integrations/[serviceInstanceId]/use-integration-list-storage';
 import { useIntegrationListUrlFilters } from '@/components/service/integrations/[serviceInstanceId]/use-integration-list-url-filters';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { Skeleton } from '@filigran/ui';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { FeatureFlag } from '@graphql/generated';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 
@@ -46,23 +44,17 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     setFilters,
     setSelectedFilters,
   });
-  const isSolutionCategoriesEnabled = useIsFeatureEnabled(
-    FeatureFlag.SolutionCategories
-  );
 
-  const logicalFilters = useLogicalFiltersFromStorage(
-    {
-      serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS,
-      labels,
-      deployable,
-      verified,
-      integrationTypes,
-      productVersions,
-      licenseTypes,
-      solutionCategories,
-    },
-    isSolutionCategoriesEnabled
-  );
+  const logicalFilters = useLogicalFiltersFromStorage({
+    serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS,
+    labels,
+    deployable,
+    verified,
+    integrationTypes,
+    productVersions,
+    licenseTypes,
+    solutionCategories,
+  });
 
   useEffect(() => {
     loadQuery(

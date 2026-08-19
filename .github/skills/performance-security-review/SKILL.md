@@ -1,5 +1,5 @@
 ---
-name: Performance & Security Review
+name: performance-security-review
 description: Shared XTM Hub criteria for reviewing code for performance bottlenecks, security issues, and likely future failures, and for challenging assumptions as a devil's advocate.
 ---
 

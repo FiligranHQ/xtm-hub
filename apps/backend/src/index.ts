@@ -257,10 +257,18 @@ if (
 }
 
 app.use(function (req, res, next) {
+  const forwardedFor = req.headers['x-forwarded-for'];
+  const forwardedForIp = Array.isArray(forwardedFor)
+    ? forwardedFor[0]
+    : forwardedFor?.split(',')[0]?.trim();
   requestContext.run(
     {
       user: req.session.user,
       correlationId: uuidv4(),
+      userAgent: req.headers['user-agent'],
+      ip: forwardedForIp || req.ip,
+      referer: req.headers.referer,
+      organizationId: req.session.user?.selected_organization_id,
     },
     () => {
       next();

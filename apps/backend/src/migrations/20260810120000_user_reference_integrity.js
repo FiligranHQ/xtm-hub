@@ -43,7 +43,7 @@ export async function up(knex) {
   await knex('OneClickDeployment')
     .whereNotNull('user_id')
     .whereNotIn('user_id', knex('User').select('id'))
-    .delete();
+    .update({ user_id: null });
 
   await knex.schema.alterTable('OneClickDeployment', (table) => {
     table

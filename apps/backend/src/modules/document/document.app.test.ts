@@ -10,7 +10,11 @@ import {
   vi,
 } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../tests/tests.const';
+import {
+  SERVICES,
+  TEST_ORGANIZATIONS,
+  TEST_USE_CASES,
+} from '../../../tests/tests.const';
 import {
   DocumentImageType,
   DocumentMetadataKeyCode,
@@ -46,8 +50,6 @@ import {
   TelemetrySource,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import { useCaseApp } from '../use-case/use-case.app';
-import { useCaseDomain } from '../use-case/use-case.domain';
 import { DocumentApp } from './document.app';
 import {
   ALL_METADATA_KEYS,
@@ -92,6 +94,7 @@ describe('documentApp', () => {
     description: 'description',
     active: true,
     use_cases: [],
+    solution_categories: [],
   };
 
   const documentUpdateData = {
@@ -173,7 +176,11 @@ describe('documentApp', () => {
         sourceDocument: mockUpload,
       });
 
-      const { use_cases: _use_cases, ...expected } = documentData;
+      const {
+        use_cases: _use_cases,
+        solution_categories: _solution_categories,
+        ...expected
+      } = documentData;
 
       // Then
       expect(result).toMatchObject({
@@ -237,6 +244,37 @@ describe('documentApp', () => {
         active: input.active,
       });
       expect(licenseTypeFromDb).toBe(input.license_type);
+    });
+
+    it('should link all provided solution categories when multiple are provided on create', async () => {
+      // Given
+      const category1 = await solutionCategoryDomain.insertSolutionCategory({
+        name: `category-${uuidv4()}`,
+      });
+      const category2 = await solutionCategoryDomain.insertSolutionCategory({
+        name: `category-${uuidv4()}`,
+      });
+
+      // When
+      const createdDocument = await DocumentApp.createDocument({
+        input: {
+          ...documentData,
+          slug: `create-multi-solution-categories-${uuidv4()}`,
+          solution_categories: [category1.id, category2.id],
+        },
+        metadata: integrationMetadata,
+        serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+      });
+
+      // Then
+      const links =
+        await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery([
+          createdDocument.id,
+        ]);
+      expect(links).toHaveLength(2);
+      expect(links.map(({ id }) => id)).toEqual(
+        expect.arrayContaining([category1.id, category2.id])
+      );
     });
 
     it('should not use document file when document is a third party integration', async () => {
@@ -813,8 +851,8 @@ describe('documentApp', () => {
       expect(updatedDocument.slug).toBe(originalSlug);
     });
 
-    describe('solution_category linking', () => {
-      it('should link solution category when provided on update', async () => {
+    describe('solution_categories linking', () => {
+      it('should link solution categories when provided on update', async () => {
         // Given
         const category = await solutionCategoryDomain.insertSolutionCategory({
           name: `category-${uuidv4()}`,
@@ -827,7 +865,7 @@ describe('documentApp', () => {
           metadata: integrationMetadata,
           input: {
             ...documentUpdateData,
-            solution_category: category.id,
+            solution_categories: [category.id],
           },
           existingImageIds: [],
         });
@@ -842,6 +880,38 @@ describe('documentApp', () => {
           _document_id: createdDocument!.id,
           id: category.id,
         });
+      });
+
+      it('should link all provided solution categories when multiple are provided on update', async () => {
+        // Given
+        const category1 = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+        const category2 = await solutionCategoryDomain.insertSolutionCategory({
+          name: `category-${uuidv4()}`,
+        });
+
+        // When
+        await DocumentApp.updateDocument({
+          parentDocumentId: createdDocument!.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: integrationMetadata,
+          input: {
+            ...documentUpdateData,
+            solution_categories: [category1.id, category2.id],
+          },
+          existingImageIds: [],
+        });
+
+        // Then
+        const links =
+          await solutionCategoryDomain.buildSolutionCategoriesByDocumentIdQuery(
+            [createdDocument!.id]
+          );
+        expect(links).toHaveLength(2);
+        expect(links.map(({ id }) => id)).toEqual(
+          expect.arrayContaining([category1.id, category2.id])
+        );
       });
 
       it('should replace previous solution category link on update', async () => {
@@ -859,7 +929,7 @@ describe('documentApp', () => {
           metadata: integrationMetadata,
           input: {
             ...documentUpdateData,
-            solution_category: category1.id,
+            solution_categories: [category1.id],
           },
           existingImageIds: [],
         });
@@ -871,7 +941,7 @@ describe('documentApp', () => {
           metadata: integrationMetadata,
           input: {
             ...documentUpdateData,
-            solution_category: category2.id,
+            solution_categories: [category2.id],
           },
           existingImageIds: [],
         });
@@ -888,7 +958,7 @@ describe('documentApp', () => {
         });
       });
 
-      it('should keep existing solution category link when update omits solution_category', async () => {
+      it('should keep existing solution categories link when update omits solution_categories', async () => {
         // Given
         const category = await solutionCategoryDomain.insertSolutionCategory({
           name: `category-${uuidv4()}`,
@@ -900,7 +970,7 @@ describe('documentApp', () => {
           metadata: integrationMetadata,
           input: {
             ...documentUpdateData,
-            solution_category: category.id,
+            solution_categories: [category.id],
           },
           existingImageIds: [],
         });
@@ -1164,7 +1234,6 @@ describe('documentApp', () => {
   describe('createDocumentWithChildrenAndMetadata', () => {
     beforeEach(async () => {
       await TestHelper.objectUseCase.delete({});
-      await TestHelper.useCase.delete({});
     });
 
     it('should create a document without linking any use case when use_cases is omitted', async () => {
@@ -1196,7 +1265,10 @@ describe('documentApp', () => {
           service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
           type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
           active: true,
-          use_cases: ['Detection', 'Response'],
+          use_cases: [
+            TEST_USE_CASES.DETECTION.NAME,
+            TEST_USE_CASES.RESPONSE.NAME,
+          ],
         },
         []
       );
@@ -1206,25 +1278,15 @@ describe('documentApp', () => {
         object_id: document.id,
       });
       expect(links).toHaveLength(2);
-
-      const detectionUseCase = await useCaseDomain.loadUseCaseBy({
-        name: 'Detection',
-      });
-      const responseUseCase = await useCaseDomain.loadUseCaseBy({
-        name: 'Response',
-      });
       expect(links?.map((link) => link.use_case_id)).toEqual(
-        expect.arrayContaining([detectionUseCase?.id, responseUseCase?.id])
+        expect.arrayContaining([
+          TEST_USE_CASES.DETECTION.ID,
+          TEST_USE_CASES.RESPONSE.ID,
+        ])
       );
     });
 
     it('should reuse an existing use case by name (case-insensitive) rather than duplicating it', async () => {
-      // Given
-      const existingUseCase = await useCaseApp.loadOrCreateUseCase({
-        name: 'Detection',
-        color: '#0099cc',
-      });
-
       // When
       const document = await DocumentApp.createDocumentWithChildrenAndMetadata(
         {
@@ -1238,9 +1300,11 @@ describe('documentApp', () => {
         []
       );
 
-      // Then
-      const allUseCases = await TestHelper.useCase.loadAll({});
-      expect(allUseCases).toHaveLength(1);
+      // Then — no duplicate "Detection" use case was created
+      const detectionUseCases = await TestHelper.useCase.loadAll({
+        name: TEST_USE_CASES.DETECTION.NAME,
+      });
+      expect(detectionUseCases).toHaveLength(1);
 
       const links = await TestHelper.objectUseCase.load({
         object_id: document.id,
@@ -1248,7 +1312,7 @@ describe('documentApp', () => {
       expect(links).toHaveLength(1);
       expect(links?.[0]).toMatchObject({
         object_id: document.id,
-        use_case_id: existingUseCase.id,
+        use_case_id: TEST_USE_CASES.DETECTION.ID,
       });
     });
   });
@@ -1350,7 +1414,6 @@ describe('documentApp', () => {
     describe('use_cases linking', () => {
       beforeEach(async () => {
         await TestHelper.objectUseCase.delete({});
-        await TestHelper.useCase.delete({});
       });
 
       it('should link use cases by name when creating a new document', async () => {
@@ -1360,7 +1423,7 @@ describe('documentApp', () => {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           slug: 'use-case-create-slug',
           service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          use_cases: ['Detection'],
+          use_cases: [TEST_USE_CASES.DETECTION.NAME],
         };
 
         // When
@@ -1377,12 +1440,9 @@ describe('documentApp', () => {
           object_id: doc.id,
         });
         expect(links).toHaveLength(1);
-        const detectionUseCase = await useCaseDomain.loadUseCaseBy({
-          name: 'Detection',
-        });
         expect(links?.[0]).toMatchObject({
           object_id: doc.id,
-          use_case_id: detectionUseCase?.id,
+          use_case_id: TEST_USE_CASES.DETECTION.ID,
         });
       });
 
@@ -1393,7 +1453,7 @@ describe('documentApp', () => {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           slug: 'use-case-update-slug',
           service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          use_cases: ['Detection'],
+          use_cases: [TEST_USE_CASES.DETECTION.NAME],
         };
         const doc1 = await DocumentApp.upsertDocumentWithExternalImage(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -1406,7 +1466,7 @@ describe('documentApp', () => {
         // When — update with "Response" instead
         const doc2 = await DocumentApp.upsertDocumentWithExternalImage(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          { ...input, use_cases: ['Response'] },
+          { ...input, use_cases: [TEST_USE_CASES.RESPONSE.NAME] },
           mockUpload,
           metadataKeys,
           FiligranProduct.Opencti
@@ -1418,12 +1478,9 @@ describe('documentApp', () => {
           object_id: doc2.id,
         });
         expect(links).toHaveLength(1);
-        const responseUseCase = await useCaseDomain.loadUseCaseBy({
-          name: 'Response',
-        });
         expect(links?.[0]).toMatchObject({
           object_id: doc2.id,
-          use_case_id: responseUseCase?.id,
+          use_case_id: TEST_USE_CASES.RESPONSE.ID,
         });
       });
 
@@ -1434,7 +1491,7 @@ describe('documentApp', () => {
           uploader_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
           slug: 'use-case-unchanged-slug',
           service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
-          use_cases: ['Detection'],
+          use_cases: [TEST_USE_CASES.DETECTION.NAME],
         };
         const doc1 = await DocumentApp.upsertDocumentWithExternalImage(
           OPENCTI_INTEGRATION_DOCUMENT_TYPE,
@@ -1464,12 +1521,9 @@ describe('documentApp', () => {
           object_id: doc2.id,
         });
         expect(links).toHaveLength(1);
-        const detectionUseCase = await useCaseDomain.loadUseCaseBy({
-          name: 'Detection',
-        });
         expect(links?.[0]).toMatchObject({
           object_id: doc2.id,
-          use_case_id: detectionUseCase?.id,
+          use_case_id: TEST_USE_CASES.DETECTION.ID,
         });
       });
     });

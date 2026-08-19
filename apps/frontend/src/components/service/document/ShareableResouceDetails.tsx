@@ -7,7 +7,6 @@ import {
   getEntityTypes,
   ShareableResourceEntityTypes,
 } from '@/components/service/document/ui/ShareableResourceEntityTypes';
-import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
 import { UserDisplay } from '@/components/ui/UserDisplay';
 import { roundToNearest } from '@/lib/utils';
 import { formatDate } from '@/utils/date';
@@ -19,11 +18,9 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { isResourceDownloadable } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
-import { Badge } from '@filigran/ui/servers';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
 
 interface ShareableResourceDetailsProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
@@ -54,14 +51,6 @@ const ShareableResourceDetails = ({
     ];
   const platformName = PlatformMetadataMapping[platformIdentifier].name;
   const isIntegration = isIntegrationItem(documentData);
-
-  const integrationSubTypeMetadata = useMemo(() => {
-    if (!isIntegration) {
-      return null;
-    }
-
-    return getIntegrationSubTypeMetadata(documentData.integration_subtype);
-  }, [isIntegration, documentData]);
 
   const documentationUrl =
     documentData.integration_type &&
@@ -127,21 +116,6 @@ const ShareableResourceDetails = ({
               <div className="flex items-center gap-s">
                 <span>{documentData.license_type}</span>
               </div>
-            </ShareableResourceDetailItem>
-          )}
-          {integrationSubTypeMetadata && (
-            <ShareableResourceDetailItem
-              label={t(
-                'Service.ShareableResources.Details.IntegrationSubType'
-              )}>
-              <span>
-                <Badge
-                  className="mr-auto"
-                  variant="outline"
-                  color={integrationSubTypeMetadata.color}>
-                  {integrationSubTypeMetadata.label}
-                </Badge>
-              </span>
             </ShareableResourceDetailItem>
           )}
         </>

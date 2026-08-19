@@ -310,6 +310,7 @@ const Page = async ({
           </div>
           <div>
             <BadgeOverflowCounter
+              formatLabel={false}
               badges={document?.use_cases as BadgeOverflow[]}
               className="z-[2]"
             />

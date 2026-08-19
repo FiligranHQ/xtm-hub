@@ -163,6 +163,7 @@ const ShareableResourceSlug = ({
           </div>
           <div>
             <BadgeOverflowCounter
+              formatLabel={false}
               badges={documentData.use_cases as BadgeOverflow[]}
             />
           </div>

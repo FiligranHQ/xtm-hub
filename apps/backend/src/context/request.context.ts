@@ -1,9 +1,14 @@
 import { AsyncLocalStorage } from 'async_hooks';
+import { OrganizationId } from '../model/kanel/public/Organization';
 import { UserLoadUserBy } from '../model/user';
 import { UnknownErrorCode } from '../utils/error/error.code';
 export interface RequestContext {
   user?: UserLoadUserBy;
   correlationId?: string;
+  userAgent?: string;
+  ip?: string;
+  referer?: string;
+  organizationId?: OrganizationId;
 }
 
 // Create typed AsyncLocalStorage
