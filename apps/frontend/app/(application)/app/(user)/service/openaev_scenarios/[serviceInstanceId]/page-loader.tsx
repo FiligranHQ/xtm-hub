@@ -23,13 +23,10 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, search, labels, setSearch, orderMode, orderBy } =
     useServiceListLocalStorage(ServiceListLocalStorageKey.OpenAEVScenarios);
-  const logicalFilters = useLogicalFiltersFromStorage(
-    {
-      serviceInstanceSlug: ServiceSlug.OPEN_AEV_SCENARIOS,
-      labels,
-    },
-    false
-  );
+  const logicalFilters = useLogicalFiltersFromStorage({
+    serviceInstanceSlug: ServiceSlug.OPEN_AEV_SCENARIOS,
+    labels,
+  });
 
   useEffect(() => {
     loadQuery(

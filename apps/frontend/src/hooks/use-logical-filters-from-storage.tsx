@@ -32,11 +32,10 @@ type IntegrationFiltersParams = {
 export type LogicalFiltersParams =
   SimpleFiltersParams | IntegrationFiltersParams;
 
-export const useLogicalFiltersFromStorage = (
-  params: LogicalFiltersParams,
-  shouldDisplaySolutionCategoriesFilter: boolean
-) => {
+export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
   const { serviceInstanceSlug, labels } = params;
+  const shouldDisplaySolutionCategoriesFilter =
+    serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS;
   const entityTypes = 'entityTypes' in params ? params.entityTypes : undefined;
   const deployable = 'deployable' in params ? params.deployable : undefined;
   const verified =

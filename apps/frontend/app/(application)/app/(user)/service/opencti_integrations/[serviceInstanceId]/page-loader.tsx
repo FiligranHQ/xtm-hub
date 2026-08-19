@@ -45,19 +45,16 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     setSelectedFilters,
   });
 
-  const logicalFilters = useLogicalFiltersFromStorage(
-    {
-      serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS,
-      labels,
-      deployable,
-      verified,
-      integrationTypes,
-      productVersions,
-      licenseTypes,
-      solutionCategories,
-    },
-    true
-  );
+  const logicalFilters = useLogicalFiltersFromStorage({
+    serviceInstanceSlug: ServiceSlug.OPEN_CTI_INTEGRATIONS,
+    labels,
+    deployable,
+    verified,
+    integrationTypes,
+    productVersions,
+    licenseTypes,
+    solutionCategories,
+  });
 
   useEffect(() => {
     loadQuery(

@@ -67,10 +67,7 @@ export const PublicDocumentListPageLoader = ({
           entityTypes,
         };
 
-  const logicalFilters = useLogicalFiltersFromStorage(
-    params,
-    serviceInstanceSlug === ServiceSlug.OPEN_CTI_INTEGRATIONS
-  );
+  const logicalFilters = useLogicalFiltersFromStorage(params);
 
   useEffect(() => {
     loadQuery(

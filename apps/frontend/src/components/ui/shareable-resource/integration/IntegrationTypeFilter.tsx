@@ -23,7 +23,6 @@ export const IntegrationTypeFilter = () => {
     const allOptions = Object.values(IntegrationType).map((feedType) => ({
       label: t(`Service.OpenctiIntegrations.Type.${feedType}`),
       value: feedType.toString(),
-      children: undefined,
     }));
     const availableOption = allOptions
       .filter((option) =>
