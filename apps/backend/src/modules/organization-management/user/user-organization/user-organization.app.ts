@@ -174,7 +174,7 @@ export const UserOrganizationApp = {
       organizationId
     );
 
-    const pendingUserAccepted = await withTransaction(async () => {
+    await withTransaction(async () => {
       const pendingUser =
         await UserOrganizationPendingDomain.lockUserOrganizationPending(
           userId,
@@ -182,7 +182,7 @@ export const UserOrganizationApp = {
         );
 
       if (!pendingUser) {
-        return false;
+        return;
       }
 
       await UserHelper.acceptPendingUserWithCapabilities({
@@ -190,29 +190,14 @@ export const UserOrganizationApp = {
         organization_id: organizationId,
         orgCapabilities: [],
       });
-
-      return true;
     });
-
-    if (!pendingUserAccepted) {
-      const [userOrganization] =
-        await UserOrganizationDomain.loadUserOrganization({
-          user_id: userId,
-          organization_id: organizationId,
-        });
-
-      if (!userOrganization) {
-        return null;
-      }
-    }
 
     const user = await UserDomain.loadUserBy({
       'User.id': userId,
+      'Organization.id': organizationId,
     });
-    if (!user) {
-      throw new Error(ErrorCode.UserNotFound);
-    }
-    return user;
+
+    return user ?? null;
   },
 
   sendPendingUsersDigest: async (): Promise<void> => {

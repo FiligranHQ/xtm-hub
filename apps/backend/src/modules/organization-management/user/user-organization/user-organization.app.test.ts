@@ -425,6 +425,26 @@ describe('usersOrganizationApp', () => {
       expect(acceptedUser).toBeNull();
     });
 
+    it('should return null when user is only member of another organization', async () => {
+      requestContext.set({
+        user: contextAdminSecondOrga.user,
+      });
+      const user = await insertTestUser();
+
+      await TestHelper.user_Organization.create({
+        user_id: user.id,
+        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+
+      const acceptedUser =
+        await UserOrganizationApp.acceptPendingUserInOrganization({
+          userId: user.id,
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        });
+
+      expect(acceptedUser).toBeNull();
+    });
+
     it('should reject when user does not have enough capabilities', async () => {
       requestContext.set({
         user: contextSimpleUserSecondOrga.user,
