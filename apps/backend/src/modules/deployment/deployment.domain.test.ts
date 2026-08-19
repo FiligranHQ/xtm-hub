@@ -1412,9 +1412,7 @@ describe('deploymentRequestDomain', () => {
     const OTHER_USER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID;
 
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return 0 when no deployment request matches the given conditions', async () => {
