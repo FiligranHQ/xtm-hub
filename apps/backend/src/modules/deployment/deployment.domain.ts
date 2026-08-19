@@ -56,6 +56,30 @@ export const DeploymentRequestDomain = {
       .select('*');
   },
 
+  loadDeploymentRequestWithChildren: async (
+    deploymentRequest: DeploymentRequest,
+    childrenHubStatus?: DeploymentRequestHubStatus
+  ): Promise<DeploymentRequest[]> => {
+    if (deploymentRequest.type !== DeploymentRequestDeploymentType.Bundle) {
+      return [deploymentRequest];
+    }
+
+    const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+      parent_id: deploymentRequest.id,
+      ...(childrenHubStatus ? { hub_status: childrenHubStatus } : {}),
+    });
+
+    // Children are sorted by platform_identifier to keep a stable quota lock
+    // acquisition order: two concurrent family cancellations would otherwise
+    // be able to deadlock on DeploymentRequestQuota rows.
+    return [
+      deploymentRequest,
+      ...children.sort((a, b) =>
+        (a.platform_identifier ?? '').localeCompare(b.platform_identifier ?? '')
+      ),
+    ];
+  },
+
   loadTrialsForOrganization: async (
     organizationId: OrganizationId,
     identifiers?: PlatformIdentifier[]
@@ -157,9 +181,17 @@ export const DeploymentRequestDomain = {
 
   loadTrialsToExpire: async (): Promise<DeploymentRequest[]> => {
     return db<DeploymentRequest[]>('DeploymentRequest')
-      .where('type', '=', DeploymentRequestDeploymentType.Trial)
       .where('end_date', '<', new Date())
       .where('hub_status', '=', DeploymentRequestHubStatus.Active)
+      .where((qb) => {
+        qb.where('type', '=', DeploymentRequestDeploymentType.Bundle).orWhere(
+          (subQb) => {
+            subQb
+              .where('type', '=', DeploymentRequestDeploymentType.Trial)
+              .whereNull('parent_id');
+          }
+        );
+      })
       .select('*');
   },
 

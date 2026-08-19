@@ -20,10 +20,13 @@ import DeploymentRequest, {
 import DeploymentRequestQuota, {
   DeploymentRequestQuotaMutator,
 } from '../../src/model/kanel/public/DeploymentRequestQuota';
-import { ServiceInstanceId } from '../../src/model/kanel/public/ServiceInstance';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../src/model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
 } from '../../src/model/kanel/public/Subscription';
+import { UserId } from '../../src/model/kanel/public/User';
 import { DeploymentRequestDomain } from '../../src/modules/deployment/deployment.domain';
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../../src/modules/registration/registration.mapping';
 import { ServiceInstanceDomain } from '../../src/modules/service/instance/service-instance.domain';
@@ -33,6 +36,22 @@ export const TestDeploymentHelper = {
   deploymentRequest: {
     delete: async (field: DeploymentRequestMutator) => {
       await db<DeploymentRequest>('DeploymentRequest').where(field).del();
+    },
+    deleteAllWithServiceInstanceAndSubscription: async () => {
+      const deploymentRequests = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      ).select('service_instance_id');
+      const serviceInstanceIds = deploymentRequests.map(
+        ({ service_instance_id }: DeploymentRequest) => service_instance_id
+      );
+
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await db<Subscription>('Subscription')
+        .whereIn('service_instance_id', serviceInstanceIds)
+        .del();
+      await db<ServiceInstance>('ServiceInstance')
+        .whereIn('id', serviceInstanceIds)
+        .del();
     },
     update: async (field: DeploymentRequestMutator) => {
       await db<DeploymentRequest>('DeploymentRequest').update(field);
@@ -118,10 +137,18 @@ export const TestDeploymentHelper = {
         hub_status,
         target_state,
         ordering,
+        counts_in_orga_quota,
+        cancellation_reason,
+        cancellation_date,
+        cancellation_user_id,
       }: {
         hub_status?: DeploymentRequestHubStatus;
         target_state?: DeploymentRequestPlatformState;
         ordering?: number;
+        counts_in_orga_quota?: boolean;
+        cancellation_reason?: string | null;
+        cancellation_date?: Date | null;
+        cancellation_user_id?: UserId | null;
       }
     ) => {
       const deploymentRequest =
@@ -141,6 +168,28 @@ export const TestDeploymentHelper = {
 
       if (ordering !== undefined) {
         expect(deploymentRequest!.ordering).toBe(ordering);
+      }
+
+      if (counts_in_orga_quota !== undefined) {
+        expect(deploymentRequest!.counts_in_orga_quota).toBe(
+          counts_in_orga_quota
+        );
+      }
+
+      if (cancellation_reason !== undefined) {
+        expect(deploymentRequest!.cancellation_reason).toBe(
+          cancellation_reason
+        );
+      }
+
+      if (cancellation_date !== undefined) {
+        expect(deploymentRequest!.cancellation_date).toEqual(cancellation_date);
+      }
+
+      if (cancellation_user_id !== undefined) {
+        expect(deploymentRequest!.cancellation_user_id).toBe(
+          cancellation_user_id
+        );
       }
     },
   },
