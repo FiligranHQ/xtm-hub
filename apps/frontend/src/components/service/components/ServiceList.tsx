@@ -8,6 +8,7 @@ import {
   ServiceRestriction,
 } from '@graphql/generated';
 
+import DocumentList from '@/components/service/components/DocumentList';
 import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
   ServiceListFilterKey,
@@ -23,10 +24,17 @@ import {
   HeroSectionLibrary,
 } from '@/components/service/document/ui/HeroSectionLibrary';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
+import { CountBadge } from '@/components/ui/CountBadge';
 import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
 import { Fragment, useContext, useLayoutEffect } from 'react';
@@ -136,24 +144,36 @@ const ServiceList = ({
           <Fragment key={integrationType}>
             {Object.values(IntegrationType).includes(
               integrationType as IntegrationType
-            ) && (
-              <h2>
-                {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}
-              </h2>
+            ) ? (
+              <Accordion
+                type="single"
+                collapsible>
+                <AccordionItem value={integrationType}>
+                  <h2 className="m-0">
+                    <AccordionTrigger className="hover:cursor-pointer">
+                      <div className="inline-flex items-center gap-s">
+                        {t(
+                          `Service.OpenctiIntegrations.Type.${integrationType}`
+                        )}
+                        <CountBadge
+                          count={documents.length}
+                          bgFadedClass={
+                            'bg-feedback-neutral-secondary-transparency'
+                          }
+                          textClass={'text-feedback-neutral-primary'}
+                        />
+                      </div>
+                    </AccordionTrigger>
+                  </h2>
+
+                  <AccordionContent>
+                    <DocumentList documents={documents} />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            ) : (
+              <DocumentList documents={documents} />
             )}
-            <ul
-              className={
-                'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
-              }>
-              {documents.map((document) => (
-                <ServiceCard
-                  key={document.id}
-                  document={document}
-                  detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
-                  shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                />
-              ))}
-            </ul>
           </Fragment>
         )
       )}

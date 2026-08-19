@@ -1,10 +1,16 @@
-import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { CountBadge } from '@/components/ui/CountBadge';
+import { PublicShareableDocumentList } from '@/components/ui/shareable-resource/PublicShareableDocumentList';
 import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@filigran/ui';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { IntegrationType } from '@graphql/generated';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Fragment, useMemo } from 'react';
 
 interface PublicShareableResourceListProps {
@@ -19,7 +25,6 @@ export const PublicShareableResourceList = ({
   baseUrl,
 }: PublicShareableResourceListProps) => {
   const t = useTranslations();
-  const locale = useLocale();
 
   const documentsByIntegrationType = useMemo(() => {
     return documents.reduce<
@@ -52,26 +57,44 @@ export const PublicShareableResourceList = ({
           <Fragment key={integrationType}>
             {Object.values(IntegrationType).includes(
               integrationType as IntegrationType
-            ) && (
-              <h2 className="mt-xl">
-                {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}
-              </h2>
+            ) ? (
+              <Accordion
+                type="single"
+                collapsible>
+                <AccordionItem value={integrationType}>
+                  <h2 className="m-0">
+                    <AccordionTrigger className="hover:cursor-pointer">
+                      <div className="inline-flex items-center gap-s">
+                        {t(
+                          `Service.OpenctiIntegrations.Type.${integrationType}`
+                        )}
+                        <CountBadge
+                          count={documents.length}
+                          bgFadedClass={
+                            'bg-feedback-neutral-secondary-transparency'
+                          }
+                          textClass={'text-feedback-neutral-primary'}
+                        />
+                      </div>
+                    </AccordionTrigger>
+                  </h2>
+
+                  <AccordionContent>
+                    <PublicShareableDocumentList
+                      documents={documents}
+                      serviceInstance={serviceInstance}
+                      baseUrl={baseUrl}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            ) : (
+              <PublicShareableDocumentList
+                documents={documents}
+                serviceInstance={serviceInstance}
+                baseUrl={baseUrl}
+              />
             )}
-            <ul
-              className={
-                'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
-              }>
-              {documents.map((document) => (
-                <ShareableResourceCard
-                  publicPath
-                  key={document.id}
-                  document={document}
-                  serviceInstance={serviceInstance}
-                  detailUrl={`/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                  shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                />
-              ))}
-            </ul>
           </Fragment>
         )
       )}
