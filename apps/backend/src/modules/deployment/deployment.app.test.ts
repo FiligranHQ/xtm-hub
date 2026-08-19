@@ -2054,22 +2054,14 @@ describe('deployment app', () => {
           ForbiddenErrorCode.CantCancelBundleProduct
         );
 
-        const untouchedChild =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            id: child.id,
-          });
-        const untouchedBundle =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            id: bundle.id as DeploymentRequestId,
-          });
-
-        expect(untouchedChild).toMatchObject({
+        await TestHelper.deploymentRequest.assertProperties(child.id, {
           hub_status: DeploymentRequestHubStatus.Active,
           cancellation_date: null,
           cancellation_reason: null,
         });
-        expect(untouchedBundle?.hub_status).toBe(
-          DeploymentRequestHubStatus.Active
+        await TestHelper.deploymentRequest.assertProperties(
+          bundle.id as DeploymentRequestId,
+          { hub_status: DeploymentRequestHubStatus.Active }
         );
         expect(freePlaceSpy).not.toHaveBeenCalled();
       }
@@ -2911,10 +2903,7 @@ describe('deployment app', () => {
         await DeploymentApp.expireTrials();
 
         for (const { id } of [bundle, childOpencti, childXtmone]) {
-          const expired = await DeploymentRequestDomain.loadDeploymentRequestBy(
-            { id }
-          );
-          expect(expired).toMatchObject({
+          await TestHelper.deploymentRequest.assertProperties(id, {
             hub_status: DeploymentRequestHubStatus.Expired,
             target_state: DeploymentRequestPlatformState.Removed,
           });
@@ -2933,12 +2922,10 @@ describe('deployment app', () => {
 
         await DeploymentApp.expireTrials();
 
-        const untouched = await DeploymentRequestDomain.loadDeploymentRequestBy(
-          {
-            id: ongoingStandalone.id,
-          }
+        await TestHelper.deploymentRequest.assertProperties(
+          ongoingStandalone.id,
+          { hub_status: DeploymentRequestHubStatus.Active }
         );
-        expect(untouched?.hub_status).toBe(DeploymentRequestHubStatus.Active);
       });
 
       it('should leave the whole bundle untouched when one row fails to be expired', async () => {
@@ -2976,21 +2963,12 @@ describe('deployment app', () => {
 
         await DeploymentApp.expireTrials();
 
-        const untouchedChild =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            id: childXtmone.id,
-          });
-        expect(untouchedChild?.hub_status).toBe(
-          DeploymentRequestHubStatus.Cancelled
-        );
-
-        const expiredBundle =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            id: bundle.id,
-          });
-        expect(expiredBundle?.hub_status).toBe(
-          DeploymentRequestHubStatus.Expired
-        );
+        await TestHelper.deploymentRequest.assertProperties(childXtmone.id, {
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+        });
+        await TestHelper.deploymentRequest.assertProperties(bundle.id, {
+          hub_status: DeploymentRequestHubStatus.Expired,
+        });
       });
     });
   });
