@@ -69,6 +69,9 @@ export const DeploymentRequestDomain = {
       ...(childrenHubStatus ? { hub_status: childrenHubStatus } : {}),
     });
 
+    // Children are sorted by platform_identifier to keep a stable quota lock
+    // acquisition order: two concurrent family cancellations would otherwise
+    // be able to deadlock on DeploymentRequestQuota rows.
     return [
       deploymentRequest,
       ...children.sort((a, b) =>
