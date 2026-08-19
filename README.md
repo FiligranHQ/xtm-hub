@@ -38,13 +38,13 @@ XTM Hub brings together, in a single place, everything you need to get the most 
 
 ### Try, connect and manage your products
 
-- **Free trials** — spin up an OpenCTI or OpenAEV trial instance in a few clicks.
+- **Free trials** — spin up an OpenCTI or OpenAEV trial in a few clicks.
 - **Product connection** — connect your OpenCTI and OpenAEV products to your organization to unlock Hub services and deploy resources directly from the Hub.
 - **Organization management** — invite members, manage roles and capabilities, and control who can access what.
 
 ### Stay connected to the ecosystem
 
-- **XTM Platform roadmap** — follow what is coming next and give feedback on upcoming features.
+- **XTM Platform roadmap** — follow what is coming next on OpenCTI, OpenAEV, XTM One & XTM Hub products.
 - **Resources & news** — access documentation, the Filigran Academy, the blog and community channels from one place.
 
 ## Objective
