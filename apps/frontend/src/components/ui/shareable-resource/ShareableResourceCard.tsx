@@ -78,6 +78,7 @@ const ShareableResourceCard = ({
               description={document.short_description}
             />
             <BadgeOverflowCounter
+              formatLabel={false}
               badges={document.use_cases as BadgeOverflow[]}
               className="z-2 shrink-0"
             />

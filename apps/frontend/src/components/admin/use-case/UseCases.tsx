@@ -3,7 +3,6 @@ import EditUseCase from '@/components/admin/use-case/EditUseCase';
 import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { i18nKey } from '@/utils/datatable';
-import { formatName } from '@/utils/format/name';
 import {
   Badge,
   DataTable,
@@ -63,7 +62,7 @@ const UseCases = () => {
           <Badge
             variant="outline"
             color={row.original.color}>
-            {formatName(row.original.name)}
+            {row.original.name}
           </Badge>
         );
       },

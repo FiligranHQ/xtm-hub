@@ -46,10 +46,10 @@ describe('UseCases', () => {
     renderComponent();
 
     expect(
-      await screen.findByRole('row', { name: /Threat Hunting.*#11aa22/ })
+      await screen.findByRole('row', { name: /threat hunting.*#11aa22/ })
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole('row', { name: /Incident Response.*#3344ff/ })
+      await screen.findByRole('row', { name: /incident response.*#3344ff/ })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: 'UseCaseActions.AddUseCase' })
