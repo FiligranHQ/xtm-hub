@@ -73,6 +73,7 @@ export const ShareableResourceCardHeader = ({
         ) : (
           <div className="mt-s flex flex-wrap gap-s">
             <BadgeOverflowCounter
+              formatLabel={false}
               badges={document.use_cases as BadgeOverflow[]}
               className="z-[2]"
             />

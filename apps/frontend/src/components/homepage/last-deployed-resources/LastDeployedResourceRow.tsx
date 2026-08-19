@@ -69,6 +69,7 @@ const LastDeployedResourceRow = ({
           {document.use_cases && document.use_cases.length > 0 && (
             <div className="min-w-16 shrink">
               <BadgeOverflowCounter
+                formatLabel={false}
                 badges={document.use_cases}
                 badgeClassName={BADGE_CLASS}
               />

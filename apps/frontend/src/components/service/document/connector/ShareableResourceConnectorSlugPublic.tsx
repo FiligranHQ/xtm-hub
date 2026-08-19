@@ -82,6 +82,7 @@ const ShareableResourceConnectorSlugPublic = ({
           </div>
           <div className="w-full mt-s mb-xs">
             <BadgeOverflowCounter
+              formatLabel={false}
               badges={documentData?.use_cases as BadgeOverflow[]}
               className="z-[2]"
             />
