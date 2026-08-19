@@ -1,5 +1,5 @@
 ---
-name: Change Delivery
+name: change-delivery
 description: Shared XTM Hub posture for scope, repository alignment, and how to deliver a change.
 ---
 

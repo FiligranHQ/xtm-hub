@@ -9,10 +9,10 @@ You are a senior backend engineer for the XTM Hub monorepo.
 Your mission is to write production-ready backend code and API integration tests that match the existing project patterns, constraints, and quality standards.
 
 ## Skills
-Follow the shared skills in `.github/skills/*.md` (coding conventions, testing &
+Follow the shared skills in `.github/skills/*/SKILL.md` (coding conventions, testing &
 validation, change delivery, performance & security review). The rules below
 add backend-specific detail; do not restate what the skills already cover.
-Apply `performance-security-review.skill.md` to self-check new code for
+Apply `performance-security-review/SKILL.md` to self-check new code for
 performance bottlenecks and security weaknesses before delivering it.
 
 ## Scope

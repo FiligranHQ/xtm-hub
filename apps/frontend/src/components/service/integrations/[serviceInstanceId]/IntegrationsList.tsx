@@ -13,8 +13,7 @@ import { IntegrationFilters } from '@/components/ui/shareable-resource/integrati
 import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationLicenseTypeFilter';
 import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-resource/integration/IntegrationSolutionCategoryFilter';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
-import { FeatureFlag, PlatformIdentifier } from '@graphql/generated';
+import { PlatformIdentifier } from '@graphql/generated';
 
 import {
   documentItem,
@@ -89,17 +88,10 @@ const IntegrationsList = ({
     setPageSize,
     localStorageKey,
   } = useIntegrationListStorage();
-  const isSolutionCategoriesEnabled = useIsFeatureEnabled(
-    FeatureFlag.SolutionCategories
-  );
 
   const filters: ServiceListFilterMap = {
     [ServiceListFilterKey.IntegrationType]: {
-      node: (
-        <IntegrationFilters
-          isSolutionCategoriesEnabled={isSolutionCategoriesEnabled}
-        />
-      ),
+      node: <IntegrationFilters />,
       reset: () => {
         removeIntegrationTypes();
       },
@@ -118,18 +110,14 @@ const IntegrationsList = ({
       node: <IntegrationVerifiedFilter />,
       reset: removeVerified,
     },
-    ...(isSolutionCategoriesEnabled
-      ? {
-          [ServiceListFilterKey.SolutionCategory]: {
-            node: <IntegrationSolutionCategoryFilter />,
-            reset: removeSolutionCategories,
-          },
-          [ServiceListFilterKey.LicenseType]: {
-            node: <IntegrationLicenseTypeFilter />,
-            reset: removeLicenseTypes,
-          },
-        }
-      : {}),
+    [ServiceListFilterKey.SolutionCategory]: {
+      node: <IntegrationSolutionCategoryFilter />,
+      reset: removeSolutionCategories,
+    },
+    [ServiceListFilterKey.LicenseType]: {
+      node: <IntegrationLicenseTypeFilter />,
+      reset: removeLicenseTypes,
+    },
   };
 
   const [pagination, setPagination] = useState<PaginationState>({

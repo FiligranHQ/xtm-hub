@@ -26,13 +26,10 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
       ServiceListLocalStorageKey.OpenCTICustomDashboards
     );
 
-  const logicalFilters = useLogicalFiltersFromStorage(
-    {
-      serviceInstanceSlug: ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS,
-      labels,
-    },
-    false
-  );
+  const logicalFilters = useLogicalFiltersFromStorage({
+    serviceInstanceSlug: ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS,
+    labels,
+  });
 
   useEffect(() => {
     loadQuery(

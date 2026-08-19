@@ -17,23 +17,18 @@ import { useQueryLoader } from 'react-relay';
 interface PublicDocumentListPageLoaderProps {
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
-  isSolutionCategoriesEnabled: boolean;
 }
 
 export const PublicDocumentListPageLoader = ({
   serviceInstance,
   baseUrl,
-  isSolutionCategoriesEnabled,
 }: PublicDocumentListPageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<publicDocumentsQuery>(
     PublicDocumentListQuery
   );
 
   const serviceInstanceSlug = serviceInstance.slug as ServiceSlug;
-  const { localStorageKey } = useShareableResourceMapping(
-    serviceInstanceSlug,
-    isSolutionCategoriesEnabled
-  );
+  const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug);
 
   const {
     pageSize,
@@ -72,10 +67,7 @@ export const PublicDocumentListPageLoader = ({
           entityTypes,
         };
 
-  const logicalFilters = useLogicalFiltersFromStorage(
-    params,
-    isSolutionCategoriesEnabled
-  );
+  const logicalFilters = useLogicalFiltersFromStorage(params);
 
   useEffect(() => {
     loadQuery(
@@ -114,7 +106,6 @@ export const PublicDocumentListPageLoader = ({
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           baseUrl={baseUrl}
-          isSolutionCategoriesEnabled={isSolutionCategoriesEnabled}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

@@ -1,5 +1,5 @@
 ---
-name: Coding Conventions
+name: coding-conventions
 description: Shared XTM Hub coding conventions and code quality expectations for application code.
 ---
 

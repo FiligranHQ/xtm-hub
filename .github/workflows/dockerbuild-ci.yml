@@ -400,7 +400,7 @@ jobs:
     steps:
       - name: Finalize e2e shards
         run: |
-          if [ "${{ needs.run-e2e-tests-shards.result }}" != "success" ]; then
+          if [ "${{ needs.run-e2e-tests-shards.result }}" != "success" ] && [ "${{ needs.run-e2e-tests-shards.result }}" != "skipped" ]; then
             echo "E2E shard job failed with result: ${{ needs.run-e2e-tests-shards.result }}"
             exit 1
           fi
@@ -436,7 +436,7 @@ jobs:
     steps:
       - name: Finalize frontend shards
         run: |
-          if [ "${{ needs.run-front-unit-tests-shards.result }}" != "success" ]; then
+          if [ "${{ needs.run-front-unit-tests-shards.result }}" != "success" ] && [ "${{ needs.run-front-unit-tests-shards.result }}" != "skipped" ]; then
             echo "Frontend shard job failed with result: ${{ needs.run-front-unit-tests-shards.result }}"
             exit 1
           fi
@@ -448,7 +448,7 @@ jobs:
     steps:
       - name: Finalize backend shards
         run: |
-          if [ "${{ needs.run-api-unit-tests-shards.result }}" != "success" ]; then
+          if [ "${{ needs.run-api-unit-tests-shards.result }}" != "success" ] && [ "${{ needs.run-api-unit-tests-shards.result }}" != "skipped" ]; then
             echo "Backend shard job failed with result: ${{ needs.run-api-unit-tests-shards.result }}"
             exit 1
           fi

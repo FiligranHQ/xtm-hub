@@ -19,10 +19,7 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 
-export const useShareableResourceMapping = (
-  slug: ServiceSlug,
-  isSolutionCategoriesEnabled: boolean
-) => {
+export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const localStorageKeyMapping: Record<
     ServiceSlug,
     ServiceListLocalStorageKey
@@ -73,11 +70,7 @@ export const useShareableResourceMapping = (
     [ServiceSlug.OPEN_CTI_INTEGRATIONS]: {
       [ServiceListFilterKey.Label]: labelFilter,
       [ServiceListFilterKey.IntegrationType]: {
-        node: (
-          <IntegrationFilters
-            isSolutionCategoriesEnabled={isSolutionCategoriesEnabled}
-          />
-        ),
+        node: <IntegrationFilters />,
         reset: removeIntegrationTypes,
       },
       [ServiceListFilterKey.ManagerSupported]: {
@@ -88,18 +81,15 @@ export const useShareableResourceMapping = (
         node: <IntegrationVerifiedFilter />,
         reset: removeVerified,
       },
-      ...(isSolutionCategoriesEnabled
-        ? {
-            [ServiceListFilterKey.SolutionCategory]: {
-              node: <IntegrationSolutionCategoryFilter />,
-              reset: removeSolutionCategories,
-            },
-            [ServiceListFilterKey.LicenseType]: {
-              node: <IntegrationLicenseTypeFilter />,
-              reset: removeLicenseTypes,
-            },
-          }
-        : {}),
+
+      [ServiceListFilterKey.SolutionCategory]: {
+        node: <IntegrationSolutionCategoryFilter />,
+        reset: removeSolutionCategories,
+      },
+      [ServiceListFilterKey.LicenseType]: {
+        node: <IntegrationLicenseTypeFilter />,
+        reset: removeLicenseTypes,
+      },
     },
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {
       [ServiceListFilterKey.Label]: labelFilter,
