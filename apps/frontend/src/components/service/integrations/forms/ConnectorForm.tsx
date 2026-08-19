@@ -49,7 +49,7 @@ const connectorSchema = z.object({
   integration_subtype: z.string().min(1, 'Required'),
   use_cases: z.array(z.string()).optional(),
   solution_categories: z.array(z.string()).min(1, 'Required'),
-  license_type: z.enum(['Free', 'Commercial']),
+  license_type: z.enum(['Free', 'Commercial']).optional(),
   active: z.boolean().optional(),
   verified: z.boolean().optional(),
   manager_supported: z.boolean().optional(),

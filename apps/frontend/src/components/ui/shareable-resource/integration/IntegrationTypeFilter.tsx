@@ -1,36 +1,21 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
-import {
-  availableIntegrationTypes,
-  getIntegrationSubTypeMetadata,
-  SubTypesPerIntegrationType,
-} from '@/components/service/integrations/Integration.utils';
+import { availableIntegrationTypes } from '@/components/service/integrations/Integration.utils';
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
-import { FeatureFlag, IntegrationType } from '@graphql/generated';
+import { IntegrationType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
-interface IntegrationTypeFilterProps {
-  isSolutionCategoriesEnabled?: boolean;
-}
-
-export const IntegrationTypeFilter = ({
-  isSolutionCategoriesEnabled,
-}: IntegrationTypeFilterProps = {}) => {
+export const IntegrationTypeFilter = () => {
   const { integrationTypes, setIntegrationTypes, removeIntegrationTypes } =
     useServiceListLocalStorage(
       ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
     );
-  const isSolutionCategoriesFeatureEnabled = useIsFeatureEnabled(
-    FeatureFlag.SolutionCategories
-  );
-  const shouldHideSubtypes =
-    isSolutionCategoriesEnabled ?? isSolutionCategoriesFeatureEnabled;
+
   const { removeFilter } = useServiceListFilters();
   const t = useTranslations();
 
@@ -38,12 +23,6 @@ export const IntegrationTypeFilter = ({
     const allOptions = Object.values(IntegrationType).map((feedType) => ({
       label: t(`Service.OpenctiIntegrations.Type.${feedType}`),
       value: feedType.toString(),
-      children: shouldHideSubtypes
-        ? undefined
-        : (SubTypesPerIntegrationType.get(feedType)?.map((subtype) => ({
-            label: getIntegrationSubTypeMetadata(subtype)?.label ?? '',
-            value: subtype.toString(),
-          })) ?? undefined),
     }));
     const availableOption = allOptions
       .filter((option) =>
@@ -57,7 +36,7 @@ export const IntegrationTypeFilter = ({
       )
       .sort((a, b) => a.label.localeCompare(b.label));
     return [...availableOption, ...comingSoonOption];
-  }, [shouldHideSubtypes, t]);
+  }, [t]);
 
   const removeIntegrationFilter = () => {
     removeIntegrationTypes();
