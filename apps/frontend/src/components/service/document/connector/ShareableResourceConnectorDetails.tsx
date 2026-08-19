@@ -2,10 +2,9 @@ import { PlatformMetadataMapping } from '@/components/registration/PlatformIdent
 import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
-import { getIntegrationSubTypeMetadata } from '@/components/service/integrations/Integration.utils';
 import { roundToNearest } from '@/lib/utils';
 import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
-import { Badge, Button } from '@filigran/ui/servers';
+import { Button } from '@filigran/ui/servers';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -38,9 +37,6 @@ export const ShareableResourceConnectorDetails = ({
 }: ShareableResourceConnectorDetailsProps) => {
   const t = useTranslations();
   const platformName = PlatformMetadataMapping[PlatformIdentifier.Opencti].name;
-  const connectorMetadata = getIntegrationSubTypeMetadata(
-    connectorDetails?.integration_subtype ?? undefined
-  );
 
   return (
     <ShareableResourceBasicInformation>
@@ -87,19 +83,6 @@ export const ShareableResourceConnectorDetails = ({
               )}
             </span>
           </div>
-        </ShareableResourceDetailItem>
-      )}
-      {connectorMetadata && (
-        <ShareableResourceDetailItem
-          label={t('Service.ShareableResources.Details.IntegrationSubType')}>
-          <span>
-            <Badge
-              className="mr-auto"
-              variant="outline"
-              color={connectorMetadata.color}>
-              {connectorMetadata.label}
-            </Badge>
-          </span>
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem

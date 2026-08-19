@@ -44,7 +44,7 @@ const thirdPartyIntegrationFormSchema = z.object({
   demo_url: z.url().or(z.literal('')).nullish(),
   document: z.custom<FileList>(fileListCheck).optional(), // declared for genericity but not used
   logo: z.custom<FileList>(optionalFileListCheck).optional(),
-  images: z.custom<FileList>(fileListCheck),
+  images: z.custom<FileList>(fileListCheck).optional(),
 });
 
 export type ThirdPartyIntegrationFormValues = z.infer<
