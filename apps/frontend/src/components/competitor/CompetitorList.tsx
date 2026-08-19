@@ -1,14 +1,10 @@
 'use client';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { i18nKey } from '@/utils/datatable';
 import { DeleteIcon, EditIcon } from '@filigran/icon';
 import { Button, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import { CompetitorTier } from '@graphql/generated';
-import {
-  ColumnDef,
-  PaginationState,
-  SortingState,
-  Updater,
-} from '@tanstack/react-table';
+import { ColumnDef, SortingState, Updater } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -69,11 +65,6 @@ const CompetitorList = () => {
     count: pageSize,
     orderBy,
     orderMode,
-  });
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
   });
 
   const [data, refetch] = useRefetchableFragment<
@@ -169,19 +160,27 @@ const CompetitorList = () => {
     [t, connectionID, deleteCompetitor]
   );
 
+  const { pagination, cursor, onPaginationChange } = useTablePagination({
+    pageSize,
+    setPageSize,
+    onPaginationChange: (nextPagination, nextCursor) => {
+      handleRefetchData({ count: nextPagination.pageSize, cursor: nextCursor });
+    },
+  });
+
   const handleRefetchData = useCallback(
     (args?: Partial<competitorListQuery$variables>) => {
       const sorting = mapToSortingTableValue(orderBy, orderMode);
       refetch({
         count: pagination.pageSize,
-        cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+        cursor,
         orderBy,
         orderMode,
         ...transformSortingValueToParams(sorting),
         ...args,
       });
     },
-    [orderBy, orderMode, pagination, refetch]
+    [orderBy, orderMode, pagination, cursor, refetch]
   );
 
   const onSortingChange = useCallback(
@@ -204,24 +203,6 @@ const CompetitorList = () => {
       setOrderBy,
       setOrderMode,
     ]
-  );
-
-  const onPaginationChange = useCallback(
-    (updater: Updater<PaginationState>) => {
-      const newPaginationValue: PaginationState =
-        updater instanceof Function ? updater(pagination) : updater;
-      handleRefetchData({
-        count: newPaginationValue.pageSize,
-        cursor: btoa(
-          String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-        ),
-      });
-      setPagination(newPaginationValue);
-      if (newPaginationValue.pageSize !== pageSize) {
-        setPageSize(newPaginationValue.pageSize);
-      }
-    },
-    [handleRefetchData, pageSize, pagination, setPageSize]
   );
 
   return (

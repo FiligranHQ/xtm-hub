@@ -10,9 +10,10 @@ import { useContext } from 'react';
 
 interface DocumentListProps {
   documents: documentItem_fragment$data[];
+  connectionId?: string;
 }
 
-const DocumentList = ({ documents }: DocumentListProps) => {
+const DocumentList = ({ documents, connectionId }: DocumentListProps) => {
   const { settings } = useContext(SettingsContext);
   const { serviceInstance } = useServiceContext();
 
@@ -25,6 +26,7 @@ const DocumentList = ({ documents }: DocumentListProps) => {
         <ServiceCard
           key={document.id}
           document={document}
+          connectionId={connectionId}
           detailUrl={`/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${document.id}`}
           shareLinkUrl={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
         />

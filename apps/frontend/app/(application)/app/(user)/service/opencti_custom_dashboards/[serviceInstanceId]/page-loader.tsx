@@ -1,26 +1,24 @@
 'use client';
 
-import CustomDashboardsList from '@/components/service/custom-dashboards/[serviceInstanceId]/CustomDashboardsList';
-import { DocumentsListQuery } from '@/components/service/document/document.graphql';
+import ShareableResourceServiceList from '@/components/service/components/ShareableResourceServiceList';
 import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
-import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
+import { useShareableResourceQueryLoader } from '@/hooks/use-shareable-resource-query-loader';
+import {
+  ServiceSlug,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { Skeleton } from '@filigran/ui';
-import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { useEffect } from 'react';
-import { useQueryLoader } from 'react-relay';
 
 interface PageLoaderProps {
   serviceInstance: serviceInstance_fragment$data;
 }
 
 const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
-  const [queryRef, loadQuery] =
-    useQueryLoader<documentsQuery>(DocumentsListQuery);
   const { count, search, setSearch, labels, orderMode, orderBy } =
     useServiceListLocalStorage(
       ServiceListLocalStorageKey.OpenCTICustomDashboards
@@ -31,38 +29,25 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     labels,
   });
 
-  useEffect(() => {
-    loadQuery(
-      {
-        count,
-        orderBy,
-        orderMode,
-        serviceInstanceId: serviceInstance.id,
-        searchTerm: search,
-        logicalFilters,
-      },
-      {
-        fetchPolicy: 'store-and-network',
-      }
-    );
-  }, [
-    loadQuery,
-    count,
-    serviceInstance,
-    search,
-    logicalFilters,
-    orderMode,
+  const queryRef = useShareableResourceQueryLoader({
+    pageSize: count,
     orderBy,
-  ]);
+    orderMode,
+    serviceInstanceId: serviceInstance.id,
+    searchTerm: search,
+    logicalFilters,
+  });
 
   return (
     <>
       {queryRef ? (
-        <CustomDashboardsList
+        <ShareableResourceServiceList
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           search={search}
           onSearchChange={setSearch}
+          type={ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD}
+          localStorageKey={ServiceListLocalStorageKey.OpenCTICustomDashboards}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />
