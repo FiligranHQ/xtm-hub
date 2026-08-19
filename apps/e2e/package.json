@@ -5,6 +5,7 @@
   "scripts": {
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:demo": "playwright test --config=playwright.demo.config.ts",
     "generate-test-e2e": "npx playwright codegen http://localhost:3002/",
     "test:e2e:update-snapshot": "playwright test --update-snapshots",
     "lint": "eslint .",
