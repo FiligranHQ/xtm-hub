@@ -318,6 +318,40 @@ describe('deploymentRequestDomain', () => {
 
       expect(family).toEqual([standalone]);
     });
+
+    it('should only return children matching the given hub status', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
+      const activeChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          parent_id: bundle.id,
+          platform_identifier: PlatformIdentifier.Xtmone,
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+        }
+      );
+
+      const family =
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+          bundle,
+          DeploymentRequestHubStatus.Active
+        );
+
+      expect(family.map(({ id }) => id)).toEqual([bundle.id, activeChild.id]);
+    });
   });
 
   describe('loadTrialsToExpire', () => {

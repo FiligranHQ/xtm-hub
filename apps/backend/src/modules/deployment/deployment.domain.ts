@@ -57,7 +57,8 @@ export const DeploymentRequestDomain = {
   },
 
   loadDeploymentRequestWithChildren: async (
-    deploymentRequest: DeploymentRequest
+    deploymentRequest: DeploymentRequest,
+    childrenHubStatus?: DeploymentRequestHubStatus
   ): Promise<DeploymentRequest[]> => {
     if (deploymentRequest.type !== DeploymentRequestDeploymentType.Bundle) {
       return [deploymentRequest];
@@ -65,6 +66,7 @@ export const DeploymentRequestDomain = {
 
     const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
       parent_id: deploymentRequest.id,
+      ...(childrenHubStatus ? { hub_status: childrenHubStatus } : {}),
     });
 
     return [
