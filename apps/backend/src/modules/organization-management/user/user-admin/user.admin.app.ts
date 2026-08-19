@@ -8,23 +8,40 @@ import {
 import { withTransaction } from '../../../../context/database.context';
 import { requestContext } from '../../../../context/request.context';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
-import { UserId } from '../../../../model/kanel/public/User';
+import User, { UserId } from '../../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../../model/user';
+import { PROTECTED_USER_UUIDS } from '../../../../portal.const';
 import { dispatch } from '../../../../pub';
 import { isUserAdminPlatform } from '../../../../security/access';
 import { securityGuard } from '../../../../security/guard';
-import { updateUserSession } from '../../../../session-store-manager';
+import {
+  destroyUserSessions,
+  updateUserSession,
+} from '../../../../session-store-manager';
 import { auth0Client } from '../../../../thirdparty/auth0/client';
 import { logApp } from '../../../../utils/app-logger.util';
 import { toError } from '../../../../utils/error/error-guard.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
 import { stripNulls } from '../../../../utils/typescript';
+import { DocumentDomain } from '../../../document/domain/document.domain';
+import { EpicDomain } from '../../../xtm-platform-roadmap/epic.domain';
 import { OrganizationDomain } from '../../organization/organization.domain';
 import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationDomain } from '../user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
 import { UserHelper } from '../user.helper';
+import { UserAdminGuard } from './user.admin.guard';
+
+// PostgreSQL error code for foreign_key_violation
+// (see https://www.postgresql.org/docs/current/errcodes-appendix.html).
+const FOREIGN_KEY_VIOLATION_CODE = '23503';
+
+const isForeignKeyViolation = (error: unknown): boolean =>
+  typeof error === 'object' &&
+  error !== null &&
+  'code' in error &&
+  (error as { code?: string }).code === FOREIGN_KEY_VIOLATION_CODE;
 
 export const UserAdminApp = {
   addUser: async (input: AdminAddUserInput): Promise<UserLoadUserBy> => {
@@ -283,5 +300,99 @@ export const UserAdminApp = {
     await dispatch('UserPending', 'invalidate', {
       id: organizationId,
     });
+  },
+
+  deleteUser: async (userId: UserId): Promise<User> => {
+    const contextUser = requestContext.requireUser();
+    if (contextUser.id === userId) {
+      throw new Error(ErrorCode.CantDeleteYourself);
+    }
+
+    if (PROTECTED_USER_UUIDS.includes(userId)) {
+      throw new Error(ErrorCode.CantDeleteBuiltinUser);
+    }
+
+    const [user] = await UserDomain.loadUser({ id: userId });
+    if (!user) {
+      throw new Error(ErrorCode.UserNotFound);
+    }
+
+    const personalSpaceId = userId as unknown as OrganizationId;
+
+    await UserAdminGuard.assertUserHasNoTransferRequest(userId);
+    await UserAdminGuard.assertUserHasNoDeploymentRequest(userId);
+    await UserAdminGuard.assertUserHasNoCancellationRecord(userId);
+    await UserAdminGuard.assertUserHasNoPlatformRegistration(userId);
+    await UserAdminGuard.assertUserIsNotLastOrganizationMember(userId);
+    await UserAdminGuard.assertUserIsNotLastOrganizationAdministrator(userId);
+    await UserAdminGuard.assertPersonalSpaceHasNoPendingUsers(personalSpaceId);
+
+    const { deletedUser, deletedPersonalSpace } = await withTransaction(
+      async () => {
+        // Re-validate the invariants above under row locks, immediately
+        // before the destructive operations: another request may have
+        // changed the relevant organizations' membership between the
+        // checks above and now.
+        await UserAdminGuard.relockAndRevalidateDeletionInvariants(
+          userId,
+          personalSpaceId
+        );
+
+        await DocumentDomain.reassignUserDocumentsToSystemUser(userId);
+        await EpicDomain.reassignUserEpicsToSystemUser(userId);
+
+        // The User row must be removed first: User.selected_organization_id
+        // references Organization.id without a cascade.
+        const removedUser = await UserDomain.deleteUserBy({ id: userId });
+        if (!removedUser) {
+          throw new Error(ErrorCode.UserNotFound);
+        }
+
+        const removedPersonalSpace =
+          await OrganizationDomain.deleteOrganizationBy({
+            id: personalSpaceId,
+          });
+
+        return {
+          deletedUser: removedUser,
+          deletedPersonalSpace: removedPersonalSpace,
+        };
+      }
+    ).catch((error: unknown) => {
+      if (isForeignKeyViolation(error)) {
+        logApp.warn('User deletion blocked by a foreign key constraint', {
+          userId,
+          error,
+        });
+        throw new Error(ErrorCode.DeleteUserBlockedByLinkedData);
+      }
+      throw error;
+    });
+
+    await destroyUserSessions(userId);
+    await UserHelper.deleteUserPicture(user.picture_minio);
+
+    // The user and its personal space are already deleted at this point:
+    // a dispatch failure (e.g. a downstream subscriber error) must not be
+    // reported as a failed deletion.
+    try {
+      await dispatch('User', 'delete', deletedUser);
+      await dispatch('MeUser', 'delete', deletedUser, 'User');
+      if (deletedPersonalSpace) {
+        await dispatch('Organization', 'delete', deletedPersonalSpace);
+      }
+    } catch (error) {
+      logApp.error('Error dispatching user deletion events', {
+        userId,
+        error,
+      });
+    }
+
+    logApp.info('User deleted', {
+      userId,
+      deletedPersonalSpaceId: deletedPersonalSpace?.id ?? null,
+    });
+
+    return deletedUser;
   },
 };

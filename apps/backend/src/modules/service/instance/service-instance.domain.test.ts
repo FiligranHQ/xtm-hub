@@ -407,7 +407,7 @@ describe('service instance domain', () => {
     it('should handle complete configuration replacement', async () => {
       // Given
       const newConfig: PlatformConfigurationInput = {
-        registerer_id: uuidv4(),
+        registerer_id: contextRegistererUserSecondOrga.user.id,
         platform_id: uuidv4(),
         platform_title: 'Completely New Title',
         platform_url: 'https://completelynew.com',

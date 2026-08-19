@@ -7,10 +7,13 @@ import {
 } from '../../../../tests/tests.const';
 import { OrganizationCapability } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
-import Organization from '../../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../model/user';
 import * as MailService from '../../../server/mail-service';
+import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { UserOrganizationCapabilityDomain } from '../../security-management/user-organization-capability/user-organization-capability.domain';
 import { TelemetryApp } from '../../telemetry/telemetry.app';
@@ -20,7 +23,7 @@ import { OrganizationDomain } from '../organization/organization.domain';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
-import { UserHelper } from './user.helper';
+import { isUserLastOrganizationAdministrator, UserHelper } from './user.helper';
 
 describe('user helpers', async () => {
   afterEach(async () => {
@@ -303,6 +306,61 @@ describe('user helpers', async () => {
 
         expect(result).toBeUndefined();
       });
+    });
+  });
+
+  describe('isUserLastOrganizationAdministrator', () => {
+    it('should return false when user does not have administrator capability', async () => {
+      const loadUserCapabilitiesByOrganizationSpy = vi
+        .spyOn(UserDomain, 'loadUserCapabilitiesByOrganization')
+        .mockResolvedValue({
+          capabilities: [OrganizationCapability.ManageAccess],
+        } as never);
+      const countOrganizationAdministratorsSpy = vi.spyOn(
+        UserOrganizationDomain,
+        'countOrganizationAdministrators'
+      );
+
+      const result = await isUserLastOrganizationAdministrator(
+        uuidv4() as UserId,
+        uuidv4() as OrganizationId
+      );
+
+      expect(result).toBe(false);
+      expect(countOrganizationAdministratorsSpy).not.toHaveBeenCalled();
+
+      loadUserCapabilitiesByOrganizationSpy.mockRestore();
+      countOrganizationAdministratorsSpy.mockRestore();
+    });
+
+    it('should log and return true when no administrator is found', async () => {
+      const userId = uuidv4() as UserId;
+      const organizationId = uuidv4() as OrganizationId;
+      const loadUserCapabilitiesByOrganizationSpy = vi
+        .spyOn(UserDomain, 'loadUserCapabilitiesByOrganization')
+        .mockResolvedValue({
+          capabilities: [OrganizationCapability.AdministrateOrganization],
+        } as never);
+      const countOrganizationAdministratorsSpy = vi
+        .spyOn(UserOrganizationDomain, 'countOrganizationAdministrators')
+        .mockResolvedValue(0);
+      const logErrorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {
+        return undefined as never;
+      });
+
+      const result = await isUserLastOrganizationAdministrator(
+        userId,
+        organizationId
+      );
+
+      expect(result).toBe(true);
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        `Zero administrators found in the organization ${organizationId}`
+      );
+
+      loadUserCapabilitiesByOrganizationSpy.mockRestore();
+      countOrganizationAdministratorsSpy.mockRestore();
+      logErrorSpy.mockRestore();
     });
   });
 });

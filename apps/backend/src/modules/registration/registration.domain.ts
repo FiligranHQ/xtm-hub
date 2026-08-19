@@ -20,6 +20,7 @@ import ServiceInstance, {
   ServiceInstanceId,
 } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
+import { UserId } from '../../model/kanel/public/User';
 import { securityGuard } from '../../security/guard';
 import { ErrorCode } from '../../utils/error/error.code';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
@@ -29,7 +30,7 @@ import { PlatformConfigurationDomain } from './platform-configuration/platform-c
 import { serviceDefinitionIdentifierMappedByPlatformIdentifier } from './registration.mapping';
 
 export type PlatformConfigurationInput = {
-  registerer_id: string;
+  registerer_id: UserId;
   platform_id: string;
   tenant_id?: string;
   tenant_name?: string;

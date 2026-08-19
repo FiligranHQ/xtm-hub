@@ -59,7 +59,7 @@ import { RegistrationHelper } from './registration.helper';
 
 const buildPlatformConfiguration = (
   platform: PlatformInput,
-  registererId: string,
+  registererId: UserId,
   token: string
 ): PlatformConfigurationInput => ({
   registerer_id: registererId,

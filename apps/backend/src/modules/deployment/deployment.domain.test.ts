@@ -872,7 +872,7 @@ describe('deploymentRequestDomain', () => {
           }
         );
       deploymentRequestId1 = deploymentRequest1!.id;
-      platformIdentifier = deploymentRequest1!.platform_identifier;
+      platformIdentifier = deploymentRequest1!.platform_identifier!;
       region = deploymentRequest1!.region;
 
       const deploymentRequest2 =
@@ -1264,6 +1264,49 @@ describe('deploymentRequestDomain', () => {
       );
 
       expect(createAudienceSpy).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('countDeploymentRequestsBy', () => {
+    const REQUESTER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID;
+    const OTHER_USER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID;
+
+    afterEach(async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
+      await TestHelper.subscription.delete({});
+    });
+
+    it('should return 0 when no deployment request matches the given conditions', async () => {
+      const count = await DeploymentRequestDomain.countDeploymentRequestsBy({
+        user_requester_id: uuidv4() as UserId,
+      });
+
+      expect(count).toBe(0);
+    });
+
+    it('should count only deployment requests matching the given conditions', async () => {
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { user_requester_id: REQUESTER_ID, cancellation_user_id: null }
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { user_requester_id: REQUESTER_ID, cancellation_user_id: REQUESTER_ID }
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { user_requester_id: OTHER_USER_ID, cancellation_user_id: REQUESTER_ID }
+      );
+
+      const countByRequester =
+        await DeploymentRequestDomain.countDeploymentRequestsBy({
+          user_requester_id: REQUESTER_ID,
+        });
+      const countByCanceller =
+        await DeploymentRequestDomain.countDeploymentRequestsBy({
+          cancellation_user_id: REQUESTER_ID,
+        });
+
+      expect(countByRequester).toBe(2);
+      expect(countByCanceller).toBe(2);
     });
   });
 });

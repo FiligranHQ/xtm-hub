@@ -5,8 +5,13 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { dispatch } from '../../../pub';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../../utils/error/error.code';
+import { PlatformConfigurationDomain } from '../../registration/platform-configuration/platform-configuration.domain';
 import { TelemetryApp } from '../../telemetry/telemetry.app';
 import { TelemetryHelper } from '../../telemetry/telemetry.helper';
+import {
+  assertOrganizationHasNoPendingUsers,
+  organizationWouldLoseLastMember,
+} from './organization-membership.util';
 import { OrganizationDomain } from './organization.domain';
 
 export const OrganizationApp = {
@@ -72,10 +77,31 @@ export const OrganizationApp = {
   },
 
   async deleteOrganization(id: OrganizationId) {
+    const organization = await OrganizationDomain.loadOrganizationBy({ id });
+    if (!organization) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
+
+    if (!organization.personal_space) {
+      await assertOrganizationHasNoPendingUsers(
+        id,
+        ErrorCode.DeleteOrganizationPendingUsers
+      );
+
+      if (!(await organizationWouldLoseLastMember(id))) {
+        throw new Error(ErrorCode.DeleteOrganizationRequiresSingleUser);
+      }
+
+      const connectedProductCount =
+        await PlatformConfigurationDomain.countConfigurationsByOrganization(id);
+      if (connectedProductCount > 0) {
+        throw new Error(ErrorCode.DeleteOrganizationBlockedByConnectedProduct);
+      }
+    }
+
     const deletedOrganization = await OrganizationDomain.deleteOrganizationBy({
       id,
     });
-
     if (!deletedOrganization) {
       throw new Error(UnknownErrorCode.DeleteOrganizationError);
     }

@@ -87,12 +87,13 @@ describe('LastDeployedResourceRow', () => {
     expect(screen.getByText('author@filigran.io')).toBeInTheDocument();
   });
 
-  it('does not render deployed author section when deployedBy is missing', () => {
+  it('renders "Deleted user" fallback when deployedBy is missing', () => {
     const resource = buildResource({ deployedBy: null });
 
     testRender(<LastDeployedResourceRow resource={resource} />);
 
-    expect(screen.queryByText('By')).not.toBeInTheDocument();
+    expect(screen.getByText('By')).toBeInTheDocument();
+    expect(screen.getByText('DeletedUser')).toBeInTheDocument();
   });
 
   it('returns null when required document fields are missing', () => {

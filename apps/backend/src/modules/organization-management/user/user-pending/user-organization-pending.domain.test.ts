@@ -299,6 +299,47 @@ describe('userOrganizationPendingDomain', () => {
       expect(filigranPendingUsers).toHaveLength(1);
     });
   });
+  describe('countPendingUsersInOrganization', () => {
+    afterEach(async () => {
+      await TestHelper.user_OrganizationPending.delete({});
+    });
+
+    it('should count pending users of the organization, ignoring other organizations', async () => {
+      expect(
+        await UserOrganizationPendingDomain.countPendingUsersInOrganization(
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+        )
+      ).toBe(0);
+
+      const secondOrgaUsers = [
+        await TestHelper.user.insert({
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          email: 'countPendingOne@second-orga.com',
+        }),
+        await TestHelper.user.insert({
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          email: 'countPendingTwo@second-orga.com',
+        }),
+      ];
+      await TestHelper.user_OrganizationPending.linkUsersToOrganization(
+        secondOrgaUsers,
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+      );
+      const filigranUser = await TestHelper.user.insert({
+        email: 'countPendingFiligran@filigran.io',
+      });
+      await TestHelper.user_OrganizationPending.linkUsersToOrganization(
+        [filigranUser],
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(
+        await UserOrganizationPendingDomain.countPendingUsersInOrganization(
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID
+        )
+      ).toBe(2);
+    });
+  });
   describe('removeUserFromOrganizationPending', () => {
     let createdUser: User;
     beforeEach(async () => {

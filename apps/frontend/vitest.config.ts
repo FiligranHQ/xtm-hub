@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+
 import react from '@vitejs/plugin-react';
 import type { PluginOption } from 'vite';
 import relay from 'vite-plugin-relay';
@@ -5,7 +7,15 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
-    tsconfigPaths: true,
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@app': fileURLToPath(new URL('./app', import.meta.url)),
+      '@generated': fileURLToPath(new URL('./__generated__', import.meta.url)),
+      '@graphql': fileURLToPath(new URL('./graphql', import.meta.url)),
+      '@messages': fileURLToPath(new URL('./messages', import.meta.url)),
+      '@public': fileURLToPath(new URL('./public', import.meta.url)),
+      '@styles': fileURLToPath(new URL('./styles', import.meta.url)),
+    },
   },
   ssr: {
     noExternal: ['@filigran/ui', /@uiw\/.*/],
