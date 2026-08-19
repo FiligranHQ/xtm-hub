@@ -493,6 +493,50 @@ describe('manifestFragmentDomain', () => {
       expect(newDocument!.tags).not.toContain('latest-lts');
     });
 
+    it('promotes latest tag to the newer version when the same slug is ingested twice', async () => {
+      // Given
+      const slug = 'misp-same-slug-newer-version';
+      const firstFragment = buildManifestFragment(ManifestType.Connector, {
+        slug,
+        version: '7.260308.0',
+      });
+      const secondFragment = buildManifestFragment(ManifestType.Connector, {
+        slug,
+        version: '7.260309.0',
+      });
+
+      // When
+      await ManifestFragmentDomain.ingestManifestFragment(firstFragment);
+      await ManifestFragmentDomain.ingestManifestFragment(secondFragment);
+
+      // Then
+      const connectors = await TestHelper.document.loadAll({
+        slug,
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
+      });
+      expect(connectors).toHaveLength(2);
+      _createdDocumentIds.push(...connectors.map((connector) => connector.id));
+
+      const oldDocument = connectors.find(
+        (connector) => connector.version === firstFragment.version
+      );
+      const newDocument = connectors.find(
+        (connector) => connector.version === secondFragment.version
+      );
+
+      expect(oldDocument).toMatchObject({
+        slug,
+        version: firstFragment.version,
+      });
+      expect(newDocument).toMatchObject({
+        slug,
+        version: secondFragment.version,
+      });
+      expect(newDocument!.tags).toContain('latest');
+      expect(oldDocument!.tags).not.toContain('latest');
+    });
+
     it('keeps current latest when incoming version is lower', async () => {
       // Given
 
