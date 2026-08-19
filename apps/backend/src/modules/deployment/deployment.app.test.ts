@@ -102,9 +102,7 @@ describe('deployment app', () => {
   });
 
   afterEach(async () => {
-    await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-    await ServiceInstanceDomain.deleteServiceInstanceBy({});
-    await TestHelper.subscription.delete({});
+    await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     vi.resetAllMocks();
   });
 

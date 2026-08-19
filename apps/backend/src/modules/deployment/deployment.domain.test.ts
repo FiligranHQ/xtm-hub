@@ -16,7 +16,6 @@ import {
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
-import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { DeploymentRequestDomain } from './deployment.domain';
 import { ServiceGroupDomain } from './group/service-group.domain';
 
@@ -27,9 +26,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadDeploymentRequest', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return filtered deployment requests', async () => {
@@ -210,9 +207,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadDeploymentRequestsBy', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return all deployment requests matching the given conditions', async () => {
@@ -256,9 +251,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadDeploymentRequestWithChildren', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return the bundle first, then its children ordered by platform identifier', async () => {
@@ -356,9 +349,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadTrialsToExpire', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return expired bundles and standalone trials, but not bundle children', async () => {
@@ -411,9 +402,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadTrialDeploymentRequestByPlatformIdentifierAndUserId', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return deployment request when Active trial deployment exists for user', async () => {
@@ -541,9 +530,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadTrialDeploymentRequestByPlatformToken', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return deployment request when Active trial deployment exists with matching token', async () => {
@@ -1371,9 +1358,7 @@ describe('deploymentRequestDomain', () => {
   describe('initialiseServiceGroup', () => {
     afterEach(async () => {
       vi.restoreAllMocks();
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     const createDeploymentRequest = (platformIdentifier: PlatformIdentifier) =>

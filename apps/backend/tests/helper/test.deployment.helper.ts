@@ -35,6 +35,11 @@ export const TestDeploymentHelper = {
     delete: async (field: DeploymentRequestMutator) => {
       await db<DeploymentRequest>('DeploymentRequest').where(field).del();
     },
+    deleteAllWithServiceInstanceAndSubscription: async () => {
+      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
+      await ServiceInstanceDomain.deleteServiceInstanceBy({});
+      await db<Subscription>('Subscription').where({}).del();
+    },
     update: async (field: DeploymentRequestMutator) => {
       await db<DeploymentRequest>('DeploymentRequest').update(field);
     },
