@@ -20,7 +20,9 @@ import DeploymentRequest, {
 import DeploymentRequestQuota, {
   DeploymentRequestQuotaMutator,
 } from '../../src/model/kanel/public/DeploymentRequestQuota';
-import { ServiceInstanceId } from '../../src/model/kanel/public/ServiceInstance';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../src/model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
 } from '../../src/model/kanel/public/Subscription';
@@ -36,9 +38,20 @@ export const TestDeploymentHelper = {
       await db<DeploymentRequest>('DeploymentRequest').where(field).del();
     },
     deleteAllWithServiceInstanceAndSubscription: async () => {
+      const deploymentRequests = await db<DeploymentRequest>(
+        'DeploymentRequest'
+      ).select('service_instance_id');
+      const serviceInstanceIds = deploymentRequests.map(
+        ({ service_instance_id }: DeploymentRequest) => service_instance_id
+      );
+
       await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await db<Subscription>('Subscription').where({}).del();
+      await db<Subscription>('Subscription')
+        .whereIn('service_instance_id', serviceInstanceIds)
+        .del();
+      await db<ServiceInstance>('ServiceInstance')
+        .whereIn('id', serviceInstanceIds)
+        .del();
     },
     update: async (field: DeploymentRequestMutator) => {
       await db<DeploymentRequest>('DeploymentRequest').update(field);
