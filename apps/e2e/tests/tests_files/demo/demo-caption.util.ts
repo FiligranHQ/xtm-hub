@@ -104,6 +104,27 @@ export async function announceIntro(
 }
 
 /**
+ * Injects the intro overlay of {@link announceIntro}, pre-formatted with the
+ * list of data the scenario starts from, so a viewer knows the initial state
+ * before any action happens.
+ *
+ * Demo-only utility: not meant for use in regular (non-recorded) e2e specs.
+ */
+export async function announceInitialData(
+  page: Page,
+  scenarioTitle: string,
+  data: string[],
+  displayMs = 8000
+) {
+  await announceIntro(
+    page,
+    scenarioTitle,
+    `Initial data for this test:\n${data.map((entry) => `- ${entry}`).join('\n')}`,
+    displayMs
+  );
+}
+
+/**
  * Injects a banner overlay announcing the upcoming demo step, then waits so
  * it's clearly visible in the recording before the step's actions run.
  *
@@ -220,4 +241,22 @@ export async function announceDbQueryResult(
   );
 
   await page.waitForTimeout(displayMs);
+}
+
+/**
+ * Variant of {@link announceDbQueryResult} that shows the same query evaluated
+ * before and after an action, so a demo video can prove what the action
+ * actually changed in the database.
+ *
+ * Demo-only utility: not meant for use in regular (non-recorded) e2e specs.
+ */
+export async function announceDbQueryBeforeAfter(
+  page: Page,
+  title: string,
+  query: string,
+  before: unknown,
+  after: unknown,
+  displayMs = 5000
+) {
+  await announceDbQueryResult(page, title, query, { before, after }, displayMs);
 }
