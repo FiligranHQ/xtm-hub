@@ -16,7 +16,6 @@ import {
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
-import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { DeploymentRequestDomain } from './deployment.domain';
 import { ServiceGroupDomain } from './group/service-group.domain';
 
@@ -27,9 +26,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadDeploymentRequest', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return filtered deployment requests', async () => {
@@ -210,9 +207,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadDeploymentRequestsBy', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return all deployment requests matching the given conditions', async () => {
@@ -254,11 +249,160 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
+  describe('loadDeploymentRequestWithChildren', () => {
+    afterEach(async () => {
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
+    });
+
+    it('should return the bundle first, then its children ordered by platform identifier', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      const childXtmone =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Xtmone,
+          }
+        );
+      const childOpencti =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        );
+      const childOpenaev =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        );
+
+      const family =
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(bundle);
+
+      expect(family.map(({ id }) => id)).toEqual([
+        bundle.id,
+        childOpenaev.id,
+        childOpencti.id,
+        childXtmone.id,
+      ]);
+    });
+
+    it('should return the standalone trial alone', async () => {
+      const standalone =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { platform_identifier: PlatformIdentifier.Openaev }
+      );
+
+      const family =
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+          standalone
+        );
+
+      expect(family).toEqual([standalone]);
+    });
+
+    it('should only return children matching the given hub status', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
+      const activeChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          parent_id: bundle.id,
+          platform_identifier: PlatformIdentifier.Xtmone,
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+        }
+      );
+
+      const family =
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+          bundle,
+          DeploymentRequestHubStatus.Active
+        );
+
+      expect(family.map(({ id }) => id)).toEqual([bundle.id, activeChild.id]);
+    });
+  });
+
+  describe('loadTrialsToExpire', () => {
+    afterEach(async () => {
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
+    });
+
+    it('should return expired bundles and standalone trials, but not bundle children', async () => {
+      const expiredDate = new Date(Date.UTC(2020, 0, 1));
+      const futureDate = new Date(Date.UTC(2999, 0, 1));
+
+      const expiredBundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: expiredDate,
+          }
+        );
+      const expiredChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: expiredBundle.id,
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: expiredDate,
+          }
+        );
+      const expiredStandalone =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: expiredDate,
+          }
+        );
+      const ongoingBundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: futureDate,
+          }
+        );
+
+      const toExpire = await DeploymentRequestDomain.loadTrialsToExpire();
+
+      expect(toExpire.map(({ id }) => id).sort()).toEqual(
+        [expiredBundle.id, expiredStandalone.id].sort()
+      );
+      expect(toExpire.map(({ id }) => id)).not.toContain(expiredChild.id);
+      expect(toExpire.map(({ id }) => id)).not.toContain(ongoingBundle.id);
+    });
+  });
+
   describe('loadTrialDeploymentRequestByPlatformIdentifierAndUserId', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return deployment request when Active trial deployment exists for user', async () => {
@@ -386,9 +530,7 @@ describe('deploymentRequestDomain', () => {
 
   describe('loadTrialDeploymentRequestByPlatformToken', () => {
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return deployment request when Active trial deployment exists with matching token', async () => {
@@ -1216,9 +1358,7 @@ describe('deploymentRequestDomain', () => {
   describe('initialiseServiceGroup', () => {
     afterEach(async () => {
       vi.restoreAllMocks();
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     const createDeploymentRequest = (platformIdentifier: PlatformIdentifier) =>
@@ -1272,9 +1412,7 @@ describe('deploymentRequestDomain', () => {
     const OTHER_USER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID;
 
     afterEach(async () => {
-      await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-      await ServiceInstanceDomain.deleteServiceInstanceBy({});
-      await TestHelper.subscription.delete({});
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
     it('should return 0 when no deployment request matches the given conditions', async () => {
