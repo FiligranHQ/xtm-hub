@@ -1001,6 +1001,7 @@ export type Mutation = {
   deleteSolutionCategory: SolutionCategory;
   deleteSubscriptions: Array<SubscriptionModel>;
   deleteUseCase: UseCase;
+  deleteUser: User;
   deleteUserServices: Maybe<Array<Maybe<UserService>>>;
   editMeUser: User;
   editOrganization: Maybe<Organization>;
@@ -1210,6 +1211,11 @@ export type MutationDeleteSubscriptionsArgs = {
 
 
 export type MutationDeleteUseCaseArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteUserArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -3046,6 +3052,13 @@ export type UseCasesListQueryVariables = Exact<{
 
 export type UseCasesListQuery = { __typename?: 'Query', useCases: { __typename?: 'UseCaseConnection', totalCount: number, edges: Array<{ __typename?: 'UseCaseEdge', node: { __typename?: 'UseCase', id: string, name: string, color: string, product: Array<FiligranProduct> } }> } | null };
 
+export type UserDeleteMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type UserDeleteMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string } };
+
 export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4211,6 +4224,35 @@ export const useInfiniteUseCasesListQuery = <
 useInfiniteUseCasesListQuery.getKey = (variables: UseCasesListQueryVariables) => ['UseCasesList.infinite', variables];
 useInfiniteUseCasesListQuery.getRootKey = () => ['UseCasesList.infinite'] as const;
 useUseCasesListQuery.fetcher = (client: GraphQLClient, variables: UseCasesListQueryVariables, headers?: RequestInit['headers']) => fetcher<UseCasesListQuery, UseCasesListQueryVariables>(client, UseCasesListDocument, variables, headers);
+
+export const UserDeleteDocument = `
+    mutation UserDelete($id: ID!) {
+  deleteUser(id: $id) {
+    id
+  }
+}
+    `;
+
+export const useUserDeleteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UserDeleteMutation, TError, UserDeleteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<UserDeleteMutation, TError, UserDeleteMutationVariables, TContext>(
+      {
+    mutationKey: ['UserDelete'],
+    mutationFn: (variables?: UserDeleteMutationVariables) => fetcher<UserDeleteMutation, UserDeleteMutationVariables>(client, UserDeleteDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useUserDeleteMutation.getKey = () => ['UserDelete'];
+useUserDeleteMutation.getRootKey = () => ['UserDelete'] as const;
+useUserDeleteMutation.fetcher = (client: GraphQLClient, variables: UserDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<UserDeleteMutation, UserDeleteMutationVariables>(client, UserDeleteDocument, variables, headers);
 
 export const EpicCountPerTimelineQueryDocument = `
     query EpicCountPerTimelineQuery {

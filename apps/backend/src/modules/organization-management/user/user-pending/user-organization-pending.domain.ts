@@ -85,6 +85,18 @@ export const UserOrganizationPendingDomain = {
     );
   },
 
+  countPendingUsersInOrganization: async (
+    organization_id: OrganizationId
+  ): Promise<number> => {
+    const result = await db<UserOrganizationPending>(
+      'User_Organization_Pending'
+    )
+      .where({ organization_id })
+      .count<[{ count: string }]>('user_id as count')
+      .first();
+    return Number(result?.count ?? 0);
+  },
+
   removeUserFromOrganizationPending: async (
     user_id: UserId,
     organization_id: OrganizationId

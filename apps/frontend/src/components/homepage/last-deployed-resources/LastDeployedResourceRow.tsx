@@ -84,18 +84,14 @@ const LastDeployedResourceRow = ({
         <span className="shrink-0 content-body-base text-text-default-primary">
           {deployedAt}
         </span>
-        {resource.deployedBy && (
-          <>
-            <span className="shrink-0">{t('By')}</span>
-            <div className="min-w-0 shrink flex items-center gap-s">
-              <UserDisplay
-                uploader={resource.deployedBy}
-                className="min-w-0 max-w-none"
-                withTooltip
-              />
-            </div>
-          </>
-        )}
+        <span className="shrink-0">{t('By')}</span>
+        <div className="min-w-0 shrink flex items-center gap-s">
+          <UserDisplay
+            uploader={resource.deployedBy}
+            className="min-w-0 max-w-none"
+            withTooltip
+          />
+        </div>
       </div>
     </Link>
   );

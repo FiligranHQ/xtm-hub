@@ -11,8 +11,8 @@ const TEST_USER = {
 };
 
 test.describe('User Management', () => {
-  let loginPage;
-  let userPage;
+  let loginPage: LoginPage;
+  let userPage: UserPage;
 
   test.beforeEach(async ({ page }) => {
     await addOrganization(TEST_USER.userOrganizationName);
@@ -47,6 +47,15 @@ test.describe('User Management', () => {
     await test.step('Disable user', async () => {
       await userPage.disableUser(TEST_USER.userEmail);
       await expect(page.getByRole('cell', { name: 'Disabled' })).toBeVisible();
+    });
+
+    await test.step('Delete user', async () => {
+      await userPage.deleteUser(TEST_USER.userEmail);
+      await expect(
+        page
+          .getByRole('cell', { name: TEST_USER.userEmail, exact: true })
+          .locator('span')
+      ).not.toBeVisible();
     });
   });
 

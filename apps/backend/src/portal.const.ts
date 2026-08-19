@@ -40,6 +40,13 @@ export const ROLE_USER: RolePortal = {
   name: 'USER',
 };
 
+export const PROTECTED_USER_UUIDS: UserId[] = [
+  ADMIN_UUID,
+  SYSTEM_USER_UUID,
+  PLATFORM_USER_UUID,
+  CRONS_USER_UUID,
+];
+
 export const XTM_HUB_SUPPORT_EMAIL = 'xtm-hub-support@filigran.io';
 export const XTM_HUB_DEV_TEAM_EMAIL = '333b4e48.filigran.io@fr.teams.ms';
 

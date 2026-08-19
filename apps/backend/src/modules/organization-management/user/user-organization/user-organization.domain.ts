@@ -192,6 +192,28 @@ export const UserOrganizationDomain = {
       .delete('*');
   },
 
+  countUsersInOrganization: async (
+    organization_id: OrganizationId
+  ): Promise<number> => {
+    const result = await db<UserOrganization>('User_Organization')
+      .where({ organization_id })
+      .count<[{ count: string }]>('user_id as count')
+      .first();
+    return Number(result?.count ?? 0);
+  },
+
+  // Locks the organization's membership rows for the lifetime of the current
+  // transaction, so a concurrent request touching the same organization's
+  // memberships (e.g. another user deletion) is serialized behind this one.
+  // Must be called from within a `withTransaction` block.
+  lockOrganizationMembers: async (
+    organization_id: OrganizationId
+  ): Promise<UserOrganization[]> => {
+    return db<UserOrganization>('User_Organization')
+      .where({ organization_id })
+      .forUpdate();
+  },
+
   removeUserFromPendingList: async ({
     user_id,
     organization_id,

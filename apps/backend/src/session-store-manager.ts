@@ -62,6 +62,56 @@ const getSessionsForUser = (
 };
 
 /**
+ * Destroy every active session belonging to a user
+ * This function works with both PostgreSQL and Memory stores
+ */
+export const destroyUserSessions = (userId: string): Promise<void> => {
+  const storeInstance = getSessionStoreInstance();
+
+  return new Promise((resolve) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    storeInstance.all((err: any, sessions: any) => {
+      if (err) {
+        logApp.error('Error retrieving sessions for user deletion:', {
+          error: err,
+        });
+        resolve();
+        return;
+      }
+
+      const sessionIds = getSessionsForUser(
+        sessions as Record<string, SessionData> | null | undefined,
+        userId
+      );
+
+      if (sessionIds.length === 0) {
+        logApp.debug(`No active sessions found for user ${userId}`);
+        resolve();
+        return;
+      }
+
+      logApp.info(`Destroying ${sessionIds.length} sessions for user`, {
+        userId,
+      });
+
+      let remaining = sessionIds.length;
+      sessionIds.forEach((sessionId) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        storeInstance.destroy(sessionId, (error?: any) => {
+          if (error) {
+            logApp.error(`Error destroying session ${sessionId}:`, { error });
+          }
+          remaining -= 1;
+          if (remaining === 0) {
+            resolve();
+          }
+        });
+      });
+    });
+  });
+};
+
+/**
  * Update user session data across all active sessions
  * This function works with both PostgreSQL and Memory stores
  */

@@ -176,6 +176,7 @@ type Mutation {
   deleteOrganization(id: ID!): Organization
   adminAddUser(input: AdminAddUserInput!): User
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
+  deleteUser(id: ID!): User!
   addUser(input: AddUserInput!): User
   editUserCapabilities(id: ID!, input: EditUserCapabilitiesInput!): User!
   changeSelectedOrganization(organization_id: OrganizationId!): User

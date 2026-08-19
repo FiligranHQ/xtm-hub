@@ -63,6 +63,18 @@ export default class UserPage {
     await this.page.getByRole('button', { name: 'Disable' }).click();
   }
 
+  async deleteUser(userEmail: string) {
+    await this.page
+      .getByRole('row', { name: userEmail })
+      .getByRole('button', { name: 'Open Menu' })
+      .click();
+    await this.page.getByRole('menuitem', { name: 'Delete' }).click();
+    await this.page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Delete' })
+      .click();
+  }
+
   async assertCurrentPage() {
     await this.page.waitForURL('/app/manage/user');
     await expect(

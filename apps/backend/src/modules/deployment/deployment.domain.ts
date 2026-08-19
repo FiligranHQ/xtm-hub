@@ -171,6 +171,16 @@ export const DeploymentRequestDomain = {
       .delete();
   },
 
+  countDeploymentRequestsBy: async (
+    conditions: DeploymentRequestMutator
+  ): Promise<number> => {
+    const result = await db<DeploymentRequest>('DeploymentRequest')
+      .where(conditions)
+      .count<[{ count: string }]>('id as count')
+      .first();
+    return Number(result?.count ?? 0);
+  },
+
   updateDeploymentRequestById: async (
     id: DeploymentRequestId,
     data: DeploymentRequestMutator

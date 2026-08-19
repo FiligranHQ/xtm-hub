@@ -127,6 +127,7 @@ type Mutation {
   adminAddUser(input: AdminAddUserInput!): User @auth(portalCapa: [BYPASS])
   adminEditUser(id: ID!, input: AdminEditUserInput!): User!
     @auth(portalCapa: [BYPASS])
+  deleteUser(id: ID!): User! @auth(portalCapa: [BYPASS])
 
   # Management
   addUser(input: AddUserInput!): User

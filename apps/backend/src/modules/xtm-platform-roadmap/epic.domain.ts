@@ -6,9 +6,20 @@ import {
   Timeline,
 } from '../../__generated__/resolvers-types';
 import Epic, { EpicId, EpicMutator } from '../../model/kanel/public/Epic';
+import { UserId } from '../../model/kanel/public/User';
+import { SYSTEM_USER_UUID } from '../../portal.const';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 
 export const EpicDomain = {
+  reassignUserEpicsToSystemUser: async (userId: UserId): Promise<void> => {
+    await db<Epic>('Epic')
+      .where('uploader_id', '=', userId)
+      .update({ uploader_id: SYSTEM_USER_UUID });
+
+    await db<Epic>('Epic')
+      .where('updater_id', '=', userId)
+      .update({ updater_id: SYSTEM_USER_UUID });
+  },
   loadEpics: async (opts: Partial<QueryEpicsArgs>) => {
     const epicQuery = db<Epic>('Epic').select(['Epic.*']);
     return paginate<Epic, EpicConnection>('Epic', opts, undefined, epicQuery);

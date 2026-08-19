@@ -26,6 +26,7 @@ import {
 import { dispatch } from '../../../pub';
 import { sendMail } from '../../../server/mail-service';
 import { updateUserSession } from '../../../session-store-manager';
+import { MinIOClient } from '../../../thirdparty/minio/client';
 import { logApp } from '../../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
@@ -120,7 +121,7 @@ const countOrganizationAdministrators = async (
   return UserOrganizationDomain.countOrganizationAdministrators(organizationId);
 };
 
-const isUserLastOrganizationAdministrator = async (
+export const isUserLastOrganizationAdministrator = async (
   userId: UserId,
   organizationId: OrganizationId
 ) => {
@@ -411,6 +412,17 @@ export const UserHelper = {
       roles_portal:
         'roles_portal' in user ? (user.roles_portal as RolePortal[]) : null,
     };
+  },
+
+  deleteUserPicture: async (pictureMinio: string | null) => {
+    if (!pictureMinio) {
+      return;
+    }
+    try {
+      await MinIOClient.deleteFile(pictureMinio);
+    } catch (error) {
+      logApp.error('Error deleting user picture from MinIO', { error });
+    }
   },
 
   removeUser: async (field: UserMutator) => {

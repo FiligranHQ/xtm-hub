@@ -11,6 +11,9 @@ import UserOrganization, {
   UserOrganizationInitializer,
   UserOrganizationMutator,
 } from '../../src/model/kanel/public/UserOrganization';
+import UserOrganizationCapability, {
+  UserOrganizationCapabilityMutator,
+} from '../../src/model/kanel/public/UserOrganizationCapability';
 import UserOrganizationPending, {
   UserOrganizationPendingMutator,
 } from '../../src/model/kanel/public/UserOrganizationPending';
@@ -85,6 +88,14 @@ export const TestUserHelper = {
     },
   },
   user_RolePortal: {
+    create: async (
+      data: UserRolePortalMutator
+    ): Promise<UserRolePortal | undefined> => {
+      const [userRolePortal] = await db<UserRolePortal>('User_RolePortal')
+        .insert(data)
+        .returning('*');
+      return userRolePortal;
+    },
     delete: async (field: UserRolePortalMutator) => {
       await db<UserRolePortal>('User_RolePortal').where(field).del();
     },
@@ -109,6 +120,33 @@ export const TestUserHelper = {
     },
     load: async (field: UserOrganizationMutator): Promise<UserOrganization> => {
       return db<UserOrganization>('User_Organization').where(field).first();
+    },
+  },
+  user_OrganizationCapability: {
+    create: async (
+      data: Partial<UserOrganizationCapability> & {
+        user_organization_id: UserOrganizationCapability['user_organization_id'];
+        name: string;
+      }
+    ): Promise<UserOrganizationCapability | undefined> => {
+      const [userOrganizationCapability] = await db<UserOrganizationCapability>(
+        'UserOrganization_Capability'
+      )
+        .insert(data)
+        .returning('*');
+      return userOrganizationCapability;
+    },
+    loadAll: async (
+      field: UserOrganizationCapabilityMutator
+    ): Promise<UserOrganizationCapability[]> => {
+      return db<UserOrganizationCapability[]>(
+        'UserOrganization_Capability'
+      ).where(field);
+    },
+    delete: async (field: UserOrganizationCapabilityMutator) => {
+      await db<UserOrganizationCapability>('UserOrganization_Capability')
+        .where(field)
+        .del();
     },
   },
   user_OrganizationPending: {
