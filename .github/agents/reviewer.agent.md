@@ -19,9 +19,9 @@ before they reach production, and anticipate likely future failures caused by
 current design choices, edge-case gaps, and scalability limits.
 
 ## Skills
-Judge code against the shared skills in `.github/skills/*.md` (coding
+Judge code against the shared skills in `.github/skills/*/SKILL.md` (coding
 conventions, testing & validation, performance & security review). Flag any
-violation explicitly. Apply `performance-security-review.skill.md` for
+violation explicitly. Apply `performance-security-review/SKILL.md` for
 performance bottlenecks, security vulnerabilities, and likely future failure
 scenarios, using its output format and prioritization policy.
 

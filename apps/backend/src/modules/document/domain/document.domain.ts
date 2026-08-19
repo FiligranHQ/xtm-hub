@@ -120,7 +120,6 @@ export const DocumentDomain = {
         ...omit(documentData, [
           'parent_document_id',
           'use_cases',
-          'solution_category',
           'solution_categories',
           ...metadataKeys,
         ]),
@@ -471,7 +470,7 @@ export const DocumentDomain = {
       .where('id', '=', parentDocumentId)
       .update({
         ...stripNulls(
-          omit(completeDocumentData, ['use_cases', 'solution_category'])
+          omit(completeDocumentData, ['use_cases', 'solution_categories'])
         ),
         uploader_organization_id,
         uploader_id,
@@ -495,7 +494,6 @@ export const DocumentDomain = {
       ...omit(documentData, [
         'parent_document_id',
         'use_cases',
-        'solution_category',
         'solution_categories',
         ...metadataKeys,
       ]),

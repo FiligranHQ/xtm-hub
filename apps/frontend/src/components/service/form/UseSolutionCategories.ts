@@ -1,5 +1,4 @@
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { formatName } from '@/utils/format/name';
 import {
   FiligranProduct,
   OrderingMode,
@@ -28,7 +27,7 @@ export const useSolutionCategories = (product?: FiligranProduct) => {
         .map(({ node }) => node)
         .map(({ id, name }) => ({
           id,
-          name: formatName(name),
+          name: name,
         })),
     [data]
   );

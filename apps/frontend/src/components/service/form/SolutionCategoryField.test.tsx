@@ -2,7 +2,7 @@ import { ServiceFormSolutionCategoryField } from '@/components/service/form/Solu
 import { useSolutionCategories } from '@/components/service/form/UseSolutionCategories';
 import testRender from '@/utils/test/test-render';
 import { Form, FormField } from '@filigran/ui';
-import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
+import { FiligranProduct } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { useForm } from 'react-hook-form';
 import { describe, expect, it, vi } from 'vitest';
@@ -12,22 +12,22 @@ vi.mock('@/components/service/form/UseSolutionCategories', () => ({
 }));
 
 type FormValues = {
-  solution_category?: string;
+  solution_categories?: string[];
 };
 
 const TestForm = ({
   defaultValue,
-  document,
+  product,
 }: {
-  defaultValue?: string;
-  document?: documentItem_fragment$data;
+  defaultValue?: string[];
+  product?: FiligranProduct;
 }) => {
   const form = useForm<FormValues>({
     defaultValues:
       defaultValue === undefined
         ? {}
         : {
-            solution_category: defaultValue,
+            solution_categories: defaultValue,
           },
   });
 
@@ -35,11 +35,11 @@ const TestForm = ({
     <Form {...form}>
       <FormField
         control={form.control}
-        name="solution_category"
+        name="solution_categories"
         render={({ field }) => (
           <ServiceFormSolutionCategoryField
             field={field}
-            document={document}
+            product={product}
           />
         )}
       />
@@ -48,74 +48,48 @@ const TestForm = ({
 };
 
 describe('ServiceFormSolutionCategoryField', () => {
-  it('should display document category when missing from fetched options', () => {
+  it('should display placeholder when no value is selected', () => {
     vi.mocked(useSolutionCategories).mockReturnValue([
       { id: 'cat-1', name: 'Endpoint Security' },
     ]);
 
-    const document = {
-      solution_categories: [
-        {
-          id: 'cat-legacy',
-          name: 'Legacy Category',
-        },
-      ],
-    } as unknown as documentItem_fragment$data;
+    testRender(<TestForm defaultValue={undefined} />);
 
-    testRender(
-      <TestForm
-        document={document}
-        defaultValue={undefined}
-      />
-    );
-
-    expect(screen.getByRole('combobox')).toHaveTextContent('Legacy Category');
+    expect(
+      screen.getByRole('button', {
+        name: 'Service.Form.SolutionCategoriesLabel',
+      })
+    ).toHaveTextContent('Service.Form.SolutionCategoriesPlaceholder');
   });
 
-  it('should display document category from fetched options when present', () => {
+  it('should display selected categories from field value', () => {
     vi.mocked(useSolutionCategories).mockReturnValue([
       { id: 'cat-1', name: 'Endpoint Security' },
       { id: 'cat-2', name: 'Threat Intelligence' },
     ]);
 
-    const document = {
-      solution_categories: [
-        {
-          id: 'cat-2',
-          name: 'Threat Intelligence',
-        },
-      ],
-    } as unknown as documentItem_fragment$data;
+    testRender(<TestForm defaultValue={['cat-1', 'cat-2']} />);
 
-    testRender(<TestForm document={document} />);
-
-    expect(screen.getByRole('combobox')).toHaveTextContent(
-      'Threat Intelligence'
-    );
+    expect(
+      screen.getByRole('button', {
+        name: 'Service.Form.SolutionCategoriesLabel',
+      })
+    ).toHaveTextContent('Endpoint Security');
+    expect(
+      screen.getByRole('button', {
+        name: 'Service.Form.SolutionCategoriesLabel',
+      })
+    ).toHaveTextContent('Threat Intelligence');
   });
 
-  it('should prioritize field value over document category', () => {
+  it('should pass product to useSolutionCategories', () => {
     vi.mocked(useSolutionCategories).mockReturnValue([
       { id: 'cat-1', name: 'Endpoint Security' },
       { id: 'cat-2', name: 'Threat Intelligence' },
     ]);
 
-    const document = {
-      solution_categories: [
-        {
-          id: 'cat-2',
-          name: 'Threat Intelligence',
-        },
-      ],
-    } as unknown as documentItem_fragment$data;
+    testRender(<TestForm product={FiligranProduct.Opencti} />);
 
-    testRender(
-      <TestForm
-        document={document}
-        defaultValue="cat-1"
-      />
-    );
-
-    expect(screen.getByRole('combobox')).toHaveTextContent('Endpoint Security');
+    expect(useSolutionCategories).toHaveBeenCalledWith(FiligranProduct.Opencti);
   });
 });

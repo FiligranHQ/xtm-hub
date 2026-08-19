@@ -236,7 +236,7 @@ export type CreateDocumentInput = {
   name: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
-  solution_category: InputMaybe<Scalars['SolutionCategoryId']['input']>;
+  solution_categories: Array<Scalars['SolutionCategoryId']['input']>;
   uploader_id: Scalars['UserId']['input'];
   use_cases: Array<Scalars['UseCaseId']['input']>;
 };
@@ -648,7 +648,7 @@ export enum DocumentMetadataKeyCode {
   MinimumDeployableVersionPadded = 'minimum_deployable_version_padded',
   PlaybookSupported = 'playbook_supported',
   ProductVersion = 'product_version',
-  SolutionCategory = 'solution_category',
+  SolutionCategories = 'solution_categories',
   SourceCode = 'source_code',
   SubscriptionLink = 'subscription_link',
   VendorUrl = 'vendor_url',
@@ -756,8 +756,7 @@ export enum EpicType {
 }
 
 export enum FeatureFlag {
-  Dummy = 'DUMMY',
-  SolutionCategories = 'SOLUTION_CATEGORIES'
+  Dummy = 'DUMMY'
 }
 
 export enum FiligranProduct {
@@ -934,7 +933,7 @@ export type ManifestFragmentInput = {
   image_name: Scalars['String']['input'];
   image_type: Scalars['String']['input'];
   integration_type: Scalars['String']['input'];
-  last_verified_date: Scalars['String']['input'];
+  last_verified_date: InputMaybe<Scalars['String']['input']>;
   license_type: InputMaybe<LicenseType>;
   logo: Scalars['String']['input'];
   manager_supported: Scalars['Boolean']['input'];
@@ -2646,7 +2645,7 @@ export type UpdateDocumentInput = {
   license_type: InputMaybe<LicenseType>;
   name: InputMaybe<Scalars['String']['input']>;
   short_description: InputMaybe<Scalars['String']['input']>;
-  solution_category: InputMaybe<Scalars['SolutionCategoryId']['input']>;
+  solution_categories: InputMaybe<Array<Scalars['SolutionCategoryId']['input']>>;
   uploader_id: InputMaybe<Scalars['UserId']['input']>;
   uploader_organization_id: InputMaybe<Scalars['OrganizationId']['input']>;
   use_cases: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
