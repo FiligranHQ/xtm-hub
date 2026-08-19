@@ -38,7 +38,7 @@ export const HeroSectionLibrary = ({
   showLibraryUpdate = false,
 }: HeroSectionLibraryProps) => {
   return (
-    <section className="px-m pt-m pb-xxl">
+    <section className="pt-m pb-xxl">
       <div className="flex flex-col gap-s">
         <p className="text-primary font-bold">{eyebrow}</p>
         <div className="flex flex-row items-center">
