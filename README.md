@@ -10,9 +10,8 @@
 
 ## Introduction
 
-[XTM Hub](https://filigran.io/solutions/xtm-hub/) is the **unified entry point** for Filigran's ecosystem. It allows community members, prospects and customers to easily discover our offerings, access resources, and engage with one another.
+[XTM Hub](https://hub.filigran.io/en) is the **unified entry point** for Filigran's ecosystem. It allows community members, prospects and customers to easily discover our offerings, access resources, and engage with one another.
 
-![Screenshot](./.github/img/screenshot.png "Screenshot")
 
 ## Objective
 
