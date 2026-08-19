@@ -1786,6 +1786,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -1809,6 +1810,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: DeploymentRequestHubStatus.Active,
         end_date: bundle.end_date,
@@ -1831,6 +1833,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -1850,6 +1853,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: true,
         hub_status: null,
         end_date: null,
@@ -1889,6 +1893,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -1903,7 +1908,28 @@ describe('deployment app', () => {
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
+
+    it('should report the standalone product as ongoing when the organization has an active standalone trial', async () => {
+      // Given an organization with an ongoing standalone OpenCTI trial
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_identifier: PlatformIdentifier.Opencti,
+          hub_status: DeploymentRequestHubStatus.Active,
+        }
+      );
+
+      // When loading the platform trial status
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      // Then the standalone product is reported as ongoing
+      expect(platformTrialStatus.ongoingStandaloneTrials).toEqual([
+        PlatformIdentifier.Opencti,
+      ]);
+    });
   });
+
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
       vi.spyOn(
@@ -1995,6 +2021,7 @@ describe('deployment app', () => {
       );
     });
   });
+
   describe('cancelDeploymentRequest', () => {
     let freePlaceSpy: MockInstance;
     beforeEach(() => {

@@ -1447,4 +1447,133 @@ describe('deploymentRequestDomain', () => {
       expect(countByCanceller).toBe(2);
     });
   });
+
+  describe('loadOngoingStandaloneTrialsForOrganization', () => {
+    const ORGANIZATION_ID = TEST_ORGANIZATIONS.FILIGRAN.ID;
+    const OTHER_ORGANIZATION_ID = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
+
+    afterEach(async () => {
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
+    });
+
+    it.each([
+      DeploymentRequestHubStatus.Queued,
+      DeploymentRequestHubStatus.Pending,
+      DeploymentRequestHubStatus.Provisioning,
+      DeploymentRequestHubStatus.Active,
+    ])(
+      'should return the standalone trial when its status is %s',
+      async (hubStatus) => {
+        // Given a standalone trial in an ongoing status
+        const standalone =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            { hub_status: hubStatus }
+          );
+
+        // When loading the ongoing standalone trials of the organization
+        const ongoing =
+          await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+            ORGANIZATION_ID
+          );
+
+        // Then the trial is returned
+        expect(ongoing.map(({ id }) => id)).toEqual([standalone.id]);
+      }
+    );
+
+    it.each([
+      DeploymentRequestHubStatus.Cancelled,
+      DeploymentRequestHubStatus.Expired,
+      DeploymentRequestHubStatus.Failed,
+    ])(
+      'should not return the standalone trial when its status is %s',
+      async (hubStatus) => {
+        // Given a standalone trial in a terminal status
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { hub_status: hubStatus }
+        );
+
+        // When loading the ongoing standalone trials of the organization
+        const ongoing =
+          await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+            ORGANIZATION_ID
+          );
+
+        // Then nothing is returned
+        expect(ongoing).toEqual([]);
+      }
+    );
+
+    it('should not return a bundle nor its products when the organization has an active bundle', async () => {
+      // Given an active bundle with an active child
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          parent_id: bundle.id,
+          hub_status: DeploymentRequestHubStatus.Active,
+        }
+      );
+
+      // When loading the ongoing standalone trials of the organization
+      const ongoing =
+        await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+          ORGANIZATION_ID
+        );
+
+      // Then nothing is returned
+      expect(ongoing).toEqual([]);
+    });
+
+    it('should not return the trials of another organization', async () => {
+      // Given an ongoing standalone trial owned by another organization
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          organization_requester_id: OTHER_ORGANIZATION_ID,
+          hub_status: DeploymentRequestHubStatus.Active,
+        }
+      );
+
+      // When loading the ongoing standalone trials of the organization
+      const ongoing =
+        await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+          ORGANIZATION_ID
+        );
+
+      // Then nothing is returned
+      expect(ongoing).toEqual([]);
+    });
+
+    it('should return every ongoing standalone trial when the organization has several', async () => {
+      // Given two ongoing standalone trials on different products
+      const openctiTrial =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { hub_status: DeploymentRequestHubStatus.Active }
+        );
+      const openaevTrial =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: PlatformIdentifier.Openaev,
+            hub_status: DeploymentRequestHubStatus.Pending,
+          }
+        );
+
+      // When loading the ongoing standalone trials of the organization
+      const ongoing =
+        await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+          ORGANIZATION_ID
+        );
+
+      // Then both are returned
+      expect(ongoing.map(({ id }) => id).sort()).toEqual(
+        [openctiTrial.id, openaevTrial.id].sort()
+      );
+    });
+  });
 });

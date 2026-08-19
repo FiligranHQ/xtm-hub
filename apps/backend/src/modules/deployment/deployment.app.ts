@@ -558,6 +558,7 @@ export const DeploymentApp = {
     }
     if (organization.personal_space) {
       return {
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -569,11 +570,21 @@ export const DeploymentApp = {
         organizationId
       );
 
+    const standaloneTrials =
+      await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+        organizationId
+      );
+
     return {
       isBlacklisted:
         await CompetitorApp.isOrganizationBlacklisted(organization),
       hub_status: bundle?.hub_status ?? null,
       end_date: bundle?.end_date ?? null,
+      ongoingStandaloneTrials: standaloneTrials
+        .map(({ platform_identifier }) => platform_identifier)
+        .filter(
+          (identifier): identifier is PlatformIdentifier => identifier !== null
+        ),
     };
   },
 };

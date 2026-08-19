@@ -1683,6 +1683,7 @@ export type PlatformTrialStatus = {
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status?: Maybe<DeploymentRequestHubStatus>;
   isBlacklisted: Scalars['Boolean']['output'];
+  ongoingStandaloneTrials: Array<PlatformIdentifier>;
 };
 
 export enum PortalCapability {
@@ -4082,6 +4083,7 @@ export type PlatformTrialStatusResolvers<ContextType = PortalContext, ParentType
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<Maybe<ResolversTypes['DeploymentRequestHubStatus']>, ParentType, ContextType>;
   isBlacklisted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  ongoingStandaloneTrials?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
