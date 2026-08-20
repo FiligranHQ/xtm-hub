@@ -1,3 +1,4 @@
+import { PublicXtmPlatformTrialPanel } from '@/components/service/trial-instances/xtm-platform-trial/PublicXtmPlatformTrialPanel';
 import { XtmPlatformTrialPage } from '@/components/service/trial-instances/xtm-platform-trial/XtmPlatformTrialPage';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import type { PublicLocale } from '@/i18n/config';
@@ -71,7 +72,7 @@ const Page = async ({
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
       <BreadcrumbNav value={breadcrumbs} />
-      <XtmPlatformTrialPage panel={null} />
+      <XtmPlatformTrialPage panel={<PublicXtmPlatformTrialPanel />} />{' '}
     </>
   );
 };
