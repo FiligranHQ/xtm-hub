@@ -1,6 +1,7 @@
 'use client';
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { cn } from '@/lib/utils';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
@@ -16,35 +17,54 @@ const PRODUCT_TRANSLATION_KEYS: Record<PlatformIdentifier, string> = {
   [PlatformIdentifier.Xtmone]: 'xtmone',
 };
 
+const PRODUCT_ICON_CLASSES: Record<PlatformIdentifier, string> = {
+  [PlatformIdentifier.Opencti]: 'text-filigran-brand-primary',
+  [PlatformIdentifier.Openaev]: 'text-filigran-brand-primary',
+  [PlatformIdentifier.Xtmone]: 'text-filigran-ia-main',
+};
+
 export const XtmPlatformTrialPitch = () => {
   const t = useTranslations('Service.Trials.XtmPlatform.Page');
 
   return (
     <section className="flex flex-col gap-xl">
-      <div className="flex flex-col gap-l">
-        <h2 className="heading-xl">{t('PitchTitle')}</h2>
-        <p className="content-body-base">{t('PitchDescription')}</p>
+      <div className="flex flex-col gap-xs">
+        <h2 className="heading-2xl">{t('PitchTitle')}</h2>
+        <p className="content-body-base text-text-default-secondary">
+          {t('PitchDescription')}
+        </p>
       </div>
 
-      {BUNDLE_PRODUCTS.map((platformIdentifier) => {
-        const { name, Icon } = PlatformMetadataMapping[platformIdentifier];
-        const productKey = PRODUCT_TRANSLATION_KEYS[platformIdentifier];
+      <div className="flex flex-col gap-xl">
+        {BUNDLE_PRODUCTS.map((platformIdentifier) => {
+          const { name, Icon } = PlatformMetadataMapping[platformIdentifier];
+          const productKey = PRODUCT_TRANSLATION_KEYS[platformIdentifier];
 
-        return (
-          <article
-            key={platformIdentifier}
-            className="flex flex-col gap-s">
-            <div className="flex items-center gap-s">
-              <Icon className="size-6" />
-              <span className="heading-lg">{name}</span>
-            </div>
-            <h3 className="font-bold">{t(`Products.${productKey}.Tagline`)}</h3>
-            <p className="content-body-base">
-              {t(`Products.${productKey}.Description`)}
-            </p>
-          </article>
-        );
-      })}
+          return (
+            <article
+              key={platformIdentifier}
+              className="flex flex-col gap-s">
+              <div className="flex items-center gap-s">
+                <Icon
+                  className={cn(
+                    'size-6',
+                    PRODUCT_ICON_CLASSES[platformIdentifier]
+                  )}
+                />{' '}
+                <span className="heading-md">{name}</span>
+              </div>
+              <div className="flex flex-col">
+                <h3 className="heading-xs">
+                  {t(`Products.${productKey}.Tagline`)}
+                </h3>
+                <p className="content-body-compact text-text-default-secondary">
+                  {t(`Products.${productKey}.Description`)}
+                </p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
     </section>
   );
 };

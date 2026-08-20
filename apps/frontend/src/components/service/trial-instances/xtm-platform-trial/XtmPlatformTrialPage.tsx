@@ -5,25 +5,34 @@ import { ReactNode } from 'react';
 
 interface XtmPlatformTrialPageProps {
   panel: ReactNode;
+  showLimitations?: boolean;
 }
 
-export const XtmPlatformTrialPage = ({ panel }: XtmPlatformTrialPageProps) => {
+export const XtmPlatformTrialPage = ({
+  panel,
+  showLimitations = false,
+}: XtmPlatformTrialPageProps) => {
   const t = useTranslations('Service.Trials.XtmPlatform.Page');
 
   return (
-    <>
-      <header className="flex flex-col gap-s px-m pt-m pb-xl">
-        <p className="text-filigran-brand-primary font-bold">{t('Overline')}</p>
+    <div className="flex flex-col gap-xxl">
+      <header className="flex flex-col gap-s">
+        <p className="heading-sm bg-clip-text text-transparent bg-gradient-focus">
+          {t('Overline')}
+        </p>
         <h1 className="heading-2xl">{t('Title')}</h1>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-xl px-m pb-xxl">
-        <div className="flex flex-col gap-xl">
+      <div className="flex flex-col gap-l lg:flex-row">
+        {' '}
+        <div className="flex flex-1 flex-col gap-xl">
           <XtmPlatformTrialPitch />
-          <XtmPlatformTrialLimitations />
+          {showLimitations && <XtmPlatformTrialLimitations />}
         </div>
-        <div>{panel}</div>
+        <div className="flex w-full items-center lg:w-[521px] lg:shrink-0">
+          <div className="w-full lg:h-[346px]">{panel}</div>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
