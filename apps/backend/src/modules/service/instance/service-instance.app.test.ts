@@ -43,6 +43,7 @@ import * as securityGuardModule from '../../../security/guard';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { DocumentHelper } from '../../document/document.helper';
 import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
+import { subscriptionApp } from '../../subscription/subscription.app';
 import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { ServiceInstanceApp } from './service-instance.app';
@@ -255,6 +256,145 @@ describe('service Instance app', () => {
           mockServiceInstanceId
         )
       ).rejects.toThrow('Other error');
+    });
+
+    it('should auto-subscribe the organization on a public service instance', async () => {
+      requestContext.set(requestContextSimpleUserSecondOrga);
+      loadServiceInstanceBySpy.mockResolvedValue({
+        ...mockServiceInstance,
+        public: true,
+      });
+      loadSubscriptionBySpy.mockResolvedValue(undefined);
+      doesUserServiceExistSpy.mockResolvedValue(false);
+      grantServiceAccessSpy.mockResolvedValue(undefined);
+      const subscribeSpy = vi
+        .spyOn(subscriptionApp, 'subscribeOrganizationsToService')
+        .mockResolvedValue([mockSubscription]);
+
+      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+        mockServiceInstanceId
+      );
+
+      expect(subscribeSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          organizationIds: [
+            contextSimpleUserSecondOrga.user.selected_organization_id,
+          ],
+          serviceInstanceId: mockServiceInstanceId,
+          capabilityIds: [],
+        })
+      );
+      expect(grantServiceAccessSpy).toHaveBeenCalledWith(
+        GenericServiceCapabilityIds.AccessId,
+        mockUserId,
+        mockSubscriptionId
+      );
+    });
+
+    it('should reject access to a non public service instance without subscription', async () => {
+      requestContext.set(requestContextSimpleUserSecondOrga);
+      loadServiceInstanceBySpy.mockResolvedValue({
+        ...mockServiceInstance,
+        public: false,
+      });
+      loadSubscriptionBySpy.mockResolvedValue(undefined);
+      const subscribeSpy = vi.spyOn(
+        subscriptionApp,
+        'subscribeOrganizationsToService'
+      );
+
+      await expect(
+        ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+          mockServiceInstanceId
+        )
+      ).rejects.toThrow(ErrorCode.ServiceInstanceNotPublic);
+
+      expect(subscribeSpy).not.toHaveBeenCalled();
+      expect(grantServiceAccessSpy).not.toHaveBeenCalled();
+    });
+
+    it('should grant access to a non public service instance when the organization is subscribed', async () => {
+      requestContext.set(requestContextSimpleUserSecondOrga);
+      loadServiceInstanceBySpy.mockResolvedValue({
+        ...mockServiceInstance,
+        public: false,
+      });
+      loadSubscriptionBySpy.mockResolvedValue(mockSubscription);
+      doesUserServiceExistSpy.mockResolvedValue(false);
+      grantServiceAccessSpy.mockResolvedValue(undefined);
+
+      await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+        mockServiceInstanceId
+      );
+
+      expect(grantServiceAccessSpy).toHaveBeenCalledWith(
+        GenericServiceCapabilityIds.AccessId,
+        mockUserId,
+        mockSubscriptionId
+      );
+    });
+  });
+
+  describe('loadServiceInstance visibility', () => {
+    let serviceInstance: ServiceInstance;
+
+    beforeEach(() => {
+      requestContext.set(requestContextSimpleUserSecondOrga);
+    });
+
+    afterEach(async () => {
+      await TestHelper.subscription.delete({
+        service_instance_id: serviceInstance.id,
+      });
+      await TestHelper.serviceInstance.delete({ id: serviceInstance.id });
+    });
+
+    it('should return a public service instance', async () => {
+      serviceInstance = await TestHelper.serviceInstance.create({
+        public: true,
+      });
+
+      const result = await ServiceInstanceApp.loadServiceInstance(
+        serviceInstance.id
+      );
+
+      expect(result.id).toEqual(serviceInstance.id);
+    });
+
+    it('should return a non public service instance when the organization is subscribed', async () => {
+      serviceInstance = await TestHelper.serviceInstance.create({
+        public: false,
+      });
+      await TestHelper.subscription.create({
+        service_instance_id: serviceInstance.id,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+
+      const result = await ServiceInstanceApp.loadServiceInstance(
+        serviceInstance.id
+      );
+
+      expect(result.id).toEqual(serviceInstance.id);
+    });
+
+    it('should reject a non public service instance without subscription', async () => {
+      serviceInstance = await TestHelper.serviceInstance.create({
+        public: false,
+      });
+
+      await expect(
+        ServiceInstanceApp.loadServiceInstance(serviceInstance.id)
+      ).rejects.toThrow(ErrorCode.ServiceInstanceNotPublic);
+    });
+
+    it('should throw not found for an unknown service instance', async () => {
+      serviceInstance = await TestHelper.serviceInstance.create({
+        public: true,
+      });
+
+      await expect(
+        ServiceInstanceApp.loadServiceInstance(uuidv4() as ServiceInstanceId)
+      ).rejects.toThrow(ErrorCode.ServiceInstanceNotFound);
     });
   });
 

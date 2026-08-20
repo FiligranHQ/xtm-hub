@@ -1972,6 +1972,7 @@ export type QueryServiceInstancesArgs = {
   after?: InputMaybe<Scalars['ID']['input']>;
   filters?: InputMaybe<Array<ServiceInstanceFilter>>;
   first: Scalars['Int']['input'];
+  includeInaccessible?: InputMaybe<Scalars['Boolean']['input']>;
   orderBy: ServiceInstanceOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
