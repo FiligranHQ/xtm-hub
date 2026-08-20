@@ -1,3 +1,5 @@
+import config from 'config';
+import { toGlobalId } from 'graphql-relay/node/node.js';
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../../../tests/helper/test.helper';
@@ -28,6 +30,33 @@ describe('usersOrganizationApp', () => {
       portalConfig.enabled_emails = originalEnabledEmails;
     });
 
+    const expectedPendingUserLink = (
+      action: 'approve' | 'deny',
+      userId: string
+    ) =>
+      `${config.get('base_url_front')}/redirect/handle-pending-user` +
+      `?action=${action}` +
+      `&organization_id=${encodeURIComponent(toGlobalId('Organization', TEST_ORGANIZATIONS.FILIGRAN.ID))}` +
+      `&user_id=${encodeURIComponent(toGlobalId('User', userId))}`;
+
+    const expectedDigestUser = ({
+      userId,
+      firstName,
+      lastName,
+      email,
+    }: {
+      userId: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+    }) => ({
+      firstName,
+      lastName,
+      email,
+      approveLink: expectedPendingUserLink('approve', userId),
+      denyLink: expectedPendingUserLink('deny', userId),
+    });
+
     const mockLoadOrganizationsWithPendingUsers = (users: User[]) => {
       vi.spyOn(
         UserOrganizationPendingDomain,
@@ -51,15 +80,18 @@ describe('usersOrganizationApp', () => {
         pending_user_digest: true,
       };
 
+      const firstUserId = uuidv4() as UserId;
+      const secondUserId = uuidv4() as UserId;
+
       mockLoadOrganizationsWithPendingUsers([
         {
-          id: uuidv4() as UserId,
+          id: firstUserId,
           email: 'user1@test.com',
           first_name: 'John',
           last_name: 'Doe',
         } as User,
         {
-          id: uuidv4() as UserId,
+          id: secondUserId,
           email: 'user2@test.com',
           first_name: 'Robert',
           last_name: 'Smith',
@@ -73,10 +105,21 @@ describe('usersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
           adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           users: [
-            { firstName: 'John', lastName: 'Doe', email: 'user1@test.com' },
-            { firstName: 'Robert', lastName: 'Smith', email: 'user2@test.com' },
+            expectedDigestUser({
+              userId: firstUserId,
+              firstName: 'John',
+              lastName: 'Doe',
+              email: 'user1@test.com',
+            }),
+            expectedDigestUser({
+              userId: secondUserId,
+              firstName: 'Robert',
+              lastName: 'Smith',
+              email: 'user2@test.com',
+            }),
           ],
           userCount: 2,
           requestLabel: 'requests',
@@ -92,6 +135,8 @@ describe('usersOrganizationApp', () => {
         pending_user_digest: true,
       };
 
+      const userId = uuidv4() as UserId;
+
       vi.spyOn(
         UserOrganizationPendingDomain,
         'loadOrganizationsWithPendingUsers'
@@ -101,7 +146,7 @@ describe('usersOrganizationApp', () => {
           name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           users: [
             {
-              id: uuidv4() as UserId,
+              id: userId,
               email: 'user1@test.com',
               first_name: 'John',
               last_name: 'Doe',
@@ -121,9 +166,15 @@ describe('usersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
           adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           users: [
-            { firstName: 'John', lastName: 'Doe', email: 'user1@test.com' },
+            expectedDigestUser({
+              userId,
+              firstName: 'John',
+              lastName: 'Doe',
+              email: 'user1@test.com',
+            }),
           ],
           userCount: 1,
           requestLabel: 'request',
@@ -139,9 +190,11 @@ describe('usersOrganizationApp', () => {
         pending_user_digest: true,
       };
 
+      const userId = uuidv4() as UserId;
+
       mockLoadOrganizationsWithPendingUsers([
         {
-          id: uuidv4() as UserId,
+          id: userId,
           email: 'user1@test.com',
           first_name: null,
           last_name: 'Smith',
@@ -155,10 +208,16 @@ describe('usersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
           adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           requestLabel: 'request',
           users: [
-            { firstName: '', lastName: 'Smith', email: 'user1@test.com' },
+            expectedDigestUser({
+              userId,
+              firstName: '',
+              lastName: 'Smith',
+              email: 'user1@test.com',
+            }),
           ],
           userCount: 1,
         },
@@ -173,9 +232,11 @@ describe('usersOrganizationApp', () => {
         pending_user_digest: true,
       };
 
+      const userId = uuidv4() as UserId;
+
       mockLoadOrganizationsWithPendingUsers([
         {
-          id: uuidv4() as UserId,
+          id: userId,
           email: 'user1@test.com',
           first_name: 'John',
           last_name: null,
@@ -189,9 +250,17 @@ describe('usersOrganizationApp', () => {
       expect(sendMailSpy).toHaveBeenCalledWith({
         params: {
           adminName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
+          adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           organizationName: TEST_ORGANIZATIONS.FILIGRAN.NAME,
           requestLabel: 'request',
-          users: [{ firstName: 'John', lastName: '', email: 'user1@test.com' }],
+          users: [
+            expectedDigestUser({
+              userId,
+              firstName: 'John',
+              lastName: '',
+              email: 'user1@test.com',
+            }),
+          ],
           userCount: 1,
         },
         template: 'organization_pending_user_digest',

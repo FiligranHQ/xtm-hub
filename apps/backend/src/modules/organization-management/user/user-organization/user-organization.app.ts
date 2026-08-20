@@ -10,7 +10,10 @@ import { UserId } from '../../../../model/kanel/public/User';
 import { UserLoadUserBy } from '../../../../model/user';
 import { isUserAdminPlatform } from '../../../../security/access';
 import { securityGuard } from '../../../../security/guard';
-import { sendMail } from '../../../../server/mail-service';
+import {
+  buildPendingUserActionLink,
+  sendMail,
+} from '../../../../server/mail-service';
 import { logApp } from '../../../../utils/app-logger.util';
 import { ErrorCode } from '../../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../../utils/error/error.util';
@@ -234,15 +237,26 @@ export const UserOrganizationApp = {
               template: 'organization_pending_user_digest',
               params: {
                 adminName: formatName(adminUser.first_name ?? ''),
+                adminEmail: adminUser.email,
                 organizationName: organization.name,
                 users: organization.users
                   .sort((a, b) =>
                     (a.first_name ?? '').localeCompare(b.first_name ?? '')
                   )
-                  .map(({ first_name, last_name, email }) => ({
+                  .map(({ id, first_name, last_name, email }) => ({
                     firstName: formatName(first_name),
                     lastName: formatName(last_name),
                     email,
+                    approveLink: buildPendingUserActionLink({
+                      action: 'approve',
+                      organizationId: organization.id,
+                      userId: id,
+                    }),
+                    denyLink: buildPendingUserActionLink({
+                      action: 'deny',
+                      organizationId: organization.id,
+                      userId: id,
+                    }),
                   })),
                 userCount: organization.users.length,
                 requestLabel:
