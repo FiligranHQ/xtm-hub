@@ -1441,6 +1441,18 @@
         "LogoAlt": "{name} Logo",
         "IllustrationAlt": "Illustration of free trial service"
       },
+      "XtmPlatform": {
+        "NoTrial": {
+          "Text": "Start your 30-day free trial and explore the full XTM Platform experience!"
+        },
+        "Active": {
+          "Text": "Explore the full XTM Platform experience during your trial!"
+        },
+        "Ending": {
+          "Text": "Keep exploring the full XTM Platform experience before your trial ends."
+        },
+        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}"
+      },
       "QuickStart": {
         "Title": "Quick start guide",
         "Subtitle": "Get more out of your {platformName} product!",

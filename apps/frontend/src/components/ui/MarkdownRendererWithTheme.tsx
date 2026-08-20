@@ -1,30 +1,22 @@
 'use client';
 
+import { useHasMounted } from '@/hooks/use-has-mounted';
 import { MarkdownRenderer } from '@filigran/ui/clients';
 import { useTheme } from 'next-themes';
-import { useSyncExternalStore } from 'react';
 
 interface MarkdownRendererWithThemeProps {
   source: string;
   className?: string;
 }
 
-const subscribe = () => () => {};
-const getSnapshot = () => true;
-const getServerSnapshot = () => false;
-
 const MarkdownRendererWithTheme = ({
   source,
   className,
 }: MarkdownRendererWithThemeProps) => {
   const { resolvedTheme } = useTheme();
-  const isMounted = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
-  );
+  const hasMounted = useHasMounted();
 
-  const colorMode: 'light' | 'dark' = !isMounted
+  const colorMode: 'light' | 'dark' = !hasMounted
     ? 'dark'
     : resolvedTheme === 'light'
       ? 'light'
