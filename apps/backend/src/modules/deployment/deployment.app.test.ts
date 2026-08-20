@@ -54,6 +54,7 @@ import * as mailService from '../../server/mail-service';
 import { auth0ClientMock } from '../../thirdparty/auth0/mock';
 import { logApp } from '../../utils/app-logger.util';
 import {
+  AlreadyExistsErrorCode,
   BadRequestErrorCode,
   ErrorCode,
   ForbiddenErrorCode,
@@ -89,6 +90,7 @@ import {
 } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
 import {
+  bundleQuotaKey,
   DeploymentQuotaDomain,
   trialQuotaKey,
 } from './quota/deployment.quota.domain';
@@ -399,29 +401,55 @@ describe('deployment app', () => {
         expect(mockSendMail).toHaveBeenCalledTimes(6);
       });
 
-      it('should bypass the free trial limit check for bundle products', async () => {
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            organization_requester_id:
-              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-            platform_identifier: PlatformIdentifier.Opencti,
-            hub_status: DeploymentRequestHubStatus.Active,
-            counts_in_orga_quota: true,
-          }
-        );
+      it('should allow a bundle when another organization has an on-going trial', async () => {
+        requestContext.set(requestContextAdminUser);
+        const otherOrgaTrial = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          products: [PlatformIdentifier.Opencti],
+        });
 
-        const bundle = await DeploymentApp.createDeploymentRequest({
+        requestContext.set(requestContextRegistererUserSecondOrga);
+        await DeploymentApp.createDeploymentRequest({
           ...TEST_DEPLOYMENT,
           type: DeploymentRequestDeploymentType.Bundle,
           products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
         });
 
-        expect(bundle.id).toBeDefined();
-        const children = await TestHelper.deploymentRequest.loadMany({
-          parent_id: bundle.id as DeploymentRequestId,
-        });
-        expect(children).toHaveLength(2);
+        await TestHelper.deploymentRequest.assertProperties(
+          otherOrgaTrial.id as DeploymentRequestId,
+          { hub_status: DeploymentRequestHubStatus.Pending }
+        );
       });
+
+      it.each([
+        [DeploymentRequestHubStatus.Cancelled],
+        [DeploymentRequestHubStatus.Expired],
+      ])(
+        'should allow a bundle when a product trial is %s, even when it still counts in the orga quota',
+        async (hub_status) => {
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              organization_requester_id:
+                TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status,
+              counts_in_orga_quota: true,
+            }
+          );
+
+          const bundle = await DeploymentApp.createDeploymentRequest({
+            ...TEST_DEPLOYMENT,
+            type: DeploymentRequestDeploymentType.Bundle,
+            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          });
+
+          expect(bundle.id).toBeDefined();
+          const children = await TestHelper.deploymentRequest.loadMany({
+            parent_id: bundle.id as DeploymentRequestId,
+          });
+          expect(children).toHaveLength(2);
+        }
+      );
 
       it('should roll back the whole bundle when a child fails to be created', async () => {
         const originalRegisterNewPlatform =
@@ -1940,8 +1968,11 @@ describe('deployment app', () => {
           ].includes(hub_status)
         ) {
           expect(freePlaceSpy).toHaveBeenCalledWith(
+            bundleQuotaKey(initialDeployment.region)
+          );
+          expect(freePlaceSpy).toHaveBeenCalledWith(
             trialQuotaKey(
-              initialDeployment.platform_identifier,
+              initialDeployment.platform_identifier!,
               initialDeployment.region
             )
           );
@@ -2247,18 +2278,34 @@ describe('deployment app', () => {
       await TestHelper.deploymentRequest.delete({});
     });
 
+    const bundleFilter = {
+      region,
+      type: DeploymentRequestDeploymentType.Bundle,
+    };
+
     const insertRequest = async (
       hubStatus: DeploymentRequestHubStatus,
       ordering: number = 1
     ): Promise<DeploymentRequest> => {
-      return (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        {
-          platform_identifier: platformIdentifier,
-          region,
-          hub_status: hubStatus,
-          ordering,
-        }
-      ))!;
+      const request =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: platformIdentifier,
+            region,
+            hub_status: hubStatus,
+            ordering,
+          }
+        ))!;
+
+      if (hubStatus === DeploymentRequestHubStatus.Pending) {
+        const bundleQuota =
+          await TestHelper.deploymentRequestQuota.load(bundleFilter);
+        await TestHelper.deploymentRequestQuota.update(bundleFilter, {
+          availability: bundleQuota!.availability - 1,
+        });
+      }
+
+      return request;
     };
 
     const initQuota = async ({
@@ -2700,6 +2747,472 @@ describe('deployment app', () => {
     });
   });
 
+  describe('bundle quota', () => {
+    const region = DeploymentRequestPlatformRegion.UsEast;
+    const bundleFilter = {
+      region,
+      type: DeploymentRequestDeploymentType.Bundle,
+    };
+    const productFilter = (platform_identifier: PlatformIdentifier) => ({
+      region,
+      platform_identifier,
+    });
+
+    const loadAvailability = async (
+      filter: Parameters<typeof TestHelper.deploymentRequestQuota.load>[0]
+    ) => {
+      const quota = await TestHelper.deploymentRequestQuota.load(filter);
+      return quota!.availability;
+    };
+
+    const setAvailability = async (
+      filter: Parameters<typeof TestHelper.deploymentRequestQuota.load>[0],
+      availability: number
+    ) => TestHelper.deploymentRequestQuota.update(filter, { availability });
+
+    beforeEach(async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+      await setAvailability(bundleFilter, 5);
+      await setAvailability(productFilter(PlatformIdentifier.Opencti), 5);
+      await setAvailability(productFilter(PlatformIdentifier.Openaev), 5);
+    });
+
+    describe('standalone trial reservation', () => {
+      it('should reserve the product place and borrow a bundle place', async () => {
+        await setAvailability(bundleFilter, 5);
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 5);
+
+        const request = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+
+        expect(request.hub_status).toBe(DeploymentRequestHubStatus.Pending);
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(4);
+        expect(await loadAvailability(bundleFilter)).toBe(4);
+      });
+
+      it('should queue the trial when the product quota is full, without borrowing a bundle place', async () => {
+        await setAvailability(bundleFilter, 5);
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 0);
+
+        const request = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+
+        expect(request.hub_status).toBe(DeploymentRequestHubStatus.Queued);
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(0);
+        expect(await loadAvailability(bundleFilter)).toBe(5);
+      });
+
+      it('should not be blocked by an exhausted bundle quota, which may go negative', async () => {
+        await setAvailability(bundleFilter, 0);
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 5);
+
+        const request = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+
+        expect(request.hub_status).toBe(DeploymentRequestHubStatus.Pending);
+        expect(await loadAvailability(bundleFilter)).toBe(-1);
+      });
+    });
+
+    describe('bundle reservation', () => {
+      it('should reserve only the bundle place and leave the product quotas untouched', async () => {
+        await setAvailability(bundleFilter, 5);
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 5);
+        await setAvailability(productFilter(PlatformIdentifier.Openaev), 5);
+
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [
+            PlatformIdentifier.Xtmone,
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+        });
+
+        expect(bundle.hub_status).toBe(DeploymentRequestHubStatus.Pending);
+        expect(await loadAvailability(bundleFilter)).toBe(4);
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(5);
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Openaev))
+        ).toBe(5);
+      });
+
+      it('should be pending even when every product quota is full', async () => {
+        await setAvailability(bundleFilter, 5);
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 0);
+        await setAvailability(productFilter(PlatformIdentifier.Openaev), 0);
+
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [
+            PlatformIdentifier.Xtmone,
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+        });
+
+        expect(bundle.hub_status).toBe(DeploymentRequestHubStatus.Pending);
+      });
+
+      it('should queue the bundle and all its children together when the bundle quota is full', async () => {
+        await setAvailability(bundleFilter, 0);
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 5);
+        await setAvailability(productFilter(PlatformIdentifier.Openaev), 5);
+
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [
+            PlatformIdentifier.Xtmone,
+            PlatformIdentifier.Opencti,
+            PlatformIdentifier.Openaev,
+          ],
+        });
+
+        expect(bundle.hub_status).toBe(DeploymentRequestHubStatus.Queued);
+
+        const children = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+        });
+        expect(children).toHaveLength(3);
+        for (const child of children) {
+          expect(child.hub_status).toBe(DeploymentRequestHubStatus.Queued);
+        }
+        expect(await loadAvailability(bundleFilter)).toBe(0);
+      });
+
+      it('should create an xtmone child that reserves nothing', async () => {
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+
+        const children = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+        });
+        expect(
+          children.map((child) => child.platform_identifier).sort()
+        ).toEqual([PlatformIdentifier.Opencti, PlatformIdentifier.Xtmone]);
+      });
+    });
+
+    describe('release', () => {
+      it('should refuse to cancel a bundle child on its own', async () => {
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+        const [child] = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+          platform_identifier: PlatformIdentifier.Opencti,
+        });
+        const bundleAvailabilityBefore = await loadAvailability(bundleFilter);
+        const productAvailabilityBefore = await loadAvailability(
+          productFilter(PlatformIdentifier.Opencti)
+        );
+
+        const call = DeploymentApp.cancelDeploymentRequest(child!.id, false);
+
+        await expect(call).rejects.toThrow(
+          ForbiddenErrorCode.CantCancelBundleProduct
+        );
+        expect(await loadAvailability(bundleFilter)).toBe(
+          bundleAvailabilityBefore
+        );
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(productAvailabilityBefore);
+      });
+
+      it('should give back only the bundle place when a bundle with an active child is cancelled', async () => {
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+        const [child] = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+          platform_identifier: PlatformIdentifier.Opencti,
+        });
+        await DeploymentRequestDomain.updateDeploymentRequestById(child!.id, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+        const bundleAvailabilityBefore = await loadAvailability(bundleFilter);
+        const productAvailabilityBefore = await loadAvailability(
+          productFilter(PlatformIdentifier.Opencti)
+        );
+
+        await DeploymentApp.cancelDeploymentRequest(
+          bundle.id as DeploymentRequestId,
+          false
+        );
+
+        expect(await loadAvailability(bundleFilter)).toBe(
+          bundleAvailabilityBefore + 1
+        );
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(productAvailabilityBefore);
+        await TestHelper.deploymentRequest.assertProperties(child!.id, {
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+        });
+      });
+
+      it('should give back nothing when a bundle child is expired by the cron', async () => {
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+        const [child] = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+          platform_identifier: PlatformIdentifier.Opencti,
+        });
+        await DeploymentRequestDomain.updateDeploymentRequestById(child!.id, {
+          hub_status: DeploymentRequestHubStatus.Active,
+          end_date: new Date(Date.UTC(2025, 0, 1)),
+        });
+        const bundleAvailabilityBefore = await loadAvailability(bundleFilter);
+        const productAvailabilityBefore = await loadAvailability(
+          productFilter(PlatformIdentifier.Opencti)
+        );
+
+        await DeploymentApp.expireTrials();
+
+        expect(await loadAvailability(bundleFilter)).toBe(
+          bundleAvailabilityBefore
+        );
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(productAvailabilityBefore);
+        await TestHelper.deploymentRequest.assertProperties(child!.id, {
+          hub_status: DeploymentRequestHubStatus.Active,
+        });
+      });
+
+      it('should give back both places when a standalone trial is expired by the cron', async () => {
+        await TestHelper.deploymentRequest.delete({});
+        await setAvailability(bundleFilter, 5);
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 5);
+
+        const request = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          request.id as DeploymentRequestId,
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: new Date(Date.UTC(2025, 0, 1)),
+          }
+        );
+        const bundleAvailabilityBefore = await loadAvailability(bundleFilter);
+        const productAvailabilityBefore = await loadAvailability(
+          productFilter(PlatformIdentifier.Opencti)
+        );
+
+        await DeploymentApp.expireTrials();
+
+        expect(await loadAvailability(bundleFilter)).toBe(
+          bundleAvailabilityBefore + 1
+        );
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(productAvailabilityBefore + 1);
+      });
+
+      it('should give back both places when a standalone trial is cancelled', async () => {
+        const request = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+        const bundleAvailabilityBefore = await loadAvailability(bundleFilter);
+        const productAvailabilityBefore = await loadAvailability(
+          productFilter(PlatformIdentifier.Opencti)
+        );
+
+        await DeploymentApp.cancelDeploymentRequest(
+          request.id as DeploymentRequestId,
+          true
+        );
+
+        expect(await loadAvailability(bundleFilter)).toBe(
+          bundleAvailabilityBefore + 1
+        );
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(productAvailabilityBefore + 1);
+      });
+
+      it('should promote a queued bundle when a standalone trial is cancelled', async () => {
+        await TestHelper.deploymentRequest.delete({});
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 5);
+        await setAvailability(bundleFilter, 1);
+
+        const standalone = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+        expect(standalone.hub_status).toBe(DeploymentRequestHubStatus.Pending);
+        expect(await loadAvailability(bundleFilter)).toBe(0);
+
+        requestContext.set(requestContextAdminUser);
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
+        });
+        expect(bundle.hub_status).toBe(DeploymentRequestHubStatus.Queued);
+
+        requestContext.set(requestContextRegistererUserSecondOrga);
+        await DeploymentApp.cancelDeploymentRequest(
+          standalone.id as DeploymentRequestId,
+          true
+        );
+
+        expect(await loadAvailability(bundleFilter)).toBe(0);
+        await TestHelper.deploymentRequest.assertProperties(
+          bundle.id as DeploymentRequestId,
+          { hub_status: DeploymentRequestHubStatus.Pending }
+        );
+        const children = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+        });
+        for (const child of children) {
+          expect(child.hub_status).toBe(DeploymentRequestHubStatus.Pending);
+        }
+      });
+
+      it('should give back nothing when a queued standalone trial is cancelled', async () => {
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 0);
+        const queued = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+        expect(queued.hub_status).toBe(DeploymentRequestHubStatus.Queued);
+        const bundleAvailabilityBefore = await loadAvailability(bundleFilter);
+
+        await DeploymentApp.cancelDeploymentRequest(
+          queued.id as DeploymentRequestId,
+          true
+        );
+
+        expect(await loadAvailability(bundleFilter)).toBe(
+          bundleAvailabilityBefore
+        );
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(0);
+      });
+
+      it('should borrow a bundle place for the trial promoted in place of a cancelled one', async () => {
+        await setAvailability(productFilter(PlatformIdentifier.Opencti), 1);
+
+        const pending = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+        expect(pending.hub_status).toBe(DeploymentRequestHubStatus.Pending);
+
+        requestContext.set(requestContextAdminUser);
+        const queued = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+        expect(queued.hub_status).toBe(DeploymentRequestHubStatus.Queued);
+
+        const bundleAvailabilityBefore = await loadAvailability(bundleFilter);
+
+        await DeploymentApp.cancelDeploymentRequest(
+          pending.id as DeploymentRequestId,
+          true
+        );
+
+        expect(await loadAvailability(bundleFilter)).toBe(
+          bundleAvailabilityBefore
+        );
+        expect(
+          await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+        ).toBe(0);
+        await TestHelper.deploymentRequest.assertProperties(
+          queued.id as DeploymentRequestId,
+          { hub_status: DeploymentRequestHubStatus.Pending }
+        );
+      });
+    });
+
+    describe('organization eligibility', () => {
+      it('should count a bundle child as an existing trial for that product', async () => {
+        await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+
+        const call = DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+
+        await expect(call).rejects.toThrow(
+          AlreadyExistsErrorCode.FreeTrialAlreadyExists
+        );
+      });
+
+      it('should not count a bundle child for a product the bundle does not include', async () => {
+        await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
+        });
+
+        const request = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          region,
+          products: [PlatformIdentifier.Opencti],
+        });
+
+        expect(request.id).toBeDefined();
+      });
+    });
+  });
+
   describe('expireTrials', () => {
     let freePlaceSpy: MockInstance;
     beforeEach(() => {
@@ -2753,7 +3266,13 @@ describe('deployment app', () => {
         target_state: DeploymentRequestPlatformState.Active,
       });
 
-      expect(freePlaceSpy).toHaveBeenCalledTimes(1);
+      expect(freePlaceSpy).toHaveBeenCalledTimes(2);
+      expect(freePlaceSpy).toHaveBeenCalledWith(
+        bundleQuotaKey(expiredTrial!.region)
+      );
+      expect(freePlaceSpy).toHaveBeenCalledWith(
+        trialQuotaKey(expiredTrial!.platform_identifier!, expiredTrial!.region)
+      );
     });
 
     it.each`
@@ -3002,10 +3521,7 @@ describe('deployment app', () => {
 
           await DeploymentApp.releaseDeploymentRequestPlace(
             deploymentRequest!.hub_status,
-            trialQuotaKey(
-              deploymentRequest!.platform_identifier,
-              deploymentRequest!.region
-            )
+            deploymentRequest!
           );
 
           expect(freePlaceSpy).not.toHaveBeenCalled();
@@ -3026,23 +3542,32 @@ describe('deployment app', () => {
       };
       const setFirstQueuedRequestAsPendingSpy = vi
         .spyOn(DeploymentRequestDomain, 'setFirstQueuedRequestAsPending')
-        .mockResolvedValue(queuedDeploymentRequest);
+        .mockImplementation(async (key) =>
+          key.type === DeploymentRequestDeploymentType.Trial
+            ? queuedDeploymentRequest
+            : undefined
+        );
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         deploymentRequestToRelease!.hub_status,
-        trialQuotaKey(
-          deploymentRequestToRelease!.platform_identifier,
-          deploymentRequestToRelease!.region
-        )
+        deploymentRequestToRelease!
       );
 
       expect(setFirstQueuedRequestAsPendingSpy).toHaveBeenCalledWith(
         trialQuotaKey(
-          deploymentRequestToRelease!.platform_identifier,
+          deploymentRequestToRelease!.platform_identifier!,
           deploymentRequestToRelease!.region
         )
       );
-      expect(freePlaceSpy).not.toHaveBeenCalled();
+      expect(freePlaceSpy).not.toHaveBeenCalledWith(
+        trialQuotaKey(
+          deploymentRequestToRelease!.platform_identifier!,
+          deploymentRequestToRelease!.region
+        )
+      );
+      expect(freePlaceSpy).toHaveBeenCalledWith(
+        bundleQuotaKey(deploymentRequestToRelease!.region)
+      );
     });
 
     it('should free place when deployment request was not moved to pending', async () => {
@@ -3060,15 +3585,12 @@ describe('deployment app', () => {
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         deploymentRequest!.hub_status,
-        trialQuotaKey(
-          deploymentRequest!.platform_identifier,
-          deploymentRequest!.region
-        )
+        deploymentRequest!
       );
 
       expect(freePlaceSpy).toHaveBeenCalledWith(
         trialQuotaKey(
-          deploymentRequest!.platform_identifier,
+          deploymentRequest!.platform_identifier!,
           deploymentRequest!.region
         )
       );
@@ -3090,8 +3612,7 @@ describe('deployment app', () => {
 
         await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
-          deploymentRequest!.platform_identifier,
-          deploymentRequest!.region
+          deploymentRequest!
         );
 
         expect(telemetrySpy).not.toHaveBeenCalled();
@@ -3116,10 +3637,14 @@ describe('deployment app', () => {
         vi.spyOn(
           DeploymentRequestDomain,
           'setFirstQueuedRequestAsPending'
-        ).mockResolvedValue({
-          ...queuedDeploymentRequest!,
-          hub_status: DeploymentRequestHubStatus!.Pending,
-        });
+        ).mockImplementation(async (key) =>
+          key.type === DeploymentRequestDeploymentType.Trial
+            ? {
+                ...queuedDeploymentRequest!,
+                hub_status: DeploymentRequestHubStatus.Pending,
+              }
+            : undefined
+        );
         const deploymentRequest =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -3129,8 +3654,7 @@ describe('deployment app', () => {
 
         await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
-          deploymentRequest!.platform_identifier,
-          deploymentRequest!.region
+          deploymentRequest!
         );
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({

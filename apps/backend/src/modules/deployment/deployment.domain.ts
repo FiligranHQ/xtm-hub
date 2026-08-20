@@ -269,6 +269,17 @@ export const DeploymentRequestDomain = {
       })
       .where('id', '=', request.id)
       .returning('*');
+
+    if (request.type === DeploymentRequestDeploymentType.Bundle) {
+      await db<DeploymentRequest>('DeploymentRequest')
+        .update({
+          hub_status: DeploymentRequestHubStatus.Pending,
+          target_state: DeploymentRequestPlatformState.Active,
+        })
+        .where('parent_id', '=', request.id)
+        .andWhere('hub_status', '=', DeploymentRequestHubStatus.Queued);
+    }
+
     return updatedRequest ?? undefined;
   },
 

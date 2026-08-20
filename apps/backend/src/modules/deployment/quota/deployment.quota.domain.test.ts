@@ -133,6 +133,22 @@ describe('deploymentQuotaDomain', () => {
       expect(result.isPlaceAvailable).toBe(false);
       expect(updatedRequestQuota!.availability).toBe(0);
     });
+
+    it('should let a non-blocking reservation drive the bundle quota negative', async () => {
+      await TestHelper.deploymentRequestQuota.update(bundleQuotaFilter, {
+        availability: 0,
+      });
+
+      const result = await DeploymentQuotaDomain.reservePlace(bundleKey, {
+        blocking: false,
+      });
+
+      const updatedRequestQuota =
+        await TestHelper.deploymentRequestQuota.load(bundleQuotaFilter);
+
+      expect(result.isPlaceAvailable).toBe(true);
+      expect(updatedRequestQuota!.availability).toBe(-1);
+    });
   });
 
   describe('freePlace', () => {

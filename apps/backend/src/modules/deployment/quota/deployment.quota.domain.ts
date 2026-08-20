@@ -5,6 +5,7 @@ import {
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
+import DeploymentRequestModel from '../../../model/kanel/public/DeploymentRequest';
 import DeploymentRequestQuota, {
   DeploymentRequestQuotaMutator,
 } from '../../../model/kanel/public/DeploymentRequestQuota';
@@ -25,7 +26,7 @@ export const bundleQuotaKey = (
 });
 
 export const trialQuotaKey = (
-  platformIdentifier: PlatformIdentifier | null,
+  platformIdentifier: PlatformIdentifier,
   region: DeploymentRequestPlatformRegion
 ): QuotaKey => ({
   type: DeploymentRequestDeploymentType.Trial,
@@ -42,9 +43,24 @@ const isQuotaManagedPlatform = (
   platformIdentifier !== null &&
   platformIdentifier !== PlatformIdentifier.Xtmone;
 
-export const isQuotaManagedKey = (key: QuotaKey): boolean =>
+const isQuotaManagedKey = (key: QuotaKey): boolean =>
   key.type === DeploymentRequestDeploymentType.Bundle ||
   isQuotaManagedPlatform(key.platformIdentifier);
+
+export const quotaKeysOfRequest = (
+  request: DeploymentRequestModel
+): QuotaKey[] => {
+  if (request.type === DeploymentRequestDeploymentType.Bundle) {
+    return [bundleQuotaKey(request.region)];
+  }
+  if (request.parent_id !== null || request.platform_identifier === null) {
+    return [];
+  }
+  return [
+    bundleQuotaKey(request.region),
+    trialQuotaKey(request.platform_identifier, request.region),
+  ];
+};
 
 const QUOTA_KEY_LOCK_ORDER = [
   DeploymentRequestDeploymentType.Bundle,
@@ -56,7 +72,8 @@ const compareQuotaKeys = (a: QuotaKey, b: QuotaKey): number =>
 
 export const DeploymentQuotaDomain = {
   reservePlace: async (
-    key: QuotaKey
+    key: QuotaKey,
+    { blocking = true }: { blocking?: boolean } = {}
   ): Promise<{ isPlaceAvailable: boolean }> => {
     if (!isQuotaManagedKey(key)) {
       return { isPlaceAvailable: true };
@@ -68,7 +85,7 @@ export const DeploymentQuotaDomain = {
         if (!quota) {
           throw new Error(ErrorCode.DeploymentRequestQuotaNotFound);
         }
-        if (quota.availability <= 0) {
+        if (blocking && quota.availability <= 0) {
           return {
             isPlaceAvailable: false,
           };

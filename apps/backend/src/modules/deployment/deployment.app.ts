@@ -74,9 +74,11 @@ import {
   FullyQualifiedDeploymentRequest,
 } from './deployment.domain';
 import { DeploymentHelper } from './deployment.helper';
+import { DeploymentQuotaApp } from './quota/deployment.quota.app';
 import {
+  bundleQuotaKey,
   DeploymentQuotaDomain,
-  QuotaKey,
+  quotaKeysOfRequest,
   trialQuotaKey,
 } from './quota/deployment.quota.domain';
 
@@ -453,30 +455,21 @@ export const DeploymentApp = {
 
   releaseDeploymentRequestPlace: async (
     previousHubStatus: DeploymentRequestHubStatus,
-    key: QuotaKey
+    request: DeploymentRequestModel
   ) => {
-    const isRequestCountedInQuotas = [
-      DeploymentRequestHubStatus.Active,
-      DeploymentRequestHubStatus.Pending,
-      DeploymentRequestHubStatus.Provisioning,
-    ].includes(previousHubStatus);
-    if (!isRequestCountedInQuotas) {
+    const promotedRequests = await DeploymentQuotaApp.releaseQuotaForRequest(
+      request,
+      previousHubStatus
+    );
+
+    if (promotedRequests.length === 0) {
       return;
     }
 
-    const updatedDeploymentRequest =
-      await DeploymentRequestDomain.setFirstQueuedRequestAsPending(key);
-    if (updatedDeploymentRequest) {
-      const user = requestContext.requireUser();
-
-      await sendUpdateDeploymentTelemetryEvent(
-        updatedDeploymentRequest,
-        user.id
-      );
-      return;
+    const user = requestContext.requireUser();
+    for (const promotedRequest of promotedRequests) {
+      await sendUpdateDeploymentTelemetryEvent(promotedRequest, user.id);
     }
-
-    await DeploymentQuotaDomain.freePlace(key);
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
     const user = requestContext.requireUser();
@@ -575,12 +568,14 @@ const createSingleDeploymentRequest = async ({
   platformIdentifier,
   type,
   parentId,
+  inheritedHubStatus,
 }: {
   user: UserLoadUserBy;
   input: CreateDeploymentRequestInput;
   platformIdentifier: PlatformIdentifier;
   type: DeploymentRequestDeploymentType;
   parentId: DeploymentRequestId | null;
+  inheritedHubStatus?: DeploymentRequestHubStatus;
 }): Promise<DeploymentRequestModel> => {
   const serviceDefinition =
     await ServiceDefinitionDomain.loadServiceDefinitionByPlatformIdentifier(
@@ -590,16 +585,23 @@ const createSingleDeploymentRequest = async ({
     throw new Error(ErrorCode.ServiceDefinitionNotFound);
   }
 
-  const productKey = trialQuotaKey(platformIdentifier, input.region);
+  const quotaKeys =
+    parentId === null
+      ? [
+          bundleQuotaKey(input.region),
+          trialQuotaKey(platformIdentifier, input.region),
+        ]
+      : [];
 
   return DeploymentQuotaDomain.withLockedQuotaTransaction(
-    [productKey],
+    quotaKeys,
     async () => {
-      const { isPlaceAvailable } =
-        await DeploymentQuotaDomain.reservePlace(productKey);
-      const hubStatus = isPlaceAvailable
-        ? DeploymentRequestHubStatus.Pending
-        : DeploymentRequestHubStatus.Queued;
+      const hubStatus = await resolveHubStatus({
+        parentId,
+        inheritedHubStatus,
+        platformIdentifier,
+        region: input.region,
+      });
       const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
         hub_status: hubStatus,
         platform_identifier: platformIdentifier,
@@ -637,6 +639,32 @@ const createSingleDeploymentRequest = async ({
       });
     }
   );
+};
+
+const resolveHubStatus = async ({
+  parentId,
+  inheritedHubStatus,
+  platformIdentifier,
+  region,
+}: {
+  parentId: DeploymentRequestId | null;
+  inheritedHubStatus?: DeploymentRequestHubStatus;
+  platformIdentifier: PlatformIdentifier;
+  region: DeploymentRequestPlatformRegion;
+}): Promise<DeploymentRequestHubStatus> => {
+  if (parentId !== null) {
+    return inheritedHubStatus ?? DeploymentRequestHubStatus.Pending;
+  }
+
+  const { isPlaceAvailable } =
+    await DeploymentQuotaApp.takeStandaloneTrialQuota(
+      platformIdentifier,
+      region
+    );
+
+  return isPlaceAvailable
+    ? DeploymentRequestHubStatus.Pending
+    : DeploymentRequestHubStatus.Queued;
 };
 
 const sendDeploymentRequestCreatedNotifications = async ({
@@ -757,102 +785,117 @@ const createBundleDeploymentRequest = async ({
     }
   }
 
-  return withTransaction(async () => {
-    const bundleServiceInstance =
-      await ServiceInstanceDomain.insertServiceInstance({
-        id: uuidv4() as ServiceInstanceId,
-        name: XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
-        description: '',
-        public: false,
-        creation_status: ServiceInstanceCreationStatus.Pending,
-        tags: [
-          ServiceInstanceTag.Trial,
-          ...products.map(
-            (platformIdentifier) =>
-              serviceInstanceTagMappedByPlatformIdentifier[platformIdentifier]
-          ),
-        ],
-        service_definition_id: bundleServiceDefinition.id,
-      });
-
-    await SubscriptionDomain.createSubscription({
-      id: uuidv4() as SubscriptionId,
-      organization_id: user.selected_organization_id,
-      service_instance_id: bundleServiceInstance.id,
-      start_date: new Date(),
-      end_date: null,
-    });
-
-    const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
-      hub_status: DeploymentRequestHubStatus.Pending,
-      platform_identifier: null,
-    });
-
-    const bundleDeploymentRequest =
-      await DeploymentRequestDomain.insertDeploymentRequest({
-        id: uuidv4() as DeploymentRequestId,
-        user_requester_id: user.id,
-        organization_requester_id: user.selected_organization_id,
-        service_instance_id: bundleServiceInstance.id,
-        hub_status: DeploymentRequestHubStatus.Pending,
-        target_state: DeploymentRequestPlatformState.Active,
-        actual_state: DeploymentRequestPlatformState.Unprovisioned,
-        ordering: (maxOrdering ?? 0) + 1,
-        type: DeploymentRequestDeploymentType.Bundle,
-        platform_identifier: null,
-        region: input.region,
-        job_title: input.job_title,
-        use_case: input.use_case,
-        activity_sector: input.activity_sector,
-        platform_token: uuidv4(),
-        source: input.source,
-        parent_id: null,
-      });
-
-    try {
-      const createDeploymentEvent = TelemetryHelper.buildCreateDeploymentEvent(
-        chosenOrganization,
-        user.id,
-        undefined,
-        input.source,
-        {
-          region: bundleDeploymentRequest.region,
-          status: bundleDeploymentRequest.hub_status,
-          activity_sector: bundleDeploymentRequest.activity_sector,
-          job_title: bundleDeploymentRequest.job_title,
-          use_case: bundleDeploymentRequest.use_case,
-          email: user.email,
-          deployment_id: bundleDeploymentRequest.id,
-          deployment_type: bundleDeploymentRequest.type,
-        }
+  return DeploymentQuotaDomain.withLockedQuotaTransaction(
+    [bundleQuotaKey(input.region)],
+    async () => {
+      const { isPlaceAvailable } = await DeploymentQuotaApp.takeBundleQuota(
+        input.region
       );
-      await TelemetryApp.sendTelemetryEvent(createDeploymentEvent);
-    } catch (error) {
-      logApp.error('Unable to send telemetry event', {
-        error,
+      const bundleHubStatus = isPlaceAvailable
+        ? DeploymentRequestHubStatus.Pending
+        : DeploymentRequestHubStatus.Queued;
+
+      const bundleServiceInstance =
+        await ServiceInstanceDomain.insertServiceInstance({
+          id: uuidv4() as ServiceInstanceId,
+          name: XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
+          description: '',
+          public: false,
+          creation_status: ServiceInstanceCreationStatus.Pending,
+          tags: [
+            ServiceInstanceTag.Trial,
+            ...products.map(
+              (platformIdentifier) =>
+                serviceInstanceTagMappedByPlatformIdentifier[platformIdentifier]
+            ),
+          ],
+          service_definition_id: bundleServiceDefinition.id,
+        });
+
+      await SubscriptionDomain.createSubscription({
+        id: uuidv4() as SubscriptionId,
+        organization_id: user.selected_organization_id,
+        service_instance_id: bundleServiceInstance.id,
+        start_date: new Date(),
+        end_date: null,
       });
+
+      const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
+        hub_status: bundleHubStatus,
+        platform_identifier: null,
+      });
+
+      const bundleDeploymentRequest =
+        await DeploymentRequestDomain.insertDeploymentRequest({
+          id: uuidv4() as DeploymentRequestId,
+          user_requester_id: user.id,
+          organization_requester_id: user.selected_organization_id,
+          service_instance_id: bundleServiceInstance.id,
+          hub_status: bundleHubStatus,
+          target_state:
+            bundleHubStatus === DeploymentRequestHubStatus.Queued
+              ? DeploymentRequestPlatformState.Unprovisioned
+              : DeploymentRequestPlatformState.Active,
+          actual_state: DeploymentRequestPlatformState.Unprovisioned,
+          ordering: (maxOrdering ?? 0) + 1,
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          region: input.region,
+          job_title: input.job_title,
+          use_case: input.use_case,
+          activity_sector: input.activity_sector,
+          platform_token: uuidv4(),
+          source: input.source,
+          parent_id: null,
+        });
+
+      try {
+        const createDeploymentEvent =
+          TelemetryHelper.buildCreateDeploymentEvent(
+            chosenOrganization,
+            user.id,
+            undefined,
+            input.source,
+            {
+              region: bundleDeploymentRequest.region,
+              status: bundleDeploymentRequest.hub_status,
+              activity_sector: bundleDeploymentRequest.activity_sector,
+              job_title: bundleDeploymentRequest.job_title,
+              use_case: bundleDeploymentRequest.use_case,
+              email: user.email,
+              deployment_id: bundleDeploymentRequest.id,
+              deployment_type: bundleDeploymentRequest.type,
+            }
+          );
+        await TelemetryApp.sendTelemetryEvent(createDeploymentEvent);
+      } catch (error) {
+        logApp.error('Unable to send telemetry event', {
+          error,
+        });
+      }
+
+      for (const platformIdentifier of products) {
+        const childDeploymentRequest = await createSingleDeploymentRequest({
+          user,
+          input,
+          platformIdentifier,
+          type: DeploymentRequestDeploymentType.Trial,
+          parentId: bundleDeploymentRequest.id,
+          inheritedHubStatus: bundleHubStatus,
+        });
+
+        await sendDeploymentRequestCreatedNotifications({
+          user,
+          chosenOrganization,
+          input,
+          platformIdentifier,
+          deploymentRequest: childDeploymentRequest,
+        });
+      }
+
+      return bundleDeploymentRequest;
     }
-
-    for (const platformIdentifier of products) {
-      const childDeploymentRequest = await createSingleDeploymentRequest({
-        user,
-        input,
-        platformIdentifier,
-        type: DeploymentRequestDeploymentType.Trial,
-        parentId: bundleDeploymentRequest.id,
-      });
-
-      await sendDeploymentRequestCreatedNotifications({
-        user,
-        chosenOrganization,
-        input,
-        platformIdentifier,
-        deploymentRequest: childDeploymentRequest,
-      });
-    }
-
-    return bundleDeploymentRequest;
-  });
+  );
 };
 
 const loadDeploymentRequestForUpdate = async (
@@ -921,13 +964,8 @@ const applyCancellationToDeploymentRequest = async ({
       ? DeploymentRequestPlatformState.Unprovisioned
       : DeploymentRequestPlatformState.Removed;
 
-  const quotaKey = trialQuotaKey(
-    deploymentRequest.platform_identifier,
-    deploymentRequest.region
-  );
-
   return DeploymentQuotaDomain.withLockedQuotaTransaction(
-    [quotaKey],
+    quotaKeysOfRequest(deploymentRequest),
     async () => {
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.updateDeploymentRequestById(
@@ -954,7 +992,7 @@ const applyCancellationToDeploymentRequest = async ({
       }
       await DeploymentApp.releaseDeploymentRequestPlace(
         previousHubStatus,
-        quotaKey
+        deploymentRequest
       );
 
       return updatedDeploymentRequest;
@@ -1018,13 +1056,9 @@ const applyExpirationToDeploymentRequest = async (
   deploymentRequest: DeploymentRequestModel
 ): Promise<DeploymentRequestModel> => {
   const previousHubStatus = deploymentRequest.hub_status;
-  const quotaKey = trialQuotaKey(
-    deploymentRequest.platform_identifier,
-    deploymentRequest.region
-  );
 
   return DeploymentQuotaDomain.withLockedQuotaTransaction(
-    [quotaKey],
+    quotaKeysOfRequest(deploymentRequest),
     async () => {
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.updateDeploymentRequestById(
@@ -1041,7 +1075,7 @@ const applyExpirationToDeploymentRequest = async (
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         previousHubStatus,
-        quotaKey
+        deploymentRequest
       );
 
       return updatedDeploymentRequest;
@@ -1200,12 +1234,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
   newStatus: DeploymentRequestHubStatus;
 }) => {
   await DeploymentQuotaDomain.withLockedQuotaTransaction(
-    [
-      trialQuotaKey(
-        deploymentRequest.platform_identifier,
-        deploymentRequest.region
-      ),
-    ],
+    quotaKeysOfRequest(deploymentRequest),
     async () => {
       if (deploymentRequest.type === DeploymentRequestDeploymentType.Bundle) {
         await DeploymentRequestDomain.updateDeploymentRequestById(
