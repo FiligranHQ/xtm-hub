@@ -88,7 +88,10 @@ import {
   XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
 } from './deployment.app';
 import { DeploymentRequestDomain } from './deployment.domain';
-import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
+import {
+  DeploymentQuotaDomain,
+  trialQuotaKey,
+} from './quota/deployment.quota.domain';
 
 describe('deployment app', () => {
   let telemetrySpy: MockInstance;
@@ -1937,8 +1940,10 @@ describe('deployment app', () => {
           ].includes(hub_status)
         ) {
           expect(freePlaceSpy).toHaveBeenCalledWith(
-            initialDeployment.platform_identifier,
-            initialDeployment.region
+            trialQuotaKey(
+              initialDeployment.platform_identifier,
+              initialDeployment.region
+            )
           );
         } else {
           expect(freePlaceSpy).not.toHaveBeenCalled();
@@ -2997,8 +3002,10 @@ describe('deployment app', () => {
 
           await DeploymentApp.releaseDeploymentRequestPlace(
             deploymentRequest!.hub_status,
-            deploymentRequest!.platform_identifier,
-            deploymentRequest!.region
+            trialQuotaKey(
+              deploymentRequest!.platform_identifier,
+              deploymentRequest!.region
+            )
           );
 
           expect(freePlaceSpy).not.toHaveBeenCalled();
@@ -3023,13 +3030,17 @@ describe('deployment app', () => {
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         deploymentRequestToRelease!.hub_status,
-        deploymentRequestToRelease!.platform_identifier,
-        deploymentRequestToRelease!.region
+        trialQuotaKey(
+          deploymentRequestToRelease!.platform_identifier,
+          deploymentRequestToRelease!.region
+        )
       );
 
       expect(setFirstQueuedRequestAsPendingSpy).toHaveBeenCalledWith(
-        deploymentRequestToRelease!.platform_identifier,
-        deploymentRequestToRelease!.region
+        trialQuotaKey(
+          deploymentRequestToRelease!.platform_identifier,
+          deploymentRequestToRelease!.region
+        )
       );
       expect(freePlaceSpy).not.toHaveBeenCalled();
     });
@@ -3049,13 +3060,17 @@ describe('deployment app', () => {
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         deploymentRequest!.hub_status,
-        deploymentRequest!.platform_identifier,
-        deploymentRequest!.region
+        trialQuotaKey(
+          deploymentRequest!.platform_identifier,
+          deploymentRequest!.region
+        )
       );
 
       expect(freePlaceSpy).toHaveBeenCalledWith(
-        deploymentRequest!.platform_identifier,
-        deploymentRequest!.region
+        trialQuotaKey(
+          deploymentRequest!.platform_identifier,
+          deploymentRequest!.region
+        )
       );
     });
 

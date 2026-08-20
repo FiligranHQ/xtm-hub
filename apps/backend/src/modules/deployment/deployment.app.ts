@@ -74,7 +74,11 @@ import {
   FullyQualifiedDeploymentRequest,
 } from './deployment.domain';
 import { DeploymentHelper } from './deployment.helper';
-import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
+import {
+  DeploymentQuotaDomain,
+  QuotaKey,
+  trialQuotaKey,
+} from './quota/deployment.quota.domain';
 
 export const XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME = 'XTM Platform Bundle';
 
@@ -309,51 +313,39 @@ export const DeploymentApp = {
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
     const user = requestContext.requireUser();
-    await DeploymentQuotaDomain.withLockedQuotaTransaction(
-      { platformIdentifier, region },
-      async () => {
-        const { newAvailability } =
-          await DeploymentQuotaDomain.updateQuotaCapacity({
-            platformIdentifier,
-            region,
-            newCapacity,
-          });
+    const key = trialQuotaKey(platformIdentifier, region);
+    await DeploymentQuotaDomain.withLockedQuotaTransaction([key], async () => {
+      const { newAvailability } =
+        await DeploymentQuotaDomain.updateQuotaCapacity({
+          key,
+          newCapacity,
+        });
 
-        if (newAvailability < 0) {
-          for (let i = 0; i < -newAvailability; i++) {
-            const updatedRequest =
-              await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-                platformIdentifier,
-                region
-              );
+      if (newAvailability < 0) {
+        for (let i = 0; i < -newAvailability; i++) {
+          const updatedRequest =
+            await DeploymentRequestDomain.setLastPendingRequestAsQueued(key);
 
-            if (!updatedRequest) {
-              break;
-            }
-
-            void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
-            await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
+          if (!updatedRequest) {
+            break;
           }
-        } else if (newAvailability > 0) {
-          for (let i = 0; i < newAvailability; i++) {
-            const updatedRequest =
-              await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
-                platformIdentifier,
-                region
-              );
-            if (!updatedRequest) {
-              break;
-            }
 
-            void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
-            await DeploymentQuotaDomain.reservePlace(
-              platformIdentifier,
-              region
-            );
+          void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
+          await DeploymentQuotaDomain.freePlace(key);
+        }
+      } else if (newAvailability > 0) {
+        for (let i = 0; i < newAvailability; i++) {
+          const updatedRequest =
+            await DeploymentRequestDomain.setFirstQueuedRequestAsPending(key);
+          if (!updatedRequest) {
+            break;
           }
+
+          void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
+          await DeploymentQuotaDomain.reservePlace(key);
         }
       }
-    );
+    });
 
     return { success: true };
   },
@@ -461,8 +453,7 @@ export const DeploymentApp = {
 
   releaseDeploymentRequestPlace: async (
     previousHubStatus: DeploymentRequestHubStatus,
-    platformIdentifier: PlatformIdentifier | null,
-    region: DeploymentRequestPlatformRegion
+    key: QuotaKey
   ) => {
     const isRequestCountedInQuotas = [
       DeploymentRequestHubStatus.Active,
@@ -474,10 +465,7 @@ export const DeploymentApp = {
     }
 
     const updatedDeploymentRequest =
-      await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
-        platformIdentifier,
-        region
-      );
+      await DeploymentRequestDomain.setFirstQueuedRequestAsPending(key);
     if (updatedDeploymentRequest) {
       const user = requestContext.requireUser();
 
@@ -488,7 +476,7 @@ export const DeploymentApp = {
       return;
     }
 
-    await DeploymentQuotaDomain.freePlace(platformIdentifier, region);
+    await DeploymentQuotaDomain.freePlace(key);
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
     const user = requestContext.requireUser();
@@ -602,16 +590,13 @@ const createSingleDeploymentRequest = async ({
     throw new Error(ErrorCode.ServiceDefinitionNotFound);
   }
 
+  const productKey = trialQuotaKey(platformIdentifier, input.region);
+
   return DeploymentQuotaDomain.withLockedQuotaTransaction(
-    {
-      platformIdentifier,
-      region: input.region,
-    },
+    [productKey],
     async () => {
-      const { isPlaceAvailable } = await DeploymentQuotaDomain.reservePlace(
-        platformIdentifier,
-        input.region
-      );
+      const { isPlaceAvailable } =
+        await DeploymentQuotaDomain.reservePlace(productKey);
       const hubStatus = isPlaceAvailable
         ? DeploymentRequestHubStatus.Pending
         : DeploymentRequestHubStatus.Queued;
@@ -936,11 +921,13 @@ const applyCancellationToDeploymentRequest = async ({
       ? DeploymentRequestPlatformState.Unprovisioned
       : DeploymentRequestPlatformState.Removed;
 
+  const quotaKey = trialQuotaKey(
+    deploymentRequest.platform_identifier,
+    deploymentRequest.region
+  );
+
   return DeploymentQuotaDomain.withLockedQuotaTransaction(
-    {
-      platformIdentifier: deploymentRequest.platform_identifier,
-      region: deploymentRequest.region,
-    },
+    [quotaKey],
     async () => {
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.updateDeploymentRequestById(
@@ -967,8 +954,7 @@ const applyCancellationToDeploymentRequest = async ({
       }
       await DeploymentApp.releaseDeploymentRequestPlace(
         previousHubStatus,
-        deploymentRequest.platform_identifier,
-        deploymentRequest.region
+        quotaKey
       );
 
       return updatedDeploymentRequest;
@@ -1032,12 +1018,13 @@ const applyExpirationToDeploymentRequest = async (
   deploymentRequest: DeploymentRequestModel
 ): Promise<DeploymentRequestModel> => {
   const previousHubStatus = deploymentRequest.hub_status;
+  const quotaKey = trialQuotaKey(
+    deploymentRequest.platform_identifier,
+    deploymentRequest.region
+  );
 
   return DeploymentQuotaDomain.withLockedQuotaTransaction(
-    {
-      platformIdentifier: deploymentRequest.platform_identifier,
-      region: deploymentRequest.region,
-    },
+    [quotaKey],
     async () => {
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.updateDeploymentRequestById(
@@ -1054,8 +1041,7 @@ const applyExpirationToDeploymentRequest = async (
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         previousHubStatus,
-        deploymentRequest.platform_identifier,
-        deploymentRequest.region
+        quotaKey
       );
 
       return updatedDeploymentRequest;
@@ -1214,10 +1200,12 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
   newStatus: DeploymentRequestHubStatus;
 }) => {
   await DeploymentQuotaDomain.withLockedQuotaTransaction(
-    {
-      platformIdentifier: deploymentRequest.platform_identifier,
-      region: deploymentRequest.region,
-    },
+    [
+      trialQuotaKey(
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region
+      ),
+    ],
     async () => {
       if (deploymentRequest.type === DeploymentRequestDeploymentType.Bundle) {
         await DeploymentRequestDomain.updateDeploymentRequestById(

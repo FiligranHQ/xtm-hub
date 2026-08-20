@@ -3,7 +3,6 @@ import { db, paginate } from '../../../knexfile';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
-  DeploymentRequestPlatformRegion,
   DeploymentRequestPlatformState,
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
@@ -23,6 +22,25 @@ import {
   ServiceGroupDomain,
   ServiceGroupName,
 } from './group/service-group.domain';
+import { QuotaKey } from './quota/deployment.quota.domain';
+
+const scopeToPlatformIdentifier =
+  (key: QuotaKey) => (builder: Knex.QueryBuilder<DeploymentRequest>) => {
+    if (key.platformIdentifier === null) {
+      builder.whereNull('platform_identifier');
+    } else {
+      builder.andWhere('platform_identifier', '=', key.platformIdentifier);
+    }
+  };
+
+const scopeToQuotaKey =
+  (key: QuotaKey) => (builder: Knex.QueryBuilder<DeploymentRequest>) => {
+    builder
+      .where('type', '=', key.type)
+      .andWhere('region', '=', key.region)
+      .whereNull('parent_id')
+      .modify(scopeToPlatformIdentifier(key));
+  };
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -225,14 +243,12 @@ export const DeploymentRequestDomain = {
   },
 
   setFirstQueuedRequestAsPending: async (
-    platformIdentifier: PlatformIdentifier | null,
-    region: DeploymentRequestPlatformRegion
+    key: QuotaKey
   ): Promise<DeploymentRequest | undefined> => {
     const request = await db<DeploymentRequest>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
-      .andWhere('platform_identifier', '=', platformIdentifier)
-      .andWhere('region', '=', region)
+      .modify(scopeToQuotaKey(key))
       .orderBy('ordering', 'asc')
       .first();
 
@@ -242,7 +258,7 @@ export const DeploymentRequestDomain = {
 
     const maxPendingOrdering = await DeploymentRequestDomain.getMaxOrdering({
       hub_status: DeploymentRequestHubStatus.Pending,
-      platform_identifier: platformIdentifier,
+      platform_identifier: request.platform_identifier,
     });
 
     const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
@@ -257,14 +273,12 @@ export const DeploymentRequestDomain = {
   },
 
   setLastPendingRequestAsQueued: async (
-    platformIdentifier: PlatformIdentifier,
-    region: DeploymentRequestPlatformRegion
+    key: QuotaKey
   ): Promise<DeploymentRequest | undefined> => {
     const request = await db<DeploymentRequest>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Pending)
-      .andWhere('platform_identifier', '=', platformIdentifier)
-      .andWhere('region', '=', region)
+      .modify(scopeToQuotaKey(key))
       .orderBy('ordering', 'desc')
       .first();
 
@@ -275,7 +289,9 @@ export const DeploymentRequestDomain = {
     await db<DeploymentRequest>('DeploymentRequest')
       .increment('ordering', 1)
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
-      .andWhere('platform_identifier', '=', platformIdentifier);
+      .andWhere('type', '=', key.type)
+      .whereNull('parent_id')
+      .modify(scopeToPlatformIdentifier(key));
     const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .update({
         hub_status: DeploymentRequestHubStatus.Queued,

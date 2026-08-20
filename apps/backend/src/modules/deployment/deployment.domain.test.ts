@@ -18,6 +18,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { DeploymentRequestDomain } from './deployment.domain';
 import { ServiceGroupDomain } from './group/service-group.domain';
+import { trialQuotaKey } from './quota/deployment.quota.domain';
 
 describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
@@ -1061,8 +1062,7 @@ describe('deploymentRequestDomain', () => {
 
       const updatedRequest =
         await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-          platformIdentifier,
-          region
+          trialQuotaKey(platformIdentifier, region)
         );
 
       expect(updatedRequest).toBeDefined();
@@ -1111,8 +1111,7 @@ describe('deploymentRequestDomain', () => {
 
     it('should set pending requests in the right order with queued requests', async () => {
       await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-        platformIdentifier,
-        region
+        trialQuotaKey(platformIdentifier, region)
       );
 
       await TestHelper.deploymentRequest.assertProperties(
@@ -1151,8 +1150,7 @@ describe('deploymentRequestDomain', () => {
 
       const updatedRequest =
         await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-          platformIdentifier,
-          region
+          trialQuotaKey(platformIdentifier, region)
         );
 
       expect(updatedRequest).toBeUndefined();
@@ -1224,8 +1222,10 @@ describe('deploymentRequestDomain', () => {
 
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
-          deploymentRequest1!.platform_identifier,
-          deploymentRequest1!.region
+          trialQuotaKey(
+            deploymentRequest1!.platform_identifier!,
+            deploymentRequest1!.region
+          )
         );
 
       expect(updatedDeploymentRequest).toBeDefined();
@@ -1296,8 +1296,7 @@ describe('deploymentRequestDomain', () => {
 
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
-          PlatformIdentifier.Opencti,
-          deploymentRequest1!.region
+          trialQuotaKey(PlatformIdentifier.Opencti, deploymentRequest1!.region)
         );
       expect(updatedDeploymentRequest).toBeDefined();
       await TestHelper.deploymentRequest.assertProperties(
@@ -1336,8 +1335,10 @@ describe('deploymentRequestDomain', () => {
 
       const updatedDeploymentRequest =
         await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
-          deploymentRequest1!.platform_identifier,
-          DeploymentRequestPlatformRegion.UsEast
+          trialQuotaKey(
+            deploymentRequest1!.platform_identifier!,
+            DeploymentRequestPlatformRegion.UsEast
+          )
         );
       expect(updatedDeploymentRequest).toBeDefined();
       await TestHelper.deploymentRequest.assertProperties(
