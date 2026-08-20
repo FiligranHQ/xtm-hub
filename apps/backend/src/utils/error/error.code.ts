@@ -62,6 +62,7 @@ export enum BadRequestErrorCode {
   ContactTooLong = 'CONTACT_TOO_LONG',
   MixedLtsManifestFragments = 'MIXED_LTS_MANIFEST_FRAGMENTS',
   InvalidProductsForDeploymentType = 'INVALID_PRODUCTS_FOR_DEPLOYMENT_TYPE',
+  MissingUseCaseForProduct = 'MISSING_USE_CASE_FOR_PRODUCT',
 }
 
 export enum UnknownErrorCode {

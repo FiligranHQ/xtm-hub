@@ -217,7 +217,7 @@ export type CreateDeploymentRequestInput = {
   region: DeploymentRequestPlatformRegion;
   source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
-  use_case?: InputMaybe<DeploymentRequestUseCase>;
+  use_cases_by_product?: InputMaybe<Array<ProductUseCaseInput>>;
 };
 
 export type CreateDocumentInput = {
@@ -1699,6 +1699,11 @@ export enum PortalCapability {
   ReadTrials = 'READ_TRIALS'
 }
 
+export type ProductUseCaseInput = {
+  platform_identifier: PlatformIdentifier;
+  use_case: DeploymentRequestUseCase;
+};
+
 export type ProvisionedNewsFeedItem = Node & {
   __typename?: 'ProvisionedNewsFeedItem';
   creation_date: Scalars['Date']['output'];
@@ -3059,6 +3064,7 @@ export type ResolversTypes = ResolversObject<{
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   PlatformTrialStatus: ResolverTypeWrapper<PlatformTrialStatus>;
   PortalCapability: PortalCapability;
+  ProductUseCaseInput: ProductUseCaseInput;
   ProvisionedNewsFeedItem: ResolverTypeWrapper<ProvisionedNewsFeedItem>;
   Query: ResolverTypeWrapper<{}>;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
@@ -3260,6 +3266,7 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
   PlatformTrialStatus: PlatformTrialStatus;
+  ProductUseCaseInput: ProductUseCaseInput;
   ProvisionedNewsFeedItem: ProvisionedNewsFeedItem;
   Query: {};
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;

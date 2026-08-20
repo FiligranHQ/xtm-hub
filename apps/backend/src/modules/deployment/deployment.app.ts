@@ -609,6 +609,20 @@ const validateDeploymentRequestProducts = (
     if (!includesXtmone || !hasAtLeastOneOtherProduct) {
       throw new Error(BadRequestErrorCode.InvalidProductsForDeploymentType);
     }
+
+    const productsRequiringUseCase = uniqueProducts.filter(
+      (platformIdentifier) => platformIdentifier !== PlatformIdentifier.Xtmone
+    );
+    const everyProductHasUseCase = productsRequiringUseCase.every(
+      (platformIdentifier) =>
+        input.use_cases_by_product?.some(
+          (entry) => entry.platform_identifier === platformIdentifier
+        )
+    );
+    if (!everyProductHasUseCase) {
+      throw new Error(BadRequestErrorCode.MissingUseCaseForProduct);
+    }
+
     return {
       type: DeploymentRequestDeploymentType.Bundle,
       products: uniqueProducts,
@@ -687,7 +701,10 @@ const createSingleDeploymentRequest = async ({
         platform_identifier: platformIdentifier,
         region: input.region,
         job_title: input.job_title,
-        use_case: input.use_case,
+        use_case:
+          input.use_cases_by_product?.find(
+            (entry) => entry.platform_identifier === platformIdentifier
+          )?.use_case ?? null,
         activity_sector: input.activity_sector,
         platform_token: uuidv4(),
         source: input.source,
@@ -773,7 +790,7 @@ const sendDeploymentRequestCreatedNotifications = async ({
         userEmail: user.email,
         region: input.region,
         activitySector: input.activity_sector ?? undefined,
-        useCase: input.use_case ?? undefined,
+        useCase: deploymentRequest.use_case ?? undefined,
         platformIdentifier,
         deploymentType: ucfirst(deploymentRequest.type),
       },
@@ -860,7 +877,7 @@ const createBundleDeploymentRequest = async ({
         platform_identifier: null,
         region: input.region,
         job_title: input.job_title,
-        use_case: input.use_case,
+        use_case: null,
         activity_sector: input.activity_sector,
         platform_token: uuidv4(),
         source: input.source,

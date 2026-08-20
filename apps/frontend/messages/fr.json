@@ -271,6 +271,7 @@
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
+      "MISSING_USE_CASE_FOR_PRODUCT": "Un cas d'usage doit être sélectionné pour chaque produit inclus dans l'essai",
       "MIXED_LTS_MANIFEST_FRAGMENTS": "Un lot ne peut pas mélanger des fragments LTS et non-LTS",
       "NEWS_FEED_ITEM_MISSING_TITLE": "Le titre de l'article du fil d'actualité est manquant",
       "NEWS_FEED_ITEM_NOT_FOUND": "L'article du fil d'actualité n'a pas été trouvé",

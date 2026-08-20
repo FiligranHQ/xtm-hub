@@ -285,6 +285,12 @@ describe('deployment app', () => {
           PlatformIdentifier.Xtmone,
           'unknown-platform' as PlatformIdentifier,
         ],
+        use_cases_by_product: [
+          {
+            platform_identifier: 'unknown-platform' as PlatformIdentifier,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+        ],
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
@@ -306,6 +312,16 @@ describe('deployment app', () => {
             PlatformIdentifier.Xtmone,
             PlatformIdentifier.Opencti,
             PlatformIdentifier.Openaev,
+          ],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.OaevPurpleTeam,
+            },
           ],
         });
 
@@ -411,6 +427,12 @@ describe('deployment app', () => {
           ...TEST_DEPLOYMENT,
           type: DeploymentRequestDeploymentType.Bundle,
           products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+          ],
         });
 
         expect(bundle.id).toBeDefined();
@@ -441,6 +463,16 @@ describe('deployment app', () => {
             PlatformIdentifier.Xtmone,
             PlatformIdentifier.Opencti,
             PlatformIdentifier.Openaev,
+          ],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.OaevPurpleTeam,
+            },
           ],
         });
 
@@ -520,7 +552,12 @@ describe('deployment app', () => {
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
-            use_case: DeploymentRequestUseCase.ThreatHunting,
+            use_cases_by_product: [
+              {
+                platform_identifier: product,
+                use_case: DeploymentRequestUseCase.ThreatHunting,
+              },
+            ],
             products: [product],
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
