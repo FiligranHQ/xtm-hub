@@ -62,6 +62,7 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await this.page.getByText('TAXII Feeds').click();
   }
   async fillRssFeed({
     name,
@@ -92,6 +93,7 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await this.page.getByText('RSS Feeds').click();
   }
 
   async fillStream({
@@ -125,6 +127,7 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await this.page.getByText('OpenCTI Streams').click();
   }
   async fillCsvFeed({
     name,
@@ -155,6 +158,7 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await this.page.getByText('CSV Feeds').click();
   }
 
   async fillThirdPartyIntegration({
@@ -200,6 +204,7 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
+    await this.page.getByText('Third Party integrations').click();
   }
 
   async navigateToIntegration(shortDescription: string) {
@@ -207,7 +212,16 @@ export default class IntegrationPage {
   }
 
   async deleteIntegration(deleteButtonRole: 'menuitem' | 'button') {
-    await this.page.getByRole(deleteButtonRole, { name: 'Delete' }).click();
-    await this.page.getByRole('button', { name: 'Delete' }).click();
+    if (deleteButtonRole === 'menuitem') {
+      const deleteAction = this.page
+        .getByRole('menu')
+        .first()
+        .getByRole('menuitem', { name: 'Delete' });
+      await deleteAction.click({ force: true });
+    } else {
+      await this.page.getByRole('button', { name: 'Delete' }).first().click();
+    }
+
+    await this.page.getByRole('button', { name: 'Delete' }).last().click();
   }
 }

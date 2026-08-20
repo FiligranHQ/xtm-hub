@@ -1,9 +1,9 @@
-import { TimelineCountBadge } from '@/components/epic/epic-item/TimelineCountBadge';
 import {
   FiligranTimelineMapping,
   type FiligranTimelineMetadata,
 } from '@/components/epic/epic-item/TimelineMapping';
 import type { HomepageRoadmapTitleProduct } from '@/components/homepage/Homepage.utils';
+import { CountBadge } from '@/components/ui/CountBadge';
 import { PublicLocale } from '@/i18n/config';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -98,7 +98,7 @@ const XtmRoadmap = async ({
               key={labelKey}
               className="flex flex-col gap-xs max-sm:gap-[2px]">
               <div className="flex items-center gap-s max-md:gap-xs max-sm:gap-[4px] pr-8 max-md:pr-5 max-sm:pr-1">
-                <TimelineCountBadge
+                <CountBadge
                   count={count}
                   bgFadedClass={bgFadedClass}
                   textClass={textClass}
