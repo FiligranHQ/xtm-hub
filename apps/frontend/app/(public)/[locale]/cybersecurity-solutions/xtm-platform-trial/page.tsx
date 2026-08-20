@@ -8,13 +8,13 @@ import {
   getBaseUrl,
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
+import { loadMeUser } from '@/utils/load-me-user';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { loadMeUser } from '@/utils/load-me-user';
 import { redirect } from 'next/navigation';
 
 const PATHNAME = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/xtm-platform-trial`;

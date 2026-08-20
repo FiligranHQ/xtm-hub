@@ -1,3 +1,4 @@
+import { PrivateXtmPlatformTrialPanel } from '@/components/service/trial-instances/xtm-platform-trial/PrivateXtmPlatformTrialPanel';
 import { XtmPlatformTrialPage } from '@/components/service/trial-instances/xtm-platform-trial/XtmPlatformTrialPage';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { APP_PATH } from '@/utils/path/constant';
@@ -20,7 +21,10 @@ const Page = async () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <XtmPlatformTrialPage panel={null} />
+      <XtmPlatformTrialPage
+        panel={<PrivateXtmPlatformTrialPanel />}
+        showLimitations
+      />
     </>
   );
 };
