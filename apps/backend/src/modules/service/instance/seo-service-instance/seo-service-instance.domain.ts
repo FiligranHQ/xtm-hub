@@ -1,18 +1,33 @@
 import { db } from '../../../../../knexfile';
 import {
   EditSeoServiceInstanceInput,
+  PortalCapability,
   SeoServiceInstanceLanguage,
   SeoServiceInstanceMetadata,
 } from '../../../../__generated__/resolvers-types';
+import { requestContext } from '../../../../context/request.context';
 import { SEOServiceInstanceMutator } from '../../../../model/kanel/public/SEOServiceInstance';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import { restrictSeoServiceInstanceToPublicServiceInstance } from '../../../../security/restriction/seo-service-instance';
 import { NotFoundErrorCode } from '../../../../utils/error/error.code';
+import { AuthHelper } from '../../../security-management/capability/auth.helper';
+
+const canReadPrivateServiceMetadata = () =>
+  AuthHelper.userHasPortalCapability(requestContext.get()?.user, [
+    PortalCapability.ModifyServiceMetadata,
+  ]);
 
 export const SeoServiceInstanceDomain = {
   loadSeoServiceInstancesBy: async (
     field: SEOServiceInstanceMutator
   ): Promise<SeoServiceInstanceMetadata[]> => {
-    return db<SeoServiceInstanceMetadata>('SEO_ServiceInstance').where(field);
+    return db<SeoServiceInstanceMetadata>('SEO_ServiceInstance')
+      .where(field)
+      .modify((queryBuilder) => {
+        if (!canReadPrivateServiceMetadata()) {
+          restrictSeoServiceInstanceToPublicServiceInstance(queryBuilder);
+        }
+      });
   },
 
   upsertSeoServiceInstance: async (
