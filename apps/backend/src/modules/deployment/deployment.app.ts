@@ -259,7 +259,7 @@ export const DeploymentApp = {
       region: quota.region,
       availableCount: quota.availability,
       capacity: quota.capacity,
-      platform_identifier: quota.platform_identifier,
+      platform_identifier: platformIdentifier,
     }));
   },
 

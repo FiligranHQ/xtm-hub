@@ -28,6 +28,7 @@ const COLUMN_ENUM_MAP = {
   DeploymentRequestQuota: {
     platform_identifier: 'PlatformIdentifier',
     region: 'DeploymentRequestPlatformRegion',
+    type: 'DeploymentRequestDeploymentType',
   },
   Epic: {
     product: 'FiligranProduct',
