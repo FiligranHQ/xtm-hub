@@ -235,9 +235,18 @@ describe('PrivateNavigation component — open={true}', () => {
     expect(screen.getByText('StartFreeTrial')).toBeInTheDocument();
     expect(screen.getByText('CustomDashboards')).toBeInTheDocument();
     expect(screen.getByText('Integrations')).toBeInTheDocument();
-    expect(screen.getByText('Playbooks')).toBeInTheDocument();
     expect(screen.getByText('LiveDemo')).toBeInTheDocument();
     expect(screen.getByText('Documentation')).toBeInTheDocument();
+  });
+
+  it('omits services the user cannot access instead of rendering a disabled entry', async () => {
+    const user = userEvent.setup();
+    testRender(<PrivateNavigation open={true} />);
+
+    await expandSection(user, 'OpenCTI');
+
+    expect(screen.queryByText('Playbooks')).not.toBeInTheDocument();
+    expect(screen.queryByText('CustomViews')).not.toBeInTheDocument();
   });
 
   it('renders external OpenCTI links with target and rel attributes', async () => {

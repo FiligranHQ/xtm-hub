@@ -292,6 +292,7 @@
       "SERVICE_DEFINITION_NOT_FOUND": "サービス定義が見つかりませんでした",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "あなたはこれを行うことはできません",
       "SERVICE_INSTANCE_NOT_FOUND": "サービスインスタンスが見つかりません",
+      "SERVICE_INSTANCE_NOT_PUBLIC": "このサービスへのアクセス権がありません",
       "SERVICE_NOT_FOUND": "サービスが見つかりません",
       "SERVICE_NOT_MANAGEABLE": "このサービスは管理できません。",
       "SERVICE_SUBSCRIPTION_ERROR": "サービスにサブスクリプションを追加する際にエラーが発生した",
