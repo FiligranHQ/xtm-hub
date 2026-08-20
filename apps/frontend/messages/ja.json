@@ -1704,6 +1704,13 @@
         "BackButton": "XTM トライアルプラットフォームに戻る",
         "GroupAction": "グループアクション",
         "AddTrialUser": "トライアルユーザーを追加",
+        "Table": {
+          "Email": "メールアドレス",
+          "OpenCTIRole": "OpenCTIロール",
+          "OpenAEVRole": "OpenAEVロール",
+          "XtmOne": "XTM One",
+          "NoUsers": "ユーザーが見つかりません。"
+        },
         "Roles": {
           "opencti": {
             "Title": "OpenCTI ロール一覧",

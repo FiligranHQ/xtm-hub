@@ -17,6 +17,7 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
+  DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   PlatformConfigurationStatus,
   PlatformContract,
@@ -24,6 +25,7 @@ import {
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
+import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import * as mailService from '../../../server/mail-service';
@@ -559,6 +561,166 @@ describe('serviceGroupApp', () => {
 
       // Then
       expect(auth0Spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('loadBundleUserServiceGroups', () => {
+    const createdBundleIds: DeploymentRequestId[] = [];
+
+    afterEach(async () => {
+      for (const bundleId of createdBundleIds) {
+        await TestHelper.deploymentRequest.deleteBundle(bundleId);
+      }
+      createdBundleIds.length = 0;
+    });
+
+    it('should return groups pivoted per user across the bundle children', async () => {
+      // Given
+      const { bundle, children } =
+        await TestHelper.deploymentRequest.createBundle({
+          children: [
+            { platform_identifier: PlatformIdentifier.Opencti },
+            { platform_identifier: PlatformIdentifier.Openaev },
+          ],
+        });
+      createdBundleIds.push(bundle.id);
+      const [openctiDeploymentRequest, openaevDeploymentRequest] = children;
+
+      const openctiAdminGroupId = uuidv4() as ServiceGroupId;
+      const openaevObserverGroupId = uuidv4() as ServiceGroupId;
+      await TestHelper.serviceGroup.create({
+        id: openctiAdminGroupId,
+        name: 'Admin',
+        service_instance_id: openctiDeploymentRequest.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: openaevObserverGroupId,
+        name: 'Observer',
+        service_instance_id: openaevDeploymentRequest.service_instance_id,
+      });
+
+      await TestHelper.serviceGroupUser.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        group_id: openctiAdminGroupId,
+      });
+      await TestHelper.serviceGroupUser.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        group_id: openaevObserverGroupId,
+      });
+
+      // When
+      const result = await ServiceGroupApp.loadBundleUserServiceGroups(
+        bundle.service_instance_id
+      );
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]?.user.id).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID
+      );
+      // Regression: the underlying query used to be rooted on
+      // `DeploymentRequest`, so knex's postProcessResponse tagged every row
+      // (including the joined `User.*` columns) with `__typename:
+      // 'DeploymentRequest'`, which made `Node.id` encode the user as a
+      // `DeploymentRequest:` global id instead of `User:` on the GraphQL
+      // layer.
+      expect(result[0]?.user.__typename).toBe('User');
+      expect(result[0]?.groups).toEqual(
+        expect.arrayContaining([
+          { platformIdentifier: PlatformIdentifier.Opencti, name: 'Admin' },
+          {
+            platformIdentifier: PlatformIdentifier.Openaev,
+            name: 'Observer',
+          },
+        ])
+      );
+    });
+
+    it('should throw DeploymentRequestNotFound when the bundle has no deployment request', async () => {
+      // Given
+      const bundleServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+      // When
+      const call = ServiceGroupApp.loadBundleUserServiceGroups(
+        bundleServiceInstanceId
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+    });
+
+    it('should throw SubscriptionNotFound when the bundle has no subscribed organization', async () => {
+      // Given
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      createdBundleIds.push(bundle.id);
+      await TestHelper.subscription.delete({
+        service_instance_id: bundle.service_instance_id,
+      });
+
+      // When
+      const call = ServiceGroupApp.loadBundleUserServiceGroups(
+        bundle.service_instance_id
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
+    });
+
+    it('should prevent a non-bypass user from accessing a bundle of another organization', async () => {
+      // Given
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      createdBundleIds.push(bundle.id);
+      requestContext.set(requestContextAdminSecondOrga);
+
+      // When
+      const call = ServiceGroupApp.loadBundleUserServiceGroups(
+        bundle.service_instance_id
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(
+        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
+      );
+    });
+
+    it('should allow a bypass user to access a bundle of another organization', async () => {
+      // Given
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      createdBundleIds.push(bundle.id);
+      await TestHelper.subscription.delete({
+        service_instance_id: bundle.service_instance_id,
+      });
+      await TestHelper.subscription.create({
+        service_instance_id: bundle.service_instance_id,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      requestContext.set(requestContextAdminUser);
+
+      // When
+      const result = await ServiceGroupApp.loadBundleUserServiceGroups(
+        bundle.service_instance_id
+      );
+
+      // Then
+      expect(result).toEqual([]);
     });
   });
 });

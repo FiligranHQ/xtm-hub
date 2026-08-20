@@ -1704,6 +1704,13 @@
         "BackButton": "Back to XTM Platform Trial",
         "GroupAction": "Group action",
         "AddTrialUser": "Add trial user",
+        "Table": {
+          "Email": "Email",
+          "OpenCTIRole": "OpenCTI role",
+          "OpenAEVRole": "OpenAEV role",
+          "XtmOne": "XTM One",
+          "NoUsers": "No users found."
+        },
         "Roles": {
           "opencti": {
             "Title": "OpenCTI roles",

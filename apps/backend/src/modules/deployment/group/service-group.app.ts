@@ -1,7 +1,12 @@
-import { DeploymentRequestDeploymentType } from '../../../__generated__/resolvers-types';
+import {
+  BundleUserServiceGroup,
+  DeploymentRequestDeploymentType,
+  ServiceGroupName,
+  ServiceGroup as ServiceGroupResponse,
+} from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
-import ServiceGroup, {
+import ServiceGroupModel, {
   ServiceGroupId,
 } from '../../../model/kanel/public/ServiceGroup';
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
@@ -22,24 +27,99 @@ import { ServiceGroupHelper } from './service-group.helper';
 
 export type UpdateGroupsPayload = { id: ServiceGroupId; userIds: UserId[] }[];
 
+const toServiceGroupResponse = (
+  serviceGroup: ServiceGroupModel
+): ServiceGroupResponse => ({
+  ...serviceGroup,
+  name: serviceGroup.name as ServiceGroupName,
+});
+
 export const ServiceGroupApp = {
   loadGroups: async ({
     serviceInstanceId,
   }: {
     serviceInstanceId: ServiceInstanceId;
-  }): Promise<ServiceGroup[]> => {
-    return ServiceGroupDomain.loadServiceGroups({
+  }): Promise<ServiceGroupResponse[]> => {
+    const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
       service_instance_id: serviceInstanceId,
     });
+    return serviceGroups.map(toServiceGroupResponse);
   },
 
   loadGroupUsers: async (groupId: ServiceGroupId): Promise<User[]> => {
     return ServiceGroupDomain.loadGroupUsers(groupId);
   },
 
+  loadGroupsByServiceInstanceAndUser: async (
+    serviceInstanceId: ServiceInstanceId,
+    userId: UserId
+  ): Promise<ServiceGroupResponse[]> => {
+    const serviceGroups =
+      await ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
+        serviceInstanceId,
+        userId
+      );
+    return serviceGroups.map(toServiceGroupResponse);
+  },
+
+  loadBundleUserServiceGroups: async (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<BundleUserServiceGroup[]> => {
+    const user = requestContext.requireUser();
+
+    const bundleDeploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        service_instance_id: serviceInstanceId,
+      });
+    if (!bundleDeploymentRequest) {
+      throw new Error(ErrorCode.DeploymentRequestNotFound);
+    }
+
+    const bundleOrganization =
+      await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
+        serviceInstanceId
+      );
+    if (!bundleOrganization) {
+      throw new Error(ErrorCode.SubscriptionNotFound);
+    }
+    if (
+      !AuthHelper.userHasBypassCapability(user) &&
+      bundleOrganization.id !== user.selected_organization_id
+    ) {
+      throw new Error(ErrorCode.OrganizationDoesNotMatchSelectedOrganization);
+    }
+
+    const rows = await UserDomain.loadUsersWithDeploymentServiceGroups(
+      bundleDeploymentRequest.id
+    );
+
+    const bundleUserServiceGroupsByUserId = new Map<
+      UserId,
+      BundleUserServiceGroup
+    >();
+    rows.forEach(({ platform_identifier, group_name, ...rowUser }) => {
+      if (!platform_identifier) {
+        return;
+      }
+      const entry: BundleUserServiceGroup = bundleUserServiceGroupsByUserId.get(
+        rowUser.id
+      ) ?? {
+        user: rowUser,
+        groups: [],
+      };
+      entry.groups.push({
+        platformIdentifier: platform_identifier,
+        name: group_name,
+      });
+      bundleUserServiceGroupsByUserId.set(rowUser.id, entry);
+    });
+
+    return Array.from(bundleUserServiceGroupsByUserId.values());
+  },
+
   updateGroups: async (
     groups: UpdateGroupsPayload
-  ): Promise<ServiceGroup[]> => {
+  ): Promise<ServiceGroupResponse[]> => {
     const user = requestContext.requireUser();
     const groupIds = groups.map(({ id }) => id);
 
@@ -134,9 +214,10 @@ export const ServiceGroupApp = {
       }
     }
 
-    return ServiceGroupDomain.loadServiceGroups({
+    const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
       service_instance_id: serviceInstanceIds[0],
     });
+    return serviceGroups.map(toServiceGroupResponse);
   },
   removeExpiredGroups: async (): Promise<void> => {
     const rows = await ServiceGroupDomain.loadGroupsForExpiredTrials();

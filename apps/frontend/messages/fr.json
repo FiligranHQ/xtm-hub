@@ -1704,6 +1704,13 @@
         "BackButton": "Retour à la plateforme d'essai XTM",
         "GroupAction": "Action groupée",
         "AddTrialUser": "Ajouter un utilisateur d'essai",
+        "Table": {
+          "Email": "Email",
+          "OpenCTIRole": "Rôle OpenCTI",
+          "OpenAEVRole": "Rôle OpenAEV",
+          "XtmOne": "XTM One",
+          "NoUsers": "Aucun utilisateur trouvé."
+        },
         "Roles": {
           "opencti": {
             "Title": "Rôles OpenCTI",

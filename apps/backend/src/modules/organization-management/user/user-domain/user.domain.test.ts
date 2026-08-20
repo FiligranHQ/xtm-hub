@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { TestHelper } from '../../../../../tests/helper/test.helper';
 import {
   contextSimpleUserSecondOrga,
   requestContextAdminSecondOrga,
@@ -10,9 +11,13 @@ import {
 } from '../../../../../tests/tests.const';
 import {
   OrderingMode,
+  PlatformIdentifier,
+  ServiceGroupName,
   UserOrdering,
 } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
+import { DeploymentRequestId } from '../../../../model/kanel/public/DeploymentRequest';
+import { ServiceGroupId } from '../../../../model/kanel/public/ServiceGroup';
 import User, { UserId } from '../../../../model/kanel/public/User';
 import { ROLE_ADMIN } from '../../../../portal.const';
 import { TelemetryApp } from '../../../telemetry/telemetry.app';
@@ -166,6 +171,106 @@ describe('users domain', () => {
       expect(returnedIds).toContain(
         TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
       );
+    });
+  });
+
+  describe('loadUsersWithDeploymentServiceGroups', () => {
+    const createdDeploymentRequestIds: DeploymentRequestId[] = [];
+
+    afterEach(async () => {
+      for (const deploymentRequestId of createdDeploymentRequestIds) {
+        await TestHelper.deploymentRequest.deleteBundle(deploymentRequestId);
+      }
+      createdDeploymentRequestIds.length = 0;
+    });
+
+    it('should return one row per user/platform-group pair for the deployment request children', async () => {
+      // Given
+      const createdBundle = await TestHelper.deploymentRequest.createBundle({
+        children: [
+          { platform_identifier: PlatformIdentifier.Opencti },
+          { platform_identifier: PlatformIdentifier.Openaev },
+        ],
+      });
+      const { bundle, children } = createdBundle;
+      createdDeploymentRequestIds.push(bundle.id);
+      const [openctiDeploymentRequest, openaevDeploymentRequest] = children;
+
+      const openctiAdminGroupId = uuidv4() as ServiceGroupId;
+      const openaevObserverGroupId = uuidv4() as ServiceGroupId;
+      await TestHelper.serviceGroup.create({
+        id: openctiAdminGroupId,
+        name: ServiceGroupName.Admin,
+        service_instance_id: openctiDeploymentRequest.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: openaevObserverGroupId,
+        name: ServiceGroupName.Observer,
+        service_instance_id: openaevDeploymentRequest.service_instance_id,
+      });
+
+      await TestHelper.serviceGroupUser.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        group_id: openctiAdminGroupId,
+      });
+      await TestHelper.serviceGroupUser.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        group_id: openaevObserverGroupId,
+      });
+
+      // When
+      const rows = await UserDomain.loadUsersWithDeploymentServiceGroups(
+        bundle.id
+      );
+
+      // Then
+      expect(rows).toHaveLength(2);
+      expect(rows).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+            platform_identifier: PlatformIdentifier.Opencti,
+            group_name: ServiceGroupName.Admin,
+          }),
+          expect.objectContaining({
+            id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+            platform_identifier: PlatformIdentifier.Openaev,
+            group_name: ServiceGroupName.Observer,
+          }),
+        ])
+      );
+    });
+
+    it('should not return groups from deployment requests that are not children of the given parent', async () => {
+      // Given
+      const createdBundle = await TestHelper.deploymentRequest.createBundle();
+      const { bundle } = createdBundle;
+      createdDeploymentRequestIds.push(bundle.id);
+
+      const unrelatedDeploymentRequest =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { parent_id: null, platform_identifier: PlatformIdentifier.Opencti }
+        );
+      createdDeploymentRequestIds.push(unrelatedDeploymentRequest.id);
+
+      const unrelatedGroupId = uuidv4() as ServiceGroupId;
+      await TestHelper.serviceGroup.create({
+        id: unrelatedGroupId,
+        name: ServiceGroupName.Admin,
+        service_instance_id: unrelatedDeploymentRequest.service_instance_id,
+      });
+      await TestHelper.serviceGroupUser.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        group_id: unrelatedGroupId,
+      });
+
+      // When
+      const rows = await UserDomain.loadUsersWithDeploymentServiceGroups(
+        bundle.id
+      );
+
+      // Then
+      expect(rows).toEqual([]);
     });
   });
 });

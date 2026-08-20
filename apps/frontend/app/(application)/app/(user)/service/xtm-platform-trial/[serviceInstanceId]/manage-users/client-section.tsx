@@ -2,6 +2,7 @@
 
 import { ManageTrialHeader } from '@/components/service/bundle/manage-trial/ManageTrialHeader';
 import { ManageTrialRoleDescriptions } from '@/components/service/bundle/manage-trial/ManageTrialRoleDescriptions';
+import { ManageTrialTable } from '@/components/service/bundle/manage-trial/ManageTrialTable';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { APP_PATH } from '@/utils/path/constant';
 import { use } from 'react';
@@ -10,7 +11,8 @@ import { ServiceXtmPlatformBundleManageUsersPageProps } from './page';
 const ClientSection = ({
   params,
 }: ServiceXtmPlatformBundleManageUsersPageProps) => {
-  const { serviceInstanceId: _serviceInstanceId } = use(params);
+  const { serviceInstanceId } = use(params);
+  const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
 
   const breadcrumbs = [
     {
@@ -28,9 +30,10 @@ const ClientSection = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <div className="flex flex-col gap-xl">
+      <div className="flex flex-col gap-l">
         <ManageTrialHeader />
         <ManageTrialRoleDescriptions />
+        <ManageTrialTable serviceInstanceId={decodedServiceInstanceId} />
       </div>
     </>
   );

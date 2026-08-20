@@ -117,6 +117,12 @@ export type BulkPendingUserFromOrganizationInput = {
   searchTerm: InputMaybe<Scalars['String']['input']>;
 };
 
+export type BundleUserServiceGroup = {
+  __typename?: 'BundleUserServiceGroup';
+  groups: Array<UserPlatformGroup>;
+  user: User;
+};
+
 export type CanUnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
   tenantId: InputMaybe<Scalars['String']['input']>;
@@ -1774,6 +1780,7 @@ export type ProvisionedNewsFeedItem = Node & {
 
 export type Query = {
   __typename?: 'Query';
+  bundleUserServiceGroups: Array<BundleUserServiceGroup>;
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
@@ -1831,6 +1838,11 @@ export type Query = {
   votingRound: Maybe<VotingRound>;
   votingRoundResults: VotingRoundResults;
   votingRounds: Array<VotingRound>;
+};
+
+
+export type QueryBundleUserServiceGroupsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2359,9 +2371,18 @@ export enum ServiceDefinitionIdentifier {
 export type ServiceGroup = Node & {
   __typename?: 'ServiceGroup';
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  name: ServiceGroupName;
   users: Maybe<Array<User>>;
 };
+
+export enum ServiceGroupName {
+  Admin = 'Admin',
+  Analyst = 'Analyst',
+  Manager = 'Manager',
+  Observer = 'Observer',
+  Reader = 'Reader',
+  User = 'User'
+}
 
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
@@ -2882,6 +2903,12 @@ export type UserPendingSubscription = {
   invalidate: Maybe<OrganizationRef>;
 };
 
+export type UserPlatformGroup = {
+  __typename?: 'UserPlatformGroup';
+  name: ServiceGroupName;
+  platformIdentifier: PlatformIdentifier;
+};
+
 export type UserService = Node & {
   __typename?: 'UserService';
   id: Scalars['ID']['output'];
@@ -3206,6 +3233,13 @@ export type ConnectProductOrganizationAdminsQueryVariables = Exact<{
 
 
 export type ConnectProductOrganizationAdminsQuery = { __typename?: 'Query', usersWithCapabilitiesInOrganization: Array<{ __typename?: 'User', id: string, email: string, first_name: string | null, last_name: string | null }> };
+
+export type BundleUserServiceGroupsQueryVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+}>;
+
+
+export type BundleUserServiceGroupsQuery = { __typename?: 'Query', bundleUserServiceGroups: Array<{ __typename?: 'BundleUserServiceGroup', user: { __typename?: 'User', id: string, email: string }, groups: Array<{ __typename?: 'UserPlatformGroup', platformIdentifier: PlatformIdentifier, name: ServiceGroupName }> }> };
 
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
@@ -4511,6 +4545,66 @@ export const useInfiniteConnectProductOrganizationAdminsQuery = <
 useInfiniteConnectProductOrganizationAdminsQuery.getKey = (variables: ConnectProductOrganizationAdminsQueryVariables) => ['ConnectProductOrganizationAdmins.infinite', variables];
 useInfiniteConnectProductOrganizationAdminsQuery.getRootKey = () => ['ConnectProductOrganizationAdmins.infinite'] as const;
 useConnectProductOrganizationAdminsQuery.fetcher = (client: GraphQLClient, variables: ConnectProductOrganizationAdminsQueryVariables, headers?: RequestInit['headers']) => fetcher<ConnectProductOrganizationAdminsQuery, ConnectProductOrganizationAdminsQueryVariables>(client, ConnectProductOrganizationAdminsDocument, variables, headers);
+
+export const BundleUserServiceGroupsDocument = `
+    query BundleUserServiceGroups($serviceInstanceId: ServiceInstanceId!) {
+  bundleUserServiceGroups(serviceInstanceId: $serviceInstanceId) {
+    user {
+      id
+      email
+    }
+    groups {
+      platformIdentifier
+      name
+    }
+  }
+}
+    `;
+
+export const useBundleUserServiceGroupsQuery = <
+      TData = BundleUserServiceGroupsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: BundleUserServiceGroupsQueryVariables,
+      options?: Omit<UseQueryOptions<BundleUserServiceGroupsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<BundleUserServiceGroupsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<BundleUserServiceGroupsQuery, TError, TData>(
+      {
+    queryKey: ['BundleUserServiceGroups', variables],
+    queryFn: fetcher<BundleUserServiceGroupsQuery, BundleUserServiceGroupsQueryVariables>(client, BundleUserServiceGroupsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useBundleUserServiceGroupsQuery.getKey = (variables: BundleUserServiceGroupsQueryVariables) => ['BundleUserServiceGroups', variables];
+useBundleUserServiceGroupsQuery.getRootKey = () => ['BundleUserServiceGroups'] as const;
+export const useInfiniteBundleUserServiceGroupsQuery = <
+      TData = InfiniteData<BundleUserServiceGroupsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: BundleUserServiceGroupsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<BundleUserServiceGroupsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<BundleUserServiceGroupsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<BundleUserServiceGroupsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['BundleUserServiceGroups.infinite', variables],
+      queryFn: (metaData) => fetcher<BundleUserServiceGroupsQuery, BundleUserServiceGroupsQueryVariables>(client, BundleUserServiceGroupsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteBundleUserServiceGroupsQuery.getKey = (variables: BundleUserServiceGroupsQueryVariables) => ['BundleUserServiceGroups.infinite', variables];
+useInfiniteBundleUserServiceGroupsQuery.getRootKey = () => ['BundleUserServiceGroups.infinite'] as const;
+useBundleUserServiceGroupsQuery.fetcher = (client: GraphQLClient, variables: BundleUserServiceGroupsQueryVariables, headers?: RequestInit['headers']) => fetcher<BundleUserServiceGroupsQuery, BundleUserServiceGroupsQueryVariables>(client, BundleUserServiceGroupsDocument, variables, headers);
 
 export const ServiceInstancesListDocument = `
     query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!, $filters: [ServiceInstanceFilter!], $searchTerm: String) {

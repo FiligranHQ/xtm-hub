@@ -83,6 +83,54 @@ describe('service groups GraphQL query', () => {
   });
 });
 
+describe('bundleUserServiceGroups GraphQL query', () => {
+  it('should load bundle user service groups for given serviceInstanceId and return result', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const expected = [
+      { user: { id: uuidv4(), email: 'user@test.com' }, groups: [] },
+    ] as unknown as Awaited<
+      ReturnType<typeof ServiceGroupApp.loadBundleUserServiceGroups>
+    >;
+    vi.spyOn(ServiceGroupApp, 'loadBundleUserServiceGroups').mockResolvedValue(
+      expected
+    );
+
+    // When
+    const result = await serviceGroupResolver.Query!.bundleUserServiceGroups!(
+      {},
+      { serviceInstanceId },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(ServiceGroupApp.loadBundleUserServiceGroups).toHaveBeenCalledWith(
+      serviceInstanceId
+    );
+    expect(result).toEqual(expected);
+  });
+
+  it('should throw mapped error when ServiceGroupApp throws', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    vi.spyOn(ServiceGroupApp, 'loadBundleUserServiceGroups').mockRejectedValue(
+      new Error('UNEXPECTED')
+    );
+
+    // When
+    const call = serviceGroupResolver.Query!.bundleUserServiceGroups!(
+      {},
+      { serviceInstanceId },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toMatchObject({ name: ErrorType.UnknownError });
+  });
+});
+
 describe('update service groups GraphQL mutation', () => {
   it('should delegate to ServiceGroupApp.updateGroups', async () => {
     // Given

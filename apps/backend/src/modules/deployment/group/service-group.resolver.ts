@@ -19,6 +19,15 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
+    bundleUserServiceGroups: async (_, { serviceInstanceId }) => {
+      try {
+        return await ServiceGroupApp.loadBundleUserServiceGroups(
+          serviceInstanceId
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
   },
   Mutation: {
     updateServiceGroups: async (_, { input }) => {

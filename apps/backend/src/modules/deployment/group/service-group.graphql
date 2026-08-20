@@ -1,9 +1,28 @@
 scalar ServiceGroupId
 
+enum ServiceGroupName {
+  Admin
+  Analyst
+  Reader
+  Manager
+  Observer
+  User
+}
+
 type ServiceGroup implements Node {
   id: ID!
-  name: String!
+  name: ServiceGroupName!
   users: [User!]
+}
+
+type UserPlatformGroup {
+  platformIdentifier: PlatformIdentifier!
+  name: ServiceGroupName!
+}
+
+type BundleUserServiceGroup {
+  user: User!
+  groups: [UserPlatformGroup!]!
 }
 
 input UpdateServiceGroupsInputGroup {
@@ -17,6 +36,13 @@ input UpdateServiceGroupsInput {
 
 type Query {
   serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
+  bundleUserServiceGroups(
+    serviceInstanceId: ServiceInstanceId!
+  ): [BundleUserServiceGroup!]!
     @auth(
       portalCapa: [BYPASS]
       orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]

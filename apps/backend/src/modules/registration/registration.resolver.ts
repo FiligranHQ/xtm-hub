@@ -14,7 +14,7 @@ import {
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { BadRequestError } from '../../utils/error/error.util';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
-import { ServiceGroupDomain } from '../deployment/group/service-group.domain';
+import { ServiceGroupApp } from '../deployment/group/service-group.app';
 import { extractPlatformToken } from '../security-management/token/platform-token.util';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { RegistrationApp } from './registration.app';
@@ -28,7 +28,7 @@ const resolvers: Resolvers = {
         id as ServiceInstanceId
       ),
     myGroups: ({ id }, _, context) =>
-      ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
+      ServiceGroupApp.loadGroupsByServiceInstanceAndUser(
         id as ServiceInstanceId,
         context.user.id
       ),

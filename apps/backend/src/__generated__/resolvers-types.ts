@@ -110,6 +110,12 @@ export type BulkPendingUserFromOrganizationInput = {
   searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type BundleUserServiceGroup = {
+  __typename?: 'BundleUserServiceGroup';
+  groups: Array<UserPlatformGroup>;
+  user: User;
+};
+
 export type CanUnregisterPlatformInput = {
   platformId: Scalars['String']['input'];
   tenantId?: InputMaybe<Scalars['String']['input']>;
@@ -1767,6 +1773,7 @@ export type ProvisionedNewsFeedItem = Node & {
 
 export type Query = {
   __typename?: 'Query';
+  bundleUserServiceGroups: Array<BundleUserServiceGroup>;
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
@@ -1824,6 +1831,11 @@ export type Query = {
   votingRound?: Maybe<VotingRound>;
   votingRoundResults: VotingRoundResults;
   votingRounds: Array<VotingRound>;
+};
+
+
+export type QueryBundleUserServiceGroupsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2352,9 +2364,18 @@ export enum ServiceDefinitionIdentifier {
 export type ServiceGroup = Node & {
   __typename?: 'ServiceGroup';
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  name: ServiceGroupName;
   users?: Maybe<Array<User>>;
 };
+
+export enum ServiceGroupName {
+  Admin = 'Admin',
+  Analyst = 'Analyst',
+  Manager = 'Manager',
+  Observer = 'Observer',
+  Reader = 'Reader',
+  User = 'User'
+}
 
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
@@ -2875,6 +2896,12 @@ export type UserPendingSubscription = {
   invalidate?: Maybe<OrganizationRef>;
 };
 
+export type UserPlatformGroup = {
+  __typename?: 'UserPlatformGroup';
+  name: ServiceGroupName;
+  platformIdentifier: PlatformIdentifier;
+};
+
 export type UserService = Node & {
   __typename?: 'UserService';
   id: Scalars['ID']['output'];
@@ -3113,6 +3140,7 @@ export type ResolversTypes = ResolversObject<{
   AutoRegisterPlatformInput: AutoRegisterPlatformInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
+  BundleUserServiceGroup: ResolverTypeWrapper<BundleUserServiceGroup>;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
   Capability: ResolverTypeWrapper<Capability>;
@@ -3265,6 +3293,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
   ServiceGroup: ResolverTypeWrapper<ServiceGroup>;
   ServiceGroupId: ResolverTypeWrapper<Scalars['ServiceGroupId']['output']>;
+  ServiceGroupName: ServiceGroupName;
   ServiceInstance: ResolverTypeWrapper<ServiceInstance>;
   ServiceInstanceCreationStatus: ServiceInstanceCreationStatus;
   ServiceInstanceEdge: ResolverTypeWrapper<ServiceInstanceEdge>;
@@ -3328,6 +3357,7 @@ export type ResolversTypes = ResolversObject<{
   UserId: ResolverTypeWrapper<Scalars['UserId']['output']>;
   UserOrdering: UserOrdering;
   UserPendingSubscription: ResolverTypeWrapper<UserPendingSubscription>;
+  UserPlatformGroup: ResolverTypeWrapper<UserPlatformGroup>;
   UserService: ResolverTypeWrapper<UserService>;
   UserServiceAddInput: UserServiceAddInput;
   UserServiceAddYourselfInput: UserServiceAddYourselfInput;
@@ -3365,6 +3395,7 @@ export type ResolversParentTypes = ResolversObject<{
   AutoRegisterPlatformInput: AutoRegisterPlatformInput;
   Boolean: Scalars['Boolean']['output'];
   BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
+  BundleUserServiceGroup: BundleUserServiceGroup;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
   Capability: Capability;
@@ -3529,6 +3560,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserEdge: UserEdge;
   UserId: Scalars['UserId']['output'];
   UserPendingSubscription: UserPendingSubscription;
+  UserPlatformGroup: UserPlatformGroup;
   UserService: UserService;
   UserServiceAddInput: UserServiceAddInput;
   UserServiceAddYourselfInput: UserServiceAddYourselfInput;
@@ -3573,6 +3605,12 @@ export type System_TokenDirectiveArgs = {
 };
 
 export type System_TokenDirectiveResolver<Result, Parent, ContextType = PortalContext, Args = System_TokenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type BundleUserServiceGroupResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['BundleUserServiceGroup'] = ResolversParentTypes['BundleUserServiceGroup']> = ResolversObject<{
+  groups?: Resolver<Array<ResolversTypes['UserPlatformGroup']>, ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['CanUnregisterResponse'] = ResolversParentTypes['CanUnregisterResponse']> = ResolversObject<{
   isAllowed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -4309,6 +4347,7 @@ export type ProvisionedNewsFeedItemResolvers<ContextType = PortalContext, Parent
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  bundleUserServiceGroups?: Resolver<Array<ResolversTypes['BundleUserServiceGroup']>, ParentType, ContextType, RequireFields<QueryBundleUserServiceGroupsArgs, 'serviceInstanceId'>>;
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   countEpicsPerTimeline?: Resolver<Array<ResolversTypes['EpicCountPerTimeline']>, ParentType, ContextType>;
@@ -4503,7 +4542,7 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
 
 export type ServiceGroupResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceGroup'] = ResolversParentTypes['ServiceGroup']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['ServiceGroupName'], ParentType, ContextType>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -4851,6 +4890,12 @@ export type UserPendingSubscriptionResolvers<ContextType = PortalContext, Parent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserPlatformGroupResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserPlatformGroup'] = ResolversParentTypes['UserPlatformGroup']> = ResolversObject<{
+  name?: Resolver<ResolversTypes['ServiceGroupName'], ParentType, ContextType>;
+  platformIdentifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type UserServiceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserService'] = ResolversParentTypes['UserService']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   ordering?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -4964,6 +5009,7 @@ export type VotingRoundResultsResolvers<ContextType = PortalContext, ParentType 
 }>;
 
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
+  BundleUserServiceGroup?: BundleUserServiceGroupResolvers<ContextType>;
   CanUnregisterResponse?: CanUnregisterResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   Competitor?: CompetitorResolvers<ContextType>;
@@ -5077,6 +5123,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserEdge?: UserEdgeResolvers<ContextType>;
   UserId?: GraphQLScalarType;
   UserPendingSubscription?: UserPendingSubscriptionResolvers<ContextType>;
+  UserPlatformGroup?: UserPlatformGroupResolvers<ContextType>;
   UserService?: UserServiceResolvers<ContextType>;
   UserServiceCapabilitiesResponse?: UserServiceCapabilitiesResponseResolvers<ContextType>;
   UserServiceCapability?: UserServiceCapabilityResolvers<ContextType>;

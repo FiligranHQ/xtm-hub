@@ -38,6 +38,7 @@ import {
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceDefinitionIdentifier,
+  ServiceGroupName,
   ServiceInstanceCreationStatus,
   ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
@@ -68,10 +69,7 @@ import {
   TelemetryTargetProduct,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import {
-  ServiceGroupDomain,
-  ServiceGroupName,
-} from './group/service-group.domain';
+import { ServiceGroupDomain } from './group/service-group.domain';
 
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';

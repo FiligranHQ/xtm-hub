@@ -3,6 +3,7 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   PlatformIdentifier,
+  ServiceGroupName,
 } from '../../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import ServiceGroup, {
@@ -19,14 +20,6 @@ import {
   UnknownErrorCode,
 } from '../../../utils/error/error.code';
 
-export enum ServiceGroupName {
-  Admin = 'Admin',
-  Analyst = 'Analyst',
-  Reader = 'Reader',
-  Manager = 'Manager',
-  Observer = 'Observer',
-}
-
 export const GROUPS_BY_PLATFORM_IDENTIFIER: Partial<
   Record<PlatformIdentifier, readonly ServiceGroupName[]>
 > = {
@@ -40,6 +33,7 @@ export const GROUPS_BY_PLATFORM_IDENTIFIER: Partial<
     ServiceGroupName.Manager,
     ServiceGroupName.Observer,
   ],
+  [PlatformIdentifier.Xtmone]: [ServiceGroupName.Admin, ServiceGroupName.User],
 };
 
 export const ServiceGroupDomain = {
