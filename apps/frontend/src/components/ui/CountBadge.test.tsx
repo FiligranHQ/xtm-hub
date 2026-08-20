@@ -1,13 +1,13 @@
-import { TimelineCountBadge } from '@/components/epic/epic-item/TimelineCountBadge';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { CountBadge } from './CountBadge';
 
-describe('TimelineCountBadge', () => {
+describe('CountBadge', () => {
   it('renders count and applies timeline classes', () => {
     // Given
     const { container } = testRender(
-      <TimelineCountBadge
+      <CountBadge
         count={7}
         bgFadedClass="bg-feedback-info-faded"
         textClass="text-feedback-info-primary"

@@ -1,18 +1,18 @@
 import { cn } from '@/lib/utils';
 
-interface TimelineCountBadgeProps {
+interface CountBadgeProps {
   count: number;
   bgFadedClass: string;
   textClass: string;
   className?: string;
 }
 
-export const TimelineCountBadge = ({
+export const CountBadge = ({
   count,
   bgFadedClass,
   textClass,
   className,
-}: TimelineCountBadgeProps) => (
+}: CountBadgeProps) => (
   <div
     className={cn(
       'rounded-full w-6 h-6 flex items-center justify-center relative shrink-0',

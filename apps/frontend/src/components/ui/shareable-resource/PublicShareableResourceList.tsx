@@ -1,10 +1,10 @@
-import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
-import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import IntegrationAccordion from '@/components/ui/shareable-resource/IntegrationAccordion';
+import { PublicShareableDocumentList } from '@/components/ui/shareable-resource/PublicShareableDocumentList';
 import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { IntegrationType } from '@graphql/generated';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Fragment, useMemo } from 'react';
 
 interface PublicShareableResourceListProps {
@@ -19,7 +19,6 @@ export const PublicShareableResourceList = ({
   baseUrl,
 }: PublicShareableResourceListProps) => {
   const t = useTranslations();
-  const locale = useLocale();
 
   const documentsByIntegrationType = useMemo(() => {
     return documents.reduce<
@@ -52,26 +51,24 @@ export const PublicShareableResourceList = ({
           <Fragment key={integrationType}>
             {Object.values(IntegrationType).includes(
               integrationType as IntegrationType
-            ) && (
-              <h2 className="mt-xl">
-                {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}
-              </h2>
-            )}
-            <ul
-              className={
-                'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
-              }>
-              {documents.map((document) => (
-                <ShareableResourceCard
-                  publicPath
-                  key={document.id}
-                  document={document}
+            ) ? (
+              <IntegrationAccordion
+                key={integrationType}
+                integrationType={integrationType}
+                count={documents.length}>
+                <PublicShareableDocumentList
+                  documents={documents}
                   serviceInstance={serviceInstance}
-                  detailUrl={`/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-                  shareLinkUrl={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
+                  baseUrl={baseUrl}
                 />
-              ))}
-            </ul>
+              </IntegrationAccordion>
+            ) : (
+              <PublicShareableDocumentList
+                documents={documents}
+                serviceInstance={serviceInstance}
+                baseUrl={baseUrl}
+              />
+            )}
           </Fragment>
         )
       )}
