@@ -225,7 +225,7 @@ export type CreateDeploymentRequestInput = {
   region: DeploymentRequestPlatformRegion;
   source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
-  use_case: InputMaybe<DeploymentRequestUseCase>;
+  use_cases_by_product: InputMaybe<Array<ProductUseCaseInput>>;
 };
 
 export type CreateDocumentInput = {
@@ -1707,6 +1707,11 @@ export enum PortalCapability {
   ReadTrials = 'READ_TRIALS'
 }
 
+export type ProductUseCaseInput = {
+  platform_identifier: PlatformIdentifier;
+  use_case: DeploymentRequestUseCase;
+};
+
 export type ProvisionedNewsFeedItem = Node & {
   __typename?: 'ProvisionedNewsFeedItem';
   creation_date: Scalars['Date']['output'];
@@ -3030,7 +3035,7 @@ export type PlatformTrialStatusQueryVariables = Exact<{
 }>;
 
 
-export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null } };
+export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null, ongoingStandaloneTrials: Array<PlatformIdentifier> } };
 
 export type TrialDeploymentsEligibilityQueryVariables = Exact<{
   input: TrialDeploymentsInput;
@@ -4045,6 +4050,7 @@ export const PlatformTrialStatusDocument = `
     isBlacklisted
     hub_status
     end_date
+    ongoingStandaloneTrials
   }
 }
     `;

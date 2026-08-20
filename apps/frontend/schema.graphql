@@ -409,8 +409,13 @@ input CreateDeploymentRequestInput {
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
-  use_case: DeploymentRequestUseCase
+  use_cases_by_product: [ProductUseCaseInput!]
   source: DeploymentRequestSource!
+}
+
+input ProductUseCaseInput {
+  platform_identifier: PlatformIdentifier!
+  use_case: DeploymentRequestUseCase!
 }
 
 input UpdateDeploymentRequestInput {
