@@ -599,30 +599,45 @@ type ValidatedDeploymentRequestProducts =
       platformIdentifier: PlatformIdentifier;
     };
 
+const validateUseCasesByProduct = (
+  input: CreateDeploymentRequestInput,
+  uniqueProducts: PlatformIdentifier[]
+): void => {
+  const productsRequiringUseCase = uniqueProducts.filter(
+    (platformIdentifier) => platformIdentifier !== PlatformIdentifier.Xtmone
+  );
+  const everyProductHasUseCase = productsRequiringUseCase.every(
+    (platformIdentifier) =>
+      input.use_cases_by_product?.some(
+        (entry) => entry.platform_identifier === platformIdentifier
+      )
+  );
+  const everyEntryTargetsAValidProduct =
+    input.use_cases_by_product?.every(
+      (entry) =>
+        entry.platform_identifier !== PlatformIdentifier.Xtmone &&
+        uniqueProducts.includes(entry.platform_identifier)
+    ) ?? true;
+  if (!everyEntryTargetsAValidProduct) {
+    throw new Error(BadRequestErrorCode.MissingUseCaseForProduct);
+  }
+  if (!everyProductHasUseCase) {
+    throw new Error(BadRequestErrorCode.MissingUseCaseForProduct);
+  }
+};
+
 const validateDeploymentRequestProducts = (
   input: CreateDeploymentRequestInput
 ): ValidatedDeploymentRequestProducts => {
   const uniqueProducts = [...new Set(input.products)];
+
   if (input.type === DeploymentRequestDeploymentType.Bundle) {
     const includesXtmone = uniqueProducts.includes(PlatformIdentifier.Xtmone);
     const hasAtLeastOneOtherProduct = uniqueProducts.length >= 2;
     if (!includesXtmone || !hasAtLeastOneOtherProduct) {
       throw new Error(BadRequestErrorCode.InvalidProductsForDeploymentType);
     }
-
-    const productsRequiringUseCase = uniqueProducts.filter(
-      (platformIdentifier) => platformIdentifier !== PlatformIdentifier.Xtmone
-    );
-    const everyProductHasUseCase = productsRequiringUseCase.every(
-      (platformIdentifier) =>
-        input.use_cases_by_product?.some(
-          (entry) => entry.platform_identifier === platformIdentifier
-        )
-    );
-    if (!everyProductHasUseCase) {
-      throw new Error(BadRequestErrorCode.MissingUseCaseForProduct);
-    }
-
+    validateUseCasesByProduct(input, uniqueProducts);
     return {
       type: DeploymentRequestDeploymentType.Bundle,
       products: uniqueProducts,
@@ -635,6 +650,7 @@ const validateDeploymentRequestProducts = (
   if (!hasSingleProduct || isXtmone) {
     throw new Error(BadRequestErrorCode.InvalidProductsForDeploymentType);
   }
+  validateUseCasesByProduct(input, uniqueProducts);
   return { type: DeploymentRequestDeploymentType.Trial, platformIdentifier };
 };
 

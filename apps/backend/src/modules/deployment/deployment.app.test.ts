@@ -230,16 +230,52 @@ describe('deployment app', () => {
         ErrorCode.CantRequestFreeTrialInPersonalSpace
       );
     });
-
     it('should throw when service definition is not found', async () => {
       const call = DeploymentApp.createDeploymentRequest({
         ...TEST_DEPLOYMENT,
         products: ['unknown-platform' as PlatformIdentifier],
+        use_cases_by_product: [
+          {
+            platform_identifier: 'unknown-platform' as PlatformIdentifier,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+        ],
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
+    it('should throw when a requested product has no use case', async () => {
+      const call = DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        use_cases_by_product: [],
+      });
 
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.MissingUseCaseForProduct
+      );
+    });
+
+    it('should throw when a use case targets a product that was not requested', async () => {
+      const call = DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        type: DeploymentRequestDeploymentType.Bundle,
+        products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        use_cases_by_product: [
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+          {
+            platform_identifier: PlatformIdentifier.Openaev,
+            use_case: DeploymentRequestUseCase.OaevPurpleTeam,
+          },
+        ],
+      });
+
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.MissingUseCaseForProduct
+      );
+    });
     it.each([
       [[PlatformIdentifier.Xtmone]],
       [[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]],
