@@ -1249,6 +1249,7 @@ export const mockPlatformTrialStatus = (overrides?: Partial<PlatformTrialStatus>
         end_date: overrides && overrides.hasOwnProperty('end_date') ? overrides.end_date! : '2021-07-26T23:22:15.977Z',
         hub_status: overrides && overrides.hasOwnProperty('hub_status') ? overrides.hub_status! : DeploymentRequestHubStatus.Active,
         isBlacklisted: overrides && overrides.hasOwnProperty('isBlacklisted') ? overrides.isBlacklisted! : true,
+        ongoingStandaloneTrials: overrides && overrides.hasOwnProperty('ongoingStandaloneTrials') ? overrides.ongoingStandaloneTrials! : [PlatformIdentifier.Openaev],
     };
 };
 

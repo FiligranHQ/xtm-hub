@@ -1691,6 +1691,7 @@ export type PlatformTrialStatus = {
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: Maybe<DeploymentRequestHubStatus>;
   isBlacklisted: Scalars['Boolean']['output'];
+  ongoingStandaloneTrials: Array<PlatformIdentifier>;
 };
 
 export enum PortalCapability {
