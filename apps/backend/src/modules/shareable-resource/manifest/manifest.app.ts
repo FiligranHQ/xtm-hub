@@ -98,14 +98,6 @@ const fetchConnectors = async (
     slugs: incompatibleSlugs,
   });
 
-  if (incompatibleSlugs.length === 0) {
-    logApp.info(
-      'No slug found for incompatible connectors, they will be excluded from the manifest',
-      { connectorIds: incompatibleConnectorIds }
-    );
-    return compatible;
-  }
-
   const fallbacks = await DocumentDomain.loadBestCompatibleConnectorsBySlugs(
     incompatibleSlugs,
     version
