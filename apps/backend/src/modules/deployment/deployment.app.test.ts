@@ -451,6 +451,55 @@ describe('deployment app', () => {
         }
       );
 
+      it('should reject a second bundle for the same organization', async () => {
+        await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+
+        const call = DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
+        });
+
+        await expect(call).rejects.toThrow(
+          AlreadyExistsErrorCode.FreeTrialAlreadyExists
+        );
+      });
+
+      it('should reject the second of two concurrent bundles for the same organization in different regions', async () => {
+        const results = await Promise.allSettled([
+          DeploymentApp.createDeploymentRequest({
+            ...TEST_DEPLOYMENT,
+            region: DeploymentRequestPlatformRegion.EuWest,
+            type: DeploymentRequestDeploymentType.Bundle,
+            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          }),
+          DeploymentApp.createDeploymentRequest({
+            ...TEST_DEPLOYMENT,
+            region: DeploymentRequestPlatformRegion.UsEast,
+            type: DeploymentRequestDeploymentType.Bundle,
+            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
+          }),
+        ]);
+
+        expect(
+          results.filter((result) => result.status === 'fulfilled')
+        ).toHaveLength(1);
+        expect(
+          results.filter((result) => result.status === 'rejected')
+        ).toHaveLength(1);
+
+        const bundles = await TestHelper.deploymentRequest.loadMany({
+          organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION
+            .ID as OrganizationId,
+          type: DeploymentRequestDeploymentType.Bundle,
+        });
+        expect(bundles).toHaveLength(1);
+      });
+
       it('should roll back the whole bundle when a child fails to be created', async () => {
         const originalRegisterNewPlatform =
           RegistrationDomain.registerNewPlatform;

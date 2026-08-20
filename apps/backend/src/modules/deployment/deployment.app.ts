@@ -26,7 +26,10 @@ import {
   UpdateDeploymentRequestInput,
 } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
-import { withTransaction } from '../../context/database.context';
+import {
+  withAdvisoryLock,
+  withTransaction,
+} from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import DeploymentRequestModel, {
   DeploymentRequestId,
@@ -84,6 +87,8 @@ import {
 
 export const XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME = 'XTM Platform Bundle';
 
+const DEPLOYMENT_REQUEST_LOCK_NAMESPACE = 'deployment_request';
+
 export const DeploymentApp = {
   createDeploymentRequest: async (
     input: CreateDeploymentRequestInput
@@ -113,29 +118,51 @@ export const DeploymentApp = {
     }
 
     try {
+      await DeploymentHelper.assertFreeTrialsLimit(
+        user.selected_organization_id,
+        validatedProducts
+      );
+
       if (validatedProducts.type === DeploymentRequestDeploymentType.Bundle) {
-        return await createBundleDeploymentRequest({
-          user,
-          chosenOrganization,
-          input,
-          products: validatedProducts.products,
-        });
+        return await withAdvisoryLock(
+          DEPLOYMENT_REQUEST_LOCK_NAMESPACE,
+          user.selected_organization_id,
+          async () => {
+            await DeploymentHelper.assertFreeTrialsLimit(
+              user.selected_organization_id,
+              validatedProducts
+            );
+
+            return createBundleDeploymentRequest({
+              user,
+              chosenOrganization,
+              input,
+              products: validatedProducts.products,
+            });
+          }
+        );
       }
 
       const { platformIdentifier } = validatedProducts;
 
-      await DeploymentHelper.assertFreeTrialsLimit(
+      const createdDeploymentRequest = await withAdvisoryLock(
+        DEPLOYMENT_REQUEST_LOCK_NAMESPACE,
         user.selected_organization_id,
-        platformIdentifier
-      );
+        async () => {
+          await DeploymentHelper.assertFreeTrialsLimit(
+            user.selected_organization_id,
+            validatedProducts
+          );
 
-      const createdDeploymentRequest = await createSingleDeploymentRequest({
-        user,
-        input,
-        platformIdentifier,
-        type: DeploymentRequestDeploymentType.Trial,
-        parentId: null,
-      });
+          return createSingleDeploymentRequest({
+            user,
+            input,
+            platformIdentifier,
+            type: DeploymentRequestDeploymentType.Trial,
+            parentId: null,
+          });
+        }
+      );
 
       await sendDeploymentRequestCreatedNotifications({
         user,
