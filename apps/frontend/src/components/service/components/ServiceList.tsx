@@ -25,7 +25,7 @@ import useServiceCapability from '@/hooks/use-service-capability';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { useLayoutEffect } from 'react';
+import { Fragment, useLayoutEffect } from 'react';
 
 export interface ServiceListProps {
   active: documentItem_fragment$data[];
@@ -116,6 +116,7 @@ const ServiceList = ({
           </div>
           <DocumentList
             documents={draft}
+            displayMode={selectedDisplayMode}
             connectionId={connectionId}
           />
           {active.length > 0 && (
@@ -125,26 +126,33 @@ const ServiceList = ({
       )}
 
       {Object.entries(activeByIntegrationType).map(
-        ([integrationType, documents]) =>
-          Object.values(IntegrationType).includes(
-            integrationType as IntegrationType
-          ) ? (
-            <IntegrationAccordion
-              key={integrationType}
-              integrationType={integrationType}
-              count={documents.length}>
+        ([integrationType, documents]) => (
+          <Fragment key={integrationType}>
+            {Object.values(IntegrationType).includes(
+              integrationType as IntegrationType
+            ) ? (
+              <>
+                <IntegrationAccordion
+                  key={integrationType}
+                  integrationType={integrationType}
+                  count={documents.length}>
+                  <DocumentList
+                    documents={documents}
+                    displayMode={selectedDisplayMode}
+                    connectionId={connectionId}
+                  />
+                </IntegrationAccordion>
+              </>
+            ) : (
               <DocumentList
+                displayMode={selectedDisplayMode}
+                key={integrationType}
                 documents={documents}
                 connectionId={connectionId}
               />
-            </IntegrationAccordion>
-          ) : (
-            <DocumentList
-              key={integrationType}
-              documents={documents}
-              connectionId={connectionId}
-            />
-          )
+            )}
+          </Fragment>
+        )
       )}
     </div>
   );

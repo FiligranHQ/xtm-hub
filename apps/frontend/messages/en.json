@@ -1224,6 +1224,14 @@
     "List": {
       "ViewTab": "Select tab view",
       "ViewList": "Select list view",
+      "Tab": {
+        "Name": "Name",
+        "Description": "Description",
+        "UseCases": "Use cases",
+        "Actions": "Actions",
+        "Author": "Author",
+        "MinimumDeployableVersion": "Minimum deployable version"
+      },
       "Filter": {
         "Add": "Add filter",
         "NoOptions": "No options",

@@ -1224,6 +1224,14 @@
     "List": {
       "ViewTab": "Sélectionner l'affichage par onglets",
       "ViewList": "Sélectionner l'affichage sous forme de liste",
+      "Tab": {
+        "Name": "Nom",
+        "Description": "Description",
+        "UseCases": "Cas d'utilisation",
+        "Actions": "Actions",
+        "Author": "Auteur",
+        "MinimumDeployableVersion": "Version minimale déployable"
+      },
       "Filter": {
         "Add": "Ajouter un filtre",
         "NoOptions": "Pas d'options",

@@ -1,3 +1,4 @@
+import { ServiceListDisplayModeEnum } from '@/components/service/components/header/ServiceListHeader';
 import testRender from '@/utils/test/test-render';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -35,6 +36,7 @@ describe('PublicShareableDocumentList', () => {
         documents={documents}
         serviceInstance={serviceInstance}
         baseUrl="https://xtm.local"
+        displayMode={ServiceListDisplayModeEnum.Tab}
       />
     );
 
