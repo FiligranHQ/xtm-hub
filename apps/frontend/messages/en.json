@@ -1222,6 +1222,8 @@
     "GoTo": "Go to service page",
     "GoToAdminLabel": "Manage",
     "List": {
+      "ViewTab": "Select tab view",
+      "ViewList": "Select list view",
       "Filter": {
         "Add": "Add filter",
         "NoOptions": "No options",

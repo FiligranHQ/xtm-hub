@@ -58,7 +58,11 @@ const ServiceList = ({
   ]);
 
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
-  const { removeLabels } = useServiceListLocalStorage(localStorageKey);
+  const {
+    removeLabels,
+    displayMode: selectedDisplayMode,
+    setDisplayMode,
+  } = useServiceListLocalStorage(localStorageKey);
 
   const filters = {
     ...additionalFilters,
@@ -95,13 +99,16 @@ const ServiceList = ({
         {...heroSectionProps}
         showLibraryUpdate={userIsMarketingOrBypass}
       />
-      <ServiceListHeader
-        search={search}
-        onSearchChange={onSearchChange}
-        filters={filters}
-        actions={<ServiceListHeaderButtons />}
-        paginationControls={paginationControls}
-      />
+      <div className="sticky top-0 py-m z-11 relative bg-gradient-background">
+        <ServiceListHeader
+          search={search}
+          onSearchChange={onSearchChange}
+          filters={filters}
+          actions={<ServiceListHeaderButtons />}
+          paginationControls={paginationControls}
+          onDisplayModeChange={setDisplayMode}
+        />
+      </div>
       {userCanUpdate && draft.length > 0 && (
         <>
           <div className="txt-category">
