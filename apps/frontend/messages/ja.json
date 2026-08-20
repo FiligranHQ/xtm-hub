@@ -1691,6 +1691,63 @@
       "SureDeleteService": "本当にカスタムビュー {name} を削除しますか？",
       "NonActive": "草案",
       "Active": "公開"
+    },
+    "Bundle": {
+      "ManageTrial": {
+        "Breadcrumb": {
+          "BundleName": "XTM トライアルプラットフォーム",
+          "ManageUsers": "ユーザーを管理"
+        },
+        "Title": "XTM Platform トライアルでチームを管理",
+        "Eyebrow": "XTM Platform 無料トライアル",
+        "Description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "BackButton": "XTM トライアルプラットフォームに戻る",
+        "GroupAction": "グループアクション",
+        "AddTrialUser": "トライアルユーザーを追加",
+        "Roles": {
+          "opencti": {
+            "Title": "OpenCTI ロール一覧",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "管理者ロールは、製品の設定、構成、管理に対する完全なアクセス権を持ちます。管理者はユーザー、ロール、システム全体の設定を管理できるほか、データに対する完全な可視性と制御権を持ちます。"
+            },
+            "Analyst": {
+              "Label": "Analyst",
+              "Description": "製品内のすべてのナレッジに完全にアクセスできるロールです。アナリストはエンティティ、関係、調査を作成、編集、管理できますが、製品の設定、管理、構成オプションにはアクセスできません。"
+            },
+            "Reader": {
+              "Label": "Reader",
+              "Description": "製品内のすべてのデータを閲覧できるが、変更はできない読み取り専用のロールです。情報を閲覧するだけでよいユーザーに最適です。"
+            }
+          },
+          "openaev": {
+            "Title": "OpenAEV ロール一覧",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "管理者ロールは、製品の設定、構成、管理に対する完全なアクセス権を持ちます。管理者はユーザー、ロール、システム全体の設定を管理できるほか、要素に対する完全な可視性と制御権を持ちます。"
+            },
+            "Manager": {
+              "Label": "Manager",
+              "Description": "あらゆる種類のシナリオを管理・実行するための完全な機能を持つロールです。マネージャーは製品内の任意の要素を変更できますが、製品の設定、管理、構成オプションにはアクセスできません。"
+            },
+            "Observer": {
+              "Label": "Observer",
+              "Description": "製品内のすべての要素を閲覧できるが、変更はできない読み取り専用のロールです。情報を閲覧するだけでよいユーザーに最適です。"
+            }
+          },
+          "xtmone": {
+            "Title": "XTM One ロール一覧",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "管理者ロールは、プラットフォームの設定、構成、管理に対する完全なアクセス権を持ちます。管理者はユーザー、グループ、インテグレーション、システム全体の設定を管理できるほか、組織内で共有される会社管理リソースを含むすべての要素に対する完全な可視性と制御権を持ちます。また、トラブルシューティングのためにユーザーになりすますこともできます。"
+            },
+            "User": {
+              "Label": "User（デフォルト）",
+              "Description": "自身のエージェント、フロー、ナレッジベースを作成、構成、実行するための完全な機能を持つロールです。ユーザーは自身が所有する要素や共有された要素を変更できますが、プラットフォームの設定、管理、構成オプションにはアクセスできません。"
+            }
+          }
+        }
+      }
     }
   },
   "ServiceActions": {

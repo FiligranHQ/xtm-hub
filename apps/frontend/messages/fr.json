@@ -1691,6 +1691,63 @@
       "SureDeleteService": "Êtes-vous sûr de vouloir supprimer la vue personnalisée {name}?",
       "NonActive": "Brouillon",
       "Active": "Publié"
+    },
+    "Bundle": {
+      "ManageTrial": {
+        "Breadcrumb": {
+          "BundleName": "Plateforme d'essai XTM",
+          "ManageUsers": "Gérer les utilisateurs"
+        },
+        "Title": "Gérez votre équipe sur la plateforme d'essai XTM",
+        "Eyebrow": "Essai gratuit XTM Platform",
+        "Description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "BackButton": "Retour à la plateforme d'essai XTM",
+        "GroupAction": "Action groupée",
+        "AddTrialUser": "Ajouter un utilisateur d'essai",
+        "Roles": {
+          "opencti": {
+            "Title": "Rôles OpenCTI",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion du produit. Les administrateurs peuvent gérer les utilisateurs, les rôles et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur les données."
+            },
+            "Analyst": {
+              "Label": "Analyst",
+              "Description": "Un rôle offrant un accès complet à toutes les connaissances du produit. Les analystes peuvent créer, modifier et gérer des entités, des relations et des investigations, mais n'ont pas accès aux paramètres, à l'administration ou aux options de configuration du produit."
+            },
+            "Reader": {
+              "Label": "Reader",
+              "Description": "Un rôle en lecture seule permettant de consulter toutes les données du produit sans possibilité d'y apporter de modifications. Idéal pour les utilisateurs qui n'ont besoin que de consulter des informations."
+            }
+          },
+          "openaev": {
+            "Title": "Rôles OpenAEV",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion du produit. Les administrateurs peuvent gérer les utilisateurs, les rôles et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur les éléments."
+            },
+            "Manager": {
+              "Label": "Manager",
+              "Description": "Un rôle offrant toutes les capacités nécessaires pour gérer et exécuter tout type de scénario. Le manager peut modifier n'importe quel élément du produit, mais n'a pas accès aux paramètres, à l'administration ou aux options de configuration du produit."
+            },
+            "Observer": {
+              "Label": "Observer",
+              "Description": "Un rôle en lecture seule permettant de consulter tous les éléments du produit sans possibilité d'y apporter de modifications. Idéal pour les utilisateurs qui n'ont besoin que de consulter des informations."
+            }
+          },
+          "xtmone": {
+            "Title": "Rôles XTM One",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion de la plateforme. Les administrateurs peuvent gérer les utilisateurs, les groupes, les intégrations et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur tous les éléments, y compris les ressources gérées par l'entreprise et partagées au sein de l'organisation. Ils peuvent usurper l'identité des utilisateurs à des fins de dépannage."
+            },
+            "User": {
+              "Label": "User (par défaut)",
+              "Description": "Un rôle offrant toutes les capacités nécessaires pour créer, configurer et exécuter ses propres agents, flux et bases de connaissances. Les utilisateurs peuvent modifier tout élément qu'ils possèdent ou qui a été partagé avec eux, mais n'ont pas accès aux paramètres, à l'administration ou aux options de configuration de la plateforme."
+            }
+          }
+        }
+      }
     }
   },
   "ServiceActions": {

@@ -1691,6 +1691,63 @@
       "SureDeleteService": "Are you sure you want to delete the custom view {name}?",
       "NonActive": "Draft",
       "Active": "Published"
+    },
+    "Bundle": {
+      "ManageTrial": {
+        "Breadcrumb": {
+          "BundleName": "XTM Platform Trial",
+          "ManageUsers": "Manage users"
+        },
+        "Title": "Manage your team on XTM Platform trial",
+        "Eyebrow": "XTM Platform free trial",
+        "Description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "BackButton": "Back to XTM Platform Trial",
+        "GroupAction": "Group action",
+        "AddTrialUser": "Add trial user",
+        "Roles": {
+          "opencti": {
+            "Title": "OpenCTI roles",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to product settings, configuration, and management. Admins can manage users, roles, and system-wide settings, in addition to having full visibility and control over the data."
+            },
+            "Analyst": {
+              "Label": "Analyst",
+              "Description": "A role with full access to all knowledge within the product. Analysts can create, edit, and manage entities, relationships, and investigations, but do not have access to product settings, administration, or configuration options."
+            },
+            "Reader": {
+              "Label": "Reader",
+              "Description": "A read-only role that allows access to view all data in the product without the ability to make any modifications. Ideal for users who only need to consume information."
+            }
+          },
+          "openaev": {
+            "Title": "OpenAEV roles",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to product settings, configuration, and management. Admins can manage users, roles, and system-wide settings, in addition to having full visibility and control over the elements."
+            },
+            "Manager": {
+              "Label": "Manager",
+              "Description": "A role with full capabilities to manage and run any type of scenario. Manager can modify any element in the product but do not have access to product settings, administration, or configuration options."
+            },
+            "Observer": {
+              "Label": "Observer",
+              "Description": "A read-only role that allows access to view all elements in the product without the ability to make any modifications. Ideal for users who only need to consume information."
+            }
+          },
+          "xtmone": {
+            "Title": "XTM One roles",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to platform settings, configuration, and management. Admins can manage users, groups, integrations, and system-wide settings, in addition to having full visibility and control over all elements, including company-managed resources shared across the organization. They can impersonate users for troubleshooting."
+            },
+            "User": {
+              "Label": "User (default)",
+              "Description": "A role with full capabilities to create, configure, and run their own agents, flows, and knowledge bases. Users can modify any element they own or that has been shared with them, but do not have access to platform settings, administration, or configuration options."
+            }
+          }
+        }
+      }
     }
   },
   "ServiceActions": {
