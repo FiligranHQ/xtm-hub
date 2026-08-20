@@ -696,6 +696,12 @@
       "Title": "Are you sure?"
     }
   },
+  "PendingUserRedirect": {
+    "Unauthorized": {
+      "Title": "Insufficient permissions",
+      "Description": "You do not have the required permissions to manage user requests for this organization."
+    }
+  },
   "RegistrationDetails": {
     "NoAccess": "No access",
     "NoAccessContact": "please contact the trial administrator at {email}"
