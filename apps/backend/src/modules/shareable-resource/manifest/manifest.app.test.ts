@@ -57,6 +57,7 @@ const createConnectorDocument = async (tags: string[]): Promise<Document> => {
 
 const createConnectorWithFragment = async ({
   manifestFragmentId,
+  slug = `connector-${manifestFragmentId}`,
   minimumDeployableVersionPadded,
   tags = [],
   version = '007.260309.000',
@@ -64,6 +65,7 @@ const createConnectorWithFragment = async ({
   isDecommissioned = false,
 }: {
   manifestFragmentId: string;
+  slug?: string;
   minimumDeployableVersionPadded?: string;
   tags?: string[];
   version?: string;
@@ -75,6 +77,7 @@ const createConnectorWithFragment = async ({
     is_decommissioned: isDecommissioned,
     tags: tags.length > 0 ? [...tags, TAG_DECOUPLING] : [],
     version,
+    slug,
   });
   await TestHelper.documentMetadata.create({
     document_id: doc.id,
@@ -196,7 +199,7 @@ describe('manifestApp', () => {
       it('includes compatible connectors as-is without querying for fallbacks', async () => {
         const spy = vi.spyOn(
           DocumentDomain,
-          'loadBestCompatibleConnectorsByManifestFragmentIds'
+          'loadBestCompatibleConnectorsBySlugs'
         );
         const doc1 = await createConnectorWithFragment({
           manifestFragmentId: 'fragment-compatible-1',
@@ -218,19 +221,34 @@ describe('manifestApp', () => {
         expect(linkedIds).toContain(doc2.id);
       });
 
-      it('replaces an incompatible connector with its best compatible fallback', async () => {
+      it('replaces an incompatible connector with the best compatible fallback from the same slug', async () => {
+        const slugFallbackSpy = vi.spyOn(
+          DocumentDomain,
+          'loadBestCompatibleConnectorsBySlugs'
+        );
+        const byIdHydrationSpy = vi.spyOn(
+          DocumentDomain,
+          'loadDocumentsWithMetadataByIds'
+        );
         await createConnectorWithFragment({
           manifestFragmentId: 'fragment-a',
+          slug: 'connector-a',
           tags: [TAG_LATEST],
           minimumDeployableVersionPadded: '007.260601.000', // above MANIFEST_KEY padded version
         });
         const fallback = await createConnectorWithFragment({
-          manifestFragmentId: 'fragment-a',
+          manifestFragmentId: 'fragment-a-legacy',
+          slug: 'connector-a',
           version: '007.260101.000',
         });
 
         await ManifestApp.generateManifest(MANIFEST_KEY);
 
+        expect(byIdHydrationSpy).not.toHaveBeenCalled();
+        expect(slugFallbackSpy).toHaveBeenCalledWith(
+          ['connector-a'],
+          MANIFEST_KEY.version
+        );
         const links = await TestHelper.manifestDocument.loadAll({});
         expect(links).toHaveLength(1);
         expect(links[0]!.document_id).toBe(fallback.id);
