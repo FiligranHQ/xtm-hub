@@ -2,13 +2,13 @@
 import { EpicFilter, EpicFilterType } from '@/components/epic/EpicFilter';
 import { EpicFormSheet } from '@/components/epic/EpicFormSheet';
 import { EpicItem } from '@/components/epic/epic-item/EpicItem';
-import { TimelineCountBadge } from '@/components/epic/epic-item/TimelineCountBadge';
 import { FiligranTimelineMapping } from '@/components/epic/epic-item/TimelineMapping';
 import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
 } from '@/components/epic/epic-list-utils';
 import { PortalContext } from '@/components/me/AppPortalContext';
+import { CountBadge } from '@/components/ui/CountBadge';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { cn } from '@/lib/utils';
@@ -188,7 +188,7 @@ export const EpicList = ({
             key={timeline.title}
             className="flex items-stretch gap-m">
             <div className="flex flex-col items-center self-stretch mt-xl">
-              <TimelineCountBadge
+              <CountBadge
                 count={timeline.epics.length}
                 bgFadedClass={timelineMetadata.bgFadedClass}
                 textClass={timelineMetadata.textClass}

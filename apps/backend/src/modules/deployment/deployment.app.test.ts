@@ -102,10 +102,7 @@ describe('deployment app', () => {
   });
 
   afterEach(async () => {
-    await DeploymentRequestDomain.deleteDeploymentRequestBy({});
-    await ServiceInstanceDomain.deleteServiceInstanceBy({});
-    await TestHelper.subscription.delete({});
-    vi.resetAllMocks();
+    await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
   });
 
   afterAll(async () => {
@@ -1782,6 +1779,131 @@ describe('deployment app', () => {
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
   });
+  describe('loadPlatformTrialStatus', () => {
+    it('should return null hub_status and end_date when no bundle DeploymentRequest exists', async () => {
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: false,
+        hub_status: null,
+        end_date: null,
+      });
+    });
+
+    it('should return the bundle hub_status and end_date when a bundle DeploymentRequest exists', async () => {
+      const endDate = new Date(Date.UTC(2025, 5, 1));
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: endDate,
+          }
+        );
+
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: false,
+        hub_status: DeploymentRequestHubStatus.Active,
+        end_date: bundle.end_date,
+      });
+    });
+
+    it('should treat a bundle DeploymentRequest as non-existent when counts_in_orga_quota is false', async () => {
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          hub_status: DeploymentRequestHubStatus.Active,
+          end_date: new Date(Date.UTC(2025, 5, 1)),
+          counts_in_orga_quota: false,
+        }
+      );
+
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: false,
+        hub_status: null,
+        end_date: null,
+      });
+    });
+
+    it('should return blacklisted = true if orga is blacklisted', async () => {
+      await CompetitorDomain.insertCompetitor({
+        id: uuidv4() as CompetitorId,
+        name: 'Filigran',
+        tier: CompetitorTier.Tier1,
+        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+      });
+
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: true,
+        hub_status: null,
+        end_date: null,
+      });
+
+      await TestHelper.competitor.delete({});
+    });
+
+    it('should return null hub_status and end_date for personal space, even with a bundle in another organization', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          hub_status: DeploymentRequestHubStatus.Active,
+          end_date: new Date(Date.UTC(2025, 5, 1)),
+        }
+      );
+
+      const contextUserWithPersonalOrga: PortalContext = {
+        ...contextSimpleUserSecondOrga,
+        user: {
+          ...contextSimpleUserSecondOrga.user,
+          selected_organization_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
+              .PERSONAL_SPACE_ID,
+        },
+      };
+
+      requestContext.set({
+        user: contextUserWithPersonalOrga.user,
+      });
+
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: false,
+        hub_status: null,
+        end_date: null,
+      });
+    });
+
+    it('should throw if user does not belong in the organization', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+      const call = DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+  });
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
       vi.spyOn(
@@ -2018,7 +2140,54 @@ describe('deployment app', () => {
         parent_id: undefined,
       });
     });
+    it.each`
+      isAdmin  | description
+      ${false} | ${'as a customer'}
+      ${true}  | ${'as a platform admin'}
+    `(
+      'should refuse to cancel a single product of a bundle $description',
+      async ({ isAdmin }) => {
+        const bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
+        const child =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id as DeploymentRequestId,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
 
+        const call = DeploymentApp.cancelDeploymentRequest(
+          child.id,
+          isAdmin,
+          'my reason'
+        );
+
+        await expect(call).rejects.toThrow(
+          ForbiddenErrorCode.CantCancelBundleProduct
+        );
+
+        await TestHelper.deploymentRequest.assertProperties(child.id, {
+          hub_status: DeploymentRequestHubStatus.Active,
+          cancellation_date: null,
+          cancellation_reason: null,
+        });
+        await TestHelper.deploymentRequest.assertProperties(
+          bundle.id as DeploymentRequestId,
+          { hub_status: DeploymentRequestHubStatus.Active }
+        );
+        expect(freePlaceSpy).not.toHaveBeenCalled();
+      }
+    );
     it('should send a mail to the trial requester', async () => {
       const deployment =
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -2082,6 +2251,113 @@ describe('deployment app', () => {
         }
       }
     );
+
+    describe('bundle cancellation', () => {
+      let bundle: DeploymentRequest;
+      let childOpencti: DeploymentRequest;
+      let childXtmone: DeploymentRequest;
+
+      beforeEach(async () => {
+        bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
+        childOpencti =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
+        childXtmone =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              platform_identifier: PlatformIdentifier.Xtmone,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+            }
+          );
+      });
+
+      it('should cancel the bundle and all its children with the cancellation reason', async () => {
+        await DeploymentApp.cancelDeploymentRequest(
+          bundle.id,
+          false,
+          'my reason'
+        );
+
+        for (const { id } of [bundle, childOpencti, childXtmone]) {
+          const cancelled =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+          expect(cancelled).toMatchObject({
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            target_state: DeploymentRequestPlatformState.Removed,
+            cancellation_reason: 'my reason',
+            cancellation_date: expect.any(Date),
+            cancellation_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+          });
+        }
+      });
+
+      it('should send one telemetry event per deployment request', async () => {
+        await DeploymentApp.cancelDeploymentRequest(
+          bundle.id,
+          false,
+          'my reason'
+        );
+
+        expect(telemetrySpy).toHaveBeenCalledTimes(3);
+        for (const { id } of [bundle, childOpencti, childXtmone]) {
+          expect(telemetrySpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+              event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+              deployment_id: id,
+              status: DeploymentRequestHubStatus.Cancelled,
+              cancellation_reason: 'my reason',
+            })
+          );
+        }
+      });
+
+      it('should leave the whole bundle untouched when one row fails to be cancelled', async () => {
+        const originalUpdate =
+          DeploymentRequestDomain.updateDeploymentRequestById;
+        let callCount = 0;
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'updateDeploymentRequestById'
+        ).mockImplementation(async (id, data) => {
+          callCount += 1;
+          if (callCount === 2) {
+            throw new Error('boom');
+          }
+          return originalUpdate(id, data);
+        });
+
+        const call = DeploymentApp.cancelDeploymentRequest(
+          bundle.id,
+          false,
+          'my reason'
+        );
+
+        await expect(call).rejects.toThrow('boom');
+
+        for (const { id, hub_status } of [bundle, childOpencti, childXtmone]) {
+          const untouched =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+          expect(untouched?.hub_status).toBe(hub_status);
+          expect(untouched?.cancellation_date).toBeNull();
+        }
+      });
+    });
   });
 
   describe('updateDeploymentQuotaCapacity', () => {
@@ -2702,6 +2978,119 @@ describe('deployment app', () => {
         end_date,
         status: DeploymentRequestHubStatus.Expired,
         parent_id: undefined,
+      });
+    });
+
+    describe('bundle expiry', () => {
+      let bundle: DeploymentRequest;
+      let childOpencti: DeploymentRequest;
+      let childXtmone: DeploymentRequest;
+
+      beforeEach(async () => {
+        const expiredDate = new Date(Date.UTC(2020, 0, 1));
+
+        bundle =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              type: DeploymentRequestDeploymentType.Bundle,
+              platform_identifier: null,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              end_date: expiredDate,
+            }
+          );
+        childOpencti =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              platform_identifier: PlatformIdentifier.Opencti,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              end_date: expiredDate,
+            }
+          );
+        childXtmone =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              platform_identifier: PlatformIdentifier.Xtmone,
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              end_date: expiredDate,
+            }
+          );
+      });
+
+      it('should expire the bundle and all its children', async () => {
+        await DeploymentApp.expireTrials();
+
+        for (const { id } of [bundle, childOpencti, childXtmone]) {
+          await TestHelper.deploymentRequest.assertProperties(id, {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            target_state: DeploymentRequestPlatformState.Removed,
+          });
+        }
+      });
+
+      it('should not expire a standalone trial that is still running', async () => {
+        const ongoingStandalone =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              end_date: new Date(Date.UTC(2999, 0, 1)),
+            }
+          );
+
+        await DeploymentApp.expireTrials();
+
+        await TestHelper.deploymentRequest.assertProperties(
+          ongoingStandalone.id,
+          { hub_status: DeploymentRequestHubStatus.Active }
+        );
+      });
+
+      it('should leave the whole bundle untouched when one row fails to be expired', async () => {
+        const originalUpdate =
+          DeploymentRequestDomain.updateDeploymentRequestById;
+        let callCount = 0;
+        vi.spyOn(
+          DeploymentRequestDomain,
+          'updateDeploymentRequestById'
+        ).mockImplementation(async (id, data) => {
+          callCount += 1;
+          if (callCount === 2) {
+            throw new Error('boom');
+          }
+          return originalUpdate(id, data);
+        });
+
+        await DeploymentApp.expireTrials();
+
+        for (const { id } of [bundle, childOpencti, childXtmone]) {
+          const untouched =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+          expect(untouched?.hub_status).toBe(DeploymentRequestHubStatus.Active);
+        }
+      });
+
+      it('should not re-expire a child that is already cancelled', async () => {
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          childXtmone.id,
+          {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            cancellation_date: new Date(),
+          }
+        );
+
+        await DeploymentApp.expireTrials();
+
+        await TestHelper.deploymentRequest.assertProperties(childXtmone.id, {
+          hub_status: DeploymentRequestHubStatus.Cancelled,
+        });
+        await TestHelper.deploymentRequest.assertProperties(bundle.id, {
+          hub_status: DeploymentRequestHubStatus.Expired,
+        });
       });
     });
   });

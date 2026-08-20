@@ -4195,14 +4195,87 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hookform/resolvers@npm:5.4.0":
-  version: 5.4.0
-  resolution: "@hookform/resolvers@npm:5.4.0"
+"@hookform/resolvers@npm:5.9.1":
+  version: 5.9.1
+  resolution: "@hookform/resolvers@npm:5.9.1"
   dependencies:
     "@standard-schema/utils": "npm:^0.3.0"
   peerDependencies:
+    "@sinclair/typebox": ">=0.25.24"
+    "@standard-schema/spec": ^1.0.0
+    "@typeschema/main": ">=0.13.7"
+    "@vinejs/vine": ^2.0.0 || ^3.0.0 || ^4.0.0
+    ajv: ^8.12.0
+    ajv-errors: ^3.0.0
+    ajv-formats: ^2.1.1
+    arktype: ^2.0.0
+    ata-validator: ^1.2.0
+    class-transformer: ">=0.4.0"
+    class-validator: ">=0.12.0"
+    computed-types: ^1.0.0
+    effect: ^3.10.3
+    fluentvalidation-ts: ^3.0.0
+    fp-ts: ^2.7.0
+    io-ts: ^2.0.0
+    joi: ^17.0.0 || ^18.0.0
+    nope-validator: ">=0.12.0"
     react-hook-form: ^7.55.0
-  checksum: 10/c56e03d3707999bf0bebdcf1a8c5fc1cbbca527425d893e2402ead09e3644681581b8d2ad76eec62f72270534f5dc38159e2d6ee4001a0152363b8eddfedfcab
+    superstruct: ">=0.12.0"
+    typanion: ^3.3.2
+    valibot: ">=0.31.0 || ^1.0.0-beta.4 || ^1.0.0-rc"
+    vest: ">=6.0.0"
+    yup: ^1.0.0
+    zod: ^3.25.0 || ^4.0.0
+  peerDependenciesMeta:
+    "@sinclair/typebox":
+      optional: true
+    "@standard-schema/spec":
+      optional: true
+    "@typeschema/main":
+      optional: true
+    "@vinejs/vine":
+      optional: true
+    ajv:
+      optional: true
+    ajv-errors:
+      optional: true
+    ajv-formats:
+      optional: true
+    arktype:
+      optional: true
+    ata-validator:
+      optional: true
+    class-transformer:
+      optional: true
+    class-validator:
+      optional: true
+    computed-types:
+      optional: true
+    effect:
+      optional: true
+    fluentvalidation-ts:
+      optional: true
+    fp-ts:
+      optional: true
+    io-ts:
+      optional: true
+    joi:
+      optional: true
+    nope-validator:
+      optional: true
+    superstruct:
+      optional: true
+    typanion:
+      optional: true
+    valibot:
+      optional: true
+    vest:
+      optional: true
+    yup:
+      optional: true
+    zod:
+      optional: true
+  checksum: 10/b334b50a9d6d915ae52e6a636aabe1f800d41889856f1978c34528d0871332a9a59a19ef666a60b59ffd4cd515aceac84155595ecda0ba79f4357a04c002e363
   languageName: node
   linkType: hard
 
@@ -8789,7 +8862,7 @@ __metadata:
     graphql-relay: "npm:0.10.2"
     graphql-sse: "catalog:"
     graphql-subscriptions: "npm:3.0.0"
-    graphql-upload: "npm:17.0.0"
+    graphql-upload: "npm:17.1.0"
     handlebars: "npm:4.7.9"
     jwt-decode: "npm:4.0.0"
     kanel: "npm:4.0.3"
@@ -8825,7 +8898,7 @@ __metadata:
     "@graphql-codegen/typescript": "catalog:"
     "@graphql-codegen/typescript-operations": "npm:4.6.1"
     "@graphql-codegen/typescript-react-query": "npm:6.1.2"
-    "@hookform/resolvers": "npm:5.4.0"
+    "@hookform/resolvers": "npm:5.9.1"
     "@lingual/i18n-check": "npm:0.9.5"
     "@svgr/webpack": "npm:8.1.0"
     "@tailwindcss/postcss": "npm:4.3.3"
@@ -13093,9 +13166,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-upload@npm:17.0.0":
-  version: 17.0.0
-  resolution: "graphql-upload@npm:17.0.0"
+"graphql-upload@npm:17.1.0":
+  version: 17.1.0
+  resolution: "graphql-upload@npm:17.1.0"
   dependencies:
     "@types/busboy": "npm:^1.5.0"
     "@types/node": "npm:*"
@@ -13105,15 +13178,15 @@ __metadata:
     http-errors: "npm:^2.0.0"
     object-path: "npm:^0.11.8"
   peerDependencies:
-    "@types/express": 4.0.29 - 5
-    "@types/koa": ^2.11.4
-    graphql: ^16.3.0
+    "@types/express": ^4.0.29 || ^5.0.0
+    "@types/koa": ^2.11.4 || ^3.0.0
+    graphql: ^16.3.0 || ^17.0.0
   peerDependenciesMeta:
     "@types/express":
       optional: true
     "@types/koa":
       optional: true
-  checksum: 10/7df39d0cd16b14668151091e2844960faa46b3d79a75219585821db7a24b08e8be6264e26c97b1bf144678fdde5489ef4d105a3e718983826747221bf81bba81
+  checksum: 10/9498cb98eab8d65f8ccef2a6cc3af14f6d10ef914ef93d511debdba1cefe5619396fb4e7fef7c86cae24330970c9910531faf4acf6ccdc1f2c137ac98ef22e44
   languageName: node
   linkType: hard
 

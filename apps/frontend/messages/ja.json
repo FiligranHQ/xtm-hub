@@ -204,6 +204,7 @@
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "パーソナルスペースにユーザーを追加することはできません",
       "CANT_DELETE_BUILTIN_USER": "この組み込みユーザーは削除できません",
       "CANT_DELETE_YOURSELF": "自分のアカウントを削除することはできません",
+      "CANT_CANCEL_BUNDLE_PRODUCT": "XTM Platform Trial 内の個別の製品はキャンセルできない",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "組織の最後の管理者を削除することはできない",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "組織から自分自身を削除することはできない",
       "CANT_REQUEST_FREE_TRIAL": "無料トライアルのリクエストはできない",
@@ -1439,6 +1440,18 @@
         "OpenAEVDescription": "Adversarial Exposure Validation (AEV) で脅威に積極的に対抗し、現実の攻撃シナリオをシミュレートしてセキュリティ防御を最適化します。",
         "LogoAlt": "{name} ロゴ",
         "IllustrationAlt": "無料トライアルサービスのイラスト"
+      },
+      "XtmPlatform": {
+        "NoTrial": {
+          "Text": "30日間の無料トライアルを開始して、XTM Platform のフル体験をお試しください!"
+        },
+        "Active": {
+          "Text": "トライアル期間中は、XTM Platform のフル体験をお楽しみください!"
+        },
+        "Ending": {
+          "Text": "トライアル終了前に、引き続き XTM Platform のフル体験をお楽しみください。"
+        },
+        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}"
       },
       "QuickStart": {
         "Title": "クイックスタートガイド",
