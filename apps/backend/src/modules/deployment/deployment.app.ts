@@ -373,7 +373,9 @@ export const DeploymentApp = {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
-    const previousHubStatus = deploymentRequest.hub_status;
+    if (deploymentRequest.parent_id) {
+      throw new Error(ForbiddenErrorCode.CantCancelBundleProduct);
+    }
 
     if (
       !isAdmin &&
@@ -383,105 +385,39 @@ export const DeploymentApp = {
       throw new Error(ForbiddenErrorCode.UserIsNotInOrganization);
     }
 
-    const countsInOrgaQuota =
-      isAdmin ||
-      ![
-        DeploymentRequestPlatformState.Unprovisioned,
-        DeploymentRequestPlatformState.Provisioning,
-      ].includes(
-        deploymentRequest.actual_state ??
-          DeploymentRequestPlatformState.Unprovisioned
+    const family =
+      await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+        deploymentRequest
       );
 
-    const target_state =
-      deploymentRequest.actual_state ===
-      DeploymentRequestPlatformState.Unprovisioned
-        ? DeploymentRequestPlatformState.Unprovisioned
-        : DeploymentRequestPlatformState.Removed;
+    const updatedFamily = await withTransaction(async () => {
+      const updated: DeploymentRequestModel[] = [];
 
-    await DeploymentQuotaDomain.withLockedQuotaTransaction(
-      {
-        platformIdentifier: deploymentRequest.platform_identifier,
-        region: deploymentRequest.region,
-      },
-      async () => {
-        await DeploymentRequestDomain.updateDeploymentRequestById(
-          deploymentRequestId,
-          {
-            hub_status: DeploymentRequestHubStatus.Cancelled,
-            target_state: target_state,
-            cancellation_date: new Date(),
-            cancellation_user_id: user.id,
-            cancellation_reason: cancellationReason,
-            counts_in_orga_quota: countsInOrgaQuota,
-          }
-        );
-        if (!countsInOrgaQuota) {
-          await ServiceInstanceDomain.updateServiceInstance(
-            deploymentRequest.service_instance_id,
-            {
-              creation_status: ServiceInstanceCreationStatus.Disabled,
-            }
-          );
-        }
-        await DeploymentApp.releaseDeploymentRequestPlace(
-          previousHubStatus,
-          deploymentRequest.platform_identifier,
-          deploymentRequest.region
+      for (const request of family) {
+        const updatedRequest = await applyCancellationToDeploymentRequest({
+          deploymentRequest: request,
+          userId: user.id,
+          isAdmin,
+          cancellationReason,
+        });
+        updated.push(updatedRequest);
+
+        await sendDeploymentRequestCancelledNotifications(
+          updatedRequest,
+          user.id
         );
       }
-    );
 
-    const updatedDeploymentRequest =
-      await DeploymentRequestDomain.loadDeploymentRequestBy({
-        id: deploymentRequestId,
-      });
+      return updated;
+    });
 
+    for (const previousRequest of family) {
+      await deleteDeploymentRequestAudience(previousRequest);
+    }
+
+    const [updatedDeploymentRequest] = updatedFamily;
     if (!updatedDeploymentRequest) {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
-    }
-
-    await sendUpdateDeploymentTelemetryEvent(updatedDeploymentRequest, user.id);
-
-    try {
-      const [requester] = await UserDomain.loadUser({
-        id: updatedDeploymentRequest.user_requester_id,
-      });
-      if (requester && updatedDeploymentRequest.platform_identifier) {
-        await sendMail({
-          to: requester.email,
-          template: 'free_trial_cancelled',
-          params: {
-            firstName: formatName(requester.first_name ?? ''),
-            platformIdentifier: updatedDeploymentRequest.platform_identifier,
-          },
-        });
-      } else if (!requester) {
-        logApp.warn('Requester not found for trial cancellation mail', {
-          deploymentRequestId: updatedDeploymentRequest.id,
-        });
-      }
-    } catch (error) {
-      logApp.error('Unable to send mail for trial cancellation', {
-        error,
-        deploymentRequestId: updatedDeploymentRequest.id,
-      });
-    }
-
-    try {
-      if (deploymentRequest.platform_id) {
-        await auth0Client.deleteAudienceAPI(
-          deploymentRequest.organization_requester_id,
-          deploymentRequest.platform_id
-        );
-      } else {
-        logApp.error('Unable to delete audience', {
-          error: 'missing platform_id',
-          deploymentRequestId: deploymentRequest.id,
-        });
-      }
-    } catch (error) {
-      logDeleteAudienceError(error, deploymentRequest);
     }
 
     return updatedDeploymentRequest;
@@ -492,87 +428,33 @@ export const DeploymentApp = {
       await DeploymentRequestDomain.loadTrialsToExpire();
 
     for (const trial of expiredTrials) {
-      const previousHubStatus = trial.hub_status;
       logApp.info('expiring trial', { deploymentRequestId: trial.id });
 
-      try {
-        await DeploymentQuotaDomain.withLockedQuotaTransaction(
-          {
-            platformIdentifier: trial.platform_identifier,
-            region: trial.region,
-          },
-          async () => {
-            const updatedDeploymentRequest =
-              await DeploymentRequestDomain.updateDeploymentRequestById(
-                trial.id,
-                {
-                  hub_status: DeploymentRequestHubStatus.Expired,
-                  target_state: DeploymentRequestPlatformState.Removed,
-                }
-              );
-
-            if (!updatedDeploymentRequest) {
-              throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
-            }
-
-            await DeploymentApp.releaseDeploymentRequestPlace(
-              previousHubStatus,
-              trial.platform_identifier,
-              trial.region
-            );
-
-            await sendUpdateDeploymentTelemetryEvent(
-              updatedDeploymentRequest,
-              SYSTEM_USER_UUID
-            );
-          }
+      const family =
+        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+          trial,
+          DeploymentRequestHubStatus.Active
         );
 
-        try {
-          const [requester] = await UserDomain.loadUser({
-            id: trial.user_requester_id,
-          });
-          if (requester && trial.platform_identifier) {
-            await sendMail({
-              to: requester.email,
-              template: 'free_trial_expired',
-              params: {
-                firstName: formatName(requester.first_name ?? ''),
-                platformIdentifier: trial.platform_identifier,
-              },
-            });
-          } else if (!requester) {
-            logApp.warn('Requester not found for trial expiration mail', {
-              trialId: trial.id,
-            });
-          }
-        } catch (error) {
-          logApp.error('Unable to send mail for trial expiration', {
-            error,
-            deploymentRequestId: trial.id,
-          });
-        }
+      try {
+        await withTransaction(async () => {
+          for (const request of family) {
+            const updatedRequest =
+              await applyExpirationToDeploymentRequest(request);
 
-        try {
-          if (trial.platform_id) {
-            await auth0Client.deleteAudienceAPI(
-              trial.organization_requester_id,
-              trial.platform_id
-            );
-          } else {
-            logApp.error('Unable to delete audience', {
-              error: 'missing platform_id',
-              deploymentRequestId: trial.id,
-            });
+            await sendDeploymentRequestExpiredNotifications(updatedRequest);
           }
-        } catch (error) {
-          logDeleteAudienceError(error, trial);
-        }
+        });
       } catch (error) {
         logApp.error('Error during trial expiration', {
           error,
           deploymentRequestId: trial.id,
         });
+        continue;
+      }
+
+      for (const request of family) {
+        await deleteDeploymentRequestAudience(request);
       }
     }
   },
@@ -1023,6 +905,193 @@ const logDeleteAudienceError = (
     error,
     deploymentRequestId: deploymentRequest.id,
   });
+};
+
+const applyCancellationToDeploymentRequest = async ({
+  deploymentRequest,
+  userId,
+  isAdmin,
+  cancellationReason,
+}: {
+  deploymentRequest: DeploymentRequestModel;
+  userId: UserId;
+  isAdmin: boolean;
+  cancellationReason?: string;
+}): Promise<DeploymentRequestModel> => {
+  const previousHubStatus = deploymentRequest.hub_status;
+
+  const countsInOrgaQuota =
+    isAdmin ||
+    ![
+      DeploymentRequestPlatformState.Unprovisioned,
+      DeploymentRequestPlatformState.Provisioning,
+    ].includes(
+      deploymentRequest.actual_state ??
+        DeploymentRequestPlatformState.Unprovisioned
+    );
+
+  const target_state =
+    deploymentRequest.actual_state ===
+    DeploymentRequestPlatformState.Unprovisioned
+      ? DeploymentRequestPlatformState.Unprovisioned
+      : DeploymentRequestPlatformState.Removed;
+
+  return DeploymentQuotaDomain.withLockedQuotaTransaction(
+    {
+      platformIdentifier: deploymentRequest.platform_identifier,
+      region: deploymentRequest.region,
+    },
+    async () => {
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          deploymentRequest.id,
+          {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            target_state: target_state,
+            cancellation_date: new Date(),
+            cancellation_user_id: userId,
+            cancellation_reason: cancellationReason,
+            counts_in_orga_quota: countsInOrgaQuota,
+          }
+        );
+      if (!updatedDeploymentRequest) {
+        throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+      }
+      if (!countsInOrgaQuota) {
+        await ServiceInstanceDomain.updateServiceInstance(
+          deploymentRequest.service_instance_id,
+          {
+            creation_status: ServiceInstanceCreationStatus.Disabled,
+          }
+        );
+      }
+      await DeploymentApp.releaseDeploymentRequestPlace(
+        previousHubStatus,
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region
+      );
+
+      return updatedDeploymentRequest;
+    }
+  );
+};
+
+const sendDeploymentRequestCancelledNotifications = async (
+  deploymentRequest: DeploymentRequestModel,
+  userId: UserId
+): Promise<void> => {
+  await sendUpdateDeploymentTelemetryEvent(deploymentRequest, userId);
+
+  try {
+    const [requester] = await UserDomain.loadUser({
+      id: deploymentRequest.user_requester_id,
+    });
+    if (requester && deploymentRequest.platform_identifier) {
+      await sendMail({
+        to: requester.email,
+        template: 'free_trial_cancelled',
+        params: {
+          firstName: formatName(requester.first_name ?? ''),
+          platformIdentifier: deploymentRequest.platform_identifier,
+        },
+      });
+    } else if (!requester) {
+      logApp.warn('Requester not found for trial cancellation mail', {
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+  } catch (error) {
+    logApp.error('Unable to send mail for trial cancellation', {
+      error,
+      deploymentRequestId: deploymentRequest.id,
+    });
+  }
+};
+
+const deleteDeploymentRequestAudience = async (
+  deploymentRequest: DeploymentRequestModel
+): Promise<void> => {
+  try {
+    if (deploymentRequest.platform_id) {
+      await auth0Client.deleteAudienceAPI(
+        deploymentRequest.organization_requester_id,
+        deploymentRequest.platform_id
+      );
+    } else {
+      logApp.error('Unable to delete audience', {
+        error: 'missing platform_id',
+        deploymentRequestId: deploymentRequest.id,
+      });
+    }
+  } catch (error) {
+    logDeleteAudienceError(error, deploymentRequest);
+  }
+};
+
+const applyExpirationToDeploymentRequest = async (
+  deploymentRequest: DeploymentRequestModel
+): Promise<DeploymentRequestModel> => {
+  const previousHubStatus = deploymentRequest.hub_status;
+
+  return DeploymentQuotaDomain.withLockedQuotaTransaction(
+    {
+      platformIdentifier: deploymentRequest.platform_identifier,
+      region: deploymentRequest.region,
+    },
+    async () => {
+      const updatedDeploymentRequest =
+        await DeploymentRequestDomain.updateDeploymentRequestById(
+          deploymentRequest.id,
+          {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            target_state: DeploymentRequestPlatformState.Removed,
+          }
+        );
+
+      if (!updatedDeploymentRequest) {
+        throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+      }
+
+      await DeploymentApp.releaseDeploymentRequestPlace(
+        previousHubStatus,
+        deploymentRequest.platform_identifier,
+        deploymentRequest.region
+      );
+
+      return updatedDeploymentRequest;
+    }
+  );
+};
+
+const sendDeploymentRequestExpiredNotifications = async (
+  deploymentRequest: DeploymentRequestModel
+): Promise<void> => {
+  await sendUpdateDeploymentTelemetryEvent(deploymentRequest, SYSTEM_USER_UUID);
+
+  try {
+    const [requester] = await UserDomain.loadUser({
+      id: deploymentRequest.user_requester_id,
+    });
+    if (requester && deploymentRequest.platform_identifier) {
+      await sendMail({
+        to: requester.email,
+        template: 'free_trial_expired',
+        params: {
+          firstName: formatName(requester.first_name ?? ''),
+          platformIdentifier: deploymentRequest.platform_identifier,
+        },
+      });
+    } else if (!requester) {
+      logApp.warn('Requester not found for trial expiration mail', {
+        trialId: deploymentRequest.id,
+      });
+    }
+  } catch (error) {
+    logApp.error('Unable to send mail for trial expiration', {
+      error,
+      deploymentRequestId: deploymentRequest.id,
+    });
+  }
 };
 
 const checkStatusAndDataValidity = async (
