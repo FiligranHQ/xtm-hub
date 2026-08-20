@@ -172,15 +172,22 @@ export const DocumentDomain = {
     return DocumentMetadataDomain.hydrateMetadata(documents, include_metadata);
   },
 
-  lockDocumentsByMetadata: async (
-    key: string,
-    value: string
-  ): Promise<void> => {
-    await db<DocumentModel>('Document')
-      .whereIn(
-        'Document.id',
-        db('Document_Metadata').select('document_id').where({ key, value })
-      )
+  lockDocumentsBySlugTypeAndServiceInstance: async ({
+    slug,
+    type,
+    serviceInstanceId,
+  }: {
+    slug: string;
+    type: string;
+    serviceInstanceId: ServiceInstanceId;
+  }): Promise<Pick<DocumentModel, 'id'>[]> => {
+    return db<DocumentModel>('Document')
+      .where({
+        slug,
+        type,
+        service_instance_id: serviceInstanceId,
+      })
+      .select('id')
       .forUpdate();
   },
 

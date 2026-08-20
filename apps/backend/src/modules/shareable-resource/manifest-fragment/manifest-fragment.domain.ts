@@ -178,14 +178,16 @@ export const ManifestFragmentDomain = {
 
     await withTransaction(async () => {
       // Serializes concurrent ingestions for the same connector slug.
-      await db<Document>('Document')
-        .where({
-          slug: fragment.slug,
-          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-          service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
-        })
-        .forUpdate();
 
+      await DocumentDomain.lockDocumentsBySlugTypeAndServiceInstance({
+        slug: fragment.slug,
+        type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+        serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+      });
+
+      // Re-read the whole family after the lock statement so this transaction
+      // uses a fresh snapshot that includes connectors inserted by prior
+      // concurrent transactions.
       const existingBatchConnectorRows: Pick<Document, 'id'>[] =
         await db<Document>('Document')
           .where({
@@ -198,6 +200,25 @@ export const ManifestFragmentDomain = {
       const existingBatchConnectorIds = existingBatchConnectorRows.map(
         (connector) => connector.id
       );
+
+      const existingConnectorsWithSameId =
+        await DocumentDomain.loadDocumentsByMetadata(
+          DocumentMetadataKeyCode.ManifestFragmentId,
+          fragment.id,
+          [],
+          {
+            type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+            service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
+          }
+        );
+
+      const conflictingConnector = existingConnectorsWithSameId.find(
+        (connector) => connector.slug !== fragment.slug
+      );
+
+      if (conflictingConnector) {
+        throw new Error(BadRequestErrorCode.ConnectorIdAlreadyExists);
+      }
 
       const existingBatchConnectors =
         (await DocumentDomain.loadDocumentsWithMetadataByIds(

@@ -255,18 +255,30 @@ describe('manifestApp', () => {
       });
 
       it('excludes an incompatible connector when no compatible fallback exists, keeping the rest of the manifest', async () => {
-        await createConnectorWithFragment({
+        // Given
+        const infoSpy = vi.spyOn(logApp, 'info');
+        const incompatible = await createConnectorWithFragment({
           manifestFragmentId: 'fragment-no-fallback',
+          slug: 'connector-no-fallback',
           tags: [TAG_LATEST],
           minimumDeployableVersionPadded: '007.260601.000', // above MANIFEST_KEY padded version, no fallback created
         });
         const compatible = await createConnectorDocument([TAG_LATEST]);
 
+        // When
         await ManifestApp.generateManifest(MANIFEST_KEY);
 
+        // Then
         const links = await TestHelper.manifestDocument.loadAll({});
         expect(links).toHaveLength(1);
         expect(links[0]!.document_id).toBe(compatible.id);
+        expect(infoSpy).toHaveBeenCalledWith(
+          'No compatible fallback found for some connectors, they will be excluded from the manifest',
+          expect.objectContaining({
+            slugs: ['connector-no-fallback'],
+            connectorIds: expect.arrayContaining([incompatible.id]),
+          })
+        );
       });
     });
 
