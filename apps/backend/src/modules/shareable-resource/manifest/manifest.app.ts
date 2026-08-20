@@ -82,33 +82,40 @@ const fetchConnectors = async (
     return compatible;
   }
 
-  const incompatibleFragmentIds = incompatible
-    .map((c) => c.manifest_fragment_id)
-    .filter((id): id is string => id !== null && id !== undefined);
+  const incompatibleConnectorIds = incompatible.map((c) => c.id);
+  const incompatibleSlugs = Array.from(
+    new Set(
+      incompatible
+        .map((c) => c.slug)
+        .filter((slug): slug is string => slug !== null)
+    )
+  );
 
   logApp.info('Incompatible connectors found, searching for fallbacks', {
     count: incompatible.length,
     version,
-    manifestFragmentIds: incompatibleFragmentIds,
+    connectorIds: incompatibleConnectorIds,
+    slugs: incompatibleSlugs,
   });
 
-  const fallbacks =
-    await DocumentDomain.loadBestCompatibleConnectorsByManifestFragmentIds(
-      incompatibleFragmentIds,
-      version
-    );
+  const fallbacks = await DocumentDomain.loadBestCompatibleConnectorsBySlugs(
+    incompatibleSlugs,
+    version
+  );
 
-  const fallbackFragmentIds = new Set(
-    fallbacks.map((c) => c.manifest_fragment_id)
+  const fallbackSlugs = new Set(
+    fallbacks.map((c) => c.slug).filter((slug): slug is string => slug !== null)
   );
-  const notFound = incompatibleFragmentIds.filter(
-    (id) => !fallbackFragmentIds.has(id)
-  );
+  const notFound = incompatibleSlugs.filter((slug) => !fallbackSlugs.has(slug));
   if (notFound.length > 0) {
+    const notFoundSlugSet = new Set(notFound);
     logApp.info(
       'No compatible fallback found for some connectors, they will be excluded from the manifest',
       {
-        manifestFragmentIds: notFound,
+        slugs: notFound,
+        connectorIds: incompatible
+          .filter((connector) => notFoundSlugSet.has(connector.slug ?? ''))
+          .map((connector) => connector.id),
       }
     );
   }
