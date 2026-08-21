@@ -252,7 +252,7 @@ describe('deployment app', () => {
       });
 
       await expect(call).rejects.toThrow(
-        BadRequestErrorCode.MissingUseCaseForProduct
+        BadRequestErrorCode.InvalidUseCasesForProducts
       );
     });
 
@@ -274,7 +274,28 @@ describe('deployment app', () => {
       });
 
       await expect(call).rejects.toThrow(
-        BadRequestErrorCode.MissingUseCaseForProduct
+        BadRequestErrorCode.InvalidUseCasesForProducts
+      );
+    });
+    it('should throw when two use cases target the same product', async () => {
+      const call = DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        type: DeploymentRequestDeploymentType.Bundle,
+        products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        use_cases_by_product: [
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.DetectionEngineering,
+          },
+        ],
+      });
+
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.InvalidUseCasesForProducts
       );
     });
     it.each([

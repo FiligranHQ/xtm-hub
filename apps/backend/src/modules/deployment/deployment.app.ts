@@ -620,11 +620,19 @@ const validateUseCasesByProduct = (
         entry.platform_identifier !== PlatformIdentifier.Xtmone &&
         uniqueProducts.includes(entry.platform_identifier)
     ) ?? true;
+  const targetedProducts =
+    input.use_cases_by_product?.map((entry) => entry.platform_identifier) ?? [];
+  const hasDuplicatedEntry =
+    targetedProducts.length !== new Set(targetedProducts).size;
+
   if (!everyEntryTargetsAValidProduct) {
-    throw new Error(BadRequestErrorCode.MissingUseCaseForProduct);
+    throw new Error(BadRequestErrorCode.InvalidUseCasesForProducts);
   }
   if (!everyProductHasUseCase) {
-    throw new Error(BadRequestErrorCode.MissingUseCaseForProduct);
+    throw new Error(BadRequestErrorCode.InvalidUseCasesForProducts);
+  }
+  if (hasDuplicatedEntry) {
+    throw new Error(BadRequestErrorCode.InvalidUseCasesForProducts);
   }
 };
 
