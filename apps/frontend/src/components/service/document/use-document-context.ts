@@ -22,6 +22,7 @@ import { OpenctiPlaybookForm } from '@/components/service/opencti-playbooks/[ser
 import { omit } from '@/lib/omit';
 import { pick } from '@/lib/pick';
 import { splitFileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import revalidateDocumentSlugsAction from '@/utils/actions/revalidate-document-slugs.actions';
 import {
   docIsExistingFile,
   isFile,
@@ -145,6 +146,9 @@ export function useDocumentContext({
           return;
         }
 
+        if (serviceInstance.slug) {
+          revalidateDocumentSlugsAction(serviceInstance.slug);
+        }
         onSuccess(input.name);
       },
       onError: (error) => {
@@ -169,6 +173,9 @@ export function useDocumentContext({
         forceDelete: true,
       },
       onCompleted() {
+        if (serviceInstance.slug) {
+          revalidateDocumentSlugsAction(serviceInstance.slug);
+        }
         onCompleted();
       },
     });
@@ -226,6 +233,9 @@ export function useDocumentContext({
         ...(isFile(logo[0]) ? { logo } : {}),
       }),
       onCompleted: () => {
+        if (serviceInstance.slug) {
+          revalidateDocumentSlugsAction(serviceInstance.slug);
+        }
         onSuccess(values.name);
       },
       onError: (error) => {

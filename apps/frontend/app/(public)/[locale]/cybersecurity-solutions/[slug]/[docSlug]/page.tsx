@@ -27,7 +27,10 @@ import {
   getServiceInfo,
   isResourceDownloadable,
 } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
+import {
+  fetchAllDocuments,
+  fetchSingleDocument,
+} from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { MarkdownRenderer } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
@@ -41,6 +44,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
+import { isKnownDocumentSlug } from './docslug-page.utils';
 const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
   [ServiceSlug.OPEN_CTI_INTEGRATIONS]:
     'Metadata.DocumentFallbackDescriptionIntegration',
@@ -71,6 +75,22 @@ const getPageData = cache(async (serviceSlug: string, docSlug: string) => {
     .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
 
   if (!serviceInstance) {
+    notFound();
+  }
+
+  // Reuses the same cached fetch as the parent list/SEO page, so this is a
+  // free lookup in the common case. It lets us reject unknown/guessed
+  // docSlug values without ever calling the backend for the document detail.
+  const knownDocuments = await fetchAllDocuments(
+    serviceInstance.slug as ServiceSlug
+  );
+
+  if (
+    !isKnownDocumentSlug(
+      knownDocuments.map((doc) => doc.slug),
+      docSlug
+    )
+  ) {
     notFound();
   }
 
