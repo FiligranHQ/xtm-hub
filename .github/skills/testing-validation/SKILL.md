@@ -12,8 +12,7 @@ integration testing) build on top of these.
 
 - Adding **new** tests (new `it`/`describe` blocks, new files) is always encouraged and never requires asking first.
 - Do **not** rewrite, restructure, delete, or change the scenario/assertions of an **existing** test unless either:
-    - it fails to compile/run purely because of a change you were asked to make (e.g. renamed import, changed function
-    signature), or
+    - it fails to compile/run purely because of a change you were asked to make (e.g. renamed import, changed function signature), or
     - its expectations must change to strictly match a business-logic change you were explicitly asked to implement.
 - If an existing test looks wrong, outdated, redundant, or in need of restructuring for reasons unrelated to the above,
   stop and ask before touching it — do not silently rewrite it.
