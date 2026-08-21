@@ -119,54 +119,62 @@ export const ServiceListHeader = ({
               {sortControls}
             </div>
           </div>
-          {paginationControls && (
-            <div className="ml-auto max-sm:w-full max-sm:[&>div]:w-full max-sm:[&>div>*:nth-child(2)]:flex-1">
-              {paginationControls}
-            </div>
-          )}
-          <div className="p-s border hover:cursor-pointer flex items-center align-middle gap-s">
-            <button
-              type="button"
-              onClick={() =>
-                handleDisplayModeChange(ServiceListDisplayModeEnum.Tab)
-              }
-              className="hover:cursor-pointer flex items-center"
-              aria-pressed={
-                storedDisplayMode === ServiceListDisplayModeEnum.Tab
-              }
-              aria-label={t('Service.List.ViewTab')}>
-              <CalendarViewMonthIcon
-                className={cn(
-                  'h-5 w-5',
+          <div
+            className={cn(
+              'flex items-center gap-s max-sm:w-full',
+              paginationControls
+                ? 'max-sm:justify-between sm:ml-auto'
+                : 'ml-auto'
+            )}>
+            {paginationControls && (
+              <div className="min-w-0 flex-1 max-sm:[&>div]:w-full max-sm:[&>div>*:nth-child(2)]:flex-1">
+                {paginationControls}
+              </div>
+            )}
+            <div className="p-s border hover:cursor-pointer flex items-center align-middle gap-s">
+              <button
+                type="button"
+                onClick={() =>
+                  handleDisplayModeChange(ServiceListDisplayModeEnum.Tab)
+                }
+                className="hover:cursor-pointer flex items-center"
+                aria-pressed={
                   storedDisplayMode === ServiceListDisplayModeEnum.Tab
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
-                )}
+                }
+                aria-label={t('Service.List.ViewTab')}>
+                <CalendarViewMonthIcon
+                  className={cn(
+                    'h-5 w-5',
+                    storedDisplayMode === ServiceListDisplayModeEnum.Tab
+                      ? 'text-primary'
+                      : 'text-muted-foreground'
+                  )}
+                />
+              </button>
+              <Separator
+                orientation="vertical"
+                className="h-5 w-px bg-border"
               />
-            </button>
-            <Separator
-              orientation="vertical"
-              className="h-5 w-px bg-border"
-            />
-            <button
-              type="button"
-              onClick={() =>
-                handleDisplayModeChange(ServiceListDisplayModeEnum.List)
-              }
-              className="hover:cursor-pointer flex items-center"
-              aria-pressed={
-                storedDisplayMode === ServiceListDisplayModeEnum.List
-              }
-              aria-label={t('Service.List.ViewList')}>
-              <ListViewIcon
-                className={cn(
-                  'h-4 w-4',
+              <button
+                type="button"
+                onClick={() =>
+                  handleDisplayModeChange(ServiceListDisplayModeEnum.List)
+                }
+                className="hover:cursor-pointer flex items-center"
+                aria-pressed={
                   storedDisplayMode === ServiceListDisplayModeEnum.List
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
-                )}
-              />
-            </button>
+                }
+                aria-label={t('Service.List.ViewList')}>
+                <ListViewIcon
+                  className={cn(
+                    'h-4 w-4',
+                    storedDisplayMode === ServiceListDisplayModeEnum.List
+                      ? 'text-primary'
+                      : 'text-muted-foreground'
+                  )}
+                />
+              </button>
+            </div>
           </div>
         </div>
 

@@ -172,7 +172,7 @@ export const useServiceListLocalStorage = (
   const [displayMode, setDisplayMode, removeDisplayMode] =
     useLocalStorage<ServiceListDisplayMode>(
       `displayMode${pagePrefix}${serviceName}List`,
-      ServiceListDisplayModeEnum.List
+      ServiceListDisplayModeEnum.Tab
     );
 
   const resetAll = useCallback(() => {

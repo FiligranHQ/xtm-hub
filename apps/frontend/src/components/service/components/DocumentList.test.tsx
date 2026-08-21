@@ -161,6 +161,9 @@ describe('DocumentList', () => {
     expect(mocks.push).toHaveBeenCalledWith(
       `/app/service/${ServiceIdentifier}/${ServiceInstanceId}/${FirstDocumentId}`
     );
+    expect(
+      screen.queryByLabelText('Manage columns visibility')
+    ).not.toBeInTheDocument();
   });
 
   it('should set integration type when clicking update on integration item', async () => {

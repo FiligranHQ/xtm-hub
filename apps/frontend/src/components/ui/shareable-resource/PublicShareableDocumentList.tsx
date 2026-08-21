@@ -117,6 +117,7 @@ export const PublicShareableDocumentList = ({
         <DataTable
           columns={tableColumns}
           data={documents}
+          toolbar={<></>}
           onClickRow={(row) =>
             router.push(
               `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`

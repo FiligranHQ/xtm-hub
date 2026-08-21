@@ -110,35 +110,37 @@ const DocumentActionsCell = ({ document }: DocumentActionsCellProps) => {
         documentId={document.id}
         url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
       />
-      <IconActions
-        className="z-[2]"
-        icon={
-          <>
-            <MoreVertIcon className="h-4 w-4 text-primary" />
-            <span className="sr-only">{t('Utils.OpenMenu')}</span>
-          </>
-        }>
-        {userCanUpdate && (
-          <IconActionsItem onClick={() => onClickOnUpdate()}>
-            {t('MenuActions.Update')}
-          </IconActionsItem>
-        )}
-        {userCanDelete && (
-          <ServiceDelete
-            type={'menuitem'}
-            userCanDelete={userCanDelete}
-            onDelete={() =>
-              context.handleDeleteSheet(document, onDeleteCompleted)
-            }
-            serviceName={serviceInstance.name}
-            integrationType={
-              (isIntegrationItem(document)
-                ? document.integration_type
-                : document.type) as CardTypeEnum
-            }
-          />
-        )}
-      </IconActions>
+      {(userCanDelete || userCanUpdate) && (
+        <IconActions
+          className="z-[2]"
+          icon={
+            <>
+              <MoreVertIcon className="h-4 w-4 text-primary" />
+              <span className="sr-only">{t('Utils.OpenMenu')}</span>
+            </>
+          }>
+          {userCanUpdate && (
+            <IconActionsItem onClick={() => onClickOnUpdate()}>
+              {t('MenuActions.Update')}
+            </IconActionsItem>
+          )}
+          {userCanDelete && (
+            <ServiceDelete
+              type={'menuitem'}
+              userCanDelete={userCanDelete}
+              onDelete={() =>
+                context.handleDeleteSheet(document, onDeleteCompleted)
+              }
+              serviceName={serviceInstance.name}
+              integrationType={
+                (isIntegrationItem(document)
+                  ? document.integration_type
+                  : document.type) as CardTypeEnum
+              }
+            />
+          )}
+        </IconActions>
+      )}
       {userCanUpdate && (
         <ServiceManageSheet
           document={document}
@@ -150,7 +152,11 @@ const DocumentActionsCell = ({ document }: DocumentActionsCellProps) => {
   );
 };
 
-const DocumentList = ({ documents, displayMode, connectionId }: DocumentListProps) => {
+const DocumentList = ({
+  documents,
+  displayMode,
+  connectionId,
+}: DocumentListProps) => {
   const { settings } = useContext(SettingsContext);
   const { serviceInstance } = useServiceContext();
   const t = useTranslations();
@@ -228,6 +234,7 @@ const DocumentList = ({ documents, displayMode, connectionId }: DocumentListProp
         <DataTable
           columns={tableColumns}
           data={documents}
+          toolbar={<></>}
           onClickRow={(row) =>
             router.push(
               `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${row.original.id}`
