@@ -1497,6 +1497,9 @@
           "NotAdmin": {
             "Title": "To request a trial you need to be Organization admin",
             "Description": "Please contact the organization admin in your company"
+          },
+          "PersonalSpace": {
+            "Title": "Trials are not available in a personal space"
           }
         }
       },

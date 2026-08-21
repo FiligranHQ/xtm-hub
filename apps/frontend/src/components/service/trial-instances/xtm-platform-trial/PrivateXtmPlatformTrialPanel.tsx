@@ -24,7 +24,7 @@ import { useContext } from 'react';
 import { z } from 'zod';
 
 export const PrivateXtmPlatformTrialPanel = () => {
-  const { me } = useContext(PortalContext);
+  const { me, isPersonalSpace } = useContext(PortalContext);
   const t = useTranslations('Service.Trials.XtmPlatform.Page');
   const tGlobal = useTranslations();
   const organizationId = me?.selected_organization_id ?? '';
@@ -70,10 +70,20 @@ export const PrivateXtmPlatformTrialPanel = () => {
   }
 
   const state = deriveXtmPlatformTrialPanelState({
+    isPersonalSpace: isPersonalSpace ?? false,
     isAllowed: canRequestTrial,
     ongoingStandaloneTrials:
       data?.platformTrialStatus?.ongoingStandaloneTrials ?? [],
   });
+
+  if (state === 'personal-space') {
+    return (
+      <XtmPlatformTrialMessagePanel
+        title={t('PersonalSpace.Title')}
+        description={tGlobal('Service.Trials.InfoPersonalSpace')}
+      />
+    );
+  }
 
   if (state === 'not-allowed') {
     return (

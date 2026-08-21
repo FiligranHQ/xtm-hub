@@ -154,8 +154,8 @@ export const XtmPlatformTrialForm = ({
                 </div>
               </div>
             ) : (
-              <div className="flex items-start gap-xs rounded border border-solid border-orange p-s text-sm">
-                <WarningIcon className="size-4 shrink-0 text-feedback-warning-primary" />
+              <div className="flex items-start gap-xs rounded border border-solid border-alert-alert-primary p-s text-sm">
+                <WarningIcon className="size-4 shrink-0 text-alert-alert-primary" />
                 <span>
                   {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
                 </span>

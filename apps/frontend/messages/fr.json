@@ -1497,6 +1497,9 @@
           "NotAdmin": {
             "Title": "Vous devez être administrateur de l'organisation pour demander un essai",
             "Description": "Contactez l'administrateur de l'organisation dans votre entreprise"
+          },
+          "PersonalSpace": {
+            "Title": "Les essais ne sont pas disponibles dans un espace personnel"
           }
         }
       },

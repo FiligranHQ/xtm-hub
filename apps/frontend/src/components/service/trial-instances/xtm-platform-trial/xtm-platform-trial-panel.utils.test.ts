@@ -8,7 +8,23 @@ import { describe, expect, it } from 'vitest';
 describe('deriveXtmPlatformTrialPanelState', () => {
   it.each([
     {
+      description: 'the organization is a personal space',
+      isPersonalSpace: true,
+      isAllowed: true,
+      ongoingStandaloneTrials: [],
+      expected: 'personal-space',
+    },
+    {
+      description:
+        'the organization is a personal space even with ongoing trials',
+      isPersonalSpace: true,
+      isAllowed: true,
+      ongoingStandaloneTrials: [PlatformIdentifier.Opencti],
+      expected: 'personal-space',
+    },
+    {
       description: 'the user is not allowed to request a trial',
+      isPersonalSpace: false,
       isAllowed: false,
       ongoingStandaloneTrials: [],
       expected: 'not-allowed',
@@ -16,6 +32,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
     {
       description:
         'the user is not allowed even though the organization has ongoing trials',
+      isPersonalSpace: false,
       isAllowed: false,
       ongoingStandaloneTrials: [PlatformIdentifier.Opencti],
       expected: 'not-allowed',
@@ -23,6 +40,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
     {
       description:
         'the user is allowed and the organization has no ongoing trial',
+      isPersonalSpace: false,
       isAllowed: true,
       ongoingStandaloneTrials: [],
       expected: 'request',
@@ -30,6 +48,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
     {
       description:
         'the user is allowed and the organization has one ongoing trial',
+      isPersonalSpace: false,
       isAllowed: true,
       ongoingStandaloneTrials: [PlatformIdentifier.Opencti],
       expected: 'request-with-ongoing-trials',
@@ -37,6 +56,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
     {
       description:
         'the user is allowed and the organization has two ongoing trials',
+      isPersonalSpace: false,
       isAllowed: true,
       ongoingStandaloneTrials: [
         PlatformIdentifier.Opencti,
@@ -46,10 +66,11 @@ describe('deriveXtmPlatformTrialPanelState', () => {
     },
   ])(
     'should return $expected when $description',
-    ({ isAllowed, ongoingStandaloneTrials, expected }) => {
+    ({ isPersonalSpace, isAllowed, ongoingStandaloneTrials, expected }) => {
       // Given the eligibility facts of the organization
       // When deriving the panel state
       const state = deriveXtmPlatformTrialPanelState({
+        isPersonalSpace,
         isAllowed,
         ongoingStandaloneTrials,
       });
