@@ -970,6 +970,7 @@ export type MergeEvent = Node & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  acceptPendingUserInOrganization: Maybe<User>;
   addCapabilitiesToUserServices: Maybe<Array<Maybe<UserService>>>;
   addOrganization: Maybe<Organization>;
   addServicePicture: Maybe<ServiceInstance>;
@@ -1041,6 +1042,12 @@ export type Mutation = {
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
+};
+
+
+export type MutationAcceptPendingUserInOrganizationArgs = {
+  organization_id: Scalars['OrganizationId']['input'];
+  user_id: Scalars['UserId']['input'];
 };
 
 

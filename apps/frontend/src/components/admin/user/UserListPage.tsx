@@ -1,6 +1,6 @@
 import { AddUser } from '@/components/admin/user/forms/AddUser';
 import { AdminAddUser } from '@/components/admin/user/forms/admin/AdminAddUser';
-import PendingUserList from '@/components/admin/user/PendingUserList';
+import PendingUserList from '@/components/admin/user/pending-user/PendingUserList';
 import {
   UserPendingListFragment,
   UserPendingListQuery,
@@ -47,9 +47,12 @@ const UserListPage = ({ organization }: UserListPageProps) => {
   const [connectionID, setConnectionId] = useState<string>('');
 
   const searchParams = useSearchParams();
-  const selectedTab = searchParams.has('pendingUsers')
-    ? 'pendingUsers'
-    : 'users';
+  const hasPendingActionParams =
+    searchParams.has('action') && searchParams.has('user_id');
+  const selectedTab =
+    searchParams.has('pendingUsers') || hasPendingActionParams
+      ? 'pendingUsers'
+      : 'users';
 
   const queryData = useLazyLoadQuery<userPendingListQuery>(
     UserPendingListQuery,
