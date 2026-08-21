@@ -53,7 +53,7 @@ export const quotaKeysOfRequest = (
   if (request.type === DeploymentRequestDeploymentType.Bundle) {
     return [bundleQuotaKey(request.region)];
   }
-  if (request.parent_id !== null || request.platform_identifier === null) {
+  if (request.platform_identifier === null) {
     return [];
   }
   return [
@@ -68,7 +68,8 @@ const QUOTA_KEY_LOCK_ORDER = [
 ];
 
 const compareQuotaKeys = (a: QuotaKey, b: QuotaKey): number =>
-  QUOTA_KEY_LOCK_ORDER.indexOf(a.type) - QUOTA_KEY_LOCK_ORDER.indexOf(b.type);
+  QUOTA_KEY_LOCK_ORDER.indexOf(a.type) - QUOTA_KEY_LOCK_ORDER.indexOf(b.type) ||
+  (a.platformIdentifier ?? '').localeCompare(b.platformIdentifier ?? '');
 
 export const DeploymentQuotaDomain = {
   reservePlace: async (

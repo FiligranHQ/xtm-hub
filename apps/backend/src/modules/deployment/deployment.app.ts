@@ -809,10 +809,16 @@ const createBundleDeploymentRequest = async ({
   }
 
   return DeploymentQuotaDomain.withLockedQuotaTransaction(
-    [bundleQuotaKey(input.region)],
+    [
+      bundleQuotaKey(input.region),
+      ...products.map((platformIdentifier) =>
+        trialQuotaKey(platformIdentifier, input.region)
+      ),
+    ],
     async () => {
       const { isPlaceAvailable } = await DeploymentQuotaApp.takeBundleQuota(
-        input.region
+        input.region,
+        products
       );
       const bundleHubStatus = isPlaceAvailable
         ? DeploymentRequestHubStatus.Pending

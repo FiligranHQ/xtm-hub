@@ -886,7 +886,7 @@ describe('deployment app', () => {
         expect(await loadAvailability(bundleQuotaFilter)).toBe(-1);
       });
 
-      it('should reserve only the bundle place and leave the product quotas untouched', async () => {
+      it('should reserve the bundle place and one place per embarked product', async () => {
         const bundle = await DeploymentApp.createDeploymentRequest({
           ...TEST_DEPLOYMENT,
           region: QUOTA_REGION,
@@ -902,10 +902,10 @@ describe('deployment app', () => {
         expect(await loadAvailability(bundleQuotaFilter)).toBe(4);
         expect(
           await loadAvailability(productQuotaFilter(PlatformIdentifier.Opencti))
-        ).toBe(5);
+        ).toBe(4);
         expect(
           await loadAvailability(productQuotaFilter(PlatformIdentifier.Openaev))
-        ).toBe(5);
+        ).toBe(4);
       });
 
       it('should create a bundle even when every product quota is full', async () => {
@@ -3529,7 +3529,7 @@ describe('deployment app', () => {
         expect(await loadAvailability(bundleQuotaFilter)).toBe(4);
         expect(
           await loadAvailability(productQuotaFilter(PlatformIdentifier.Opencti))
-        ).toBe(5);
+        ).toBe(4);
         await TestHelper.deploymentRequest.assertProperties(child!.id, {
           hub_status: DeploymentRequestHubStatus.Active,
         });

@@ -33,6 +33,47 @@ const promoteOrFreePlace = async (
   return undefined;
 };
 
+const reserveProductPlacesOfBundle = async (
+  bundle: DeploymentRequestModel
+): Promise<void> => {
+  const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+    parent_id: bundle.id,
+  });
+
+  const platformIdentifiers = children
+    .map((child) => child.platform_identifier)
+    .filter(
+      (identifier): identifier is PlatformIdentifier => identifier !== null
+    )
+    .sort((a, b) => a.localeCompare(b));
+
+  for (const platformIdentifier of platformIdentifiers) {
+    await DeploymentQuotaDomain.reservePlace(
+      trialQuotaKey(platformIdentifier, bundle.region),
+      { blocking: false }
+    );
+  }
+};
+
+const releaseBundleChildQuota = async (
+  platformIdentifier: PlatformIdentifier,
+  region: DeploymentRequestPlatformRegion
+): Promise<DeploymentRequestModel | undefined> => {
+  const trialKey = trialQuotaKey(platformIdentifier, region);
+
+  const promotedTrial =
+    await DeploymentRequestDomain.setFirstQueuedRequestAsPending(trialKey);
+  if (promotedTrial) {
+    await DeploymentQuotaDomain.reservePlace(bundleQuotaKey(region), {
+      blocking: false,
+    });
+    return promotedTrial;
+  }
+
+  await DeploymentQuotaDomain.freePlace(trialKey);
+  return undefined;
+};
+
 const releaseStandaloneTrialQuota = async (
   platformIdentifier: PlatformIdentifier,
   region: DeploymentRequestPlatformRegion
@@ -44,6 +85,7 @@ const releaseStandaloneTrialQuota = async (
     await DeploymentRequestDomain.setFirstQueuedRequestAsPending(bundleKey);
   if (promotedBundle) {
     await DeploymentQuotaDomain.freePlace(trialKey);
+    await reserveProductPlacesOfBundle(promotedBundle);
     return promotedBundle;
   }
 
@@ -59,10 +101,27 @@ const releaseStandaloneTrialQuota = async (
 };
 
 export const DeploymentQuotaApp = {
-  takeBundleQuota: (
-    region: DeploymentRequestPlatformRegion
-  ): Promise<{ isPlaceAvailable: boolean }> =>
-    DeploymentQuotaDomain.reservePlace(bundleQuotaKey(region)),
+  takeBundleQuota: async (
+    region: DeploymentRequestPlatformRegion,
+    products: PlatformIdentifier[]
+  ): Promise<{ isPlaceAvailable: boolean }> => {
+    const { isPlaceAvailable } = await DeploymentQuotaDomain.reservePlace(
+      bundleQuotaKey(region)
+    );
+
+    if (isPlaceAvailable) {
+      for (const platformIdentifier of [...products].sort((a, b) =>
+        a.localeCompare(b)
+      )) {
+        await DeploymentQuotaDomain.reservePlace(
+          trialQuotaKey(platformIdentifier, region),
+          { blocking: false }
+        );
+      }
+    }
+
+    return { isPlaceAvailable };
+  },
 
   takeStandaloneTrialQuota: async (
     platformIdentifier: PlatformIdentifier,
@@ -90,11 +149,24 @@ export const DeploymentQuotaApp = {
     }
 
     if (request.type === DeploymentRequestDeploymentType.Bundle) {
-      return promoteOrFreePlace(bundleQuotaKey(request.region));
+      const promotedBundle = await promoteOrFreePlace(
+        bundleQuotaKey(request.region)
+      );
+      if (promotedBundle) {
+        await reserveProductPlacesOfBundle(promotedBundle);
+      }
+      return promotedBundle;
     }
 
-    if (request.parent_id !== null || request.platform_identifier === null) {
+    if (request.platform_identifier === null) {
       return undefined;
+    }
+
+    if (request.parent_id !== null) {
+      return releaseBundleChildQuota(
+        request.platform_identifier,
+        request.region
+      );
     }
 
     return releaseStandaloneTrialQuota(
