@@ -44,6 +44,9 @@ export const ServiceInstanceApp = {
     let subscription = existingSubscription;
 
     if (!subscription) {
+      if (!service.public) {
+        throw new Error(ErrorCode.ServiceInstanceNotPublic);
+      }
       const [createdSubscription] =
         await subscriptionApp.subscribeOrganizationsToService({
           organizationIds: [user.selected_organization_id],
@@ -74,11 +77,18 @@ export const ServiceInstanceApp = {
   loadServiceInstance: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
-    const service = await ServiceInstanceDomain.loadServiceInstanceBy({
-      id: serviceInstanceId,
-    });
+    const service = await ServiceInstanceDomain.loadAccessibleServiceInstanceBy(
+      { id: serviceInstanceId }
+    );
     if (!service) {
-      throw new Error(ErrorCode.ServiceInstanceNotFound);
+      const existingService = await ServiceInstanceDomain.loadServiceInstanceBy(
+        { id: serviceInstanceId }
+      );
+      throw new Error(
+        existingService
+          ? ErrorCode.ServiceInstanceNotPublic
+          : ErrorCode.ServiceInstanceNotFound
+      );
     }
     return service as unknown as ServiceInstance;
   },

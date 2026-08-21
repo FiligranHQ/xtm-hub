@@ -11,6 +11,7 @@ import {
 } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import {
+  requestContextSimpleUserFiligran2,
   SERVICES,
   TEST_ORGANIZATIONS,
   TEST_USE_CASES,
@@ -27,8 +28,11 @@ import {
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
 import Document from '../../model/kanel/public/Document';
+import { OrganizationId } from '../../model/kanel/public/Organization';
 import ServiceDefinition from '../../model/kanel/public/ServiceDefinition';
-import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
 import { MinIOClient } from '../../thirdparty/minio/client';
 import { ErrorCode } from '../../utils/error/error.code';
 import { NewsFeedApp } from '../news-feed/news-feed.app';
@@ -1174,6 +1178,58 @@ describe('documentApp', () => {
         SERVICES.INSTANCES.CUSTOM_DASHBOARDS.SLUG,
         CUSTOM_DASHBOARD_METADATA_KEYS
       );
+    });
+  });
+
+  describe('loadDocuments visibility', () => {
+    let privateServiceInstance: ServiceInstance;
+
+    beforeEach(async () => {
+      const seededInstance = await TestHelper.serviceInstance.load({
+        id: SERVICES.INSTANCES.CUSTOM_DASHBOARDS.ID,
+      });
+      privateServiceInstance = await TestHelper.serviceInstance.create({
+        service_definition_id: seededInstance!.service_definition_id,
+        public: false,
+        slug: `private-${uuidv4()}`,
+      });
+      await TestHelper.document.createWholeDocument({
+        serviceInstanceId: privateServiceInstance.id,
+        metadata: [
+          { key: DocumentMetadataKeyCode.ProductVersion, value: '1.2.3' },
+        ],
+      });
+    });
+
+    afterEach(async () => {
+      await TestHelper.subscription.delete({
+        service_instance_id: privateServiceInstance.id,
+      });
+      await TestHelper.serviceInstance.delete({
+        id: privateServiceInstance.id,
+      });
+    });
+
+    it('should not return documents of a private service instance the organization is not subscribed to', async () => {
+      const result = await DocumentApp.loadDocuments({
+        serviceInstanceId: privateServiceInstance.id,
+      });
+
+      expect(result.edges).toHaveLength(0);
+    });
+
+    it('should return documents of a private service instance the organization is subscribed to', async () => {
+      await TestHelper.subscription.create({
+        service_instance_id: privateServiceInstance.id,
+        organization_id: requestContextSimpleUserFiligran2.user
+          .selected_organization_id as OrganizationId,
+      });
+
+      const result = await DocumentApp.loadDocuments({
+        serviceInstanceId: privateServiceInstance.id,
+      });
+
+      expect(result.edges).toHaveLength(1);
     });
   });
 

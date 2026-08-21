@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import {
   afterAll,
   afterEach,
@@ -34,7 +35,12 @@ import {
 } from '../../shareable-resource/opencti/integration/integration.model';
 
 import { TestHelper } from '../../../../tests/helper/test.helper';
-import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
+import {
+  requestContextRegistererUserSecondOrga,
+  SERVICES,
+  TEST_ORGANIZATIONS,
+} from '../../../../tests/tests.const';
+import { requestContext } from '../../../context/request.context';
 import Document from '../../../model/kanel/public/Document';
 import { ObjectUseCaseObjectId } from '../../../model/kanel/public/ObjectUseCase';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
@@ -1831,6 +1837,113 @@ describe('document domain', () => {
 
       const expected = [docA.id, docB.id].sort();
       expect(result.map((d) => d.id)).toEqual(expected);
+    });
+  });
+
+  describe('service instance visibility', () => {
+    const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+    const createDocumentIn = (serviceInstanceId: ServiceInstanceId) =>
+      TestHelper.document.create({
+        name: `doc-${uuidv4()}`,
+        type: OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        slug: `doc-${uuidv4()}`,
+        uploader_id: ADMIN_UUID,
+        service_instance_id: serviceInstanceId,
+        active: true,
+      });
+
+    beforeAll(async () => {
+      await TestHelper.serviceInstance.create({
+        id: privateServiceInstanceId,
+        name: 'private-library',
+        slug: 'private-library',
+        public: false,
+      });
+    });
+
+    beforeEach(async () => {
+      requestContext.set(undefined);
+      await TestHelper.oneClickDeployment.deleteAll();
+      await TestHelper.document.delete({});
+    });
+
+    afterAll(async () => {
+      requestContext.set(undefined);
+      await TestHelper.subscription.delete({});
+      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
+    });
+
+    it('should hide newest documents of a non public service instance', async () => {
+      const visible = await createDocumentIn(
+        SERVICES.INSTANCES.CUSTOM_VIEWS.ID
+      );
+      const hidden = await createDocumentIn(privateServiceInstanceId);
+
+      const ids = (await DocumentDomain.loadNewestDocuments(50)).map(
+        ({ id }) => id
+      );
+
+      expect(ids).toContain(visible.id);
+      expect(ids).not.toContain(hidden.id);
+    });
+
+    it('should hide most deployed documents of a non public service instance', async () => {
+      const hidden = await createDocumentIn(privateServiceInstanceId);
+      await TestHelper.oneClickDeployment.insert({ resource_id: hidden.id });
+
+      const ids = (await DocumentDomain.loadMostDeployedDocuments(50)).map(
+        ({ id }) => id
+      );
+
+      expect(ids).not.toContain(hidden.id);
+    });
+
+    it('should expose documents of a non public service instance to a subscribed organization', async () => {
+      const hidden = await createDocumentIn(privateServiceInstanceId);
+      await TestHelper.subscription.create({
+        service_instance_id: privateServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      const ids = (await DocumentDomain.loadNewestDocuments(50)).map(
+        ({ id }) => id
+      );
+
+      expect(ids).toContain(hidden.id);
+    });
+
+    it('should keep hiding documents on the anonymous SEO surface even when an organization is subscribed', async () => {
+      const hidden = await createDocumentIn(privateServiceInstanceId);
+      await TestHelper.subscription.create({
+        service_instance_id: privateServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      const result = await DocumentDomain.loadSeoDocumentBySlug(
+        OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        hidden.slug as string
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should keep documents that belong to no service instance', async () => {
+      const orphan = await TestHelper.document.create({
+        name: 'orphan',
+        type: OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE,
+        slug: `orphan-${uuidv4()}`,
+        uploader_id: ADMIN_UUID,
+        active: true,
+      });
+
+      const ids = (await DocumentDomain.loadNewestDocuments(50)).map(
+        ({ id }) => id
+      );
+
+      expect(ids).toContain(orphan.id);
     });
   });
 });

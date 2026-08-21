@@ -32,6 +32,10 @@ import { UserId } from '../../../model/kanel/public/User';
 import { UserServiceId } from '../../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
 import { isUserAdminPlatform } from '../../../security/access';
+import {
+  restrictServiceInstanceToAccessible,
+  restrictServiceInstanceToPublic,
+} from '../../../security/restriction/service-instance';
 import { buildServiceLink, sendMail } from '../../../server/mail-service';
 import { ServiceIdentifierToMailTemplate } from '../../../server/mail-template/mail';
 import { logApp } from '../../../utils/app-logger.util';
@@ -234,14 +238,29 @@ export const ServiceInstanceDomain = {
       );
   },
 
-  loadServiceInstances: async (opts: QueryOpts) => {
-    const { filters, searchTerm, orderBy } = opts;
-    return paginate<ServiceInstance, ServiceConnection>('ServiceInstance', {
-      ...opts,
-      orderBy: `ServiceInstance.${orderBy}`,
-      filters,
-      searchTerm,
-    });
+  loadServiceInstances: async (
+    opts: QueryOpts & { includeInaccessible?: boolean | null }
+  ) => {
+    const { filters, searchTerm, orderBy, includeInaccessible } = opts;
+    const user = requestContext.get()?.user;
+    const showEveryServiceInstance =
+      !!includeInaccessible && !!user && isUserAdminPlatform(user);
+
+    return paginate<ServiceInstance, ServiceConnection>(
+      'ServiceInstance',
+      {
+        ...opts,
+        orderBy: `ServiceInstance.${orderBy}`,
+        filters,
+        searchTerm,
+      },
+      undefined,
+      db<ServiceInstance>('ServiceInstance').modify((queryBuilder) => {
+        if (!showEveryServiceInstance) {
+          restrictServiceInstanceToAccessible(queryBuilder);
+        }
+      })
+    );
   },
 
   loadServiceInstanceSubscriptionsByIds: async (
@@ -378,6 +397,16 @@ export const ServiceInstanceDomain = {
       });
 
     return query.select('ServiceInstance.*').first();
+  },
+
+  loadAccessibleServiceInstanceBy: async (
+    field: ServiceInstanceMutator
+  ): Promise<ServiceInstance | undefined> => {
+    return db<ServiceInstance>('ServiceInstance')
+      .where(field)
+      .tap(restrictServiceInstanceToAccessible)
+      .select('ServiceInstance.*')
+      .first();
   },
 
   loadServiceInstancesByIds: async (
@@ -562,6 +591,7 @@ export const ServiceInstanceDomain = {
         dbRaw('json_agg("Service_Link") AS links')
       )
       .where('ServiceInstance.slug', '=', slug)
+      .tap(restrictServiceInstanceToPublic)
       .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
       .first();
   },

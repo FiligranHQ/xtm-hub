@@ -113,6 +113,7 @@ export const servicesListFragment = graphql`
       orderMode: $orderMode
       searchTerm: $searchTerm
       filters: $filters
+      includeInaccessible: $includeInaccessible
     ) {
       __id
       totalCount
@@ -134,6 +135,7 @@ export const ServiceListQuery = graphql`
     $orderMode: OrderingMode!
     $filters: [ServiceInstanceFilter!]
     $searchTerm: String
+    $includeInaccessible: Boolean
   ) {
     ...servicesList_services
   }

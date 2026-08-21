@@ -6,10 +6,12 @@ import Link from 'next/link';
 
 interface PublicHeaderContentProps {
   locale: string;
+  visibleServiceSlugs: string[];
 }
 
 export const PublicHeaderContent = async ({
   locale,
+  visibleServiceSlugs,
 }: PublicHeaderContentProps) => {
   const t = await getTranslations();
 
@@ -35,7 +37,7 @@ export const PublicHeaderContent = async ({
           <Link href={`/sign-up`}>{t('PublicLayout.SignUp')}</Link>
         </Button>
         <div className="md:hidden flex items-center">
-          <PublicMobileMenuButton />
+          <PublicMobileMenuButton visibleServiceSlugs={visibleServiceSlugs} />
         </div>
       </div>
     </>

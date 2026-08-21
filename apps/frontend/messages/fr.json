@@ -292,6 +292,7 @@
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "Vous n'êtes pas autorisé à faire ceci",
       "SERVICE_INSTANCE_NOT_FOUND": "L'instance du service n'a pas été trouvée",
+      "SERVICE_INSTANCE_NOT_PUBLIC": "Vous n'avez pas accès à ce service",
       "SERVICE_NOT_FOUND": "Le service n'a pas été trouvé",
       "SERVICE_NOT_MANAGEABLE": "Ce service n'est pas gérable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
