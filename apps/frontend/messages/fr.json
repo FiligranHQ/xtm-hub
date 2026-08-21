@@ -696,7 +696,8 @@
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",
-    "xtmhub": "XTM Hub"
+    "xtmhub": "XTM Hub",
+    "xtmone": "XTM One"
   },
   "ProfilePage": {
     "Picture": "Photo de profil",
@@ -1483,11 +1484,10 @@
           },
           "Form": {
             "ProductsTitle": "Produits inclus dans cet essai",
-            "ChooseCarefullyTitle": "Choisissez votre offre d'essai avec attention.",
-            "ChooseCarefullyDescription": "Une fois l'essai démarré, les produits ne peuvent plus être ajoutés ni modifiés, et aucun autre essai ne pourra être demandé pour la même organisation.",
             "OngoingTrialWarning": "Vous avez un essai en cours : demander un essai XTM Platform annulera tous vos essais actuels et les données ne seront pas transférées.",
             "OngoingTrialDescription": "Une fois votre nouvelle offre d'essai choisie, les produits ne peuvent plus être modifiés, et aucun autre essai ne pourra être demandé pour la même organisation.",
-            "UseCaseLabel": "Cas d'usage {productName}",
+            "ProductsWarning": "Choisissez votre offre d'essai avec attention. Une fois l'essai démarré, les produits ne peuvent plus être ajoutés ni modifiés, et aucun autre essai ne pourra être demandé pour la même organisation.",
+            "UseCaseFor": "Cas d'usage {product}",
             "Submit": "Demander l'essai XTM Platform"
           },
           "NotLoggedIn": {

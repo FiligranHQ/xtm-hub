@@ -1,0 +1,6 @@
+mutation CreateDeploymentRequest($input: CreateDeploymentRequestInput!) {
+  createDeploymentRequest(input: $input) {
+    id
+    service_instance_id
+  }
+}

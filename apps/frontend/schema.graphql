@@ -405,11 +405,11 @@ type PlatformDeploymentRequest {
 
 input CreateDeploymentRequestInput {
   products: [PlatformIdentifier!]!
+  use_cases_by_product: [ProductUseCaseInput!]
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
-  use_cases_by_product: [ProductUseCaseInput!]
   source: DeploymentRequestSource!
 }
 

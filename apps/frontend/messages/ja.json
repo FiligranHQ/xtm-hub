@@ -696,7 +696,8 @@
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "オープンCTI",
-    "xtmhub": "XTM ハブ"
+    "xtmhub": "XTM ハブ",
+    "xtmone": "XTM One"
   },
   "ProfilePage": {
     "Picture": "写真",
@@ -1483,11 +1484,10 @@
           },
           "Form": {
             "ProductsTitle": "このトライアルに含まれる製品",
-            "ChooseCarefullyTitle": "トライアルの製品構成は慎重にお選びください。",
-            "ChooseCarefullyDescription": "トライアル開始後は製品の追加・変更ができず、同じ組織で追加のトライアルを申請することもできません。",
             "OngoingTrialWarning": "進行中のトライアルがあります。XTM Platform トライアルを申請すると、現在のトライアルはすべてキャンセルされ、データは引き継がれません。",
             "OngoingTrialDescription": "新しいトライアル構成を選択した後は製品を変更できず、同じ組織で追加のトライアルを申請することもできません。",
-            "UseCaseLabel": "{productName} のユースケース",
+            "ProductsWarning": "トライアルの製品構成は慎重にお選びください。トライアル開始後は製品の追加・変更はできず、同一組織で追加のトライアルを申請することもできません。",
+            "UseCaseFor": "{product} のユースケース",
             "Submit": "XTM Platform トライアルを申請"
           },
           "NotLoggedIn": {

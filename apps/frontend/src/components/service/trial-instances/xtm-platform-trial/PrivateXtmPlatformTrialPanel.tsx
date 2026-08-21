@@ -1,17 +1,27 @@
 'use client';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
+import {
+  XtmPlatformTrialForm,
+  xtmPlatformTrialFormSchema,
+} from '@/components/service/trial-instances/xtm-platform-trial/XtmPlatformTrialForm';
 import { XtmPlatformTrialMessagePanel } from '@/components/service/trial-instances/xtm-platform-trial/XtmPlatformTrialMessagePanel';
 import { deriveXtmPlatformTrialPanelState } from '@/components/service/trial-instances/xtm-platform-trial/xtm-platform-trial-panel.utils';
 import { useCanRequestPlatformTrial } from '@/hooks/use-can-request-platform-trial';
 import { portalGraphqlClient } from '@/lib/graphql-client';
+import { toast } from '@filigran/ui/clients';
 import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestSource,
   PlatformTrialStatusQueryVariables,
+  useCreateDeploymentRequestMutation,
   usePlatformTrialStatusQuery,
 } from '@graphql/generated';
 import { platformTrialKeys } from '@graphql/trial/trial.keys';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
+import { z } from 'zod';
 
 export const PrivateXtmPlatformTrialPanel = () => {
   const { me } = useContext(PortalContext);
@@ -29,6 +39,30 @@ export const PrivateXtmPlatformTrialPanel = () => {
       queryKey: platformTrialKeys.platformTrialStatus(variables),
     }
   );
+
+  const queryClient = useQueryClient();
+  const { mutate } = useCreateDeploymentRequestMutation(portalGraphqlClient, {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: platformTrialKeys.platformTrialStatus(variables),
+      });
+      toast({
+        title: t('Utils.Success'),
+        description: t('Service.Trials.Form.FormRequested'),
+      });
+    },
+  });
+
+  const handleSubmit = (values: z.infer<typeof xtmPlatformTrialFormSchema>) => {
+    const { acceptTerms: _, ...rest } = values;
+    mutate({
+      input: {
+        ...rest,
+        type: DeploymentRequestDeploymentType.Bundle,
+        source: DeploymentRequestSource.Xtmhub,
+      },
+    });
+  };
 
   if (!organizationId || isLoading || isPending || isError) {
     return null;
@@ -49,5 +83,14 @@ export const PrivateXtmPlatformTrialPanel = () => {
     );
   }
 
-  return null;
+  if (state === 'request-with-ongoing-trials') {
+    return (
+      <>
+        {/* TODO: avertissement de suppression des standalone */}
+        <XtmPlatformTrialForm handleSubmit={handleSubmit} />
+      </>
+    );
+  }
+
+  return <XtmPlatformTrialForm handleSubmit={handleSubmit} />;
 };

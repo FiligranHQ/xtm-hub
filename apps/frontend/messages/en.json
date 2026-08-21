@@ -696,7 +696,8 @@
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",
-    "xtmhub": "XTM Hub"
+    "xtmhub": "XTM Hub",
+    "xtmone": "XTM One"
   },
   "ProfilePage": {
     "Picture": "Picture",
@@ -1483,11 +1484,10 @@
           },
           "Form": {
             "ProductsTitle": "Products included in this trial",
-            "ChooseCarefullyTitle": "Choose your trial bundle carefully.",
-            "ChooseCarefullyDescription": "Once your trial starts, products cannot be added or changed, and no additional trials can be requested for the same organization.",
+            "ProductsWarning": "Choose your trial bundle carefully. Once your trial starts, products cannot be added or changed, and no additional trials can be requested for the same organization.",
             "OngoingTrialWarning": "You have an ongoing trial, requesting a XTM platform trial will cancel all your current trials and data will not be transferred.",
             "OngoingTrialDescription": "When you chose a new trial bundle, products cannot be changed, and no additional trials can be requested for the same organization.",
-            "UseCaseLabel": "{productName} use case",
+            "UseCaseFor": "{product} use case",
             "Submit": "Request XTM Platform trial"
           },
           "NotLoggedIn": {

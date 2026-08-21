@@ -23,8 +23,7 @@ export const XtmPlatformTrialPage = ({
         <h1 className="heading-2xl">{t('Title')}</h1>
       </header>
 
-      <div className="flex flex-col gap-l lg:flex-row">
-        {' '}
+      <div className="flex flex-col gap-l lg:flex-row lg:items-start">
         <div className="flex flex-1 flex-col gap-xl">
           <XtmPlatformTrialPitch />
           {showLimitations && <XtmPlatformTrialLimitations />}
