@@ -2,6 +2,9 @@ name: Run XTM Hub CI/CD
 
 on:
   workflow_dispatch:
+  merge_group:
+    types:
+      - checks_requested
   push:
     branches:
       - "main"
@@ -522,6 +525,7 @@ jobs:
     if: |
       always() &&
       github.event_name != 'pull_request' &&
+      github.event_name != 'merge_group' &&
       (needs.run-lint.result == 'success') &&
       (needs.run-e2e-tests.result == 'success') &&
       (needs.run-front-unit-tests.result == 'skipped' || needs.run-front-unit-tests.result == 'success') &&
@@ -605,6 +609,7 @@ jobs:
     if: |
       always() &&
       github.event_name != 'pull_request' &&
+      github.event_name != 'merge_group' &&
       (needs.build-images-prod.result == 'success')
     steps:
       - name: Install AWX cli
