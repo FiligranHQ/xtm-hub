@@ -6890,108 +6890,108 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-darwin-arm64@npm:1.15.26"
+"@swc/core-darwin-arm64@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-darwin-arm64@npm:1.15.47"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-darwin-x64@npm:1.15.26"
+"@swc/core-darwin-x64@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-darwin-x64@npm:1.15.47"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.15.26"
+"@swc/core-linux-arm-gnueabihf@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.15.47"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.15.26"
+"@swc/core-linux-arm64-gnu@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.15.47"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-linux-arm64-musl@npm:1.15.26"
+"@swc/core-linux-arm64-musl@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-linux-arm64-musl@npm:1.15.47"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-ppc64-gnu@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-linux-ppc64-gnu@npm:1.15.26"
+"@swc/core-linux-ppc64-gnu@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-linux-ppc64-gnu@npm:1.15.47"
   conditions: os=linux & cpu=ppc64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-s390x-gnu@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-linux-s390x-gnu@npm:1.15.26"
+"@swc/core-linux-s390x-gnu@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-linux-s390x-gnu@npm:1.15.47"
   conditions: os=linux & cpu=s390x & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-linux-x64-gnu@npm:1.15.26"
+"@swc/core-linux-x64-gnu@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-linux-x64-gnu@npm:1.15.47"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-linux-x64-musl@npm:1.15.26"
+"@swc/core-linux-x64-musl@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-linux-x64-musl@npm:1.15.47"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.15.26"
+"@swc/core-win32-arm64-msvc@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.15.47"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.15.26"
+"@swc/core-win32-ia32-msvc@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.15.47"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.15.26":
-  version: 1.15.26
-  resolution: "@swc/core-win32-x64-msvc@npm:1.15.26"
+"@swc/core-win32-x64-msvc@npm:1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core-win32-x64-msvc@npm:1.15.47"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core@npm:^1.15.2":
-  version: 1.15.26
-  resolution: "@swc/core@npm:1.15.26"
+"@swc/core@npm:~1.15.47":
+  version: 1.15.47
+  resolution: "@swc/core@npm:1.15.47"
   dependencies:
-    "@swc/core-darwin-arm64": "npm:1.15.26"
-    "@swc/core-darwin-x64": "npm:1.15.26"
-    "@swc/core-linux-arm-gnueabihf": "npm:1.15.26"
-    "@swc/core-linux-arm64-gnu": "npm:1.15.26"
-    "@swc/core-linux-arm64-musl": "npm:1.15.26"
-    "@swc/core-linux-ppc64-gnu": "npm:1.15.26"
-    "@swc/core-linux-s390x-gnu": "npm:1.15.26"
-    "@swc/core-linux-x64-gnu": "npm:1.15.26"
-    "@swc/core-linux-x64-musl": "npm:1.15.26"
-    "@swc/core-win32-arm64-msvc": "npm:1.15.26"
-    "@swc/core-win32-ia32-msvc": "npm:1.15.26"
-    "@swc/core-win32-x64-msvc": "npm:1.15.26"
+    "@swc/core-darwin-arm64": "npm:1.15.47"
+    "@swc/core-darwin-x64": "npm:1.15.47"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.15.47"
+    "@swc/core-linux-arm64-gnu": "npm:1.15.47"
+    "@swc/core-linux-arm64-musl": "npm:1.15.47"
+    "@swc/core-linux-ppc64-gnu": "npm:1.15.47"
+    "@swc/core-linux-s390x-gnu": "npm:1.15.47"
+    "@swc/core-linux-x64-gnu": "npm:1.15.47"
+    "@swc/core-linux-x64-musl": "npm:1.15.47"
+    "@swc/core-win32-arm64-msvc": "npm:1.15.47"
+    "@swc/core-win32-ia32-msvc": "npm:1.15.47"
+    "@swc/core-win32-x64-msvc": "npm:1.15.47"
     "@swc/counter": "npm:^0.1.3"
-    "@swc/types": "npm:^0.1.26"
+    "@swc/types": "npm:^0.1.27"
   peerDependencies:
     "@swc/helpers": ">=0.5.17"
   dependenciesMeta:
@@ -7022,7 +7022,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 10/88c4df005a0c3e17319491528b2e971257bf547ca1fceb97546a2727169c8fc4ecd40c7743111d2f8cb7ace4aefaf528353421b87c6a419ff4d64a1a9113e1ee
+  checksum: 10/0562c46c3a5f798a2d8f58a017c89592ea6ca791d153929db0cdce8f8caac46ea78edc5213b9bb222ee6f9d889aa8d05c7bf969cebeff195cab4d84675f03386
   languageName: node
   linkType: hard
 
@@ -7042,12 +7042,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/types@npm:^0.1.26":
-  version: 0.1.26
-  resolution: "@swc/types@npm:0.1.26"
+"@swc/types@npm:^0.1.27":
+  version: 0.1.28
+  resolution: "@swc/types@npm:0.1.28"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
-  checksum: 10/07de03b9da3928cdf69bda70bf2c809dd86f16ef23e357759e577bbd975529cb20218c2e54e72b00585abae2b5e04e39b8947cea7a6f4de2d40a7633be441919
+  checksum: 10/9cd2b13a640c36d28235a30567dc38330e01dc54ba0ca6ff4000fc56f0be27252b91c3df4989a9ef019b9df9eb722e73fb273913675f8b891428981fb9cc9a0f
   languageName: node
   linkType: hard
 
@@ -8945,7 +8945,7 @@ __metadata:
     monocart-reporter: "catalog:"
     msw: "npm:2.15.0"
     next: "npm:16.3.1"
-    next-intl: "npm:4.13.6"
+    next-intl: "npm:4.13.7"
     next-themes: "npm:0.4.6"
     postcss: "npm:8.5.26"
     prettier: "catalog:"
@@ -13716,12 +13716,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"icu-minify@npm:^4.13.6":
-  version: 4.13.6
-  resolution: "icu-minify@npm:4.13.6"
+"icu-minify@npm:^4.13.7":
+  version: 4.13.7
+  resolution: "icu-minify@npm:4.13.7"
   dependencies:
     "@formatjs/icu-messageformat-parser": "npm:^3.4.0"
-  checksum: 10/8464400423780c467b08aa93879a0283467ec12ea5beef7676a33ea406a0b7184a6945472b2554062a25edfec2cfdc8cadb070a91f5db1eb3fc8a02ac97fe5bf
+  checksum: 10/02fe2827de2c7ddcda436167042f810f04bbc79ee81451579185de640066a244913eedd1a517400470af2c59051b539597b7614b4534a1cfb09b4ca8d12a04c6
   languageName: node
   linkType: hard
 
@@ -16521,32 +16521,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-intl-swc-plugin-extractor@npm:^4.13.6":
-  version: 4.13.6
-  resolution: "next-intl-swc-plugin-extractor@npm:4.13.6"
-  checksum: 10/3dc2dba83941ecda059355eacb32b0939ae75b46f0a611ae8398d176a3e67eb9c2e2b96076aebd2578df3eae5a2fc54b09474bd6a7919829288b79176ee10d91
+"next-intl-swc-plugin-extractor@npm:4.13.7":
+  version: 4.13.7
+  resolution: "next-intl-swc-plugin-extractor@npm:4.13.7"
+  checksum: 10/a647fef58f02cc6f9c29b90bd9538176ff7124d0462e554bfc25e00cf1954bfdfe8e5be53367ef701e87f851a5046cc95163940f872a3dedb87ccd5ba8207a1c
   languageName: node
   linkType: hard
 
-"next-intl@npm:4.13.6":
-  version: 4.13.6
-  resolution: "next-intl@npm:4.13.6"
+"next-intl@npm:4.13.7":
+  version: 4.13.7
+  resolution: "next-intl@npm:4.13.7"
   dependencies:
     "@formatjs/intl-localematcher": "npm:^0.8.1"
     "@parcel/watcher": "npm:^2.4.1"
-    "@swc/core": "npm:^1.15.2"
-    icu-minify: "npm:^4.13.6"
+    "@swc/core": "npm:~1.15.47"
+    icu-minify: "npm:^4.13.7"
     negotiator: "npm:^1.0.0"
-    next-intl-swc-plugin-extractor: "npm:^4.13.6"
+    next-intl-swc-plugin-extractor: "npm:4.13.7"
     po-parser: "npm:^2.1.1"
-    use-intl: "npm:^4.13.6"
+    use-intl: "npm:^4.13.7"
   peerDependencies:
     next: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/f7ed5ff6cb89fa5f1ab2d8f579ce74108f066f9a1156b6d7a94013de761cf2b89c4cc407a65ad5f169f8cf7fdb5cf963dd04ee2c9a1bfc5d7748667e8e1c0fbe
+  checksum: 10/227a1b461f3f77c2ccc4a3164b8fb160d158015e2f40e19029aa92822f902bb5d0b2d259f928654f2e4c82703a669bb1d55a921d75db71d53c3c192925798fbb
   languageName: node
   linkType: hard
 
@@ -20960,17 +20960,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-intl@npm:^4.13.6":
-  version: 4.13.6
-  resolution: "use-intl@npm:4.13.6"
+"use-intl@npm:^4.13.7":
+  version: 4.13.7
+  resolution: "use-intl@npm:4.13.7"
   dependencies:
     "@formatjs/fast-memoize": "npm:^3.1.0"
     "@schummar/icu-type-parser": "npm:1.21.5"
-    icu-minify: "npm:^4.13.6"
+    icu-minify: "npm:^4.13.7"
     intl-messageformat: "npm:^11.1.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || >=19.0.0-rc <19.0.0 || ^19.0.0
-  checksum: 10/2ff7a55ff20eb9c6adbdeddc1c22b0d1828a42f5b0cdf24575040ee45591e9e582ac77d27ccb1f16714caeb83aa378d898934781d1dc52c719acf50f6a47e392
+  checksum: 10/31efa76181eb4da2113ce52ebf9f19204a239ede764dc9cbc71466a962e178254ba8159c75a0f220873330127ebd072c5116560ca479b000ea40edc54f798d79
   languageName: node
   linkType: hard
 
