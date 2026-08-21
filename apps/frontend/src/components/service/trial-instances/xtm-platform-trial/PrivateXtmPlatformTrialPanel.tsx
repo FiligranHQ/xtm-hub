@@ -25,8 +25,7 @@ import { z } from 'zod';
 
 export const PrivateXtmPlatformTrialPanel = () => {
   const { me, isPersonalSpace } = useContext(PortalContext);
-  const t = useTranslations('Service.Trials.XtmPlatform.Page');
-  const tGlobal = useTranslations();
+  const t = useTranslations();
   const organizationId = me?.selected_organization_id ?? '';
 
   const canRequestTrial = useCanRequestPlatformTrial();
@@ -48,8 +47,8 @@ export const PrivateXtmPlatformTrialPanel = () => {
         queryKey: platformTrialKeys.platformTrialStatus(variables),
       });
       toast({
-        title: tGlobal('Utils.Success'),
-        description: tGlobal('Service.Trials.Form.FormRequested'),
+        title: t('Utils.Success'),
+        description: t('Service.Trials.Form.FormRequested'),
       });
     },
   });
@@ -89,8 +88,8 @@ export const PrivateXtmPlatformTrialPanel = () => {
   if (state === 'personal-space') {
     return (
       <XtmPlatformTrialMessagePanel
-        title={t('PersonalSpace.Title')}
-        description={tGlobal('Service.Trials.InfoPersonalSpace')}
+        title={t('Service.Trials.XtmPlatform.Page.PersonalSpace.Title')}
+        description={t('Service.Trials.InfoPersonalSpace')}
       />
     );
   }
@@ -98,8 +97,8 @@ export const PrivateXtmPlatformTrialPanel = () => {
   if (state === 'not-allowed') {
     return (
       <XtmPlatformTrialMessagePanel
-        title={t('NotAdmin.Title')}
-        description={t('NotAdmin.Description')}
+        title={t('Service.Trials.XtmPlatform.Page.NotAdmin.Title')}
+        description={t('Service.Trials.XtmPlatform.Page.NotAdmin.Description')}
       />
     );
   }

@@ -12,15 +12,16 @@ export const XtmPlatformTrialPage = ({
   panel,
   showLimitations = false,
 }: XtmPlatformTrialPageProps) => {
-  const t = useTranslations('Service.Trials.XtmPlatform.Page');
-
+  const t = useTranslations();
   return (
     <div className="flex flex-col gap-xxl">
       <header className="flex flex-col gap-s">
         <p className="heading-sm bg-clip-text text-transparent bg-gradient-focus">
-          {t('Overline')}
+          {t('Service.Trials.XtmPlatform.Page.Overline')}
         </p>
-        <h1 className="heading-2xl">{t('Title')}</h1>
+        <h1 className="heading-2xl">
+          {t('Service.Trials.XtmPlatform.Page.Title')}
+        </h1>
       </header>
 
       <div className="flex flex-col gap-l lg:flex-row lg:items-start">
@@ -28,9 +29,7 @@ export const XtmPlatformTrialPage = ({
           <XtmPlatformTrialPitch />
           {showLimitations && <XtmPlatformTrialLimitations />}
         </div>
-        <div className="flex w-full items-center lg:w-[521px] lg:shrink-0">
-          <div className="w-full lg:w-[521px] lg:shrink-0">{panel}</div>
-        </div>
+        <div className="w-full lg:w-[521px] lg:shrink-0">{panel}</div>
       </div>
     </div>
   );

@@ -24,14 +24,16 @@ const PRODUCT_ICON_CLASSES: Record<PlatformIdentifier, string> = {
 };
 
 export const XtmPlatformTrialPitch = () => {
-  const t = useTranslations('Service.Trials.XtmPlatform.Page');
+  const t = useTranslations();
 
   return (
     <section className="flex flex-col gap-xl">
       <div className="flex flex-col gap-xs">
-        <h2 className="heading-2xl">{t('PitchTitle')}</h2>
+        <h2 className="heading-2xl">
+          {t('Service.Trials.XtmPlatform.Page.PitchTitle')}
+        </h2>
         <p className="content-body-base text-text-default-secondary">
-          {t('PitchDescription')}
+          {t('Service.Trials.XtmPlatform.Page.PitchDescription')}
         </p>
       </div>
 
@@ -55,10 +57,14 @@ export const XtmPlatformTrialPitch = () => {
               </div>
               <div className="flex flex-col">
                 <h3 className="heading-xs">
-                  {t(`Products.${productKey}.Tagline`)}
+                  {t(
+                    `Service.Trials.XtmPlatform.Page.Products.${productKey}.Tagline`
+                  )}
                 </h3>
                 <p className="content-body-compact text-text-default-secondary">
-                  {t(`Products.${productKey}.Description`)}
+                  {t(
+                    `Service.Trials.XtmPlatform.Page.Products.${productKey}.Description`
+                  )}
                 </p>
               </div>
             </article>

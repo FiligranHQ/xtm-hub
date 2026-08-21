@@ -90,7 +90,7 @@ const Page = async ({
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
       <BreadcrumbNav value={breadcrumbs} />
-      <XtmPlatformTrialPage panel={<PublicXtmPlatformTrialPanel />} />{' '}
+      <XtmPlatformTrialPage panel={<PublicXtmPlatformTrialPanel />} />
     </>
   );
 };
