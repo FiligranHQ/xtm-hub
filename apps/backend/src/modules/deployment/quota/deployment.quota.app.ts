@@ -36,25 +36,26 @@ const promoteOrFreePlace = async (
 const releaseStandaloneTrialQuota = async (
   platformIdentifier: PlatformIdentifier,
   region: DeploymentRequestPlatformRegion
-): Promise<DeploymentRequestModel[]> => {
-  const promotedRequests: DeploymentRequestModel[] = [];
+): Promise<DeploymentRequestModel | undefined> => {
+  const bundleKey = bundleQuotaKey(region);
+  const trialKey = trialQuotaKey(platformIdentifier, region);
 
-  const promotedBundle = await promoteOrFreePlace(bundleQuotaKey(region));
+  const promotedBundle =
+    await DeploymentRequestDomain.setFirstQueuedRequestAsPending(bundleKey);
   if (promotedBundle) {
-    promotedRequests.push(promotedBundle);
+    await DeploymentQuotaDomain.freePlace(trialKey);
+    return promotedBundle;
   }
 
-  const promotedTrial = await promoteOrFreePlace(
-    trialQuotaKey(platformIdentifier, region)
-  );
+  const promotedTrial =
+    await DeploymentRequestDomain.setFirstQueuedRequestAsPending(trialKey);
   if (promotedTrial) {
-    promotedRequests.push(promotedTrial);
-    await DeploymentQuotaDomain.reservePlace(bundleQuotaKey(region), {
-      blocking: false,
-    });
+    return promotedTrial;
   }
 
-  return promotedRequests;
+  await DeploymentQuotaDomain.freePlace(bundleKey);
+  await DeploymentQuotaDomain.freePlace(trialKey);
+  return undefined;
 };
 
 export const DeploymentQuotaApp = {
@@ -83,20 +84,17 @@ export const DeploymentQuotaApp = {
   releaseQuotaForRequest: async (
     request: DeploymentRequestModel,
     previousHubStatus: DeploymentRequestHubStatus
-  ): Promise<DeploymentRequestModel[]> => {
+  ): Promise<DeploymentRequestModel | undefined> => {
     if (!QUOTA_HOLDING_HUB_STATUSES.includes(previousHubStatus)) {
-      return [];
+      return undefined;
     }
 
     if (request.type === DeploymentRequestDeploymentType.Bundle) {
-      const promotedBundle = await promoteOrFreePlace(
-        bundleQuotaKey(request.region)
-      );
-      return promotedBundle ? [promotedBundle] : [];
+      return promoteOrFreePlace(bundleQuotaKey(request.region));
     }
 
     if (request.parent_id !== null || request.platform_identifier === null) {
-      return [];
+      return undefined;
     }
 
     return releaseStandaloneTrialQuota(

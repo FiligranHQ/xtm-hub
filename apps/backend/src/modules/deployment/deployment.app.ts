@@ -359,7 +359,7 @@ export const DeploymentApp = {
             break;
           }
 
-          void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
+          await sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
           await DeploymentQuotaDomain.freePlace(key);
         }
       } else if (newAvailability > 0) {
@@ -370,7 +370,7 @@ export const DeploymentApp = {
             break;
           }
 
-          void sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
+          await sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
           await DeploymentQuotaDomain.reservePlace(key);
         }
       }
@@ -482,20 +482,16 @@ export const DeploymentApp = {
 
   releaseDeploymentRequestPlace: async (
     previousHubStatus: DeploymentRequestHubStatus,
-    request: DeploymentRequestModel
+    request: DeploymentRequestModel,
+    userId: UserId
   ) => {
-    const promotedRequests = await DeploymentQuotaApp.releaseQuotaForRequest(
+    const promotedRequest = await DeploymentQuotaApp.releaseQuotaForRequest(
       request,
       previousHubStatus
     );
 
-    if (promotedRequests.length === 0) {
-      return;
-    }
-
-    const user = requestContext.requireUser();
-    for (const promotedRequest of promotedRequests) {
-      await sendUpdateDeploymentTelemetryEvent(promotedRequest, user.id);
+    if (promotedRequest) {
+      await sendUpdateDeploymentTelemetryEvent(promotedRequest, userId);
     }
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
@@ -1019,7 +1015,8 @@ const applyCancellationToDeploymentRequest = async ({
       }
       await DeploymentApp.releaseDeploymentRequestPlace(
         previousHubStatus,
-        deploymentRequest
+        deploymentRequest,
+        userId
       );
 
       return updatedDeploymentRequest;
@@ -1102,7 +1099,8 @@ const applyExpirationToDeploymentRequest = async (
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         previousHubStatus,
-        deploymentRequest
+        deploymentRequest,
+        SYSTEM_USER_UUID
       );
 
       return updatedDeploymentRequest;

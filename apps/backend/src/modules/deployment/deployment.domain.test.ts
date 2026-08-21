@@ -18,7 +18,7 @@ import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { DeploymentRequestDomain } from './deployment.domain';
 import { ServiceGroupDomain } from './group/service-group.domain';
-import { trialQuotaKey } from './quota/deployment.quota.domain';
+import { bundleQuotaKey, trialQuotaKey } from './quota/deployment.quota.domain';
 
 describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
@@ -1353,6 +1353,60 @@ describe('deploymentRequestDomain', () => {
           hub_status: DeploymentRequestHubStatus.Queued,
         }
       );
+    });
+
+    it('should cascade to the queued children when the promoted request is a bundle', async () => {
+      const region = DeploymentRequestPlatformRegion.UsEast;
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            region,
+            ordering: 1,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+          }
+        );
+      const queuedChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle!.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+            region,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+          }
+        );
+      const cancelledChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle!.id,
+            platform_identifier: PlatformIdentifier.Xtmone,
+            region,
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+          }
+        );
+
+      const promotedRequest =
+        await DeploymentRequestDomain.setFirstQueuedRequestAsPending(
+          bundleQuotaKey(region)
+        );
+
+      expect(promotedRequest?.id).toBe(bundle!.id);
+      await TestHelper.deploymentRequest.assertProperties(bundle!.id, {
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      });
+      await TestHelper.deploymentRequest.assertProperties(queuedChild!.id, {
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      });
+      await TestHelper.deploymentRequest.assertProperties(cancelledChild!.id, {
+        hub_status: DeploymentRequestHubStatus.Cancelled,
+        target_state: DeploymentRequestPlatformState.Unprovisioned,
+      });
     });
   });
 
