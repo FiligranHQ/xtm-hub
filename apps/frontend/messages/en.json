@@ -1476,7 +1476,7 @@
           },
           "Limitations": {
             "Title": "Trial limitations",
-            "Intro": "The XTM platform free trial come includes all Enterprise Edition SaaS features, but with limited computing power and storage:",
+            "Intro": "The XTM Platform free trial includes all Enterprise Edition SaaS features, but with limited computing power and storage:",
             "OpenCTI": "For OpenCTI: up to 40GB in intelligence data storage and 3GB in file storage.",
             "OpenAEV": "For OpenAEV: 16GB",
             "Ingestion": "Ingesting large, premium feed with rich data sets during this trial could impact your storage quickly.",
