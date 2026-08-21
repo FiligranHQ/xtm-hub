@@ -8944,7 +8944,7 @@ __metadata:
     prettier-plugin-tailwindcss: "npm:0.8.1"
     react: "catalog:"
     react-dom: "catalog:"
-    react-hook-form: "npm:7.81.0"
+    react-hook-form: "npm:7.85.0"
     react-relay: "npm:20.1.1"
     rehype-sanitize: "npm:6.0.0"
     relay-compiler: "npm:21.0.1"
@@ -18019,12 +18019,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:7.81.0":
-  version: 7.81.0
-  resolution: "react-hook-form@npm:7.81.0"
+"react-hook-form@npm:7.85.0":
+  version: 7.85.0
+  resolution: "react-hook-form@npm:7.85.0"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18 || ^19
-  checksum: 10/e230964e4f77ca4342ac4d2b7b5abab0628481fc2892f056388eb38056a5996a89cfce81579334d988b07850eee7dfc081a21d6c81afaac0bc09cd5283865bf0
+  checksum: 10/ab3c695866c6f803cb56ac71385a103f12879a72ca353b979b7d159e92cc54de721c988af8ff52ce3bca6181b50bb80e085567aae7819c7a7db1fcb1bfb2565d
   languageName: node
   linkType: hard
 
