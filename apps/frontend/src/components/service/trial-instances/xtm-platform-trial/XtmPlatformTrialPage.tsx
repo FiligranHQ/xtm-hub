@@ -29,7 +29,7 @@ export const XtmPlatformTrialPage = ({
           {showLimitations && <XtmPlatformTrialLimitations />}
         </div>
         <div className="flex w-full items-center lg:w-[521px] lg:shrink-0">
-          <div className="w-full lg:h-[346px]">{panel}</div>
+          <div className="w-full lg:w-[521px] lg:shrink-0">{panel}</div>
         </div>
       </div>
     </div>
