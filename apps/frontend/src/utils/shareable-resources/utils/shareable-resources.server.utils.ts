@@ -1,5 +1,5 @@
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
-
+import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import type { publicDocumentByServiceSlugItemFragment$data } from '@generated/publicDocumentByServiceSlugItemFragment.graphql';
 import type { publicDocumentBySlugItemFragment$data } from '@generated/publicDocumentBySlugItemFragment.graphql';
@@ -7,25 +7,29 @@ import publicDocumentBySlugQueryGraphql from '@generated/publicDocumentBySlugQue
 import publicDocumentsByServiceSlugQueryGraphql from '@generated/publicDocumentsByServiceSlugQuery.graphql';
 
 /**
- * Cache tag used to (in)validate the cached list of public documents for a
- * given service instance. Call `updateTag(publicDocumentsCacheTag(slug))`
- * (see `revalidate-document-slugs.actions.ts`) whenever a document is
- * created, updated or deleted so both `fetchAllDocuments` and the
- * `app/sitemap.ts` route (which reuses this same function) stay fresh.
+ * Cache tag for the public document list of a service instance. Invalidated
+ * via `updateTag` in `revalidate-document-slugs.actions.ts` on document
+ * create/update/delete; also used by `app/sitemap.ts`.
  */
 export const publicDocumentsCacheTag = (serviceInstanceSlug: string): string =>
   `public-documents:${serviceInstanceSlug}`;
 
 /**
- * Fallback time-based revalidation for public document data. Some documents
- * (e.g. connectors) are created/updated by backend processes (manifest
- * ingestion) that don't go through the front-end mutations wired to
- * `revalidateDocumentSlugsAction`, so on-demand tag invalidation alone
- * wouldn't pick up their changes. This periodic revalidation guarantees data
- * is never stale for longer than this window, regardless of how it changed.
+ * Cache tag for a single public document. Scoped by `serviceInstanceSlug`
+ * because `docSlug` alone isn't unique (unique per `type` + `slug` +
+ * `version` in DB), matching how the backend looks it up.
  */
-const PUBLIC_DOCUMENTS_REVALIDATE_SECONDS = 60 * 60 * 6; // 6 hours
+export const publicDocumentCacheTag = (
+  serviceInstanceSlug: string,
+  docSlug: string
+): string => `public-document:${serviceInstanceSlug}:${docSlug}`;
 
+/**
+ * Fetches every public document of a service instance; also used to
+ * validate `docSlug` on the detail page before calling the backend for a
+ * single document. Tag-invalidated on demand, with a 6h fallback revalidate
+ * to catch backend-side changes (e.g. connector manifest ingestion).
+ */
 export async function fetchAllDocuments(
   serviceInstanceSlug: ServiceSlug
 ): Promise<publicDocumentByServiceSlugItemFragment$data[]> {
@@ -39,7 +43,7 @@ export async function fetchAllDocuments(
       cache: 'force-cache',
       next: {
         tags: [publicDocumentsCacheTag(serviceInstanceSlug)],
-        revalidate: PUBLIC_DOCUMENTS_REVALIDATE_SECONDS,
+        revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS,
       },
     }
   );
@@ -50,8 +54,10 @@ export async function fetchAllDocuments(
   ] as publicDocumentByServiceSlugItemFragment$data[];
 }
 
+/** Fetches a single public document by slug; same caching as `fetchAllDocuments`. */
 export async function fetchSingleDocument(
   serviceInstanceId: string,
+  serviceInstanceSlug: string,
   slug: string
 ): Promise<publicDocumentBySlugItemFragment$data | null> {
   const response = await serverFetchGraphQL(
@@ -59,7 +65,10 @@ export async function fetchSingleDocument(
     { slug, serviceInstanceId },
     {
       cache: 'force-cache',
-      next: { revalidate: PUBLIC_DOCUMENTS_REVALIDATE_SECONDS },
+      next: {
+        tags: [publicDocumentCacheTag(serviceInstanceSlug, slug)],
+        revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS,
+      },
     }
   );
   const safeData = response.data as Record<string, unknown>;

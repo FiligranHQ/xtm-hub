@@ -1,21 +1,25 @@
 'use server';
-import { publicDocumentsCacheTag } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
+import {
+  publicDocumentCacheTag,
+  publicDocumentsCacheTag,
+} from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { updateTag } from 'next/cache';
 
 /**
- * Invalidates the cached list of public documents for a service instance, so
- * the public `[slug]/[docSlug]` page and `app/sitemap.ts` (both reuse
- * `fetchAllDocuments`) pick up newly created/updated/deleted document slugs
- * immediately instead of serving a stale list.
+ * Invalidates the cached public document list (and sitemap) for a service
+ * instance after a create/update/delete. Pass `docSlug` on update/delete to
+ * also invalidate that document's own detail cache; omit it on creation.
  *
- * Uses `updateTag` (not `revalidateTag`) on purpose: this is called from a
- * Server Action right after a document mutation, and we need read-your-own-
- * writes semantics — the very next request must see fresh data, not a
- * stale-while-revalidate response, otherwise a user could be redirected to
- * the document they just created/updated and hit a false 404.
+ * Uses `updateTag` (not `revalidateTag`) for read-your-own-writes: the next
+ * request must see fresh data immediately, not a stale-while-revalidate
+ * response that could 404 a document the user just created/updated.
  */
 export default async function revalidateDocumentSlugsAction(
-  serviceInstanceSlug: string
+  serviceInstanceSlug: string,
+  docSlug?: string | null
 ) {
   updateTag(publicDocumentsCacheTag(serviceInstanceSlug));
+  if (docSlug) {
+    updateTag(publicDocumentCacheTag(serviceInstanceSlug, docSlug));
+  }
 }

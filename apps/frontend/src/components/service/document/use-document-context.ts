@@ -174,7 +174,7 @@ export function useDocumentContext({
       },
       onCompleted() {
         if (serviceInstance.slug) {
-          revalidateDocumentSlugsAction(serviceInstance.slug);
+          revalidateDocumentSlugsAction(serviceInstance.slug, document.slug);
         }
         onCompleted();
       },
@@ -234,7 +234,7 @@ export function useDocumentContext({
       }),
       onCompleted: () => {
         if (serviceInstance.slug) {
-          revalidateDocumentSlugsAction(serviceInstance.slug);
+          revalidateDocumentSlugsAction(serviceInstance.slug, resource.slug);
         }
         onSuccess(values.name);
       },

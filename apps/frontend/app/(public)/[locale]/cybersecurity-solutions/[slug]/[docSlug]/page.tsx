@@ -9,6 +9,7 @@ import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { formatPersonNames } from '@/utils/format/name';
 import {
@@ -68,7 +69,7 @@ const getPageData = cache(async (serviceSlug: string, docSlug: string) => {
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
     { slug: serviceSlug },
-    { cache: undefined, next: { revalidate: 3600 } }
+    { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
   );
 
   const serviceInstance = serviceResponse.data
@@ -94,7 +95,11 @@ const getPageData = cache(async (serviceSlug: string, docSlug: string) => {
     notFound();
   }
 
-  const document = await fetchSingleDocument(serviceInstance.id, docSlug);
+  const document = await fetchSingleDocument(
+    serviceInstance.id,
+    serviceInstance.slug as string,
+    docSlug
+  );
   if (!document) {
     notFound();
   }
