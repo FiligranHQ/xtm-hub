@@ -8,19 +8,16 @@ import { PaginationControls } from '@/components/ui/pagination/PaginationControl
 import { PublicShareableResourceList } from '@/components/ui/shareable-resource/PublicShareableResourceList';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import publicDocumentListGraphql, {
   publicDocumentList$key,
 } from '@generated/publicDocumentList.graphql';
 import { publicDocumentListItemFragment$key } from '@generated/publicDocumentListItemFragment.graphql';
-import {
-  publicDocumentsQuery,
-  publicDocumentsQuery$variables,
-} from '@generated/publicDocumentsQuery.graphql';
+import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { PaginationState } from '@tanstack/react-table';
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo } from 'react';
 import {
   PreloadedQuery,
   readInlineData,
@@ -67,40 +64,19 @@ const PublicDocumentsList = ({
   const { search, setSearch, pageSize, setPageSize } =
     useServiceListLocalStorage(localStorageKey);
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-
   const { restore } = useScrollPosition();
 
   useLayoutEffect(() => {
     restore();
   }, [restore]);
 
-  const handleRefetchData = (
-    args?: Partial<publicDocumentsQuery$variables>
-  ) => {
-    refetch({
-      count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      ...args,
-    });
-  };
-
-  const onPaginationChange = (newPaginationValue: PaginationState) => {
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
-  };
+  const { pagination, onPaginationChange } = useTablePagination({
+    pageSize,
+    setPageSize,
+    onPaginationChange: (nextPagination, nextCursor) => {
+      refetch({ count: nextPagination.pageSize, cursor: nextCursor });
+    },
+  });
 
   return (
     <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>

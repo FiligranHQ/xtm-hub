@@ -43,7 +43,7 @@ const ServiceList = ({
   search,
   onSearchChange,
   additionalFilters,
-  connectionId: _connectionId,
+  connectionId,
   paginationControls,
 }: ServiceListProps) => {
   const t = useTranslations();
@@ -107,7 +107,10 @@ const ServiceList = ({
           <div className="txt-category">
             {t(`${translationKey}.NonActive`)}:
           </div>
-          <DocumentList documents={draft} />
+          <DocumentList
+            documents={draft}
+            connectionId={connectionId}
+          />
           {active.length > 0 && (
             <div className="txt-category">{t(`${translationKey}.Active`)}:</div>
           )}
@@ -123,12 +126,16 @@ const ServiceList = ({
               key={integrationType}
               integrationType={integrationType}
               count={documents.length}>
-              <DocumentList documents={documents} />
+              <DocumentList
+                documents={documents}
+                connectionId={connectionId}
+              />
             </IntegrationAccordion>
           ) : (
             <DocumentList
               key={integrationType}
               documents={documents}
+              connectionId={connectionId}
             />
           )
       )}

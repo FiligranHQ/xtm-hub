@@ -8,6 +8,7 @@ import {
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
 import { localizedCardName } from '@/utils/services';
@@ -24,7 +25,7 @@ import {
 import { newsFeedList_fragment$key } from '@generated/newsFeedList_fragment.graphql';
 import { newsFeedListQuery } from '@generated/newsFeedListQuery.graphql';
 import { NewsFeedItemMetadataKey } from '@graphql/generated';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -53,10 +54,7 @@ const NewsFeedList = () => {
   const [deleteTarget, setDeleteTarget] = useState<
     newsFeedItem_fragment$data | undefined
   >(undefined);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: DEFAULT_PAGE_SIZE,
-  });
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   const queryData = useLazyLoadQuery<newsFeedListQuery>(NewsFeedListQuery, {
     count: DEFAULT_PAGE_SIZE,
@@ -84,24 +82,20 @@ const NewsFeedList = () => {
     refetch(
       {
         count: pagination.pageSize,
-        cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+        cursor,
         ...args,
       },
       { fetchPolicy: 'store-and-network' }
     );
   };
 
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-    setPagination(newPaginationValue);
-  };
+  const { pagination, cursor, onPaginationChange } = useTablePagination({
+    pageSize,
+    setPageSize,
+    onPaginationChange: (nextPagination, nextCursor) => {
+      handleRefetchData({ count: nextPagination.pageSize, cursor: nextCursor });
+    },
+  });
 
   const handleDelete = (item: newsFeedItem_fragment$data) => {
     deleteNewsFeedItem({

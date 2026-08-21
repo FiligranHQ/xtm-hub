@@ -20,6 +20,7 @@ import {
   useAdminByPass,
   useUserHasPortalCapability,
 } from '@/hooks/use-portal-capability';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { daysUntil, formatDate } from '@/utils/date';
@@ -58,7 +59,7 @@ import {
   PortalCapability,
   ReorderDeploymentRequestInQueueDirection,
 } from '@graphql/generated';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -563,11 +564,6 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
     }
   }, [currentConnectionID, type]);
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-
   const trialsDataTable = useMemo<trials_fragment$data[]>(
     () =>
       data.deploymentRequestsList.edges?.map?.(({ node }) =>
@@ -576,13 +572,21 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
     [data]
   );
 
+  const { pagination, cursor, onPaginationChange } = useTablePagination({
+    pageSize,
+    setPageSize,
+    onPaginationChange: (nextPagination, nextCursor) => {
+      handleRefetchData({ count: nextPagination.pageSize, cursor: nextCursor });
+    },
+  });
+
   const handleRefetchData = useCallback(
     (args?: Partial<TrialsListPaginationQuery$variables>) => {
       const sorting = mapToSortingTableValue(orderBy, orderMode);
       refetch(
         {
           count: pagination.pageSize,
-          cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+          cursor,
           orderBy,
           orderMode,
           searchTerm: undefined,
@@ -592,7 +596,7 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
         { fetchPolicy: 'store-and-network' }
       );
     },
-    [orderBy, orderMode, pagination.pageIndex, pagination.pageSize, refetch]
+    [orderBy, orderMode, pagination, cursor, refetch]
   );
 
   useEffect(() => {
@@ -611,21 +615,6 @@ const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
       removeOrder,
       handleRefetchData,
     });
-  };
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
   };
 
   const handleInputChange = (inputValue: string) => {
