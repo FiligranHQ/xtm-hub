@@ -79,6 +79,8 @@ import { DeploymentHelper } from './deployment.helper';
 import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
 export const XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME = 'XTM Platform Bundle';
+export const BUNDLE_ACTIVATION_CANCELLATION_REASON =
+  'Cancelled automatically when the XTM Platform trial became active';
 
 export const DeploymentApp = {
   createDeploymentRequest: async (
@@ -1278,6 +1280,24 @@ const recomputeBundleDates = async (bundleId: DeploymentRequestId) => {
   );
 };
 
+const cancelOngoingStandaloneTrialsForBundle = async (
+  bundle: DeploymentRequestModel
+) => {
+  const standaloneTrials =
+    await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+      bundle.organization_requester_id
+    );
+
+  for (const trial of standaloneTrials) {
+    await applyCancellationToDeploymentRequest({
+      deploymentRequest: trial,
+      userId: bundle.user_requester_id,
+      isAdmin: false,
+      cancellationReason: BUNDLE_ACTIVATION_CANCELLATION_REASON,
+    });
+  }
+};
+
 const applyDeploymentRequestUpdateInQuotaTransaction = async ({
   deploymentRequest,
   deploymentRequestId,
@@ -1305,6 +1325,14 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
             hub_status: newStatus,
           }
         );
+
+        const becomesActive =
+          newStatus === DeploymentRequestHubStatus.Active &&
+          deploymentRequest.hub_status !== DeploymentRequestHubStatus.Active;
+        if (becomesActive) {
+          await cancelOngoingStandaloneTrialsForBundle(deploymentRequest);
+        }
+
         return;
       }
 

@@ -84,6 +84,7 @@ import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
 import {
+  BUNDLE_ACTIVATION_CANCELLATION_REASON,
   DeploymentApp,
   XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
 } from './deployment.app';
@@ -1504,7 +1505,6 @@ describe('deployment app', () => {
           url: null,
         });
       });
-
       it('should not initialise a service group for a bundle', async () => {
         const bundle =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -1552,6 +1552,149 @@ describe('deployment app', () => {
           actual_state: DeploymentRequestPlatformState.Active,
         });
         expect(active.hub_status).toBe(DeploymentRequestHubStatus.Active);
+      });
+      describe('standalone trials cancellation', () => {
+        beforeEach(() => {
+          vi.spyOn(DeploymentQuotaDomain, 'freePlace').mockResolvedValue();
+        });
+
+        it('should cancel ongoing standalone trials of the organization when the bundle becomes active', async () => {
+          const standalone =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                hub_status: DeploymentRequestHubStatus.Active,
+              }
+            );
+
+          const bundle =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                type: DeploymentRequestDeploymentType.Bundle,
+                platform_identifier: null,
+                hub_status: DeploymentRequestHubStatus.Pending,
+                actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              }
+            );
+
+          await DeploymentApp.updateDeploymentRequest({
+            id: bundle.id as DeploymentRequestId,
+            actual_state: DeploymentRequestPlatformState.Active,
+          });
+
+          const cancelled =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({
+              id: standalone.id,
+            });
+          expect(cancelled).toMatchObject({
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            cancellation_reason: BUNDLE_ACTIVATION_CANCELLATION_REASON,
+          });
+        });
+
+        it('should not cancel standalone trials of another organization', async () => {
+          const standalone =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                organization_requester_id:
+                  TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+                hub_status: DeploymentRequestHubStatus.Active,
+              }
+            );
+
+          const bundle =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                type: DeploymentRequestDeploymentType.Bundle,
+                platform_identifier: null,
+                hub_status: DeploymentRequestHubStatus.Pending,
+                actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              }
+            );
+
+          await DeploymentApp.updateDeploymentRequest({
+            id: bundle.id as DeploymentRequestId,
+            actual_state: DeploymentRequestPlatformState.Active,
+          });
+
+          const untouched =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({
+              id: standalone.id,
+            });
+          expect(untouched).toMatchObject({
+            hub_status: DeploymentRequestHubStatus.Active,
+          });
+        });
+
+        it('should not cancel the children of the bundle itself', async () => {
+          const bundle =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                type: DeploymentRequestDeploymentType.Bundle,
+                platform_identifier: null,
+                hub_status: DeploymentRequestHubStatus.Pending,
+                actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              }
+            );
+
+          const child =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                parent_id: bundle.id as DeploymentRequestId,
+                hub_status: DeploymentRequestHubStatus.Active,
+              }
+            );
+
+          await DeploymentApp.updateDeploymentRequest({
+            id: bundle.id as DeploymentRequestId,
+            actual_state: DeploymentRequestPlatformState.Active,
+          });
+
+          const untouched =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({
+              id: child.id,
+            });
+          expect(untouched).toMatchObject({
+            hub_status: DeploymentRequestHubStatus.Active,
+          });
+        });
+
+        it('should not cancel standalone trials again when an already active bundle is updated', async () => {
+          const bundle =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                type: DeploymentRequestDeploymentType.Bundle,
+                platform_identifier: null,
+                hub_status: DeploymentRequestHubStatus.Pending,
+                actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              }
+            );
+
+          await DeploymentApp.updateDeploymentRequest({
+            id: bundle.id as DeploymentRequestId,
+            actual_state: DeploymentRequestPlatformState.Active,
+          });
+
+          const standalone =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                hub_status: DeploymentRequestHubStatus.Active,
+              }
+            );
+
+          await DeploymentApp.updateDeploymentRequest({
+            id: bundle.id as DeploymentRequestId,
+            actual_state: DeploymentRequestPlatformState.Active,
+            platform_id: 'bundle-platform-id',
+          });
+
+          const untouched =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({
+              id: standalone.id,
+            });
+          expect(untouched).toMatchObject({
+            hub_status: DeploymentRequestHubStatus.Active,
+          });
+        });
       });
     });
 
