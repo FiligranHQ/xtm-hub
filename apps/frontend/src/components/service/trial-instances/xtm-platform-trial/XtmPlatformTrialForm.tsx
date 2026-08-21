@@ -1,5 +1,6 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
+  REGIONS,
   REGIONS_VALUES,
   USE_CASES_BY_PLATFORM_IDENTIFIER,
 } from '@/components/service/trial-instances/form-constants';
@@ -11,7 +12,13 @@ import {
   Form,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@filigran/ui';
 import {
   DeploymentRequestActivitySector,
@@ -51,10 +58,12 @@ const emptyUseCase = undefined as unknown as DeploymentRequestUseCase;
 
 interface XtmPlatformTrialFormProps {
   handleSubmit: (values: z.infer<typeof xtmPlatformTrialFormSchema>) => void;
+  hasOngoingStandaloneTrials?: boolean;
 }
 
 export const XtmPlatformTrialForm = ({
   handleSubmit,
+  hasOngoingStandaloneTrials = false,
 }: XtmPlatformTrialFormProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
@@ -128,12 +137,30 @@ export const XtmPlatformTrialForm = ({
               {t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}
             </h3>
 
-            <div className="flex items-start gap-xs rounded border border-solid border-orange p-s text-sm ">
-              <WarningIcon className="size-4 shrink-0 text-feedback-warning-primary" />
-              <span>
-                {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
-              </span>
-            </div>
+            {hasOngoingStandaloneTrials ? (
+              <div className="flex items-start gap-xs rounded border border-solid border-red p-s text-sm">
+                <WarningIcon className="size-4 shrink-0 text-destructive" />
+                <div className="flex flex-col gap-xs">
+                  <span>
+                    {t(
+                      'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning'
+                    )}
+                  </span>
+                  <span>
+                    {t(
+                      'Service.Trials.XtmPlatform.Page.Form.OngoingTrialDescription'
+                    )}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-xs rounded border border-solid border-orange p-s text-sm">
+                <WarningIcon className="size-4 shrink-0 text-feedback-warning-primary" />
+                <span>
+                  {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
+                </span>
+              </div>
+            )}
 
             <div className="flex items-center gap-xl">
               {SELECTABLE_PRODUCTS.map((platformIdentifier) => (
@@ -174,13 +201,31 @@ export const XtmPlatformTrialForm = ({
             control={form.control}
             name="region"
             render={({ field }) => (
-              <TranslatableEnumSelectField
-                field={field}
-                label={t('Service.Trials.Form.Region')}
-                placeholder={t('Service.Trials.Form.RegionPlaceholder')}
-                values={REGIONS_VALUES}
-                translationNamespace="Region"
-              />
+              <FormItem>
+                <FormLabel>
+                  {t('Service.Trials.Form.Region')}{' '}
+                  <span className="text-sm text-destructive">*</span>
+                </FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={t('Service.Trials.Form.RegionPlaceholder')}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {REGIONS.map((region) => (
+                      <SelectItem
+                        key={region.value}
+                        value={region.value}>
+                        {t(`Region.${region.label}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage className="text-sm text-destructive" />
+              </FormItem>
             )}
           />
 

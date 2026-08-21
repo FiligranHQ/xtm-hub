@@ -26,6 +26,7 @@ import { z } from 'zod';
 export const PrivateXtmPlatformTrialPanel = () => {
   const { me } = useContext(PortalContext);
   const t = useTranslations('Service.Trials.XtmPlatform.Page');
+  const tGlobal = useTranslations();
   const organizationId = me?.selected_organization_id ?? '';
 
   const canRequestTrial = useCanRequestPlatformTrial();
@@ -47,8 +48,8 @@ export const PrivateXtmPlatformTrialPanel = () => {
         queryKey: platformTrialKeys.platformTrialStatus(variables),
       });
       toast({
-        title: t('Utils.Success'),
-        description: t('Service.Trials.Form.FormRequested'),
+        title: tGlobal('Utils.Success'),
+        description: tGlobal('Service.Trials.Form.FormRequested'),
       });
     },
   });
@@ -83,14 +84,10 @@ export const PrivateXtmPlatformTrialPanel = () => {
     );
   }
 
-  if (state === 'request-with-ongoing-trials') {
-    return (
-      <>
-        {/* TODO: avertissement de suppression des standalone */}
-        <XtmPlatformTrialForm handleSubmit={handleSubmit} />
-      </>
-    );
-  }
-
-  return <XtmPlatformTrialForm handleSubmit={handleSubmit} />;
+  return (
+    <XtmPlatformTrialForm
+      handleSubmit={handleSubmit}
+      hasOngoingStandaloneTrials={state === 'request-with-ongoing-trials'}
+    />
+  );
 };
