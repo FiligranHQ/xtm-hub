@@ -50,7 +50,7 @@ export const XtmPlatformTrialPitch = () => {
                     'size-6',
                     PRODUCT_ICON_CLASSES[platformIdentifier]
                   )}
-                />{' '}
+                />
                 <span className="heading-md">{name}</span>
               </div>
               <div className="flex flex-col">

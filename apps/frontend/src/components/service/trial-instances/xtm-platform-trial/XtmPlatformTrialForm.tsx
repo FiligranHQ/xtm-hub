@@ -38,12 +38,24 @@ export const xtmPlatformTrialFormSchema = z.object({
   job_title: z.enum(DeploymentRequestJobTitle),
   activity_sector: z.enum(DeploymentRequestActivitySector),
   products: z.array(z.enum(PlatformIdentifier)),
-  use_cases_by_product: z.array(
-    z.object({
-      platform_identifier: z.enum(PlatformIdentifier),
-      use_case: z.enum(DeploymentRequestUseCase),
-    })
-  ),
+  use_cases_by_product: z
+    .array(
+      z.object({
+        platform_identifier: z.enum(PlatformIdentifier),
+        use_case: z.enum(DeploymentRequestUseCase).optional(),
+      })
+    )
+    .superRefine((entries, ctx) => {
+      entries.forEach((entry, index) => {
+        if (!entry.use_case) {
+          ctx.addIssue({
+            path: [index, 'use_case'],
+            code: 'custom',
+            message: 'Please select a use case.',
+          });
+        }
+      });
+    }),
   acceptTerms: z.boolean().refine((value) => value === true, {
     error: 'Please accept the MSSA to continue.',
   }),
@@ -53,8 +65,6 @@ const SELECTABLE_PRODUCTS = [
   PlatformIdentifier.Opencti,
   PlatformIdentifier.Openaev,
 ];
-
-const emptyUseCase = undefined as unknown as DeploymentRequestUseCase;
 
 interface XtmPlatformTrialFormProps {
   handleSubmit: (values: z.infer<typeof xtmPlatformTrialFormSchema>) => void;
@@ -78,7 +88,7 @@ export const XtmPlatformTrialForm = ({
       ],
       use_cases_by_product: SELECTABLE_PRODUCTS.map((platformIdentifier) => ({
         platform_identifier: platformIdentifier,
-        use_case: emptyUseCase,
+        use_case: undefined,
       })),
       acceptTerms: false,
     },
@@ -103,7 +113,7 @@ export const XtmPlatformTrialForm = ({
       form.setValue('products', [...products, platformIdentifier]);
       append({
         platform_identifier: platformIdentifier,
-        use_case: emptyUseCase,
+        use_case: undefined,
       });
       return;
     }

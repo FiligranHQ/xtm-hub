@@ -55,10 +55,20 @@ export const PrivateXtmPlatformTrialPanel = () => {
   });
 
   const handleSubmit = (values: z.infer<typeof xtmPlatformTrialFormSchema>) => {
-    const { acceptTerms: _, ...rest } = values;
+    const { acceptTerms: _, use_cases_by_product, ...rest } = values;
     mutate({
       input: {
         ...rest,
+        use_cases_by_product: use_cases_by_product.flatMap((entry) =>
+          entry.use_case
+            ? [
+                {
+                  platform_identifier: entry.platform_identifier,
+                  use_case: entry.use_case,
+                },
+              ]
+            : []
+        ),
         type: DeploymentRequestDeploymentType.Bundle,
         source: DeploymentRequestSource.Xtmhub,
       },
