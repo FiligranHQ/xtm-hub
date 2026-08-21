@@ -32,7 +32,9 @@ import DeploymentRequestModel, {
   DeploymentRequestId,
   DeploymentRequestMutator,
 } from '../../model/kanel/public/DeploymentRequest';
-import Organization from '../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { UserId } from '../../model/kanel/public/User';
@@ -542,6 +544,36 @@ export const DeploymentApp = {
         }),
       isBlacklisted:
         await CompetitorApp.isOrganizationBlacklisted(organization),
+    };
+  },
+  loadPlatformTrialStatus: async (organizationId: OrganizationId) => {
+    const user = requestContext.requireUser();
+    await securityGuard.assertUserIsInOrganization(user, organizationId);
+
+    const organization = await OrganizationDomain.loadOrganizationBy({
+      id: organizationId,
+    });
+    if (!organization) {
+      throw new Error(ErrorCode.OrganizationNotFound);
+    }
+    if (organization.personal_space) {
+      return {
+        isBlacklisted: false,
+        hub_status: null,
+        end_date: null,
+      };
+    }
+
+    const bundle =
+      await DeploymentRequestDomain.loadBundleTrialForOrganization(
+        organizationId
+      );
+
+    return {
+      isBlacklisted:
+        await CompetitorApp.isOrganizationBlacklisted(organization),
+      hub_status: bundle?.hub_status ?? null,
+      end_date: bundle?.end_date ?? null,
     };
   },
 };

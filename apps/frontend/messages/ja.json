@@ -1448,6 +1448,18 @@
         "LogoAlt": "{name} ロゴ",
         "IllustrationAlt": "無料トライアルサービスのイラスト"
       },
+      "XtmPlatform": {
+        "NoTrial": {
+          "Text": "30日間の無料トライアルを開始して、XTM Platform のフル体験をお試しください!"
+        },
+        "Active": {
+          "Text": "トライアル期間中は、XTM Platform のフル体験をお楽しみください!"
+        },
+        "Ending": {
+          "Text": "トライアル終了前に、引き続き XTM Platform のフル体験をお楽しみください。"
+        },
+        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}"
+      },
       "QuickStart": {
         "Title": "クイックスタートガイド",
         "Subtitle": "{platformName} 製品を最大限に活用しましょう",

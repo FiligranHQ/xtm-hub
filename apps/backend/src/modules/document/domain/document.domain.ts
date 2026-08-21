@@ -172,15 +172,22 @@ export const DocumentDomain = {
     return DocumentMetadataDomain.hydrateMetadata(documents, include_metadata);
   },
 
-  lockDocumentsByMetadata: async (
-    key: string,
-    value: string
-  ): Promise<void> => {
-    await db<DocumentModel>('Document')
-      .whereIn(
-        'Document.id',
-        db('Document_Metadata').select('document_id').where({ key, value })
-      )
+  lockDocumentsBySlugTypeAndServiceInstance: async ({
+    slug,
+    type,
+    serviceInstanceId,
+  }: {
+    slug: string;
+    type: string;
+    serviceInstanceId: ServiceInstanceId;
+  }): Promise<Pick<DocumentModel, 'id'>[]> => {
+    return db<DocumentModel>('Document')
+      .where({
+        slug,
+        type,
+        service_instance_id: serviceInstanceId,
+      })
+      .select('id')
       .forUpdate();
   },
 
@@ -600,16 +607,16 @@ export const DocumentDomain = {
   },
 
   /**
-   * For each manifest_fragment_id in the provided list, returns the connector
-   * with the highest product_version that is still compatible with manifestVersion
+   * For each connector slug in the provided list, returns the connector with
+   * the highest product version that is still compatible with manifestVersion
    * (i.e. minimum_deployable_version_padded is absent or <= manifestVersion, padded).
-   * Exactly one row per manifest_fragment_id is returned (or none if no compatible version exists).
+   * Exactly one row per slug is returned (or none if no compatible version exists).
    */
-  loadBestCompatibleConnectorsByManifestFragmentIds: async (
-    manifestFragmentIds: string[],
+  loadBestCompatibleConnectorsBySlugs: async (
+    slugs: string[],
     version: string
   ): Promise<ConnectorV2[]> => {
-    if (manifestFragmentIds.length === 0) return [];
+    if (slugs.length === 0) return [];
 
     const paddedVersion =
       ManifestFragmentHelper.validateAndFormatManifestVersion(version);
@@ -618,16 +625,11 @@ export const DocumentDomain = {
       INTEGRATION_CONNECTOR_V2_METADATA_KEYS as DocumentMetadataKeyCode[];
 
     const connectors: ConnectorV2[] = await db<DocumentModel>('Document')
-      .distinctOn('dm_fragment.value')
+      .distinctOn('Document.slug')
       .join(
         'Document_Metadata as dm_type',
         'Document.id',
         'dm_type.document_id'
-      )
-      .join(
-        'Document_Metadata as dm_fragment',
-        'Document.id',
-        'dm_fragment.document_id'
       )
       .leftJoin({ dm_min: 'Document_Metadata' }, function () {
         this.on('dm_min.document_id', '=', 'Document.id').andOnVal(
@@ -637,19 +639,18 @@ export const DocumentDomain = {
       })
       .where('dm_type.key', DocumentMetadataKeyCode.IntegrationType)
       .andWhere('dm_type.value', IntegrationType.Connector)
-      .andWhere('dm_fragment.key', DocumentMetadataKeyCode.ManifestFragmentId)
-      .whereIn('dm_fragment.value', manifestFragmentIds)
+      .whereIn('Document.slug', slugs)
       .where('Document.active', true)
       .where('Document.is_decommissioned', false)
       .select('Document.*')
-      .groupBy('Document.id', 'dm_fragment.value')
+      .groupBy('Document.id', 'Document.slug')
       .havingRaw(
         `(MAX("dm_min"."value") IS NULL OR MAX("dm_min"."value") <= ?)
          AND "Document"."version" ${isLts ? 'LIKE' : 'NOT LIKE'} '%.LTS.%'`,
         [paddedVersion]
       )
       .orderByRaw(
-        `"dm_fragment"."value" ASC, "Document"."version" DESC NULLS LAST`
+        `"Document"."slug" ASC, "Document"."version" DESC NULLS LAST`
       );
 
     return DocumentMetadataDomain.hydrateMetadata(connectors, metadataKeys);

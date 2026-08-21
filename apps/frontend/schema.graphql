@@ -109,6 +109,7 @@ type Query {
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier!): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments!
+  platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
   serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
   documentExists(documentName: String, service_instance_id: ServiceInstanceId!): Boolean
   publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId!): DocumentConnection!
@@ -476,6 +477,12 @@ type TrialsDeployments {
   availableTrials: [PlatformIdentifier!]!
   deployed: [DeployedPlatform!]!
   isBlacklisted: Boolean!
+}
+
+type PlatformTrialStatus {
+  isBlacklisted: Boolean!
+  hub_status: DeploymentRequestHubStatus
+  end_date: Date
 }
 
 enum DeploymentRequestOrdering {
@@ -1310,6 +1317,7 @@ type ServiceInstanceSubscription {
 
 enum FeatureFlag {
   DUMMY
+  XTM_PLATFORM_TRIAL
 }
 
 type PlatformProvider {

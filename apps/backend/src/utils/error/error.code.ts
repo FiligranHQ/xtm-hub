@@ -57,6 +57,7 @@ export enum BadRequestErrorCode {
   NewsFeedItemMissingTitle = 'NEWS_FEED_ITEM_MISSING_TITLE',
   InvalidManifestVersionFormat = 'INVALID_MANIFEST_VERSION_FORMAT',
   ConnectorVersionAlreadyExists = 'CONNECTOR_VERSION_ALREADY_EXISTS',
+  ConnectorIdAlreadyExists = 'CONNECTOR_ID_ALREADY_EXISTS',
   ShortDescriptionTooLong = 'SHORT_DESCRIPTION_TOO_LONG',
   ContactTooLong = 'CONTACT_TOO_LONG',
   MixedLtsManifestFragments = 'MIXED_LTS_MANIFEST_FRAGMENTS',
