@@ -103,7 +103,9 @@ const DocumentActionsCell = ({ document }: DocumentActionsCellProps) => {
   }
 
   return (
-    <div className="flex items-center gap-xs">
+    <div
+      className="flex items-center gap-xs"
+      onClick={(event) => event.stopPropagation()}>
       <ShareLinkButton
         documentId={document.id}
         url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
@@ -152,6 +154,7 @@ const DocumentList = ({ documents, displayMode, connectionId }: DocumentListProp
   const { settings } = useContext(SettingsContext);
   const { serviceInstance } = useServiceContext();
   const t = useTranslations();
+  const router = useRouter();
   const columns: ColumnDef<documentItem_fragment$data>[] = useMemo(
     () => [
       {
@@ -225,6 +228,11 @@ const DocumentList = ({ documents, displayMode, connectionId }: DocumentListProp
         <DataTable
           columns={tableColumns}
           data={documents}
+          onClickRow={(row) =>
+            router.push(
+              `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${row.original.id}`
+            )
+          }
         />
       )}
     </>

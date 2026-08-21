@@ -50,7 +50,10 @@ vi.mock('next/navigation', async (importOriginal) => ({
 
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next-intl')>()),
-  useTranslations: vi.fn(() => (key: string) => key),
+  useTranslations: () =>
+    Object.assign((key: string) => key, {
+      has: () => false,
+    }),
   useLocale: vi.fn(() => 'en'),
 }));
 

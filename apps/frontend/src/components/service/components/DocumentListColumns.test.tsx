@@ -95,9 +95,7 @@ describe('buildProductVersionColumn', () => {
       throw new Error('column cell is not defined');
     }
 
-    const { getByText } = testRender(
-      <>{cell(buildCellContext(document))}</>
-    );
+    const { getByText } = testRender(<>{cell(buildCellContext(document))}</>);
 
     expect(getByText('5.0.1')).toBeInTheDocument();
   });
@@ -141,9 +139,7 @@ describe('buildAuthorColumn', () => {
       throw new Error('column cell is not defined');
     }
 
-    const { getByText } = testRender(
-      <>{cell(buildCellContext(document))}</>
-    );
+    const { getByText } = testRender(<>{cell(buildCellContext(document))}</>);
 
     expect(getByText('Alice Doe')).toBeInTheDocument();
   });

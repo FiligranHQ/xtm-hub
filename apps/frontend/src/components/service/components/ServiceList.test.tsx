@@ -10,20 +10,6 @@ import {
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('next-intl', async (importOriginal) => {
-  const original = await importOriginal<typeof import('next-intl')>();
-  return {
-    ...original,
-    useTranslations: () => {
-      const t = ((key: string) => key) as ((key: string) => string) & {
-        has: (key: string) => boolean;
-      };
-      t.has = () => false;
-      return t;
-    },
-  };
-});
-
 const testState = vi.hoisted(() => ({
   useServiceContext: vi.fn(),
   useServiceCapability: vi.fn(),

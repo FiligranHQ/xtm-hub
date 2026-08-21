@@ -35,7 +35,7 @@ vi.mock('@/components/service/components/ServiceContext', () => ({
       id: ServiceInstanceId,
       slug: ServiceSlug,
       service_definition: {
-        identifier: 'opencti',
+        identifier: ServiceIdentifier,
       },
       name: 'My service',
     },
@@ -78,32 +78,37 @@ describe('DocumentList', () => {
     });
     mocks.revalidatePathActions.mockResolvedValue(undefined);
     mocks.handleDeleteSheet.mockImplementation(
-      (_document: documentItem_fragment$data, onDeleteCompleted: () => void) => {
+      (
+        _document: documentItem_fragment$data,
+        onDeleteCompleted: () => void
+      ) => {
         onDeleteCompleted();
       }
     );
   });
 
   it('renders one service card per document with expected URLs', () => {
+    // Given
     const documents = [
       {
-        id: 'doc-1',
-        slug: 'first-document',
-        name: 'First document',
+        id: FirstDocumentId,
+        slug: FirstDocumentSlug,
+        name: FirstDocumentName,
         type: 'opencti_integration',
-        short_description: 'Description 1',
+        short_description: FirstDocumentDescription,
         use_cases: [],
       },
       {
-        id: 'doc-2',
-        slug: 'second-document',
-        name: 'Second document',
+        id: SecondDocumentId,
+        slug: SecondDocumentSlug,
+        name: SecondDocumentName,
         type: 'opencti_integration',
-        short_description: 'Description 2',
+        short_description: SecondDocumentDescription,
         use_cases: [],
       },
     ] as documentItem_fragment$data[];
 
+    // When
     testRender(
       <DocumentList
         documents={documents}
@@ -111,8 +116,9 @@ describe('DocumentList', () => {
       />
     );
 
-    expect(screen.getByText('First document')).toBeInTheDocument();
-    expect(screen.getByText('Second document')).toBeInTheDocument();
+    // Then
+    expect(screen.getByText(FirstDocumentName)).toBeInTheDocument();
+    expect(screen.getByText(SecondDocumentName)).toBeInTheDocument();
 
     const detailLinks = screen
       .getAllByRole('link')
@@ -121,11 +127,39 @@ describe('DocumentList', () => {
     expect(detailLinks).toHaveLength(2);
     expect(detailLinks[0]).toHaveAttribute(
       'href',
-      '/app/service/opencti/service-instance-1/doc-1'
+      `/app/service/${ServiceIdentifier}/${ServiceInstanceId}/${FirstDocumentId}`
     );
     expect(detailLinks[1]).toHaveAttribute(
       'href',
-      '/app/service/opencti/service-instance-1/doc-2'
+      `/app/service/${ServiceIdentifier}/${ServiceInstanceId}/${SecondDocumentId}`
+    );
+  });
+
+  it('should navigate to detail page when clicking a row in list mode', async () => {
+    // Given
+    const documents = [
+      {
+        id: FirstDocumentId,
+        slug: FirstDocumentSlug,
+        name: FirstDocumentName,
+        type: 'opencti_integration',
+        short_description: FirstDocumentDescription,
+        use_cases: [],
+      },
+    ] as documentItem_fragment$data[];
+    const { user } = testRender(
+      <DocumentList
+        documents={documents}
+        displayMode={ServiceListDisplayModeEnum.List}
+      />
+    );
+
+    // When
+    await user.click(screen.getByText(FirstDocumentName).closest('tr')!);
+
+    // Then
+    expect(mocks.push).toHaveBeenCalledWith(
+      `/app/service/${ServiceIdentifier}/${ServiceInstanceId}/${FirstDocumentId}`
     );
   });
 
@@ -151,7 +185,9 @@ describe('DocumentList', () => {
 
     // When
     await user.click(screen.getByRole('button', { name: 'Utils.OpenMenu' }));
-    await user.click(screen.getByRole('menuitem', { name: 'MenuActions.Update' }));
+    await user.click(
+      screen.getByRole('menuitem', { name: 'MenuActions.Update' })
+    );
 
     // Then
     expect(mocks.setIntegrationType).toHaveBeenCalledWith(
@@ -182,7 +218,9 @@ describe('DocumentList', () => {
     await user.click(screen.getByRole('button', { name: 'Utils.OpenMenu' }));
     await user.click(screen.getByRole('menuitem', { name: 'Utils.Delete' }));
     const dialog = await screen.findByRole('alertdialog');
-    await user.click(within(dialog).getByRole('button', { name: 'Utils.Delete' }));
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Utils.Delete' })
+    );
 
     // Then
     expect(mocks.revalidatePathActions).toHaveBeenCalledWith([

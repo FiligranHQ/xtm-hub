@@ -16,6 +16,7 @@ import { publicDocumentListItemFragment$data } from '@generated/publicDocumentLi
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { ColumnDef } from '@tanstack/react-table';
 import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
 interface PublicShareableDocumentListProps {
@@ -33,6 +34,7 @@ export const PublicShareableDocumentList = ({
 }: PublicShareableDocumentListProps) => {
   const locale = useLocale();
   const t = useTranslations();
+  const router = useRouter();
 
   const columns: ColumnDef<publicDocumentListItemFragment$data>[] = useMemo(
     () => [
@@ -71,10 +73,12 @@ export const PublicShareableDocumentList = ({
         id: 'action',
         header: t('Service.List.Tab.Actions'),
         cell: ({ row }) => (
-          <ShareLinkButton
-            documentId={row.original.id}
-            url={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`}
-          />
+          <div onClick={(event) => event.stopPropagation()}>
+            <ShareLinkButton
+              documentId={row.original.id}
+              url={`${baseUrl}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`}
+            />
+          </div>
         ),
       },
     ],
@@ -113,6 +117,11 @@ export const PublicShareableDocumentList = ({
         <DataTable
           columns={tableColumns}
           data={documents}
+          onClickRow={(row) =>
+            router.push(
+              `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`
+            )
+          }
         />
       )}
     </>

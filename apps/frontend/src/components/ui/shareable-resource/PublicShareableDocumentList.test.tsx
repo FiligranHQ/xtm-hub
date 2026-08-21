@@ -2,47 +2,77 @@ import { ServiceListDisplayModeEnum } from '@/components/service/components/head
 import testRender from '@/utils/test/test-render';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { screen, within } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PublicShareableDocumentList } from './PublicShareableDocumentList';
 
+const ServiceId = 'service-1';
+const ServiceSlug = 'my-service';
+const BaseUrl = 'https://xtm.local';
+const FirstDocumentId = 'doc-1';
+const FirstDocumentSlug = 'connector-doc';
+const FirstDocumentName = 'Connector document';
+const FirstDocumentDescription = 'Connector description';
+const SecondDocumentId = 'doc-2';
+const SecondDocumentSlug = 'dashboard-doc';
+const SecondDocumentName = 'Dashboard document';
+const SecondDocumentDescription = 'Dashboard description';
+
+const mocks = vi.hoisted(() => ({
+  push: vi.fn(),
+}));
+
 describe('PublicShareableDocumentList', () => {
+  beforeEach(() => {
+    vi.mocked(useRouter).mockReturnValue({
+      push: mocks.push,
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      refresh: vi.fn(),
+    });
+  });
+
   const serviceInstance = {
-    id: 'service-1',
-    slug: 'my-service',
+    id: ServiceId,
+    slug: ServiceSlug,
   } as seoServiceInstanceFragment$data;
 
   const documents = [
     {
-      id: 'doc-1',
-      slug: 'connector-doc',
-      name: 'Connector document',
+      id: FirstDocumentId,
+      slug: FirstDocumentSlug,
+      name: FirstDocumentName,
       type: 'opencti_custom_dashboard',
-      short_description: 'Connector description',
+      short_description: FirstDocumentDescription,
       use_cases: [],
     },
     {
-      id: 'doc-2',
-      slug: 'dashboard-doc',
-      name: 'Dashboard document',
+      id: SecondDocumentId,
+      slug: SecondDocumentSlug,
+      name: SecondDocumentName,
       type: 'opencti_custom_dashboard',
-      short_description: 'Dashboard description',
+      short_description: SecondDocumentDescription,
       use_cases: [],
     },
   ] as publicDocumentListItemFragment$data[];
 
   it('renders one public card per document with expected public URLs in tab mode', () => {
+    // Given / When
     testRender(
       <PublicShareableDocumentList
         documents={documents}
         serviceInstance={serviceInstance}
-        baseUrl="https://xtm.local"
+        baseUrl={BaseUrl}
         displayMode={ServiceListDisplayModeEnum.Tab}
       />
     );
 
-    expect(screen.getByText('Connector document')).toBeInTheDocument();
-    expect(screen.getByText('Dashboard document')).toBeInTheDocument();
+    // Then
+    expect(screen.getByText(FirstDocumentName)).toBeInTheDocument();
+    expect(screen.getByText(SecondDocumentName)).toBeInTheDocument();
 
     const detailLinks = screen
       .getAllByRole('link')
@@ -53,31 +83,70 @@ describe('PublicShareableDocumentList', () => {
     expect(detailLinks).toHaveLength(2);
     expect(detailLinks[0]).toHaveAttribute(
       'href',
-      '/en/cybersecurity-solutions/my-service/connector-doc'
+      `/en/cybersecurity-solutions/${ServiceSlug}/${FirstDocumentSlug}`
     );
     expect(detailLinks[1]).toHaveAttribute(
       'href',
-      '/en/cybersecurity-solutions/my-service/dashboard-doc'
+      `/en/cybersecurity-solutions/${ServiceSlug}/${SecondDocumentSlug}`
     );
   });
 
   it('renders list mode without public detail card links', () => {
+    // Given / When
     testRender(
       <PublicShareableDocumentList
         documents={documents}
         serviceInstance={serviceInstance}
-        baseUrl="https://xtm.local"
+        baseUrl={BaseUrl}
         displayMode={ServiceListDisplayModeEnum.List}
       />
     );
 
-    expect(screen.getByText('Connector document')).toBeInTheDocument();
-    expect(screen.getByText('Dashboard document')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('link', { name: 'Connector document' })
-    ).toBeNull();
-    expect(
-      screen.queryByRole('link', { name: 'Dashboard document' })
-    ).toBeNull();
+    // Then
+    expect(screen.getByText(FirstDocumentName)).toBeInTheDocument();
+    expect(screen.getByText(SecondDocumentName)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: FirstDocumentName })).toBeNull();
+    expect(screen.queryByRole('link', { name: SecondDocumentName })).toBeNull();
+  });
+
+  it('should navigate to public detail page when clicking a row in list mode', async () => {
+    // Given
+    const { user } = testRender(
+      <PublicShareableDocumentList
+        documents={documents}
+        serviceInstance={serviceInstance}
+        baseUrl={BaseUrl}
+        displayMode={ServiceListDisplayModeEnum.List}
+      />
+    );
+
+    // When
+    await user.click(screen.getByText(FirstDocumentName).closest('tr')!);
+
+    // Then
+    expect(mocks.push).toHaveBeenCalledWith(
+      `/en/cybersecurity-solutions/${ServiceSlug}/${FirstDocumentSlug}`
+    );
+  });
+
+  it('should not navigate when clicking share action in list mode', async () => {
+    // Given
+    const { user } = testRender(
+      <PublicShareableDocumentList
+        documents={documents}
+        serviceInstance={serviceInstance}
+        baseUrl={BaseUrl}
+        displayMode={ServiceListDisplayModeEnum.List}
+      />
+    );
+    const firstRow = screen.getByText(FirstDocumentName).closest('tr');
+    const shareIcon = within(firstRow!).getByRole('img');
+    const shareActionButton = shareIcon.closest('button');
+
+    // When
+    await user.click(shareActionButton!);
+
+    // Then
+    expect(mocks.push).not.toHaveBeenCalled();
   });
 });
