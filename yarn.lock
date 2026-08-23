@@ -8879,7 +8879,7 @@ __metadata:
     migrate: "npm:^2.1.0"
     node-cron: "npm:4.6.0"
     nodemailer: "npm:9.0.5"
-    openid-client: "npm:6.8.5"
+    openid-client: "npm:6.8.7"
     passport: "npm:0.7.0"
     pg: "catalog:"
     pg-boss: "npm:12.27.0"
@@ -16934,13 +16934,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openid-client@npm:6.8.5":
-  version: 6.8.5
-  resolution: "openid-client@npm:6.8.5"
+"openid-client@npm:6.8.7":
+  version: 6.8.7
+  resolution: "openid-client@npm:6.8.7"
   dependencies:
     jose: "npm:^6.2.8"
     oauth4webapi: "npm:^3.8.7"
-  checksum: 10/7c399e21a6faf94e03f52233254bc9bc227476842bb86804a6ff81550565ca732a4e44d37cef9fd25997c82dc48b8f0349a1039e67d868a4df70caed55e1421e
+  checksum: 10/13e06f7e0752cb0ca3980c105c50e4c862bb12ce12fefe5ef46374a0669ee6693e0309fc859528274f0d7498a772c893185468fbf655bc8e0117b19c48403be5
   languageName: node
   linkType: hard
 
