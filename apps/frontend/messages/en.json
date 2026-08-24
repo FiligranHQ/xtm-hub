@@ -1704,6 +1704,11 @@
         "BackButton": "Back to XTM Platform Trial",
         "GroupAction": "Group action",
         "AddTrialUser": "Add trial user",
+        "BulkDeleteDialog": {
+          "Title": "Remove users from trial",
+          "Text": "Are you sure you want to remove {emails} from this trial? They will lose access to all products.",
+          "MoreEmails": "+{count} more"
+        },
         "Table": {
           "Email": "Email",
           "OpenCTIRole": "OpenCTI role",

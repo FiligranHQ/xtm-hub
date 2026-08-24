@@ -1,21 +1,74 @@
 'use client';
 
-import { ArrowUpwardIcon } from '@filigran/icon';
-import { Button } from '@filigran/ui';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { portalGraphqlClient } from '@/lib/graphql-client';
+import { ArrowUpwardIcon, DeleteIcon } from '@filigran/icon';
+import { Button, toast } from '@filigran/ui';
+import {
+  BundleUserServiceGroupsQuery,
+  useRemoveUsersFromBundleGroupsMutation,
+} from '@graphql/generated';
+import { bundleUserServiceGroupsKeys } from '@graphql/service-group/service-group.keys';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
 import { AddTrialUserDialog } from './AddTrialUserDialog';
+import { formatEmailList } from './manage-trial-header.utils';
+
+interface ManageTrialHeaderUser {
+  id: string;
+  email: string;
+}
 
 interface ManageTrialHeaderProps {
   serviceInstanceId: string;
+  selectedUsers: ManageTrialHeaderUser[];
+  onUsersRemoved: () => void;
 }
 
 export const ManageTrialHeader = ({
   serviceInstanceId,
+  selectedUsers,
+  onUsersRemoved,
 }: ManageTrialHeaderProps) => {
   const t = useTranslations();
+  const queryClient = useQueryClient();
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  const { mutate: removeUsersFromBundleGroups } =
+    useRemoveUsersFromBundleGroupsMutation(portalGraphqlClient, {
+      onSuccess: (_data, mutationVariables) => {
+        const variables = { serviceInstanceId };
+        queryClient.setQueryData<BundleUserServiceGroupsQuery>(
+          bundleUserServiceGroupsKeys.list(variables),
+          (previous) =>
+            previous && {
+              bundleUserServiceGroups: previous.bundleUserServiceGroups.filter(
+                (row) => !mutationVariables.userIds.includes(row.user.id)
+              ),
+            }
+        );
+        toast({ title: t('Utils.Success') });
+        setIsBulkDeleting(false);
+        onUsersRemoved();
+      },
+      onError: (error: unknown) => {
+        const errorMessage =
+          error instanceof Error ? error.message : 'UnknownError';
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${errorMessage}`)}</>,
+        });
+        setIsBulkDeleting(false);
+      },
+    });
+
+  const { visible, hiddenCount } = formatEmailList(
+    selectedUsers.map((user) => user.email)
+  );
 
   return (
     <header className="flex flex-col gap-l">
@@ -38,7 +91,40 @@ export const ManageTrialHeader = ({
             {t('Service.Bundle.ManageTrial.BackButton')}
           </Link>
         </Button>
-        <div className="flex flex-wrap gap-s">
+        <div className="flex flex-wrap items-center gap-s">
+          {selectedUsers.length > 0 && (
+            <AlertDialogComponent
+              AlertTitle={t(
+                'Service.Bundle.ManageTrial.BulkDeleteDialog.Title'
+              )}
+              actionButtonText={t('Utils.Delete')}
+              variantName="destructive"
+              continueButtonDisabled={isBulkDeleting}
+              triggerElement={
+                <Button
+                  type="button"
+                  variant="tertiary"
+                  size="icon"
+                  aria-label={t('Utils.Delete')}
+                  disabled={isBulkDeleting}>
+                  <DeleteIcon className="h-4 w-4" />
+                </Button>
+              }
+              onClickContinue={() => {
+                setIsBulkDeleting(true);
+                removeUsersFromBundleGroups({
+                  serviceInstanceId,
+                  userIds: selectedUsers.map((user) => user.id),
+                });
+              }}>
+              {t('Service.Bundle.ManageTrial.BulkDeleteDialog.Text', {
+                emails:
+                  hiddenCount > 0
+                    ? `${visible} ${t('Service.Bundle.ManageTrial.BulkDeleteDialog.MoreEmails', { count: hiddenCount })}`
+                    : visible,
+              })}
+            </AlertDialogComponent>
+          )}
           <Button
             variant="outline"
             className="border-elevation-border-default-layer-0">

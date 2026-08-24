@@ -1704,6 +1704,11 @@
         "BackButton": "XTM トライアルプラットフォームに戻る",
         "GroupAction": "グループアクション",
         "AddTrialUser": "トライアルユーザーを追加",
+        "BulkDeleteDialog": {
+          "Title": "トライアルからユーザーを削除",
+          "Text": "{emails} をこのトライアルから削除してもよろしいですか?すべての製品へのアクセス権を失います。",
+          "MoreEmails": "他{count}件"
+        },
         "Table": {
           "Email": "メールアドレス",
           "OpenCTIRole": "OpenCTIロール",

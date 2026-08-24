@@ -1,5 +1,6 @@
 import { ManageTrialTable } from '@/components/service/bundle/manage-trial/ManageTrialTable';
 import testRender from '@/utils/test/test-render';
+import { SelectionState } from '@filigran/ui';
 import {
   BundleUserServiceGroupsQuery,
   PlatformIdentifier,
@@ -11,6 +12,12 @@ import { UseMutationOptions } from '@tanstack/react-query';
 import { screen, waitFor, within } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const emptySelection: SelectionState = {
+  selectAll: false,
+  selectedIds: new Set<string>(),
+  excludedIds: new Set<string>(),
+};
 
 interface MockActionsCellRow {
   id: string;
@@ -124,7 +131,13 @@ describe('ManageTrialTable', () => {
       isLoading: false,
     });
 
-    testRender(<ManageTrialTable serviceInstanceId="bundle-1" />);
+    testRender(
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
+    );
 
     expect(await screen.findByText('user1@filigran.io')).toBeInTheDocument();
   });
@@ -136,7 +149,13 @@ describe('ManageTrialTable', () => {
       isLoading: false,
     });
 
-    testRender(<ManageTrialTable serviceInstanceId="bundle-1" />);
+    testRender(
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
+    );
 
     expect(await screen.findByText('Utils.Error')).toBeInTheDocument();
   });
@@ -148,7 +167,13 @@ describe('ManageTrialTable', () => {
       isLoading: false,
     });
 
-    testRender(<ManageTrialTable serviceInstanceId="bundle-1" />);
+    testRender(
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
+    );
 
     expect(
       await screen.findByText('Service.Bundle.ManageTrial.Table.NoUsers')
@@ -162,7 +187,13 @@ describe('ManageTrialTable', () => {
       isLoading: false,
     });
 
-    testRender(<ManageTrialTable serviceInstanceId="bundle-1" />);
+    testRender(
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
+    );
 
     const lastCall =
       graphqlMocks.useBundleUserServiceGroupsQuery.mock.calls.at(-1);
@@ -181,7 +212,11 @@ describe('ManageTrialTable', () => {
     });
 
     const { user } = testRender(
-      <ManageTrialTable serviceInstanceId="bundle-1" />
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
     );
 
     const dialog = await openDeleteDialog(user);
@@ -213,7 +248,11 @@ describe('ManageTrialTable', () => {
     );
 
     const { user } = testRender(
-      <ManageTrialTable serviceInstanceId="bundle-1" />
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
     );
 
     const dialog = await openDeleteDialog(user);
@@ -240,7 +279,11 @@ describe('ManageTrialTable', () => {
     );
 
     const { user } = testRender(
-      <ManageTrialTable serviceInstanceId="bundle-1" />
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
     );
 
     const dialog = await openDeleteDialog(user);

@@ -1704,6 +1704,11 @@
         "BackButton": "Retour à la plateforme d'essai XTM",
         "GroupAction": "Action groupée",
         "AddTrialUser": "Ajouter un utilisateur d'essai",
+        "BulkDeleteDialog": {
+          "Title": "Retirer les utilisateurs de l'essai",
+          "Text": "Voulez-vous vraiment retirer {emails} de cet essai ? Ils perdront l'accès à tous les produits.",
+          "MoreEmails": "+{count} de plus"
+        },
         "Table": {
           "Email": "Email",
           "OpenCTIRole": "Rôle OpenCTI",

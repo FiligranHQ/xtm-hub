@@ -15,10 +15,12 @@ import { bundleUserServiceGroupsKeys } from '@graphql/service-group/service-grou
 import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 
 interface ManageTrialTableProps {
   serviceInstanceId: string;
+  selection: SelectionState;
+  onSelectionChange: Dispatch<SetStateAction<SelectionState>>;
 }
 
 interface ManageTrialTableRow {
@@ -38,14 +40,11 @@ const findRoleName = (
 
 export const ManageTrialTable = ({
   serviceInstanceId,
+  selection,
+  onSelectionChange,
 }: ManageTrialTableProps) => {
   const t = useTranslations();
   const queryClient = useQueryClient();
-  const [selection, setSelection] = useState<SelectionState>({
-    selectAll: false,
-    selectedIds: new Set<string>(),
-    excludedIds: new Set<string>(),
-  });
   const [deletingUserId, setDeletingUserId] = useState<string | undefined>(
     undefined
   );
@@ -180,7 +179,7 @@ export const ManageTrialTable = ({
         selectionOptions={{
           selectionState: {
             state: selection,
-            onSelectionChange: setSelection,
+            onSelectionChange: onSelectionChange,
           },
         }}
       />

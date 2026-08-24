@@ -2,10 +2,25 @@ import { ManageTrialHeader } from '@/components/service/bundle/manage-trial/Mana
 import { mockGraphqlQuery } from '@/utils/test/msw/graphql-api';
 import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';
-import { BundleUserServiceGroupsQuery, UsersQuery } from '@graphql/generated';
+import {
+  BundleUserServiceGroupsQuery,
+  RemoveUsersFromBundleGroupsMutationVariables,
+  UsersQuery,
+} from '@graphql/generated';
 import { mockUserConnection } from '@graphql/mocks';
-import { screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { screen, waitFor, within } from '@testing-library/react';
+import { graphql, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const toastMock = vi.hoisted(() => vi.fn());
+
+vi.mock('@filigran/ui', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@filigran/ui')>()),
+  toast: toastMock,
+}));
+
+const GQL_OPERATION_REMOVE_USERS_FROM_BUNDLE_GROUPS =
+  'RemoveUsersFromBundleGroups';
 
 const bundleUserServiceGroupsResponse: BundleUserServiceGroupsQuery = {
   __typename: 'Query',
@@ -17,18 +32,37 @@ const usersResponse: UsersQuery = {
   users: mockUserConnection({ edges: [] }),
 };
 
+const setupQueryMocks = () => {
+  mswServer.use(
+    mockGraphqlQuery({
+      queryName: 'BundleUserServiceGroups',
+      data: bundleUserServiceGroupsResponse,
+    }),
+    mockGraphqlQuery({ queryName: 'Users', data: usersResponse })
+  );
+};
+
+const openBulkDeleteDialog = async (user: {
+  click: (el: Element) => unknown;
+}) => {
+  await user.click(screen.getByLabelText('Utils.Delete'));
+  return screen.getByRole('alertdialog');
+};
+
 describe('ManageTrialHeader', () => {
+  beforeEach(() => {
+    toastMock.mockReset();
+  });
+
   it('opens the add trial user dialog when the button is clicked', async () => {
-    mswServer.use(
-      mockGraphqlQuery({
-        queryName: 'BundleUserServiceGroups',
-        data: bundleUserServiceGroupsResponse,
-      }),
-      mockGraphqlQuery({ queryName: 'Users', data: usersResponse })
-    );
+    setupQueryMocks();
 
     const { user } = testRender(
-      <ManageTrialHeader serviceInstanceId="bundle-1" />
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        selectedUsers={[]}
+        onUsersRemoved={vi.fn()}
+      />
     );
 
     expect(
@@ -44,5 +78,124 @@ describe('ManageTrialHeader', () => {
     expect(
       await screen.findByText('Service.Bundle.ManageTrial.AddUserDialog.Title')
     ).toBeInTheDocument();
+  });
+
+  it('does not show the bulk-delete button when no users are selected', () => {
+    setupQueryMocks();
+
+    testRender(
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        selectedUsers={[]}
+        onUsersRemoved={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByLabelText('Utils.Delete')).not.toBeInTheDocument();
+  });
+
+  it('shows the bulk-delete button and dialog with the correct title and text keys when users are selected', async () => {
+    setupQueryMocks();
+
+    const { user } = testRender(
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        selectedUsers={[
+          { id: 'user-1', email: 'user1@filigran.io' },
+          { id: 'user-2', email: 'user2@filigran.io' },
+        ]}
+        onUsersRemoved={vi.fn()}
+      />
+    );
+
+    const dialog = await openBulkDeleteDialog(user);
+
+    expect(
+      within(dialog).getByText(
+        'Service.Bundle.ManageTrial.BulkDeleteDialog.Title'
+      )
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(
+        'Service.Bundle.ManageTrial.BulkDeleteDialog.Text'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('calls the remove mutation with every selected user id, shows a success toast and clears the selection', async () => {
+    setupQueryMocks();
+    let capturedVariables:
+      RemoveUsersFromBundleGroupsMutationVariables | undefined;
+    mswServer.use(
+      graphql.mutation(
+        GQL_OPERATION_REMOVE_USERS_FROM_BUNDLE_GROUPS,
+        async ({ variables }) => {
+          capturedVariables =
+            variables as RemoveUsersFromBundleGroupsMutationVariables;
+          return HttpResponse.json({
+            data: { removeUsersFromBundleGroups: capturedVariables.userIds },
+          });
+        }
+      )
+    );
+
+    const onUsersRemoved = vi.fn();
+    const { user } = testRender(
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        selectedUsers={[
+          { id: 'user-1', email: 'user1@filigran.io' },
+          { id: 'user-2', email: 'user2@filigran.io' },
+        ]}
+        onUsersRemoved={onUsersRemoved}
+      />
+    );
+
+    const dialog = await openBulkDeleteDialog(user);
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Utils.Delete' })
+    );
+
+    await waitFor(() => {
+      expect(capturedVariables).toEqual({
+        serviceInstanceId: 'bundle-1',
+        userIds: ['user-1', 'user-2'],
+      });
+    });
+    expect(toastMock).toHaveBeenCalledWith({ title: 'Utils.Success' });
+    expect(onUsersRemoved).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows a destructive toast and keeps the selection when the removal fails', async () => {
+    setupQueryMocks();
+    mswServer.use(
+      graphql.mutation(GQL_OPERATION_REMOVE_USERS_FROM_BUNDLE_GROUPS, () =>
+        HttpResponse.json({ errors: [{ message: 'UNKNOWN_ERROR' }] })
+      )
+    );
+
+    const onUsersRemoved = vi.fn();
+    const { user } = testRender(
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        selectedUsers={[{ id: 'user-1', email: 'user1@filigran.io' }]}
+        onUsersRemoved={onUsersRemoved}
+      />
+    );
+
+    const dialog = await openBulkDeleteDialog(user);
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Utils.Delete' })
+    );
+
+    await waitFor(() => {
+      expect(toastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variant: 'destructive',
+          title: 'Utils.Error',
+        })
+      );
+    });
+    expect(onUsersRemoved).not.toHaveBeenCalled();
   });
 });
