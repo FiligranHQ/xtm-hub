@@ -1612,6 +1612,41 @@ describe('deployment app', () => {
           });
         });
 
+        it('should delete the Auth0 audience of cancelled standalone trials', async () => {
+          const deleteAudienceSpy = vi.spyOn(
+            auth0ClientMock,
+            'deleteAudienceAPI'
+          );
+
+          const standalone =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                hub_status: DeploymentRequestHubStatus.Active,
+                platform_id: uuidv4(),
+              }
+            );
+
+          const bundle =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                type: DeploymentRequestDeploymentType.Bundle,
+                platform_identifier: null,
+                hub_status: DeploymentRequestHubStatus.Pending,
+                actual_state: DeploymentRequestPlatformState.Unprovisioned,
+              }
+            );
+
+          await DeploymentApp.updateDeploymentRequest({
+            id: bundle.id as DeploymentRequestId,
+            actual_state: DeploymentRequestPlatformState.Active,
+          });
+
+          expect(deleteAudienceSpy).toHaveBeenCalledWith(
+            standalone.organization_requester_id,
+            standalone.platform_id
+          );
+        });
+
         it('should not cancel standalone trials of another organization', async () => {
           const standalone =
             await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(

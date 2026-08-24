@@ -1303,6 +1303,7 @@ const cancelOngoingStandaloneTrialsForBundle = async (
       isAdmin: false,
       cancellationReason: BUNDLE_ACTIVATION_CANCELLATION_REASON,
     });
+    await deleteDeploymentRequestAudience(trial);
   }
 };
 
