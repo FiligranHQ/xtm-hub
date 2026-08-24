@@ -4,7 +4,9 @@ import {
   DeploymentRequestPlatformRegion,
   PlatformIdentifier,
 } from '../../../__generated__/resolvers-types';
-import DeploymentRequestModel from '../../../model/kanel/public/DeploymentRequest';
+import DeploymentRequestModel, {
+  DeploymentRequestId,
+} from '../../../model/kanel/public/DeploymentRequest';
 import { DeploymentRequestDomain } from '../deployment.domain';
 import {
   bundleQuotaKey,
@@ -19,159 +21,198 @@ const QUOTA_HOLDING_HUB_STATUSES = [
   DeploymentRequestHubStatus.Provisioning,
 ];
 
-const promoteOrFreePlace = async (
-  key: QuotaKey
-): Promise<DeploymentRequestModel | undefined> => {
-  const promotedRequest =
-    await DeploymentRequestDomain.setFirstQueuedRequestAsPending(key);
+type TakeQuotaInput =
+  | {
+      type: DeploymentRequestDeploymentType.Bundle;
+      region: DeploymentRequestPlatformRegion;
+      products: PlatformIdentifier[];
+    }
+  | {
+      type: DeploymentRequestDeploymentType.Trial;
+      region: DeploymentRequestPlatformRegion;
+      platformIdentifier: PlatformIdentifier | null;
+      parentId: DeploymentRequestId | null;
+    };
 
-  if (promotedRequest) {
-    return promotedRequest;
-  }
-
-  await DeploymentQuotaDomain.freePlace(key);
-  return undefined;
-};
-
-const reserveProductPlacesOfBundle = async (
+const loadBundleProducts = async (
   bundle: DeploymentRequestModel
-): Promise<void> => {
+): Promise<PlatformIdentifier[]> => {
   const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
     parent_id: bundle.id,
   });
 
-  const platformIdentifiers = children
+  return children
     .map((child) => child.platform_identifier)
     .filter(
       (identifier): identifier is PlatformIdentifier => identifier !== null
-    )
-    .sort((a, b) => a.localeCompare(b));
+    );
+};
 
-  for (const platformIdentifier of platformIdentifiers) {
+const reserveProductPlaces = async (
+  products: PlatformIdentifier[],
+  region: DeploymentRequestPlatformRegion
+): Promise<void> => {
+  for (const platformIdentifier of [...products].sort((a, b) =>
+    a.localeCompare(b)
+  )) {
     await DeploymentQuotaDomain.reservePlace(
-      trialQuotaKey(platformIdentifier, bundle.region),
+      trialQuotaKey(platformIdentifier, region),
       { blocking: false }
     );
   }
 };
 
-const releaseBundleChildQuota = async (
-  platformIdentifier: PlatformIdentifier,
-  region: DeploymentRequestPlatformRegion
-): Promise<DeploymentRequestModel | undefined> => {
-  const trialKey = trialQuotaKey(platformIdentifier, region);
-
-  const promotedTrial =
-    await DeploymentRequestDomain.setFirstQueuedRequestAsPending(trialKey);
-  if (promotedTrial) {
-    await DeploymentQuotaDomain.reservePlace(bundleQuotaKey(region), {
-      blocking: false,
-    });
-    return promotedTrial;
+const takeQuotaInputOf = async (
+  request: DeploymentRequestModel
+): Promise<TakeQuotaInput> => {
+  if (request.type === DeploymentRequestDeploymentType.Bundle) {
+    return {
+      type: DeploymentRequestDeploymentType.Bundle,
+      region: request.region,
+      products: await loadBundleProducts(request),
+    };
   }
 
-  await DeploymentQuotaDomain.freePlace(trialKey);
-  return undefined;
+  return {
+    type: DeploymentRequestDeploymentType.Trial,
+    region: request.region,
+    platformIdentifier: request.platform_identifier,
+    parentId: request.parent_id,
+  };
 };
 
-const releaseStandaloneTrialQuota = async (
-  platformIdentifier: PlatformIdentifier,
-  region: DeploymentRequestPlatformRegion
+const promoteNextQueuedRequest = async (
+  keys: QuotaKey[]
 ): Promise<DeploymentRequestModel | undefined> => {
-  const bundleKey = bundleQuotaKey(region);
-  const trialKey = trialQuotaKey(platformIdentifier, region);
+  for (const key of keys) {
+    const candidate = await DeploymentRequestDomain.loadFirstQueuedRequest(key);
+    if (!candidate) {
+      continue;
+    }
 
-  const promotedBundle =
-    await DeploymentRequestDomain.setFirstQueuedRequestAsPending(bundleKey);
-  if (promotedBundle) {
-    await DeploymentQuotaDomain.freePlace(trialKey);
-    await reserveProductPlacesOfBundle(promotedBundle);
-    return promotedBundle;
+    const { isPlaceAvailable } = await DeploymentQuotaApp.takeQuotaForRequest(
+      await takeQuotaInputOf(candidate)
+    );
+    if (isPlaceAvailable) {
+      return DeploymentRequestDomain.setRequestAsPending(candidate);
+    }
   }
 
-  const promotedTrial =
-    await DeploymentRequestDomain.setFirstQueuedRequestAsPending(trialKey);
-  if (promotedTrial) {
-    return promotedTrial;
-  }
-
-  await DeploymentQuotaDomain.freePlace(bundleKey);
-  await DeploymentQuotaDomain.freePlace(trialKey);
   return undefined;
 };
 
 export const DeploymentQuotaApp = {
-  takeBundleQuota: async (
-    region: DeploymentRequestPlatformRegion,
-    products: PlatformIdentifier[]
+  takeQuotaForRequest: async (
+    input: TakeQuotaInput
   ): Promise<{ isPlaceAvailable: boolean }> => {
-    const { isPlaceAvailable } = await DeploymentQuotaDomain.reservePlace(
-      bundleQuotaKey(region)
-    );
-
-    if (isPlaceAvailable) {
-      for (const platformIdentifier of [...products].sort((a, b) =>
-        a.localeCompare(b)
-      )) {
-        await DeploymentQuotaDomain.reservePlace(
-          trialQuotaKey(platformIdentifier, region),
-          { blocking: false }
-        );
+    if (input.type === DeploymentRequestDeploymentType.Bundle) {
+      const { isPlaceAvailable } = await DeploymentQuotaDomain.reservePlace(
+        bundleQuotaKey(input.region)
+      );
+      if (isPlaceAvailable) {
+        await reserveProductPlaces(input.products, input.region);
       }
+      return { isPlaceAvailable };
     }
 
-    return { isPlaceAvailable };
-  },
+    if (input.parentId !== null || input.platformIdentifier === null) {
+      return { isPlaceAvailable: true };
+    }
 
-  takeStandaloneTrialQuota: async (
-    platformIdentifier: PlatformIdentifier,
-    region: DeploymentRequestPlatformRegion
-  ): Promise<{ isPlaceAvailable: boolean }> => {
     const { isPlaceAvailable } = await DeploymentQuotaDomain.reservePlace(
-      trialQuotaKey(platformIdentifier, region)
+      trialQuotaKey(input.platformIdentifier, input.region)
     );
-
     if (isPlaceAvailable) {
-      await DeploymentQuotaDomain.reservePlace(bundleQuotaKey(region), {
+      await DeploymentQuotaDomain.reservePlace(bundleQuotaKey(input.region), {
         blocking: false,
       });
     }
-
     return { isPlaceAvailable };
   },
 
   releaseQuotaForRequest: async (
     request: DeploymentRequestModel,
-    previousHubStatus: DeploymentRequestHubStatus
+    previousHubStatus: DeploymentRequestHubStatus,
+    { promote = true }: { promote?: boolean } = {}
   ): Promise<DeploymentRequestModel | undefined> => {
     if (!QUOTA_HOLDING_HUB_STATUSES.includes(previousHubStatus)) {
       return undefined;
     }
 
     if (request.type === DeploymentRequestDeploymentType.Bundle) {
-      const promotedBundle = await promoteOrFreePlace(
-        bundleQuotaKey(request.region)
-      );
-      if (promotedBundle) {
-        await reserveProductPlacesOfBundle(promotedBundle);
-      }
-      return promotedBundle;
+      await DeploymentQuotaDomain.freePlace(bundleQuotaKey(request.region));
+
+      return promote
+        ? promoteNextQueuedRequest([bundleQuotaKey(request.region)])
+        : undefined;
     }
 
     if (request.platform_identifier === null) {
       return undefined;
     }
 
+    const trialKey = trialQuotaKey(request.platform_identifier, request.region);
+    await DeploymentQuotaDomain.freePlace(trialKey);
+
     if (request.parent_id !== null) {
-      return releaseBundleChildQuota(
-        request.platform_identifier,
-        request.region
-      );
+      return promote ? promoteNextQueuedRequest([trialKey]) : undefined;
     }
 
-    return releaseStandaloneTrialQuota(
-      request.platform_identifier,
-      request.region
+    await DeploymentQuotaDomain.freePlace(bundleQuotaKey(request.region));
+
+    return promote
+      ? promoteNextQueuedRequest([bundleQuotaKey(request.region), trialKey])
+      : undefined;
+  },
+
+  applyQuotaCapacityChange: async ({
+    platformIdentifier,
+    region,
+    newCapacity,
+    onRequestMoved,
+  }: {
+    platformIdentifier: PlatformIdentifier;
+    region: DeploymentRequestPlatformRegion;
+    newCapacity: number;
+    onRequestMoved: (request: DeploymentRequestModel) => Promise<void>;
+  }): Promise<void> => {
+    const trialKey = trialQuotaKey(platformIdentifier, region);
+
+    await DeploymentQuotaDomain.withLockedQuotaTransaction(
+      [bundleQuotaKey(region), trialKey],
+      async () => {
+        const { newAvailability } =
+          await DeploymentQuotaDomain.updateQuotaCapacity({
+            key: trialKey,
+            newCapacity,
+          });
+
+        for (let i = 0; i < -newAvailability; i++) {
+          const demotedRequest =
+            await DeploymentRequestDomain.setLastPendingRequestAsQueued(
+              trialKey
+            );
+          if (!demotedRequest) {
+            break;
+          }
+
+          await DeploymentQuotaApp.releaseQuotaForRequest(
+            demotedRequest,
+            DeploymentRequestHubStatus.Pending,
+            { promote: false }
+          );
+          await onRequestMoved(demotedRequest);
+        }
+
+        for (let i = 0; i < newAvailability; i++) {
+          const promotedRequest = await promoteNextQueuedRequest([trialKey]);
+          if (!promotedRequest) {
+            break;
+          }
+
+          await onRequestMoved(promotedRequest);
+        }
+      }
     );
   },
 };

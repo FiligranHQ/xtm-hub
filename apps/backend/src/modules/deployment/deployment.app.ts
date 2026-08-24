@@ -342,38 +342,13 @@ export const DeploymentApp = {
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
     const user = requestContext.requireUser();
-    const key = trialQuotaKey(platformIdentifier, region);
-    await DeploymentQuotaDomain.withLockedQuotaTransaction([key], async () => {
-      const { newAvailability } =
-        await DeploymentQuotaDomain.updateQuotaCapacity({
-          key,
-          newCapacity,
-        });
 
-      if (newAvailability < 0) {
-        for (let i = 0; i < -newAvailability; i++) {
-          const updatedRequest =
-            await DeploymentRequestDomain.setLastPendingRequestAsQueued(key);
-
-          if (!updatedRequest) {
-            break;
-          }
-
-          await sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
-          await DeploymentQuotaDomain.freePlace(key);
-        }
-      } else if (newAvailability > 0) {
-        for (let i = 0; i < newAvailability; i++) {
-          const updatedRequest =
-            await DeploymentRequestDomain.setFirstQueuedRequestAsPending(key);
-          if (!updatedRequest) {
-            break;
-          }
-
-          await sendUpdateDeploymentTelemetryEvent(updatedRequest, user.id);
-          await DeploymentQuotaDomain.reservePlace(key);
-        }
-      }
+    await DeploymentQuotaApp.applyQuotaCapacityChange({
+      platformIdentifier,
+      region,
+      newCapacity,
+      onRequestMoved: (movedRequest) =>
+        sendUpdateDeploymentTelemetryEvent(movedRequest, user.id),
     });
 
     return { success: true };
@@ -482,8 +457,7 @@ export const DeploymentApp = {
 
   releaseDeploymentRequestPlace: async (
     previousHubStatus: DeploymentRequestHubStatus,
-    request: DeploymentRequestModel,
-    userId: UserId
+    request: DeploymentRequestModel
   ) => {
     const promotedRequest = await DeploymentQuotaApp.releaseQuotaForRequest(
       request,
@@ -491,7 +465,9 @@ export const DeploymentApp = {
     );
 
     if (promotedRequest) {
-      await sendUpdateDeploymentTelemetryEvent(promotedRequest, userId);
+      const user = requestContext.requireUser();
+
+      await sendUpdateDeploymentTelemetryEvent(promotedRequest, user.id);
     }
   },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
@@ -679,11 +655,12 @@ const resolveHubStatus = async ({
     return inheritedHubStatus ?? DeploymentRequestHubStatus.Pending;
   }
 
-  const { isPlaceAvailable } =
-    await DeploymentQuotaApp.takeStandaloneTrialQuota(
-      platformIdentifier,
-      region
-    );
+  const { isPlaceAvailable } = await DeploymentQuotaApp.takeQuotaForRequest({
+    type: DeploymentRequestDeploymentType.Trial,
+    region,
+    platformIdentifier,
+    parentId,
+  });
 
   return isPlaceAvailable
     ? DeploymentRequestHubStatus.Pending
@@ -816,9 +793,12 @@ const createBundleDeploymentRequest = async ({
       ),
     ],
     async () => {
-      const { isPlaceAvailable } = await DeploymentQuotaApp.takeBundleQuota(
-        input.region,
-        products
+      const { isPlaceAvailable } = await DeploymentQuotaApp.takeQuotaForRequest(
+        {
+          type: DeploymentRequestDeploymentType.Bundle,
+          region: input.region,
+          products,
+        }
       );
       const bundleHubStatus = isPlaceAvailable
         ? DeploymentRequestHubStatus.Pending
@@ -1021,8 +1001,7 @@ const applyCancellationToDeploymentRequest = async ({
       }
       await DeploymentApp.releaseDeploymentRequestPlace(
         previousHubStatus,
-        deploymentRequest,
-        userId
+        deploymentRequest
       );
 
       return updatedDeploymentRequest;
@@ -1105,8 +1084,7 @@ const applyExpirationToDeploymentRequest = async (
 
       await DeploymentApp.releaseDeploymentRequestPlace(
         previousHubStatus,
-        deploymentRequest,
-        SYSTEM_USER_UUID
+        deploymentRequest
       );
 
       return updatedDeploymentRequest;

@@ -79,7 +79,6 @@ import { TestHelper } from '../../../tests/helper/test.helper';
 import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
-import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import { RegistrationDomain } from '../registration/registration.domain';
@@ -3548,8 +3547,6 @@ describe('deployment app', () => {
   });
 
   describe('releaseDeploymentRequestPlace', () => {
-    const RELEASING_USER_ID = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2
-      .ID as UserId;
     let freePlaceSpy: MockInstance;
     beforeEach(() => {
       freePlaceSpy = vi
@@ -3576,8 +3573,7 @@ describe('deployment app', () => {
 
           await DeploymentApp.releaseDeploymentRequestPlace(
             deploymentRequest!.hub_status,
-            deploymentRequest!,
-            RELEASING_USER_ID
+            deploymentRequest!
           );
 
           expect(freePlaceSpy).not.toHaveBeenCalled();
@@ -3585,74 +3581,12 @@ describe('deployment app', () => {
       );
     });
 
-    it('should set one queued request as pending and not free place', async () => {
-      const deploymentRequestToRelease =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            hub_status: DeploymentRequestHubStatus.Active,
-          }
-        );
-      const queuedDeploymentRequest = {
-        ...deploymentRequestToRelease!,
-        hub_status: DeploymentRequestHubStatus.Pending,
-      };
-      const setFirstQueuedRequestAsPendingSpy = vi
-        .spyOn(DeploymentRequestDomain, 'setFirstQueuedRequestAsPending')
-        .mockImplementation(async (key) =>
-          key.type === DeploymentRequestDeploymentType.Trial
-            ? queuedDeploymentRequest
-            : undefined
-        );
-
-      await DeploymentApp.releaseDeploymentRequestPlace(
-        deploymentRequestToRelease!.hub_status,
-        deploymentRequestToRelease!,
-        RELEASING_USER_ID
-      );
-
-      expect(setFirstQueuedRequestAsPendingSpy).toHaveBeenCalledWith(
-        trialQuotaKey(
-          deploymentRequestToRelease!.platform_identifier!,
-          deploymentRequestToRelease!.region
-        )
-      );
-      expect(freePlaceSpy).not.toHaveBeenCalled();
-    });
-
-    it('should free place when deployment request was not moved to pending', async () => {
-      vi.spyOn(
-        DeploymentRequestDomain,
-        'setFirstQueuedRequestAsPending'
-      ).mockResolvedValue(undefined);
-
-      const deploymentRequest =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            hub_status: DeploymentRequestHubStatus.Active,
-          }
-        );
-
-      await DeploymentApp.releaseDeploymentRequestPlace(
-        deploymentRequest!.hub_status,
-        deploymentRequest!,
-        RELEASING_USER_ID
-      );
-
-      expect(freePlaceSpy).toHaveBeenCalledWith(
-        trialQuotaKey(
-          deploymentRequest!.platform_identifier!,
-          deploymentRequest!.region
-        )
-      );
-    });
-
     describe('telemetry', () => {
-      it('should not send telemetry event when deployment request was not moved to pending', async () => {
-        vi.spyOn(
-          DeploymentRequestDomain,
-          'setFirstQueuedRequestAsPending'
-        ).mockResolvedValue(undefined);
+      beforeEach(async () => {
+        await resetQuotaAvailabilities();
+      });
 
+      it('should not send telemetry event when deployment request was not moved to pending', async () => {
         const deploymentRequest =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -3662,8 +3596,7 @@ describe('deployment app', () => {
 
         await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
-          deploymentRequest!,
-          RELEASING_USER_ID
+          deploymentRequest!
         );
 
         expect(telemetrySpy).not.toHaveBeenCalled();
@@ -3685,17 +3618,6 @@ describe('deployment app', () => {
             }
           );
 
-        vi.spyOn(
-          DeploymentRequestDomain,
-          'setFirstQueuedRequestAsPending'
-        ).mockImplementation(async (key) =>
-          key.type === DeploymentRequestDeploymentType.Trial
-            ? {
-                ...queuedDeploymentRequest!,
-                hub_status: DeploymentRequestHubStatus.Pending,
-              }
-            : undefined
-        );
         const deploymentRequest =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -3705,8 +3627,7 @@ describe('deployment app', () => {
 
         await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
-          deploymentRequest!,
-          RELEASING_USER_ID
+          deploymentRequest!
         );
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({

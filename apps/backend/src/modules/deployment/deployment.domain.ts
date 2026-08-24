@@ -242,20 +242,20 @@ export const DeploymentRequestDomain = {
     return deploymentRequest;
   },
 
-  setFirstQueuedRequestAsPending: async (
+  loadFirstQueuedRequest: async (
     key: QuotaKey
   ): Promise<DeploymentRequest | undefined> => {
-    const request = await db<DeploymentRequest>('DeploymentRequest')
+    return db<DeploymentRequest>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
       .modify(scopeToQuotaKey(key))
       .orderBy('ordering', 'asc')
       .first();
+  },
 
-    if (!request) {
-      return undefined;
-    }
-
+  setRequestAsPending: async (
+    request: DeploymentRequest
+  ): Promise<DeploymentRequest | undefined> => {
     const maxPendingOrdering = await DeploymentRequestDomain.getMaxOrdering({
       hub_status: DeploymentRequestHubStatus.Pending,
       platform_identifier: request.platform_identifier,
