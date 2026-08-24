@@ -62,7 +62,6 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('TAXII Feeds').click();
   }
   async fillRssFeed({
     name,
@@ -93,7 +92,6 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('RSS Feeds').click();
   }
 
   async fillStream({
@@ -127,7 +125,6 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('OpenCTI Streams').click();
   }
   async fillCsvFeed({
     name,
@@ -158,7 +155,6 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('CSV Feeds').click();
   }
 
   async fillThirdPartyIntegration({
@@ -204,7 +200,6 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('Third Party integrations').click();
   }
 
   async navigateToIntegration(shortDescription: string) {

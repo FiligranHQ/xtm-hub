@@ -20,8 +20,8 @@ const IntegrationAccordion = ({
 
   return (
     <Accordion
-      type="single"
-      collapsible>
+      type="multiple"
+      defaultValue={[integrationType]}>
       <AccordionItem value={integrationType}>
         <h2 className="m-0">
           <AccordionTrigger className="hover:cursor-pointer">

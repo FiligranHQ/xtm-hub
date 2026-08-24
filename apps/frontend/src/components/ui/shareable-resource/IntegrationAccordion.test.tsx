@@ -25,16 +25,13 @@ describe('IntegrationAccordion', () => {
     ).toBeInTheDocument();
   });
 
-  it('should display the children when the accordion is opened', async () => {
+  it('should display the children by default', () => {
     // Given
-    const { user } = testRender(
+    testRender(
       <IntegrationAccordion integrationType={integrationType}>
         <div>{childrenText}</div>
       </IntegrationAccordion>
     );
-
-    // When
-    await user.click(screen.getByRole('button', { name: triggerLabelPattern }));
 
     // Then
     expect(screen.getByText(childrenText)).toBeInTheDocument();
