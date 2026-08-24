@@ -3,6 +3,7 @@ import { CAPABILITY_BYPASS } from '../../../portal.const';
 
 import {
   OrganizationCapability,
+  PortalCapability,
   ServiceInstance,
 } from '../../../__generated__/resolvers-types';
 import CapabilityPortal from '../../../model/kanel/public/CapabilityPortal';
@@ -98,6 +99,21 @@ export const AuthHelper = {
   userHasBypassCapability: (user: UserLoadUserBy): boolean => {
     return (user.capabilities ?? []).some(
       (c) => c.name === CAPABILITY_BYPASS.name
+    );
+  },
+
+  userHasPortalCapability: (
+    user: UserLoadUserBy | undefined,
+    requiredCapabilities: PortalCapability[]
+  ): boolean => {
+    if (!user) {
+      return false;
+    }
+    if (AuthHelper.userHasBypassCapability(user)) {
+      return true;
+    }
+    return (user.capabilities ?? []).some((c) =>
+      requiredCapabilities.some((capability) => capability === c.name)
     );
   },
 

@@ -1,3 +1,4 @@
+import { type Knex } from 'knex';
 import { db, dbRaw, paginate } from '../../../../../knexfile';
 import {
   Filter,
@@ -37,6 +38,12 @@ import { isEmpty } from '../../../../utils/utils';
 import { RolePortalDomain } from '../../../role-portal/role-portal.domain';
 import { TelemetryApp } from '../../../telemetry/telemetry.app';
 import { TelemetryHelper } from '../../../telemetry/telemetry.helper';
+
+export type LoadUserByFilter = (
+  addPrefixToObject<UserMutator, 'User.'> | UserMutator
+) & {
+  'Organization.id'?: OrganizationId;
+};
 
 export const UserDomain = {
   loadUsers: async (userIds: UserId[]): Promise<User[]> => {
@@ -130,9 +137,25 @@ export const UserDomain = {
   },
 
   loadUserBy: async (
-    field: addPrefixToObject<UserMutator, 'User.'> | UserMutator
+    field: LoadUserByFilter
   ): Promise<UserLoadUserBy | undefined> => {
-    const [foundUser] = await db<UserLoadUserBy>('User').where(field);
+    const { 'Organization.id': organizationId, ...userFilter } = field;
+
+    const restrictToOrganization = (queryBuilder: Knex.QueryBuilder) => {
+      if (!organizationId) {
+        return;
+      }
+      queryBuilder.whereExists(function () {
+        this.select(dbRaw('1'))
+          .from('User_Organization')
+          .whereRaw('"User_Organization"."user_id" = "User"."id"')
+          .andWhere('User_Organization.organization_id', '=', organizationId);
+      });
+    };
+
+    const [foundUser] = await db<UserLoadUserBy>('User')
+      .where(userFilter)
+      .modify(restrictToOrganization);
     if (!foundUser) {
       return;
     }
@@ -161,7 +184,8 @@ export const UserDomain = {
       );
 
     const userQuery = db<UserLoadUserBy>('User')
-      .where(field)
+      .where(userFilter)
+      .modify(restrictToOrganization)
       .leftJoin('User_Organization as UserOrg', 'User.id', 'UserOrg.user_id')
       .leftJoin('User_Organization as selected_user_orga', function () {
         this.on(

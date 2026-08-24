@@ -15,7 +15,13 @@ import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export const PublicMobileMenuButton = () => {
+interface PublicMobileMenuButtonProps {
+  visibleServiceSlugs: string[];
+}
+
+export const PublicMobileMenuButton = ({
+  visibleServiceSlugs,
+}: PublicMobileMenuButtonProps) => {
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
   const t = useTranslations();
@@ -61,7 +67,10 @@ export const PublicMobileMenuButton = () => {
               setOpen(false);
             }
           }}>
-          <PublicNavigation open={true} />
+          <PublicNavigation
+            open={true}
+            visibleServiceSlugs={visibleServiceSlugs}
+          />
         </div>
       </SheetContent>
     </Sheet>

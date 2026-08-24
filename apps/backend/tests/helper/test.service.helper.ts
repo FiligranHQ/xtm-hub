@@ -92,6 +92,7 @@ export const TestServiceHelper = {
           name: 'Default name serviceInstance',
           service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
           tags: [],
+          public: true,
           ...data,
         })
         .returning('*')

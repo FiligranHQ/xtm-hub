@@ -1,7 +1,7 @@
+import { ServiceListFilterMap } from '@/components/service/components/header/ServiceListHeader';
 import { useActiveAndDraftSplit } from '@/components/service/components/service-list-utils';
 import { AppServiceContext } from '@/components/service/components/ServiceContext';
 import ServiceList from '@/components/service/components/ServiceList';
-
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import {
   documentItem,
@@ -14,6 +14,7 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   documentItem_fragment$data,
@@ -25,27 +26,38 @@ import {
   documentsQuery$variables,
 } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { PaginationState } from '@tanstack/react-table';
-import { useState } from 'react';
 import {
   PreloadedQuery,
   usePreloadedQuery,
   useRefetchableFragment,
 } from 'react-relay';
 
-interface OpenAEVScenariosListProps {
+export interface ShareableResourceServiceListProps {
   queryRef: PreloadedQuery<documentsQuery>;
   serviceInstance: serviceInstance_fragment$data;
   search: string;
   onSearchChange: (v: string) => void;
+  type: ShareableResourceType;
+  localStorageKey: ServiceListLocalStorageKey;
+  additionalFilters?: ServiceListFilterMap;
 }
 
-const OpenaevScenariosList = ({
+/**
+ * Mutualizes the behaviour shared by every shareable-resource list (integrations, custom
+ * dashboards, custom views, OpenAEV scenarios, OpenCTI playbooks): loading the documents
+ * connection, splitting active/draft documents, wiring the document CRUD context, and
+ * rendering the paginated `ServiceList`. Resource-specific filters are passed in via
+ * `additionalFilters`.
+ */
+const ShareableResourceServiceList = ({
   queryRef,
   serviceInstance,
   search,
   onSearchChange,
-}: OpenAEVScenariosListProps) => {
+  type,
+  localStorageKey,
+  additionalFilters,
+}: ShareableResourceServiceListProps) => {
   const queryData = usePreloadedQuery<documentsQuery>(
     DocumentsListQuery,
     queryRef
@@ -66,49 +78,32 @@ const OpenaevScenariosList = ({
   const context = useDocumentContext({
     serviceInstance,
     connectionId,
-    type: ShareableResourceType.OPENAEV_SCENARIO,
+    type,
   });
 
-  const { pageSize, setPageSize } = useServiceListLocalStorage(
-    ServiceListLocalStorageKey.OpenAEVScenarios
-  );
+  const { pageSize, setPageSize } = useServiceListLocalStorage(localStorageKey);
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
+  const { pagination, onPaginationChange } = useTablePagination({
     pageSize,
+    setPageSize,
+    onPaginationChange: (nextPagination, nextCursor) => {
+      refetch({
+        count: nextPagination.pageSize,
+        cursor: nextCursor,
+      } satisfies Partial<documentsQuery$variables>);
+    },
   });
-
-  const handleRefetchData = (args?: Partial<documentsQuery$variables>) => {
-    refetch({
-      count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
-      ...args,
-    });
-  };
-
-  const onPaginationChange = (newPaginationValue: PaginationState) => {
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
-  };
 
   return (
     <AppServiceContext {...context}>
-      <AppServiceListLocalStorageKeyContext
-        localStorageKey={ServiceListLocalStorageKey.OpenAEVScenarios}>
+      <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
         <ServiceList
           active={active}
           draft={draft}
           search={search}
           onSearchChange={onSearchChange}
+          additionalFilters={additionalFilters}
+          connectionId={connectionId}
           paginationControls={
             <PaginationControls
               totalCount={data.documents.totalCount}
@@ -124,4 +119,4 @@ const OpenaevScenariosList = ({
   );
 };
 
-export default OpenaevScenariosList;
+export default ShareableResourceServiceList;

@@ -250,6 +250,28 @@ const resolvers: Resolvers = {
         );
       }
     },
+    acceptPendingUserInOrganization: async (
+      _,
+      { user_id, organization_id }
+    ) => {
+      try {
+        const user = await UserOrganizationApp.acceptPendingUserInOrganization({
+          userId: user_id,
+          organizationId: organization_id,
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        return UserHelper.mapUserToGraphqlUser(user);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.AcceptUserInPendingOrgaError
+        );
+      }
+    },
     removePendingUserFromOrganization: async (
       _,
       { user_id, organization_id }

@@ -135,7 +135,7 @@ type Query {
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
   seoServiceInstanceMetadata(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage): [SeoServiceInstanceMetadata!]!
-  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!], includeInaccessible: Boolean): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId!): ServiceInstance
   serviceInstanceByIdAndGrantAccess(service_instance_id: ServiceInstanceId!): ServiceInstance
@@ -183,6 +183,7 @@ type Mutation {
   changeSelectedOrganization(organization_id: OrganizationId!): User
   bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput!): Success
   bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput!): Success
+  acceptPendingUserInOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   removePendingUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   removeUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   editMeUser(input: EditMeUserInput!): User!

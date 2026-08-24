@@ -34,9 +34,12 @@ import {
   SYSTEM_USER_UUID,
 } from '../../../portal.const';
 import {
+  restrictDocumentToAccessibleServiceInstance,
   restrictDocumentToActive,
+  restrictDocumentToPublicServiceInstance,
   restrictDocumentToUserOrganization,
 } from '../../../security/restriction/document';
+import { restrictServiceInstanceToPublic } from '../../../security/restriction/service-instance';
 import { MinioFile } from '../../../thirdparty/minio/types';
 import { stripNulls } from '../../../utils/typescript';
 import {
@@ -287,6 +290,7 @@ export const DocumentDomain = {
     const loadDocumentQuery = db<Document>('Document')
       .select(['Document.*'])
       .tap(restrictDocumentToUserOrganization)
+      .tap(restrictDocumentToAccessibleServiceInstance)
       .where(field)
       .modify(excludeDecouplingTag);
 
@@ -345,6 +349,7 @@ export const DocumentDomain = {
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
       .modify(excludeDecouplingTag)
+      .tap(restrictDocumentToPublicServiceInstance)
       .whereNotExists(function () {
         this.select('*')
           .from('Document_Children')
@@ -416,6 +421,7 @@ export const DocumentDomain = {
           );
       })
       .where('ServiceInstance.slug', '=', serviceSlug)
+      .tap(restrictServiceInstanceToPublic)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
       .modify(excludeDecouplingTag)
@@ -564,6 +570,7 @@ export const DocumentDomain = {
           );
       })
       .modify(excludeDecouplingTag)
+      .tap(restrictDocumentToAccessibleServiceInstance)
       .modify((qb) => {
         if (documentTypes?.length) {
           qb.whereIn('Document.type', documentTypes);
@@ -598,6 +605,7 @@ export const DocumentDomain = {
     const documents = await db<Document>('Document')
       .select('Document.*')
       .join(deployCounts, 'deploy_counts.resource_id', 'Document.id')
+      .tap(restrictDocumentToAccessibleServiceInstance)
       .groupBy(['Document.id'])
       .orderByRaw('MAX("deploy_counts"."deploy_count") DESC')
       .orderBy('Document.id', 'asc')

@@ -1,12 +1,9 @@
 import { defaultLocale, publicLocales } from '@/i18n/config';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { fetchSeoServiceInstances } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
-import SeoServiceInstancesQuery, {
-  seoServiceInstancesQuery,
-} from '@generated/seoServiceInstancesQuery.graphql';
-import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import SettingsQuery, { settingsQuery } from '@generated/settingsQuery.graphql';
 import type { MetadataRoute } from 'next';
 
@@ -46,13 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     await serverFetchGraphQL<settingsQuery>(SettingsQuery);
   const baseURI = settingsResponse.data.settings.base_url_front;
 
-  const seoServiceInstancesResponse =
-    await serverFetchGraphQL<seoServiceInstancesQuery>(
-      SeoServiceInstancesQuery
-    );
-
-  const seoServiceInstancesData = seoServiceInstancesResponse.data
-    .seoServiceInstances as unknown as serviceList_fragment$data[];
+  const seoServiceInstancesData = await fetchSeoServiceInstances();
   const routableSeoServiceInstances = seoServiceInstancesData.filter(
     (service) => service.slug !== null && service.slug !== undefined
   );

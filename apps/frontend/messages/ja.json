@@ -293,6 +293,7 @@
       "SERVICE_DEFINITION_NOT_FOUND": "サービス定義が見つかりませんでした",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "あなたはこれを行うことはできません",
       "SERVICE_INSTANCE_NOT_FOUND": "サービスインスタンスが見つかりません",
+      "SERVICE_INSTANCE_NOT_PUBLIC": "このサービスへのアクセス権がありません",
       "SERVICE_NOT_FOUND": "サービスが見つかりません",
       "SERVICE_NOT_MANAGEABLE": "このサービスは管理できません。",
       "SERVICE_SUBSCRIPTION_ERROR": "サービスにサブスクリプションを追加する際にエラーが発生した",
@@ -673,9 +674,16 @@
   },
   "PendingUserListPage": {
     "TabTitle": "ユーザーリクエスト ({usersCount})",
+    "ActionSuccessApprove": "{email} のユーザー申請を承認しました",
+    "ActionSuccessDeny": "{email} のユーザー申請を拒否しました",
+    "WarningUserAccept": {
+      "Confirm": "確認",
+      "Description": "{email} を組織に受け入れます。デフォルトでは、このユーザーに特別な権限は付与されません。権限を割り当てたり更新したりする場合は、[ユーザー] タブにアクセスしてください。よろしいですか？",
+      "Title": "よろしいですか？"
+    },
     "WarningUserRejection": {
       "Confirm": "確認",
-      "Description": "このユーザーを組織から拒否しようとしています。この操作は取り消せません。本当によろしいですか？",
+      "Description": "{email} を組織から拒否しようとしています。この操作は取り消せません。本当によろしいですか？",
       "Title": "本当によろしいですか？"
     },
     "WarningUsersRejection": {

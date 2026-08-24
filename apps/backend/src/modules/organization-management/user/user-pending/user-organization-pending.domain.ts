@@ -85,6 +85,16 @@ export const UserOrganizationPendingDomain = {
     );
   },
 
+  lockUserOrganizationPending: (
+    user_id: UserId,
+    organization_id: OrganizationId
+  ): Promise<UserOrganizationPending | undefined> => {
+    return db<UserOrganizationPending>('User_Organization_Pending')
+      .where({ user_id, organization_id })
+      .forUpdate()
+      .first();
+  },
+
   countPendingUsersInOrganization: async (
     organization_id: OrganizationId
   ): Promise<number> => {

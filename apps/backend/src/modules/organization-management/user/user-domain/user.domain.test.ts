@@ -71,6 +71,29 @@ describe('users domain', () => {
     expect(response.organization_capabilities).toHaveLength(2);
   });
 
+  describe('loadUserBy with an Organization.id restriction', () => {
+    it('should return the user with all their organizations when they belong to the given organization', async () => {
+      const response = await UserDomain.loadUserBy({
+        'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        'Organization.id': TEST_ORGANIZATIONS.FILIGRAN.ID,
+      });
+
+      expect(response?.email).toEqual(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+      );
+      expect(response?.organization_capabilities).toHaveLength(2);
+    });
+
+    it('should return undefined when the user does not belong to the given organization', async () => {
+      const response = await UserDomain.loadUserBy({
+        'User.id': TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        'Organization.id': TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+
+      expect(response).toBeUndefined();
+    });
+  });
+
   it('should throw FORBIDDEN_ACCESS when Simple User calls EditUser', async () => {
     try {
       requestContext.set(requestContextSimpleUserSecondOrga);

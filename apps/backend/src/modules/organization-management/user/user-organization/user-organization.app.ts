@@ -159,6 +159,47 @@ export const UserOrganizationApp = {
     return user;
   },
 
+  acceptPendingUserInOrganization: async ({
+    userId,
+    organizationId,
+  }: {
+    userId: UserId;
+    organizationId: OrganizationId;
+  }): Promise<UserLoadUserBy | null> => {
+    await securityGuard.assertUserCapabilities(
+      [
+        OrganizationCapability.AdministrateOrganization,
+        OrganizationCapability.ManageAccess,
+      ],
+      organizationId
+    );
+
+    await withTransaction(async () => {
+      const pendingUser =
+        await UserOrganizationPendingDomain.lockUserOrganizationPending(
+          userId,
+          organizationId
+        );
+
+      if (!pendingUser) {
+        return;
+      }
+
+      await UserHelper.acceptPendingUserWithCapabilities({
+        user_id: userId,
+        organization_id: organizationId,
+        orgCapabilities: [],
+      });
+    });
+
+    const user = await UserDomain.loadUserBy({
+      'User.id': userId,
+      'Organization.id': organizationId,
+    });
+
+    return user ?? null;
+  },
+
   sendPendingUsersDigest: async (): Promise<void> => {
     if (!portalConfig.enabled_emails.pending_user_digest) {
       logApp.info('Pending user digest email disabled.');

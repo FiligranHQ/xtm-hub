@@ -63,12 +63,22 @@ const resolvers: Resolvers = {
       return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);
     },
     serviceInstanceByIdAndGrantAccess: async (_, { service_instance_id }) => {
-      return ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-        service_instance_id
-      );
+      try {
+        return await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
+          service_instance_id
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
     },
     serviceInstanceById: async (_, { service_instance_id }) => {
-      return ServiceInstanceApp.loadServiceInstance(service_instance_id);
+      try {
+        return await ServiceInstanceApp.loadServiceInstance(
+          service_instance_id
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
     },
     seoServiceInstances: async () => {
       return ServiceInstanceApp.loadSeoServiceInstances();

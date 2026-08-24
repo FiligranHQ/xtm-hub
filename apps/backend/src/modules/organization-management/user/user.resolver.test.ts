@@ -40,6 +40,7 @@ import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { loginFromProvider } from '../../security-management/authentication/auth-user';
 import { UserAdminApp } from './user-admin/user.admin.app';
 import { UserDomain } from './user-domain/user.domain';
+import { UserOrganizationApp } from './user-organization/user-organization.app';
 import { UserOrganizationDomain } from './user-organization/user-organization.domain';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
 import { UserHelper } from './user.helper';
@@ -837,6 +838,90 @@ describe('user mutation resolver', () => {
       expect(auth0Spy).toBeCalledWith(
         TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL
       );
+    });
+  });
+
+  describe('acceptPendingUserInOrganization', () => {
+    it('should delegate to UserOrganizationApp.acceptPendingUserInOrganization and return mapped user', async () => {
+      const acceptedUser = contextSimpleUserSecondOrga.user;
+      const acceptPendingUserInOrganizationSpy = vi
+        .spyOn(UserOrganizationApp, 'acceptPendingUserInOrganization')
+        .mockResolvedValue(acceptedUser);
+
+      const result = await usersResolver.Mutation!
+        .acceptPendingUserInOrganization!(
+        {},
+        {
+          user_id: acceptedUser.id,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        },
+        contextAdminSecondOrga,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      expect(acceptPendingUserInOrganizationSpy).toHaveBeenCalledWith({
+        userId: acceptedUser.id,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      expect(result).toMatchObject({
+        id: acceptedUser.id,
+        email: acceptedUser.email,
+      });
+
+      acceptPendingUserInOrganizationSpy.mockRestore();
+    });
+
+    it('should return null when app returns null', async () => {
+      const acceptPendingUserInOrganizationSpy = vi
+        .spyOn(UserOrganizationApp, 'acceptPendingUserInOrganization')
+        .mockResolvedValue(null);
+
+      const result = await usersResolver.Mutation!
+        .acceptPendingUserInOrganization!(
+        {},
+        {
+          user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+          organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        },
+        contextAdminSecondOrga,
+        GRAPHQL_RESOLVE_INFO
+      );
+
+      expect(acceptPendingUserInOrganizationSpy).toHaveBeenCalledWith({
+        userId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+      expect(result).toBeNull();
+
+      acceptPendingUserInOrganizationSpy.mockRestore();
+    });
+
+    it('should map errors when accepting a pending user fails', async () => {
+      const acceptPendingUserInOrganizationSpy = vi
+        .spyOn(UserOrganizationApp, 'acceptPendingUserInOrganization')
+        .mockRejectedValue(new Error('accept pending user failed'));
+
+      const testContext = {
+        ...contextAdminSecondOrga,
+        user: {
+          ...contextAdminSecondOrga.user,
+          selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        },
+      };
+
+      await expect(
+        usersResolver.Mutation!.acceptPendingUserInOrganization!(
+          {},
+          {
+            user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+            organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          },
+          testContext,
+          GRAPHQL_RESOLVE_INFO
+        )
+      ).rejects.toBeTruthy();
+
+      acceptPendingUserInOrganizationSpy.mockRestore();
     });
   });
 

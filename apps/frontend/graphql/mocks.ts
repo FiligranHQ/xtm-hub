@@ -862,6 +862,7 @@ export const mockMutation = (overrides?: Partial<Mutation>, _relationshipsToOmit
     relationshipsToOmit.add('Mutation');
     return {
         __typename: 'Mutation',
+        acceptPendingUserInOrganization: overrides && overrides.hasOwnProperty('acceptPendingUserInOrganization') ? overrides.acceptPendingUserInOrganization! : relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit),
         addCapabilitiesToUserServices: overrides && overrides.hasOwnProperty('addCapabilitiesToUserServices') ? overrides.addCapabilitiesToUserServices! : [relationshipsToOmit.has('UserService') ? {} as UserService : mockUserService({}, relationshipsToOmit)],
         addOrganization: overrides && overrides.hasOwnProperty('addOrganization') ? overrides.addOrganization! : relationshipsToOmit.has('Organization') ? {} as Organization : mockOrganization({}, relationshipsToOmit),
         addServicePicture: overrides && overrides.hasOwnProperty('addServicePicture') ? overrides.addServicePicture! : relationshipsToOmit.has('ServiceInstance') ? {} as ServiceInstance : mockServiceInstance({}, relationshipsToOmit),

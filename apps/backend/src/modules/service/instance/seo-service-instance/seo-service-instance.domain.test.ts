@@ -114,6 +114,36 @@ describe('seo-service-instance.domain', () => {
     });
   });
 
+  it('should not load seoServiceInstances of a non-public serviceInstance without the MODIFY_SERVICE_METADATA capability', async () => {
+    const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
+    await TestHelper.serviceInstance.create({
+      id: privateServiceInstanceId,
+      name: `seo-service-instance-${privateServiceInstanceId}`,
+      public: false,
+    });
+    await TestHelper.seoServiceInstance.create({
+      service_instance_id: privateServiceInstanceId,
+      language: 'en' as SEOServiceInstanceLanguage,
+      meta_title: 'title en',
+      meta_description: 'description en',
+    });
+
+    const result = await SeoServiceInstanceDomain.loadSeoServiceInstancesBy({
+      service_instance_id: privateServiceInstanceId,
+    });
+
+    const savedRows = await TestHelper.seoServiceInstance.loadAll({
+      service_instance_id: privateServiceInstanceId,
+    });
+    expect(savedRows).toHaveLength(1);
+    expect(result).toHaveLength(0);
+
+    await TestHelper.seoServiceInstance.delete({
+      service_instance_id: privateServiceInstanceId,
+    });
+    await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
+  });
+
   it('should update seoServiceInstance when editSeoServiceInstanceBy is called and the row already exists', async () => {
     // Given
     await TestHelper.seoServiceInstance.create({

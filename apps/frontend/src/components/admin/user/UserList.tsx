@@ -18,6 +18,7 @@ import { SearchInput } from '@/components/ui/SearchInput';
 import useAdminPath from '@/hooks/use-admin-path';
 import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { useUsersList } from '@/hooks/use-users-list';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
@@ -29,7 +30,7 @@ import {
   UserList_fragment$key,
 } from '@generated/UserList_fragment.graphql';
 import { UserListQuery$variables } from '@generated/UserListQuery.graphql';
-import { ColumnDef, PaginationState, Row } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { graphql, readInlineData, useSubscription } from 'react-relay';
@@ -133,11 +134,6 @@ const UserList = ({ organization }: UserListProps) => {
   }>({
     search: undefined,
     organization: isAdminPath ? organizationFilter : organization,
-  });
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
   });
 
   const { data, refetch } = useUsersList({
@@ -347,13 +343,26 @@ const UserList = ({ organization }: UserListProps) => {
     const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
       count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+      cursor,
       orderBy,
       orderMode,
       ...transformSortingValueToParams(sorting),
       ...args,
     });
   };
+
+  const { pagination, cursor, setPagination, onPaginationChange } =
+    useTablePagination({
+      pageSize,
+      setPageSize,
+      onPaginationChange: (nextPagination, nextCursor) => {
+        handleRefetchData({
+          count: nextPagination.pageSize,
+          cursor: nextCursor,
+        });
+      },
+    });
+
   const onSortingChange = (updater: unknown) => {
     handleSortingChange({
       updater,
@@ -364,21 +373,6 @@ const UserList = ({ organization }: UserListProps) => {
       orderMode,
       handleRefetchData,
     });
-  };
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
   };
 
   const handleInputChange = (inputValue: string) => {

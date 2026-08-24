@@ -141,6 +141,10 @@ type Mutation {
   bulkAcceptPendingUserInOrganization(
     input: BulkPendingUserFromOrganizationInput!
   ): Success @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  acceptPendingUserInOrganization(
+    user_id: UserId!
+    organization_id: OrganizationId!
+  ): User @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
   removePendingUserFromOrganization(
     user_id: UserId!
     organization_id: OrganizationId!
