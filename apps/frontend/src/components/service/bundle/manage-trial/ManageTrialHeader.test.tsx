@@ -94,6 +94,43 @@ describe('ManageTrialHeader', () => {
     expect(screen.queryByLabelText('Utils.Delete')).not.toBeInTheDocument();
   });
 
+  it('disables the GroupAction button when no users are selected', () => {
+    setupQueryMocks();
+
+    testRender(
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        selectedUsers={[]}
+        onUsersRemoved={vi.fn()}
+      />
+    );
+
+    const buttons = screen.getAllByRole('button', {
+      name: 'Service.Bundle.ManageTrial.GroupAction',
+    });
+    expect(buttons.some((button) => button.hasAttribute('disabled'))).toBe(
+      true
+    );
+  });
+
+  it('enables the GroupAction button when users are selected', () => {
+    setupQueryMocks();
+
+    testRender(
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        selectedUsers={[{ id: 'user-1', email: 'user1@filigran.io' }]}
+        onUsersRemoved={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Service.Bundle.ManageTrial.GroupAction',
+      })
+    ).not.toBeDisabled();
+  });
+
   it('shows the bulk-delete button and dialog with the correct title and text keys when users are selected', async () => {
     setupQueryMocks();
 

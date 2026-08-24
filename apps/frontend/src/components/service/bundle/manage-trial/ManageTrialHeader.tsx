@@ -3,7 +3,14 @@
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { ArrowUpwardIcon, DeleteIcon } from '@filigran/icon';
-import { Button, toast } from '@filigran/ui';
+import {
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  toast,
+} from '@filigran/ui';
 import {
   BundleUserServiceGroupsQuery,
   useRemoveUsersFromBundleGroupsMutation,
@@ -93,43 +100,75 @@ export const ManageTrialHeader = ({
         </Button>
         <div className="flex flex-wrap items-center gap-s">
           {selectedUsers.length > 0 && (
-            <AlertDialogComponent
-              AlertTitle={t(
-                'Service.Bundle.ManageTrial.BulkDeleteDialog.Title'
-              )}
-              actionButtonText={t('Utils.Delete')}
-              variantName="destructive"
-              continueButtonDisabled={isBulkDeleting}
-              triggerElement={
-                <Button
-                  type="button"
-                  variant="tertiary"
-                  size="icon"
-                  aria-label={t('Utils.Delete')}
-                  disabled={isBulkDeleting}>
-                  <DeleteIcon className="h-4 w-4" />
-                </Button>
-              }
-              onClickContinue={() => {
-                setIsBulkDeleting(true);
-                removeUsersFromBundleGroups({
-                  serviceInstanceId,
-                  userIds: selectedUsers.map((user) => user.id),
-                });
-              }}>
-              {t('Service.Bundle.ManageTrial.BulkDeleteDialog.Text', {
-                emails:
-                  hiddenCount > 0
-                    ? `${visible} ${t('Service.Bundle.ManageTrial.BulkDeleteDialog.MoreEmails', { count: hiddenCount })}`
-                    : visible,
-              })}
-            </AlertDialogComponent>
+            <TooltipProvider>
+              <Tooltip>
+                <AlertDialogComponent
+                  AlertTitle={t(
+                    'Service.Bundle.ManageTrial.BulkDeleteDialog.Title'
+                  )}
+                  actionButtonText={t('Utils.Delete')}
+                  variantName="destructive"
+                  continueButtonDisabled={isBulkDeleting}
+                  triggerElement={
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="tertiary"
+                        size="icon"
+                        aria-label={t('Utils.Delete')}
+                        disabled={isBulkDeleting}>
+                        <DeleteIcon className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                  }
+                  onClickContinue={() => {
+                    setIsBulkDeleting(true);
+                    removeUsersFromBundleGroups({
+                      serviceInstanceId,
+                      userIds: selectedUsers.map((user) => user.id),
+                    });
+                  }}>
+                  {t('Service.Bundle.ManageTrial.BulkDeleteDialog.Text', {
+                    emails:
+                      hiddenCount > 0
+                        ? `${visible} ${t('Service.Bundle.ManageTrial.BulkDeleteDialog.MoreEmails', { count: hiddenCount })}`
+                        : visible,
+                  })}
+                </AlertDialogComponent>
+                <TooltipContent className="bg-elevation-border-subtle-layer-0 dark:bg-elevation-border-subtle-layer-0">
+                  {t('Service.Bundle.ManageTrial.BulkDeleteTooltip')}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
-          <Button
-            variant="outline"
-            className="border-elevation-border-default-layer-0">
-            {t('Service.Bundle.ManageTrial.GroupAction')}
-          </Button>
+          {selectedUsers.length === 0 ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger
+                  asChild
+                  className="w-fit"
+                  style={{ cursor: 'unset' }}>
+                  <div>
+                    <Button
+                      variant="outline"
+                      disabled
+                      className="border-elevation-border-default-layer-0">
+                      {t('Service.Bundle.ManageTrial.GroupAction')}
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="bg-elevation-border-subtle-layer-0 dark:bg-elevation-border-subtle-layer-0">
+                  {t('Service.Bundle.ManageTrial.GroupActionDisabledTooltip')}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <Button
+              variant="outline"
+              className="border-elevation-border-default-layer-0">
+              {t('Service.Bundle.ManageTrial.GroupAction')}
+            </Button>
+          )}
           <Button
             variant="default"
             onClick={() => setIsAddUserDialogOpen(true)}>

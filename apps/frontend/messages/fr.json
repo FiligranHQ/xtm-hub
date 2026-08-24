@@ -1703,6 +1703,8 @@
         "Description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
         "BackButton": "Retour à la plateforme d'essai XTM",
         "GroupAction": "Action groupée",
+        "GroupActionDisabledTooltip": "Vous devez sélectionner des utilisateurs dans la liste pour appliquer une action groupée",
+        "BulkDeleteTooltip": "Vous pouvez supprimer les utilisateurs sélectionnés",
         "AddTrialUser": "Ajouter un utilisateur d'essai",
         "BulkDeleteDialog": {
           "Title": "Retirer les utilisateurs de l'essai",
