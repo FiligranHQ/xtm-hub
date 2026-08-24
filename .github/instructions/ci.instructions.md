@@ -66,6 +66,11 @@ Removing `skip-feature-env` from an open pull request triggers a redeploy throug
   one, switch it to `node-version-file` at the same time.
 - Always `corepack enable` and let Yarn resolve from the `packageManager` field in the root `package.json`. Do not
   pass an explicit version to `corepack prepare`; a pinned version silently diverges from `packageManager`.
+- **Do not set `cache: yarn` on `actions/setup-node`.** That option shells out to the runner's preinstalled global
+  yarn 1.x to locate the cache folder, and it runs *before* your `corepack enable` step, so it fails with
+  `This project's package.json defines "packageManager": "yarn@4.x". However the current global version of Yarn is
+  1.22.x`. Enable Corepack first, then read the folder with `yarn config get cacheFolder` and pass it to
+  `actions/cache` — see `copilot-setup-steps.yml` for the working pattern.
 - Install with `yarn install --immutable` so a stale `yarn.lock` fails the build instead of being rewritten.
 
 Note `.yarnrc.yml` sets `enableScripts: false` and `npmMinimalAgeGate: 4320` (3 days). Packages published in the last
