@@ -213,15 +213,17 @@ export default class IntegrationPage {
 
   async deleteIntegration(deleteButtonRole: 'menuitem' | 'button') {
     if (deleteButtonRole === 'menuitem') {
-      const deleteAction = this.page
-        .getByRole('menu')
-        .first()
-        .getByRole('menuitem', { name: 'Delete' });
-      await deleteAction.click({ force: true });
+      await this.page
+        .getByRole('menuitem', { name: 'Delete' })
+        .last()
+        .click({ force: true });
     } else {
       await this.page.getByRole('button', { name: 'Delete' }).first().click();
     }
 
-    await this.page.getByRole('button', { name: 'Delete' }).last().click();
+    await this.page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Delete' })
+      .click();
   }
 }

@@ -942,9 +942,9 @@ export type ManifestFragmentInput = {
   platform: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
-  solution_categories: InputMaybe<Array<Scalars['String']['input']>>;
+  solution_categories: Array<Scalars['String']['input']>;
   source_code: Scalars['String']['input'];
-  subscription_link: Scalars['String']['input'];
+  subscription_link: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   use_cases: Array<Scalars['String']['input']>;
   verified: InputMaybe<Scalars['Boolean']['input']>;

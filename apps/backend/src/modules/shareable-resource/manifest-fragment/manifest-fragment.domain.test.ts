@@ -96,6 +96,7 @@ describe('manifestFragmentDomain', () => {
       integration_type: integrationType,
       license_type: LicenseType.Commercial,
       contact: 'https://github.com/some-contributor',
+      solution_categories: [SEEDED_SOLUTION_CATEGORY_NAME],
       additional_properties: {
         max_confidence_level: 50,
       },
@@ -226,6 +227,30 @@ describe('manifestFragmentDomain', () => {
       expect(metadataByKey.get(DocumentMetadataKeyCode.Contact)).toBeNull();
     });
 
+    it('accepts a fragment with a null subscription_link', async () => {
+      // Given a fragment ingested without a subscription link
+      const slug = 'misp-without-subscription-link';
+      const fragment = buildManifestFragment(ManifestType.Connector, { slug });
+      fragment.subscription_link = null;
+
+      // When
+      await ManifestFragmentDomain.ingestManifestFragment(fragment);
+
+      // Then
+      const createdDocument = await TestHelper.document.load({ slug });
+      _createdDocumentIds.push(createdDocument!.id);
+
+      const metadataRows = await TestHelper.documentMetadata.loadAll({
+        document_id: createdDocument!.id,
+      });
+      const metadataByKey = new Map(
+        metadataRows.map((metadata) => [metadata.key as string, metadata.value])
+      );
+      expect(
+        metadataByKey.get(DocumentMetadataKeyCode.SubscriptionLink)
+      ).toBeNull();
+    });
+
     it('links the fragment solution categories to the created connector', async () => {
       // Given the seeded category, scoped to opencti
       const slug = 'misp-with-categories';
@@ -327,6 +352,32 @@ describe('manifestFragmentDomain', () => {
       const createdDocument = await TestHelper.document.load({ slug });
       expect(createdDocument).toBeUndefined();
     });
+
+    it.each`
+      solutionCategories | description      | slug
+      ${[]}              | ${'empty array'} | ${'misp-empty-solution-categories'}
+      ${null}            | ${'null'}        | ${'misp-null-solution-categories'}
+    `(
+      'throws when solution_categories is $description',
+      async ({ solutionCategories, slug }) => {
+        // Given
+        const fragment = buildManifestFragment(ManifestType.Connector, {
+          slug,
+        });
+        fragment.solution_categories = solutionCategories;
+
+        // When
+        const call = ManifestFragmentDomain.ingestManifestFragment(fragment);
+
+        // Then
+        await expect(call).rejects.toThrow(
+          BadRequestErrorCode.SolutionCategoriesRequired
+        );
+
+        const createdDocument = await TestHelper.document.load({ slug });
+        expect(createdDocument).toBeUndefined();
+      }
+    );
 
     it('rejects when connector id already exists under a different slug', async () => {
       // Given

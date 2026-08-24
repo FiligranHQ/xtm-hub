@@ -169,6 +169,9 @@ export const ManifestFragmentDomain = {
     ManifestFragmentHelper.validateShortDescriptionLength(
       fragment.short_description
     );
+    ManifestFragmentHelper.validateSolutionCategories(
+      fragment.solution_categories
+    );
     const licenseType = fragment.license_type ?? undefined;
     const contact = ManifestFragmentHelper.parseContact(fragment.contact);
     const formattedVersion =
@@ -281,7 +284,7 @@ export const ManifestFragmentDomain = {
         if (isFiligranProduct(platform)) {
           await solutionCategoryApp.linkSolutionCategoriesByNameToObject({
             objectId: toObjectSolutionCategoryObjectId(connector.id),
-            names: fragment.solution_categories ?? [],
+            names: fragment.solution_categories,
             product: platform,
           });
         } else {

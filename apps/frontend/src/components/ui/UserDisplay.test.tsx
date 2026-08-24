@@ -3,6 +3,14 @@ import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { UserDisplay } from './UserDisplay';
 
+const uploaderWithPicture = {
+  id: 'user-with-picture',
+  first_name: 'jane',
+  last_name: 'doe',
+  email: 'jane@filigran.io',
+  picture: 'https://filigran.io/avatar.png',
+};
+
 describe('UserDisplay', () => {
   it('renders the uploader full name when available', () => {
     testRender(
@@ -69,5 +77,31 @@ describe('UserDisplay', () => {
 
     const nameText = screen.getByText('Jane Doe');
     expect(nameText).not.toHaveClass('italic');
+  });
+
+  it('should render the avatar container when displayPicture is true', () => {
+    // Given
+    testRender(
+      <UserDisplay
+        uploader={uploaderWithPicture}
+        displayPicture
+      />
+    );
+
+    // Then
+    expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
+  });
+
+  it('should not render the avatar container when displayPicture is false', () => {
+    // Given
+    testRender(
+      <UserDisplay
+        uploader={uploaderWithPicture}
+        displayPicture={false}
+      />
+    );
+
+    // Then
+    expect(screen.queryByRole('img', { hidden: true })).not.toBeInTheDocument();
   });
 });

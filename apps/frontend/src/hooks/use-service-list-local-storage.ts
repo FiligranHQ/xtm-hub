@@ -1,4 +1,7 @@
-import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
+import {
+  ServiceListDisplayMode,
+  ServiceListFilterKey,
+} from '@/components/service/components/header/ServiceListHeader';
 import {
   isLogicalMultiSelectSelection,
   LogicalMultiSelectSelection,
@@ -165,6 +168,11 @@ export const useServiceListLocalStorage = (
       `orderMode${pagePrefix}${serviceName}List`,
       OrderingMode.Asc
     );
+  const [displayMode, setDisplayMode, removeDisplayMode] =
+    useLocalStorage<ServiceListDisplayMode>(
+      `displayMode${pagePrefix}${serviceName}List`,
+      ServiceListDisplayMode.Tab
+    );
 
   const resetAll = useCallback(() => {
     removeCount();
@@ -181,6 +189,7 @@ export const useServiceListLocalStorage = (
     removeVerified();
     removeOrderBy();
     removeOrderMode();
+    removeDisplayMode();
   }, [
     removeCount,
     removePageSize,
@@ -196,6 +205,7 @@ export const useServiceListLocalStorage = (
     removeVerified,
     removeOrderBy,
     removeOrderMode,
+    removeDisplayMode,
   ]);
 
   return {
@@ -238,5 +248,7 @@ export const useServiceListLocalStorage = (
     setOrderBy,
     orderMode,
     setOrderMode,
+    displayMode,
+    setDisplayMode,
   };
 };
