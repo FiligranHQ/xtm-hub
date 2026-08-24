@@ -6,13 +6,18 @@ import {
   xtmPlatformTrialFormSchema,
 } from '@/components/service/trial-instances/xtm-platform-trial/XtmPlatformTrialForm';
 import { XtmPlatformTrialMessagePanel } from '@/components/service/trial-instances/xtm-platform-trial/XtmPlatformTrialMessagePanel';
-import { deriveXtmPlatformTrialPanelState } from '@/components/service/trial-instances/xtm-platform-trial/xtm-platform-trial-panel.utils';
-import { useCanRequestPlatformTrial } from '@/hooks/use-can-request-platform-trial';
+import {
+  deriveXtmPlatformTrialPanelState,
+  XtmPlatformTrialPanelState,
+} from '@/components/service/trial-instances/xtm-platform-trial/xtm-platform-trial-panel.utils';
+import useGranted from '@/hooks/use-granted';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { toast } from '@filigran/ui/clients';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestSource,
+  OrganizationCapability,
   PlatformTrialStatusQueryVariables,
   useCreateDeploymentRequestMutation,
   usePlatformTrialStatusQuery,
@@ -28,7 +33,18 @@ export const PrivateXtmPlatformTrialPanel = () => {
   const t = useTranslations();
   const organizationId = me?.selected_organization_id ?? '';
 
-  const canRequestTrial = useCanRequestPlatformTrial();
+  const canAdministrateOrganization = useGranted(
+    OrganizationCapability.AdministrateOrganization
+  );
+  const canManagePlatformRegistration = useGranted(
+    OrganizationCapability.ManagePlatformRegistration
+  );
+  const isPlatformAdmin = useAdminByPass();
+  const canRequestTrial = Boolean(
+    canAdministrateOrganization ||
+    canManagePlatformRegistration ||
+    isPlatformAdmin
+  );
 
   const variables: PlatformTrialStatusQueryVariables = { organizationId };
   const { data, isLoading, isPending, isError } = usePlatformTrialStatusQuery(
@@ -85,7 +101,7 @@ export const PrivateXtmPlatformTrialPanel = () => {
       data?.platformTrialStatus?.ongoingStandaloneTrials ?? [],
   });
 
-  if (state === 'personal-space') {
+  if (state === XtmPlatformTrialPanelState.PersonalSpace) {
     return (
       <XtmPlatformTrialMessagePanel
         title={t('Service.Trials.XtmPlatform.Page.PersonalSpace.Title')}
@@ -94,7 +110,7 @@ export const PrivateXtmPlatformTrialPanel = () => {
     );
   }
 
-  if (state === 'not-allowed') {
+  if (state === XtmPlatformTrialPanelState.NotAllowed) {
     return (
       <XtmPlatformTrialMessagePanel
         title={t('Service.Trials.XtmPlatform.Page.NotAdmin.Title')}
@@ -106,7 +122,9 @@ export const PrivateXtmPlatformTrialPanel = () => {
   return (
     <XtmPlatformTrialForm
       handleSubmit={handleSubmit}
-      hasOngoingStandaloneTrials={state === 'request-with-ongoing-trials'}
+      hasOngoingStandaloneTrials={
+        state === XtmPlatformTrialPanelState.RequestWithOngoingTrials
+      }
     />
   );
 };

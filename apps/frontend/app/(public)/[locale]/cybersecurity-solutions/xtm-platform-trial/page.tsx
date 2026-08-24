@@ -28,16 +28,15 @@ export async function generateMetadata({
   const baseUrl = await getBaseUrl();
   const t = await getTranslations({
     locale,
-    namespace: 'Service.Trials.XtmPlatform.Page',
   });
 
   return buildSeoPageMetadata({
     baseUrl,
     locale,
     pathname: PATHNAME,
-    title: `${t('Title')} | XTM Hub`,
-    description: t('PitchDescription'),
-    imageAlt: t('PitchTitle'),
+    title: `${t('Service.Trials.XtmPlatform.Page.Title')} | XTM Hub`,
+    description: t('Service.Trials.XtmPlatform.Page.PitchDescription'),
+    imageAlt: t('Service.Trials.XtmPlatform.Page.PitchTitle'),
   });
 }
 

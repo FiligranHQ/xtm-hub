@@ -1,4 +1,5 @@
 import {
+  CreateDeploymentRequestInput,
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformState,
@@ -6,7 +7,10 @@ import {
 } from '../../__generated__/resolvers-types';
 import DeploymentRequestModel from '../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { AlreadyExistsErrorCode } from '../../utils/error/error.code';
+import {
+  AlreadyExistsErrorCode,
+  BadRequestErrorCode,
+} from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from './deployment.domain';
 
 type HubStatusTransition = {
@@ -228,5 +232,39 @@ export const DeploymentHelper = {
     }
 
     return newHubStatus;
+  },
+
+  validateUseCasesByProduct: (
+    input: CreateDeploymentRequestInput,
+    uniqueProducts: PlatformIdentifier[]
+  ): void => {
+    const productsRequiringUseCase = uniqueProducts.filter(
+      (platformIdentifier) => platformIdentifier !== PlatformIdentifier.Xtmone
+    );
+    const everyProductHasUseCase = productsRequiringUseCase.every(
+      (platformIdentifier) =>
+        input.use_cases_by_product?.some(
+          (entry) => entry.platform_identifier === platformIdentifier
+        )
+    );
+    const everyEntryTargetsAValidProduct =
+      input.use_cases_by_product?.every(
+        (entry) =>
+          entry.platform_identifier !== PlatformIdentifier.Xtmone &&
+          uniqueProducts.includes(entry.platform_identifier)
+      ) ?? true;
+    const targetedProducts =
+      input.use_cases_by_product?.map((entry) => entry.platform_identifier) ??
+      [];
+    const hasDuplicatedEntry =
+      targetedProducts.length !== new Set(targetedProducts).size;
+
+    const areUseCasesForProductsInvalid =
+      !everyEntryTargetsAValidProduct ||
+      !everyProductHasUseCase ||
+      hasDuplicatedEntry;
+    if (areUseCasesForProductsInvalid) {
+      throw new Error(BadRequestErrorCode.InvalidUseCasesForProducts);
+    }
   },
 };

@@ -12,7 +12,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
       isPersonalSpace: true,
       isAllowed: true,
       ongoingStandaloneTrials: [],
-      expected: 'personal-space',
+      expected: XtmPlatformTrialPanelState.PersonalSpace,
     },
     {
       description:
@@ -20,14 +20,25 @@ describe('deriveXtmPlatformTrialPanelState', () => {
       isPersonalSpace: true,
       isAllowed: true,
       ongoingStandaloneTrials: [PlatformIdentifier.Opencti],
-      expected: 'personal-space',
+      expected: XtmPlatformTrialPanelState.PersonalSpace,
+    },
+    {
+      description:
+        'the organization is a personal space even with multiple ongoing trials',
+      isPersonalSpace: true,
+      isAllowed: true,
+      ongoingStandaloneTrials: [
+        PlatformIdentifier.Opencti,
+        PlatformIdentifier.Openaev,
+      ],
+      expected: XtmPlatformTrialPanelState.PersonalSpace,
     },
     {
       description: 'the user is not allowed to request a trial',
       isPersonalSpace: false,
       isAllowed: false,
       ongoingStandaloneTrials: [],
-      expected: 'not-allowed',
+      expected: XtmPlatformTrialPanelState.NotAllowed,
     },
     {
       description:
@@ -35,7 +46,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
       isPersonalSpace: false,
       isAllowed: false,
       ongoingStandaloneTrials: [PlatformIdentifier.Opencti],
-      expected: 'not-allowed',
+      expected: XtmPlatformTrialPanelState.NotAllowed,
     },
     {
       description:
@@ -43,7 +54,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
       isPersonalSpace: false,
       isAllowed: true,
       ongoingStandaloneTrials: [],
-      expected: 'request',
+      expected: XtmPlatformTrialPanelState.Request,
     },
     {
       description:
@@ -51,7 +62,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
       isPersonalSpace: false,
       isAllowed: true,
       ongoingStandaloneTrials: [PlatformIdentifier.Opencti],
-      expected: 'request-with-ongoing-trials',
+      expected: XtmPlatformTrialPanelState.RequestWithOngoingTrials,
     },
     {
       description:
@@ -62,7 +73,7 @@ describe('deriveXtmPlatformTrialPanelState', () => {
         PlatformIdentifier.Opencti,
         PlatformIdentifier.Openaev,
       ],
-      expected: 'request-with-ongoing-trials',
+      expected: XtmPlatformTrialPanelState.RequestWithOngoingTrials,
     },
   ])(
     'should return $expected when $description',

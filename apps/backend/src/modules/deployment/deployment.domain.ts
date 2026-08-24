@@ -7,6 +7,7 @@ import {
   DeploymentRequestPlatformState,
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
+  ServiceInstanceCreationStatus,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
 import DeploymentRequest, {
@@ -15,14 +16,26 @@ import DeploymentRequest, {
   DeploymentRequestMutator,
 } from '../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
+import { getErrorNumberProperty } from '../../utils/error/error-guard.util';
+import {
+  ErrorCode,
+  NotFoundErrorCode,
+  UnknownErrorCode,
+} from '../../utils/error/error.code';
 import { prefixObjectKeys } from '../../utils/utils';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
+import {
+  BUNDLE_REQUEST_CANCELLATION_REASON,
+  DeploymentApp,
+} from './deployment.app';
 import {
   ServiceGroupDomain,
   ServiceGroupName,
 } from './group/service-group.domain';
+import { DeploymentQuotaDomain } from './quota/deployment.quota.domain';
 
 export const DeploymentRequestDomain = {
   insertDeploymentRequest: async (
@@ -429,6 +442,114 @@ export const DeploymentRequestDomain = {
       });
     });
   },
+
+  applyCancellationToDeploymentRequest: async ({
+    deploymentRequest,
+    userId,
+    isAdmin,
+    cancellationReason,
+  }: {
+    deploymentRequest: DeploymentRequest;
+    userId: UserId;
+    isAdmin: boolean;
+    cancellationReason?: string;
+  }): Promise<DeploymentRequest> => {
+    const previousHubStatus = deploymentRequest.hub_status;
+
+    const countsInOrgaQuota =
+      isAdmin ||
+      ![
+        DeploymentRequestPlatformState.Unprovisioned,
+        DeploymentRequestPlatformState.Provisioning,
+      ].includes(
+        deploymentRequest.actual_state ??
+          DeploymentRequestPlatformState.Unprovisioned
+      );
+
+    const target_state =
+      deploymentRequest.actual_state ===
+      DeploymentRequestPlatformState.Unprovisioned
+        ? DeploymentRequestPlatformState.Unprovisioned
+        : DeploymentRequestPlatformState.Removed;
+
+    return DeploymentQuotaDomain.withLockedQuotaTransaction(
+      {
+        platformIdentifier: deploymentRequest.platform_identifier,
+        region: deploymentRequest.region,
+      },
+      async () => {
+        const updatedDeploymentRequest =
+          await DeploymentRequestDomain.updateDeploymentRequestById(
+            deploymentRequest.id,
+            {
+              hub_status: DeploymentRequestHubStatus.Cancelled,
+              target_state: target_state,
+              cancellation_date: new Date(),
+              cancellation_user_id: userId,
+              cancellation_reason: cancellationReason,
+              counts_in_orga_quota: countsInOrgaQuota,
+            }
+          );
+        if (!updatedDeploymentRequest) {
+          throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
+        }
+        if (!countsInOrgaQuota) {
+          await ServiceInstanceDomain.updateServiceInstance(
+            deploymentRequest.service_instance_id,
+            {
+              creation_status: ServiceInstanceCreationStatus.Disabled,
+            }
+          );
+        }
+        await DeploymentApp.releaseDeploymentRequestPlace(
+          previousHubStatus,
+          deploymentRequest.platform_identifier,
+          deploymentRequest.region
+        );
+
+        return updatedDeploymentRequest;
+      }
+    );
+  },
+
+  deleteDeploymentRequestAudience: async (
+    deploymentRequest: DeploymentRequest
+  ): Promise<void> => {
+    try {
+      if (deploymentRequest.platform_id) {
+        await auth0Client.deleteAudienceAPI(
+          deploymentRequest.organization_requester_id,
+          deploymentRequest.platform_id
+        );
+      } else {
+        logApp.error('Unable to delete audience', {
+          error: 'missing platform_id',
+          deploymentRequestId: deploymentRequest.id,
+        });
+      }
+    } catch (error) {
+      logDeleteAudienceError(error, deploymentRequest);
+    }
+  },
+
+  cancelOngoingStandaloneTrialsForBundle: async (
+    bundle: DeploymentRequest
+  ): Promise<void> => {
+    const standaloneTrials =
+      await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+        bundle.organization_requester_id
+      );
+
+    for (const trial of standaloneTrials) {
+      await DeploymentRequestDomain.applyCancellationToDeploymentRequest({
+        deploymentRequest: trial,
+        userId: bundle.user_requester_id,
+        isAdmin: false,
+        cancellationReason: BUNDLE_REQUEST_CANCELLATION_REASON,
+      });
+      await DeploymentRequestDomain.deleteDeploymentRequestAudience(trial);
+    }
+  },
 };
 
 export type FullyQualifiedDeploymentRequest = DeploymentRequest & {
@@ -437,6 +558,27 @@ export type FullyQualifiedDeploymentRequest = DeploymentRequest & {
   requester_email: string;
   requester_first_name: string;
   requester_last_name: string;
+};
+
+const logDeleteAudienceError = (
+  error: unknown,
+  deploymentRequest: Pick<DeploymentRequest, 'id' | 'platform_identifier'>
+) => {
+  const isExpectedOpenaevAudienceMiss =
+    getErrorNumberProperty(error, 'statusCode') === 404 &&
+    deploymentRequest.platform_identifier === PlatformIdentifier.Openaev;
+
+  if (isExpectedOpenaevAudienceMiss) {
+    logApp.warn('No Auth0 audience to delete for OpenAEV trial', {
+      deploymentRequestId: deploymentRequest.id,
+    });
+    return;
+  }
+
+  logApp.error('Unable to delete audience', {
+    error,
+    deploymentRequestId: deploymentRequest.id,
+  });
 };
 
 const getDeploymentRequestWithUserDataQuery =

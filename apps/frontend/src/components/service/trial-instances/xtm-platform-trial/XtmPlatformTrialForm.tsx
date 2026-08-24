@@ -132,7 +132,7 @@ export const XtmPlatformTrialForm = ({
   return (
     <div className="flex w-full flex-col gap-xl rounded bg-page-background p-xl">
       <div className="flex items-center gap-l">
-        <span className="txt-default text-muted-foreground">
+        <span className="text-content-body-base text-muted-foreground">
           {t('Service.Trials.Form.AssociatedEmail')}
         </span>
         <span className="txt-default-bold">{me?.email}</span>

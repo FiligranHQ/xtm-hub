@@ -7,10 +7,10 @@ export const XtmPlatformTrialLimitations = () => {
   const t = useTranslations();
   return (
     <div className="rounded p-6 bg-elevation-background-layer-1">
-      <h3 className="flex items-center gap-s text-primary mb-s font-bold">
+      <h2 className="flex items-center gap-s mb-s heading-xs">
         <InfoIcon className="size-4" />
         {t('Service.Trials.XtmPlatform.Page.Limitations.Title')}
-      </h3>
+      </h2>
       <p className="text-sm mb-s">
         {t('Service.Trials.XtmPlatform.Page.Limitations.Intro')}
       </p>

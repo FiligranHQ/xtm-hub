@@ -11,12 +11,6 @@ const BUNDLE_PRODUCTS = [
   PlatformIdentifier.Xtmone,
 ];
 
-const PRODUCT_TRANSLATION_KEYS: Record<PlatformIdentifier, string> = {
-  [PlatformIdentifier.Opencti]: 'opencti',
-  [PlatformIdentifier.Openaev]: 'openaev',
-  [PlatformIdentifier.Xtmone]: 'xtmone',
-};
-
 const PRODUCT_ICON_CLASSES: Record<PlatformIdentifier, string> = {
   [PlatformIdentifier.Opencti]: 'text-filigran-brand-primary',
   [PlatformIdentifier.Openaev]: 'text-filigran-brand-primary',
@@ -40,7 +34,6 @@ export const XtmPlatformTrialPitch = () => {
       <div className="flex flex-col gap-xl">
         {BUNDLE_PRODUCTS.map((platformIdentifier) => {
           const { name, Icon } = PlatformMetadataMapping[platformIdentifier];
-          const productKey = PRODUCT_TRANSLATION_KEYS[platformIdentifier];
 
           return (
             <article
@@ -58,12 +51,12 @@ export const XtmPlatformTrialPitch = () => {
               <div className="flex flex-col">
                 <h3 className="heading-xs">
                   {t(
-                    `Service.Trials.XtmPlatform.Page.Products.${productKey}.Tagline`
+                    `Service.Trials.XtmPlatform.Page.Products.${platformIdentifier}.Tagline`
                   )}
                 </h3>
                 <p className="content-body-compact text-text-default-secondary">
                   {t(
-                    `Service.Trials.XtmPlatform.Page.Products.${productKey}.Description`
+                    `Service.Trials.XtmPlatform.Page.Products.${platformIdentifier}.Description`
                   )}
                 </p>
               </div>

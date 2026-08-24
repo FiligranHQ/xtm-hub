@@ -1,7 +1,11 @@
 import { PlatformIdentifier } from '@graphql/generated';
 
-export type XtmPlatformTrialPanelState =
-  'personal-space' | 'not-allowed' | 'request' | 'request-with-ongoing-trials';
+export enum XtmPlatformTrialPanelState {
+  PersonalSpace = 'personal-space',
+  NotAllowed = 'not-allowed',
+  Request = 'request',
+  RequestWithOngoingTrials = 'request-with-ongoing-trials',
+}
 
 interface DeriveXtmPlatformTrialPanelStateParams {
   isPersonalSpace: boolean;
@@ -19,13 +23,13 @@ export const deriveXtmPlatformTrialPanelState = ({
   ongoingStandaloneTrials,
 }: DeriveXtmPlatformTrialPanelStateParams): XtmPlatformTrialPanelState => {
   if (isPersonalSpace) {
-    return 'personal-space';
+    return XtmPlatformTrialPanelState.PersonalSpace;
   }
   if (!isAllowed) {
-    return 'not-allowed';
+    return XtmPlatformTrialPanelState.NotAllowed;
   }
   if (ongoingStandaloneTrials.length > 0) {
-    return 'request-with-ongoing-trials';
+    return XtmPlatformTrialPanelState.RequestWithOngoingTrials;
   }
-  return 'request';
+  return XtmPlatformTrialPanelState.Request;
 };
