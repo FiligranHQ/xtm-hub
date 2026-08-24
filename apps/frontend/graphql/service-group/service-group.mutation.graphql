@@ -13,3 +13,13 @@ mutation AddUsersToBundleGroups(
     }
   }
 }
+
+mutation RemoveUsersFromBundleGroups(
+  $serviceInstanceId: ServiceInstanceId!
+  $userIds: [UserId!]!
+) {
+  removeUsersFromBundleGroups(
+    serviceInstanceId: $serviceInstanceId
+    userIds: $userIds
+  )
+}

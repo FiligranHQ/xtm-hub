@@ -1709,7 +1709,11 @@
           "OpenCTIRole": "OpenCTIロール",
           "OpenAEVRole": "OpenAEVロール",
           "XtmOne": "XTM One",
-          "NoUsers": "ユーザーが見つかりません。"
+          "NoUsers": "ユーザーが見つかりません。",
+          "DeleteDialog": {
+            "Title": "トライアルからユーザーを削除",
+            "Text": "{email} をこのトライアルから削除してもよろしいですか?すべての製品へのアクセス権を失います。"
+          }
         },
         "AddUserDialog": {
           "Title": "トライアルユーザーを追加",

@@ -1,15 +1,18 @@
 'use client';
 
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { i18nKey } from '@/utils/datatable';
 import { DeleteIcon } from '@filigran/icon';
-import { DataTable, SelectionState } from '@filigran/ui';
+import { Button, DataTable, SelectionState, toast } from '@filigran/ui';
 import {
   BundleUserServiceGroupsQuery,
   PlatformIdentifier,
   useBundleUserServiceGroupsQuery,
+  useRemoveUsersFromBundleGroupsMutation,
 } from '@graphql/generated';
 import { bundleUserServiceGroupsKeys } from '@graphql/service-group/service-group.keys';
+import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -37,11 +40,15 @@ export const ManageTrialTable = ({
   serviceInstanceId,
 }: ManageTrialTableProps) => {
   const t = useTranslations();
+  const queryClient = useQueryClient();
   const [selection, setSelection] = useState<SelectionState>({
     selectAll: false,
     selectedIds: new Set<string>(),
     excludedIds: new Set<string>(),
   });
+  const [deletingUserId, setDeletingUserId] = useState<string | undefined>(
+    undefined
+  );
 
   const variables = { serviceInstanceId };
   const {
@@ -51,6 +58,33 @@ export const ManageTrialTable = ({
   } = useBundleUserServiceGroupsQuery(portalGraphqlClient, variables, {
     queryKey: bundleUserServiceGroupsKeys.list(variables),
   });
+
+  const { mutate: removeUsersFromBundleGroups } =
+    useRemoveUsersFromBundleGroupsMutation(portalGraphqlClient, {
+      onSuccess: (_data, mutationVariables) => {
+        queryClient.setQueryData<BundleUserServiceGroupsQuery>(
+          bundleUserServiceGroupsKeys.list(variables),
+          (previous) =>
+            previous && {
+              bundleUserServiceGroups: previous.bundleUserServiceGroups.filter(
+                (row) => !mutationVariables.userIds.includes(row.user.id)
+              ),
+            }
+        );
+        toast({ title: t('Utils.Success') });
+        setDeletingUserId(undefined);
+      },
+      onError: (error: unknown) => {
+        const errorMessage =
+          error instanceof Error ? error.message : 'UnknownError';
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${errorMessage}`)}</>,
+        });
+        setDeletingUserId(undefined);
+      },
+    });
 
   const rows = useMemo<ManageTrialTableRow[]>(
     () =>
@@ -92,18 +126,39 @@ export const ManageTrialTable = ({
         enableSorting: false,
         enableResizing: false,
         size: 48,
-        cell: () => (
-          <button
-            type="button"
-            disabled
-            aria-label={t('Utils.Delete')}
-            className="flex items-center justify-end text-text-default-disabled">
-            <DeleteIcon className="h-4 w-4" />
-          </button>
+        cell: ({ row }) => (
+          <AlertDialogComponent
+            AlertTitle={t(
+              'Service.Bundle.ManageTrial.Table.DeleteDialog.Title'
+            )}
+            actionButtonText={t('Utils.Delete')}
+            variantName="destructive"
+            continueButtonDisabled={deletingUserId === row.original.id}
+            triggerElement={
+              <Button
+                type="button"
+                variant="tertiary"
+                size="icon"
+                aria-label={t('Utils.Delete')}
+                disabled={deletingUserId === row.original.id}>
+                <DeleteIcon className="h-4 w-4" />
+              </Button>
+            }
+            onClickContinue={() => {
+              setDeletingUserId(row.original.id);
+              removeUsersFromBundleGroups({
+                serviceInstanceId,
+                userIds: [row.original.id],
+              });
+            }}>
+            {t('Service.Bundle.ManageTrial.Table.DeleteDialog.Text', {
+              email: row.original.email,
+            })}
+          </AlertDialogComponent>
         ),
       },
     ],
-    [t]
+    [t, deletingUserId, removeUsersFromBundleGroups, serviceInstanceId]
   );
 
   return (

@@ -73,4 +73,12 @@ type Mutation {
       portalCapa: [BYPASS]
       orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
     )
+  removeUsersFromBundleGroups(
+    serviceInstanceId: ServiceInstanceId!
+    userIds: [UserId!]!
+  ): [UserId!]!
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
 }

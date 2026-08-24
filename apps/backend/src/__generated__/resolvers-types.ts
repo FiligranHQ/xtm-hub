@@ -1036,6 +1036,7 @@ export type Mutation = {
   registerPlatform: RegistrationResponse;
   removePendingUserFromOrganization?: Maybe<User>;
   removeUserFromOrganization?: Maybe<User>;
+  removeUsersFromBundleGroups: Array<Scalars['UserId']['output']>;
   reorderDeploymentRequestInQueue: Success;
   requestTransferPersonalSpace: Success;
   resetPassword: Success;
@@ -1381,6 +1382,12 @@ export type MutationRemovePendingUserFromOrganizationArgs = {
 export type MutationRemoveUserFromOrganizationArgs = {
   organization_id: Scalars['OrganizationId']['input'];
   user_id: Scalars['UserId']['input'];
+};
+
+
+export type MutationRemoveUsersFromBundleGroupsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  userIds: Array<Scalars['UserId']['input']>;
 };
 
 
@@ -4140,6 +4147,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   registerPlatform?: Resolver<ResolversTypes['RegistrationResponse'], ParentType, ContextType, RequireFields<MutationRegisterPlatformArgs, 'input'>>;
   removePendingUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemovePendingUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
   removeUserFromOrganization?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRemoveUserFromOrganizationArgs, 'organization_id' | 'user_id'>>;
+  removeUsersFromBundleGroups?: Resolver<Array<ResolversTypes['UserId']>, ParentType, ContextType, RequireFields<MutationRemoveUsersFromBundleGroupsArgs, 'serviceInstanceId' | 'userIds'>>;
   reorderDeploymentRequestInQueue?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationReorderDeploymentRequestInQueueArgs, 'input'>>;
   requestTransferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationRequestTransferPersonalSpaceArgs, 'new_email'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;

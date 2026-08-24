@@ -1043,6 +1043,7 @@ export type Mutation = {
   registerPlatform: RegistrationResponse;
   removePendingUserFromOrganization: Maybe<User>;
   removeUserFromOrganization: Maybe<User>;
+  removeUsersFromBundleGroups: Array<Scalars['UserId']['output']>;
   reorderDeploymentRequestInQueue: Success;
   requestTransferPersonalSpace: Success;
   resetPassword: Success;
@@ -1388,6 +1389,12 @@ export type MutationRemovePendingUserFromOrganizationArgs = {
 export type MutationRemoveUserFromOrganizationArgs = {
   organization_id: Scalars['OrganizationId']['input'];
   user_id: Scalars['UserId']['input'];
+};
+
+
+export type MutationRemoveUsersFromBundleGroupsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  userIds: Array<Scalars['UserId']['input']>;
 };
 
 
@@ -3259,6 +3266,14 @@ export type AddUsersToBundleGroupsMutationVariables = Exact<{
 
 export type AddUsersToBundleGroupsMutation = { __typename?: 'Mutation', addUsersToBundleGroups: Array<{ __typename?: 'BundleUserServiceGroup', user: { __typename?: 'User', id: string, email: string }, groups: Array<{ __typename?: 'UserPlatformGroup', platformIdentifier: PlatformIdentifier, name: ServiceGroupName }> }> };
 
+export type RemoveUsersFromBundleGroupsMutationVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  userIds: Array<Scalars['UserId']['input']> | Scalars['UserId']['input'];
+}>;
+
+
+export type RemoveUsersFromBundleGroupsMutation = { __typename?: 'Mutation', removeUsersFromBundleGroups: Array<any> };
+
 export type BundleUserServiceGroupsQueryVariables = Exact<{
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 }>;
@@ -4616,6 +4631,36 @@ export const useAddUsersToBundleGroupsMutation = <
 useAddUsersToBundleGroupsMutation.getKey = () => ['AddUsersToBundleGroups'];
 useAddUsersToBundleGroupsMutation.getRootKey = () => ['AddUsersToBundleGroups'] as const;
 useAddUsersToBundleGroupsMutation.fetcher = (client: GraphQLClient, variables: AddUsersToBundleGroupsMutationVariables, headers?: RequestInit['headers']) => fetcher<AddUsersToBundleGroupsMutation, AddUsersToBundleGroupsMutationVariables>(client, AddUsersToBundleGroupsDocument, variables, headers);
+
+export const RemoveUsersFromBundleGroupsDocument = `
+    mutation RemoveUsersFromBundleGroups($serviceInstanceId: ServiceInstanceId!, $userIds: [UserId!]!) {
+  removeUsersFromBundleGroups(
+    serviceInstanceId: $serviceInstanceId
+    userIds: $userIds
+  )
+}
+    `;
+
+export const useRemoveUsersFromBundleGroupsMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<RemoveUsersFromBundleGroupsMutation, TError, RemoveUsersFromBundleGroupsMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<RemoveUsersFromBundleGroupsMutation, TError, RemoveUsersFromBundleGroupsMutationVariables, TContext>(
+      {
+    mutationKey: ['RemoveUsersFromBundleGroups'],
+    mutationFn: (variables?: RemoveUsersFromBundleGroupsMutationVariables) => fetcher<RemoveUsersFromBundleGroupsMutation, RemoveUsersFromBundleGroupsMutationVariables>(client, RemoveUsersFromBundleGroupsDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useRemoveUsersFromBundleGroupsMutation.getKey = () => ['RemoveUsersFromBundleGroups'];
+useRemoveUsersFromBundleGroupsMutation.getRootKey = () => ['RemoveUsersFromBundleGroups'] as const;
+useRemoveUsersFromBundleGroupsMutation.fetcher = (client: GraphQLClient, variables: RemoveUsersFromBundleGroupsMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveUsersFromBundleGroupsMutation, RemoveUsersFromBundleGroupsMutationVariables>(client, RemoveUsersFromBundleGroupsDocument, variables, headers);
 
 export const BundleUserServiceGroupsDocument = `
     query BundleUserServiceGroups($serviceInstanceId: ServiceInstanceId!) {

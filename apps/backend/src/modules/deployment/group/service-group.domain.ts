@@ -62,6 +62,18 @@ export const ServiceGroupDomain = {
     return db<ServiceGroup[]>('ServiceGroup').select('*').where(field);
   },
 
+  loadServiceGroupsByServiceInstanceIds: async (
+    serviceInstanceIds: ServiceInstanceId[]
+  ): Promise<ServiceGroup[]> => {
+    if (!serviceInstanceIds.length) {
+      return [];
+    }
+
+    return db<ServiceGroup[]>('ServiceGroup')
+      .select('*')
+      .whereIn('service_instance_id', serviceInstanceIds);
+  },
+
   loadServiceGroupsByServiceInstanceAndUser: async (
     serviceInstanceId: ServiceInstanceId,
     userId: UserId
@@ -130,6 +142,20 @@ export const ServiceGroupDomain = {
     }
 
     await db('ServiceGroup_User').del().whereIn('group_id', groupIds);
+  },
+
+  removeUsersFromServiceGroups: async (
+    userIds: UserId[],
+    groupIds: ServiceGroupId[]
+  ) => {
+    if (!userIds.length || !groupIds.length) {
+      return;
+    }
+
+    await db('ServiceGroup_User')
+      .del()
+      .whereIn('user_id', userIds)
+      .whereIn('group_id', groupIds);
   },
 
   deleteGroups: async (groupIds: ServiceGroupId[]) => {

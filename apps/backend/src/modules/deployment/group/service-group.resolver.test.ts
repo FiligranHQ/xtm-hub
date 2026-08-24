@@ -243,3 +243,53 @@ describe('addUsersToBundleGroups GraphQL mutation', () => {
     await expect(call).rejects.toMatchObject({ name: ErrorType.UnknownError });
   });
 });
+
+describe('removeUsersFromBundleGroups GraphQL mutation', () => {
+  it('should delegate to ServiceGroupApp.removeUsersFromBundleGroups', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const userId = uuidv4() as UserId;
+    const expected = [userId] as unknown as Awaited<
+      ReturnType<typeof ServiceGroupApp.removeUsersFromBundleGroups>
+    >;
+    vi.spyOn(ServiceGroupApp, 'removeUsersFromBundleGroups').mockResolvedValue(
+      expected
+    );
+
+    // When
+    const result = await serviceGroupResolver.Mutation!
+      .removeUsersFromBundleGroups!(
+      {},
+      { serviceInstanceId, userIds: [userId] },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(ServiceGroupApp.removeUsersFromBundleGroups).toHaveBeenCalledWith(
+      serviceInstanceId,
+      [userId]
+    );
+    expect(result).toEqual(expected);
+  });
+
+  it('should throw mapped error when ServiceGroupApp throws', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const userId = uuidv4() as UserId;
+    vi.spyOn(ServiceGroupApp, 'removeUsersFromBundleGroups').mockRejectedValue(
+      new Error('UNEXPECTED')
+    );
+
+    // When
+    const call = serviceGroupResolver.Mutation!.removeUsersFromBundleGroups!(
+      {},
+      { serviceInstanceId, userIds: [userId] },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toMatchObject({ name: ErrorType.UnknownError });
+  });
+});

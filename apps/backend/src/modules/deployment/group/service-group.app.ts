@@ -274,6 +274,51 @@ export const ServiceGroupApp = {
     return ServiceGroupApp.loadBundleUserServiceGroups(serviceInstanceId);
   },
 
+  removeUsersFromBundleGroups: async (
+    serviceInstanceId: ServiceInstanceId,
+    userIds: UserId[]
+  ): Promise<UserId[]> => {
+    const { bundleDeploymentRequest } =
+      await assertBundleAccessAndLoad(serviceInstanceId);
+
+    const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+      parent_id: bundleDeploymentRequest.id,
+    });
+
+    const groups =
+      await ServiceGroupDomain.loadServiceGroupsByServiceInstanceIds(
+        children.map((child) => child.service_instance_id)
+      );
+    const allGroupIds = groups.map((group) => group.id);
+
+    await ServiceGroupDomain.removeUsersFromServiceGroups(userIds, allGroupIds);
+
+    const users = await UserDomain.loadUsers(userIds);
+    const emailByUserId = new Map(users.map(({ id, email }) => [id, email]));
+
+    await Promise.all(
+      children.map(async (child) => {
+        if (!child.platform_id) {
+          return;
+        }
+
+        await Promise.all(
+          userIds.map((userId) => {
+            const email = emailByUserId.get(userId);
+            if (!email) {
+              return undefined;
+            }
+            return auth0Client.updateUserRBACInstance(email, {
+              [child.platform_id as string]: { groups: [] },
+            });
+          })
+        );
+      })
+    );
+
+    return userIds;
+  },
+
   updateGroups: async (
     groups: UpdateGroupsPayload
   ): Promise<ServiceGroupResponse[]> => {

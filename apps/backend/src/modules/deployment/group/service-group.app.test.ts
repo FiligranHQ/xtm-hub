@@ -1084,4 +1084,194 @@ describe('serviceGroupApp', () => {
       );
     });
   });
+
+  describe('removeUsersFromBundleGroups', () => {
+    const createdBundleIds: DeploymentRequestId[] = [];
+
+    afterEach(async () => {
+      for (const bundleId of createdBundleIds) {
+        await TestHelper.deploymentRequest.deleteBundle(bundleId);
+      }
+      createdBundleIds.length = 0;
+    });
+
+    const createBundleWithMember = async (opts?: {
+      userId?: string;
+      secondUserId?: string;
+    }) => {
+      const openctiPlatformId = uuidv4();
+      const xtmonePlatformId = uuidv4();
+      const { bundle, children } =
+        await TestHelper.deploymentRequest.createBundle({
+          children: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              platform_id: openctiPlatformId,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Xtmone,
+              platform_id: xtmonePlatformId,
+            },
+          ],
+        });
+      createdBundleIds.push(bundle.id);
+      const [openctiChild, xtmoneChild] = children;
+
+      const openctiAdminGroupId = uuidv4() as ServiceGroupId;
+      const xtmoneUserGroupId = uuidv4() as ServiceGroupId;
+      await TestHelper.serviceGroup.create({
+        id: openctiAdminGroupId,
+        name: 'Admin',
+        service_instance_id: openctiChild!.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: xtmoneUserGroupId,
+        name: 'User',
+        service_instance_id: xtmoneChild!.service_instance_id,
+      });
+
+      const userId =
+        opts?.userId ?? TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID;
+      await TestHelper.serviceGroupUser.create({
+        user_id: userId,
+        group_id: openctiAdminGroupId,
+      });
+      await TestHelper.serviceGroupUser.create({
+        user_id: userId,
+        group_id: xtmoneUserGroupId,
+      });
+
+      if (opts?.secondUserId) {
+        await TestHelper.serviceGroupUser.create({
+          user_id: opts.secondUserId,
+          group_id: openctiAdminGroupId,
+        });
+      }
+
+      return {
+        bundle,
+        openctiChild: openctiChild!,
+        xtmoneChild: xtmoneChild!,
+        groups: { openctiAdminGroupId, xtmoneUserGroupId },
+      };
+    };
+
+    it('should remove the user from every service group tied to the bundle and sync Auth0 for each platform', async () => {
+      // Given
+      const targetUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS;
+      const { bundle, openctiChild, xtmoneChild, groups } =
+        await createBundleWithMember({ userId: targetUser.ID });
+
+      const auth0Spy = vi
+        .spyOn(auth0ClientMock, 'updateUserRBACInstance')
+        .mockResolvedValue(undefined);
+
+      // When
+      const result = await ServiceGroupApp.removeUsersFromBundleGroups(
+        bundle.service_instance_id,
+        [targetUser.ID]
+      );
+
+      // Then
+      expect(result).toEqual([targetUser.ID]);
+
+      const openctiMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiAdminGroupId,
+      });
+      const xtmoneMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.xtmoneUserGroupId,
+      });
+      expect(openctiMembers).toEqual([]);
+      expect(xtmoneMembers).toEqual([]);
+
+      expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
+        [openctiChild.platform_id as string]: { groups: [] },
+      });
+      expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
+        [xtmoneChild.platform_id as string]: { groups: [] },
+      });
+    });
+
+    it('should support removing several users at once and leave other members untouched', async () => {
+      // Given
+      const targetUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS;
+      const otherUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2;
+      const { bundle, groups } = await createBundleWithMember({
+        userId: targetUser.ID,
+        secondUserId: otherUser.ID,
+      });
+
+      vi.spyOn(auth0ClientMock, 'updateUserRBACInstance').mockResolvedValue(
+        undefined
+      );
+
+      // When
+      const result = await ServiceGroupApp.removeUsersFromBundleGroups(
+        bundle.service_instance_id,
+        [targetUser.ID, otherUser.ID]
+      );
+
+      // Then
+      expect(result).toEqual([targetUser.ID, otherUser.ID]);
+      const openctiMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiAdminGroupId,
+      });
+      expect(openctiMembers).toEqual([]);
+    });
+
+    it('should be a no-op when the user has no membership in the bundle groups', async () => {
+      // Given
+      const { bundle } = await createBundleWithMember();
+      vi.spyOn(auth0ClientMock, 'updateUserRBACInstance').mockResolvedValue(
+        undefined
+      );
+
+      // When
+      const result = await ServiceGroupApp.removeUsersFromBundleGroups(
+        bundle.service_instance_id,
+        [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID]
+      );
+
+      // Then
+      expect(result).toEqual([TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID]);
+    });
+
+    it('should throw DeploymentRequestNotFound when the bundle has no deployment request', async () => {
+      // Given
+      const bundleServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+      // When
+      const call = ServiceGroupApp.removeUsersFromBundleGroups(
+        bundleServiceInstanceId,
+        [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID]
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+    });
+
+    it('should prevent a non-bypass user from removing users from a bundle of another organization', async () => {
+      // Given
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      createdBundleIds.push(bundle.id);
+      requestContext.set(requestContextAdminSecondOrga);
+
+      // When
+      const call = ServiceGroupApp.removeUsersFromBundleGroups(
+        bundle.service_instance_id,
+        [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID]
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(
+        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
+      );
+    });
+  });
 });

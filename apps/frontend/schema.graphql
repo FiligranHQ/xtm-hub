@@ -175,6 +175,7 @@ type Mutation {
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
   addUsersToBundleGroups(serviceInstanceId: ServiceInstanceId!, input: AddUsersToBundleGroupsInput!): [BundleUserServiceGroup!]!
+  removeUsersFromBundleGroups(serviceInstanceId: ServiceInstanceId!, userIds: [UserId!]!): [UserId!]!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
   updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
   deleteDocument(documentId: DocumentId!, service_instance_id: ServiceInstanceId!, forceDelete: Boolean): Document!

@@ -1709,7 +1709,11 @@
           "OpenCTIRole": "Rôle OpenCTI",
           "OpenAEVRole": "Rôle OpenAEV",
           "XtmOne": "XTM One",
-          "NoUsers": "Aucun utilisateur trouvé."
+          "NoUsers": "Aucun utilisateur trouvé.",
+          "DeleteDialog": {
+            "Title": "Retirer l'utilisateur de l'essai",
+            "Text": "Voulez-vous vraiment retirer {email} de cet essai ? Il/elle perdra l'accès à tous les produits."
+          }
         },
         "AddUserDialog": {
           "Title": "Ajouter un utilisateur d'essai",
