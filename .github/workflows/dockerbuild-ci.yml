@@ -69,9 +69,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Enable Corepack
-        run: |
-          corepack enable
-          corepack prepare yarn@4.13.0 --activate
+        run: corepack enable
 
       - name: Install dependencies
         run: yarn install --immutable
