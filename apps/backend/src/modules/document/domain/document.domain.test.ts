@@ -15,7 +15,6 @@ import {
   DocumentOrdering,
   FilterKey,
   Integration,
-  IntegrationSubType,
   IntegrationType,
   LogicalOperator,
   OrderingMode,
@@ -346,7 +345,7 @@ describe('document domain', () => {
         });
       });
 
-      it('should handle type and subtype', async () => {
+      it('should handle type', async () => {
         const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
         );
@@ -374,12 +373,6 @@ describe('document domain', () => {
                           value: [IntegrationType.Connector],
                         },
                       },
-                      {
-                        leaf: {
-                          key: FilterKey.IntegrationSubtype,
-                          value: [IntegrationSubType.ExternalImport],
-                        },
-                      },
                     ],
                   },
                   {
@@ -394,7 +387,7 @@ describe('document domain', () => {
             INTEGRATION_METADATA_KEYS
           );
 
-        expect(connectorConnection.edges).toHaveLength(2);
+        expect(connectorConnection.edges).toHaveLength(3);
 
         expect(connectorConnection.edges).toEqual(
           expect.arrayContaining([
@@ -406,7 +399,6 @@ describe('document domain', () => {
             expect.objectContaining({
               node: expect.objectContaining({
                 integration_type: IntegrationType.Connector,
-                integration_subtype: IntegrationSubType.ExternalImport,
               }),
             }),
           ])

@@ -153,29 +153,24 @@ export const documentItem = graphql`
     }
 
     ... on TaxiiFeed {
-      integration_subtype
       feed_url
     }
 
     ... on RssFeed {
-      integration_subtype
       feed_url
     }
 
     ... on Stream {
-      integration_subtype
       feed_url
     }
 
     ... on ThirdPartyIntegration {
-      integration_subtype
       product_version
       vendor_url
       github_url
     }
 
     ... on Connector {
-      integration_subtype
       product_version
       container_image
       verified

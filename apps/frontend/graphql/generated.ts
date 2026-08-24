@@ -179,7 +179,6 @@ export type Connector = Document & Integration & Node & {
   download_number: Maybe<Scalars['Int']['output']>;
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type: Maybe<LicenseType>;
   manager_supported: Scalars['Boolean']['output'];
@@ -638,7 +637,6 @@ export enum DocumentMetadataKeyCode {
   GithubUrl = 'github_url',
   ImageName = 'image_name',
   ImageType = 'image_type',
-  IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   LastVerifiedDate = 'last_verified_date',
   LicenseType = 'license_type',
@@ -775,7 +773,6 @@ export type Filter = {
 export enum FilterKey {
   EntityType = 'entity_type',
   FeedUrl = 'feed_url',
-  IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   Label = 'label',
   LicenseType = 'license_type',
@@ -854,29 +851,6 @@ export type IntegrationHack = Document & Integration & Node & {
   uploader_organization: Maybe<Organization>;
   use_cases: Maybe<Array<UseCase>>;
 };
-
-export enum IntegrationSubType {
-  CaseManagement = 'CASE_MANAGEMENT',
-  CyberIndustry = 'CYBER_INDUSTRY',
-  Darkweb = 'DARKWEB',
-  Detection = 'DETECTION',
-  ExternalImport = 'EXTERNAL_IMPORT',
-  FederalOrganization = 'FEDERAL_ORGANIZATION',
-  InternalEnrichment = 'INTERNAL_ENRICHMENT',
-  InternalExportFile = 'INTERNAL_EXPORT_FILE',
-  InternalImportFile = 'INTERNAL_IMPORT_FILE',
-  Journalists = 'JOURNALISTS',
-  Malware = 'MALWARE',
-  Native = 'NATIVE',
-  NotForProfitOrganization = 'NOT_FOR_PROFIT_ORGANIZATION',
-  Orchestration = 'ORCHESTRATION',
-  PeriodicBriefing = 'PERIODIC_BRIEFING',
-  SecurityResearcher = 'SECURITY_RESEARCHER',
-  SocialMedia = 'SOCIAL_MEDIA',
-  Stream = 'STREAM',
-  ThreatActors = 'THREAT_ACTORS',
-  Vendors = 'VENDORS'
-}
 
 export enum IntegrationType {
   Connector = 'connector',
@@ -2171,7 +2145,6 @@ export type RssFeed = Document & Integration & Node & {
   feed_url: Maybe<Scalars['String']['output']>;
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2417,7 +2390,6 @@ export type Stream = Document & Integration & Node & {
   feed_url: Maybe<Scalars['String']['output']>;
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2537,7 +2509,6 @@ export type TaxiiFeed = Document & Integration & Node & {
   feed_url: Maybe<Scalars['String']['output']>;
   file_name: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2589,7 +2560,6 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   file_name: Maybe<Scalars['String']['output']>;
   github_url: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type: Maybe<LicenseType>;
   name: Scalars['String']['output'];

@@ -1026,7 +1026,6 @@
       "LicenseTypeLabel": "ライセンスの種類",
       "Restore": "リストア",
       "SelectImage": "画像を選択",
-      "SelectIntegrationSubType": "サブタイプ",
       "SelectJSONFile": "JSONファイルを選択",
       "ShortDescriptionLabel": "短い説明",
       "ShortDescriptionPlaceholder": "ドキュメントを説明するためのキャッチフレーズです。",
@@ -1054,10 +1053,6 @@
       "AddService": "新しい統合を追加する",
       "IntegrationType": "統合タイプ",
       "Filter": {
-        "IntegrationSubType": {
-          "Label": "サブタイプ",
-          "Placeholder": "サブタイプ..."
-        },
         "Type": {
           "Label": "統合タイプ",
           "Placeholder": "統合タイプ..."
@@ -1357,7 +1352,6 @@
         "IntegrationType": "タイプ",
         "IntegrationSolutionCategory": "解答カテゴリ",
         "IntegrationLicenseType": "ライセンスの種類",
-        "IntegrationSubType": "サブタイプ",
         "GithubURL": "Github URL",
         "VendorURL": "ベンダーURL",
         "FeedURL": "フィードURL",

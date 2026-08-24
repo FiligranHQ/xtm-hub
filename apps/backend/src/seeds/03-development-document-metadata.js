@@ -39,11 +39,6 @@ export async function seed(knex) {
       },
       {
         document_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
-        key: 'integration_subtype',
-        value: 'NATIVE',
-      },
-      {
-        document_id: '1b226f91-4896-4298-af2d-1de0aae63e62',
         key: 'feed_url',
         value: 'https://test.fr',
       },
@@ -51,11 +46,6 @@ export async function seed(knex) {
         document_id: 'e9efb7a0-2308-4776-9076-489c5caf9b4c',
         key: 'integration_type',
         value: 'rss_feed',
-      },
-      {
-        document_id: 'e9efb7a0-2308-4776-9076-489c5caf9b4c',
-        key: 'integration_subtype',
-        value: 'MALWARE',
       },
       {
         document_id: 'e9efb7a0-2308-4776-9076-489c5caf9b4c',
@@ -69,11 +59,6 @@ export async function seed(knex) {
       },
       {
         document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
-        key: 'integration_subtype',
-        value: 'NATIVE',
-      },
-      {
-        document_id: 'e53832ce-2f5a-4fe5-ba5b-6fef1d6ad1d4',
         key: 'feed_url',
         value: 'https://github.com',
       },
@@ -81,11 +66,6 @@ export async function seed(knex) {
         document_id: '00ab5423-1b12-468f-9d67-2af079807205',
         key: 'integration_type',
         value: 'third_party_integration',
-      },
-      {
-        document_id: '00ab5423-1b12-468f-9d67-2af079807205',
-        key: 'integration_subtype',
-        value: 'ORCHESTRATION',
       },
       {
         document_id: '00ab5423-1b12-468f-9d67-2af079807205',
