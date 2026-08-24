@@ -5,7 +5,11 @@ import {
   GRAPHQL_RESOLVE_INFO,
   SERVICES,
 } from '../../../../tests/tests.const';
-import { Success } from '../../../__generated__/resolvers-types';
+import {
+  PlatformIdentifier,
+  ServiceGroupName,
+  Success,
+} from '../../../__generated__/resolvers-types';
 import ServiceGroupModel, {
   ServiceGroupId,
 } from '../../../model/kanel/public/ServiceGroup';
@@ -171,6 +175,66 @@ describe('update service groups GraphQL mutation', () => {
     const call = serviceGroupResolver.Mutation!.updateServiceGroups!(
       {},
       { input: { groups: [{ id: groupId, userIds: [userId] }] } },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toMatchObject({ name: ErrorType.UnknownError });
+  });
+});
+
+describe('addUsersToBundleGroups GraphQL mutation', () => {
+  it('should delegate to ServiceGroupApp.addUsersToBundleGroups', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const userId = uuidv4() as UserId;
+    const input = {
+      userIds: [userId],
+      roles: [
+        { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+      ],
+    };
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof ServiceGroupApp.addUsersToBundleGroups>
+    >;
+    vi.spyOn(ServiceGroupApp, 'addUsersToBundleGroups').mockResolvedValue(
+      expected
+    );
+
+    // When
+    const result = await serviceGroupResolver.Mutation!.addUsersToBundleGroups!(
+      {},
+      { serviceInstanceId, input },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(ServiceGroupApp.addUsersToBundleGroups).toHaveBeenCalledWith(
+      serviceInstanceId,
+      input
+    );
+    expect(result).toEqual(expected);
+  });
+
+  it('should throw mapped error when ServiceGroupApp throws', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const input = {
+      userIds: [uuidv4() as UserId],
+      roles: [
+        { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+      ],
+    };
+    vi.spyOn(ServiceGroupApp, 'addUsersToBundleGroups').mockRejectedValue(
+      new Error('UNEXPECTED')
+    );
+
+    // When
+    const call = serviceGroupResolver.Mutation!.addUsersToBundleGroups!(
+      {},
+      { serviceInstanceId, input },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );

@@ -1711,9 +1711,16 @@
           "XtmOne": "XTM One",
           "NoUsers": "No users found."
         },
+        "AddUserDialog": {
+          "Title": "Add trial user",
+          "Email": "Email",
+          "EmailPlaceholder": "Add email"
+        },
         "Roles": {
+          "DefaultSuffix": "(default)",
+          "NoAccess": "No access",
           "opencti": {
-            "Title": "OpenCTI roles",
+            "Title": "{count, plural, one {OpenCTI role} other {OpenCTI roles}}",
             "Admin": {
               "Label": "Admin",
               "Description": "The administrator role with full access to product settings, configuration, and management. Admins can manage users, roles, and system-wide settings, in addition to having full visibility and control over the data."
@@ -1728,7 +1735,7 @@
             }
           },
           "openaev": {
-            "Title": "OpenAEV roles",
+            "Title": "{count, plural, one {OpenAEV role} other {OpenAEV roles}}",
             "Admin": {
               "Label": "Admin",
               "Description": "The administrator role with full access to product settings, configuration, and management. Admins can manage users, roles, and system-wide settings, in addition to having full visibility and control over the elements."
@@ -1743,13 +1750,13 @@
             }
           },
           "xtmone": {
-            "Title": "XTM One roles",
+            "Title": "{count, plural, one {XTM One role} other {XTM One roles}}",
             "Admin": {
               "Label": "Admin",
               "Description": "The administrator role with full access to platform settings, configuration, and management. Admins can manage users, groups, integrations, and system-wide settings, in addition to having full visibility and control over all elements, including company-managed resources shared across the organization. They can impersonate users for troubleshooting."
             },
             "User": {
-              "Label": "User (default)",
+              "Label": "User",
               "Description": "A role with full capabilities to create, configure, and run their own agents, flows, and knowledge bases. Users can modify any element they own or that has been shared with them, but do not have access to platform settings, administration, or configuration options."
             }
           }

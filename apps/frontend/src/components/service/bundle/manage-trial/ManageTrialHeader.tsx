@@ -4,9 +4,18 @@ import { ArrowUpwardIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useState } from 'react';
+import { AddTrialUserDialog } from './AddTrialUserDialog';
 
-export const ManageTrialHeader = () => {
+interface ManageTrialHeaderProps {
+  serviceInstanceId: string;
+}
+
+export const ManageTrialHeader = ({
+  serviceInstanceId,
+}: ManageTrialHeaderProps) => {
   const t = useTranslations();
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
 
   return (
     <header className="flex flex-col gap-l">
@@ -35,11 +44,18 @@ export const ManageTrialHeader = () => {
             className="border-elevation-border-default-layer-0">
             {t('Service.Bundle.ManageTrial.GroupAction')}
           </Button>
-          <Button variant="default">
+          <Button
+            variant="default"
+            onClick={() => setIsAddUserDialogOpen(true)}>
             {t('Service.Bundle.ManageTrial.AddTrialUser')}
           </Button>
         </div>
       </div>
+      <AddTrialUserDialog
+        serviceInstanceId={serviceInstanceId}
+        open={isAddUserDialogOpen}
+        setOpen={setIsAddUserDialogOpen}
+      />
     </header>
   );
 };

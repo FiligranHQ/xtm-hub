@@ -1711,9 +1711,16 @@
           "XtmOne": "XTM One",
           "NoUsers": "Aucun utilisateur trouvé."
         },
+        "AddUserDialog": {
+          "Title": "Ajouter un utilisateur d'essai",
+          "Email": "Email",
+          "EmailPlaceholder": "Ajouter un email"
+        },
         "Roles": {
+          "DefaultSuffix": "(par défaut)",
+          "NoAccess": "Pas d'accès",
           "opencti": {
-            "Title": "Rôles OpenCTI",
+            "Title": "{count, plural, one {Rôle OpenCTI} other {Rôles OpenCTI}}",
             "Admin": {
               "Label": "Admin",
               "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion du produit. Les administrateurs peuvent gérer les utilisateurs, les rôles et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur les données."
@@ -1728,7 +1735,7 @@
             }
           },
           "openaev": {
-            "Title": "Rôles OpenAEV",
+            "Title": "{count, plural, one {Rôle OpenAEV} other {Rôles OpenAEV}}",
             "Admin": {
               "Label": "Admin",
               "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion du produit. Les administrateurs peuvent gérer les utilisateurs, les rôles et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur les éléments."
@@ -1743,13 +1750,13 @@
             }
           },
           "xtmone": {
-            "Title": "Rôles XTM One",
+            "Title": "{count, plural, one {Rôle XTM One} other {Rôles XTM One}}",
             "Admin": {
               "Label": "Admin",
               "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion de la plateforme. Les administrateurs peuvent gérer les utilisateurs, les groupes, les intégrations et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur tous les éléments, y compris les ressources gérées par l'entreprise et partagées au sein de l'organisation. Ils peuvent usurper l'identité des utilisateurs à des fins de dépannage."
             },
             "User": {
-              "Label": "User (par défaut)",
+              "Label": "User",
               "Description": "Un rôle offrant toutes les capacités nécessaires pour créer, configurer et exécuter ses propres agents, flux et bases de connaissances. Les utilisateurs peuvent modifier tout élément qu'ils possèdent ou qui a été partagé avec eux, mais n'ont pas accès aux paramètres, à l'administration ou aux options de configuration de la plateforme."
             }
           }

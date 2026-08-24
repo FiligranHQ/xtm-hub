@@ -1,11 +1,15 @@
 import {
+  AddUsersToBundleGroupsInput,
   BundleUserServiceGroup,
   DeploymentRequestDeploymentType,
+  PlatformIdentifier,
   ServiceGroupName,
   ServiceGroup as ServiceGroupResponse,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
+import { OrganizationId } from '../../../model/kanel/public/Organization';
 import ServiceGroupModel, {
   ServiceGroupId,
 } from '../../../model/kanel/public/ServiceGroup';
@@ -33,6 +37,104 @@ const toServiceGroupResponse = (
   ...serviceGroup,
   name: serviceGroup.name as ServiceGroupName,
 });
+
+const assertOrganizationAccess = async (
+  serviceInstanceId: ServiceInstanceId
+): Promise<OrganizationId> => {
+  const user = requestContext.requireUser();
+
+  const organization =
+    await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
+      serviceInstanceId
+    );
+  if (!organization) {
+    throw new Error(ErrorCode.SubscriptionNotFound);
+  }
+  if (
+    !AuthHelper.userHasBypassCapability(user) &&
+    organization.id !== user.selected_organization_id
+  ) {
+    throw new Error(ErrorCode.OrganizationDoesNotMatchSelectedOrganization);
+  }
+
+  return organization.id;
+};
+
+const assertBundleAccessAndLoad = async (
+  serviceInstanceId: ServiceInstanceId
+): Promise<{
+  bundleDeploymentRequest: DeploymentRequest;
+  bundleOrganizationId: OrganizationId;
+}> => {
+  const bundleDeploymentRequest =
+    await DeploymentRequestDomain.loadDeploymentRequestBy({
+      service_instance_id: serviceInstanceId,
+    });
+  if (!bundleDeploymentRequest) {
+    throw new Error(ErrorCode.DeploymentRequestNotFound);
+  }
+
+  const bundleOrganizationId =
+    await assertOrganizationAccess(serviceInstanceId);
+
+  return { bundleDeploymentRequest, bundleOrganizationId };
+};
+
+// Sends the trial welcome email, only if the platform is an active trial with an end date.
+const sendFreeTrialWelcomeEmails = async ({
+  platformId,
+  platformIdentifier,
+  deploymentType,
+  endDate,
+  newlyAddedUsers,
+  adminEmail,
+}: {
+  platformId: string | null;
+  platformIdentifier: PlatformIdentifier | null;
+  deploymentType: DeploymentRequestDeploymentType;
+  endDate: Date | null;
+  newlyAddedUsers: User[];
+  adminEmail: string;
+}): Promise<void> => {
+  if (!platformId || !platformIdentifier || newlyAddedUsers.length === 0) {
+    return;
+  }
+
+  try {
+    const platformConfiguration =
+      await PlatformConfigurationDomain.loadConfigurationByPlatform(platformId);
+    if (
+      !platformConfiguration ||
+      deploymentType !== DeploymentRequestDeploymentType.Trial ||
+      !endDate
+    ) {
+      return;
+    }
+
+    const trialEndDate = endDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: '2-digit',
+    });
+    await Promise.all(
+      newlyAddedUsers.map((addedUser) =>
+        sendMail({
+          to: addedUser.email,
+          template: 'free_trial_user_added',
+          params: {
+            firstName: formatName(addedUser.first_name),
+            platformUrl: platformConfiguration.platform_url,
+            platformIdentifier,
+            adminEmail,
+            trialEndDate,
+          },
+        })
+      )
+    );
+  } catch (error) {
+    logApp.error('Unable to send free_trial_user_added mail', { error });
+  }
+};
 
 export const ServiceGroupApp = {
   loadGroups: async ({
@@ -65,29 +167,8 @@ export const ServiceGroupApp = {
   loadBundleUserServiceGroups: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<BundleUserServiceGroup[]> => {
-    const user = requestContext.requireUser();
-
-    const bundleDeploymentRequest =
-      await DeploymentRequestDomain.loadDeploymentRequestBy({
-        service_instance_id: serviceInstanceId,
-      });
-    if (!bundleDeploymentRequest) {
-      throw new Error(ErrorCode.DeploymentRequestNotFound);
-    }
-
-    const bundleOrganization =
-      await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
-        serviceInstanceId
-      );
-    if (!bundleOrganization) {
-      throw new Error(ErrorCode.SubscriptionNotFound);
-    }
-    if (
-      !AuthHelper.userHasBypassCapability(user) &&
-      bundleOrganization.id !== user.selected_organization_id
-    ) {
-      throw new Error(ErrorCode.OrganizationDoesNotMatchSelectedOrganization);
-    }
+    const { bundleDeploymentRequest } =
+      await assertBundleAccessAndLoad(serviceInstanceId);
 
     const rows = await UserDomain.loadUsersWithDeploymentServiceGroups(
       bundleDeploymentRequest.id
@@ -117,6 +198,82 @@ export const ServiceGroupApp = {
     return Array.from(bundleUserServiceGroupsByUserId.values());
   },
 
+  addUsersToBundleGroups: async (
+    serviceInstanceId: ServiceInstanceId,
+    input: AddUsersToBundleGroupsInput
+  ): Promise<BundleUserServiceGroup[]> => {
+    const user = requestContext.requireUser();
+
+    if (
+      !input.roles.some((role) => role.product === PlatformIdentifier.Xtmone)
+    ) {
+      throw new Error(ErrorCode.XtmOneRoleRequired);
+    }
+
+    const { bundleDeploymentRequest } =
+      await assertBundleAccessAndLoad(serviceInstanceId);
+
+    const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+      parent_id: bundleDeploymentRequest.id,
+    });
+
+    const platformRoleAssignments = input.roles.flatMap((roleAssignment) => {
+      const child = children.find(
+        (deploymentRequest) =>
+          deploymentRequest.platform_identifier === roleAssignment.product
+      );
+      return child ? [{ child, role: roleAssignment.role }] : [];
+    });
+
+    await withTransaction(async () => {
+      for (const { child, role } of platformRoleAssignments) {
+        const groups = await ServiceGroupDomain.loadServiceGroups({
+          service_instance_id: child.service_instance_id,
+        });
+        const targetGroup = groups.find((group) => group.name === role);
+        if (!targetGroup) {
+          throw new Error(ErrorCode.ServiceGroupNotFound);
+        }
+
+        await ServiceGroupDomain.addUsersToGroup(targetGroup.id, input.userIds);
+      }
+    });
+
+    const users = await UserDomain.loadUsers(input.userIds);
+    const emailByUserId = new Map(users.map(({ id, email }) => [id, email]));
+
+    await Promise.all(
+      platformRoleAssignments.map(async ({ child, role }) => {
+        if (!child.platform_id || !child.platform_identifier) {
+          return;
+        }
+
+        await Promise.all(
+          input.userIds.map((userId) => {
+            const email = emailByUserId.get(userId);
+            if (!email) {
+              return undefined;
+            }
+            return auth0Client.updateUserRBACInstance(email, {
+              [child.platform_id as string]: { groups: [role] },
+            });
+          })
+        );
+
+        await sendFreeTrialWelcomeEmails({
+          platformId: child.platform_id,
+          platformIdentifier: child.platform_identifier,
+          deploymentType: child.type,
+          endDate: child.end_date,
+          newlyAddedUsers: users,
+          adminEmail: user.email,
+        });
+      })
+    );
+
+    return ServiceGroupApp.loadBundleUserServiceGroups(serviceInstanceId);
+  },
+
   updateGroups: async (
     groups: UpdateGroupsPayload
   ): Promise<ServiceGroupResponse[]> => {
@@ -134,19 +291,7 @@ export const ServiceGroupApp = {
       firstServiceInstanceId
     );
 
-    const serviceGroupsOrganization =
-      await OrganizationDomain.loadOrganizationSubscribedToServiceInstance(
-        firstServiceInstanceId
-      );
-    if (!serviceGroupsOrganization) {
-      throw new Error(ErrorCode.SubscriptionNotFound);
-    }
-    if (
-      !AuthHelper.userHasBypassCapability(user) &&
-      serviceGroupsOrganization.id !== user.selected_organization_id
-    ) {
-      throw new Error(ErrorCode.OrganizationDoesNotMatchSelectedOrganization);
-    }
+    await assertOrganizationAccess(firstServiceInstanceId);
 
     const oldUserIds = new Set(oldUsers.map((u) => u.user_id));
     const addedUserIds = [
@@ -166,51 +311,20 @@ export const ServiceGroupApp = {
     });
 
     if (addedUserIds.length > 0) {
-      try {
-        const deploymentRequest =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            service_instance_id: serviceInstanceIds[0],
-          });
-        if (deploymentRequest?.platform_id) {
-          const platformConfiguration =
-            await PlatformConfigurationDomain.loadConfigurationByPlatform(
-              deploymentRequest.platform_id
-            );
-          if (
-            platformConfiguration &&
-            deploymentRequest.type === DeploymentRequestDeploymentType.Trial &&
-            deploymentRequest.platform_identifier &&
-            deploymentRequest.end_date
-          ) {
-            const platformIdentifier = deploymentRequest.platform_identifier;
-            const addedUsers = await UserDomain.loadUsers(addedUserIds);
-            const trialEndDate = deploymentRequest.end_date.toLocaleDateString(
-              'en-US',
-              {
-                year: 'numeric',
-                month: 'long',
-                day: '2-digit',
-              }
-            );
-            await Promise.all(
-              addedUsers.map((addedUser) =>
-                sendMail({
-                  to: addedUser.email,
-                  template: 'free_trial_user_added',
-                  params: {
-                    firstName: formatName(addedUser.first_name),
-                    platformUrl: platformConfiguration.platform_url,
-                    platformIdentifier: platformIdentifier,
-                    adminEmail: user.email,
-                    trialEndDate: trialEndDate,
-                  },
-                })
-              )
-            );
-          }
-        }
-      } catch (error) {
-        logApp.error('Unable to send free_trial_user_added mail', { error });
+      const deploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          service_instance_id: serviceInstanceIds[0],
+        });
+      if (deploymentRequest) {
+        const addedUsers = await UserDomain.loadUsers(addedUserIds);
+        await sendFreeTrialWelcomeEmails({
+          platformId: deploymentRequest.platform_id,
+          platformIdentifier: deploymentRequest.platform_identifier,
+          deploymentType: deploymentRequest.type,
+          endDate: deploymentRequest.end_date,
+          newlyAddedUsers: addedUsers,
+          adminEmail: user.email,
+        });
       }
     }
 

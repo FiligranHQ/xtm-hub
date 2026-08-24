@@ -82,6 +82,11 @@ export type AddUserInput = {
   password?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AddUsersToBundleGroupsInput = {
+  roles: Array<BundleUserRoleAssignmentInput>;
+  userIds: Array<Scalars['UserId']['input']>;
+};
+
 export type AdminAddUserInput = {
   email: Scalars['String']['input'];
   first_name?: InputMaybe<Scalars['String']['input']>;
@@ -108,6 +113,11 @@ export type BulkPendingUserFromOrganizationInput = {
   filters?: InputMaybe<Array<Filter>>;
   ids?: InputMaybe<Array<Scalars['UserId']['input']>>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BundleUserRoleAssignmentInput = {
+  product: PlatformIdentifier;
+  role: ServiceGroupName;
 };
 
 export type BundleUserServiceGroup = {
@@ -975,6 +985,7 @@ export type Mutation = {
   addUseCase: UseCase;
   addUser?: Maybe<User>;
   addUserService?: Maybe<Array<Maybe<UserService>>>;
+  addUsersToBundleGroups: Array<BundleUserServiceGroup>;
   adminAddUser?: Maybe<User>;
   adminCancelDeploymentRequest?: Maybe<DeploymentRequest>;
   adminEditUser: User;
@@ -1099,6 +1110,12 @@ export type MutationAddUserArgs = {
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationAddUsersToBundleGroupsArgs = {
+  input: AddUsersToBundleGroupsInput;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -3135,11 +3152,13 @@ export type ResolversTypes = ResolversObject<{
   AddSubscriptionCapabilityInput: AddSubscriptionCapabilityInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
+  AddUsersToBundleGroupsInput: AddUsersToBundleGroupsInput;
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   AutoRegisterPlatformInput: AutoRegisterPlatformInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
+  BundleUserRoleAssignmentInput: BundleUserRoleAssignmentInput;
   BundleUserServiceGroup: ResolverTypeWrapper<BundleUserServiceGroup>;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: ResolverTypeWrapper<CanUnregisterResponse>;
@@ -3390,11 +3409,13 @@ export type ResolversParentTypes = ResolversObject<{
   AddSubscriptionCapabilityInput: AddSubscriptionCapabilityInput;
   AddUseCaseInput: AddUseCaseInput;
   AddUserInput: AddUserInput;
+  AddUsersToBundleGroupsInput: AddUsersToBundleGroupsInput;
   AdminAddUserInput: AdminAddUserInput;
   AdminEditUserInput: AdminEditUserInput;
   AutoRegisterPlatformInput: AutoRegisterPlatformInput;
   Boolean: Scalars['Boolean']['output'];
   BulkPendingUserFromOrganizationInput: BulkPendingUserFromOrganizationInput;
+  BundleUserRoleAssignmentInput: BundleUserRoleAssignmentInput;
   BundleUserServiceGroup: BundleUserServiceGroup;
   CanUnregisterPlatformInput: CanUnregisterPlatformInput;
   CanUnregisterResponse: CanUnregisterResponse;
@@ -4068,6 +4089,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   addUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationAddUseCaseArgs, 'input'>>;
   addUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAddUserArgs, 'input'>>;
   addUserService?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationAddUserServiceArgs, 'input' | 'service_instance_id'>>;
+  addUsersToBundleGroups?: Resolver<Array<ResolversTypes['BundleUserServiceGroup']>, ParentType, ContextType, RequireFields<MutationAddUsersToBundleGroupsArgs, 'input' | 'serviceInstanceId'>>;
   adminAddUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationAdminAddUserArgs, 'input'>>;
   adminCancelDeploymentRequest?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, RequireFields<MutationAdminCancelDeploymentRequestArgs, 'deploymentRequestId'>>;
   adminEditUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationAdminEditUserArgs, 'id' | 'input'>>;

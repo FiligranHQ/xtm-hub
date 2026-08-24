@@ -118,7 +118,10 @@ export const ServiceGroupDomain = {
       group_id: groupId,
     }));
 
-    await db<ServiceGroupUser>('ServiceGroup_User').insert(data);
+    await db<ServiceGroupUser>('ServiceGroup_User')
+      .insert(data)
+      .onConflict(['group_id', 'user_id'])
+      .ignore();
   },
 
   removeUsersFromGroups: async (groupIds: ServiceGroupId[]) => {

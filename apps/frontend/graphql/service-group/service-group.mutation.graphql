@@ -1,0 +1,15 @@
+mutation AddUsersToBundleGroups(
+  $serviceInstanceId: ServiceInstanceId!
+  $input: AddUsersToBundleGroupsInput!
+) {
+  addUsersToBundleGroups(serviceInstanceId: $serviceInstanceId, input: $input) {
+    user {
+      id
+      email
+    }
+    groups {
+      platformIdentifier
+      name
+    }
+  }
+}

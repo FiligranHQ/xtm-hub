@@ -89,6 +89,11 @@ export type AddUserInput = {
   password: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AddUsersToBundleGroupsInput = {
+  roles: Array<BundleUserRoleAssignmentInput>;
+  userIds: Array<Scalars['UserId']['input']>;
+};
+
 export type AdminAddUserInput = {
   email: Scalars['String']['input'];
   first_name: InputMaybe<Scalars['String']['input']>;
@@ -115,6 +120,11 @@ export type BulkPendingUserFromOrganizationInput = {
   filters: InputMaybe<Array<Filter>>;
   ids: InputMaybe<Array<Scalars['UserId']['input']>>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BundleUserRoleAssignmentInput = {
+  product: PlatformIdentifier;
+  role: ServiceGroupName;
 };
 
 export type BundleUserServiceGroup = {
@@ -982,6 +992,7 @@ export type Mutation = {
   addUseCase: UseCase;
   addUser: Maybe<User>;
   addUserService: Maybe<Array<Maybe<UserService>>>;
+  addUsersToBundleGroups: Array<BundleUserServiceGroup>;
   adminAddUser: Maybe<User>;
   adminCancelDeploymentRequest: Maybe<DeploymentRequest>;
   adminEditUser: User;
@@ -1106,6 +1117,12 @@ export type MutationAddUserArgs = {
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationAddUsersToBundleGroupsArgs = {
+  input: AddUsersToBundleGroupsInput;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -3234,6 +3251,14 @@ export type ConnectProductOrganizationAdminsQueryVariables = Exact<{
 
 export type ConnectProductOrganizationAdminsQuery = { __typename?: 'Query', usersWithCapabilitiesInOrganization: Array<{ __typename?: 'User', id: string, email: string, first_name: string | null, last_name: string | null }> };
 
+export type AddUsersToBundleGroupsMutationVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  input: AddUsersToBundleGroupsInput;
+}>;
+
+
+export type AddUsersToBundleGroupsMutation = { __typename?: 'Mutation', addUsersToBundleGroups: Array<{ __typename?: 'BundleUserServiceGroup', user: { __typename?: 'User', id: string, email: string }, groups: Array<{ __typename?: 'UserPlatformGroup', platformIdentifier: PlatformIdentifier, name: ServiceGroupName }> }> };
+
 export type BundleUserServiceGroupsQueryVariables = Exact<{
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 }>;
@@ -3379,6 +3404,16 @@ export type ChangeSelectedOrganizationMutationVariables = Exact<{
 
 
 export type ChangeSelectedOrganizationMutation = { __typename?: 'Mutation', changeSelectedOrganization: { __typename?: 'User', id: string, selected_organization_id: any | null, selected_org_capabilities: Array<OrganizationCapability> | null } | null };
+
+export type UsersQueryVariables = Exact<{
+  first: Scalars['Int']['input'];
+  orderBy: UserOrdering;
+  orderMode: OrderingMode;
+  filters: InputMaybe<Array<Filter> | Filter>;
+}>;
+
+
+export type UsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', edges: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', id: string, email: string } }> } };
 
 export type VotingRoundCreateMutationVariables = Exact<{
   input: CreateVotingRoundInput;
@@ -4546,6 +4581,42 @@ useInfiniteConnectProductOrganizationAdminsQuery.getKey = (variables: ConnectPro
 useInfiniteConnectProductOrganizationAdminsQuery.getRootKey = () => ['ConnectProductOrganizationAdmins.infinite'] as const;
 useConnectProductOrganizationAdminsQuery.fetcher = (client: GraphQLClient, variables: ConnectProductOrganizationAdminsQueryVariables, headers?: RequestInit['headers']) => fetcher<ConnectProductOrganizationAdminsQuery, ConnectProductOrganizationAdminsQueryVariables>(client, ConnectProductOrganizationAdminsDocument, variables, headers);
 
+export const AddUsersToBundleGroupsDocument = `
+    mutation AddUsersToBundleGroups($serviceInstanceId: ServiceInstanceId!, $input: AddUsersToBundleGroupsInput!) {
+  addUsersToBundleGroups(serviceInstanceId: $serviceInstanceId, input: $input) {
+    user {
+      id
+      email
+    }
+    groups {
+      platformIdentifier
+      name
+    }
+  }
+}
+    `;
+
+export const useAddUsersToBundleGroupsMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddUsersToBundleGroupsMutation, TError, AddUsersToBundleGroupsMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<AddUsersToBundleGroupsMutation, TError, AddUsersToBundleGroupsMutationVariables, TContext>(
+      {
+    mutationKey: ['AddUsersToBundleGroups'],
+    mutationFn: (variables?: AddUsersToBundleGroupsMutationVariables) => fetcher<AddUsersToBundleGroupsMutation, AddUsersToBundleGroupsMutationVariables>(client, AddUsersToBundleGroupsDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useAddUsersToBundleGroupsMutation.getKey = () => ['AddUsersToBundleGroups'];
+useAddUsersToBundleGroupsMutation.getRootKey = () => ['AddUsersToBundleGroups'] as const;
+useAddUsersToBundleGroupsMutation.fetcher = (client: GraphQLClient, variables: AddUsersToBundleGroupsMutationVariables, headers?: RequestInit['headers']) => fetcher<AddUsersToBundleGroupsMutation, AddUsersToBundleGroupsMutationVariables>(client, AddUsersToBundleGroupsDocument, variables, headers);
+
 export const BundleUserServiceGroupsDocument = `
     query BundleUserServiceGroups($serviceInstanceId: ServiceInstanceId!) {
   bundleUserServiceGroups(serviceInstanceId: $serviceInstanceId) {
@@ -5339,6 +5410,69 @@ export const useChangeSelectedOrganizationMutation = <
 useChangeSelectedOrganizationMutation.getKey = () => ['ChangeSelectedOrganization'];
 useChangeSelectedOrganizationMutation.getRootKey = () => ['ChangeSelectedOrganization'] as const;
 useChangeSelectedOrganizationMutation.fetcher = (client: GraphQLClient, variables: ChangeSelectedOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<ChangeSelectedOrganizationMutation, ChangeSelectedOrganizationMutationVariables>(client, ChangeSelectedOrganizationDocument, variables, headers);
+
+export const UsersDocument = `
+    query Users($first: Int!, $orderBy: UserOrdering!, $orderMode: OrderingMode!, $filters: [Filter!]) {
+  users(
+    first: $first
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+  ) {
+    edges {
+      node {
+        id
+        email
+      }
+    }
+  }
+}
+    `;
+
+export const useUsersQuery = <
+      TData = UsersQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: UsersQueryVariables,
+      options?: Omit<UseQueryOptions<UsersQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<UsersQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<UsersQuery, TError, TData>(
+      {
+    queryKey: ['Users', variables],
+    queryFn: fetcher<UsersQuery, UsersQueryVariables>(client, UsersDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useUsersQuery.getKey = (variables: UsersQueryVariables) => ['Users', variables];
+useUsersQuery.getRootKey = () => ['Users'] as const;
+export const useInfiniteUsersQuery = <
+      TData = InfiniteData<UsersQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: UsersQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<UsersQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<UsersQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<UsersQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['Users.infinite', variables],
+      queryFn: (metaData) => fetcher<UsersQuery, UsersQueryVariables>(client, UsersDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteUsersQuery.getKey = (variables: UsersQueryVariables) => ['Users.infinite', variables];
+useInfiniteUsersQuery.getRootKey = () => ['Users.infinite'] as const;
+useUsersQuery.fetcher = (client: GraphQLClient, variables: UsersQueryVariables, headers?: RequestInit['headers']) => fetcher<UsersQuery, UsersQueryVariables>(client, UsersDocument, variables, headers);
 
 export const VotingRoundCreateDocument = `
     mutation VotingRoundCreate($input: CreateVotingRoundInput!) {

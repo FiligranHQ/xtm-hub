@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { InfoIcon } from '@filigran/icon';
 import {
   Accordion,
@@ -9,63 +10,68 @@ import {
 } from '@filigran/ui';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
+import { getBundleRolePanels } from './manage-trial.const';
 
-interface RolePanelConfig {
-  platform: PlatformIdentifier;
-  roles: string[];
+interface ManageTrialRoleDescriptionsProps {
+  stacked?: boolean;
+  products?: PlatformIdentifier[];
 }
 
-const ROLE_PANELS: RolePanelConfig[] = [
-  {
-    platform: PlatformIdentifier.Opencti,
-    roles: ['Admin', 'Analyst', 'Reader'],
-  },
-  {
-    platform: PlatformIdentifier.Openaev,
-    roles: ['Admin', 'Manager', 'Observer'],
-  },
-  {
-    platform: PlatformIdentifier.Xtmone,
-    roles: ['Admin', 'User'],
-  },
-];
-
-export const ManageTrialRoleDescriptions = () => {
+export const ManageTrialRoleDescriptions = ({
+  stacked = false,
+  products,
+}: ManageTrialRoleDescriptionsProps) => {
   const t = useTranslations();
+  const bundleRolePanels = getBundleRolePanels(products);
 
   return (
-    <div className="grid grid-cols-1 gap-l md:grid-cols-3">
-      {ROLE_PANELS.map(({ platform, roles }) => {
+    <Accordion
+      type="single"
+      collapsible
+      className={cn('flex flex-col gap-l', !stacked && 'md:flex-row')}>
+      {bundleRolePanels.map(({ platform, roles, defaultRole }) => {
         const namespace = `Service.Bundle.ManageTrial.Roles.${platform}`;
 
         return (
-          <Accordion
+          <AccordionItem
             key={platform}
-            type="single"
-            collapsible>
-            <AccordionItem value={platform}>
-              <AccordionTrigger className="border-b border-elevation-border-default-layer-0 py-s pr-0 hover:no-underline cursor-pointer data-[state=open]:border-b-0">
-                <span className="flex items-center gap-xs">
-                  <InfoIcon className="h-4 w-4 shrink-0" />
-                  {t(`${namespace}.Title`)}
-                </span>
-              </AccordionTrigger>
-              <AccordionContent className="py-s border-b border-elevation-border-default-layer-0 flex flex-col gap-s">
-                {roles.map((role) => (
-                  <p
-                    key={role}
-                    className="text-content-body-compact">
-                    <span className="font-bold text-text-default-primary">
-                      {t(`${namespace}.${role}.Label`)}:{' '}
-                    </span>
-                    {t(`${namespace}.${role}.Description`)}
-                  </p>
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+            value={platform}
+            className={cn(
+              !stacked && 'md:flex-1',
+              stacked && 'border-b border-elevation-border-strong-layer-3'
+            )}>
+            <AccordionTrigger
+              className={cn(
+                'py-s pr-0 hover:no-underline cursor-pointer data-[state=open]:border-b-0',
+                !stacked && 'border-b border-elevation-border-default-layer-0'
+              )}>
+              <span className="flex items-center gap-xs text-header-heading-xs">
+                <InfoIcon className="h-4 w-4 shrink-0" />
+                {t(`${namespace}.Title`, { count: roles.length })}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent
+              className={cn(
+                'py-s flex flex-col gap-s',
+                !stacked && 'border-b border-elevation-border-default-layer-0'
+              )}>
+              {roles.map((role) => (
+                <p
+                  key={role}
+                  className="text-content-body-compact text-text-default-secondary">
+                  <span className="font-bold text-header-heading-xs">
+                    {t(`${namespace}.${role}.Label`)}
+                    {role === defaultRole &&
+                      ` ${t('Service.Bundle.ManageTrial.Roles.DefaultSuffix')}`}
+                    :{' '}
+                  </span>
+                  {t(`${namespace}.${role}.Description`)}
+                </p>
+              ))}
+            </AccordionContent>
+          </AccordionItem>
         );
       })}
-    </div>
+    </Accordion>
   );
 };

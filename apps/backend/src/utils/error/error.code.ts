@@ -72,6 +72,7 @@ export enum BadRequestErrorCode {
   InvalidProductsForDeploymentType = 'INVALID_PRODUCTS_FOR_DEPLOYMENT_TYPE',
   InvalidUseCasesForProducts = 'INVALID_USE_CASES_FOR_PRODUCTS',
   SolutionCategoriesRequired = 'SOLUTION_CATEGORIES_REQUIRED',
+  XtmOneRoleRequired = 'XTM_ONE_ROLE_REQUIRED',
 }
 
 export enum UnknownErrorCode {
@@ -141,6 +142,7 @@ export enum NotFoundErrorCode {
   OrganizationNotFound = 'ORGANIZATION_NOT_FOUND',
   UseCaseNotFound = 'USE_CASE_NOT_FOUND',
   SolutionCategoryNotFound = 'SOLUTION_CATEGORY_NOT_FOUND',
+  ServiceGroupNotFound = 'SERVICE_GROUP_NOT_FOUND',
   VotableFeatureNotFound = 'VOTABLE_FEATURE_NOT_FOUND',
   VotingRoundNotFound = 'VOTING_ROUND_NOT_FOUND',
 }

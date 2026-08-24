@@ -31,7 +31,7 @@ const ClientSection = ({
     <>
       <BreadcrumbNav value={breadcrumbs} />
       <div className="flex flex-col gap-l">
-        <ManageTrialHeader />
+        <ManageTrialHeader serviceInstanceId={decodedServiceInstanceId} />
         <ManageTrialRoleDescriptions />
         <ManageTrialTable serviceInstanceId={decodedServiceInstanceId} />
       </div>
