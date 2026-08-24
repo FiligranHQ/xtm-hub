@@ -132,8 +132,7 @@ const ServiceList = ({
               integrationType as IntegrationType
             ) ? (
               <IntegrationAccordion
-                integrationType={integrationType}
-                count={documents.length}>
+                integrationType={integrationType}>
                 <DocumentList
                   documents={documents}
                   displayMode={selectedDisplayMode}

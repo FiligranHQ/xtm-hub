@@ -1,4 +1,3 @@
-import { CountBadge } from '@/components/ui/CountBadge';
 import {
   Accordion,
   AccordionContent,
@@ -10,13 +9,11 @@ import React from 'react';
 
 interface IntegrationAccordionProps {
   integrationType: string;
-  count: number;
   children: React.ReactNode;
 }
 
 const IntegrationAccordion = ({
   integrationType,
-  count,
   children,
 }: IntegrationAccordionProps) => {
   const t = useTranslations();
@@ -30,11 +27,6 @@ const IntegrationAccordion = ({
           <AccordionTrigger className="hover:cursor-pointer">
             <div className="inline-flex items-center gap-s">
               {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}
-              <CountBadge
-                count={count}
-                bgFadedClass={'bg-feedback-neutral-secondary-transparency'}
-                textClass={'text-feedback-neutral-primary'}
-              />
             </div>
           </AccordionTrigger>
         </h2>
