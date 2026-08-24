@@ -1,4 +1,5 @@
 import HomepageResourceList from '@/components/homepage/resources/HomepageResourceList';
+import { PublicLocale } from '@/i18n/config';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import {
   NewestDocumentsQueryDocument,
@@ -13,11 +14,13 @@ const NEWEST_LIMIT = 8;
 type NewestResourcesProps = {
   platformIdentifiers?: PlatformIdentifier[];
   isAuthenticated?: boolean;
+  paramsLocale?: PublicLocale;
 };
 
 const NewestResources = async ({
   platformIdentifiers,
   isAuthenticated = false,
+  paramsLocale,
 }: NewestResourcesProps) => {
   const t = await getTranslations('HomePage.XtmNewestResources');
 
@@ -38,6 +41,7 @@ const NewestResources = async ({
       title={t('Title')}
       documents={data.newestDocuments}
       isAuthenticated={isAuthenticated}
+      paramsLocale={paramsLocale}
     />
   );
 };

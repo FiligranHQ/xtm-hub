@@ -83,7 +83,10 @@ test.describe('User Management', () => {
     page,
   }) => {
     await loginPage.navigateToAndLogin(TEST_USER.adminThales);
-    await page.getByRole('link', { name: 'Users' }).click();
+    await page
+      .getByRole('navigation')
+      .getByRole('link', { name: 'Users', exact: true })
+      .click();
     await page.getByRole('button', { name: 'Add user' }).click();
     await expect(
       page.getByRole('textbox', { name: 'First name' })
@@ -112,7 +115,10 @@ test.describe('User Management', () => {
     const pendingUserNodeId = Buffer.from(`User:${userId}`).toString('base64');
 
     await loginPage.navigateToAndLogin(TEST_USER.adminThales);
-    await page.getByRole('link', { name: 'Users' }).click();
+    await page
+      .getByRole('navigation')
+      .getByRole('link', { name: 'Users', exact: true })
+      .click();
     await page.goto(
       `/app/manage/user?action=approve&user_id=${pendingUserNodeId}`
     );
