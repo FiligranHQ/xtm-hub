@@ -297,6 +297,7 @@
       "SERVICE_NOT_MANAGEABLE": "Ce service n'est pas gérable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Erreur lors de l'ajout d'une souscription au service",
       "SHORT_DESCRIPTION_TOO_LONG": "La description courte est trop longue",
+      "SOLUTION_CATEGORIES_REQUIRED": "Au moins une catégorie de solution est requise",
       "SOLUTION_CATEGORY_NOT_FOUND": "Catégorie de solution non trouvée",
       "SUBSCRIPTION_NOT_FOUND": "L'abonnement n'a pas été trouvé",
       "TENANT_ID_MANDATORY": "L'identifiant du locataire est obligatoire",

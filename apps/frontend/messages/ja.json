@@ -297,6 +297,7 @@
       "SERVICE_NOT_MANAGEABLE": "このサービスは管理できません。",
       "SERVICE_SUBSCRIPTION_ERROR": "サービスにサブスクリプションを追加する際にエラーが発生した",
       "SHORT_DESCRIPTION_TOO_LONG": "短い説明が長すぎます",
+      "SOLUTION_CATEGORIES_REQUIRED": "少なくとも1つのソリューションカテゴリが必要です",
       "SOLUTION_CATEGORY_NOT_FOUND": "ソリューションカテゴリが見つかりません",
       "SUBSCRIPTION_NOT_FOUND": "購読が見つからない",
       "TENANT_ID_MANDATORY": "テナントIDは必須です",

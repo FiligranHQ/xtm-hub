@@ -297,6 +297,7 @@
       "SERVICE_NOT_MANAGEABLE": "This service is not manageable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
       "SHORT_DESCRIPTION_TOO_LONG": "The short description is too long",
+      "SOLUTION_CATEGORIES_REQUIRED": "At least one solution category is required",
       "SOLUTION_CATEGORY_NOT_FOUND": "Solution category not found",
       "SUBSCRIPTION_NOT_FOUND": "Subscription was not found",
       "TENANT_ID_MANDATORY": "Tenant id is mandatory",
