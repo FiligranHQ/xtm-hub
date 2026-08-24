@@ -2454,35 +2454,6 @@ describe('deployment app', () => {
         ).toBe(0);
       });
 
-      it('should give back only the bundle place when a bundle with an active child is cancelled', async () => {
-        const bundle = await DeploymentApp.createDeploymentRequest({
-          ...TEST_DEPLOYMENT,
-          region: QUOTA_REGION,
-          type: DeploymentRequestDeploymentType.Bundle,
-          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
-        });
-        const [child] = await TestHelper.deploymentRequest.loadMany({
-          parent_id: bundle.id as DeploymentRequestId,
-          platform_identifier: PlatformIdentifier.Opencti,
-        });
-        await DeploymentRequestDomain.updateDeploymentRequestById(child!.id, {
-          hub_status: DeploymentRequestHubStatus.Active,
-        });
-
-        await DeploymentApp.cancelDeploymentRequest(
-          bundle.id as DeploymentRequestId,
-          false
-        );
-
-        expect(await loadAvailability(bundleQuotaFilter)).toBe(5);
-        expect(
-          await loadAvailability(productQuotaFilter(PlatformIdentifier.Opencti))
-        ).toBe(5);
-        await TestHelper.deploymentRequest.assertProperties(child!.id, {
-          hub_status: DeploymentRequestHubStatus.Cancelled,
-        });
-      });
-
       it('should hand both places over to the trial promoted in place of a cancelled one', async () => {
         await TestHelper.deploymentRequestQuota.update(
           productQuotaFilter(PlatformIdentifier.Opencti),
@@ -2718,6 +2689,45 @@ describe('deployment app', () => {
           expect(untouched?.hub_status).toBe(hub_status);
           expect(untouched?.cancellation_date).toBeNull();
         }
+      });
+
+      describe('quota', () => {
+        beforeEach(async () => {
+          freePlaceSpy.mockRestore();
+          requestContext.set(requestContextRegistererUserSecondOrga);
+          await resetQuotaAvailabilities();
+        });
+
+        it('should give back only the bundle place when a bundle with an active child is cancelled', async () => {
+          const bundle = await DeploymentApp.createDeploymentRequest({
+            ...TEST_DEPLOYMENT,
+            region: QUOTA_REGION,
+            type: DeploymentRequestDeploymentType.Bundle,
+            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          });
+          const [child] = await TestHelper.deploymentRequest.loadMany({
+            parent_id: bundle.id as DeploymentRequestId,
+            platform_identifier: PlatformIdentifier.Opencti,
+          });
+          await DeploymentRequestDomain.updateDeploymentRequestById(child!.id, {
+            hub_status: DeploymentRequestHubStatus.Active,
+          });
+
+          await DeploymentApp.cancelDeploymentRequest(
+            bundle.id as DeploymentRequestId,
+            false
+          );
+
+          expect(await loadAvailability(bundleQuotaFilter)).toBe(5);
+          expect(
+            await loadAvailability(
+              productQuotaFilter(PlatformIdentifier.Opencti)
+            )
+          ).toBe(5);
+          await TestHelper.deploymentRequest.assertProperties(child!.id, {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+          });
+        });
       });
     });
   });
