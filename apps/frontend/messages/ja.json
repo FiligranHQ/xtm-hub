@@ -202,9 +202,9 @@
       "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "製品の切断中に不明なエラーが発生しました。",
       "CANT_ADD_DISABLED_USER": "プラットフォームで無効になっているユーザーを追加できない",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "パーソナルスペースにユーザーを追加することはできません",
+      "CANT_CANCEL_BUNDLE_PRODUCT": "XTM Platform Trial 内の個別の製品はキャンセルできない",
       "CANT_DELETE_BUILTIN_USER": "この組み込みユーザーは削除できません",
       "CANT_DELETE_YOURSELF": "自分のアカウントを削除することはできません",
-      "CANT_CANCEL_BUNDLE_PRODUCT": "XTM Platform Trial 内の個別の製品はキャンセルできない",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "組織の最後の管理者を削除することはできない",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "組織から自分自身を削除することはできない",
       "CANT_REQUEST_FREE_TRIAL": "無料トライアルのリクエストはできない",
@@ -1224,6 +1224,16 @@
     "GoTo": "サービスページへ",
     "GoToAdminLabel": "管理する",
     "List": {
+      "ViewTab": "タブ表示を選択",
+      "ViewList": "リスト表示を選択",
+      "Tab": {
+        "Name": "名前",
+        "Description": "説明",
+        "UseCases": "ユースケース",
+        "Actions": "アクション",
+        "Author": "作成者",
+        "MinimumDeployableVersion": "デプロイ可能な最小バージョン"
+      },
       "Filter": {
         "Add": "フィルターの追加",
         "NoOptions": "オプションなし",
