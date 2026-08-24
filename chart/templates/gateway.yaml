@@ -1,4 +1,10 @@
-{{- if has .Values.gatewayApi.mode (list "dual" "cutover" "only") }}
+{{- if has ((.Values.gatewayApi).mode | default "off") (list "dual" "cutover" "only") }}
+{{- if not (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1") }}
+{{- fail "gatewayApi.mode requires the Gateway API CRDs (gateway.networking.k8s.io/v1) on the target cluster" }}
+{{- end }}
+{{- if not (.Capabilities.APIVersions.Has "gateway.kgateway.dev/v1alpha1") }}
+{{- fail "gatewayApi.mode requires kgateway (gateway.kgateway.dev/v1alpha1) on the target cluster" }}
+{{- end }}
 {{- $host := tpl .Values.xtmhub.host . }}
 apiVersion: gateway.networking.k8s.io/v1
 kind: ListenerSet
@@ -27,7 +33,7 @@ spec:
         namespaces:
           from: Same
 ---
-{{- if eq .Values.gatewayApi.mode "only" }}
+{{- if eq ((.Values.gatewayApi).mode | default "off") "only" }}
 # in dual/cutover the Ingress cert-manager shim maintains this secret; once the
 # Ingress is gone ("only"), this explicit Certificate takes over the same secret
 apiVersion: cert-manager.io/v1
@@ -87,7 +93,7 @@ metadata:
     # the redirect route is the gateway-side DNS source: it is the only route
     # external-dns can resolve an address from (Gateway parent). Ignored in dual
     # so the nginx Ingress stays the single DNS owner until cutover.
-    {{- if eq .Values.gatewayApi.mode "dual" }}
+    {{- if eq ((.Values.gatewayApi).mode | default "off") "dual" }}
     external-dns.alpha.kubernetes.io/controller: ignore
     {{- end }}
     external-dns.alpha.kubernetes.io/ttl: "120"
