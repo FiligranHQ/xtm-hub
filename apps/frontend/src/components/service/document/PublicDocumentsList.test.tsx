@@ -1,9 +1,12 @@
-import { ServiceListDisplayModeEnum } from '@/components/service/components/header/ServiceListHeader';
+import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import PublicDocumentsList from '@/components/service/document/PublicDocumentsList';
 import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 import testRender from '@/utils/test/test-render';
+import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
+import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { DocumentOrdering, OrderingMode } from '@graphql/generated';
 import { screen } from '@testing-library/react';
+import { PreloadedQuery } from 'react-relay';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const testState = vi.hoisted(() => ({
@@ -65,8 +68,8 @@ describe('PublicDocumentsList', () => {
   const serviceInstance = {
     id: 'service-1',
     slug: 'my-service',
-  } as never;
-  const queryRef = {} as never;
+  } as Partial<seoServiceInstanceFragment$data>;
+  const queryRef = {} as PreloadedQuery<publicDocumentsQuery>;
 
   beforeEach(() => {
     testState.refetch.mockReset();
@@ -84,7 +87,7 @@ describe('PublicDocumentsList', () => {
       setSearch: testState.setSearch,
       pageSize: 10,
       setPageSize: testState.setPageSize,
-      displayMode: ServiceListDisplayModeEnum.List,
+      displayMode: ServiceListDisplayMode.List,
       setDisplayMode: testState.setDisplayMode,
       orderBy: DocumentOrdering.Name,
       orderMode: OrderingMode.Asc,
@@ -165,7 +168,7 @@ describe('PublicDocumentsList', () => {
 
     expect(testState.setSearch).toHaveBeenCalledWith('search-updated');
     expect(testState.setDisplayMode).toHaveBeenCalledWith(
-      ServiceListDisplayModeEnum.Tab
+      ServiceListDisplayMode.Tab
     );
   });
 

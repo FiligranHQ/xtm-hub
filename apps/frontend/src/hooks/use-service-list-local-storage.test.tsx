@@ -1,5 +1,5 @@
 import {
-  ServiceListDisplayModeEnum,
+  ServiceListDisplayMode,
   ServiceListFilterKey,
 } from '@/components/service/components/header/ServiceListHeader';
 import {
@@ -58,7 +58,7 @@ describe('useServiceListLocalStorage', () => {
       );
       expect(testState.useLocalStorage).toHaveBeenCalledWith(
         `displayMode${expectedPrefix}OpenCTICustomViewsList`,
-        ServiceListDisplayModeEnum.Tab
+        ServiceListDisplayMode.Tab
       );
     }
   );
@@ -88,7 +88,7 @@ describe('useServiceListLocalStorage', () => {
     expect(result.current.pageSize).toBe(50);
     expect(result.current.count).toBe(50);
     expect(result.current.orderMode).toBe(OrderingMode.Asc);
-    expect(result.current.displayMode).toBe(ServiceListDisplayModeEnum.Tab);
+    expect(result.current.displayMode).toBe(ServiceListDisplayMode.Tab);
     expect(result.current.labels).toEqual({});
     expect(result.current.selectedFilters).toEqual([]);
   });

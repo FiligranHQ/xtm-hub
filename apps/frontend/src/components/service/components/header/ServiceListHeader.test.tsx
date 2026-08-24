@@ -1,5 +1,5 @@
 import {
-  ServiceListDisplayModeEnum,
+  ServiceListDisplayMode,
   ServiceListFilterKey,
   ServiceListHeader,
 } from '@/components/service/components/header/ServiceListHeader';
@@ -33,9 +33,7 @@ vi.mock('@/hooks/use-service-list-local-storage', async (importOriginal) => ({
   useServiceListLocalStorage: testState.useServiceListLocalStorage,
 }));
 
-const buildLocalStorageState = (
-  displayMode = ServiceListDisplayModeEnum.List
-) => ({
+const buildLocalStorageState = (displayMode = ServiceListDisplayMode.List) => ({
   orderBy: DocumentOrdering.Name,
   orderMode: OrderingMode.Asc,
   setOrderBy: testState.setOrderBy,
@@ -99,9 +97,9 @@ describe('ServiceListHeader', () => {
   });
 
   it.each`
-    initialDisplayMode                 | clickedLabel               | expectedMode
-    ${ServiceListDisplayModeEnum.List} | ${'Service.List.ViewTab'}  | ${ServiceListDisplayModeEnum.Tab}
-    ${ServiceListDisplayModeEnum.Tab}  | ${'Service.List.ViewList'} | ${ServiceListDisplayModeEnum.List}
+    initialDisplayMode             | clickedLabel               | expectedMode
+    ${ServiceListDisplayMode.List} | ${'Service.List.ViewTab'}  | ${ServiceListDisplayMode.Tab}
+    ${ServiceListDisplayMode.Tab}  | ${'Service.List.ViewList'} | ${ServiceListDisplayMode.List}
   `(
     'changes display mode from $initialDisplayMode when clicking $clickedLabel',
     async ({ initialDisplayMode, clickedLabel, expectedMode }) => {
@@ -120,9 +118,9 @@ describe('ServiceListHeader', () => {
   );
 
   it.each`
-    initialDisplayMode                 | expectedTabClass           | expectedListClass
-    ${ServiceListDisplayModeEnum.Tab}  | ${'text-primary'}          | ${'text-muted-foreground'}
-    ${ServiceListDisplayModeEnum.List} | ${'text-muted-foreground'} | ${'text-primary'}
+    initialDisplayMode             | expectedTabClass           | expectedListClass
+    ${ServiceListDisplayMode.Tab}  | ${'text-primary'}          | ${'text-muted-foreground'}
+    ${ServiceListDisplayMode.List} | ${'text-muted-foreground'} | ${'text-primary'}
   `(
     'applies selected color classes for mode=$initialDisplayMode',
     ({ initialDisplayMode, expectedTabClass, expectedListClass }) => {

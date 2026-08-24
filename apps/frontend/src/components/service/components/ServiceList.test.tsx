@@ -1,7 +1,8 @@
 import ServiceList from '@/components/service/components/ServiceList';
-import { ServiceListDisplayModeEnum } from '@/components/service/components/header/ServiceListHeader';
+import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 import testRender from '@/utils/test/test-render';
+import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import {
   DocumentOrdering,
   IntegrationType,
@@ -65,9 +66,7 @@ vi.mock(
   })
 );
 
-const buildLocalStorageState = (
-  displayMode = ServiceListDisplayModeEnum.Tab
-) => ({
+const buildLocalStorageState = (displayMode = ServiceListDisplayMode.Tab) => ({
   removeLabels: testState.removeLabels,
   displayMode,
   setDisplayMode: testState.setDisplayMode,
@@ -128,7 +127,7 @@ describe('ServiceList', () => {
         short_description: 'Active description',
         use_cases: [],
       },
-    ] as never[];
+    ] as Partial<documentItem_fragment$data>[];
     const draft = [
       {
         id: 'draft-1',
@@ -138,7 +137,7 @@ describe('ServiceList', () => {
         short_description: 'Draft description',
         use_cases: [],
       },
-    ] as never[];
+    ] as Partial<documentItem_fragment$data>[];
 
     testRender(
       <ServiceList
@@ -171,7 +170,7 @@ describe('ServiceList', () => {
         short_description: 'Active description',
         use_cases: [],
       },
-    ] as never[];
+    ] as Partial<documentItem_fragment$data>[];
     const draft = [
       {
         id: 'draft-1',
@@ -181,7 +180,7 @@ describe('ServiceList', () => {
         short_description: 'Draft description',
         use_cases: [],
       },
-    ] as never[];
+    ] as Partial<documentItem_fragment$data>[];
 
     testRender(
       <ServiceList
@@ -215,7 +214,7 @@ describe('ServiceList', () => {
         short_description: 'Dashboard description',
         use_cases: [],
       },
-    ] as never[];
+    ] as Partial<documentItem_fragment$data>[];
 
     const { user } = testRender(
       <ServiceList
@@ -259,7 +258,7 @@ describe('ServiceList', () => {
     );
 
     expect(testState.setDisplayMode).toHaveBeenCalledWith(
-      ServiceListDisplayModeEnum.Tab
+      ServiceListDisplayMode.Tab
     );
   });
 });

@@ -1,14 +1,12 @@
 'use client';
 
+import { DocumentActionsCell } from '@/components/service/components/DocumentActionsCell';
 import {
   DocumentNameCell,
   DocumentShortDescriptionCell,
 } from '@/components/service/components/DocumentListCells';
 import { buildMetadataColumns } from '@/components/service/components/DocumentListColumns';
-import {
-  ServiceListDisplayMode,
-  ServiceListDisplayModeEnum,
-} from '@/components/service/components/header/ServiceListHeader';
+import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import ServiceCard from '@/components/service/components/ServiceCard';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
 import { SettingsContext } from '@/components/settings/EnvPortalContext';
@@ -17,28 +15,13 @@ import {
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationType, ServiceRestriction } from '@graphql/generated';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo } from 'react';
 
-import {
-  CardTypeEnum,
-  ServiceDelete,
-} from '@/components/service/components/ServiceDelete';
-import { ServiceManageSheet } from '@/components/service/components/ServiceManageSheet';
-import { useDocumentContext } from '@/components/service/document/use-document-context';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
-import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
-import useServiceCapability from '@/hooks/use-service-capability';
-import revalidatePathActions from '@/utils/actions/revalidate-path.actions';
-import {
-  isIntegrationItem,
-  ShareableResourceType,
-} from '@/utils/shareable-resources/shareable-resources.types';
-import { MoreVertIcon } from '@filigran/icon';
-import { DataTable, toast } from '@filigran/ui';
+import useScrollPosition from '@/hooks/use-scroll-position';
+import { DataTable } from '@filigran/ui';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -49,109 +32,6 @@ interface DocumentListProps {
   connectionId?: string;
 }
 
-interface DocumentActionsCellProps {
-  document: documentItem_fragment$data;
-}
-
-const DocumentActionsCell = ({ document }: DocumentActionsCellProps) => {
-  const { settings } = useContext(SettingsContext);
-  const { serviceInstance, translationKey, setIntegrationType } =
-    useServiceContext();
-  const t = useTranslations();
-  const router = useRouter();
-  const [openSheet, setOpenSheet] = useState(false);
-
-  const userCanUpdate = useServiceCapability(
-    ServiceRestriction.Upload,
-    serviceInstance
-  );
-  const userCanDelete = useServiceCapability(
-    ServiceRestriction.Delete,
-    serviceInstance
-  );
-
-  const onClickOnUpdate = () => {
-    if (isIntegrationItem(document)) {
-      setIntegrationType(
-        (document.integration_type as IntegrationType) ??
-          IntegrationType.CsvFeed
-      );
-    }
-
-    setOpenSheet(true);
-  };
-
-  const context = useDocumentContext({
-    serviceInstance,
-    type: document.type as ShareableResourceType,
-  });
-
-  function onDeleteCompleted() {
-    revalidatePathActions([
-      `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}`,
-    ]).then(() => {
-      router.push(
-        `/${APP_PATH}/service/${serviceInstance.service_definition!.identifier}/${serviceInstance.id}`
-      );
-    });
-    toast({
-      title: t('Utils.Success'),
-      description: t(`${translationKey}.Actions.Deleted`, {
-        name: document.name ?? '',
-      }),
-    });
-  }
-
-  return (
-    <div
-      className="flex items-center gap-xs"
-      onClick={(event) => event.stopPropagation()}>
-      <ShareLinkButton
-        documentId={document.id}
-        url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${document.slug}`}
-      />
-      {(userCanDelete || userCanUpdate) && (
-        <IconActions
-          className="z-[2]"
-          icon={
-            <>
-              <MoreVertIcon className="h-4 w-4 text-primary" />
-              <span className="sr-only">{t('Utils.OpenMenu')}</span>
-            </>
-          }>
-          {userCanUpdate && (
-            <IconActionsItem onClick={() => onClickOnUpdate()}>
-              {t('MenuActions.Update')}
-            </IconActionsItem>
-          )}
-          {userCanDelete && (
-            <ServiceDelete
-              type={'menuitem'}
-              userCanDelete={userCanDelete}
-              onDelete={() =>
-                context.handleDeleteSheet(document, onDeleteCompleted)
-              }
-              serviceName={serviceInstance.name}
-              integrationType={
-                (isIntegrationItem(document)
-                  ? document.integration_type
-                  : document.type) as CardTypeEnum
-              }
-            />
-          )}
-        </IconActions>
-      )}
-      {userCanUpdate && (
-        <ServiceManageSheet
-          document={document}
-          open={openSheet}
-          setOpen={setOpenSheet}
-        />
-      )}
-    </div>
-  );
-};
-
 const DocumentList = ({
   documents,
   displayMode,
@@ -161,6 +41,7 @@ const DocumentList = ({
   const { serviceInstance } = useServiceContext();
   const t = useTranslations();
   const router = useRouter();
+  const { save } = useScrollPosition();
   const columns: ColumnDef<documentItem_fragment$data>[] = useMemo(
     () => [
       {
@@ -196,6 +77,8 @@ const DocumentList = ({
       {
         accessorKey: 'action',
         id: 'action',
+        enableHiding: false,
+        enableSorting: false,
         header: t('Service.List.Tab.Actions'),
         cell: ({ row }) => <DocumentActionsCell document={row.original} />,
       },
@@ -215,7 +98,7 @@ const DocumentList = ({
 
   return (
     <>
-      {displayMode === ServiceListDisplayModeEnum.Tab ? (
+      {displayMode === ServiceListDisplayMode.Tab ? (
         <ul
           className={
             'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
@@ -235,11 +118,12 @@ const DocumentList = ({
           columns={tableColumns}
           data={documents}
           toolbar={<></>}
-          onClickRow={(row) =>
+          onClickRow={(row) => {
+            save();
             router.push(
               `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${row.original.id}`
-            )
-          }
+            );
+          }}
         />
       )}
     </>

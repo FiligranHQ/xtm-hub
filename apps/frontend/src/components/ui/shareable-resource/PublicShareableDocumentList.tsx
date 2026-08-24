@@ -3,13 +3,11 @@ import {
   DocumentShortDescriptionCell,
 } from '@/components/service/components/DocumentListCells';
 import { buildMetadataColumns } from '@/components/service/components/DocumentListColumns';
-import {
-  ServiceListDisplayMode,
-  ServiceListDisplayModeEnum,
-} from '@/components/service/components/header/ServiceListHeader';
+import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import BadgeOverflowCounter from '@/components/ui/BadgeOverflowCounter';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
+import useScrollPosition from '@/hooks/use-scroll-position';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { DataTable } from '@filigran/ui';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
@@ -33,6 +31,7 @@ export const PublicShareableDocumentList = ({
   displayMode,
 }: PublicShareableDocumentListProps) => {
   const locale = useLocale();
+  const { save } = useScrollPosition();
   const t = useTranslations();
   const router = useRouter();
 
@@ -71,6 +70,8 @@ export const PublicShareableDocumentList = ({
       {
         accessorKey: 'action',
         id: 'action',
+        enableHiding: false,
+        enableSorting: false,
         header: t('Service.List.Tab.Actions'),
         cell: ({ row }) => (
           <div onClick={(event) => event.stopPropagation()}>
@@ -97,7 +98,7 @@ export const PublicShareableDocumentList = ({
 
   return (
     <>
-      {displayMode === ServiceListDisplayModeEnum.Tab ? (
+      {displayMode === ServiceListDisplayMode.Tab ? (
         <ul
           className={
             'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l'
@@ -118,11 +119,12 @@ export const PublicShareableDocumentList = ({
           columns={tableColumns}
           data={documents}
           toolbar={<></>}
-          onClickRow={(row) =>
+          onClickRow={(row) => {
+            save();
             router.push(
               `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`
-            )
-          }
+            );
+          }}
         />
       )}
     </>

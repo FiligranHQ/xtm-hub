@@ -131,22 +131,18 @@ const ServiceList = ({
             {Object.values(IntegrationType).includes(
               integrationType as IntegrationType
             ) ? (
-              <>
-                <IntegrationAccordion
-                  key={integrationType}
-                  integrationType={integrationType}
-                  count={documents.length}>
-                  <DocumentList
-                    documents={documents}
-                    displayMode={selectedDisplayMode}
-                    connectionId={connectionId}
-                  />
-                </IntegrationAccordion>
-              </>
+              <IntegrationAccordion
+                integrationType={integrationType}
+                count={documents.length}>
+                <DocumentList
+                  documents={documents}
+                  displayMode={selectedDisplayMode}
+                  connectionId={connectionId}
+                />
+              </IntegrationAccordion>
             ) : (
               <DocumentList
                 displayMode={selectedDisplayMode}
-                key={integrationType}
                 documents={documents}
                 connectionId={connectionId}
               />

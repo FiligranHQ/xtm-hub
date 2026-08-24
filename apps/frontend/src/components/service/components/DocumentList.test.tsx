@@ -6,7 +6,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import DocumentList from './DocumentList';
-import { ServiceListDisplayModeEnum } from './header/ServiceListHeader';
+import { ServiceListDisplayMode } from './header/ServiceListHeader';
 
 const ServiceIdentifier = 'opencti';
 const ServiceInstanceId = 'service-instance-1';
@@ -112,7 +112,7 @@ describe('DocumentList', () => {
     testRender(
       <DocumentList
         documents={documents}
-        displayMode={ServiceListDisplayModeEnum.Tab}
+        displayMode={ServiceListDisplayMode.Tab}
       />
     );
 
@@ -150,7 +150,7 @@ describe('DocumentList', () => {
     const { user } = testRender(
       <DocumentList
         documents={documents}
-        displayMode={ServiceListDisplayModeEnum.List}
+        displayMode={ServiceListDisplayMode.List}
       />
     );
 
@@ -182,7 +182,7 @@ describe('DocumentList', () => {
     const { user } = testRender(
       <DocumentList
         documents={documents}
-        displayMode={ServiceListDisplayModeEnum.List}
+        displayMode={ServiceListDisplayMode.List}
       />
     );
 
@@ -213,7 +213,7 @@ describe('DocumentList', () => {
     const { user } = testRender(
       <DocumentList
         documents={documents}
-        displayMode={ServiceListDisplayModeEnum.List}
+        displayMode={ServiceListDisplayMode.List}
       />
     );
 

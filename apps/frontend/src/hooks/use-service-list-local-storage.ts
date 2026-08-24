@@ -1,6 +1,5 @@
 import {
   ServiceListDisplayMode,
-  ServiceListDisplayModeEnum,
   ServiceListFilterKey,
 } from '@/components/service/components/header/ServiceListHeader';
 import {
@@ -172,7 +171,7 @@ export const useServiceListLocalStorage = (
   const [displayMode, setDisplayMode, removeDisplayMode] =
     useLocalStorage<ServiceListDisplayMode>(
       `displayMode${pagePrefix}${serviceName}List`,
-      ServiceListDisplayModeEnum.Tab
+      ServiceListDisplayMode.Tab
     );
 
   const resetAll = useCallback(() => {

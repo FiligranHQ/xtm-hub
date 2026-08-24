@@ -32,11 +32,10 @@ export type ServiceListFilterMap = Partial<
   Record<ServiceListFilterKey, ServiceListFilter>
 >;
 
-export enum ServiceListDisplayModeEnum {
+export enum ServiceListDisplayMode {
   Tab = 'tab',
   List = 'list',
 }
-export type ServiceListDisplayMode = ServiceListDisplayModeEnum;
 
 interface ServiceListHeaderProps {
   search: string;
@@ -135,17 +134,15 @@ export const ServiceListHeader = ({
               <button
                 type="button"
                 onClick={() =>
-                  handleDisplayModeChange(ServiceListDisplayModeEnum.Tab)
+                  handleDisplayModeChange(ServiceListDisplayMode.Tab)
                 }
                 className="hover:cursor-pointer flex items-center"
-                aria-pressed={
-                  storedDisplayMode === ServiceListDisplayModeEnum.Tab
-                }
+                aria-pressed={storedDisplayMode === ServiceListDisplayMode.Tab}
                 aria-label={t('Service.List.ViewTab')}>
                 <CalendarViewMonthIcon
                   className={cn(
                     'h-5 w-5',
-                    storedDisplayMode === ServiceListDisplayModeEnum.Tab
+                    storedDisplayMode === ServiceListDisplayMode.Tab
                       ? 'text-primary'
                       : 'text-muted-foreground'
                   )}
@@ -158,17 +155,15 @@ export const ServiceListHeader = ({
               <button
                 type="button"
                 onClick={() =>
-                  handleDisplayModeChange(ServiceListDisplayModeEnum.List)
+                  handleDisplayModeChange(ServiceListDisplayMode.List)
                 }
                 className="hover:cursor-pointer flex items-center"
-                aria-pressed={
-                  storedDisplayMode === ServiceListDisplayModeEnum.List
-                }
+                aria-pressed={storedDisplayMode === ServiceListDisplayMode.List}
                 aria-label={t('Service.List.ViewList')}>
                 <ListViewIcon
                   className={cn(
                     'h-4 w-4',
-                    storedDisplayMode === ServiceListDisplayModeEnum.List
+                    storedDisplayMode === ServiceListDisplayMode.List
                       ? 'text-primary'
                       : 'text-muted-foreground'
                   )}
