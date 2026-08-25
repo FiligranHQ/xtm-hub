@@ -1,4 +1,4 @@
-import { formatEmailList } from '@/components/service/bundle/manage-trial/manage-trial-header.utils';
+import { formatEmailList } from '@/components/service/bundle/manage-trial/manage-trial.utils';
 import { describe, expect, it } from 'vitest';
 
 describe('formatEmailList', () => {

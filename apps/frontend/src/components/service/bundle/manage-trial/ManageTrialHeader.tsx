@@ -20,8 +20,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
-import { AddTrialUserDialog } from './AddTrialUserDialog';
-import { formatEmailList } from './manage-trial-header.utils';
+import { TrialUserDialog } from './TrialUserDialog';
+import { formatEmailList } from './manage-trial.utils';
 
 interface ManageTrialHeaderUser {
   id: string;
@@ -176,7 +176,7 @@ export const ManageTrialHeader = ({
           </Button>
         </div>
       </div>
-      <AddTrialUserDialog
+      <TrialUserDialog
         serviceInstanceId={serviceInstanceId}
         open={isAddUserDialogOpen}
         setOpen={setIsAddUserDialogOpen}

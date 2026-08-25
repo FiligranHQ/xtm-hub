@@ -5,20 +5,21 @@ import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { AddTrialUserForm } from './AddTrialUserForm';
 
-interface AddTrialUserDialogProps {
+interface TrialUserDialogProps {
   serviceInstanceId: string;
   products?: PlatformIdentifier[];
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
-export const AddTrialUserDialog = ({
+export const TrialUserDialog = ({
   serviceInstanceId,
   products,
   open,
   setOpen,
-}: AddTrialUserDialogProps) => {
+}: TrialUserDialogProps) => {
   const t = useTranslations();
+  const onClose = () => setOpen(false);
 
   return (
     <Dialog
@@ -33,8 +34,8 @@ export const AddTrialUserDialog = ({
         <AddTrialUserForm
           serviceInstanceId={serviceInstanceId}
           products={products}
-          onCompleted={() => setOpen(false)}
-          onCancel={() => setOpen(false)}
+          onCompleted={onClose}
+          onCancel={onClose}
         />
       </DialogContent>
     </Dialog>
