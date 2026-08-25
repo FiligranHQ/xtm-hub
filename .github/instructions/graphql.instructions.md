@@ -1,5 +1,5 @@
 ---
-applyTo: 'apps/backend/**/*.graphql,apps/backend/**/*.resolver.ts,apps/frontend/**/*.graphql.ts,apps/frontend/schema.graphql'
+applyTo: 'apps/backend/**/*.graphql,apps/backend/**/*.resolver.ts,apps/frontend/**/*.graphql.ts,apps/frontend/graphql/**,apps/frontend/schema.graphql'
 ---
 
 # GraphQL Instructions
@@ -35,13 +35,22 @@ Access control belongs on the schema through the `@auth` directive, implemented 
 `apps/backend/src/security/directive-graphql/`. Prefer declaring it on the field over hand-rolling checks inside a
 resolver.
 
-## Relay conventions
+## Relay conventions (existing pages only)
 
 - The schema is Relay-compatible: it exposes the `Node` interface (`apps/backend/src/nodes/`) and
   Connection/PageInfo types (`apps/backend/src/modules/common/`).
 - Paginated fields must return a Connection, and the backend side should use `paginate()` from the Knex layer.
 - Frontend operations live in `*.graphql.ts` files using the `graphql` tagged template; artifacts land in
   `apps/frontend/__generated__/` (aliased as `@generated/*`).
+
+## `@tanstack/react-query` conventions (new frontend work)
+
+- Frontend operations live in `apps/frontend/graphql/<domain>/<name>.query.graphql` (or `.mutation.graphql`).
+- `yarn workspace @xtm-hub/frontend codegen` (`graphql-codegen`, `typescript-react-query` plugin) refreshes
+  `apps/frontend/graphql/generated.ts` (aliased `@graphql/*`), which exports a typed `use<Name>Query` /
+  `use<Name>Mutation` hook plus its query key per operation.
+- Call the hook with `portalGraphqlClient` from `apps/frontend/src/lib/graphql-client.ts` (a `graphql-request`
+  client) as the first argument; manage cache invalidation with `@tanstack/react-query`'s `useQueryClient()`.
 
 ## Subscriptions
 

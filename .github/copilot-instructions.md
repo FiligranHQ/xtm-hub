@@ -18,10 +18,10 @@ Deeper task guidance lives in [`.github/skills/`](skills/) and
 
 ## Critical rules
 
-- **No `console.log`.** Use `logApp` from `apps/backend/src/utils/app-logger.util.ts` on the backend. `console.warn`
-  and `console.error` are allowed only in scripts and launch code that is not part of the running app.
-- **Prefix unused variables with `_`** (for example `_unused`).
-- **Comment only what needs clarifying.** Do not narrate code that already reads clearly.
+Follow [`.github/skills/coding-conventions/SKILL.md`](skills/coding-conventions/SKILL.md) for the mandatory coding
+rules (no `console.log`, `_`-prefix unused variables, strict typing, no `as never`/unjustified casts). This file adds
+only what that skill doesn't cover:
+
 - **Never edit generated output.** `apps/frontend/__generated__/`, `apps/frontend/schema.graphql`,
   `apps/backend/src/__generated__/` and `apps/backend/src/model/kanel/` are produced by tooling; change the source
   and regenerate.
@@ -37,7 +37,7 @@ workspaces.
 | Workspace | Path | Stack | Dev port |
 | --- | --- | --- | --- |
 | `@xtm-hub/backend` | `apps/backend` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `@xtm-hub/frontend` | `apps/frontend` | Next.js 16 (App Router + Turbopack), React 19, Relay 20, TailwindCSS 4, `@filigran/ui` | 3002 |
+| `@xtm-hub/frontend` | `apps/frontend` | Next.js 16 (App Router + Turbopack), React 19, `@tanstack/react-query` (preferred for new data fetching) + Relay (existing pages), TailwindCSS 4, `@filigran/ui` | 3002 |
 | `@xtm-hub/test_e2e` | `apps/e2e` | Playwright | — |
 
 Node version: see `.nvmrc`. Yarn version: see `packageManager` in the root `package.json`.

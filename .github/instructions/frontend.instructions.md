@@ -4,8 +4,12 @@ applyTo: 'apps/frontend/**'
 
 # Frontend Instructions (`apps/frontend`)
 
-Next.js 16 (App Router + Turbopack) + React 19 + Relay 20 + TailwindCSS 4 + `@filigran/ui`. Dev port **3002**
-(Docker production serves on 3000 internally).
+Next.js 16 (App Router + Turbopack) + React 19 + TailwindCSS 4 + `@filigran/ui`. Dev port **3002** (Docker production
+serves on 3000 internally).
+
+Two data layers coexist mid-migration: **`@tanstack/react-query` is preferred for new work** (see
+[Data fetching](#data-fetching)); **Relay** still backs existing pages and is only touched when a task's scope
+explicitly includes migrating that component.
 
 ## Commands
 
@@ -44,9 +48,11 @@ app/                                Next.js App Router
   (embed)/                          Embeddable widgets
 src/components/                     Components by domain; `ui/` holds shared primitives
 src/hooks/                          useGranted, useDecodedParams, ...
-src/relay/                          Client + server environments, SSR provider
+src/relay/                          Client + server environments, SSR provider (existing pages)
+src/lib/graphql-client.ts           portalGraphqlClient — graphql-request client for react-query
 src/i18n/                           next-intl config, locale, request scope
-src/lib/  src/utils/                Helpers, server actions, middleware helpers
+src/lib/  src/utils/                Helpers, server actions, middleware helpers, query-cache
+graphql/                            *.query.graphql / *.mutation.graphql + generated.ts (react-query, new work)
 __generated__/                      Relay output — generated, never edit
 messages/                           en.json, fr.json
 middleware.ts                       Proxies /graphql-api, /graphql-sse, /auth/*, /document/*
@@ -56,7 +62,8 @@ schema.graphql                      Written by the backend, read by Relay
 ## Path aliases
 
 - `@/*` → `./src/*`
-- `@generated/*` → `./__generated__/*`
+- `@generated/*` → `./__generated__/*` (Relay artifacts)
+- `@graphql/*` → `./graphql/*` (react-query operations and codegen output)
 
 Use them instead of deep relative paths.
 
@@ -75,12 +82,23 @@ for buttons, inputs, tables, dialogs and the like. Fall back to raw TailwindCSS 
 
 The backend is reached through `middleware.ts`, which proxies to `SERVER_HTTP_API` (default `http://localhost:4002`).
 
-Adding a page:
+**For new work, use `@tanstack/react-query`**, not Relay:
 
-1. Create the route under `app/(application)/app/(user)/` or `(admin)/admin/`.
-2. Add a `*.graphql.ts` file using Relay's `graphql` tagged template.
-3. Run `yarn relay`.
-4. Consume it with `useLazyLoadQuery` or `usePreloadedQuery` from `react-relay`.
+1. Write the operation as `apps/frontend/graphql/<domain>/<name>.query.graphql` (or `.mutation.graphql`).
+2. Run `yarn codegen` (`graphql-codegen`, `typescript-react-query` plugin) to refresh
+   `apps/frontend/graphql/generated.ts`, imported through the `@graphql/*` alias. It exports a typed
+   `use<Name>Query`/`use<Name>Mutation` hook per operation, plus its query key.
+3. Call the hook with `portalGraphqlClient` from `@/lib/graphql-client` (a `graphql-request` client already wired to
+   the API endpoint and auth cookies) as the first argument.
+4. Invalidate or update the cache with `useQueryClient()` from `@tanstack/react-query`; see
+   `src/utils/query-cache.ts` for the existing connection-editing helpers.
+
+Only touch the Relay path when a task's scope explicitly includes migrating that component, or the change is small
+and low-risk; after removing a component's last Relay usage, confirm nothing else still imports its generated
+artifacts before deleting them.
+
+Existing Relay pages: add a `*.graphql.ts` file with the `graphql` tagged template, run `yarn relay` to regenerate
+`apps/frontend/__generated__/`, and consume it with `useLazyLoadQuery` or `usePreloadedQuery` from `react-relay`.
 
 Server-side fetches go through `src/relay/server-portal-api-fetch.ts`, which forwards Next.js cookies.
 
@@ -91,16 +109,8 @@ hardcode copy in a component. `yarn i18n:check` verifies parity.
 
 ## Tests
 
-Colocate `*.test.tsx` next to the component.
-
-- Render with `testRender` from `@/utils/test/test-render` (wraps the providers).
-- Mock `next-intl` with `useTranslations: () => (key: string) => key`, then assert on i18n keys.
-- Mock Relay mutations with `useMutation: () => [vi.fn(), {}]`.
-- Use `createMockEnvironment()` from `relay-test-utils` for queries.
-- Stub heavy components not under test (for example `DataTable`) with a plain `<div>`.
-
-Prefer extracting logic into a pure `*.utils.ts` beside the component and unit-testing that, rather than exercising
-component internals.
+See [`testing.instructions.md`](testing.instructions.md) for structure, mocking policy and the frontend-specific
+tooling (`testRender`, `next-intl` mocking, `@tanstack/react-query` vs Relay mocking, pure-utility extraction).
 
 ## Environment variables
 

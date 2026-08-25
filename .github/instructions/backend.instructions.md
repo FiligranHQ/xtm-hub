@@ -97,6 +97,5 @@ Use `logApp` from `src/utils/app-logger.util.ts`. `console.log` is never accepta
 
 ## Tests
 
-Colocate `*.test.ts` next to the source file. Integration tests hit the real `test_database`. Group with `describe`
-per function/method, nesting a second level for scenario groups. Use `expect.any(Date)` and
-`expect.objectContaining()` for dynamic values. See the testing instructions for the shared `it.each` conventions.
+See [`testing.instructions.md`](testing.instructions.md) for structure, mocking policy and backend-specific tooling
+(`test_database`, `fileParallelism: false`).

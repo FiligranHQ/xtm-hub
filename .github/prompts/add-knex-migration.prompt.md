@@ -14,8 +14,10 @@ Ask me what the schema change is if I have not described it.
 1. **Scaffold**: `yarn workspace @xtm-hub/backend migrate:make <migration_name>`. This writes a **JavaScript** file —
    migrations are copied verbatim by the build, so keep them dependency-free and never convert one to TypeScript.
 
-2. **Implement `up` and `down`.** Both are mandatory; a migration without a working `down` blocks rollback for
-   everyone. Use the `knex` instance passed in — never import `db()` or any application code.
+2. **Write `up` and `down`** following
+   [`.github/skills/knex-migration/SKILL.md`](../skills/knex-migration/SKILL.md) — table naming, the `.alter()`
+   gotcha (it silently drops any property you don't restate), and mirroring the closest existing migration. Both
+   directions are mandatory; a migration without a working `down` blocks rollback for everyone.
 
 3. **Split schema from data.** Put a backfill in its own migration so a slow data pass cannot hold a schema lock.
    For a new column on a large table: add it nullable, backfill, then add the constraint.

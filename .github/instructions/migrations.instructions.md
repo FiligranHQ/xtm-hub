@@ -7,45 +7,12 @@ applyTo: 'apps/backend/src/migrations/**,apps/backend/src/es-migrations/**,apps/
 Migrations are append-only history. Once a migration has run anywhere beyond your machine, never edit it — write a
 new one.
 
-## Postgres (Knex)
-
-Live in `apps/backend/src/migrations/` as **JavaScript** files, not TypeScript. They are copied verbatim by the
-backend `copy` build step, so keep them dependency-free and self-contained.
-
-```bash
-cd apps/backend
-yarn migrate:make <migration_name>   # scaffold
-yarn migrate:latest                  # apply
-yarn migrate:up                      # one step forward
-yarn migrate:down                    # one step back
-```
-
-Rules:
-
-- Export both `up` and `down`. A migration without a working `down` blocks rollback for everyone.
-- Match the numbering and naming of the surrounding files.
-- Do not import application code or `db()` — migrations receive their own `knex` instance.
-- Data backfills belong in a separate migration from schema changes, so a slow backfill cannot hold a schema lock.
-- Adding a column to a large table: add it nullable, backfill, then add the constraint.
-- Regenerate the kanel types in `apps/backend/src/model/kanel/` (`yarn generate-pg-to-ts`) after a schema change.
-
-## Elasticsearch
-
-Live in `apps/backend/src/es-migrations/`, scaffolded from
-`src/thirdparty/elasticsearch/migration-template.js`.
-
-```bash
-cd apps/backend
-yarn esmigrate:make <name>
-yarn esmigrate:up
-yarn esmigrate:down
-```
-
-Rules:
-
-- Mapping changes are not free: adding a field is fine, changing an existing field's type requires a reindex.
-- Make migrations idempotent — check whether the index or alias exists before creating it.
-- Prefer alias swaps over in-place mutation when reindexing, so reads stay available.
+For how to write and scaffold migrations themselves, follow
+[`.github/skills/knex-migration/SKILL.md`](../skills/knex-migration/SKILL.md) (Postgres — table naming, `.alter()`
+gotcha, `down` correctness) and
+[`.github/skills/elasticsearch-migration/SKILL.md`](../skills/elasticsearch-migration/SKILL.md) (Elasticsearch —
+mapping changes, isolation from app code). This file covers the surrounding pieces those skills don't: seeds and the
+CI coupling.
 
 ## Seeds
 

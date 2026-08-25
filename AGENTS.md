@@ -9,7 +9,7 @@ workspaces.
 | Workspace | Path | Stack | Dev port |
 | --- | --- | --- | --- |
 | `@xtm-hub/backend` | `apps/backend` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `@xtm-hub/frontend` | `apps/frontend` | Next.js 16 (App Router), React 19, Relay 20, TailwindCSS 4, `@filigran/ui` | 3002 |
+| `@xtm-hub/frontend` | `apps/frontend` | Next.js 16 (App Router), React 19, `@tanstack/react-query` (preferred for new data fetching) + Relay (existing pages), TailwindCSS 4, `@filigran/ui` | 3002 |
 | `@xtm-hub/test_e2e` | `apps/e2e` | Playwright | — |
 
 ## Setup
