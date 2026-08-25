@@ -127,7 +127,7 @@ test.describe('User Management', () => {
     await expect(page).not.toHaveURL(/action=approve/);
     await expect(page).not.toHaveURL(/user_id=/);
     await expect(
-      page.getByRole('heading', { name: 'Are you sure?' })
+      page.getByRole('heading', { name: 'Add this user to your organization?' })
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Confirm' }).click();
