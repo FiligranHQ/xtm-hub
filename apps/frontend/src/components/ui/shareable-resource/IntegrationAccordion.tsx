@@ -21,10 +21,11 @@ const IntegrationAccordion = ({
   return (
     <Accordion
       type="multiple"
+
       defaultValue={[integrationType]}>
       <AccordionItem value={integrationType}>
         <h2 className="m-0">
-          <AccordionTrigger className="hover:cursor-pointer">
+          <AccordionTrigger variant="colored">
             <div className="inline-flex items-center gap-s">
               {t(`Service.OpenctiIntegrations.Type.${integrationType}`)}
             </div>
