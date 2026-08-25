@@ -293,3 +293,63 @@ describe('removeUsersFromBundleGroups GraphQL mutation', () => {
     await expect(call).rejects.toMatchObject({ name: ErrorType.UnknownError });
   });
 });
+
+describe('updateBundleUserGroups GraphQL mutation', () => {
+  it('should delegate to ServiceGroupApp.updateBundleUserGroups', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const userId = uuidv4() as UserId;
+    const input = {
+      userIds: [userId],
+      roles: [
+        { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+      ],
+    };
+    const expected = [] as unknown as Awaited<
+      ReturnType<typeof ServiceGroupApp.updateBundleUserGroups>
+    >;
+    vi.spyOn(ServiceGroupApp, 'updateBundleUserGroups').mockResolvedValue(
+      expected
+    );
+
+    // When
+    const result = await serviceGroupResolver.Mutation!.updateBundleUserGroups!(
+      {},
+      { serviceInstanceId, input },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(ServiceGroupApp.updateBundleUserGroups).toHaveBeenCalledWith(
+      serviceInstanceId,
+      input
+    );
+    expect(result).toEqual(expected);
+  });
+
+  it('should throw mapped error when ServiceGroupApp throws', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const input = {
+      userIds: [uuidv4() as UserId],
+      roles: [
+        { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+      ],
+    };
+    vi.spyOn(ServiceGroupApp, 'updateBundleUserGroups').mockRejectedValue(
+      new Error('UNEXPECTED')
+    );
+
+    // When
+    const call = serviceGroupResolver.Mutation!.updateBundleUserGroups!(
+      {},
+      { serviceInstanceId, input },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toMatchObject({ name: ErrorType.UnknownError });
+  });
+});

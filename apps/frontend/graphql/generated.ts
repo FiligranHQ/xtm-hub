@@ -1051,6 +1051,7 @@ export type Mutation = {
   setVotingRoundStatus: Array<VotingRound>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
+  updateBundleUserGroups: Array<BundleUserServiceGroup>;
   updateCompetitor: Competitor;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
@@ -1421,6 +1422,12 @@ export type MutationTransferPersonalSpaceArgs = {
 
 export type MutationUnregisterPlatformArgs = {
   input: UnregisterPlatformInput;
+};
+
+
+export type MutationUpdateBundleUserGroupsArgs = {
+  input: UpdateBundleUserGroupsInput;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2766,6 +2773,16 @@ export type UnregisterPlatformInput = {
   tenantId: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateBundleUserGroupsInput = {
+  roles: Array<UpdateBundleUserGroupsRoleInput>;
+  userIds: Array<Scalars['UserId']['input']>;
+};
+
+export type UpdateBundleUserGroupsRoleInput = {
+  product: PlatformIdentifier;
+  role: InputMaybe<ServiceGroupName>;
+};
+
 export type UpdateCompetitorInput = {
   domain: InputMaybe<Scalars['String']['input']>;
   id: Scalars['CompetitorId']['input'];
@@ -3273,6 +3290,14 @@ export type RemoveUsersFromBundleGroupsMutationVariables = Exact<{
 
 
 export type RemoveUsersFromBundleGroupsMutation = { __typename?: 'Mutation', removeUsersFromBundleGroups: Array<any> };
+
+export type UpdateBundleUserGroupsMutationVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  input: UpdateBundleUserGroupsInput;
+}>;
+
+
+export type UpdateBundleUserGroupsMutation = { __typename?: 'Mutation', updateBundleUserGroups: Array<{ __typename?: 'BundleUserServiceGroup', user: { __typename?: 'User', id: string, email: string }, groups: Array<{ __typename?: 'UserPlatformGroup', platformIdentifier: PlatformIdentifier, name: ServiceGroupName }> }> };
 
 export type BundleUserServiceGroupsQueryVariables = Exact<{
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
@@ -4661,6 +4686,42 @@ export const useRemoveUsersFromBundleGroupsMutation = <
 useRemoveUsersFromBundleGroupsMutation.getKey = () => ['RemoveUsersFromBundleGroups'];
 useRemoveUsersFromBundleGroupsMutation.getRootKey = () => ['RemoveUsersFromBundleGroups'] as const;
 useRemoveUsersFromBundleGroupsMutation.fetcher = (client: GraphQLClient, variables: RemoveUsersFromBundleGroupsMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveUsersFromBundleGroupsMutation, RemoveUsersFromBundleGroupsMutationVariables>(client, RemoveUsersFromBundleGroupsDocument, variables, headers);
+
+export const UpdateBundleUserGroupsDocument = `
+    mutation UpdateBundleUserGroups($serviceInstanceId: ServiceInstanceId!, $input: UpdateBundleUserGroupsInput!) {
+  updateBundleUserGroups(serviceInstanceId: $serviceInstanceId, input: $input) {
+    user {
+      id
+      email
+    }
+    groups {
+      platformIdentifier
+      name
+    }
+  }
+}
+    `;
+
+export const useUpdateBundleUserGroupsMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateBundleUserGroupsMutation, TError, UpdateBundleUserGroupsMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<UpdateBundleUserGroupsMutation, TError, UpdateBundleUserGroupsMutationVariables, TContext>(
+      {
+    mutationKey: ['UpdateBundleUserGroups'],
+    mutationFn: (variables?: UpdateBundleUserGroupsMutationVariables) => fetcher<UpdateBundleUserGroupsMutation, UpdateBundleUserGroupsMutationVariables>(client, UpdateBundleUserGroupsDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useUpdateBundleUserGroupsMutation.getKey = () => ['UpdateBundleUserGroups'];
+useUpdateBundleUserGroupsMutation.getRootKey = () => ['UpdateBundleUserGroups'] as const;
+useUpdateBundleUserGroupsMutation.fetcher = (client: GraphQLClient, variables: UpdateBundleUserGroupsMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateBundleUserGroupsMutation, UpdateBundleUserGroupsMutationVariables>(client, UpdateBundleUserGroupsDocument, variables, headers);
 
 export const BundleUserServiceGroupsDocument = `
     query BundleUserServiceGroups($serviceInstanceId: ServiceInstanceId!) {

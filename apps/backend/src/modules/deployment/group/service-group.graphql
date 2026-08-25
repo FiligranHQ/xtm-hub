@@ -44,6 +44,16 @@ input AddUsersToBundleGroupsInput {
   roles: [BundleUserRoleAssignmentInput!]!
 }
 
+input UpdateBundleUserGroupsRoleInput {
+  product: PlatformIdentifier!
+  role: ServiceGroupName
+}
+
+input UpdateBundleUserGroupsInput {
+  userIds: [UserId!]!
+  roles: [UpdateBundleUserGroupsRoleInput!]!
+}
+
 type Query {
   serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
     @auth(
@@ -77,6 +87,14 @@ type Mutation {
     serviceInstanceId: ServiceInstanceId!
     userIds: [UserId!]!
   ): [UserId!]!
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
+  updateBundleUserGroups(
+    serviceInstanceId: ServiceInstanceId!
+    input: UpdateBundleUserGroupsInput!
+  ): [BundleUserServiceGroup!]!
     @auth(
       portalCapa: [BYPASS]
       orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]

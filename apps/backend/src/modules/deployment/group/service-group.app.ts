@@ -5,6 +5,7 @@ import {
   PlatformIdentifier,
   ServiceGroupName,
   ServiceGroup as ServiceGroupResponse,
+  UpdateBundleUserGroupsInput,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
@@ -339,6 +340,61 @@ export const ServiceGroupApp = {
     );
 
     return userIds;
+  },
+
+  updateBundleUserGroups: async (
+    serviceInstanceId: ServiceInstanceId,
+    input: UpdateBundleUserGroupsInput
+  ): Promise<BundleUserServiceGroup[]> => {
+    const xtmOneRoleAssignment = input.roles.find(
+      (role) => role.product === PlatformIdentifier.Xtmone
+    );
+    if (xtmOneRoleAssignment && !xtmOneRoleAssignment.role) {
+      throw new Error(ErrorCode.XtmOneRoleRequired);
+    }
+
+    const { children } = await loadBundleChildren(serviceInstanceId);
+
+    const platformRoleAssignments = matchRolesToChildren(children, input.roles);
+
+    await withTransaction(async () => {
+      for (const { child, role } of platformRoleAssignments) {
+        const groups = await ServiceGroupDomain.loadServiceGroups({
+          service_instance_id: child.service_instance_id,
+        });
+
+        await ServiceGroupDomain.removeUsersFromServiceGroups(
+          input.userIds,
+          groups.map((group) => group.id)
+        );
+
+        if (!role) {
+          continue;
+        }
+
+        const targetGroup = groups.find((group) => group.name === role);
+        if (!targetGroup) {
+          throw new Error(ErrorCode.ServiceGroupNotFound);
+        }
+
+        await ServiceGroupDomain.addUsersToGroup(targetGroup.id, input.userIds);
+      }
+    });
+
+    const { emailByUserId } = await loadEmailByUserId(input.userIds);
+
+    await Promise.all(
+      platformRoleAssignments.map(({ child, role }) =>
+        syncAuth0GroupsForChild(
+          child,
+          input.userIds,
+          emailByUserId,
+          role ? [role] : []
+        )
+      )
+    );
+
+    return ServiceGroupApp.loadBundleUserServiceGroups(serviceInstanceId);
   },
 
   updateGroups: async (

@@ -1044,6 +1044,7 @@ export type Mutation = {
   setVotingRoundStatus: Array<VotingRound>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
+  updateBundleUserGroups: Array<BundleUserServiceGroup>;
   updateCompetitor: Competitor;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
@@ -1414,6 +1415,12 @@ export type MutationTransferPersonalSpaceArgs = {
 
 export type MutationUnregisterPlatformArgs = {
   input: UnregisterPlatformInput;
+};
+
+
+export type MutationUpdateBundleUserGroupsArgs = {
+  input: UpdateBundleUserGroupsInput;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2759,6 +2766,16 @@ export type UnregisterPlatformInput = {
   tenantId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateBundleUserGroupsInput = {
+  roles: Array<UpdateBundleUserGroupsRoleInput>;
+  userIds: Array<Scalars['UserId']['input']>;
+};
+
+export type UpdateBundleUserGroupsRoleInput = {
+  product: PlatformIdentifier;
+  role?: InputMaybe<ServiceGroupName>;
+};
+
 export type UpdateCompetitorInput = {
   domain?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['CompetitorId']['input'];
@@ -3360,6 +3377,8 @@ export type ResolversTypes = ResolversObject<{
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: ResolverTypeWrapper<TrialsDeployments>;
   UnregisterPlatformInput: UnregisterPlatformInput;
+  UpdateBundleUserGroupsInput: UpdateBundleUserGroupsInput;
+  UpdateBundleUserGroupsRoleInput: UpdateBundleUserGroupsRoleInput;
   UpdateCompetitorInput: UpdateCompetitorInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
@@ -3567,6 +3586,8 @@ export type ResolversParentTypes = ResolversObject<{
   TrialDeploymentsInput: TrialDeploymentsInput;
   TrialsDeployments: TrialsDeployments;
   UnregisterPlatformInput: UnregisterPlatformInput;
+  UpdateBundleUserGroupsInput: UpdateBundleUserGroupsInput;
+  UpdateBundleUserGroupsRoleInput: UpdateBundleUserGroupsRoleInput;
   UpdateCompetitorInput: UpdateCompetitorInput;
   UpdateDeploymentQuotaCapacityInput: UpdateDeploymentQuotaCapacityInput;
   UpdateDeploymentRequestInput: UpdateDeploymentRequestInput;
@@ -4155,6 +4176,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   setVotingRoundStatus?: Resolver<Array<ResolversTypes['VotingRound']>, ParentType, ContextType, RequireFields<MutationSetVotingRoundStatusArgs, 'id' | 'status'>>;
   transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUnregisterPlatformArgs, 'input'>>;
+  updateBundleUserGroups?: Resolver<Array<ResolversTypes['BundleUserServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateBundleUserGroupsArgs, 'input' | 'serviceInstanceId'>>;
   updateCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationUpdateCompetitorArgs, 'input'>>;
   updateDeploymentQuotaCapacity?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentQuotaCapacityArgs, 'input'>>;
   updateDeploymentRequest?: Resolver<ResolversTypes['PlatformDeploymentRequest'], ParentType, ContextType, RequireFields<MutationUpdateDeploymentRequestArgs, 'input'>>;

@@ -63,6 +63,16 @@ const resolvers: Resolvers = {
         throw mapToGraphQLError(error);
       }
     },
+    updateBundleUserGroups: async (_, { serviceInstanceId, input }) => {
+      try {
+        return await ServiceGroupApp.updateBundleUserGroups(
+          serviceInstanceId,
+          input
+        );
+      } catch (error) {
+        throw mapToGraphQLError(error);
+      }
+    },
   },
 };
 

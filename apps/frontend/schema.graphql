@@ -176,6 +176,7 @@ type Mutation {
   updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
   addUsersToBundleGroups(serviceInstanceId: ServiceInstanceId!, input: AddUsersToBundleGroupsInput!): [BundleUserServiceGroup!]!
   removeUsersFromBundleGroups(serviceInstanceId: ServiceInstanceId!, userIds: [UserId!]!): [UserId!]!
+  updateBundleUserGroups(serviceInstanceId: ServiceInstanceId!, input: UpdateBundleUserGroupsInput!): [BundleUserServiceGroup!]!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
   updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
   deleteDocument(documentId: DocumentId!, service_instance_id: ServiceInstanceId!, forceDelete: Boolean): Document!
@@ -595,6 +596,16 @@ input BundleUserRoleAssignmentInput {
 input AddUsersToBundleGroupsInput {
   userIds: [UserId!]!
   roles: [BundleUserRoleAssignmentInput!]!
+}
+
+input UpdateBundleUserGroupsRoleInput {
+  product: PlatformIdentifier!
+  role: ServiceGroupName
+}
+
+input UpdateBundleUserGroupsInput {
+  userIds: [UserId!]!
+  roles: [UpdateBundleUserGroupsRoleInput!]!
 }
 
 """

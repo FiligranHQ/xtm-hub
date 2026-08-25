@@ -131,6 +131,34 @@ describe('ManageTrialHeader', () => {
     ).not.toBeDisabled();
   });
 
+  it('opens the edit users dialog when the GroupAction button is clicked', async () => {
+    setupQueryMocks();
+
+    const { user } = testRender(
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        selectedUsers={[{ id: 'user-1', email: 'user1@filigran.io' }]}
+        onUsersRemoved={vi.fn()}
+      />
+    );
+
+    expect(
+      screen.queryByText('Service.Bundle.ManageTrial.EditUsersDialog.Title')
+    ).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Service.Bundle.ManageTrial.GroupAction',
+      })
+    );
+
+    expect(
+      await screen.findByText(
+        'Service.Bundle.ManageTrial.EditUsersDialog.Title'
+      )
+    ).toBeInTheDocument();
+  });
+
   it('shows the bulk-delete button and dialog with the correct title and text keys when users are selected', async () => {
     setupQueryMocks();
 

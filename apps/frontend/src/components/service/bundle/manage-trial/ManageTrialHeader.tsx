@@ -42,6 +42,7 @@ export const ManageTrialHeader = ({
   const t = useTranslations();
   const queryClient = useQueryClient();
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
+  const [isEditUsersDialogOpen, setIsEditUsersDialogOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   const { mutate: removeUsersFromBundleGroups } =
@@ -165,7 +166,8 @@ export const ManageTrialHeader = ({
           ) : (
             <Button
               variant="outline"
-              className="border-elevation-border-default-layer-0">
+              className="border-elevation-border-default-layer-0"
+              onClick={() => setIsEditUsersDialogOpen(true)}>
               {t('Service.Bundle.ManageTrial.GroupAction')}
             </Button>
           )}
@@ -177,9 +179,17 @@ export const ManageTrialHeader = ({
         </div>
       </div>
       <TrialUserDialog
+        mode="add"
         serviceInstanceId={serviceInstanceId}
         open={isAddUserDialogOpen}
         setOpen={setIsAddUserDialogOpen}
+      />
+      <TrialUserDialog
+        mode="edit"
+        serviceInstanceId={serviceInstanceId}
+        initialUserIds={selectedUsers.map((user) => user.id)}
+        open={isEditUsersDialogOpen}
+        setOpen={setIsEditUsersDialogOpen}
       />
     </header>
   );

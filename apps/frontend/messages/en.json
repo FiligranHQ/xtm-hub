@@ -1727,6 +1727,12 @@
           "Email": "Email",
           "EmailPlaceholder": "Add email"
         },
+        "EditUsersDialog": {
+          "Title": "Edit users",
+          "Users": "Users",
+          "UsersPlaceholder": "Select users",
+          "MixedRoles": "Users with different roles are selected"
+        },
         "Roles": {
           "DefaultSuffix": "(default)",
           "NoAccess": "No access",

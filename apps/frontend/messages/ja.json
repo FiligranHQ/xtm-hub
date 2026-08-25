@@ -1727,6 +1727,12 @@
           "Email": "メールアドレス",
           "EmailPlaceholder": "メールアドレスを追加"
         },
+        "EditUsersDialog": {
+          "Title": "ユーザーを編集",
+          "Users": "ユーザー",
+          "UsersPlaceholder": "ユーザーを選択",
+          "MixedRoles": "異なるロールを持つユーザーが選択されています"
+        },
         "Roles": {
           "DefaultSuffix": "（デフォルト）",
           "NoAccess": "アクセス禁止",

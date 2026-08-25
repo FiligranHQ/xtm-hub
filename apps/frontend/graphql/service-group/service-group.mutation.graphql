@@ -23,3 +23,19 @@ mutation RemoveUsersFromBundleGroups(
     userIds: $userIds
   )
 }
+
+mutation UpdateBundleUserGroups(
+  $serviceInstanceId: ServiceInstanceId!
+  $input: UpdateBundleUserGroupsInput!
+) {
+  updateBundleUserGroups(serviceInstanceId: $serviceInstanceId, input: $input) {
+    user {
+      id
+      email
+    }
+    groups {
+      platformIdentifier
+      name
+    }
+  }
+}
