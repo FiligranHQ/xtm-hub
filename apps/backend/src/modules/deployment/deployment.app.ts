@@ -284,11 +284,13 @@ export const DeploymentApp = {
   },
 
   loadAvailableDeploymentRequests: async (
-    platformIdentifier: PlatformIdentifier
+    platformIdentifier: PlatformIdentifier | null
   ): Promise<DeploymentAvailability[]> => {
-    const quotas = await DeploymentQuotaDomain.loadQuotas({
-      platform_identifier: platformIdentifier,
-    });
+    const quotas = await DeploymentQuotaDomain.loadQuotas(
+      platformIdentifier
+        ? { platform_identifier: platformIdentifier }
+        : { type: DeploymentRequestDeploymentType.Bundle }
+    );
 
     return quotas.map((quota) => ({
       region: quota.region,
@@ -339,7 +341,7 @@ export const DeploymentApp = {
     region,
     newCapacity,
   }: {
-    platformIdentifier: PlatformIdentifier;
+    platformIdentifier?: PlatformIdentifier | null;
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ success: boolean }> => {

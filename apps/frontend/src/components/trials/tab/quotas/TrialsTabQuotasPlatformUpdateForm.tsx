@@ -28,7 +28,7 @@ interface TrialsTabQuotasPlatformUpdateFormProps {
 
 const formSchema = z.object({
   region: z.string(),
-  platformIdentifier: z.string(),
+  platformIdentifier: z.string().nullable(),
   newCapacity: z.int().min(0),
 });
 

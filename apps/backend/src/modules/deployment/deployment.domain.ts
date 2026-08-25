@@ -342,24 +342,24 @@ export const DeploymentRequestDomain = {
     return updatedRequest ?? undefined;
   },
 
-  setLastPendingRequestAsQueued: async (
+  loadLastPendingRequest: async (
     key: QuotaKey
   ): Promise<DeploymentRequest | undefined> => {
-    const request = await db<DeploymentRequest>('DeploymentRequest')
+    return db<DeploymentRequest>('DeploymentRequest')
       .select('*')
       .where('hub_status', '=', DeploymentRequestHubStatus.Pending)
       .modify(scopeToQuotaKey(key))
       .orderBy('ordering', 'desc')
       .first();
+  },
 
-    if (!request) {
-      return undefined;
-    }
-
+  setRequestAsQueued: async (
+    request: DeploymentRequest
+  ): Promise<DeploymentRequest | undefined> => {
     await db<DeploymentRequest>('DeploymentRequest')
       .increment('ordering', 1)
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
-      .modify(scopeToQuotaKey(key));
+      .modify(scopeToQueueOf(request));
     const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .update({
         hub_status: DeploymentRequestHubStatus.Queued,
@@ -368,6 +368,16 @@ export const DeploymentRequestDomain = {
       })
       .where({ id: request.id })
       .returning('*');
+
+    if (request.type === DeploymentRequestDeploymentType.Bundle) {
+      await db<DeploymentRequest>('DeploymentRequest')
+        .update({
+          hub_status: DeploymentRequestHubStatus.Queued,
+          target_state: DeploymentRequestPlatformState.Removed,
+        })
+        .where('parent_id', '=', request.id)
+        .andWhere('hub_status', '=', DeploymentRequestHubStatus.Pending);
+    }
 
     return updatedRequest;
   },

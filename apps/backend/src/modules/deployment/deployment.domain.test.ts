@@ -21,7 +21,7 @@ import {
   shouldDeleteDeploymentRequestAudience,
 } from './deployment.domain';
 import { ServiceGroupDomain } from './group/service-group.domain';
-import { trialQuotaKey } from './quota/deployment.quota.domain';
+import { QuotaKey, trialQuotaKey } from './quota/deployment.quota.domain';
 
 describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
@@ -1247,7 +1247,16 @@ describe('deploymentRequestDomain', () => {
       });
     });
   });
-  describe('setLastPendingRequestAsQueued', () => {
+  describe('loadLastPendingRequest and setRequestAsQueued', () => {
+    const queueLastPendingRequest = async (key: QuotaKey) => {
+      const request = await DeploymentRequestDomain.loadLastPendingRequest(key);
+      if (!request) {
+        return undefined;
+      }
+
+      return DeploymentRequestDomain.setRequestAsQueued(request);
+    };
+
     let platformIdentifier: PlatformIdentifier;
     let region: DeploymentRequestPlatformRegion;
     let deploymentRequestId1: DeploymentRequestId;
@@ -1312,9 +1321,7 @@ describe('deploymentRequestDomain', () => {
         );
 
       // When
-      await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-        trialQuotaKey(platformIdentifier, region)
-      );
+      await queueLastPendingRequest(trialQuotaKey(platformIdentifier, region));
 
       // Then
       await TestHelper.deploymentRequest.assertProperties(euWestQueued!.id, {
@@ -1333,10 +1340,9 @@ describe('deploymentRequestDomain', () => {
           }
         );
 
-      const updatedRequest =
-        await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-          trialQuotaKey(platformIdentifier, region)
-        );
+      const updatedRequest = await queueLastPendingRequest(
+        trialQuotaKey(platformIdentifier, region)
+      );
 
       expect(updatedRequest).toBeDefined();
       expect(updatedRequest!.id).toBe(deploymentRequestId3);
@@ -1383,9 +1389,7 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should set pending requests in the right order with queued requests', async () => {
-      await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-        trialQuotaKey(platformIdentifier, region)
-      );
+      await queueLastPendingRequest(trialQuotaKey(platformIdentifier, region));
 
       await TestHelper.deploymentRequest.assertProperties(
         deploymentRequestId1,
@@ -1421,10 +1425,9 @@ describe('deploymentRequestDomain', () => {
         hub_status: DeploymentRequestHubStatus.Queued,
       });
 
-      const updatedRequest =
-        await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-          trialQuotaKey(platformIdentifier, region)
-        );
+      const updatedRequest = await queueLastPendingRequest(
+        trialQuotaKey(platformIdentifier, region)
+      );
 
       expect(updatedRequest).toBeUndefined();
 

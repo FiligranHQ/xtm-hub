@@ -38,7 +38,7 @@ const resolvers: Resolvers = {
     ): Promise<DeploymentAvailability[]> => {
       try {
         return await DeploymentApp.loadAvailableDeploymentRequests(
-          platformIdentifier
+          platformIdentifier ?? null
         );
       } catch (error) {
         throw mapToGraphQLError(
