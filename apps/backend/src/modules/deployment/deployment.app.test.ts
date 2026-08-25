@@ -2052,6 +2052,131 @@ describe('deployment app', () => {
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
   });
+  describe('loadPlatformTrialStatus', () => {
+    it('should return null hub_status and end_date when no bundle DeploymentRequest exists', async () => {
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: false,
+        hub_status: null,
+        end_date: null,
+      });
+    });
+
+    it('should return the bundle hub_status and end_date when a bundle DeploymentRequest exists', async () => {
+      const endDate = new Date(Date.UTC(2025, 5, 1));
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+            end_date: endDate,
+          }
+        );
+
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: false,
+        hub_status: DeploymentRequestHubStatus.Active,
+        end_date: bundle.end_date,
+      });
+    });
+
+    it('should treat a bundle DeploymentRequest as non-existent when counts_in_orga_quota is false', async () => {
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          hub_status: DeploymentRequestHubStatus.Active,
+          end_date: new Date(Date.UTC(2025, 5, 1)),
+          counts_in_orga_quota: false,
+        }
+      );
+
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: false,
+        hub_status: null,
+        end_date: null,
+      });
+    });
+
+    it('should return blacklisted = true if orga is blacklisted', async () => {
+      await CompetitorDomain.insertCompetitor({
+        id: uuidv4() as CompetitorId,
+        name: 'Filigran',
+        tier: CompetitorTier.Tier1,
+        domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
+      });
+
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: true,
+        hub_status: null,
+        end_date: null,
+      });
+
+      await TestHelper.competitor.delete({});
+    });
+
+    it('should return null hub_status and end_date for personal space, even with a bundle in another organization', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          hub_status: DeploymentRequestHubStatus.Active,
+          end_date: new Date(Date.UTC(2025, 5, 1)),
+        }
+      );
+
+      const contextUserWithPersonalOrga: PortalContext = {
+        ...contextSimpleUserSecondOrga,
+        user: {
+          ...contextSimpleUserSecondOrga.user,
+          selected_organization_id:
+            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
+              .PERSONAL_SPACE_ID,
+        },
+      };
+
+      requestContext.set({
+        user: contextUserWithPersonalOrga.user,
+      });
+
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID
+      );
+
+      expect(platformTrialStatus).toEqual({
+        isBlacklisted: false,
+        hub_status: null,
+        end_date: null,
+      });
+    });
+
+    it('should throw if user does not belong in the organization', async () => {
+      requestContext.set(requestContextAdminSecondOrga);
+      const call = DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+  });
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
       vi.spyOn(

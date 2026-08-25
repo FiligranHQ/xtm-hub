@@ -111,6 +111,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
     filters: [ServiceInstanceFilter!]
+    includeInaccessible: Boolean
   ): ServiceConnection! @auth
   serviceInstanceLinksByTags(
     tags: [ServiceInstanceTag!]!

@@ -13,13 +13,14 @@ import {
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { MoreVertIcon } from '@filigran/icon';
 import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import { OrganizationsPaginationQuery$variables } from '@generated/OrganizationsPaginationQuery.graphql';
 import { organizationItem_fragment$data } from '@generated/organizationItem_fragment.graphql';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { Suspense, useMemo, useState } from 'react';
@@ -125,18 +126,13 @@ const OrganizationList = () => {
     ({ node }) => node
   ) as organizationItem_fragment$data[];
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
-
   const handleRefetchData = (
     args?: Partial<OrganizationsPaginationQuery$variables>
   ) => {
     const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
       count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+      cursor,
       orderBy,
       orderMode,
       searchTerm: undefined,
@@ -144,6 +140,14 @@ const OrganizationList = () => {
       ...args,
     });
   };
+
+  const { pagination, cursor, onPaginationChange } = useTablePagination({
+    pageSize,
+    setPageSize,
+    onPaginationChange: (nextPagination, nextCursor) => {
+      handleRefetchData({ count: nextPagination.pageSize, cursor: nextCursor });
+    },
+  });
 
   const onSortingChange = (updater: unknown) => {
     handleSortingChange<OrganizationOrdering>({
@@ -155,21 +159,6 @@ const OrganizationList = () => {
       removeOrder,
       handleRefetchData,
     });
-  };
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
   };
 
   const handleInputChange = (inputValue: string) => {

@@ -1072,4 +1072,109 @@ describe('service instance domain', () => {
       expect(result).toHaveLength(0);
     });
   });
+
+  describe('loadServiceInstances', () => {
+    const publicServiceInstanceId = uuidv4() as ServiceInstanceId;
+    const privateServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+    const loadIds = async (includeInaccessible = false) => {
+      const { edges } = await ServiceInstanceDomain.loadServiceInstances({
+        first: 100,
+        after: null,
+        orderBy: 'ordering',
+        orderMode: 'asc',
+        searchTerm: null,
+        filters: null,
+        includeInaccessible,
+      });
+      return edges.map(({ node }) => node.id);
+    };
+
+    beforeAll(async () => {
+      await TestHelper.serviceInstance.create({
+        id: publicServiceInstanceId,
+        name: 'accessible-public',
+        slug: 'accessible-public',
+        public: true,
+      });
+      await TestHelper.serviceInstance.create({
+        id: privateServiceInstanceId,
+        name: 'accessible-private',
+        slug: 'accessible-private',
+        public: false,
+      });
+    });
+
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ id: publicServiceInstanceId });
+      await TestHelper.serviceInstance.delete({ id: privateServiceInstanceId });
+    });
+
+    it('should hide a non public service instance the organization is not subscribed to', async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      const ids = await loadIds();
+
+      expect(ids).toContain(publicServiceInstanceId);
+      expect(ids).not.toContain(privateServiceInstanceId);
+    });
+
+    it('should return a non public service instance to a subscribed organization', async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+      await TestHelper.subscription.create({
+        service_instance_id: privateServiceInstanceId,
+        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      });
+
+      const ids = await loadIds();
+
+      expect(ids).toContain(privateServiceInstanceId);
+    });
+
+    it('should hide a non public service instance from a platform administrator navigation', async () => {
+      requestContext.set(requestContextAdminUser);
+
+      const ids = await loadIds();
+
+      expect(ids).toContain(publicServiceInstanceId);
+      expect(ids).not.toContain(privateServiceInstanceId);
+    });
+
+    it('should return every service instance to a platform administrator asking for the admin listing', async () => {
+      requestContext.set(requestContextAdminUser);
+
+      const ids = await loadIds(true);
+
+      expect(ids).toEqual(
+        expect.arrayContaining([
+          publicServiceInstanceId,
+          privateServiceInstanceId,
+        ])
+      );
+    });
+
+    it('should ignore the admin listing flag for a non administrator', async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      const ids = await loadIds(true);
+
+      expect(ids).not.toContain(privateServiceInstanceId);
+    });
+
+    it('should not expose a non public service instance on the SEO surface', async () => {
+      requestContext.set(requestContextAdminUser);
+
+      const seoInstances =
+        await ServiceInstanceDomain.loadSeoServiceInstances();
+      const bySlug =
+        await ServiceInstanceDomain.loadSeoServiceInstanceBySlug(
+          'accessible-private'
+        );
+
+      expect(seoInstances.map(({ id }) => id)).not.toContain(
+        privateServiceInstanceId
+      );
+      expect(bySlug).toBeUndefined();
+    });
+  });
 });

@@ -292,10 +292,12 @@
       "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "You are not allowed to do this",
       "SERVICE_INSTANCE_NOT_FOUND": "Service instance was not found",
+      "SERVICE_INSTANCE_NOT_PUBLIC": "You do not have access to this service",
       "SERVICE_NOT_FOUND": "Service was not found",
       "SERVICE_NOT_MANAGEABLE": "This service is not manageable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
       "SHORT_DESCRIPTION_TOO_LONG": "The short description is too long",
+      "SOLUTION_CATEGORIES_REQUIRED": "At least one solution category is required",
       "SOLUTION_CATEGORY_NOT_FOUND": "Solution category not found",
       "SUBSCRIPTION_NOT_FOUND": "Subscription was not found",
       "TENANT_ID_MANDATORY": "Tenant id is mandatory",
@@ -672,9 +674,16 @@
   },
   "PendingUserListPage": {
     "TabTitle": "Users Requests ({usersCount})",
+    "ActionSuccessApprove": "User request for {email} has been approved",
+    "ActionSuccessDeny": "User request for {email} has been denied",
+    "WarningUserAccept": {
+      "Confirm": "Confirm",
+      "Description": "You are about to accept {email} in your organization. This user won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
+      "Title": "Are you sure?"
+    },
     "WarningUserRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse this user from your organization. This action can’t be undone. Are you sure ?",
+      "Description": "You are about to refuse {email} from your organization. This action can’t be undone. Are you sure ?",
       "Title": "Are you sure?"
     },
     "WarningUsersRejection": {
@@ -1215,6 +1224,16 @@
     "GoTo": "Go to service page",
     "GoToAdminLabel": "Manage",
     "List": {
+      "ViewTab": "Select tab view",
+      "ViewList": "Select list view",
+      "Tab": {
+        "Name": "Name",
+        "Description": "Description",
+        "UseCases": "Use cases",
+        "Actions": "Actions",
+        "Author": "Author",
+        "MinimumDeployableVersion": "Minimum deployable version"
+      },
       "Filter": {
         "Add": "Add filter",
         "NoOptions": "No options",
@@ -1440,6 +1459,18 @@
         "OpenAEVDescription": "Proactively defend against threats with Adversarial Exposure Validation (AEV), simulating real-life attack scenarios to optimize security defenses.",
         "LogoAlt": "{name} Logo",
         "IllustrationAlt": "Illustration of free trial service"
+      },
+      "XtmPlatform": {
+        "NoTrial": {
+          "Text": "Start your 30-day free trial and explore the full XTM Platform experience!"
+        },
+        "Active": {
+          "Text": "Explore the full XTM Platform experience during your trial!"
+        },
+        "Ending": {
+          "Text": "Keep exploring the full XTM Platform experience before your trial ends."
+        },
+        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}"
       },
       "QuickStart": {
         "Title": "Quick start guide",

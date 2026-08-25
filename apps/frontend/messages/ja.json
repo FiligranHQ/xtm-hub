@@ -202,9 +202,9 @@
       "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "製品の切断中に不明なエラーが発生しました。",
       "CANT_ADD_DISABLED_USER": "プラットフォームで無効になっているユーザーを追加できない",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "パーソナルスペースにユーザーを追加することはできません",
+      "CANT_CANCEL_BUNDLE_PRODUCT": "XTM Platform Trial 内の個別の製品はキャンセルできない",
       "CANT_DELETE_BUILTIN_USER": "この組み込みユーザーは削除できません",
       "CANT_DELETE_YOURSELF": "自分のアカウントを削除することはできません",
-      "CANT_CANCEL_BUNDLE_PRODUCT": "XTM Platform Trial 内の個別の製品はキャンセルできない",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "組織の最後の管理者を削除することはできない",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "組織から自分自身を削除することはできない",
       "CANT_REQUEST_FREE_TRIAL": "無料トライアルのリクエストはできない",
@@ -292,10 +292,12 @@
       "SERVICE_DEFINITION_NOT_FOUND": "サービス定義が見つかりませんでした",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "あなたはこれを行うことはできません",
       "SERVICE_INSTANCE_NOT_FOUND": "サービスインスタンスが見つかりません",
+      "SERVICE_INSTANCE_NOT_PUBLIC": "このサービスへのアクセス権がありません",
       "SERVICE_NOT_FOUND": "サービスが見つかりません",
       "SERVICE_NOT_MANAGEABLE": "このサービスは管理できません。",
       "SERVICE_SUBSCRIPTION_ERROR": "サービスにサブスクリプションを追加する際にエラーが発生した",
       "SHORT_DESCRIPTION_TOO_LONG": "短い説明が長すぎます",
+      "SOLUTION_CATEGORIES_REQUIRED": "少なくとも1つのソリューションカテゴリが必要です",
       "SOLUTION_CATEGORY_NOT_FOUND": "ソリューションカテゴリが見つかりません",
       "SUBSCRIPTION_NOT_FOUND": "購読が見つからない",
       "TENANT_ID_MANDATORY": "テナントIDは必須です",
@@ -672,9 +674,16 @@
   },
   "PendingUserListPage": {
     "TabTitle": "ユーザーリクエスト ({usersCount})",
+    "ActionSuccessApprove": "{email} のユーザー申請を承認しました",
+    "ActionSuccessDeny": "{email} のユーザー申請を拒否しました",
+    "WarningUserAccept": {
+      "Confirm": "確認",
+      "Description": "{email} を組織に受け入れます。デフォルトでは、このユーザーに特別な権限は付与されません。権限を割り当てたり更新したりする場合は、[ユーザー] タブにアクセスしてください。よろしいですか？",
+      "Title": "よろしいですか？"
+    },
     "WarningUserRejection": {
       "Confirm": "確認",
-      "Description": "このユーザーを組織から拒否しようとしています。この操作は取り消せません。本当によろしいですか？",
+      "Description": "{email} を組織から拒否しようとしています。この操作は取り消せません。本当によろしいですか？",
       "Title": "本当によろしいですか？"
     },
     "WarningUsersRejection": {
@@ -1215,6 +1224,16 @@
     "GoTo": "サービスページへ",
     "GoToAdminLabel": "管理する",
     "List": {
+      "ViewTab": "タブ表示を選択",
+      "ViewList": "リスト表示を選択",
+      "Tab": {
+        "Name": "名前",
+        "Description": "説明",
+        "UseCases": "ユースケース",
+        "Actions": "アクション",
+        "Author": "作成者",
+        "MinimumDeployableVersion": "デプロイ可能な最小バージョン"
+      },
       "Filter": {
         "Add": "フィルターの追加",
         "NoOptions": "オプションなし",
@@ -1440,6 +1459,18 @@
         "OpenAEVDescription": "Adversarial Exposure Validation (AEV) で脅威に積極的に対抗し、現実の攻撃シナリオをシミュレートしてセキュリティ防御を最適化します。",
         "LogoAlt": "{name} ロゴ",
         "IllustrationAlt": "無料トライアルサービスのイラスト"
+      },
+      "XtmPlatform": {
+        "NoTrial": {
+          "Text": "30日間の無料トライアルを開始して、XTM Platform のフル体験をお試しください!"
+        },
+        "Active": {
+          "Text": "トライアル期間中は、XTM Platform のフル体験をお楽しみください!"
+        },
+        "Ending": {
+          "Text": "トライアル終了前に、引き続き XTM Platform のフル体験をお楽しみください。"
+        },
+        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}"
       },
       "QuickStart": {
         "Title": "クイックスタートガイド",

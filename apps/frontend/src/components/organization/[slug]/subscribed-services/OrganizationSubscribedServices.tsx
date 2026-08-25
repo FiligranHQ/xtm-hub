@@ -5,6 +5,7 @@ import {
   handleSortingChange,
   mapToSortingTableValue,
 } from '@/components/ui/handle-sorting.utils';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
@@ -17,7 +18,7 @@ import {
   useOrganizationSubscribedServicesListQuery,
 } from '@graphql/generated';
 import { organizationSubscribedServicesKeys } from '@graphql/organization-subscribed-services/organization-subscribed-services.keys';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
@@ -129,14 +130,16 @@ const OrganizationSubscribedServicesSlug = ({
     setColumnVisibility,
     resetAll,
   } = useOrganizationSubscribedServicesLocalstorage(columns);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
+  const { pagination, setPagination, cursor, onPaginationChange } =
+    useTablePagination({
+      pageSize,
+      setPageSize,
+      normalizePageSize: normalizeSubscribedServicesPageSize,
+    });
 
   const variables = {
     count: pagination.pageSize,
-    after: btoa(String(pagination.pageSize * pagination.pageIndex)),
+    after: cursor,
     orderBy,
     orderMode,
     searchTerm: searchTerm.trim() || null,
@@ -180,21 +183,6 @@ const OrganizationSubscribedServicesSlug = ({
       removeOrder,
       handleRefetchData: () => undefined,
     });
-  };
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    const normalizedPageSize = normalizeSubscribedServicesPageSize(
-      newPaginationValue.pageSize
-    );
-    setPagination({
-      ...newPaginationValue,
-      pageSize: normalizedPageSize,
-    });
-    if (normalizedPageSize !== pageSize) {
-      setPageSize(normalizedPageSize);
-    }
   };
 
   const onSearchChange = useDebounceCallback(

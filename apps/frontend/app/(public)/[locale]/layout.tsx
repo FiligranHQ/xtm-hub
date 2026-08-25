@@ -4,9 +4,13 @@ import { PublicHeaderContent } from '@/components/layout/PublicHeaderContent';
 import PublicMenu from '@/components/menu/PublicMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
+import { PublicXtmPlatformTrialBanner } from '@/components/service/trial-instances/banner/xtm-platform-trial/PublicXtmPlatformTrialBanner';
 import { type PublicLocale, publicLocales } from '@/i18n/config';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
+import { fetchVisibleServiceSlugs } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
+import { isFeatureEnabled } from '@/utils/settings.service';
 import '@filigran/ui/theme.css';
+import { FeatureFlag } from '@graphql/generated';
 import '@styles/globals.css';
 import { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
@@ -39,12 +43,28 @@ const RootLayout = async ({
   }
   setRequestLocale(locale);
 
+  const visibleServiceSlugs = await fetchVisibleServiceSlugs();
+  const xtmPlatformTrialEnabled = await isFeatureEnabled(
+    FeatureFlag.XtmPlatformTrial
+  );
+
   return (
     <ReactQueryProvider>
       <AppShell
-        banners={<PublicTryFiligranProductsBanner />}
-        menu={<PublicMenu />}
-        headerContent={<PublicHeaderContent locale={locale} />}
+        banners={
+          xtmPlatformTrialEnabled ? (
+            <PublicXtmPlatformTrialBanner />
+          ) : (
+            <PublicTryFiligranProductsBanner />
+          )
+        }
+        menu={<PublicMenu visibleServiceSlugs={visibleServiceSlugs} />}
+        headerContent={
+          <PublicHeaderContent
+            locale={locale}
+            visibleServiceSlugs={visibleServiceSlugs}
+          />
+        }
         contentClassName="container pt-l">
         {children}
       </AppShell>

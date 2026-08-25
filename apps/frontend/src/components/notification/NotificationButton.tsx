@@ -52,13 +52,29 @@ export function notificationPendingUserQueryFilters(
 }
 
 export const NotificationButton = () => {
-  const t = useTranslations();
   const { me } = useContext(PortalContext);
+  const organizationId = me?.selected_organization_id;
+
+  if (!organizationId) {
+    return null;
+  }
+
+  return <PendingUserNotifications organizationId={organizationId} />;
+};
+
+interface PendingUserNotificationsProps {
+  organizationId: string;
+}
+
+const PendingUserNotifications = ({
+  organizationId,
+}: PendingUserNotificationsProps) => {
+  const t = useTranslations();
   const [openPopover, setOpenPopover] = useState(false);
 
   const queryData = useLazyLoadQuery<userPendingListQuery>(
     UserPendingListQuery,
-    notificationPendingUserQueryFilters(me!.selected_organization_id)
+    notificationPendingUserQueryFilters(organizationId)
   );
 
   const [data, refetch] = useRefetchableFragment<
@@ -69,9 +85,6 @@ export const NotificationButton = () => {
   const connectionID = data?.pendingUsers?.__id;
 
   const environment = useRelayEnvironment();
-
-  const organizationId = me?.selected_organization_id;
-  if (!organizationId) return null;
 
   const pendingUserListSubscriptionConfig = useMemo(
     () => ({
@@ -110,6 +123,7 @@ export const NotificationButton = () => {
   );
 
   const nbUsers = data.pendingUsers.totalCount;
+
   return (
     <Popover
       open={openPopover}

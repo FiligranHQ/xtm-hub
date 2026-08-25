@@ -392,19 +392,17 @@ cp -r ./apps/backend/tests/seeds ./apps/e2e/seeds
 
 ## Commit Convention
 
-Format: `[package] <type>(<scope>): Message (#issueNumber)`
+Format: `<type>(<scope>): Message (#issueNumber)`
 
-- **Package**: optional — omit entirely for CI, chores, or cross-cutting changes with no clear owner
-- **Packages**: `frontend`, `backend`, `e2e-tests` — combinable with `/` for cross-package changes
 - **Types**: `feat`, `fix`, `docs`, `refactor`, `chore`, `test`
 - **Scope**: optional component name
 
 Examples:
 
-- `[frontend] feat(custom-dashboards): add card component (#123)`
-- `[backend] fix(login): handle missing auth token (#456)`
-- `[frontend/backend] refactor(auth): extract shared token logic (#789)`
-- `[e2e-tests] test(login): add SSO flow coverage (#202)`
+- `feat(custom-dashboards): add card component (#123)`
+- `fix(login): handle missing auth token (#456)`
+- `refactor(auth): extract shared token logic (#789)`
+- `test(login): add SSO flow coverage (#202)`
 - `chore(ci): update docker base image (#101)`
 
 ## Environment Variables
@@ -539,7 +537,6 @@ type(scope?)!?: description (#issue)
 - Types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`,
   `build`, `ci`, `revert`.
 - The description starts with a lowercase letter and has no trailing period; preserve acronyms and proper nouns.
-- The old `[backend]` / `[frontend]` bracket prefixes are discontinued — use a Conventional Commits scope instead.
 - Pull request titles **must** end with the related issue reference, e.g.
   `(#1234)`, and every pull request must be linked to an issue.
 - Sign your commits.

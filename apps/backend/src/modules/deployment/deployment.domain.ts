@@ -114,6 +114,17 @@ export const DeploymentRequestDomain = {
       .select('*');
   },
 
+  loadBundleTrialForOrganization: async (
+    organizationId: OrganizationId
+  ): Promise<DeploymentRequest | undefined> => {
+    return db<DeploymentRequest>('DeploymentRequest')
+      .where('organization_requester_id', '=', organizationId)
+      .where('type', '=', DeploymentRequestDeploymentType.Bundle)
+      .where('counts_in_orga_quota', '=', true)
+      .orderBy('request_date', 'desc')
+      .first();
+  },
+
   getMaxOrdering: async (
     field: DeploymentRequestMutator
   ): Promise<number | null> => {

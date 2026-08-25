@@ -109,6 +109,7 @@ type Query {
   deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier!): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments!
+  platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
   serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
   documentExists(documentName: String, service_instance_id: ServiceInstanceId!): Boolean
   publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId!): DocumentConnection!
@@ -134,7 +135,7 @@ type Query {
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
   seoServiceInstanceMetadata(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage): [SeoServiceInstanceMetadata!]!
-  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!]): ServiceConnection!
+  serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!], includeInaccessible: Boolean): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId!): ServiceInstance
   serviceInstanceByIdAndGrantAccess(service_instance_id: ServiceInstanceId!): ServiceInstance
@@ -182,6 +183,7 @@ type Mutation {
   changeSelectedOrganization(organization_id: OrganizationId!): User
   bulkRemovePendingUserFromOrganization(input: BulkPendingUserFromOrganizationInput!): Success
   bulkAcceptPendingUserInOrganization(input: BulkPendingUserFromOrganizationInput!): Success
+  acceptPendingUserInOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   removePendingUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   removeUserFromOrganization(user_id: UserId!, organization_id: OrganizationId!): User
   editMeUser(input: EditMeUserInput!): User!
@@ -475,6 +477,12 @@ type TrialsDeployments {
   availableTrials: [PlatformIdentifier!]!
   deployed: [DeployedPlatform!]!
   isBlacklisted: Boolean!
+}
+
+type PlatformTrialStatus {
+  isBlacklisted: Boolean!
+  hub_status: DeploymentRequestHubStatus
+  end_date: Date
 }
 
 enum DeploymentRequestOrdering {
@@ -1309,6 +1317,7 @@ type ServiceInstanceSubscription {
 
 enum FeatureFlag {
   DUMMY
+  XTM_PLATFORM_TRIAL
 }
 
 type PlatformProvider {
@@ -1334,7 +1343,7 @@ input ManifestFragmentInput {
   use_cases: [String!]!
   verified: Boolean
   last_verified_date: String
-  subscription_link: String!
+  subscription_link: String
   source_code: String!
   manager_supported: Boolean!
   min_version: String!
@@ -1347,7 +1356,7 @@ input ManifestFragmentInput {
   config_schema: JSON!
   license_type: LicenseType
   contact: String
-  solution_categories: [String!]
+  solution_categories: [String!]!
 }
 
 enum ManifestType {

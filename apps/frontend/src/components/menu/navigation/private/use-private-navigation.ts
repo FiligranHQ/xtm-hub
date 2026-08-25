@@ -285,10 +285,18 @@ export const usePrivateNavigation = (): NavigationConfig => {
   };
   const buildServiceLink = (
     identifier: ServiceDefinitionIdentifier
-  ): SectionLink => ({
-    href: serviceHrefs.get(identifier),
-    label: tMenu(SERVICE_LINK_LABEL_KEYS[identifier] ?? identifier),
-  });
+  ): SectionLink[] => {
+    const href = serviceHrefs.get(identifier);
+    if (!href) {
+      return [];
+    }
+    return [
+      {
+        href,
+        label: tMenu(SERVICE_LINK_LABEL_KEYS[identifier] ?? identifier),
+      },
+    ];
+  };
   const xtmPlatformRoadmapHref = serviceHrefs.get(
     ServiceDefinitionIdentifier.XtmPlatformRoadmap
   );
@@ -342,10 +350,12 @@ export const usePrivateNavigation = (): NavigationConfig => {
           `/${APP_PATH}/service/opencti-free-trial`
         ),
         ...openctiMyProductLinks,
-        buildServiceLink(ServiceDefinitionIdentifier.OpenctiCustomDashboards),
-        buildServiceLink(ServiceDefinitionIdentifier.OpenctiCustomViews),
-        buildServiceLink(ServiceDefinitionIdentifier.OpenctiIntegrations),
-        buildServiceLink(ServiceDefinitionIdentifier.OpenctiPlaybooks),
+        ...buildServiceLink(
+          ServiceDefinitionIdentifier.OpenctiCustomDashboards
+        ),
+        ...buildServiceLink(ServiceDefinitionIdentifier.OpenctiCustomViews),
+        ...buildServiceLink(ServiceDefinitionIdentifier.OpenctiIntegrations),
+        ...buildServiceLink(ServiceDefinitionIdentifier.OpenctiPlaybooks),
         {
           href: 'https://demo.opencti.io',
           label: tMenu('LiveDemo'),
@@ -369,7 +379,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
           `/${APP_PATH}/service/openaev-free-trial`
         ),
         ...openaevMyProductLinks,
-        buildServiceLink(ServiceDefinitionIdentifier.OpenaevScenarios),
+        ...buildServiceLink(ServiceDefinitionIdentifier.OpenaevScenarios),
         {
           href: 'https://demo.openaev.io',
           label: tMenu('LiveDemo'),

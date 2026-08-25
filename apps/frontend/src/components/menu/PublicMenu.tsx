@@ -7,7 +7,11 @@ import { useLocale } from 'next-intl';
 import { useCallback } from 'react';
 import { useLocalStorage } from 'usehooks-ts';
 
-const PublicMenu = () => {
+interface PublicMenuProps {
+  visibleServiceSlugs: string[];
+}
+
+const PublicMenu = ({ visibleServiceSlugs }: PublicMenuProps) => {
   const locale = useLocale();
   const [open, setOpen] = useLocalStorage<boolean>(
     'is-public-menu-open',
@@ -24,7 +28,10 @@ const PublicMenu = () => {
       )}>
       <MenuLogo href={`/${locale}`} />
       <div className="flex flex-col flex-1 justify-between min-h-0">
-        <PublicNavigation open={open} />
+        <PublicNavigation
+          open={open}
+          visibleServiceSlugs={visibleServiceSlugs}
+        />
         <MenuFooter
           open={open}
           handleOpenMenu={handleOpenMenu}

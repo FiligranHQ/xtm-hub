@@ -19,6 +19,7 @@ import {
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import { SearchInput } from '@/components/ui/SearchInput';
 import useServiceCapability from '@/hooks/use-service-capability';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { formatDate } from '@/utils/date';
@@ -48,7 +49,7 @@ import {
   OrderingMode,
   ServiceRestriction,
 } from '@graphql/generated';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -198,16 +199,19 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
     resetAll,
   } = documentListLocalStorage(columns);
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
+  const { pagination, cursor, onPaginationChange } = useTablePagination({
     pageSize,
+    setPageSize,
+    onPaginationChange: (nextPagination, nextCursor) => {
+      handleRefetchData({ count: nextPagination.pageSize, cursor: nextCursor });
+    },
   });
 
   const handleRefetchData = (args?: Partial<documentsQuery$variables>) => {
     const sorting = mapToSortingTableValue(orderBy, orderMode);
     refetch({
       count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+      cursor,
       orderBy,
       orderMode,
       ...transformSortingValueToParams<DocumentOrdering, OrderingMode>(sorting),
@@ -225,21 +229,6 @@ const DocumentList = ({ queryRef, serviceInstance }: ServiceProps) => {
       handleRefetchData,
       removeOrder,
     });
-  };
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    handleRefetchData({
-      count: newPaginationValue.pageSize,
-      cursor: btoa(
-        String(newPaginationValue.pageSize * newPaginationValue.pageIndex)
-      ),
-    });
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
   };
 
   const handleInputChange = (inputValue: string) => {

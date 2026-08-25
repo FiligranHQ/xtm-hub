@@ -2,7 +2,13 @@ import {
   BottomLink,
   NavigationConfig,
   SectionConfig,
+  SectionLink,
 } from '@/components/menu/navigation/shared/navigation.type';
+import {
+  PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
+  XTM_PLATFORM_ROADMAP_SLUG,
+} from '@/utils/path/constant';
+import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import {
   HomeIcon,
   LogoXtmOneIcon,
@@ -15,9 +21,24 @@ import {
 } from '@filigran/icon';
 import { useLocale, useTranslations } from 'next-intl';
 
-export const usePublicNavigation = (): NavigationConfig => {
+export const usePublicNavigation = (
+  visibleServiceSlugs: string[]
+): NavigationConfig => {
   const t = useTranslations();
   const locale = useLocale();
+  const visibleSlugs = new Set(visibleServiceSlugs);
+
+  const buildServiceLink = (slug: string, label: string): SectionLink[] => {
+    if (!visibleSlugs.has(slug)) {
+      return [];
+    }
+    return [
+      {
+        href: `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${slug}`,
+        label,
+      },
+    ];
+  };
 
   const sections: SectionConfig[] = [
     {
@@ -39,22 +60,22 @@ export const usePublicNavigation = (): NavigationConfig => {
           label: t('Menu.StartFreeTrial'),
           highlight: true,
         },
-        {
-          href: `/${locale}/cybersecurity-solutions/opencti-custom-dashboards`,
-          label: t('Menu.CustomDashboards'),
-        },
-        {
-          href: `/${locale}/cybersecurity-solutions/opencti-custom-views`,
-          label: t('Menu.CustomViews'),
-        },
-        {
-          href: `/${locale}/cybersecurity-solutions/opencti-integrations`,
-          label: t('Menu.Integrations'),
-        },
-        {
-          href: `/${locale}/cybersecurity-solutions/opencti-playbooks`,
-          label: t('Menu.Playbooks'),
-        },
+        ...buildServiceLink(
+          ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS,
+          t('Menu.CustomDashboards')
+        ),
+        ...buildServiceLink(
+          ServiceSlug.OPEN_CTI_CUSTOM_VIEWS,
+          t('Menu.CustomViews')
+        ),
+        ...buildServiceLink(
+          ServiceSlug.OPEN_CTI_INTEGRATIONS,
+          t('Menu.Integrations')
+        ),
+        ...buildServiceLink(
+          ServiceSlug.OPEN_CTI_PLAYBOOKS,
+          t('Menu.Playbooks')
+        ),
         {
           href: 'https://demo.opencti.io',
           label: t('Menu.LiveDemo'),
@@ -78,10 +99,10 @@ export const usePublicNavigation = (): NavigationConfig => {
           label: t('Menu.StartFreeTrial'),
           highlight: true,
         },
-        {
-          href: `/${locale}/cybersecurity-solutions/openaev-scenarios`,
-          label: t('Menu.Scenarios'),
-        },
+        ...buildServiceLink(
+          ServiceSlug.OPEN_AEV_SCENARIOS,
+          t('Menu.Scenarios')
+        ),
         {
           href: 'https://demo.openaev.io',
           label: t('Menu.LiveDemo'),
@@ -111,12 +132,16 @@ export const usePublicNavigation = (): NavigationConfig => {
   ];
 
   const bottomLinks: BottomLink[] = [
-    {
-      key: 'xtm-platform-roadmap',
-      href: `/${locale}/cybersecurity-solutions/xtm-platform-roadmap`,
-      icon: PapermapIcon,
-      label: t('Menu.XTMRoadmap'),
-    },
+    ...(visibleSlugs.has(XTM_PLATFORM_ROADMAP_SLUG)
+      ? [
+          {
+            key: 'xtm-platform-roadmap',
+            href: `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${XTM_PLATFORM_ROADMAP_SLUG}`,
+            icon: PapermapIcon,
+            label: t('Menu.XTMRoadmap'),
+          },
+        ]
+      : []),
     {
       key: 'filigran-academy',
       href: 'https://academy.filigran.io/',

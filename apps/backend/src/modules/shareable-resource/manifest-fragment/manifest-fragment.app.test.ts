@@ -79,6 +79,7 @@ describe('manifestFragmentApp', () => {
     integration_type: ManifestType.Connector,
     additional_properties: {},
     config_schema: {},
+    solution_categories: ['Threat Intelligence'],
   });
 
   const buildArgs = (

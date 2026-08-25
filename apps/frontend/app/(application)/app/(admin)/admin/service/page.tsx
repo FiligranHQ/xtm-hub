@@ -31,6 +31,7 @@ const Page = () => {
     orderBy: 'name',
     orderMode: 'asc',
     searchTerm: '',
+    includeInaccessible: true,
     filters: [
       {
         key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,

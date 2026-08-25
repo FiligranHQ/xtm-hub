@@ -8,6 +8,7 @@ import {
   OrderingMode as SortingOrderingMode,
 } from '@/components/ui/handle-sorting.utils';
 import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { useTablePagination } from '@/hooks/use-table-pagination';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { i18nKey } from '@/utils/datatable';
 import { formatName } from '@/utils/format/name';
@@ -20,7 +21,7 @@ import {
   useSolutionCategoriesListQuery,
 } from '@graphql/generated';
 import { solutionCategoryListKeys } from '@graphql/solution-category/solution-category-list.keys';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -42,20 +43,18 @@ const SolutionCategories = () => {
     resetAll,
     removeOrder,
   } = useSolutionCategoryListLocalstorage();
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
-  });
+  const { pagination, setPagination, cursor, onPaginationChange } =
+    useTablePagination({ pageSize, setPageSize });
 
   const variables = useMemo(
     () => ({
       count: pagination.pageSize,
-      cursor: btoa(String(pagination.pageSize * pagination.pageIndex)),
+      cursor,
       orderMode: orderMode as OrderingMode,
       orderBy,
       product: selectedProduct ?? null,
     }),
-    [orderBy, orderMode, pagination, selectedProduct]
+    [orderBy, orderMode, pagination, cursor, selectedProduct]
   );
 
   const { data: queryData, isLoading } = useSolutionCategoriesListQuery(
@@ -99,15 +98,6 @@ const SolutionCategories = () => {
     return edges.map(({ node }) => node);
   }, [queryData]);
   const totalCount = queryData?.solutionCategories?.totalCount ?? 0;
-
-  const onPaginationChange = (updater: unknown) => {
-    const newPaginationValue: PaginationState =
-      updater instanceof Function ? updater(pagination) : updater;
-    setPagination(newPaginationValue);
-    if (newPaginationValue.pageSize !== pageSize) {
-      setPageSize(newPaginationValue.pageSize);
-    }
-  };
 
   const handleRefetchData = (args: Record<string, unknown>) => {
     const nextOrderBy = args.orderBy as SolutionCategoryOrdering | undefined;

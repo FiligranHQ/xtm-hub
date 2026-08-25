@@ -5,6 +5,15 @@ import { usePathname } from 'next/navigation';
 import { describe, expect, it, vi } from 'vitest';
 import PublicNavigation from './PublicNavigation';
 
+const ALL_SERVICE_SLUGS = [
+  'opencti-custom-dashboards',
+  'opencti-custom-views',
+  'opencti-integrations',
+  'opencti-playbooks',
+  'openaev-scenarios',
+  'xtm-platform-roadmap',
+];
+
 const expandSection = async (
   user: ReturnType<typeof userEvent.setup>,
   name: string
@@ -19,7 +28,12 @@ const expandSection = async (
 
 describe('PublicNavigation — open={true}', () => {
   it('renders all section labels in the accordion', () => {
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     expect(screen.getByText('Menu.XTMPlatform')).toBeInTheDocument();
     // Hardcoded labels
@@ -29,7 +43,12 @@ describe('PublicNavigation — open={true}', () => {
   });
 
   it('renders bottom links with their labels', () => {
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     expect(screen.getByText('Menu.XTMRoadmap')).toBeInTheDocument();
     expect(screen.getByText('Menu.FiligranAcademy')).toBeInTheDocument();
@@ -38,7 +57,12 @@ describe('PublicNavigation — open={true}', () => {
   });
 
   it('XTM Platform renders as a link, not an accordion trigger', () => {
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     // LinkedSection renders a plain <a> (via next/link), not a button with aria-expanded
     const xtmPlatformLink = screen.getByRole('link', {
@@ -50,7 +74,12 @@ describe('PublicNavigation — open={true}', () => {
 
   it('expanding the OpenCTI accordion shows its sub-links', async () => {
     const user = userEvent.setup();
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     await expandSection(user, 'OpenCTI');
 
@@ -63,7 +92,12 @@ describe('PublicNavigation — open={true}', () => {
 
   it('expanding the OpenAEV accordion shows its sub-links', async () => {
     const user = userEvent.setup();
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     await expandSection(user, 'OpenAEV');
 
@@ -73,7 +107,12 @@ describe('PublicNavigation — open={true}', () => {
 
   it('expanding XTM One accordion shows the badge-only AI Catalog entry', async () => {
     const user = userEvent.setup();
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     await expandSection(user, 'XTM One');
 
@@ -83,7 +122,12 @@ describe('PublicNavigation — open={true}', () => {
 
   it('external sub-links have target="_blank" and rel="noopener noreferrer"', async () => {
     const user = userEvent.setup();
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     await expandSection(user, 'OpenCTI');
 
@@ -100,7 +144,12 @@ describe('PublicNavigation — open={true}', () => {
 
   it('applies active styles to the link matching the current pathname', () => {
     vi.mocked(usePathname).mockReturnValue('/en');
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     const xtmPlatformLink = screen.getByRole('link', {
       name: /Menu\.XTMPlatform/,
@@ -111,7 +160,12 @@ describe('PublicNavigation — open={true}', () => {
 
   it('does not apply active styles to links that do not match the current pathname', () => {
     vi.mocked(usePathname).mockReturnValue('/en');
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     // The roadmap bottom link href is /en/cybersecurity-solutions/xtm-platform-roadmap
     // which does NOT equal /en
@@ -123,7 +177,12 @@ describe('PublicNavigation — open={true}', () => {
 
   it('locale is injected into internal link hrefs', async () => {
     const user = userEvent.setup();
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     await expandSection(user, 'OpenCTI');
 
@@ -138,7 +197,12 @@ describe('PublicNavigation — open={true}', () => {
 
   it('XTM One badge-only entry renders without a link', async () => {
     const user = userEvent.setup();
-    testRender(<PublicNavigation open={true} />);
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     await expandSection(user, 'XTM One');
 
@@ -146,11 +210,53 @@ describe('PublicNavigation — open={true}', () => {
     // Rendered as a <span>, not a link
     expect(aiCatalogText.closest('a')).toBeNull();
   });
+
+  it('omits service entries whose slug is not visible', async () => {
+    const user = userEvent.setup();
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS.filter(
+          (slug) =>
+            slug !== 'opencti-custom-views' && slug !== 'xtm-platform-roadmap'
+        )}
+      />
+    );
+
+    await expandSection(user, 'OpenCTI');
+
+    expect(screen.queryByText('Menu.CustomViews')).not.toBeInTheDocument();
+    expect(screen.queryByText('Menu.XTMRoadmap')).not.toBeInTheDocument();
+    expect(screen.getByText('Menu.CustomDashboards')).toBeInTheDocument();
+    expect(screen.getByText('Menu.Integrations')).toBeInTheDocument();
+  });
+
+  it('keeps non-service entries when no service is visible', async () => {
+    const user = userEvent.setup();
+    testRender(
+      <PublicNavigation
+        open={true}
+        visibleServiceSlugs={[]}
+      />
+    );
+
+    await expandSection(user, 'OpenCTI');
+
+    expect(screen.getByText('Menu.StartFreeTrial')).toBeInTheDocument();
+    expect(screen.getByText('Menu.Documentation')).toBeInTheDocument();
+    expect(screen.getByText('Menu.FiligranAcademy')).toBeInTheDocument();
+    expect(screen.queryByText('Menu.CustomDashboards')).not.toBeInTheDocument();
+  });
 });
 
 describe('PublicNavigation — open={false}', () => {
   it('renders section buttons with aria-labels for accessibility', () => {
-    testRender(<PublicNavigation open={false} />);
+    testRender(
+      <PublicNavigation
+        open={false}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     expect(screen.getByRole('button', { name: 'OpenCTI' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'OpenAEV' })).toBeInTheDocument();
@@ -158,7 +264,12 @@ describe('PublicNavigation — open={false}', () => {
   });
 
   it('section labels are visually hidden (sr-only) in closed mode', () => {
-    testRender(<PublicNavigation open={false} />);
+    testRender(
+      <PublicNavigation
+        open={false}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     // Bottom links use PublicLinkMenu which renders the label with sr-only when closed
     const roadmapLabel = screen.getByText('Menu.XTMRoadmap');
@@ -166,7 +277,12 @@ describe('PublicNavigation — open={false}', () => {
   });
 
   it('XTM Platform renders as a link with aria-label in closed mode', () => {
-    testRender(<PublicNavigation open={false} />);
+    testRender(
+      <PublicNavigation
+        open={false}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     const xtmLink = screen.getByRole('link', {
       name: 'Menu.XTMPlatform',
@@ -176,7 +292,12 @@ describe('PublicNavigation — open={false}', () => {
 
   it('hovering a closed section button opens the popover with sub-links', async () => {
     const user = userEvent.setup();
-    testRender(<PublicNavigation open={false} />);
+    testRender(
+      <PublicNavigation
+        open={false}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     const openctiButton = screen.getByRole('button', { name: 'OpenCTI' });
     await user.hover(openctiButton);
@@ -188,7 +309,12 @@ describe('PublicNavigation — open={false}', () => {
 
   it('moving the mouse away from a closed section closes the popover', async () => {
     const user = userEvent.setup();
-    testRender(<PublicNavigation open={false} />);
+    testRender(
+      <PublicNavigation
+        open={false}
+        visibleServiceSlugs={ALL_SERVICE_SLUGS}
+      />
+    );
 
     const openctiButton = screen.getByRole('button', { name: 'OpenCTI' });
     await user.hover(openctiButton);

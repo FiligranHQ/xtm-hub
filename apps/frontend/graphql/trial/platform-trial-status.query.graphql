@@ -1,0 +1,7 @@
+query PlatformTrialStatus($organizationId: OrganizationId!) {
+  platformTrialStatus(organizationId: $organizationId) {
+    isBlacklisted
+    hub_status
+    end_date
+  }
+}

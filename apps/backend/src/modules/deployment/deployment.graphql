@@ -246,6 +246,12 @@ type TrialsDeployments {
   isBlacklisted: Boolean!
 }
 
+type PlatformTrialStatus {
+  isBlacklisted: Boolean!
+  hub_status: DeploymentRequestHubStatus
+  end_date: Date
+}
+
 enum DeploymentRequestOrdering {
   requester_email
   organization_name
@@ -305,6 +311,8 @@ extend type Query {
     searchTerm: String
   ): DeploymentRequestConnection! @auth(portalCapa: [BYPASS, READ_TRIALS])
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments! @auth
+  platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
+    @auth
 }
 
 extend type Mutation {

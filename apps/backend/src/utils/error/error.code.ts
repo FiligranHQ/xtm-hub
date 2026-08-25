@@ -1,6 +1,7 @@
 export enum ForbiddenErrorCode {
   MissingCapabilityOnOrganization = 'MISSING_CAPABILITY_ON_ORGANIZATION',
   MissingCapabilityOnService = 'MISSING_CAPABILITY_ON_SERVICE',
+  ServiceInstanceNotPublic = 'SERVICE_INSTANCE_NOT_PUBLIC',
   RegistrationOnAnotherOrganizationForbidden = 'REGISTRATION_ON_ANOTHER_ORGANIZATION_FORBIDDEN',
   UserIsNotInOrganization = 'USER_IS_NOT_IN_ORGANIZATION',
   AlreadySubscribed = 'ALREADY_SUBSCRIBED',
@@ -57,10 +58,12 @@ export enum BadRequestErrorCode {
   NewsFeedItemMissingTitle = 'NEWS_FEED_ITEM_MISSING_TITLE',
   InvalidManifestVersionFormat = 'INVALID_MANIFEST_VERSION_FORMAT',
   ConnectorVersionAlreadyExists = 'CONNECTOR_VERSION_ALREADY_EXISTS',
+  ConnectorIdAlreadyExists = 'CONNECTOR_ID_ALREADY_EXISTS',
   ShortDescriptionTooLong = 'SHORT_DESCRIPTION_TOO_LONG',
   ContactTooLong = 'CONTACT_TOO_LONG',
   MixedLtsManifestFragments = 'MIXED_LTS_MANIFEST_FRAGMENTS',
   InvalidProductsForDeploymentType = 'INVALID_PRODUCTS_FOR_DEPLOYMENT_TYPE',
+  SolutionCategoriesRequired = 'SOLUTION_CATEGORIES_REQUIRED',
 }
 
 export enum UnknownErrorCode {
