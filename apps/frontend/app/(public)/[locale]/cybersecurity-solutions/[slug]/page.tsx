@@ -6,6 +6,7 @@ import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { formatPersonNames } from '@/utils/format/name';
 import {
   buildFiligranOrganizationJsonLd,
@@ -38,7 +39,7 @@ const getPageData = cache(async (slug: string, locale: PublicLocale) => {
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
     { slug },
-    { cache: undefined, next: { revalidate: 3600 } }
+    { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
   );
 
   const serviceInstance = serviceResponse.data
@@ -55,7 +56,7 @@ const getPageData = cache(async (slug: string, locale: PublicLocale) => {
         service_instance_id: serviceInstance.id,
         language: locale,
       },
-      { cache: undefined, next: { revalidate: 3600 } }
+      { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
     );
   const seoMetadata = seoMetadataResponse.data.seoServiceInstanceMetadata[0];
 

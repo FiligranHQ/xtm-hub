@@ -19,7 +19,10 @@ export default class UserPage {
     await this.page
       .getByRole('button', { name: 'Settings', exact: true })
       .click();
-    await this.page.getByRole('link', { name: 'Users' }).click();
+    await this.page
+      .getByRole('navigation')
+      .getByRole('link', { name: 'Users', exact: true })
+      .click();
 
     await expect(
       this.page.getByRole('heading', { level: 1 }).locator(':scope.sr-only')

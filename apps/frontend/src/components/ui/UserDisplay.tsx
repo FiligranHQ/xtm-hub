@@ -19,12 +19,14 @@ interface UserDisplayProps {
     | undefined;
   className?: string;
   withTooltip?: boolean;
+  displayPicture?: boolean;
 }
 
 export const UserDisplay = ({
   uploader,
   className,
   withTooltip = false,
+  displayPicture = true,
 }: UserDisplayProps) => {
   const t = useTranslations('UserDisplay');
   const formattedName = formatPersonNames(uploader);
@@ -47,9 +49,11 @@ export const UserDisplay = ({
 
   return (
     <>
-      <div className="size-8 shrink-0 [&_img]:object-cover">
-        <Avatar src={uploader?.picture ?? ''} />
-      </div>
+      {displayPicture && (
+        <div className="size-8 shrink-0 [&_img]:object-cover">
+          <Avatar src={uploader?.picture ?? ''} />
+        </div>
+      )}
       {withTooltip ? (
         <TooltipProvider>
           <Tooltip>
