@@ -1,4 +1,5 @@
 import { UserFragment } from '@/components/admin/user/UserList';
+import { PendingUserAlreadyProcessedDialog } from '@/components/admin/user/pending-user/PendingUserAlreadyProcessedDialog';
 import { PendingUserConfirmDialog } from '@/components/admin/user/pending-user/PendingUserConfirmDialog';
 import { useUserListLocalstorage } from '@/components/admin/user/pending-user/pending-user-list-localstorage';
 import { usePendingUserActions } from '@/components/admin/user/pending-user/use-pending-user-actions';
@@ -148,6 +149,8 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
     openRejectDialog,
     closePendingUserDialog,
     onConfirmPendingUserAction,
+    alreadyProcessedDialogOpen,
+    closeAlreadyProcessedDialog,
   } = usePendingUserDialog({
     userData,
     approveUser,
@@ -359,6 +362,10 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
         pendingUserDialog={pendingUserDialog}
         onOpenChange={closePendingUserDialog}
         onConfirm={onConfirmPendingUserAction}
+      />
+      <PendingUserAlreadyProcessedDialog
+        isOpen={alreadyProcessedDialogOpen}
+        onOpenChange={closeAlreadyProcessedDialog}
       />
     </>
   );

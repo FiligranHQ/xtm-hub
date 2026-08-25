@@ -695,6 +695,11 @@
       "Confirm": "Confirmer",
       "Description": "Vous êtes sur le point d'accepter ces utilisateurs dans votre organisation. Ces utilisateurs n'auront pas d'autorisations spécifiques par défaut. Si vous souhaitez attribuer ou mettre à jour des permissions, visitez l'onglet Utilisateurs. Êtes-vous sûr ?",
       "Title": "Êtes-vous sûr ?"
+    },
+    "AlreadyProcessed": {
+      "Title": "Demande déjà traitée",
+      "Description": "Cette demande d'utilisateur a déjà été acceptée ou refusée.",
+      "Confirm": "OK"
     }
   },
   "PendingUserRedirect": {
