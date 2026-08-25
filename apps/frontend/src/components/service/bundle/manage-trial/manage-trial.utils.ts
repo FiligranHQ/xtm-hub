@@ -11,6 +11,9 @@ export const formatEmailList = (
   return { visible, hiddenCount };
 };
 
+export const isServiceGroupName = (value: string): value is ServiceGroupName =>
+  (Object.values(ServiceGroupName) as string[]).includes(value);
+
 export interface UserPlatformGroups {
   id: string;
   groups: Array<{

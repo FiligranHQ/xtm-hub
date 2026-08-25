@@ -1713,10 +1713,8 @@
         },
         "Table": {
           "Email": "メールアドレス",
-          "OpenCTIRole": "OpenCTIロール",
-          "OpenAEVRole": "OpenAEVロール",
-          "XtmOne": "XTM One",
           "NoUsers": "ユーザーが見つかりません。",
+          "RoleUpdated": "{email} の{role}が更新されました",
           "DeleteDialog": {
             "Title": "トライアルからユーザーを削除",
             "Text": "{email} をこのトライアルから削除してもよろしいですか?すべての製品へのアクセス権を失います。"

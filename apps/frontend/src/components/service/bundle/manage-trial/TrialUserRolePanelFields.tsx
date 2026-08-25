@@ -1,16 +1,6 @@
 'use client';
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@filigran/ui';
+import { FormControl, FormField, FormItem, FormLabel } from '@filigran/ui';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { Control } from 'react-hook-form';
@@ -21,6 +11,7 @@ import {
   TrialUserRolesFormValues,
 } from './manage-trial.const';
 import { MixedRoleDefault } from './manage-trial.utils';
+import { RoleSelect } from './RoleSelect';
 
 interface TrialUserRolePanelFieldsProps {
   control: Control<TrialUserRolesFormValues>;
@@ -66,41 +57,24 @@ export const TrialUserRolePanelFields = ({
                 <FormItem className="gap-m md:flex-1">
                   <FormLabel>{title}</FormLabel>
                   <FormControl>
-                    <Select
+                    <RoleSelect
+                      value={value ?? ''}
                       onValueChange={(value) => {
                         field.onChange(
                           value === NO_ROLE_VALUE ? undefined : value
                         );
                         field.onBlur(); // mark field as touched (Radix doesn't fire blur on select)
                       }}
-                      value={value}>
-                      <SelectTrigger
-                        className={
-                          isNoAccessSelected || isUntouchedAndMixed
-                            ? 'bg-input-bg-default'
-                            : 'bg-elevation-surface-highlight-layer-2'
-                        }>
-                        <SelectValue
-                          placeholder={isUntouchedAndMixed ? title : undefined}
-                        />
-                      </SelectTrigger>
-                      <SelectContent className="bg-elevation-surface-highlight-layer-2">
-                        {isOptional && (
-                          <SelectItem
-                            value={NO_ROLE_VALUE}
-                            className="bg-input-bg-default">
-                            {t('Service.Bundle.ManageTrial.Roles.NoAccess')}
-                          </SelectItem>
-                        )}
-                        {roles.map((role) => (
-                          <SelectItem
-                            key={role}
-                            value={role}>
-                            {t(`${namespace}.${role}.Label`)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      roles={roles}
+                      namespace={namespace}
+                      isOptional={isOptional}
+                      placeholder={isUntouchedAndMixed ? title : undefined}
+                      triggerClassName={
+                        isNoAccessSelected || isUntouchedAndMixed
+                          ? 'bg-input-bg-default'
+                          : 'bg-elevation-surface-highlight-layer-2'
+                      }
+                    />
                   </FormControl>
                   {isUntouchedAndMixed && (
                     <p className="text-content-body-compact text-text-default-secondary">

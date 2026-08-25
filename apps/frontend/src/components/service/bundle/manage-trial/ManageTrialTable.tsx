@@ -2,6 +2,7 @@
 
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { portalGraphqlClient } from '@/lib/graphql-client';
+import { cn } from '@/lib/utils';
 import { i18nKey } from '@/utils/datatable';
 import { DeleteIcon } from '@filigran/icon';
 import { Button, DataTable, SelectionState, toast } from '@filigran/ui';
@@ -10,12 +11,20 @@ import {
   PlatformIdentifier,
   useBundleUserServiceGroupsQuery,
   useRemoveUsersFromBundleGroupsMutation,
+  useUpdateBundleUserGroupsMutation,
 } from '@graphql/generated';
 import { bundleUserServiceGroupsKeys } from '@graphql/service-group/service-group.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import {
+  NO_ROLE_VALUE,
+  ROLE_PANELS,
+  RoleFormField,
+} from './manage-trial.const';
+import { isServiceGroupName } from './manage-trial.utils';
+import { RoleSelect } from './RoleSelect';
 
 interface ManageTrialTableProps {
   serviceInstanceId: string;
@@ -31,12 +40,23 @@ interface ManageTrialTableRow {
   xtmoneRole: string;
 }
 
-const findRoleName = (
+interface PendingRoleUpdate {
+  userId: string;
+  platform: PlatformIdentifier;
+}
+
+const findRoleValue = (
   groups: BundleUserServiceGroupsQuery['bundleUserServiceGroups'][number]['groups'],
-  platformIdentifier: PlatformIdentifier
-) =>
-  groups.find((group) => group.platformIdentifier === platformIdentifier)
-    ?.name ?? '—';
+  platform: PlatformIdentifier
+): string => {
+  const role = groups.find(
+    (group) => group.platformIdentifier === platform
+  )?.name;
+  if (role) {
+    return role;
+  }
+  return platform === PlatformIdentifier.Xtmone ? '' : NO_ROLE_VALUE;
+};
 
 export const ManageTrialTable = ({
   serviceInstanceId,
@@ -48,6 +68,9 @@ export const ManageTrialTable = ({
   const [deletingUserId, setDeletingUserId] = useState<string | undefined>(
     undefined
   );
+  const [pendingRoleUpdate, setPendingRoleUpdate] = useState<
+    PendingRoleUpdate | undefined
+  >(undefined);
 
   const variables = { serviceInstanceId };
   const {
@@ -85,14 +108,75 @@ export const ManageTrialTable = ({
       },
     });
 
+  const { mutate: updateBundleUserGroups } = useUpdateBundleUserGroupsMutation(
+    portalGraphqlClient,
+    {
+      onSuccess: (data, mutationVariables) => {
+        queryClient.setQueryData<BundleUserServiceGroupsQuery>(
+          bundleUserServiceGroupsKeys.list(variables),
+          { bundleUserServiceGroups: data.updateBundleUserGroups }
+        );
+        const userId = mutationVariables.input.userIds[0];
+        const platform = mutationVariables.input.roles[0]?.product;
+        const email = data.updateBundleUserGroups.find(
+          (entry) => entry.user.id === userId
+        )?.user.email;
+        if (email && platform) {
+          toast({
+            title: t('Service.Bundle.ManageTrial.Table.RoleUpdated', {
+              email,
+              role: t(`Service.Bundle.ManageTrial.Roles.${platform}.Title`, {
+                count: 1,
+              }),
+            }),
+          });
+        }
+        setPendingRoleUpdate(undefined);
+      },
+      onError: (error: unknown) => {
+        const errorMessage =
+          error instanceof Error ? error.message : 'UnknownError';
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${errorMessage}`)}</>,
+        });
+        setPendingRoleUpdate(undefined);
+      },
+    }
+  );
+
+  const handleRoleChange = (
+    userId: string,
+    platform: PlatformIdentifier,
+    value: string
+  ) => {
+    setPendingRoleUpdate({ userId, platform });
+    updateBundleUserGroups({
+      serviceInstanceId,
+      input: {
+        userIds: [userId],
+        roles: [
+          {
+            product: platform,
+            role:
+              value !== NO_ROLE_VALUE && isServiceGroupName(value)
+                ? value
+                : null,
+          },
+        ],
+      },
+    });
+  };
+
   const rows = useMemo<ManageTrialTableRow[]>(
     () =>
       (queryData?.bundleUserServiceGroups ?? []).map((row) => ({
         id: row.user.id,
         email: row.user.email,
-        openctiRole: findRoleName(row.groups, PlatformIdentifier.Opencti),
-        openaevRole: findRoleName(row.groups, PlatformIdentifier.Openaev),
-        xtmoneRole: findRoleName(row.groups, PlatformIdentifier.Xtmone),
+        openctiRole: findRoleValue(row.groups, PlatformIdentifier.Opencti),
+        openaevRole: findRoleValue(row.groups, PlatformIdentifier.Openaev),
+        xtmoneRole: findRoleValue(row.groups, PlatformIdentifier.Xtmone),
       })),
     [queryData]
   );
@@ -104,21 +188,42 @@ export const ManageTrialTable = ({
         id: 'email',
         header: t('Service.Bundle.ManageTrial.Table.Email'),
       },
-      {
-        accessorKey: 'openctiRole',
-        id: 'opencti_role',
-        header: t('Service.Bundle.ManageTrial.Table.OpenCTIRole'),
-      },
-      {
-        accessorKey: 'openaevRole',
-        id: 'openaev_role',
-        header: t('Service.Bundle.ManageTrial.Table.OpenAEVRole'),
-      },
-      {
-        accessorKey: 'xtmoneRole',
-        id: 'xtmone_role',
-        header: t('Service.Bundle.ManageTrial.Table.XtmOne'),
-      },
+      ...ROLE_PANELS.map(
+        ({ platform, roles }): ColumnDef<ManageTrialTableRow> => {
+          const accessorKey: RoleFormField = `${platform}Role`;
+          const isOptional = platform !== PlatformIdentifier.Xtmone;
+          const namespace = `Service.Bundle.ManageTrial.Roles.${platform}`;
+          return {
+            accessorKey,
+            id: `${platform}_role`,
+            header: t(`${namespace}.Title`, { count: 1 }),
+            cell: ({ row }) => (
+              <RoleSelect
+                value={row.original[accessorKey]}
+                onValueChange={(value) => {
+                  if (value === row.original[accessorKey]) {
+                    return;
+                  }
+                  handleRoleChange(row.original.id, platform, value);
+                }}
+                roles={roles}
+                namespace={namespace}
+                isOptional={isOptional}
+                disabled={
+                  pendingRoleUpdate?.userId === row.original.id &&
+                  pendingRoleUpdate?.platform === platform
+                }
+                triggerClassName={cn(
+                  'h-auto w-[200px] gap-xs border-0 shadow-none focus:ring-0 focus:ring-offset-0',
+                  row.original[accessorKey] === NO_ROLE_VALUE
+                    ? 'bg-elevation-background-layer-1'
+                    : 'bg-elevation-background-layer-2'
+                )}
+              />
+            ),
+          };
+        }
+      ),
       {
         id: 'actions',
         enableHiding: false,
@@ -157,7 +262,13 @@ export const ManageTrialTable = ({
         ),
       },
     ],
-    [t, deletingUserId, removeUsersFromBundleGroups, serviceInstanceId]
+    [
+      t,
+      deletingUserId,
+      removeUsersFromBundleGroups,
+      serviceInstanceId,
+      pendingRoleUpdate,
+    ]
   );
 
   return (

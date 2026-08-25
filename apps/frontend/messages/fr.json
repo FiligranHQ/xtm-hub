@@ -1713,10 +1713,8 @@
         },
         "Table": {
           "Email": "Email",
-          "OpenCTIRole": "Rôle OpenCTI",
-          "OpenAEVRole": "Rôle OpenAEV",
-          "XtmOne": "XTM One",
           "NoUsers": "Aucun utilisateur trouvé.",
+          "RoleUpdated": "{role} de {email} a été mis à jour",
           "DeleteDialog": {
             "Title": "Retirer l'utilisateur de l'essai",
             "Text": "Voulez-vous vraiment retirer {email} de cet essai ? Il/elle perdra l'accès à tous les produits."
