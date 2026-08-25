@@ -13,6 +13,7 @@ import {
 } from '@filigran/ui';
 import {
   BundleUserServiceGroupsQuery,
+  PlatformIdentifier,
   useRemoveUsersFromBundleGroupsMutation,
 } from '@graphql/generated';
 import { bundleUserServiceGroupsKeys } from '@graphql/service-group/service-group.keys';
@@ -30,12 +31,14 @@ interface ManageTrialHeaderUser {
 
 interface ManageTrialHeaderProps {
   serviceInstanceId: string;
+  products: PlatformIdentifier[];
   selectedUsers: ManageTrialHeaderUser[];
   onUsersRemoved: () => void;
 }
 
 export const ManageTrialHeader = ({
   serviceInstanceId,
+  products,
   selectedUsers,
   onUsersRemoved,
 }: ManageTrialHeaderProps) => {
@@ -181,12 +184,14 @@ export const ManageTrialHeader = ({
       <TrialUserDialog
         mode="add"
         serviceInstanceId={serviceInstanceId}
+        products={products}
         open={isAddUserDialogOpen}
         setOpen={setIsAddUserDialogOpen}
       />
       <TrialUserDialog
         mode="edit"
         serviceInstanceId={serviceInstanceId}
+        products={products}
         initialUserIds={selectedUsers.map((user) => user.id)}
         open={isEditUsersDialogOpen}
         setOpen={setIsEditUsersDialogOpen}

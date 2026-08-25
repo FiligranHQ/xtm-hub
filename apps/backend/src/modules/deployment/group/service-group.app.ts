@@ -261,6 +261,16 @@ export const ServiceGroupApp = {
     return Array.from(bundleUserServiceGroupsByUserId.values());
   },
 
+  loadBundleProducts: async (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<PlatformIdentifier[]> => {
+    const { children } = await loadBundleChildren(serviceInstanceId);
+
+    return children.flatMap((child) =>
+      child.platform_identifier ? [child.platform_identifier] : []
+    );
+  },
+
   addUsersToBundleGroups: async (
     serviceInstanceId: ServiceInstanceId,
     input: AddUsersToBundleGroupsInput

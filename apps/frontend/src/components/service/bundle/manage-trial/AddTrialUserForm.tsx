@@ -30,7 +30,7 @@ import { TrialUserFormSkeleton } from './TrialUserFormSkeleton';
 
 interface AddTrialUserFormProps {
   serviceInstanceId: string;
-  products?: PlatformIdentifier[];
+  products: PlatformIdentifier[];
   onCompleted: () => void;
   onCancel: () => void;
 }

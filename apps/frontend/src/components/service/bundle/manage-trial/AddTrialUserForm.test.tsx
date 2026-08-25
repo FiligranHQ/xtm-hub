@@ -89,6 +89,7 @@ describe('AddTrialUserForm', () => {
     testRender(
       <AddTrialUserForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}
       />
@@ -137,6 +138,7 @@ describe('AddTrialUserForm', () => {
     const { user } = testRender(
       <AddTrialUserForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}
       />
@@ -158,6 +160,7 @@ describe('AddTrialUserForm', () => {
     const { user } = testRender(
       <AddTrialUserForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}
       />
@@ -204,6 +207,7 @@ describe('AddTrialUserForm', () => {
     const { user } = testRender(
       <AddTrialUserForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         onCompleted={onCompleted}
         onCancel={vi.fn()}
       />
@@ -256,6 +260,7 @@ describe('AddTrialUserForm', () => {
     const { user } = testRender(
       <AddTrialUserForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         onCompleted={onCompleted}
         onCancel={vi.fn()}
       />
@@ -286,6 +291,7 @@ describe('AddTrialUserForm', () => {
     const { user } = testRender(
       <AddTrialUserForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         onCompleted={vi.fn()}
         onCancel={onCancel}
       />
@@ -306,6 +312,7 @@ describe('AddTrialUserForm', () => {
     const { user } = testRender(
       <AddTrialUserForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}
       />

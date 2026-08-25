@@ -4,6 +4,7 @@ import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';
 import {
   BundleUserServiceGroupsQuery,
+  PlatformIdentifier,
   RemoveUsersFromBundleGroupsMutationVariables,
   UsersQuery,
 } from '@graphql/generated';
@@ -60,6 +61,7 @@ describe('ManageTrialHeader', () => {
     const { user } = testRender(
       <ManageTrialHeader
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selectedUsers={[]}
         onUsersRemoved={vi.fn()}
       />
@@ -80,12 +82,43 @@ describe('ManageTrialHeader', () => {
     ).toBeInTheDocument();
   });
 
+  it('only shows role pickers for the given products in the add trial user dialog', async () => {
+    setupQueryMocks();
+
+    const { user } = testRender(
+      <ManageTrialHeader
+        serviceInstanceId="bundle-1"
+        products={[PlatformIdentifier.Xtmone]}
+        selectedUsers={[]}
+        onUsersRemoved={vi.fn()}
+      />
+    );
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Service.Bundle.ManageTrial.AddTrialUser',
+      })
+    );
+
+    expect(
+      await screen.findByText('Service.Bundle.ManageTrial.Roles.xtmone.Title', {
+        selector: 'label',
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Service.Bundle.ManageTrial.Roles.opencti.Title', {
+        selector: 'label',
+      })
+    ).not.toBeInTheDocument();
+  });
+
   it('does not show the bulk-delete button when no users are selected', () => {
     setupQueryMocks();
 
     testRender(
       <ManageTrialHeader
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selectedUsers={[]}
         onUsersRemoved={vi.fn()}
       />
@@ -100,6 +133,7 @@ describe('ManageTrialHeader', () => {
     testRender(
       <ManageTrialHeader
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selectedUsers={[]}
         onUsersRemoved={vi.fn()}
       />
@@ -119,6 +153,7 @@ describe('ManageTrialHeader', () => {
     testRender(
       <ManageTrialHeader
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selectedUsers={[{ id: 'user-1', email: 'user1@filigran.io' }]}
         onUsersRemoved={vi.fn()}
       />
@@ -137,6 +172,7 @@ describe('ManageTrialHeader', () => {
     const { user } = testRender(
       <ManageTrialHeader
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selectedUsers={[{ id: 'user-1', email: 'user1@filigran.io' }]}
         onUsersRemoved={vi.fn()}
       />
@@ -165,6 +201,7 @@ describe('ManageTrialHeader', () => {
     const { user } = testRender(
       <ManageTrialHeader
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selectedUsers={[
           { id: 'user-1', email: 'user1@filigran.io' },
           { id: 'user-2', email: 'user2@filigran.io' },
@@ -208,6 +245,7 @@ describe('ManageTrialHeader', () => {
     const { user } = testRender(
       <ManageTrialHeader
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selectedUsers={[
           { id: 'user-1', email: 'user1@filigran.io' },
           { id: 'user-2', email: 'user2@filigran.io' },
@@ -243,6 +281,7 @@ describe('ManageTrialHeader', () => {
     const { user } = testRender(
       <ManageTrialHeader
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selectedUsers={[{ id: 'user-1', email: 'user1@filigran.io' }]}
         onUsersRemoved={onUsersRemoved}
       />

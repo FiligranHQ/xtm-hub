@@ -10,3 +10,7 @@ query BundleUserServiceGroups($serviceInstanceId: ServiceInstanceId!) {
     }
   }
 }
+
+query BundleProducts($serviceInstanceId: ServiceInstanceId!) {
+  bundleProducts(serviceInstanceId: $serviceInstanceId)
+}

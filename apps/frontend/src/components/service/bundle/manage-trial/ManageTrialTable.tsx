@@ -19,8 +19,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import {
+  getBundleRolePanels,
   NO_ROLE_VALUE,
-  ROLE_PANELS,
   RoleFormField,
 } from './manage-trial.const';
 import { isServiceGroupName } from './manage-trial.utils';
@@ -28,6 +28,7 @@ import { RoleSelect } from './RoleSelect';
 
 interface ManageTrialTableProps {
   serviceInstanceId: string;
+  products: PlatformIdentifier[];
   selection: SelectionState;
   onSelectionChange: Dispatch<SetStateAction<SelectionState>>;
 }
@@ -60,6 +61,7 @@ const findRoleValue = (
 
 export const ManageTrialTable = ({
   serviceInstanceId,
+  products,
   selection,
   onSelectionChange,
 }: ManageTrialTableProps) => {
@@ -188,7 +190,7 @@ export const ManageTrialTable = ({
         id: 'email',
         header: t('Service.Bundle.ManageTrial.Table.Email'),
       },
-      ...ROLE_PANELS.map(
+      ...getBundleRolePanels(products).map(
         ({ platform, roles }): ColumnDef<ManageTrialTableRow> => {
           const accessorKey: RoleFormField = `${platform}Role`;
           const isOptional = platform !== PlatformIdentifier.Xtmone;
@@ -267,6 +269,7 @@ export const ManageTrialTable = ({
       deletingUserId,
       removeUsersFromBundleGroups,
       serviceInstanceId,
+      products,
       pendingRoleUpdate,
     ]
   );

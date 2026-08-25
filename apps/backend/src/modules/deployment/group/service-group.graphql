@@ -67,6 +67,11 @@ type Query {
       portalCapa: [BYPASS]
       orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
     )
+  bundleProducts(serviceInstanceId: ServiceInstanceId!): [PlatformIdentifier!]!
+    @auth(
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
+    )
 }
 
 type Mutation {

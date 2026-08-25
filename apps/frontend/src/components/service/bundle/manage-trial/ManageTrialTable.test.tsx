@@ -168,6 +168,7 @@ describe('ManageTrialTable', () => {
     testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -186,6 +187,7 @@ describe('ManageTrialTable', () => {
     testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -204,6 +206,7 @@ describe('ManageTrialTable', () => {
     testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -224,6 +227,7 @@ describe('ManageTrialTable', () => {
     testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -248,6 +252,7 @@ describe('ManageTrialTable', () => {
     const { user } = testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -284,6 +289,7 @@ describe('ManageTrialTable', () => {
     const { user } = testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -315,6 +321,7 @@ describe('ManageTrialTable', () => {
     const { user } = testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -345,6 +352,7 @@ describe('ManageTrialTable', () => {
     testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -361,6 +369,33 @@ describe('ManageTrialTable', () => {
     );
   });
 
+  it('only renders role columns for the given products', async () => {
+    graphqlMocks.useBundleUserServiceGroupsQuery.mockReturnValue({
+      data: baseQueryResponse,
+      isError: false,
+      isLoading: false,
+    });
+
+    testRender(
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        products={[PlatformIdentifier.Opencti]}
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
+    );
+
+    expect(
+      await screen.findByTestId('cell-user-1-opencti_role')
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('cell-user-1-openaev_role')
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('cell-user-1-xtmone_role')
+    ).not.toBeInTheDocument();
+  });
+
   it('calls the update mutation with only the changed platform role when selecting a new role', async () => {
     graphqlMocks.useBundleUserServiceGroupsQuery.mockReturnValue({
       data: baseQueryResponse,
@@ -375,6 +410,7 @@ describe('ManageTrialTable', () => {
     const { user } = testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -415,6 +451,7 @@ describe('ManageTrialTable', () => {
     const { user } = testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -465,6 +502,7 @@ describe('ManageTrialTable', () => {
     const { user } = testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />
@@ -500,6 +538,7 @@ describe('ManageTrialTable', () => {
     const { user } = testRender(
       <ManageTrialTable
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         selection={emptySelection}
         onSelectionChange={vi.fn()}
       />

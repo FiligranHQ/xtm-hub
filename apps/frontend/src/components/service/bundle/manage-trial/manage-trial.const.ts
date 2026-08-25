@@ -32,11 +32,9 @@ export const ROLE_PANELS: RolePanelConfig[] = [
 ];
 
 export const getBundleRolePanels = (
-  products?: PlatformIdentifier[]
+  products: PlatformIdentifier[]
 ): RolePanelConfig[] =>
-  ROLE_PANELS.filter(
-    ({ platform }) => !products || products.includes(platform)
-  );
+  ROLE_PANELS.filter(({ platform }) => products.includes(platform));
 
 export const NO_ROLE_VALUE = 'none';
 

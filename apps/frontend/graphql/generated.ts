@@ -1811,6 +1811,7 @@ export type ProvisionedNewsFeedItem = Node & {
 
 export type Query = {
   __typename?: 'Query';
+  bundleProducts: Array<PlatformIdentifier>;
   bundleUserServiceGroups: Array<BundleUserServiceGroup>;
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
@@ -1869,6 +1870,11 @@ export type Query = {
   votingRound: Maybe<VotingRound>;
   votingRoundResults: VotingRoundResults;
   votingRounds: Array<VotingRound>;
+};
+
+
+export type QueryBundleProductsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -3305,6 +3311,13 @@ export type BundleUserServiceGroupsQueryVariables = Exact<{
 
 
 export type BundleUserServiceGroupsQuery = { __typename?: 'Query', bundleUserServiceGroups: Array<{ __typename?: 'BundleUserServiceGroup', user: { __typename?: 'User', id: string, email: string }, groups: Array<{ __typename?: 'UserPlatformGroup', platformIdentifier: PlatformIdentifier, name: ServiceGroupName }> }> };
+
+export type BundleProductsQueryVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+}>;
+
+
+export type BundleProductsQuery = { __typename?: 'Query', bundleProducts: Array<PlatformIdentifier> };
 
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
@@ -4782,6 +4795,57 @@ export const useInfiniteBundleUserServiceGroupsQuery = <
 useInfiniteBundleUserServiceGroupsQuery.getKey = (variables: BundleUserServiceGroupsQueryVariables) => ['BundleUserServiceGroups.infinite', variables];
 useInfiniteBundleUserServiceGroupsQuery.getRootKey = () => ['BundleUserServiceGroups.infinite'] as const;
 useBundleUserServiceGroupsQuery.fetcher = (client: GraphQLClient, variables: BundleUserServiceGroupsQueryVariables, headers?: RequestInit['headers']) => fetcher<BundleUserServiceGroupsQuery, BundleUserServiceGroupsQueryVariables>(client, BundleUserServiceGroupsDocument, variables, headers);
+
+export const BundleProductsDocument = `
+    query BundleProducts($serviceInstanceId: ServiceInstanceId!) {
+  bundleProducts(serviceInstanceId: $serviceInstanceId)
+}
+    `;
+
+export const useBundleProductsQuery = <
+      TData = BundleProductsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: BundleProductsQueryVariables,
+      options?: Omit<UseQueryOptions<BundleProductsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<BundleProductsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<BundleProductsQuery, TError, TData>(
+      {
+    queryKey: ['BundleProducts', variables],
+    queryFn: fetcher<BundleProductsQuery, BundleProductsQueryVariables>(client, BundleProductsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useBundleProductsQuery.getKey = (variables: BundleProductsQueryVariables) => ['BundleProducts', variables];
+useBundleProductsQuery.getRootKey = () => ['BundleProducts'] as const;
+export const useInfiniteBundleProductsQuery = <
+      TData = InfiniteData<BundleProductsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: BundleProductsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<BundleProductsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<BundleProductsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<BundleProductsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['BundleProducts.infinite', variables],
+      queryFn: (metaData) => fetcher<BundleProductsQuery, BundleProductsQueryVariables>(client, BundleProductsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteBundleProductsQuery.getKey = (variables: BundleProductsQueryVariables) => ['BundleProducts.infinite', variables];
+useInfiniteBundleProductsQuery.getRootKey = () => ['BundleProducts.infinite'] as const;
+useBundleProductsQuery.fetcher = (client: GraphQLClient, variables: BundleProductsQueryVariables, headers?: RequestInit['headers']) => fetcher<BundleProductsQuery, BundleProductsQueryVariables>(client, BundleProductsDocument, variables, headers);
 
 export const ServiceInstancesListDocument = `
     query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!, $filters: [ServiceInstanceFilter!], $searchTerm: String) {

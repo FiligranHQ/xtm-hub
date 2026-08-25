@@ -14,7 +14,7 @@ import { getBundleRolePanels } from './manage-trial.const';
 
 interface ManageTrialRoleDescriptionsProps {
   stacked?: boolean;
-  products?: PlatformIdentifier[];
+  products: PlatformIdentifier[];
 }
 
 export const ManageTrialRoleDescriptions = ({

@@ -25,7 +25,7 @@ import { TrialUserFormSkeleton } from './TrialUserFormSkeleton';
 
 interface EditTrialUsersFormProps {
   serviceInstanceId: string;
-  products?: PlatformIdentifier[];
+  products: PlatformIdentifier[];
   initialUserIds: string[];
   onCompleted: () => void;
   onCancel: () => void;

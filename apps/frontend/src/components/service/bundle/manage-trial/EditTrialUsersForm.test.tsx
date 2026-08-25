@@ -91,6 +91,7 @@ describe('EditTrialUsersForm', () => {
     testRender(
       <EditTrialUsersForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         initialUserIds={['user-1']}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}
@@ -120,12 +121,40 @@ describe('EditTrialUsersForm', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('only renders role pickers for the given products', async () => {
+    setupQueryMocks();
+
+    testRender(
+      <EditTrialUsersForm
+        serviceInstanceId="bundle-1"
+        products={[PlatformIdentifier.Xtmone]}
+        initialUserIds={['user-1']}
+        onCompleted={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('Service.Bundle.ManageTrial.Roles.xtmone.Title', {
+          selector: 'label',
+        })
+      ).toBeInTheDocument()
+    );
+    expect(
+      screen.queryByText('Service.Bundle.ManageTrial.Roles.opencti.Title', {
+        selector: 'label',
+      })
+    ).not.toBeInTheDocument();
+  });
+
   it('defaults an optional platform to "No access" and shows the mixed-roles helper text when selected users have different roles', async () => {
     setupQueryMocks();
 
     testRender(
       <EditTrialUsersForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         initialUserIds={['user-1', 'user-2']}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}
@@ -158,6 +187,7 @@ describe('EditTrialUsersForm', () => {
     testRender(
       <EditTrialUsersForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         initialUserIds={['user-1', 'user-2']}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}
@@ -226,6 +256,7 @@ describe('EditTrialUsersForm', () => {
     testRender(
       <EditTrialUsersForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         initialUserIds={['user-3', 'user-4']}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}
@@ -280,6 +311,7 @@ describe('EditTrialUsersForm', () => {
     const { user } = testRender(
       <EditTrialUsersForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         initialUserIds={['user-1']}
         onCompleted={onCompleted}
         onCancel={vi.fn()}
@@ -331,6 +363,7 @@ describe('EditTrialUsersForm', () => {
     const { user } = testRender(
       <EditTrialUsersForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         initialUserIds={['user-1']}
         onCompleted={onCompleted}
         onCancel={vi.fn()}
@@ -359,6 +392,7 @@ describe('EditTrialUsersForm', () => {
     const { user } = testRender(
       <EditTrialUsersForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         initialUserIds={['user-1']}
         onCompleted={vi.fn()}
         onCancel={onCancel}
@@ -379,6 +413,7 @@ describe('EditTrialUsersForm', () => {
     const { user } = testRender(
       <EditTrialUsersForm
         serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
         initialUserIds={['user-1']}
         onCompleted={vi.fn()}
         onCancel={vi.fn()}

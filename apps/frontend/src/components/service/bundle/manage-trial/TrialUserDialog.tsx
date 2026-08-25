@@ -9,7 +9,7 @@ import { EditTrialUsersForm } from './EditTrialUsersForm';
 
 interface TrialUserDialogSharedProps {
   serviceInstanceId: string;
-  products?: PlatformIdentifier[];
+  products: PlatformIdentifier[];
   open: boolean;
   setOpen: (open: boolean) => void;
 }

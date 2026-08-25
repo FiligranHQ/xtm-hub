@@ -33,7 +33,7 @@ interface TrialUserFormSkeletonProps {
   usersOptions: UserOption[];
   pickerLabel: string;
   pickerPlaceholder: string;
-  products?: PlatformIdentifier[];
+  products: PlatformIdentifier[];
   bundleRolePanels: RolePanelConfig[];
   mixedRoleDefaults?: Partial<Record<PlatformIdentifier, MixedRoleDefault>>;
   onCancel: () => void;

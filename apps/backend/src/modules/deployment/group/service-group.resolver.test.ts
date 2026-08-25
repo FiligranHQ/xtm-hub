@@ -135,6 +135,48 @@ describe('bundleUserServiceGroups GraphQL query', () => {
   });
 });
 
+describe('bundleProducts GraphQL query', () => {
+  it('should load bundle products for given serviceInstanceId and return result', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    const expected = [PlatformIdentifier.Opencti, PlatformIdentifier.Xtmone];
+    vi.spyOn(ServiceGroupApp, 'loadBundleProducts').mockResolvedValue(expected);
+
+    // When
+    const result = await serviceGroupResolver.Query!.bundleProducts!(
+      {},
+      { serviceInstanceId },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(ServiceGroupApp.loadBundleProducts).toHaveBeenCalledWith(
+      serviceInstanceId
+    );
+    expect(result).toEqual(expected);
+  });
+
+  it('should throw mapped error when ServiceGroupApp throws', async () => {
+    // Given
+    const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
+    vi.spyOn(ServiceGroupApp, 'loadBundleProducts').mockRejectedValue(
+      new Error('UNEXPECTED')
+    );
+
+    // When
+    const call = serviceGroupResolver.Query!.bundleProducts!(
+      {},
+      { serviceInstanceId },
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toMatchObject({ name: ErrorType.UnknownError });
+  });
+});
+
 describe('update service groups GraphQL mutation', () => {
   it('should delegate to ServiceGroupApp.updateGroups', async () => {
     // Given
