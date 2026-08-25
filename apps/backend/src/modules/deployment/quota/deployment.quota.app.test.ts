@@ -67,6 +67,26 @@ describe('deploymentQuotaApp', () => {
     return bundle;
   };
 
+  const createActiveBundle = async (
+    products: PlatformIdentifier[]
+  ): Promise<DeploymentRequest> => {
+    const bundle = await createRequest({
+      type: DeploymentRequestDeploymentType.Bundle,
+      platform_identifier: null,
+      hub_status: DeploymentRequestHubStatus.Active,
+    });
+
+    for (const platformIdentifier of products) {
+      await createRequest({
+        platform_identifier: platformIdentifier,
+        hub_status: DeploymentRequestHubStatus.Active,
+        parent_id: bundle.id,
+      });
+    }
+
+    return bundle;
+  };
+
   beforeEach(async () => {
     await TestHelper.deploymentRequest.delete({});
     await setQuota(bundleFilter, { availability: 5 });
@@ -242,31 +262,7 @@ describe('deploymentQuotaApp', () => {
       ).toBe(4);
     });
 
-    it('should give the product place back when a bundle child is released and nothing is queued', async () => {
-      const bundle = await createRequest({
-        type: DeploymentRequestDeploymentType.Bundle,
-        platform_identifier: null,
-        hub_status: DeploymentRequestHubStatus.Active,
-      });
-      const child = await createRequest({
-        platform_identifier: PlatformIdentifier.Opencti,
-        hub_status: DeploymentRequestHubStatus.Cancelled,
-        parent_id: bundle.id,
-      });
-
-      const promoted = await DeploymentQuotaApp.releaseQuotaForRequest(
-        child,
-        DeploymentRequestHubStatus.Active
-      );
-
-      expect(promoted).toBeUndefined();
-      expect(
-        await loadAvailability(productFilter(PlatformIdentifier.Opencti))
-      ).toBe(6);
-      expect(await loadAvailability(bundleFilter)).toBe(5);
-    });
-
-    it('should promote a queued trial and take a bundle place when a bundle child is released', async () => {
+    it('should give the product place back without promoting anyone when a bundle child is released', async () => {
       const bundle = await createRequest({
         type: DeploymentRequestDeploymentType.Bundle,
         platform_identifier: null,
@@ -287,11 +283,57 @@ describe('deploymentQuotaApp', () => {
         DeploymentRequestHubStatus.Active
       );
 
-      expect(promoted?.id).toBe(queuedTrial.id);
+      expect(promoted).toBeUndefined();
+      await TestHelper.deploymentRequest.assertProperties(
+        queuedTrial.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Queued }
+      );
       expect(
         await loadAvailability(productFilter(PlatformIdentifier.Opencti))
-      ).toBe(5);
-      expect(await loadAvailability(bundleFilter)).toBe(4);
+      ).toBe(6);
+      expect(await loadAvailability(bundleFilter)).toBe(5);
+    });
+
+    it('should not promote any queued trial when a bundle and all its children are released', async () => {
+      const bundle = await createActiveBundle([
+        PlatformIdentifier.Opencti,
+        PlatformIdentifier.Openaev,
+      ]);
+      const children = await TestHelper.deploymentRequest.loadMany({
+        parent_id: bundle.id,
+      });
+      await createRequest({
+        platform_identifier: PlatformIdentifier.Opencti,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+      await createRequest({
+        platform_identifier: PlatformIdentifier.Openaev,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+      const promotions = [
+        await DeploymentQuotaApp.releaseQuotaForRequest(
+          bundle,
+          DeploymentRequestHubStatus.Active
+        ),
+      ];
+      for (const child of children) {
+        promotions.push(
+          await DeploymentQuotaApp.releaseQuotaForRequest(
+            child,
+            DeploymentRequestHubStatus.Active
+          )
+        );
+      }
+
+      expect(promotions.every((promoted) => promoted === undefined)).toBe(true);
+      expect(await loadAvailability(bundleFilter)).toBe(6);
+      expect(
+        await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+      ).toBe(6);
+      expect(
+        await loadAvailability(productFilter(PlatformIdentifier.Openaev))
+      ).toBe(6);
     });
 
     it('should give both places back when a standalone trial is released and nothing is queued', async () => {

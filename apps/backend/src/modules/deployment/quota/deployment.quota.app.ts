@@ -152,13 +152,14 @@ export const DeploymentQuotaApp = {
     }
 
     const trialKey = trialQuotaKey(request.platform_identifier, request.region);
-    await DeploymentQuotaDomain.freePlace(trialKey);
 
     if (request.parent_id !== null) {
-      return promote ? promoteNextQueuedRequest([trialKey]) : undefined;
+      await DeploymentQuotaDomain.freePlace(trialKey);
+      return undefined;
     }
 
     await DeploymentQuotaDomain.freePlace(bundleQuotaKey(request.region));
+    await DeploymentQuotaDomain.freePlace(trialKey);
 
     return promote
       ? promoteNextQueuedRequest([bundleQuotaKey(request.region), trialKey])
