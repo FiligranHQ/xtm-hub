@@ -40,7 +40,14 @@ import { userPendingList_users$key } from '@generated/userPendingList_users.grap
 import { FilterKey } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   readInlineData,
   useLazyLoadQuery,
@@ -48,6 +55,8 @@ import {
   useSubscription,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
+
+const renderStrong = (chunks: ReactNode) => <strong>{chunks}</strong>;
 
 interface PendingUserListProps {
   organization: string;
@@ -320,7 +329,12 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                     </Button>
                   }
                   onClickContinue={() => handleBulkApprove(selectionState)}>
-                  {t('PendingUserListPage.WarningUsersAccept.Description')}
+                  {t.rich(
+                    'PendingUserListPage.WarningUsersAccept.Description',
+                    {
+                      strong: renderStrong,
+                    }
+                  )}
                 </AlertDialogComponent>
               </>
             ),

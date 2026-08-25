@@ -678,23 +678,23 @@
     "ActionSuccessDeny": "User request for {email} has been denied",
     "WarningUserAccept": {
       "Confirm": "Confirm",
-      "Description": "You are about to accept {email} in your organization. This user won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
-      "Title": "Are you sure?"
+      "Description": "<strong>{email}</strong> will be added to your organization without any permissions by default. You can manage their access & permissions anytime from the <strong>Users</strong> tab on the left menu.",
+      "Title": "Add this user to your organization?"
     },
     "WarningUserRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse {email} from your organization. This action can’t be undone. Are you sure ?",
-      "Title": "Are you sure?"
+      "Description": "<strong>{email}</strong> will be refused from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Refuse this user from your organization?"
     },
     "WarningUsersRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse these users from your organization. This action can’t be undone. Are you sure ?",
-      "Title": "Are you sure?"
+      "Description": "Selected users will be refused from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Refuse this users from your organization?"
     },
     "WarningUsersAccept": {
       "Confirm": "Confirm",
-      "Description": "You are about to accept these users in your organization. These users won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
-      "Title": "Are you sure?"
+      "Description": "Selected users will be added to your organization without any permissions by default. You can manage their access & permissions anytime from the <strong>Users</strong> tab on the left menu.",
+      "Title": "Add this users to your organization?"
     },
     "AlreadyProcessed": {
       "Title": "Request already processed",

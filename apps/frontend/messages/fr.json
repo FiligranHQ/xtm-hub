@@ -678,23 +678,23 @@
     "ActionSuccessDeny": "La demande utilisateur pour {email} a été refusée",
     "WarningUserAccept": {
       "Confirm": "Confirmer",
-      "Description": "Vous êtes sur le point d'accepter {email} dans votre organisation. Cet utilisateur n'aura pas d'autorisations spécifiques par défaut. Si vous souhaitez attribuer ou mettre à jour des permissions, visitez l'onglet Utilisateurs. Êtes-vous sûr ?",
-      "Title": "Êtes-vous sûr?"
+      "Description": "<strong>{email}</strong> sera ajouté à votre organisation sans aucune autorisation par défaut. Vous pouvez gérer ses droits d'accès et ses autorisations à tout moment depuis l'onglet <strong>Utilisateurs</strong> du menu de gauche.",
+      "Title": "Ajouter cet utilisateur à votre organisation ?"
     },
     "WarningUserRejection": {
       "Confirm": "Confirmer",
-      "Description": "Vous êtes sur le point de refuser {email} dans votre organisation. Cette action ne peut être annulée. Êtes-vous sûr ?",
-      "Title": "Êtes-vous sûr?"
+      "Description": "<strong>{email}</strong> sera refusé(e) par votre organisation. Cette action est irréversible. Êtes-vous sûr(e) ?",
+      "Title": "Refuser cet utilisateur de votre organisation ?"
     },
     "WarningUsersRejection": {
       "Confirm": "Confirmez",
-      "Description": "Vous êtes sur le point de refuser ces utilisateurs de votre organisation. Cette action ne peut être annulée. Etes-vous sûr ?",
-      "Title": "Etes-vous sûr ?"
+      "Description": "Les utilisateurs sélectionnés seront refusés par votre organisation. Cette action est irréversible. Êtes-vous sûr ?",
+      "Title": "Refuser ces utilisateurs de votre organisation ?"
     },
     "WarningUsersAccept": {
       "Confirm": "Confirmer",
-      "Description": "Vous êtes sur le point d'accepter ces utilisateurs dans votre organisation. Ces utilisateurs n'auront pas d'autorisations spécifiques par défaut. Si vous souhaitez attribuer ou mettre à jour des permissions, visitez l'onglet Utilisateurs. Êtes-vous sûr ?",
-      "Title": "Êtes-vous sûr ?"
+      "Description": "Les utilisateurs sélectionnés seront ajoutés à votre organisation sans aucune autorisation par défaut. Vous pouvez gérer leur accès et leurs autorisations à tout moment depuis l’onglet <strong>Utilisateurs</strong> dans le menu de gauche.",
+      "Title": "Ajouter ces utilisateurs à votre organisation ?"
     },
     "AlreadyProcessed": {
       "Title": "Demande déjà traitée",
