@@ -61,8 +61,14 @@ const PublicDocumentsList = ({
     serviceInstance.slug as ServiceSlug
   );
 
-  const { search, setSearch, pageSize, setPageSize } =
-    useServiceListLocalStorage(localStorageKey);
+  const {
+    search,
+    setSearch,
+    pageSize,
+    setPageSize,
+    displayMode: selectedDisplayMode,
+    setDisplayMode,
+  } = useServiceListLocalStorage(localStorageKey);
 
   const { restore } = useScrollPosition();
 
@@ -80,22 +86,26 @@ const PublicDocumentsList = ({
 
   return (
     <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
-      <ServiceListHeader
-        search={search}
-        onSearchChange={setSearch}
-        filters={filters}
-        className="mb-3"
-        paginationControls={
-          <PaginationControls
-            totalCount={data.publicDocuments.totalCount}
-            pageSize={pageSize}
-            pageIndex={pagination.pageIndex}
-            onPaginationChange={onPaginationChange}
-            onSetPageSize={setPageSize}
-          />
-        }
-      />
+      <div className="sticky top-0 py-m z-100 relative bg-gradient-background">
+        <ServiceListHeader
+          search={search}
+          onSearchChange={setSearch}
+          filters={filters}
+          className="mb-3"
+          onDisplayModeChange={setDisplayMode}
+          paginationControls={
+            <PaginationControls
+              totalCount={data.publicDocuments.totalCount}
+              pageSize={pageSize}
+              pageIndex={pagination.pageIndex}
+              onPaginationChange={onPaginationChange}
+              onSetPageSize={setPageSize}
+            />
+          }
+        />
+      </div>
       <PublicShareableResourceList
+        displayMode={selectedDisplayMode}
         documents={documents}
         serviceInstance={serviceInstance}
         baseUrl={baseUrl}

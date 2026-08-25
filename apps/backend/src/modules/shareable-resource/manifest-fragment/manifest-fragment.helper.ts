@@ -42,6 +42,14 @@ export const ManifestFragmentHelper = {
     }
   },
 
+  validateSolutionCategories: (
+    solutionCategories: string[] | null | undefined
+  ): void => {
+    if (!solutionCategories || solutionCategories.length === 0) {
+      throw new Error(BadRequestErrorCode.SolutionCategoriesRequired);
+    }
+  },
+
   getLatestTagForConnectorVersion: (formattedVersion: string): string => {
     return formattedVersion.includes('.LTS.') ? TAG_LATEST_LTS : TAG_LATEST;
   },

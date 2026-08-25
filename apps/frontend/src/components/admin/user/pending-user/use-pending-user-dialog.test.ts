@@ -51,6 +51,7 @@ describe('usePendingUserDialog', () => {
       action: 'approve',
       user: pendingUsers[0],
     });
+    expect(result.current.alreadyProcessedDialogOpen).toBe(false);
   });
 
   it('keeps the dialog open when the effect re-runs with a new userData identity', () => {
@@ -77,7 +78,7 @@ describe('usePendingUserDialog', () => {
     expect(replaceMock).toHaveBeenCalledOnce();
   });
 
-  it('does not open a dialog for unknown user but still cleans URL params', () => {
+  it('opens the already-processed dialog for unknown user but still cleans URL params', () => {
     vi.mocked(useSearchParams).mockReturnValue(
       new URLSearchParams('action=deny&user_id=missing-user') as never
     );
@@ -91,6 +92,7 @@ describe('usePendingUserDialog', () => {
     );
 
     expect(result.current.pendingUserDialog).toBeNull();
+    expect(result.current.alreadyProcessedDialogOpen).toBe(true);
     expect(replaceMock).toHaveBeenCalledWith('/admin/manage/user');
   });
 
@@ -135,6 +137,32 @@ describe('usePendingUserDialog', () => {
       result.current.closePendingUserDialog(false);
     });
     expect(result.current.pendingUserDialog).toBeNull();
+  });
+
+  it('closes the already-processed dialog only when isOpen is false', () => {
+    vi.mocked(useSearchParams).mockReturnValue(
+      new URLSearchParams('action=deny&user_id=missing-user') as never
+    );
+
+    const { result } = renderHook(() =>
+      usePendingUserDialog({
+        userData: pendingUsers,
+        approveUser: approveUserMock,
+        rejectUser: rejectUserMock,
+      })
+    );
+
+    expect(result.current.alreadyProcessedDialogOpen).toBe(true);
+
+    act(() => {
+      result.current.closeAlreadyProcessedDialog(true);
+    });
+    expect(result.current.alreadyProcessedDialogOpen).toBe(true);
+
+    act(() => {
+      result.current.closeAlreadyProcessedDialog(false);
+    });
+    expect(result.current.alreadyProcessedDialogOpen).toBe(false);
   });
 
   it('consumes the URL action once even when the user is not in the list', () => {

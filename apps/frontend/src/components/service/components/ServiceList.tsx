@@ -25,7 +25,7 @@ import useServiceCapability from '@/hooks/use-service-capability';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useTranslations } from 'next-intl';
-import { useLayoutEffect } from 'react';
+import { Fragment, useLayoutEffect } from 'react';
 
 export interface ServiceListProps {
   active: documentItem_fragment$data[];
@@ -58,7 +58,11 @@ const ServiceList = ({
   ]);
 
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
-  const { removeLabels } = useServiceListLocalStorage(localStorageKey);
+  const {
+    removeLabels,
+    displayMode: selectedDisplayMode,
+    setDisplayMode,
+  } = useServiceListLocalStorage(localStorageKey);
 
   const filters = {
     ...additionalFilters,
@@ -95,13 +99,16 @@ const ServiceList = ({
         {...heroSectionProps}
         showLibraryUpdate={userIsMarketingOrBypass}
       />
-      <ServiceListHeader
-        search={search}
-        onSearchChange={onSearchChange}
-        filters={filters}
-        actions={<ServiceListHeaderButtons />}
-        paginationControls={paginationControls}
-      />
+      <div className="sticky top-0 py-m z-11 relative bg-gradient-background">
+        <ServiceListHeader
+          search={search}
+          onSearchChange={onSearchChange}
+          filters={filters}
+          actions={<ServiceListHeaderButtons />}
+          paginationControls={paginationControls}
+          onDisplayModeChange={setDisplayMode}
+        />
+      </div>
       {userCanUpdate && draft.length > 0 && (
         <>
           <div className="txt-category">
@@ -109,6 +116,7 @@ const ServiceList = ({
           </div>
           <DocumentList
             documents={draft}
+            displayMode={selectedDisplayMode}
             connectionId={connectionId}
           />
           {active.length > 0 && (
@@ -118,26 +126,29 @@ const ServiceList = ({
       )}
 
       {Object.entries(activeByIntegrationType).map(
-        ([integrationType, documents]) =>
-          Object.values(IntegrationType).includes(
-            integrationType as IntegrationType
-          ) ? (
-            <IntegrationAccordion
-              key={integrationType}
-              integrationType={integrationType}
-              count={documents.length}>
+        ([integrationType, documents]) => (
+          <Fragment key={integrationType}>
+            {Object.values(IntegrationType).includes(
+              integrationType as IntegrationType
+            ) ? (
+              <IntegrationAccordion
+                integrationType={integrationType}
+                count={documents.length}>
+                <DocumentList
+                  documents={documents}
+                  displayMode={selectedDisplayMode}
+                  connectionId={connectionId}
+                />
+              </IntegrationAccordion>
+            ) : (
               <DocumentList
+                displayMode={selectedDisplayMode}
                 documents={documents}
                 connectionId={connectionId}
               />
-            </IntegrationAccordion>
-          ) : (
-            <DocumentList
-              key={integrationType}
-              documents={documents}
-              connectionId={connectionId}
-            />
-          )
+            )}
+          </Fragment>
+        )
       )}
     </div>
   );

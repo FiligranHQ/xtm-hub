@@ -64,6 +64,7 @@ export enum BadRequestErrorCode {
   MixedLtsManifestFragments = 'MIXED_LTS_MANIFEST_FRAGMENTS',
   InvalidProductsForDeploymentType = 'INVALID_PRODUCTS_FOR_DEPLOYMENT_TYPE',
   InvalidUseCasesForProducts = 'INVALID_USE_CASES_FOR_PRODUCTS',
+  SolutionCategoriesRequired = 'SOLUTION_CATEGORIES_REQUIRED',
 }
 
 export enum UnknownErrorCode {

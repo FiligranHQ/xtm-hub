@@ -1,4 +1,5 @@
 import { UserFragment } from '@/components/admin/user/UserList';
+import { PendingUserAlreadyProcessedDialog } from '@/components/admin/user/pending-user/PendingUserAlreadyProcessedDialog';
 import { PendingUserConfirmDialog } from '@/components/admin/user/pending-user/PendingUserConfirmDialog';
 import { useUserListLocalstorage } from '@/components/admin/user/pending-user/pending-user-list-localstorage';
 import { usePendingUserActions } from '@/components/admin/user/pending-user/use-pending-user-actions';
@@ -39,7 +40,14 @@ import { userPendingList_users$key } from '@generated/userPendingList_users.grap
 import { FilterKey } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   readInlineData,
   useLazyLoadQuery,
@@ -47,6 +55,8 @@ import {
   useSubscription,
 } from 'react-relay';
 import { useDebounceCallback } from 'usehooks-ts';
+
+const renderStrong = (chunks: ReactNode) => <strong>{chunks}</strong>;
 
 interface PendingUserListProps {
   organization: string;
@@ -148,6 +158,8 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
     openRejectDialog,
     closePendingUserDialog,
     onConfirmPendingUserAction,
+    alreadyProcessedDialogOpen,
+    closeAlreadyProcessedDialog,
   } = usePendingUserDialog({
     userData,
     approveUser,
@@ -317,7 +329,12 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                     </Button>
                   }
                   onClickContinue={() => handleBulkApprove(selectionState)}>
-                  {t('PendingUserListPage.WarningUsersAccept.Description')}
+                  {t.rich(
+                    'PendingUserListPage.WarningUsersAccept.Description',
+                    {
+                      strong: renderStrong,
+                    }
+                  )}
                 </AlertDialogComponent>
               </>
             ),
@@ -359,6 +376,10 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
         pendingUserDialog={pendingUserDialog}
         onOpenChange={closePendingUserDialog}
         onConfirm={onConfirmPendingUserAction}
+      />
+      <PendingUserAlreadyProcessedDialog
+        isOpen={alreadyProcessedDialogOpen}
+        onOpenChange={closeAlreadyProcessedDialog}
       />
     </>
   );

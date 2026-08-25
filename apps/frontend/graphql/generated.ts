@@ -942,9 +942,9 @@ export type ManifestFragmentInput = {
   platform: Scalars['String']['input'];
   short_description: Scalars['String']['input'];
   slug: Scalars['String']['input'];
-  solution_categories: InputMaybe<Array<Scalars['String']['input']>>;
+  solution_categories: Array<Scalars['String']['input']>;
   source_code: Scalars['String']['input'];
-  subscription_link: Scalars['String']['input'];
+  subscription_link: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
   use_cases: Array<Scalars['String']['input']>;
   verified: InputMaybe<Scalars['Boolean']['input']>;
@@ -3101,6 +3101,13 @@ export type UserDeleteMutationVariables = Exact<{
 
 export type UserDeleteMutation = { __typename?: 'Mutation', deleteUser: { __typename?: 'User', id: string } };
 
+export type ChangeSelectedOrganizationMutationVariables = Exact<{
+  organization_id: Scalars['OrganizationId']['input'];
+}>;
+
+
+export type ChangeSelectedOrganizationMutation = { __typename?: 'Mutation', changeSelectedOrganization: { __typename?: 'User', id: string, selected_organization_id: any | null, selected_org_capabilities: Array<OrganizationCapability> | null } | null };
+
 export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4381,6 +4388,37 @@ export const useUserDeleteMutation = <
 useUserDeleteMutation.getKey = () => ['UserDelete'];
 useUserDeleteMutation.getRootKey = () => ['UserDelete'] as const;
 useUserDeleteMutation.fetcher = (client: GraphQLClient, variables: UserDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<UserDeleteMutation, UserDeleteMutationVariables>(client, UserDeleteDocument, variables, headers);
+
+export const ChangeSelectedOrganizationDocument = `
+    mutation ChangeSelectedOrganization($organization_id: OrganizationId!) {
+  changeSelectedOrganization(organization_id: $organization_id) {
+    id
+    selected_organization_id
+    selected_org_capabilities
+  }
+}
+    `;
+
+export const useChangeSelectedOrganizationMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<ChangeSelectedOrganizationMutation, TError, ChangeSelectedOrganizationMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<ChangeSelectedOrganizationMutation, TError, ChangeSelectedOrganizationMutationVariables, TContext>(
+      {
+    mutationKey: ['ChangeSelectedOrganization'],
+    mutationFn: (variables?: ChangeSelectedOrganizationMutationVariables) => fetcher<ChangeSelectedOrganizationMutation, ChangeSelectedOrganizationMutationVariables>(client, ChangeSelectedOrganizationDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useChangeSelectedOrganizationMutation.getKey = () => ['ChangeSelectedOrganization'];
+useChangeSelectedOrganizationMutation.getRootKey = () => ['ChangeSelectedOrganization'] as const;
+useChangeSelectedOrganizationMutation.fetcher = (client: GraphQLClient, variables: ChangeSelectedOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<ChangeSelectedOrganizationMutation, ChangeSelectedOrganizationMutationVariables>(client, ChangeSelectedOrganizationDocument, variables, headers);
 
 export const EpicCountPerTimelineQueryDocument = `
     query EpicCountPerTimelineQuery {
