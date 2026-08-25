@@ -697,6 +697,12 @@
       "Title": "Êtes-vous sûr ?"
     }
   },
+  "PendingUserRedirect": {
+    "Unauthorized": {
+      "Title": "Permissions insuffisantes",
+      "Description": "Vous n'avez pas les permissions requises pour gérer les demandes d'utilisateurs de cette organisation."
+    }
+  },
   "RegistrationDetails": {
     "NoAccess": "Pas d'accès",
     "NoAccessContact": "veuillez contacter l'administrateur de l'essai à {email}"

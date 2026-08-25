@@ -697,6 +697,12 @@
       "Title": "よろしいですか？"
     }
   },
+  "PendingUserRedirect": {
+    "Unauthorized": {
+      "Title": "権限が不足しています",
+      "Description": "この組織のユーザーリクエストを管理するために必要な権限がありません。"
+    }
+  },
   "RegistrationDetails": {
     "NoAccess": "アクセス禁止",
     "NoAccessContact": "トライアル管理者{email}までご連絡ください。"
