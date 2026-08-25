@@ -406,7 +406,7 @@ export const DeploymentRequestDomain = {
       throw new Error(ErrorCode.InvalidPlatformId);
     }
 
-    if (platformIdentifier !== PlatformIdentifier.Openaev) {
+    if (platformIdentifier === PlatformIdentifier.Opencti) {
       try {
         await auth0Client.createAudienceAPI(organization_name, platform_id);
       } catch (error) {
