@@ -8,8 +8,6 @@ import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
-import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
 import { formatPersonNames } from '@/utils/format/name';
 import {
@@ -19,6 +17,7 @@ import {
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { fetchSeoServiceInstanceBySlug } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
 import { localeMap } from '@/utils/shareable-resources/shareable-resources.consts';
 import {
   isConnectorResource,
@@ -35,10 +34,6 @@ import {
 import { LogoFiligranIcon } from '@filigran/icon';
 import { MarkdownRenderer } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import SeoServiceInstanceQuery, {
-  seoServiceInstanceQuery,
-} from '@generated/seoServiceInstanceQuery.graphql';
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
@@ -66,18 +61,7 @@ const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
 const getPageData = cache(async (serviceSlug: string, docSlug: string) => {
   const baseUrl = await getBaseUrl();
 
-  const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
-    SeoServiceInstanceQuery,
-    { slug: serviceSlug },
-    { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
-  );
-
-  const serviceInstance = serviceResponse.data
-    .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
-
-  if (!serviceInstance) {
-    notFound();
-  }
+  const serviceInstance = await fetchSeoServiceInstanceBySlug(serviceSlug);
 
   // Reuses the same cached fetch as the parent list/SEO page, so this is a
   // free lookup in the common case. It lets us reject unknown/guessed

@@ -15,18 +15,14 @@ import {
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
+import { fetchSeoServiceInstanceBySlug } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceMetadataQuery, {
   seoServiceInstanceMetadataQuery,
 } from '@generated/seoServiceInstanceMetadataQuery.graphql';
-import SeoServiceInstanceQuery, {
-  seoServiceInstanceQuery,
-} from '@generated/seoServiceInstanceQuery.graphql';
 import { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { PublicDocumentListPageLoader } from './public-document-list-page-loader';
 
@@ -36,18 +32,7 @@ import { PublicDocumentListPageLoader } from './public-document-list-page-loader
 const getPageData = cache(async (slug: string, locale: PublicLocale) => {
   const baseUrl = await getBaseUrl();
 
-  const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
-    SeoServiceInstanceQuery,
-    { slug },
-    { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
-  );
-
-  const serviceInstance = serviceResponse.data
-    .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
-
-  if (!serviceInstance) {
-    notFound();
-  }
+  const serviceInstance = await fetchSeoServiceInstanceBySlug(slug);
 
   const seoMetadataResponse =
     await serverFetchGraphQL<seoServiceInstanceMetadataQuery>(

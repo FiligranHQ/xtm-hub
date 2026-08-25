@@ -13,6 +13,7 @@ import '@testing-library/jest-dom';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import {
+  notFound,
   useParams,
   usePathname,
   useRouter,
@@ -46,6 +47,7 @@ vi.mock('next/navigation', async (importOriginal) => ({
   useRouter: vi.fn(),
   useParams: vi.fn(),
   useSearchParams: vi.fn(),
+  notFound: vi.fn(),
 }));
 
 vi.mock('next-intl', async (importOriginal) => ({
@@ -87,6 +89,9 @@ const setDefaultGlobalMocks = () => {
   vi.mocked(useSearchParams).mockReturnValue(
     new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>
   );
+  vi.mocked(notFound).mockImplementation(() => {
+    throw new Error('NEXT_NOT_FOUND');
+  });
   vi.mocked(registerClientEnvironment).mockImplementation(
     (environment: RegisterClientEnvironment) => {
       mockedClientEnvironment = environment;

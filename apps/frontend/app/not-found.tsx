@@ -10,6 +10,7 @@ const NotFound = () => {
   return (
     <RelayProvider>
       <PublicPathError
+        shouldLog={false}
         error={{
           name: 'PageNotFoundError',
           message: `An user try to reach this unknown path: ${pathname}`,

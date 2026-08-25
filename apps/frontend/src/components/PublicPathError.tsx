@@ -8,13 +8,25 @@ import { useRelayEnvironment } from 'react-relay';
 
 interface PublicPathErrorProps {
   error: Error & { digest?: string; componentStack?: string };
+  /**
+   * Whether to report this error to the backend via `logFrontendError`.
+   * Defaults to `true` for genuine unexpected errors (e.g. errors caught by
+   * an `error.tsx` boundary). Callers that render this component for an
+   * *expected* "not found" state (e.g. the root `not-found.tsx`, reached via
+   * `notFound()` for an unknown/non-public slug) should pass `false` so a
+   * normal 404 doesn't get reported as an application error.
+   */
+  shouldLog?: boolean;
 }
 
-const PublicPathError = ({ error }: PublicPathErrorProps) => {
+const PublicPathError = ({
+  error,
+  shouldLog = true,
+}: PublicPathErrorProps) => {
   const env = useRelayEnvironment();
   const t = useTranslations();
   useEffect(() => {
-    if (isProduction()) {
+    if (shouldLog && isProduction()) {
       logFrontendError(
         env,
         error.message || 'Unknown error',
