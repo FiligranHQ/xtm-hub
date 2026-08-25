@@ -53,6 +53,7 @@ vi.mock('next-intl', async (importOriginal) => ({
   useTranslations: vi.fn(() =>
     Object.assign((key: string) => key, {
       has: () => false,
+      rich: (key: string) => key,
     })
   ),
   useLocale: vi.fn(() => 'en'),

@@ -14,6 +14,31 @@ const parsePendingUserAction = (
 ): PendingUserAction | null =>
   action === 'approve' || action === 'deny' ? action : null;
 
+interface ResolvedPendingUserDialogState {
+  dialog: PendingUserDialogState | null;
+  alreadyProcessed: boolean;
+}
+
+const resolvePendingUserDialogState = (
+  searchParams: URLSearchParams,
+  userData: UserList_fragment$data[]
+): ResolvedPendingUserDialogState => {
+  const action = parsePendingUserAction(
+    searchParams.get(PENDING_USER_ACTION_PARAM)
+  );
+  const userId = searchParams.get(PENDING_USER_ID_PARAM);
+  if (!action || !userId) {
+    return { dialog: null, alreadyProcessed: false };
+  }
+
+  const user = userData.find(({ id }) => id === userId);
+  if (user) {
+    return { dialog: { action, user }, alreadyProcessed: false };
+  }
+
+  return { dialog: null, alreadyProcessed: true };
+};
+
 interface UsePendingUserDialogParams {
   userData: UserList_fragment$data[];
   approveUser: (user: UserList_fragment$data) => void;
@@ -30,18 +55,15 @@ export const usePendingUserDialog = ({
   const router = useRouter();
 
   const [pendingUserDialog, setPendingUserDialog] =
-    useState<PendingUserDialogState | null>(() => {
-      const action = parsePendingUserAction(
-        searchParams.get(PENDING_USER_ACTION_PARAM)
-      );
-      const userId = searchParams.get(PENDING_USER_ID_PARAM);
-      if (!action || !userId) {
-        return null;
-      }
+    useState<PendingUserDialogState | null>(
+      () => resolvePendingUserDialogState(searchParams, userData).dialog
+    );
 
-      const user = userData.find(({ id }) => id === userId);
-      return user ? { action, user } : null;
-    });
+  const [alreadyProcessedDialogOpen, setAlreadyProcessedDialogOpen] =
+    useState<boolean>(
+      () =>
+        resolvePendingUserDialogState(searchParams, userData).alreadyProcessed
+    );
 
   const openPendingUserDialog = useCallback(
     (action: PendingUserAction, user: UserList_fragment$data) => {
@@ -67,6 +89,12 @@ export const usePendingUserDialog = ({
   const closePendingUserDialog = useCallback((isOpen: boolean) => {
     if (!isOpen) {
       setPendingUserDialog(null);
+    }
+  }, []);
+
+  const closeAlreadyProcessedDialog = useCallback((isOpen: boolean) => {
+    if (!isOpen) {
+      setAlreadyProcessedDialogOpen(false);
     }
   }, []);
 
@@ -104,5 +132,7 @@ export const usePendingUserDialog = ({
     openRejectDialog,
     closePendingUserDialog,
     onConfirmPendingUserAction,
+    alreadyProcessedDialogOpen,
+    closeAlreadyProcessedDialog,
   };
 };

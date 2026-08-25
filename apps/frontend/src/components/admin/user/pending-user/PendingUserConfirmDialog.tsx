@@ -1,6 +1,9 @@
 import { PendingUserDialogState } from '@/components/admin/user/pending-user/pending-user-list.types';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { useTranslations } from 'next-intl';
+import { ReactNode } from 'react';
+
+const renderStrong = (chunks: ReactNode) => <strong>{chunks}</strong>;
 
 interface PendingUserConfirmDialogProps {
   pendingUserDialog: PendingUserDialogState | null;
@@ -32,8 +35,9 @@ export const PendingUserConfirmDialog = ({
       onClickContinue={onConfirm}>
       <div className="flex items-center gap-2">
         <span>
-          {t(`${i18nKey}.Description`, {
+          {t.rich(`${i18nKey}.Description`, {
             email: pendingUserDialog.user.email,
+            strong: renderStrong,
           })}
         </span>
       </div>

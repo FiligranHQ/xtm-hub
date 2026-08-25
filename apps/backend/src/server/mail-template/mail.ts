@@ -60,10 +60,13 @@ export interface OrganizationPendingUserDigestUser {
   firstName: string;
   lastName: string;
   email: string;
+  approveLink: string;
+  denyLink: string;
 }
 
 export interface OrganizationPendingUserDigestModel {
   adminName: string;
+  adminEmail: string;
   organizationName: string;
   users: OrganizationPendingUserDigestUser[];
   userCount: number;

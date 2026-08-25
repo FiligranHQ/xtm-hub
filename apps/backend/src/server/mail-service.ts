@@ -56,6 +56,28 @@ export const buildServiceLink = ({
   return `${config.get('base_url_front')}/app/service/${serviceDefinitionIdentifier}/${toGlobalId('ServiceInstance', serviceInstanceId)}`;
 };
 
+export const buildPendingUserActionLink = ({
+  action,
+  organizationId,
+  userId,
+}: {
+  action: 'approve' | 'deny';
+  organizationId: string;
+  userId: string;
+}) => {
+  const url = new URL(
+    '/redirect/handle-pending-user',
+    config.get<string>('base_url_front')
+  );
+  url.searchParams.set('action', action);
+  url.searchParams.set(
+    'organization_id',
+    toGlobalId('Organization', organizationId)
+  );
+  url.searchParams.set('user_id', toGlobalId('User', userId));
+  return url.toString();
+};
+
 export async function renderEmail<T extends keyof MailTemplates>(
   templateName: T,
   params: MailTemplates[T]
