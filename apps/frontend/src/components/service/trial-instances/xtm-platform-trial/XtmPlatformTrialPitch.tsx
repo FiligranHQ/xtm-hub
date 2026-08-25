@@ -22,7 +22,7 @@ export const XtmPlatformTrialPitch = () => {
 
   return (
     <section className="flex flex-col gap-xl">
-      <div className="flex flex-col gap-xs">
+      <div className="flex flex-col gap-xs mb-xxl">
         <h2 className="heading-2xl">
           {t('Service.Trials.XtmPlatform.Page.PitchTitle')}
         </h2>
@@ -31,7 +31,7 @@ export const XtmPlatformTrialPitch = () => {
         </p>
       </div>
 
-      <div className="flex flex-col gap-xl">
+      <div className="flex flex-col gap-xl pr-30">
         {BUNDLE_PRODUCTS.map((platformIdentifier) => {
           const { name, Icon } = PlatformMetadataMapping[platformIdentifier];
 

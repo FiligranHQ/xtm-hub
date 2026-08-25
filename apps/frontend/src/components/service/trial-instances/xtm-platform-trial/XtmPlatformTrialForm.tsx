@@ -130,7 +130,7 @@ export const XtmPlatformTrialForm = ({
   };
 
   return (
-    <div className="flex w-full flex-col gap-xl rounded bg-page-background p-xl">
+    <div className="flex w-full flex-col gap-xl rounded bg-elevation-background-layer-2 p-xl">
       <div className="flex items-center gap-l">
         <span className="text-content-body-base text-muted-foreground">
           {t('Service.Trials.Form.AssociatedEmail')}
@@ -142,14 +142,14 @@ export const XtmPlatformTrialForm = ({
         <form
           className="flex w-full flex-col gap-l"
           onSubmit={form.handleSubmit(handleSubmit)}>
-          <div className="flex flex-col gap-s rounded bg-hover p-l">
+          <div className="flex flex-col gap-s rounded bg-hover p-l bg-elevation-background-layer-2">
             <h3 className="txt-title-xs">
               {t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}
             </h3>
 
             {hasOngoingStandaloneTrials ? (
-              <div className="flex items-start gap-xs rounded border border-solid border-red p-s text-sm">
-                <WarningIcon className="size-4 shrink-0 text-destructive" />
+              <div className="flex items-start gap-xs rounded border border-solid border-red p-s">
+                <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
                 <div className="flex flex-col gap-xs">
                   <span>
                     {t(
@@ -164,11 +164,18 @@ export const XtmPlatformTrialForm = ({
                 </div>
               </div>
             ) : (
-              <div className="flex items-start gap-xs rounded border border-solid border-alert-alert-primary p-s text-sm">
-                <WarningIcon className="size-4 shrink-0 text-alert-alert-primary" />
-                <span>
-                  {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
-                </span>
+              <div className="flex items-start gap-xs rounded border border-solid border-alert-alert-primary p-s">
+                <WarningIcon className="size-4 mt-1 shrink-0 text-alert-alert-primary" />
+                <div className="flex flex-col gap-xs content-body-compact">
+                  <span>
+                    {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
+                  </span>
+                  <span>
+                    {t(
+                      'Service.Trials.XtmPlatform.Page.Form.ProductsWarningDescription'
+                    )}
+                  </span>
+                </div>
               </div>
             )}
 
@@ -176,7 +183,7 @@ export const XtmPlatformTrialForm = ({
               {SELECTABLE_PRODUCTS.map((platformIdentifier) => (
                 <div
                   key={platformIdentifier}
-                  className="flex items-center gap-s">
+                  className="relative flex items-center gap-s">
                   <Checkbox
                     id={`product-${platformIdentifier}`}
                     checked={products.includes(platformIdentifier)}
@@ -192,7 +199,7 @@ export const XtmPlatformTrialForm = ({
                 </div>
               ))}
 
-              <div className="flex items-center gap-s">
+              <div className="relative flex items-center gap-s">
                 <Checkbox
                   id="product-xtmone"
                   checked
@@ -200,7 +207,7 @@ export const XtmPlatformTrialForm = ({
                 />
                 <label
                   htmlFor="product-xtmone"
-                  className="txt-default text-muted-foreground">
+                  className="content-base text-muted-foreground">
                   {t(`PlatformIdentifier.${PlatformIdentifier.Xtmone}`)}
                 </label>
               </div>
@@ -214,7 +221,7 @@ export const XtmPlatformTrialForm = ({
               <FormItem>
                 <FormLabel>
                   {t('Service.Trials.Form.Region')}{' '}
-                  <span className="text-sm text-destructive">*</span>
+                  <span className="text-destructive">*</span>
                 </FormLabel>
                 <Select
                   value={field.value}
@@ -234,7 +241,7 @@ export const XtmPlatformTrialForm = ({
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage className="text-sm text-destructive" />
+                <FormMessage className="text-destructive" />
               </FormItem>
             )}
           />
@@ -295,9 +302,10 @@ export const XtmPlatformTrialForm = ({
             name="acceptTerms"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-start gap-l">
+                <div className="relative flex items-start gap-l">
                   <Checkbox
                     id="acceptTerms"
+                    className="mt-1"
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
@@ -311,10 +319,11 @@ export const XtmPlatformTrialForm = ({
                       className="underline text-primary"
                       href="https://filigran.io/mssa/">
                       {t('Service.Trials.Form.MSSA')}
-                    </Link>
+                    </Link>{' '}
+                    <span className="text-destructive">*</span>
                   </label>
                 </div>
-                <FormMessage className="text-sm text-destructive" />
+                <FormMessage className="text-destructive" />
               </FormItem>
             )}
           />

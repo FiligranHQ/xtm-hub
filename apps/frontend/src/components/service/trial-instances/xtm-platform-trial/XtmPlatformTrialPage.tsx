@@ -16,7 +16,7 @@ export const XtmPlatformTrialPage = ({
   return (
     <div className="flex flex-col gap-xxl">
       <header className="flex flex-col gap-s">
-        <p className="heading-sm bg-clip-text text-transparent bg-gradient-focus">
+        <p className="heading-sm bg-clip-text text-transparent bg-gradient-focus w-fit">
           {t('Service.Trials.XtmPlatform.Page.Overline')}
         </p>
         <h1 className="heading-2xl">
@@ -25,7 +25,7 @@ export const XtmPlatformTrialPage = ({
       </header>
 
       <div className="flex flex-col gap-l lg:flex-row lg:items-start">
-        <div className="flex flex-1 flex-col gap-xl">
+        <div className="flex flex-1 flex-col gap-xl ml-xxl">
           <XtmPlatformTrialPitch />
           {showLimitations && <XtmPlatformTrialLimitations />}
         </div>
