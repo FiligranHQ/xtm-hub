@@ -670,6 +670,16 @@ describe('deploymentRequestDomain', () => {
   });
 
   describe('reorderDeploymentRequestUp', () => {
+    const BUNDLE_QUEUE_REGION = DeploymentRequestPlatformRegion.UsEast;
+
+    const createQueuedBundle = (ordering: number) =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        region: BUNDLE_QUEUE_REGION,
+        ordering,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
     it('should do nothing when deployment request is the top one', async () => {
       const topDeploymentRequest =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -805,9 +815,135 @@ describe('deploymentRequestDomain', () => {
       expect(resultSelectedDeploymentRequest).toBeDefined();
       expect(resultSelectedDeploymentRequest!.ordering).toBe(4);
     });
+    it('should swap a bundle with the bundle right above it in its region queue', async () => {
+      // Given
+      const firstBundle = await createQueuedBundle(1);
+      const secondBundle = await createQueuedBundle(2);
+
+      // When
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(secondBundle!);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(secondBundle!.id, {
+        ordering: 1,
+      });
+      await TestHelper.deploymentRequest.assertProperties(firstBundle!.id, {
+        ordering: 2,
+      });
+    });
+
+    it('should only reorder bundles from the same region', async () => {
+      // Given
+      const euWestBundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            region: DeploymentRequestPlatformRegion.EuWest,
+            ordering: 1,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      const usEastBundle = await createQueuedBundle(2);
+
+      // When
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(usEastBundle!);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(usEastBundle!.id, {
+        ordering: 2,
+      });
+      await TestHelper.deploymentRequest.assertProperties(euWestBundle!.id, {
+        ordering: 1,
+      });
+    });
+
+  });
+
+  describe('getMaxOrderingInQueue', () => {
+    const queueOf = (region: DeploymentRequestPlatformRegion): QuotaKey => ({
+      type: DeploymentRequestDeploymentType.Trial,
+      platformIdentifier: PlatformIdentifier.Opencti,
+      region,
+    });
+
+    const createQueuedTrial = (
+      region: DeploymentRequestPlatformRegion,
+      ordering: number
+    ) =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        type: DeploymentRequestDeploymentType.Trial,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region,
+        ordering,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+    it('should number each region queue on its own, so two regions can share a rank', async () => {
+      // Given
+      await createQueuedTrial(DeploymentRequestPlatformRegion.EuWest, 1);
+      await createQueuedTrial(DeploymentRequestPlatformRegion.EuWest, 2);
+
+      // When
+      const euWest = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        queueOf(DeploymentRequestPlatformRegion.EuWest),
+        DeploymentRequestHubStatus.Queued
+      );
+      const usEast = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        queueOf(DeploymentRequestPlatformRegion.UsEast),
+        DeploymentRequestHubStatus.Queued
+      );
+
+      // Then
+      expect(euWest).toBe(2);
+      expect(usEast).toBeNull();
+    });
+
+    it('should ignore the bundle products, they follow their bundle instead of holding a rank', async () => {
+      // Given
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            region: DeploymentRequestPlatformRegion.EuWest,
+            ordering: 1,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.EuWest,
+          ordering: 9,
+          hub_status: DeploymentRequestHubStatus.Queued,
+          parent_id: bundle!.id,
+        }
+      );
+
+      // When
+      const maxOrdering = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        queueOf(DeploymentRequestPlatformRegion.EuWest),
+        DeploymentRequestHubStatus.Queued
+      );
+
+      // Then
+      expect(maxOrdering).toBeNull();
+    });
   });
 
   describe('reorderDeploymentRequestToTop', async () => {
+    const BUNDLE_QUEUE_REGION = DeploymentRequestPlatformRegion.UsEast;
+
+    const createQueuedBundle = (ordering: number) =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        region: BUNDLE_QUEUE_REGION,
+        ordering,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
     it('should do nothing when deployment request is the top one', async () => {
       const topDeploymentRequest =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -1000,6 +1136,26 @@ describe('deploymentRequestDomain', () => {
       expect(resultTopDeploymentRequest).toBeDefined();
       expect(resultTopDeploymentRequest!.ordering).toBe(4);
     });
+    it('should move a bundle to the top and push down the other bundles of its region', async () => {
+      // Given
+      const firstBundle = await createQueuedBundle(1);
+      const secondBundle = await createQueuedBundle(2);
+      const thirdBundle = await createQueuedBundle(3);
+
+      // When
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(thirdBundle!);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(thirdBundle!.id, {
+        ordering: 1,
+      });
+      await TestHelper.deploymentRequest.assertProperties(firstBundle!.id, {
+        ordering: 2,
+      });
+      await TestHelper.deploymentRequest.assertProperties(secondBundle!.id, {
+        ordering: 3,
+      });
+    });
   });
   describe('setLastPendingRequestAsQueued', () => {
     let platformIdentifier: PlatformIdentifier;
@@ -1050,6 +1206,30 @@ describe('deploymentRequestDomain', () => {
           }
         );
       deploymentRequestId4 = deploymentRequest4!.id;
+    });
+
+    it('should leave the ranks of the other regions untouched', async () => {
+      // Given
+      const euWestQueued =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 1,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+            platform_identifier: platformIdentifier,
+            region: DeploymentRequestPlatformRegion.EuWest,
+          }
+        );
+
+      // When
+      await DeploymentRequestDomain.setLastPendingRequestAsQueued(
+        trialQuotaKey(platformIdentifier, region)
+      );
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(euWestQueued!.id, {
+        ordering: 1,
+      });
     });
 
     it('should update the last request in platform and region', async () => {

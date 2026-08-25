@@ -644,10 +644,14 @@ const createSingleDeploymentRequest = async ({
         platformIdentifier,
         region: input.region,
       });
-      const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
-        hub_status: hubStatus,
-        platform_identifier: platformIdentifier,
-      });
+      const maxOrdering = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        {
+          type,
+          platformIdentifier,
+          region: input.region,
+        },
+        hubStatus
+      );
       const ordering = (maxOrdering ?? 0) + 1;
 
       const serviceInstanceId = await RegistrationDomain.registerNewPlatform({
@@ -875,10 +879,14 @@ const createBundleDeploymentRequest = async ({
         end_date: null,
       });
 
-      const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
-        hub_status: bundleHubStatus,
-        platform_identifier: null,
-      });
+      const maxOrdering = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        {
+          type: DeploymentRequestDeploymentType.Bundle,
+          platformIdentifier: null,
+          region: input.region,
+        },
+        bundleHubStatus
+      );
 
       const bundleDeploymentRequest =
         await DeploymentRequestDomain.insertDeploymentRequest({
