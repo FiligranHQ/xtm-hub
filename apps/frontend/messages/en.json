@@ -246,7 +246,6 @@
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
-      "EDIT_USER_SESSION_ERROR": "An unknown error occurred",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
       "EPIC_CREATE_ERROR": "An error occurred while creating the epic.",
       "EPIC_UPDATE_ERROR": "An error occurred while updating the epic.",
