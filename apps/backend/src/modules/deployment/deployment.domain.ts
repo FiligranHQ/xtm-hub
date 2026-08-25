@@ -87,6 +87,18 @@ export const DeploymentRequestDomain = {
       .select('*');
   },
 
+  loadChildrenByParentIds: async (
+    parentIds: readonly DeploymentRequestId[]
+  ): Promise<FullyQualifiedDeploymentRequest[]> => {
+    if (parentIds.length === 0) {
+      return [];
+    }
+
+    return getDeploymentRequestWithUserDataQuery()
+      .whereIn('DeploymentRequest.parent_id', parentIds)
+      .orderBy('DeploymentRequest.platform_identifier', 'asc');
+  },
+
   loadDeploymentRequestWithChildren: async (
     deploymentRequest: DeploymentRequest,
     childrenHubStatus?: DeploymentRequestHubStatus

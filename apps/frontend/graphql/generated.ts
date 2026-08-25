@@ -421,6 +421,7 @@ export type DeploymentRequest = Node & {
   cancellation_date: Maybe<Scalars['Date']['output']>;
   cancellation_reason: Maybe<Scalars['String']['output']>;
   cancellation_user_email: Maybe<Scalars['String']['output']>;
+  children: Maybe<Array<DeploymentRequest>>;
   counts_in_orga_quota: Scalars['Boolean']['output'];
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;

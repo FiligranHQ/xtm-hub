@@ -142,6 +142,7 @@ type DeploymentRequest implements Node {
   platform_url: String
   parent_id: DeploymentRequestId
   url: String
+  children: [DeploymentRequest!]
 }
 
 type PlatformDeploymentRequest {

@@ -15,6 +15,12 @@ import { DeploymentRequestDomain } from './deployment.domain';
 const resolvers: Resolvers = {
   DeploymentRequestId:
     createRelayIdScalar<DeploymentRequestId>('DeploymentRequest'),
+  DeploymentRequest: {
+    children: ({ id }, _, context) =>
+      context.dataLoaders.deploymentRequest.childrenByParentLoader.load(
+        id as DeploymentRequestId
+      ),
+  },
   Query: {
     deploymentRequests: async (_, args: QueryDeploymentRequestsArgs) => {
       try {

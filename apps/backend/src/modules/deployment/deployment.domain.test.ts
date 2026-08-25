@@ -253,6 +253,97 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
+  describe('loadChildrenByParentIds', () => {
+    afterEach(async () => {
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
+    });
+
+    const createBundle = () =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+      });
+
+    it('should return the children of the requested bundles only', async () => {
+      // Given
+      const firstBundle = await createBundle();
+      const secondBundle = await createBundle();
+      const unrequestedBundle = await createBundle();
+      const firstChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: firstBundle.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        );
+      const secondChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: secondBundle.id,
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          parent_id: unrequestedBundle.id,
+          platform_identifier: PlatformIdentifier.Xtmone,
+        }
+      );
+
+      // When
+      const children = await DeploymentRequestDomain.loadChildrenByParentIds([
+        firstBundle.id,
+        secondBundle.id,
+      ]);
+
+      // Then
+      expect(children).toHaveLength(2);
+      expect(
+        children.find((request) => request.id === firstChild.id)
+      ).toMatchObject({
+        parent_id: firstBundle.id,
+        platform_identifier: PlatformIdentifier.Opencti,
+      });
+      expect(
+        children.find((request) => request.id === secondChild.id)
+      ).toMatchObject({
+        parent_id: secondBundle.id,
+        platform_identifier: PlatformIdentifier.Openaev,
+      });
+    });
+
+    it('should expose the platform url of the children', async () => {
+      // Given
+      const bundle = await createBundle();
+      const child =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        );
+      await TestHelper.platformConfiguration.create({
+        service_instance_id: child.service_instance_id,
+        platform_url: 'https://opencti.example.com',
+      });
+
+      // When
+      const children = await DeploymentRequestDomain.loadChildrenByParentIds([
+        bundle.id,
+      ]);
+
+      // Then
+      expect(children[0]).toMatchObject({
+        id: child.id,
+        platform_url: 'https://opencti.example.com',
+      });
+
+      await TestHelper.platformConfiguration.delete({
+        service_instance_id: child.service_instance_id,
+      });
+    });
+  });
+
   describe('loadDeploymentRequestWithChildren', () => {
     afterEach(async () => {
       await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
@@ -857,7 +948,6 @@ describe('deploymentRequestDomain', () => {
         ordering: 1,
       });
     });
-
   });
 
   describe('getMaxOrderingInQueue', () => {

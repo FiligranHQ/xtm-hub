@@ -474,6 +474,7 @@ export const mockDeploymentRequest = (overrides?: Partial<DeploymentRequest>, _r
         cancellation_date: overrides && overrides.hasOwnProperty('cancellation_date') ? overrides.cancellation_date! : '2021-03-18T02:32:36.736Z',
         cancellation_reason: overrides && overrides.hasOwnProperty('cancellation_reason') ? overrides.cancellation_reason! : 'sodalitas',
         cancellation_user_email: overrides && overrides.hasOwnProperty('cancellation_user_email') ? overrides.cancellation_user_email! : 'adipisci',
+        children: overrides && overrides.hasOwnProperty('children') ? overrides.children! : [relationshipsToOmit.has('DeploymentRequest') ? {} as DeploymentRequest : mockDeploymentRequest({}, relationshipsToOmit)],
         counts_in_orga_quota: overrides && overrides.hasOwnProperty('counts_in_orga_quota') ? overrides.counts_in_orga_quota! : true,
         end_date: overrides && overrides.hasOwnProperty('end_date') ? overrides.end_date! : '2021-07-23T20:46:30.210Z',
         hub_status: overrides && overrides.hasOwnProperty('hub_status') ? overrides.hub_status! : DeploymentRequestHubStatus.Active,

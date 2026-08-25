@@ -414,6 +414,7 @@ export type DeploymentRequest = Node & {
   cancellation_date?: Maybe<Scalars['Date']['output']>;
   cancellation_reason?: Maybe<Scalars['String']['output']>;
   cancellation_user_email?: Maybe<Scalars['String']['output']>;
+  children?: Maybe<Array<DeploymentRequest>>;
   counts_in_orga_quota: Scalars['Boolean']['output'];
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
@@ -3799,6 +3800,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   cancellation_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   cancellation_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancellation_user_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  children?: Resolver<Maybe<Array<ResolversTypes['DeploymentRequest']>>, ParentType, ContextType>;
   counts_in_orga_quota?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
