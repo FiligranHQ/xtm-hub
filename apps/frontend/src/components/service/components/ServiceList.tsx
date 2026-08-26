@@ -131,9 +131,7 @@ const ServiceList = ({
             {Object.values(IntegrationType).includes(
               integrationType as IntegrationType
             ) ? (
-              <IntegrationAccordion
-                integrationType={integrationType}
-                count={documents.length}>
+              <IntegrationAccordion integrationType={integrationType}>
                 <DocumentList
                   documents={documents}
                   displayMode={selectedDisplayMode}

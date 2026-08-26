@@ -28,16 +28,7 @@ export const publicDocumentListItem = graphql`
       integration_type
     }
 
-    ... on RssFeed {
-      integration_subtype
-    }
-
-    ... on ThirdPartyIntegration {
-      integration_subtype
-    }
-
     ... on Connector {
-      integration_subtype
       product_version
       verified
       manager_supported
@@ -109,7 +100,6 @@ export const publicDocumentByServiceSlugItem = graphql`
     }
 
     ... on RssFeed {
-      integration_subtype
       feed_url
     }
 
@@ -118,14 +108,12 @@ export const publicDocumentByServiceSlugItem = graphql`
     }
 
     ... on ThirdPartyIntegration {
-      integration_subtype
       product_version
       vendor_url
       github_url
     }
 
     ... on Connector {
-      integration_subtype
       product_version
       container_image
       verified
@@ -209,7 +197,6 @@ export const publicDocumentBySlugItem = graphql`
     }
 
     ... on RssFeed {
-      integration_subtype
       feed_url
     }
 
@@ -218,14 +205,12 @@ export const publicDocumentBySlugItem = graphql`
     }
 
     ... on ThirdPartyIntegration {
-      integration_subtype
       product_version
       vendor_url
       github_url
     }
 
     ... on Connector {
-      integration_subtype
       product_version
       container_image
       verified

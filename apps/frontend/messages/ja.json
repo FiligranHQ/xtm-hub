@@ -246,7 +246,6 @@
       "EDIT_ME_USER_ERROR": "プロフィール編集中のエラー",
       "EDIT_ORGANIZATION_ERROR": "組織編集中のエラー",
       "EDIT_USER_ERROR": "ユーザー編集中のエラー",
-      "EDIT_USER_SESSION_ERROR": "不明なエラーが発生しました",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "メールドメインが組織外のユーザーを追加できない",
       "EPIC_CREATE_ERROR": "エピックの作成中にエラーが発生した。",
       "EPIC_UPDATE_ERROR": "叙事詩の更新中にエラーが発生した。",
@@ -1029,7 +1028,6 @@
       "LicenseTypeLabel": "ライセンスの種類",
       "Restore": "リストア",
       "SelectImage": "画像を選択",
-      "SelectIntegrationSubType": "サブタイプ",
       "SelectJSONFile": "JSONファイルを選択",
       "ShortDescriptionLabel": "短い説明",
       "ShortDescriptionPlaceholder": "ドキュメントを説明するためのキャッチフレーズです。",
@@ -1057,10 +1055,6 @@
       "AddService": "新しい統合を追加する",
       "IntegrationType": "統合タイプ",
       "Filter": {
-        "IntegrationSubType": {
-          "Label": "サブタイプ",
-          "Placeholder": "サブタイプ..."
-        },
         "Type": {
           "Label": "統合タイプ",
           "Placeholder": "統合タイプ..."
@@ -1360,7 +1354,6 @@
         "IntegrationType": "タイプ",
         "IntegrationSolutionCategory": "解答カテゴリ",
         "IntegrationLicenseType": "ライセンスの種類",
-        "IntegrationSubType": "サブタイプ",
         "GithubURL": "Github URL",
         "VendorURL": "ベンダーURL",
         "FeedURL": "フィードURL",

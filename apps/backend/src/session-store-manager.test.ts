@@ -73,27 +73,36 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
       } as unknown as UserWithOrganizationsAndRole;
 
       // Should not throw any errors
-      expect(() => {
-        updateUserSession(testUser);
-      }).not.toThrow();
+      await expect(updateUserSession(testUser)).resolves.toBeUndefined();
     });
 
     describe('destroyUserSessions functionality', () => {
       it('should destroy all active sessions for the given user', async () => {
         const userId = 'destroy-target-' + uuidv4();
         const store = getSessionStoreInstance();
-        const allSpy = vi.spyOn(store, 'all').mockImplementation((callback) => {
-          callback(null, {
-            sessionA: { user: { id: userId } },
-            sessionB: { user: { id: 'another-user' } },
-            sessionC: { user: { id: userId } },
-          } as unknown as Record<string, SessionData>);
-        });
+        const allSpy = vi
+          .spyOn(store, 'all')
+          .mockImplementation(
+            (
+              callback: (
+                err: unknown,
+                sessions?: Record<string, SessionData> | null
+              ) => void
+            ) => {
+              callback(null, {
+                sessionA: { user: { id: userId } },
+                sessionB: { user: { id: 'another-user' } },
+                sessionC: { user: { id: userId } },
+              } as unknown as Record<string, SessionData>);
+            }
+          );
         const destroySpy = vi
           .spyOn(store, 'destroy')
-          .mockImplementation((_sessionId, callback) => {
-            callback?.();
-          });
+          .mockImplementation(
+            (_sessionId: string, callback?: (err?: unknown) => void) => {
+              callback?.();
+            }
+          );
 
         await destroyUserSessions(userId);
 
@@ -112,9 +121,18 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
 
       it('should resolve gracefully when session listing fails', async () => {
         const store = getSessionStoreInstance();
-        const allSpy = vi.spyOn(store, 'all').mockImplementation((callback) => {
-          callback(new Error('cannot list sessions'), null);
-        });
+        const allSpy = vi
+          .spyOn(store, 'all')
+          .mockImplementation(
+            (
+              callback: (
+                err: unknown,
+                sessions?: Record<string, SessionData> | null
+              ) => void
+            ) => {
+              callback(new Error('cannot list sessions'), null);
+            }
+          );
         const destroySpy = vi.spyOn(store, 'destroy');
 
         await expect(
@@ -127,11 +145,20 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
 
       it('should resolve without destroying sessions when none match the user', async () => {
         const store = getSessionStoreInstance();
-        const allSpy = vi.spyOn(store, 'all').mockImplementation((callback) => {
-          callback(null, {
-            sessionA: { user: { id: 'different-user' } },
-          } as unknown as Record<string, SessionData>);
-        });
+        const allSpy = vi
+          .spyOn(store, 'all')
+          .mockImplementation(
+            (
+              callback: (
+                err: unknown,
+                sessions?: Record<string, SessionData> | null
+              ) => void
+            ) => {
+              callback(null, {
+                sessionA: { user: { id: 'different-user' } },
+              } as unknown as Record<string, SessionData>);
+            }
+          );
         const destroySpy = vi.spyOn(store, 'destroy');
 
         await expect(
@@ -154,14 +181,14 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
         const userId = 'update-test-' + uuidv4();
         const sessionId = 'session-' + uuidv4();
 
-        const sessionData: SessionDataWithUser = {
+        const sessionData = {
           cookie: {
             maxAge: 3600000,
             expires: new Date(Date.now() + 3600000),
             originalMaxAge: 3600000,
           },
           user: { id: userId as UserId, first_name: 'Original Name' },
-        };
+        } as unknown as SessionDataWithUser;
 
         // Create session
         await new Promise<void>((resolve, reject) => {
@@ -181,10 +208,7 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
           role: { id: 'role-id', name: 'USER' },
         } as unknown as UserWithOrganizationsAndRole;
 
-        updateUserSession(updatedUser);
-
-        // Wait for async update
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await updateUserSession(updatedUser);
 
         // Verify update
         const updatedSession = await new Promise<SessionDataWithUser | null>(
@@ -209,9 +233,13 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
         const sessionId = 'memory-session-' + uuidv4();
 
         const sessionData = {
-          cookie: { maxAge: 3600000 },
+          cookie: {
+            maxAge: 3600000,
+            expires: new Date(Date.now() + 3600000),
+            originalMaxAge: 3600000,
+          },
           user: { id: userId, first_name: 'Memory Original' },
-        };
+        } as unknown as SessionDataWithUser;
 
         await new Promise<void>((resolve, reject) => {
           store.set(sessionId, sessionData, (err) => {
@@ -226,17 +254,15 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
           first_name: 'Memory Updated',
           organizations: [],
           role: { id: 'role-id', name: 'USER' },
-        } as UserWithOrganizationsAndRole;
+        } as unknown as UserWithOrganizationsAndRole;
 
-        updateUserSession(updatedUser);
-
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await updateUserSession(updatedUser);
 
         const updatedSession = await new Promise<SessionDataWithUser | null>(
           (resolve, reject) => {
             store.get(sessionId, (err, session) => {
               if (err) reject(err);
-              else resolve(session);
+              else resolve(session ?? null);
             });
           }
         );
@@ -252,10 +278,14 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
       const store = getSessionStoreInstance();
       const sessionId = 'crud-test-' + uuidv4();
 
-      const sessionData: SessionData = {
-        cookie: { maxAge: 3600000 },
+      const sessionData = {
+        cookie: {
+          maxAge: 3600000,
+          expires: new Date(Date.now() + 3600000),
+          originalMaxAge: 3600000,
+        },
         user: { id: 'crud-user', name: 'Test User' },
-      };
+      } as unknown as SessionData;
 
       // Create
       await new Promise<void>((resolve, reject) => {
@@ -266,17 +296,20 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
       });
 
       // Read
-      const retrievedSession = await new Promise<SessionDataWithUser | null>(
+      const retrievedSession = await new Promise<SessionData | null>(
         (resolve, reject) => {
           store.get(sessionId, (err, session) => {
             if (err) reject(err);
-            else resolve(session);
+            else resolve(session ?? null);
           });
         }
       );
 
       expect(retrievedSession).toBeDefined();
-      expect(retrievedSession?.user?.name).toBe('Test User');
+      expect(
+        (retrievedSession as unknown as { user?: { name?: string } })?.user
+          ?.name
+      ).toBe('Test User');
 
       // Delete
       await new Promise<void>((resolve, reject) => {
@@ -291,7 +324,7 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
         (resolve, reject) => {
           store.get(sessionId, (err, session) => {
             if (err) reject(err);
-            else resolve(session);
+            else resolve(session ?? null);
           });
         }
       );
@@ -307,7 +340,7 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
         (resolve, reject) => {
           store.get(nonExistentId, (err, session) => {
             if (err) reject(err);
-            else resolve(session);
+            else resolve(session ?? null);
           });
         }
       );
@@ -369,7 +402,7 @@ describe('sessionStoreManager - Configuration-based Store Selection', () => {
         last_name: 'Test',
         organizations: [],
         role: { id: 'role-id', name: 'USER' },
-      } as UserWithOrganizationsAndRole;
+      } as unknown as UserWithOrganizationsAndRole;
 
       // This should not throw even if there are internal errors
       expect(() => {

@@ -171,7 +171,6 @@ export type Connector = Document & Integration & Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   manager_supported: Scalars['Boolean']['output'];
@@ -630,7 +629,6 @@ export enum DocumentMetadataKeyCode {
   GithubUrl = 'github_url',
   ImageName = 'image_name',
   ImageType = 'image_type',
-  IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   LastVerifiedDate = 'last_verified_date',
   LicenseType = 'license_type',
@@ -767,7 +765,6 @@ export type Filter = {
 export enum FilterKey {
   EntityType = 'entity_type',
   FeedUrl = 'feed_url',
-  IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   Label = 'label',
   LicenseType = 'license_type',
@@ -846,29 +843,6 @@ export type IntegrationHack = Document & Integration & Node & {
   uploader_organization?: Maybe<Organization>;
   use_cases?: Maybe<Array<UseCase>>;
 };
-
-export enum IntegrationSubType {
-  CaseManagement = 'CASE_MANAGEMENT',
-  CyberIndustry = 'CYBER_INDUSTRY',
-  Darkweb = 'DARKWEB',
-  Detection = 'DETECTION',
-  ExternalImport = 'EXTERNAL_IMPORT',
-  FederalOrganization = 'FEDERAL_ORGANIZATION',
-  InternalEnrichment = 'INTERNAL_ENRICHMENT',
-  InternalExportFile = 'INTERNAL_EXPORT_FILE',
-  InternalImportFile = 'INTERNAL_IMPORT_FILE',
-  Journalists = 'JOURNALISTS',
-  Malware = 'MALWARE',
-  Native = 'NATIVE',
-  NotForProfitOrganization = 'NOT_FOR_PROFIT_ORGANIZATION',
-  Orchestration = 'ORCHESTRATION',
-  PeriodicBriefing = 'PERIODIC_BRIEFING',
-  SecurityResearcher = 'SECURITY_RESEARCHER',
-  SocialMedia = 'SOCIAL_MEDIA',
-  Stream = 'STREAM',
-  ThreatActors = 'THREAT_ACTORS',
-  Vendors = 'VENDORS'
-}
 
 export enum IntegrationType {
   Connector = 'connector',
@@ -2169,7 +2143,6 @@ export type RssFeed = Document & Integration & Node & {
   feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2415,7 +2388,6 @@ export type Stream = Document & Integration & Node & {
   feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2535,7 +2507,6 @@ export type TaxiiFeed = Document & Integration & Node & {
   feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2587,7 +2558,6 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   file_name?: Maybe<Scalars['String']['output']>;
   github_url?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -3020,7 +2990,6 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Integration: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Integration']>;
   IntegrationHack: ResolverTypeWrapper<IntegrationHack>;
-  IntegrationSubType: IntegrationSubType;
   IntegrationType: IntegrationType;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
@@ -3440,7 +3409,6 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -4220,7 +4188,6 @@ export type RssFeedResolvers<ContextType = PortalContext, ParentType extends Res
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4410,7 +4377,6 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4502,7 +4468,6 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4547,7 +4512,6 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   github_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

@@ -246,7 +246,6 @@
       "EDIT_ME_USER_ERROR": "Erreur lors de la modification de votre profil",
       "EDIT_ORGANIZATION_ERROR": "Erreur lors de la modification de l'organisation",
       "EDIT_USER_ERROR": "Erreur lors de la modification de l'utilisateur",
-      "EDIT_USER_SESSION_ERROR": "Une erreur inconnue s'est produite",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "Vous ne pouvez pas ajouter un utilisateur dont le domaine de l'email est en dehors de votre organisation",
       "EPIC_CREATE_ERROR": "Une erreur s'est produite lors de l'ajout de l'épic.",
       "EPIC_UPDATE_ERROR": "Une erreur s'est produite lors de la mise à jour de l'épic.",
@@ -1029,7 +1028,6 @@
       "LicenseTypeLabel": "Type de licence",
       "Restore": "Restaurer",
       "SelectImage": "Sélectionner une ou plusieurs image(s)",
-      "SelectIntegrationSubType": "Sous-type",
       "SelectJSONFile": "Sélectionner le fichier JSON",
       "ShortDescriptionLabel": "Courte description",
       "ShortDescriptionPlaceholder": "Il s'agit de quelques phrases d'accroche pour décrire le document.",
@@ -1057,10 +1055,6 @@
       "AddService": "Ajouter une nouvelle intégration",
       "IntegrationType": "Type d'intégration",
       "Filter": {
-        "IntegrationSubType": {
-          "Label": "Sous-type",
-          "Placeholder": "Sous-type..."
-        },
         "Type": {
           "Label": "Type d'intégration",
           "Placeholder": "Type d'intégration..."
@@ -1360,7 +1354,6 @@
         "IntegrationType": "Type",
         "IntegrationSolutionCategory": "Catégorie de solutions",
         "IntegrationLicenseType": "Type de licence",
-        "IntegrationSubType": "Sous-type",
         "GithubURL": "URL Github",
         "VendorURL": "URL du fournisseur",
         "FeedURL": "URL du flux",

@@ -5,19 +5,16 @@ import IntegrationAccordion from './IntegrationAccordion';
 
 describe('IntegrationAccordion', () => {
   const integrationType = 'connector';
-  const count = 2;
   const childrenText = 'accordion-child-content';
   const triggerLabelPattern = new RegExp(
     `Service\\.OpenctiIntegrations\\.Type\\.${integrationType}`
   );
 
-  it('should display the accordion label and count when rendered', () => {
+  it('should display the accordion label when rendered', () => {
     // Given
     // When
     testRender(
-      <IntegrationAccordion
-        integrationType={integrationType}
-        count={count}>
+      <IntegrationAccordion integrationType={integrationType}>
         <div>{childrenText}</div>
       </IntegrationAccordion>
     );
@@ -26,21 +23,15 @@ describe('IntegrationAccordion', () => {
     expect(
       screen.getByRole('button', { name: triggerLabelPattern })
     ).toBeInTheDocument();
-    expect(screen.getByText(String(count))).toBeInTheDocument();
   });
 
-  it('should display the children when the accordion is opened', async () => {
+  it('should display the children by default', () => {
     // Given
-    const { user } = testRender(
-      <IntegrationAccordion
-        integrationType={integrationType}
-        count={count}>
+    testRender(
+      <IntegrationAccordion integrationType={integrationType}>
         <div>{childrenText}</div>
       </IntegrationAccordion>
     );
-
-    // When
-    await user.click(screen.getByRole('button', { name: triggerLabelPattern }));
 
     // Then
     expect(screen.getByText(childrenText)).toBeInTheDocument();

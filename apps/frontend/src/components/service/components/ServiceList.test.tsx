@@ -195,7 +195,7 @@ describe('ServiceList', () => {
     expect(screen.queryByText('Draft document')).toBeNull();
   });
 
-  it('groups known integration types in accordion and keeps unknown types as plain lists', async () => {
+  it('groups known integration types in accordion and keeps unknown types as plain lists', () => {
     const active = [
       {
         id: 'active-1',
@@ -216,7 +216,7 @@ describe('ServiceList', () => {
       },
     ] as Partial<documentItem_fragment$data>[];
 
-    const { user } = testRender(
+    testRender(
       <ServiceList
         active={active}
         draft={[]}
@@ -231,14 +231,6 @@ describe('ServiceList', () => {
       )
     ).toBeInTheDocument();
     expect(screen.getByText('Dashboard document')).toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole('button', {
-        name: new RegExp(
-          `Service\\.OpenctiIntegrations\\.Type\\.${IntegrationType.Connector}`
-        ),
-      })
-    );
 
     expect(screen.getByText('Connector document')).toBeInTheDocument();
   });
