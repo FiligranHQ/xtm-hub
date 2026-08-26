@@ -64,6 +64,42 @@
     "EE": "Édition Entreprise",
     "TRIAL": "Essai gratuit"
   },
+  "XtmPlatformTrial": {
+    "BundleInfo": {
+      "OrganizationName": "Organisation",
+      "StartedOn": "Démarré le",
+      "License": "Licence",
+      "Remaining": "Restant",
+      "DaysRemaining": "{days} jours",
+      "TrialRequester": "Demandeur de l'essai",
+      "Title": "Détails de l'essai XTM Product :"
+    },
+    "Products": {
+      "ConnectionStatus": "Statut de connexion",
+      "LastConnection": "Dernière vérification de connexion",
+      "Role": "Rôle",
+      "NoRole": "Aucun.",
+      "NoRoleHint": "Veuillez contacter le demandeur de l'essai.",
+      "StatusActive": "Connecté",
+      "StatusNotConnected": "Non connecté",
+      "AccessProduct": "Accéder à {productName}",
+      "StatusUnavailable": "Statut indisponible",
+      "ProductName": "Nom du produit",
+      "ConnectionOpencti": "Connexion OpenCTI",
+      "ConnectionOpenaev": "Connexion OpenAEV",
+      "EditName": "Modifier le nom",
+      "ConnectionLost": "Connexion perdue.",
+      "ReconnectHint": "Vous devriez reconnecter votre produit."
+    },
+    "CancelTrial": "Annuler l'essai",
+    "Title": "Bienvenue dans votre essai XTM Platform",
+    "Subtitle": "Tout ce dont vous avez besoin pour votre essai se trouve ici : les détails de votre essai et le temps restant, un accès direct à vos produits, et une ligne directe avec l'équipe Filigran dès que vous avez besoin d'assistance ou des questions.",
+    "Guide": {
+      "Title": "Guide de l'essai XTM Platform",
+      "Content": "Découvrez ce que nous construisons, ce qui arrive ensuite et où se dirige la plateforme XTM. Transparence totale. Aucune surprise.",
+      "SeeMore": "Voir plus"
+    }
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Colonnes",
@@ -513,6 +549,7 @@
   },
   "Menu": {
     "XTMPlatform": "Plateforme XTM",
+    "XTMPlatformTrial": "Essai Plateforme XTM",
     "StartFreeTrial": "Commencer l'essai gratuit",
     "CustomDashboards": "Tableaux de bord personnalisés",
     "CustomViews": "Vues personnalisées",
