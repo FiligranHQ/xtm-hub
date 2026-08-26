@@ -3,6 +3,7 @@ import {
   getPrivateNavigationRegisteredPlatformsByIdentifier,
   getPrivateNavigationServiceHrefs,
 } from '@/components/menu/navigation/private/private-navigation.utils';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import {
   BottomLink,
   NavigationConfig,
@@ -13,6 +14,7 @@ import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import {
+  DiamondOutlinedIcon,
   HomeIcon,
   IndividualIcon,
   LogoXtmOneIcon,
@@ -34,6 +36,7 @@ import {
   ServiceInstanceFilterKey,
   ServiceInstanceOrdering,
   ServiceInstancesListQueryVariables,
+  FeatureFlag,
   TrialDeploymentsEligibilityQueryVariables,
   useRegisteredPlatformsListQuery,
   useServiceInstancesListQuery,
@@ -93,6 +96,9 @@ export const usePrivateNavigation = (): NavigationConfig => {
     useContext(PortalContext);
   const tMenu = useTranslations('Menu');
   const tMenuLinks = useTranslations('MenuLinks');
+  const isXtmPlatformBundleEnabled = useIsFeatureEnabled(
+    FeatureFlag.XtmPlatformTrial
+  );
   const locale = useLocale();
   const selectedOrganizationId = me?.selected_organization_id;
   const currentOrganization = me?.organizations.find(
@@ -357,6 +363,18 @@ export const usePrivateNavigation = (): NavigationConfig => {
       href: `/${APP_PATH}`,
       links: [],
     },
+    ...(isXtmPlatformBundleEnabled
+      ? [
+          {
+            key: 'xtm-platform-trial',
+            label: tMenu('XTMPlatformTrial'),
+            icon: DiamondOutlinedIcon,
+            pathPrefix: `/${APP_PATH}/xtm-platform-trial`,
+            href: `/${APP_PATH}/xtm-platform-trial`,
+            links: [],
+          },
+        ]
+      : []),
     {
       key: 'opencti',
       label: 'OpenCTI',

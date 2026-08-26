@@ -148,7 +148,7 @@ describe('usePrivateNavigation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
     vi.mocked(getPrivateNavigationServiceHrefs).mockReturnValue(new Map());
     vi.mocked(
       getPrivateNavigationRegisteredPlatformsByIdentifier
@@ -176,6 +176,7 @@ describe('usePrivateNavigation', () => {
 
     expect(result.current.sections.map((section) => section.key)).toEqual([
       'xtm-platform',
+      'xtm-platform-trial',
       'opencti',
       'openaev',
       'xtm-one',
@@ -206,6 +207,18 @@ describe('usePrivateNavigation', () => {
     ]);
   });
 
+  it('hides the xtm-platform-trial section when the feature flag is off', () => {
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    expect(
+      result.current.sections.map((section) => section.key)
+    ).not.toContain('xtm-platform-trial');
+  });
+
   it('adds settings as a footer section when user is authorized', () => {
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
@@ -214,6 +227,7 @@ describe('usePrivateNavigation', () => {
 
     expect(result.current.sections.map((section) => section.key)).toEqual([
       'xtm-platform',
+      'xtm-platform-trial',
       'opencti',
       'openaev',
       'xtm-one',
@@ -682,6 +696,7 @@ describe('usePrivateNavigation', () => {
 
       expect(result.current.sections.map((section) => section.key)).toEqual([
         'xtm-platform',
+        'xtm-platform-trial',
         'opencti',
         'openaev',
         'xtm-one',
