@@ -13,9 +13,11 @@ import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
+import { isFeatureEnabled } from '@/utils/settings.service';
+import { FeatureFlag } from '@graphql/generated';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 const PATHNAME = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/xtm-platform-trial`;
 
@@ -53,6 +55,13 @@ const Page = async ({
 }: {
   params: Promise<{ locale: PublicLocale }>;
 }) => {
+  const xtmPlatformTrialEnabled = await isFeatureEnabled(
+    FeatureFlag.XtmPlatformTrial
+  );
+  if (!xtmPlatformTrialEnabled) {
+    notFound();
+  }
+
   const user = await loadCurrentUser();
   if (user) {
     redirect(`/${APP_PATH}/service/xtm-platform-trial`);
