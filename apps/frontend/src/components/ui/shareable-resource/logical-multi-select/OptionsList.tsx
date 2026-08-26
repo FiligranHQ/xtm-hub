@@ -1,3 +1,4 @@
+import { useTranslate } from '@/hooks/use-translate';
 import {
   Checkbox,
   CommandEmpty,
@@ -6,7 +7,6 @@ import {
   CommandSeparator,
   Separator,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 
 export type FlatOption =
   | { type: 'parent'; value: string; label: string }
@@ -37,7 +37,7 @@ export const OptionsList = ({
   onClose,
   showClear,
 }: OptionsListProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
 
   return (
     <>

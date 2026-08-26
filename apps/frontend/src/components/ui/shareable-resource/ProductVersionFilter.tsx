@@ -4,8 +4,8 @@ import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { useTranslate } from '@/hooks/use-translate';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 interface ProductVersionFilterProps {
@@ -15,7 +15,7 @@ interface ProductVersionFilterProps {
 export const ProductVersionFilter = ({
   platformIdentifier,
 }: ProductVersionFilterProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const { platforms } = useRegisteredPlatforms(platformIdentifier, {
     onlyActive: true,
   });

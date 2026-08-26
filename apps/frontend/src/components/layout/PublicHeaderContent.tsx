@@ -1,7 +1,7 @@
 import { PublicMobileMenuButton } from '@/components/menu/navigation/public/PublicMobileMenuButton';
+import { getTranslate } from '@/hooks/get-translate';
 import { Button } from '@filigran/ui/servers';
 import LogoXTMDark from '@public/logo_xtm_hub_dark.svg';
-import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
 interface PublicHeaderContentProps {
@@ -13,7 +13,7 @@ export const PublicHeaderContent = async ({
   locale,
   visibleServiceSlugs,
 }: PublicHeaderContentProps) => {
-  const t = await getTranslations();
+  const t = await getTranslate();
 
   return (
     <>

@@ -6,6 +6,7 @@ import {
 } from '@/components/trials/trials.graphql';
 import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
 import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
+import { useTranslate } from '@/hooks/use-translate';
 import { DataTable } from '@filigran/ui';
 import { PlatformIdentifier } from '@generated/OneClickDeployMutation.graphql';
 import trialsDeploymentAvailabilityFragmentGraphql, {
@@ -16,7 +17,6 @@ import { trialsDeploymentRequestsAvailableList$key } from '@generated/trialsDepl
 import { trialsDeploymentRequestsAvailableQuery } from '@generated/trialsDeploymentRequestsAvailableQuery.graphql';
 import { PortalCapability } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import {
   readInlineData,
@@ -31,7 +31,7 @@ interface TrialsTabQuotasPlatformProps {
 export const TrialsTabQuotasPlatform = ({
   platformIdentifier,
 }: TrialsTabQuotasPlatformProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const userHasModifyTrialQuotaCapa = useUserHasPortalCapability([
     PortalCapability.ModifyTrialsQuota,
   ]);

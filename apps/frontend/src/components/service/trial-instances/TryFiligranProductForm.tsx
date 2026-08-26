@@ -8,6 +8,7 @@ import {
 import { DeploymentRequestsAvailableQuery } from '@/components/service/trial-instances/trial-instances.graphql';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
+import { useTranslate } from '@/hooks/use-translate';
 import {
   AutoForm,
   Button,
@@ -28,7 +29,6 @@ import {
   DeploymentRequestUseCase,
   PlatformIdentifier,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useContext, useState } from 'react';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
@@ -60,7 +60,7 @@ export const TryFiligranProductForm = ({
   platformIdentifier,
 }: TryFiligranProductFormProps) => {
   const { me } = useContext(PortalContext);
-  const t = useTranslations();
+  const t = useTranslate();
 
   const deploymentRequestsAvailability =
     usePreloadedQuery<trialInstancesDeploymentRequestsAvailableQuery>(

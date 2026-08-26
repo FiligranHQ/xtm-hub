@@ -1,9 +1,5 @@
-import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
-import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader';
-import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
-import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { PublicFreeTrialContent } from '@/components/service/trial-instances/page/PublicFreeTrialContent';
 import type { PublicLocale } from '@/i18n/config';
-import { RelayProvider } from '@/relay/relay-provider';
 import {
   buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
@@ -11,11 +7,9 @@ import {
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { GradientButton } from '@filigran/ui/servers';
 import { PlatformIdentifier, ServiceInstanceTag } from '@graphql/generated';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
 
 const PATHNAME = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/openaev-free-trial`;
 
@@ -46,15 +40,6 @@ const Page = async ({
 }) => {
   const { locale } = await params;
   const baseUrl = await getBaseUrl();
-  const breadcrumbs = [
-    {
-      label: 'MenuLinks.Home',
-      href: `/${locale}`,
-    },
-    {
-      label: 'Service.Trials.OpenAEVPlatformBreadcrumb',
-    },
-  ];
   const t = await getTranslations();
 
   const jsonLd = {
@@ -73,25 +58,13 @@ const Page = async ({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
-      <BreadcrumbNav value={breadcrumbs} />
-      <RelayProvider>
-        <TrialsHeader
-          platformIdentifier={PlatformIdentifier.Openaev}
-          actions={
-            <GradientButton className="bg-background dark:bg-none">
-              <Link
-                href="/redirect/create-openaev-free-trial"
-                prefetch={false}>
-                {t('Service.Trials.StartTrial')}
-              </Link>
-            </GradientButton>
-          }
-        />
-        <TrialsLearnMore platformIdentifier={PlatformIdentifier.Openaev} />
-        <RegistrationLearnMore
-          serviceInstanceTag={ServiceInstanceTag.OpenAev}
-        />
-      </RelayProvider>
+      <PublicFreeTrialContent
+        locale={locale}
+        platformIdentifier={PlatformIdentifier.Openaev}
+        serviceInstanceTag={ServiceInstanceTag.OpenAev}
+        breadcrumbLabelKey="Service.Trials.OpenAEVPlatformBreadcrumb"
+        redirectHref="/redirect/create-openaev-free-trial"
+      />
     </>
   );
 };

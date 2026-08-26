@@ -4,6 +4,7 @@ import { invalidatePrivateNavigationQueries } from '@/components/menu/navigation
 import { translateServiceDefinitionIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { UpdatePlatformServiceMetadata } from '@/components/service/service.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { useTranslate } from '@/hooks/use-translate';
 import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
 import {
   Button,
@@ -22,7 +23,6 @@ import { ServiceDefinitionIdentifier } from '@generated/serviceInstance_fragment
 import { serviceUpdatePlatformServiceMetadataMutation } from '@generated/serviceUpdatePlatformServiceMetadataMutation.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -49,7 +49,7 @@ export const PlatformUpdateSheet = ({
   open,
   setOpen,
 }: PlatformUpdateSheetProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 

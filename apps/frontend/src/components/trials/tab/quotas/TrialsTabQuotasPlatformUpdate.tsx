@@ -1,7 +1,7 @@
 import { TrialsTabQuotasPlatformUpdateForm } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdateForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { useTranslate } from '@/hooks/use-translate';
 import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
-import { useTranslations } from 'next-intl';
 import { ReactNode, useState } from 'react';
 
 interface TrialsTabQuotasPlatformUpdateProps {
@@ -17,7 +17,7 @@ export const TrialsTabQuotasPlatformUpdate = ({
   defaultStateOpen,
   quota,
 }: TrialsTabQuotasPlatformUpdateProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const [openSheet, setOpenSheet] = useState(defaultStateOpen ?? false);
   const handleOpenSheet = (open: boolean) => {
     setOpenSheet((prevState) => {

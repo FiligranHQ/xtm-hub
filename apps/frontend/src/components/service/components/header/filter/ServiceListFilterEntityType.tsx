@@ -3,11 +3,11 @@ import { ServiceListFilterKey } from '@/components/service/components/header/Ser
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { useTranslate } from '@/hooks/use-translate';
 import { ENTITY_TYPES } from '@/utils/shareable-resources/entity-type';
-import { useTranslations } from 'next-intl';
 
 export const ServiceListFilterEntityType = () => {
-  const t = useTranslations();
+  const t = useTranslate();
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { entityTypes, setEntityTypes, removeEntityTypes } =
     useServiceListLocalStorage(localStorageKey);

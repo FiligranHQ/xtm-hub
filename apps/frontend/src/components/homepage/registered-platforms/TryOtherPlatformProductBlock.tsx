@@ -3,6 +3,7 @@
 import { resolveHomepageCrossSellProduct } from '@/components/homepage/Homepage.utils';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { Button, Card, CardContent } from '@filigran/ui';
 import {
@@ -11,12 +12,11 @@ import {
   useTrialDeploymentsEligibilityQuery,
 } from '@graphql/generated';
 import { trialKeys } from '@graphql/trial/trial.keys';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useContext } from 'react';
 
 const TryOtherPlatformProductBlock = () => {
-  const t = useTranslations('HomePage.TryOtherPlatform');
+  const t = useTranslate('HomePage.TryOtherPlatform');
   const { me } = useContext(PortalContext);
   const selectedOrganizationId = me?.selected_organization_id;
 

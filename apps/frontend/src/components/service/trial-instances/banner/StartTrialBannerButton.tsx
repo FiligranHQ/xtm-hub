@@ -1,8 +1,8 @@
 'use client';
 
+import { useTranslate } from '@/hooks/use-translate';
 import { ArrowRightAltIcon, KeyboardArrowRightIcon } from '@filigran/icon';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
@@ -50,7 +50,7 @@ import { z } from 'zod';
 
 // Component
 export const StartTrialBannerButton = () => {
-  const t = useTranslations();
+  const t = useTranslate();
   const environment = useRelayEnvironment();
   const router = useRouter();
   const queryClient = useQueryClient();

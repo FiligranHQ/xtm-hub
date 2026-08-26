@@ -1,4 +1,5 @@
 import HomepageResourceList from '@/components/homepage/resources/HomepageResourceList';
+import { getTranslate } from '@/hooks/get-translate';
 import { PublicLocale } from '@/i18n/config';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import {
@@ -7,7 +8,6 @@ import {
   MostDeployedDocumentsQueryQueryVariables,
   PlatformIdentifier,
 } from '@graphql/generated';
-import { getTranslations } from 'next-intl/server';
 
 const MOST_DEPLOYED_LIMIT = 8;
 
@@ -22,7 +22,7 @@ const MostDeployedResources = async ({
   isAuthenticated = false,
   paramsLocale,
 }: MostDeployedResourcesProps) => {
-  const t = await getTranslations('HomePage.XtmMostDeployedResources');
+  const t = await getTranslate('HomePage.XtmMostDeployedResources');
 
   const data = await serverGraphqlFetch<
     MostDeployedDocumentsQueryQuery,

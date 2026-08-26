@@ -1,8 +1,8 @@
 'use client';
 
+import { useTranslate } from '@/hooks/use-translate';
 import { ArrowRightAltIcon } from '@filigran/icon';
 import { Button, GradientButton } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
@@ -51,7 +51,7 @@ export const StartTrialButton = ({
   platformIdentifier = PlatformIdentifier.Opencti,
   source,
 }: StartTrialButtonProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const environment = useRelayEnvironment();
   const router = useRouter();
   const queryClient = useQueryClient();

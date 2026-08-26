@@ -4,12 +4,15 @@ import '@styles/globals.css';
 
 import { AdminBanner } from '@/components/admin/AdminBanner';
 import { TestEnvBanner } from '@/components/admin/TestEnvBanner';
+import { EditionModeBanner } from '@/components/content-translation/EditionModeBanner';
+import { EditModeContentObserver } from '@/components/content-translation/EditModeContentObserver';
 import HeaderComponent from '@/components/Header';
 import { AppShell } from '@/components/layout/AppShell';
 import PrivateMenu from '@/components/menu/PrivateMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { TryFiligranProductsBanner } from '@/components/service/trial-instances/banner/TryFiligranProductsBanner';
 import { PrivateXtmPlatformTrialBanner } from '@/components/service/trial-instances/banner/xtm-platform-trial/PrivateXtmPlatformTrialBanner';
+import { EditModeProvider } from '@/context/edit-mode-context';
 import { RelayProvider } from '@/relay/relay-provider';
 import { loadMeUser } from '@/utils/load-me-user';
 import { getMetadataBase } from '@/utils/metadata';
@@ -51,10 +54,15 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
     FeatureFlag.XtmPlatformTrial
   );
 
+  // EditionModeBanner self-hides whenever edit mode is off (a global,
+  // cookie-driven toggle — see app/edition/route.ts), so it can sit
+  // unconditionally in the same top-level banners slot as the env/admin
+  // banners, above the header, on every page.
   const banners = (
     <>
       <TestEnvBanner />
       <AdminBanner />
+      <EditionModeBanner />
       {xtmPlatformTrialEnabled ? (
         <PrivateXtmPlatformTrialBanner />
       ) : (
@@ -68,13 +76,16 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       <ReactQueryProvider>
         <div className="flex min-h-screen">
           <PageLoader>
-            <AppShell
-              banners={banners}
-              menu={<PrivateMenu />}
-              headerContent={<HeaderComponent />}
-              contentClassName="p-3 sm:p-6">
-              {children}
-            </AppShell>
+            <EditModeProvider>
+              <AppShell
+                banners={banners}
+                menu={<PrivateMenu />}
+                headerContent={<HeaderComponent />}
+                contentClassName="p-3 sm:p-6">
+                {children}
+              </AppShell>
+              <EditModeContentObserver />
+            </EditModeProvider>
           </PageLoader>
         </div>
       </ReactQueryProvider>

@@ -4,6 +4,7 @@ import {
 } from '@/components/epic/epic-item/TimelineMapping';
 import type { HomepageRoadmapTitleProduct } from '@/components/homepage/Homepage.utils';
 import { CountBadge } from '@/components/ui/CountBadge';
+import { getTranslate } from '@/hooks/get-translate';
 import { PublicLocale } from '@/i18n/config';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
@@ -13,7 +14,7 @@ import {
   EpicCountPerTimelineQueryQuery,
   Timeline,
 } from '@graphql/generated';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -34,8 +35,8 @@ const XtmRoadmap = async ({
   titleProduct = 'default',
   paramsLocale,
 }: XtmRoadmapProps) => {
-  const t = await getTranslations('PublicHomePage.XtmRoadmap');
-  const tPlatformIdentifier = await getTranslations('PlatformIdentifier');
+  const t = await getTranslate('PublicHomePage.XtmRoadmap');
+  const tPlatformIdentifier = await getTranslate('PlatformIdentifier');
   const usedLocale = paramsLocale ?? (await getLocale());
 
   const title =

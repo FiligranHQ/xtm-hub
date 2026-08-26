@@ -1,7 +1,7 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
+import { useTranslate } from '@/hooks/use-translate';
 import { Combobox } from '@filigran/ui/clients';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 interface ServiceListAddFilterComboboxProps {
@@ -11,7 +11,7 @@ interface ServiceListAddFilterComboboxProps {
 export const ServiceListAddFilterCombobox = ({
   filterKeys,
 }: ServiceListAddFilterComboboxProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const { addFilter, selectedFilters } = useServiceListFilters();
   const availableFilterKeys = useMemo(() => {
     return filterKeys.filter((key) => !selectedFilters.includes(key));

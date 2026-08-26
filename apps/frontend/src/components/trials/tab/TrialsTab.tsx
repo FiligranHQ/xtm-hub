@@ -21,6 +21,7 @@ import {
   useUserHasPortalCapability,
 } from '@/hooks/use-portal-capability';
 import { useTablePagination } from '@/hooks/use-table-pagination';
+import { useTranslate } from '@/hooks/use-translate';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { daysUntil, formatDate } from '@/utils/date';
@@ -60,7 +61,6 @@ import {
   ReorderDeploymentRequestInQueueDirection,
 } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslations } from 'next-intl';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   readInlineData,
@@ -109,7 +109,7 @@ const trialsTabConfig: Record<
 const connectionIDs = new Map<TrialsTabType, string>();
 
 const TrialsTab = ({ type, platformIdentifier }: TrialsTabProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const isAdminByPass = useAdminByPass();
   const userHasModifyTrialCapa = useUserHasPortalCapability([
     PortalCapability.ModifyTrials,

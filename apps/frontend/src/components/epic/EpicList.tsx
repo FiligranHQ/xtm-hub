@@ -11,6 +11,7 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import { CountBadge } from '@/components/ui/CountBadge';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import useServiceCapability from '@/hooks/use-service-capability';
+import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
@@ -30,7 +31,6 @@ import {
   ServiceRestriction,
   Timeline,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useCallback, useContext, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
@@ -55,7 +55,7 @@ export const EpicList = ({
   onFilterChange,
   onSearch,
 }: EpicListProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const [openSheet, setOpenSheet] = useState(false);
   const [showFinished, setShowFinished] = useState(false);
   const detailedServiceInstance = isServiceInstanceWithSubscriptions(

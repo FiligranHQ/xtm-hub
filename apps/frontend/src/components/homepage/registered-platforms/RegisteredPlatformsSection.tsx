@@ -1,8 +1,8 @@
 import { mapRegisteredPlatformsToHomepageCards } from '@/components/homepage/Homepage.utils';
 import RegisteredPlatformCard from '@/components/homepage/registered-platforms/RegisteredPlatformCard';
 import TryOtherPlatformProductBlock from '@/components/homepage/registered-platforms/TryOtherPlatformProductBlock';
+import { getTranslate } from '@/hooks/get-translate';
 import { RegisteredPlatformsQuery } from '@graphql/generated';
-import { getTranslations } from 'next-intl/server';
 
 interface RegisteredPlatformsSectionProps {
   welcomeName?: string;
@@ -13,7 +13,7 @@ export const RegisteredPlatformsSection = async ({
   welcomeName,
   registeredPlatformsData,
 }: RegisteredPlatformsSectionProps) => {
-  const t = await getTranslations();
+  const t = await getTranslate();
   const homepageRegisteredPlatformCards = mapRegisteredPlatformsToHomepageCards(
     registeredPlatformsData.registeredPlatforms
   );

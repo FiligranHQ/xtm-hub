@@ -95,7 +95,8 @@ type BaseDatabaseType =
   | 'Manifest'
   | 'Manifest_Document'
   | 'PlatformMetadata'
-  | 'OneClickDeployment';
+  | 'OneClickDeployment'
+  | 'ContentTranslation';
 
 export type DatabaseType =
   | BaseDatabaseType

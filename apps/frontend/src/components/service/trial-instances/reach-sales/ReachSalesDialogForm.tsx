@@ -1,4 +1,5 @@
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { useTranslate } from '@/hooks/use-translate';
 import {
   Form,
   FormControl,
@@ -10,7 +11,6 @@ import {
 } from '@filigran/ui';
 import { PlatformIdentifier } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -31,7 +31,7 @@ export const ReachSalesDialogForm = ({
   onSubmit,
   platformIdentifier: _platformIdentifier,
 }: ReachSalesDialogFormProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
 
   const form = useForm<z.infer<typeof reachSalesSchema>>({
     resolver: zodResolver(reachSalesSchema),

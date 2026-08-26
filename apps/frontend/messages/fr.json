@@ -1840,5 +1840,18 @@
     "vulnerability_analyst": "Analyste en vulnérabilités",
     "consultant": "Consultant",
     "other": "Autre"
+  },
+  "EditableText": {
+    "DialogTitle": "Modifier le contenu",
+    "KeyLabel": "Clé : {contentKey}",
+    "ValueLabel": "Valeur {locale}",
+    "Save": "Enregistrer",
+    "EditionBannerLabel": "Vous êtes en mode édition — chaque texte modifiable est cliquable.",
+    "EditionBannerExit": "Retour au site en direct"
+  },
+  "EditableTextDemo": {
+    "Title": "Bienvenue sur XTM Hub",
+    "Subtitle": "Le point d'entrée unifié de l'écosystème Filigran.",
+    "Instructions": "Rendez-vous sur /edition pour activer le mode édition (réservé aux utilisateurs avec la capacité BYPASS), puis cliquez sur le titre ou le sous-titre ci-dessous. L’enregistrement appelle la véritable mutation upsertContentTranslation."
   }
 }

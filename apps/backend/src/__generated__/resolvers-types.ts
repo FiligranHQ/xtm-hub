@@ -204,6 +204,20 @@ export type ConsumeProvisionedNewsFeedItemsResponse = {
   news_feed_items: Array<ProvisionedNewsFeedItem>;
 };
 
+export type ContentTranslationEntry = {
+  __typename?: 'ContentTranslationEntry';
+  key: Scalars['String']['output'];
+  locale: Locale;
+  updated_at: Scalars['Date']['output'];
+  updater_id?: Maybe<Scalars['UserId']['output']>;
+  value: Scalars['String']['output'];
+};
+
+export type ContentTranslationValueInput = {
+  locale: Locale;
+  value: Scalars['String']['input'];
+};
+
 export type CreateCompetitorInput = {
   domain: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -906,6 +920,12 @@ export enum LicenseType {
   Free = 'Free'
 }
 
+export enum Locale {
+  En = 'en',
+  Fr = 'fr',
+  Ja = 'ja'
+}
+
 export type LogicalFilterInput = {
   children?: InputMaybe<Array<LogicalFilterInput>>;
   leaf?: InputMaybe<Filter>;
@@ -1034,6 +1054,7 @@ export type Mutation = {
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription?: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
+  upsertContentTranslation: Array<ContentTranslationEntry>;
 };
 
 
@@ -1417,6 +1438,11 @@ export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
 };
 
+
+export type MutationUpsertContentTranslationArgs = {
+  input: UpsertContentTranslationInput;
+};
+
 export type NewsFeedItem = Node & {
   __typename?: 'NewsFeedItem';
   creation_date: Scalars['Date']['output'];
@@ -1720,6 +1746,7 @@ export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
+  contentTranslations: Array<ContentTranslationEntry>;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
@@ -1779,6 +1806,12 @@ export type QueryCompetitorsArgs = {
   first: Scalars['Int']['input'];
   orderBy: CompetitorOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryContentTranslationsArgs = {
+  keys?: InputMaybe<Array<Scalars['String']['input']>>;
+  locale?: InputMaybe<Locale>;
 };
 
 
@@ -2697,6 +2730,11 @@ export type UpdateSubscriptionInput = {
   start_date?: InputMaybe<Scalars['Date']['input']>;
 };
 
+export type UpsertContentTranslationInput = {
+  key: Scalars['String']['input'];
+  values: Array<ContentTranslationValueInput>;
+};
+
 export type UseCase = Node & {
   __typename?: 'UseCase';
   color: Scalars['String']['output'];
@@ -2955,6 +2993,8 @@ export type ResolversTypes = ResolversObject<{
   CompetitorTier: CompetitorTier;
   Connector: ResolverTypeWrapper<Connector>;
   ConsumeProvisionedNewsFeedItemsResponse: ResolverTypeWrapper<ConsumeProvisionedNewsFeedItemsResponse>;
+  ContentTranslationEntry: ResolverTypeWrapper<ContentTranslationEntry>;
+  ContentTranslationValueInput: ContentTranslationValueInput;
   CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
@@ -3022,6 +3062,7 @@ export type ResolversTypes = ResolversObject<{
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LastDeployedOverview: ResolverTypeWrapper<Omit<LastDeployedOverview, 'resources'> & { resources: Array<ResolversTypes['DeployedResource']> }>;
   LicenseType: LicenseType;
+  Locale: Locale;
   LogicalFilterInput: LogicalFilterInput;
   LogicalOperator: LogicalOperator;
   ManifestFragmentInput: ManifestFragmentInput;
@@ -3144,6 +3185,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   UpdateSubscriptionInput: UpdateSubscriptionInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
+  UpsertContentTranslationInput: UpsertContentTranslationInput;
   UseCase: ResolverTypeWrapper<UseCase>;
   UseCaseConnection: ResolverTypeWrapper<UseCaseConnection>;
   UseCaseEdge: ResolverTypeWrapper<UseCaseEdge>;
@@ -3192,6 +3234,8 @@ export type ResolversParentTypes = ResolversObject<{
   CompetitorId: Scalars['CompetitorId']['output'];
   Connector: Connector;
   ConsumeProvisionedNewsFeedItemsResponse: ConsumeProvisionedNewsFeedItemsResponse;
+  ContentTranslationEntry: ContentTranslationEntry;
+  ContentTranslationValueInput: ContentTranslationValueInput;
   CreateCompetitorInput: CreateCompetitorInput;
   CreateDeploymentRequestInput: CreateDeploymentRequestInput;
   CreateDocumentInput: CreateDocumentInput;
@@ -3333,6 +3377,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   UpdateSubscriptionInput: UpdateSubscriptionInput;
   Upload: Scalars['Upload']['output'];
+  UpsertContentTranslationInput: UpsertContentTranslationInput;
   UseCase: UseCase;
   UseCaseConnection: UseCaseConnection;
   UseCaseEdge: UseCaseEdge;
@@ -3463,6 +3508,15 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
 export type ConsumeProvisionedNewsFeedItemsResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ConsumeProvisionedNewsFeedItemsResponse'] = ResolversParentTypes['ConsumeProvisionedNewsFeedItemsResponse']> = ResolversObject<{
   available_news_feed_types?: Resolver<Array<ResolversTypes['NewsFeedItemType']>, ParentType, ContextType>;
   news_feed_items?: Resolver<Array<ResolversTypes['ProvisionedNewsFeedItem']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ContentTranslationEntryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ContentTranslationEntry'] = ResolversParentTypes['ContentTranslationEntry']> = ResolversObject<{
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  locale?: Resolver<ResolversTypes['Locale'], ParentType, ContextType>;
+  updated_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  updater_id?: Resolver<Maybe<ResolversTypes['UserId']>, ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3897,6 +3951,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updateServiceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
   updateSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationUpdateSubscriptionArgs, 'input' | 'subscription_id'>>;
   uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
+  upsertContentTranslation?: Resolver<Array<ResolversTypes['ContentTranslationEntry']>, ParentType, ContextType, RequireFields<MutationUpsertContentTranslationArgs, 'input'>>;
 }>;
 
 export type NewsFeedItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['NewsFeedItem'] = ResolversParentTypes['NewsFeedItem']> = ResolversObject<{
@@ -4108,6 +4163,7 @@ export type ProvisionedNewsFeedItemResolvers<ContextType = PortalContext, Parent
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  contentTranslations?: Resolver<Array<ResolversTypes['ContentTranslationEntry']>, ParentType, ContextType, Partial<QueryContentTranslationsArgs>>;
   countEpicsPerTimeline?: Resolver<Array<ResolversTypes['EpicCountPerTimeline']>, ParentType, ContextType>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, RequireFields<QueryDeploymentRequestsAvailableArgs, 'platformIdentifier'>>;
@@ -4700,6 +4756,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CompetitorId?: GraphQLScalarType;
   Connector?: ConnectorResolvers<ContextType>;
   ConsumeProvisionedNewsFeedItemsResponse?: ConsumeProvisionedNewsFeedItemsResponseResolvers<ContextType>;
+  ContentTranslationEntry?: ContentTranslationEntryResolvers<ContextType>;
   CsvFeed?: CsvFeedResolvers<ContextType>;
   CustomDashboard?: CustomDashboardResolvers<ContextType>;
   CustomView?: CustomViewResolvers<ContextType>;

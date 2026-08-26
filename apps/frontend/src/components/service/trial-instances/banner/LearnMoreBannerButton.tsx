@@ -2,6 +2,7 @@
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { IconActionContext } from '@/components/ui/IconActions';
+import { useTranslate } from '@/hooks/use-translate';
 import { KeyboardArrowRightIcon } from '@filigran/icon';
 import {
   DropdownMenu,
@@ -10,7 +11,6 @@ import {
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -22,7 +22,7 @@ interface LearnMoreBannerButtonProps {
 export const LearnMoreBannerButton = ({
   getHref,
 }: LearnMoreBannerButtonProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const getLink = (product: PlatformIdentifier) => (

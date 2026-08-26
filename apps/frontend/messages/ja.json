@@ -1840,5 +1840,18 @@
     "vulnerability_analyst": "脆弱性アナリスト",
     "consultant": "コンサルタント",
     "other": "その他"
+  },
+  "EditableText": {
+    "DialogTitle": "コンテンツを編集",
+    "KeyLabel": "キー: {contentKey}",
+    "ValueLabel": "{locale} の値",
+    "Save": "保存",
+    "EditionBannerLabel": "編集モードです。編集可能なテキストはすべてクリックできます。",
+    "EditionBannerExit": "公開サイトに戻る"
+  },
+  "EditableTextDemo": {
+    "Title": "XTM Hub へようこそ",
+    "Subtitle": "Filigran エコシステムの統合エントリーポイント。",
+    "Instructions": "/edition にアクセスして編集モードを有効にしてください(BYPASS 権限を持つユーザーのみ)。その後、下のタイトルまたはサブタイトルをクリックしてください。保存すると実際の upsertContentTranslation ミューテーションが呼び出されます。"
   }
 }

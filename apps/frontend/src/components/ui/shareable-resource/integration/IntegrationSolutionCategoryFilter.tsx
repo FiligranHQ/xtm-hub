@@ -4,12 +4,12 @@ import { useSolutionCategories } from '@/components/service/form/UseSolutionCate
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
+import { useTranslate } from '@/hooks/use-translate';
 import { FiligranProduct } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 export const IntegrationSolutionCategoryFilter = () => {
-  const t = useTranslations();
+  const t = useTranslate();
   const categories = useSolutionCategories(FiligranProduct.Opencti);
   const options = useMemo(
     () =>

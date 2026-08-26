@@ -48,6 +48,17 @@ vi.mock('next/navigation', async (importOriginal) => ({
   useSearchParams: vi.fn(),
 }));
 
+// cookies() throws when called outside a real Next.js request scope, which
+// is always the case in Vitest. Default to an empty cookie jar so
+// getTranslate() (and anything else reading cookies() server-side) sees
+// edit mode off, mirroring the client-side useTranslate() default in tests.
+vi.mock('next/headers', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/headers')>()),
+  cookies: vi.fn(async () => ({
+    get: () => undefined,
+  })),
+}));
+
 vi.mock('next-intl', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next-intl')>()),
   useTranslations: vi.fn(() =>

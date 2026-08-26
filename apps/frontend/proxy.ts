@@ -44,7 +44,14 @@ export async function proxy(request: NextRequest, _: NextFetchEvent) {
     }
   }
 
-  if (PUBLIC_LOCALE_PATH.test(pathname) || !pathname.startsWith('/app')) {
+  // /edition and /edition/exit are plain Route Handlers (no locale segment)
+  // that toggle the xtm-edit-mode cookie — exclude them from next-intl's
+  // middleware, which would otherwise treat "edition" as a missing locale
+  // prefix and mis-rewrite the URL.
+  if (
+    PUBLIC_LOCALE_PATH.test(pathname) ||
+    (!pathname.startsWith('/app') && !pathname.startsWith('/edition'))
+  ) {
     return intlMiddleware(request);
   }
 
@@ -71,6 +78,7 @@ export const config = {
     '/document/images/:documentId*',
     '/user/picture/:userId*',
     '/app/:path*',
+    '/edition/:path*',
     '/api/chatbot/:path*',
     '/:product/:version/:integrationType/manifests',
     '/:product/:version/:integrationType/manifests/:path*',

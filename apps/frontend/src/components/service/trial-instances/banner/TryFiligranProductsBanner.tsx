@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@/hooks/use-translate';
 
 import GuardCapacityComponent from '@/components/AdminGuard';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
@@ -21,7 +21,7 @@ type BannerConfig = {
 
 // Component
 export const TryFiligranProductsBanner = () => {
-  const t = useTranslations();
+  const t = useTranslate();
   const { settings } = useContext(SettingsContext);
   const { availableTrials } = useOrgaFreeTrial();
 
