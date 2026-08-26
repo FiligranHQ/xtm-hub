@@ -64,6 +64,42 @@
     "EE": "エンタープライズ版",
     "TRIAL": "無料トライアル"
   },
+  "XtmPlatformTrial": {
+    "BundleInfo": {
+      "OrganizationName": "組織",
+      "StartedOn": "開始日",
+      "License": "ライセンス",
+      "Remaining": "残り",
+      "DaysRemaining": "{days} 日",
+      "TrialRequester": "トライアル申請者",
+      "Title": "XTM製品トライアルの詳細:"
+    },
+    "Products": {
+      "ConnectionStatus": "接続ステータス",
+      "LastConnection": "最終接続確認",
+      "Role": "ロール",
+      "NoRole": "なし。",
+      "NoRoleHint": "トライアル申請者にお問い合わせください。",
+      "StatusActive": "接続済み",
+      "StatusNotConnected": "未接続",
+      "AccessProduct": "{productName}にアクセス",
+      "StatusUnavailable": "ステータスを取得できません",
+      "ProductName": "製品名",
+      "ConnectionOpencti": "OpenCTI接続",
+      "ConnectionOpenaev": "OpenAEV接続",
+      "EditName": "名前を編集",
+      "ConnectionLost": "接続が切断されました。",
+      "ReconnectHint": "製品を再接続してください。"
+    },
+    "CancelTrial": "トライアルをキャンセル",
+    "Title": "XTMプラットフォームトライアルへようこそ",
+    "Subtitle": "トライアルに必要なすべてがここにあります。トライアルの詳細と残り時間、製品への直接アクセス、そしてサポートが必要なときや質問があるときにFiligranチームに直接連絡できます。",
+    "Guide": {
+      "Title": "XTMプラットフォームトライアルガイド",
+      "Content": "私たちが構築しているもの、次に登場するもの、そしてXTMプラットフォームが目指す方向をご覧ください。完全な透明性。驚きはありません。",
+      "SeeMore": "詳細を見る"
+    }
+  },
   "Datatable": {
     "Asc": "として",
     "Columns": "列",
@@ -513,6 +549,7 @@
   },
   "Menu": {
     "XTMPlatform": "XTMプラットフォーム",
+    "XTMPlatformTrial": "XTMプラットフォームトライアル",
     "StartFreeTrial": "無料トライアルを開始",
     "CustomDashboards": "カスタムダッシュボード",
     "CustomViews": "カスタムビュー",
