@@ -18,7 +18,6 @@ import { OrganizationId } from '../../model/kanel/public/Organization';
 import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
-import { getErrorNumberProperty } from '../../utils/error/error-guard.util';
 import {
   ErrorCode,
   NotFoundErrorCode,
@@ -541,6 +540,10 @@ export const DeploymentRequestDomain = {
   deleteDeploymentRequestAudience: async (
     deploymentRequest: DeploymentRequest
   ): Promise<void> => {
+    if (deploymentRequest.platform_identifier !== PlatformIdentifier.Opencti) {
+      return;
+    }
+
     try {
       if (deploymentRequest.platform_id) {
         await auth0Client.deleteAudienceAPI(
@@ -554,7 +557,10 @@ export const DeploymentRequestDomain = {
         });
       }
     } catch (error) {
-      logDeleteAudienceError(error, deploymentRequest);
+      logApp.error('Unable to delete audience', {
+        error,
+        deploymentRequestId: deploymentRequest.id,
+      });
     }
   },
 
@@ -584,27 +590,6 @@ export type FullyQualifiedDeploymentRequest = DeploymentRequest & {
   requester_email: string;
   requester_first_name: string;
   requester_last_name: string;
-};
-
-const logDeleteAudienceError = (
-  error: unknown,
-  deploymentRequest: Pick<DeploymentRequest, 'id' | 'platform_identifier'>
-) => {
-  const isExpectedOpenaevAudienceMiss =
-    getErrorNumberProperty(error, 'statusCode') === 404 &&
-    deploymentRequest.platform_identifier === PlatformIdentifier.Openaev;
-
-  if (isExpectedOpenaevAudienceMiss) {
-    logApp.warn('No Auth0 audience to delete for OpenAEV trial', {
-      deploymentRequestId: deploymentRequest.id,
-    });
-    return;
-  }
-
-  logApp.error('Unable to delete audience', {
-    error,
-    deploymentRequestId: deploymentRequest.id,
-  });
 };
 
 const getDeploymentRequestWithUserDataQuery =

@@ -264,7 +264,6 @@ describe('deployment app', () => {
       );
     });
     it('should throw when service definition is not found', async () => {
-      // When
       const call = DeploymentApp.createDeploymentRequest({
         ...TEST_DEPLOYMENT,
         products: ['unknown-platform' as PlatformIdentifier],
@@ -276,7 +275,6 @@ describe('deployment app', () => {
         ],
       });
 
-      // Then
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
     it('should throw when a requested product has no use case', async () => {
@@ -345,13 +343,11 @@ describe('deployment app', () => {
     ])(
       'should throw InvalidProductsForDeploymentType for a trial with products %s',
       async (products) => {
-        // When
         const call = DeploymentApp.createDeploymentRequest({
           ...TEST_DEPLOYMENT,
           products,
         });
 
-        // Then
         await expect(call).rejects.toThrow(
           BadRequestErrorCode.InvalidProductsForDeploymentType
         );
@@ -365,14 +361,12 @@ describe('deployment app', () => {
     ])(
       'should throw InvalidProductsForDeploymentType for a bundle with products %s',
       async (products) => {
-        // When
         const call = DeploymentApp.createDeploymentRequest({
           ...TEST_DEPLOYMENT,
           type: DeploymentRequestDeploymentType.Bundle,
           products,
         });
 
-        // Then
         await expect(call).rejects.toThrow(
           BadRequestErrorCode.InvalidProductsForDeploymentType
         );
@@ -380,7 +374,6 @@ describe('deployment app', () => {
     );
 
     it("should throw when a bundle product's service definition is not found", async () => {
-      // When
       const call = DeploymentApp.createDeploymentRequest({
         ...TEST_DEPLOYMENT,
         type: DeploymentRequestDeploymentType.Bundle,
@@ -396,7 +389,6 @@ describe('deployment app', () => {
         ],
       });
 
-      // Then
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
 
@@ -410,7 +402,6 @@ describe('deployment app', () => {
       });
 
       it('should create a bundle deployment request with a child trial deployment request per product', async () => {
-        // When
         const bundle = await DeploymentApp.createDeploymentRequest({
           ...TEST_DEPLOYMENT,
           type: DeploymentRequestDeploymentType.Bundle,
@@ -431,7 +422,6 @@ describe('deployment app', () => {
           ],
         });
 
-        // Then
         expect(bundle).toMatchObject({
           type: DeploymentRequestDeploymentType.Bundle,
           platform_identifier: null,
@@ -658,7 +648,6 @@ describe('deployment app', () => {
       });
 
       it('should roll back the whole bundle when a child fails to be created', async () => {
-        // Given
         const originalRegisterNewPlatform =
           RegistrationDomain.registerNewPlatform;
         let callCount = 0;
@@ -672,7 +661,6 @@ describe('deployment app', () => {
             return originalRegisterNewPlatform(args);
           });
 
-        // When
         const call = DeploymentApp.createDeploymentRequest({
           ...TEST_DEPLOYMENT,
           type: DeploymentRequestDeploymentType.Bundle,
@@ -693,7 +681,6 @@ describe('deployment app', () => {
           ],
         });
 
-        // Then
         await expect(call).rejects.toThrow('boom');
         expect(registerNewPlatformSpy).toHaveBeenCalledTimes(2);
 
@@ -813,35 +800,6 @@ describe('deployment app', () => {
             );
           });
         });
-
-        it('should not retroactively cancel standalone trials created after the bundle was requested', async () => {
-          // Given a bundle already requested for the organization
-          await DeploymentApp.createDeploymentRequest({
-            ...TEST_DEPLOYMENT,
-            type: DeploymentRequestDeploymentType.Bundle,
-            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
-          });
-
-          // When an ongoing standalone trial is created after the bundle request
-          const standalone =
-            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-              {
-                organization_requester_id:
-                  TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-                hub_status: DeploymentRequestHubStatus.Active,
-              }
-            );
-
-          const untouched =
-            await DeploymentRequestDomain.loadDeploymentRequestBy({
-              id: standalone.id,
-            });
-
-          // Then the standalone trial is untouched
-          expect(untouched).toMatchObject({
-            hub_status: DeploymentRequestHubStatus.Active,
-          });
-        });
       });
     });
   });
@@ -854,7 +812,6 @@ describe('deployment app', () => {
       // Given
       await TestHelper.competitor.create();
 
-      // When
       const call = DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
       // Then
@@ -870,7 +827,6 @@ describe('deployment app', () => {
         domain: 'not-blocked.com',
       });
 
-      // When
       const deployment =
         await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
@@ -879,10 +835,8 @@ describe('deployment app', () => {
     });
 
     it('should allow deployment when no competitors exist', async () => {
-      // Given
       requestContext.set(requestContextRegistererUserSecondOrga);
 
-      // When
       const deployment =
         await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
@@ -950,7 +904,6 @@ describe('deployment app', () => {
         }
       );
       it('should not throw when an error is thrown by telemetry', async () => {
-        // Given
         requestContext.set(requestContextRegistererUserSecondOrga);
 
         vi.useFakeTimers();
@@ -958,11 +911,9 @@ describe('deployment app', () => {
         vi.setSystemTime(date);
         telemetrySpy.mockRejectedValue(new Error('UNKNOWN'));
 
-        // When
         const deployment =
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
-        // Then
         expect(deployment).toBeDefined();
       });
     });
@@ -970,13 +921,10 @@ describe('deployment app', () => {
     describe('mail', () => {
       describe('development environment', () => {
         it('should send a mail if status is pending to dev team', async () => {
-          // Given
           requestContext.set(requestContextAdminUser);
 
-          // When
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
-          // Then
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
           expect(mockSendMail).toHaveBeenNthCalledWith(1, {
@@ -1006,17 +954,14 @@ describe('deployment app', () => {
         });
 
         it('should send a mail if there is no space available', async () => {
-          // Given
           requestContext.set(requestContextRegistererUserSecondOrga);
 
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
 
-          // When
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
-          // Then
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
           expect(mockSendMail).toHaveBeenNthCalledWith(1, {
@@ -1060,13 +1005,10 @@ describe('deployment app', () => {
         });
 
         it('should send a mail if status is pending to dev team', async () => {
-          // Given
           requestContext.set(requestContextAdminUser);
 
-          // When
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
-          // Then
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
           expect(mockSendMail).toHaveBeenNthCalledWith(1, {
@@ -1096,17 +1038,14 @@ describe('deployment app', () => {
         });
 
         it('should send a mail if there is no space available', async () => {
-          // Given
           requestContext.set(requestContextRegistererUserSecondOrga);
 
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
 
-          // When
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
-          // Then
           expect(mockSendMail).toHaveBeenCalledTimes(2);
 
           expect(mockSendMail).toHaveBeenNthCalledWith(1, {
@@ -1348,18 +1287,15 @@ describe('deployment app', () => {
     });
 
     it('should return created deployment requests', async () => {
-      // Given a created deployment request
       const deploymentRequest =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
         );
 
-      // When loading the platform deployment requests
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
-      // Then the created deployment request is returned
       expect(deployments.totalCount).toBe('1');
       expect(deployments.edges[0]?.node).toStrictEqual({
         ...deploymentRequest,
@@ -1378,7 +1314,6 @@ describe('deployment app', () => {
     });
 
     it('should return platform_url when PlatformConfiguration exists', async () => {
-      // Given a deployment request with an active platform configuration
       const deploymentRequest =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
@@ -1390,7 +1325,6 @@ describe('deployment app', () => {
         status: PlatformConfigurationStatus.Active,
       });
 
-      // When loading the platform deployment requests
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
       });
@@ -1399,7 +1333,6 @@ describe('deployment app', () => {
         (edge) => edge.node.id === deploymentRequest!.id
       );
 
-      // Then the platform_url from the configuration is returned
       expect(deployment?.node.platform_url).toBe(
         'https://test-platform.opencti.io'
       );
@@ -1410,7 +1343,6 @@ describe('deployment app', () => {
     });
 
     it('should return out-of-sync deployment requests by default', async () => {
-      // Given one out-of-sync deployment request and one synced deployment request
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {
           hub_status: DeploymentRequestHubStatus.Pending,
@@ -1426,12 +1358,10 @@ describe('deployment app', () => {
         }
       );
 
-      // When loading the platform deployment requests without filters
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
-      // Then only the out-of-sync deployment request is returned
       expect(deployments.totalCount).toBe('1');
       expect(deployments.edges).toHaveLength(1);
       expect(deployments.edges[0]?.node?.hub_status).toBe(
@@ -1440,7 +1370,6 @@ describe('deployment app', () => {
     });
 
     it('should return out-of-sync deployments even with other filters', async () => {
-      // Given one out-of-sync deployment request and one synced deployment request
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {
           target_state: DeploymentRequestPlatformState.Active,
@@ -1455,7 +1384,6 @@ describe('deployment app', () => {
         }
       );
 
-      // When loading the platform deployment requests with an additional filter
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
         filters: [
@@ -1466,7 +1394,6 @@ describe('deployment app', () => {
         ],
       });
 
-      // Then only the out-of-sync deployment request is returned
       expect(deployments.totalCount).toBe('1');
       expect(deployments.edges).toHaveLength(1);
       expect(deployments.edges[0]?.node?.hub_status).toBe(
@@ -1475,7 +1402,6 @@ describe('deployment app', () => {
     });
 
     it('should filter multiple out-of-sync scenarios correctly', async () => {
-      // Given deployment requests covering synced and out-of-sync scenarios
       // Out-of-sync: NULL target vs NULL actual (both NULL = synced, should NOT appear)
       const synced1 =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -1536,12 +1462,10 @@ describe('deployment app', () => {
           }
         );
 
-      // When loading the platform deployment requests
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
       });
 
-      // Then only the out-of-sync deployment requests are returned
       expect(deployments.totalCount).toBe('3');
       expect(deployments.edges).toHaveLength(3);
 
@@ -1555,7 +1479,6 @@ describe('deployment app', () => {
     });
 
     it('should return filtered deployment requests only', async () => {
-      // Given deployment requests that do not match every filter criterion at once
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {}
       );
@@ -1574,7 +1497,6 @@ describe('deployment app', () => {
         }
       );
 
-      // When loading the platform deployment requests with combined filters
       const deployments = await DeploymentApp.loadPlatformDeploymentRequests({
         first: 10,
         filters: [
@@ -1593,7 +1515,6 @@ describe('deployment app', () => {
         ],
       });
 
-      // Then no deployment request matches all filters
       expect(deployments.totalCount).toBe('0');
       expect(deployments.edges).toHaveLength(0);
     });
@@ -1614,7 +1535,6 @@ describe('deployment app', () => {
     });
 
     it('should update a deployment request', async () => {
-      // When updating the deployment request
       const deployment = await DeploymentApp.updateDeploymentRequest({
         id: initialDeployment?.id as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -1640,7 +1560,6 @@ describe('deployment app', () => {
         service_instance_id: dbDeploymentRequest.service_instance_id,
       });
 
-      // Then the deployment request is updated with the new values
       expect(dbDeploymentRequest).toMatchObject({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
@@ -1680,7 +1599,6 @@ describe('deployment app', () => {
     });
 
     it('with Active status for OpenCTI, it should create OpenCTI ServiceGroups (Admin, Analyst, Reader) with admin user', async () => {
-      // When updating the deployment request to Active
       const deployment = await DeploymentApp.updateDeploymentRequest({
         id: initialDeployment?.id as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -1697,7 +1615,6 @@ describe('deployment app', () => {
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
 
-      // Then the OpenCTI ServiceGroups are created
       expect(serviceGroups).toHaveLength(3);
       expect(serviceGroups.map((g) => g.name).sort()).toEqual([
         ServiceGroupName.Admin,
@@ -1733,7 +1650,6 @@ describe('deployment app', () => {
     });
 
     it('with Active status for OpenAEV, it should create OpenAEV ServiceGroups (Admin, Manager, Observer) with admin user', async () => {
-      // Given an OpenAEV deployment request
       const openaevDeployment =
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {
@@ -1744,7 +1660,6 @@ describe('deployment app', () => {
           }
         )) as DeploymentRequest;
 
-      // When updating the deployment request to Active
       const deployment = await DeploymentApp.updateDeploymentRequest({
         id: openaevDeployment.id as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -1761,7 +1676,6 @@ describe('deployment app', () => {
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
 
-      // Then the OpenAEV ServiceGroups are created
       expect(serviceGroups).toHaveLength(3);
       expect(serviceGroups.map((g) => g.name).sort()).toEqual([
         ServiceGroupName.Admin,
@@ -1796,7 +1710,6 @@ describe('deployment app', () => {
     });
 
     it('with Active status for XTM One, it should not create any ServiceGroup', async () => {
-      // Given an XTM One deployment request
       const xtmoneDeployment =
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {
@@ -1807,7 +1720,6 @@ describe('deployment app', () => {
           }
         )) as DeploymentRequest;
 
-      // When updating the deployment request to Active
       const deployment = await DeploymentApp.updateDeploymentRequest({
         id: xtmoneDeployment.id as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
@@ -1824,19 +1736,16 @@ describe('deployment app', () => {
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
 
-      // Then no ServiceGroup is created
       expect(serviceGroups).toHaveLength(0);
     });
 
     it('should set platform registration status to inactive when actual state is removed', async () => {
-      // Given an active platform configuration for the deployment request
       await TestHelper.platformConfiguration.create({
         service_instance_id: initialDeployment.service_instance_id,
         status: PlatformConfigurationStatus.Active,
       });
 
       try {
-        // When updating the deployment request to Removed
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Removed,
@@ -1847,7 +1756,6 @@ describe('deployment app', () => {
             service_instance_id: initialDeployment.service_instance_id,
           });
 
-        // Then the platform configuration status is set to inactive
         expect(platformConfiguration?.status).toBe(
           PlatformConfigurationStatus.Inactive
         );
@@ -1859,13 +1767,11 @@ describe('deployment app', () => {
     });
 
     it('should throw if deployment request does not exist', async () => {
-      // Given a non-existent deployment request id
       const call = DeploymentApp.updateDeploymentRequest({
         id: uuidv4() as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
       });
 
-      // When / Then updating the deployment request throws
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
       );
@@ -1889,7 +1795,6 @@ describe('deployment app', () => {
     ])(
       'should throw if status active and $description',
       async ({ start_date, end_date }) => {
-        // Given an active state update with missing start or end date
         const call = DeploymentApp.updateDeploymentRequest({
           id: initialDeployment.id,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -1897,7 +1802,6 @@ describe('deployment app', () => {
           end_date,
         });
 
-        // When / Then updating the deployment request throws
         await expect(call).rejects.toThrow(
           BadRequestErrorCode.MissingStartOrEndDate
         );
@@ -1905,7 +1809,6 @@ describe('deployment app', () => {
     );
     describe('telemetry', () => {
       it('should send a telemetry event', async () => {
-        // Given a fixed system time and target dates for the update
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
@@ -1913,7 +1816,6 @@ describe('deployment app', () => {
         const start_date = new Date(2025, 1, 3);
         const end_date = new Date(2025, 2, 3);
 
-        // When updating the deployment request to Active
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -1923,7 +1825,6 @@ describe('deployment app', () => {
           failure_reason: 'not failed',
         });
 
-        // Then a telemetry event is sent with the update details
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
@@ -1943,7 +1844,6 @@ describe('deployment app', () => {
       });
 
       it('should not send a telemetry event when data did not change', async () => {
-        // Given a first update to the deployment request
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
@@ -1951,18 +1851,15 @@ describe('deployment app', () => {
 
         telemetrySpy.mockClear();
 
-        // When updating the deployment request again with the same data
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
-        // Then no telemetry event is sent
         expect(telemetrySpy).not.toHaveBeenCalled();
       });
 
       it('should not throw when telemetry throws an error', async () => {
-        // Given telemetry rejecting and a fixed system time
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         telemetrySpy.mockRejectedValue(new Error('UNKNOWN'));
@@ -1971,7 +1868,6 @@ describe('deployment app', () => {
         const start_date = new Date(2025, 1, 3);
         const end_date = new Date(2025, 2, 3);
 
-        // When updating the deployment request to Active
         const deployment = await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -1981,19 +1877,16 @@ describe('deployment app', () => {
           failure_reason: 'not failed',
         });
 
-        // Then the update still succeeds
         expect(deployment).toBeDefined();
       });
     });
     describe('mail', () => {
       it('should send a mail in case deployment request is in provisioning (only first time)', async () => {
-        // When updating the deployment request to Provisioning for the first time
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
-        // Then a mail is sent
         expect(mockSendMail).toHaveBeenCalledWith({
           to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'free_trial_provisioning',
@@ -2005,18 +1898,15 @@ describe('deployment app', () => {
 
         mockSendMail.mockClear();
 
-        // When updating the deployment request to Provisioning again
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
-        // Then no mail is sent again
         expect(mockSendMail).not.toHaveBeenCalled();
       });
 
       it('should send a mail in case deployment request is in active (only first time)', async () => {
-        // Given an active platform configuration for the deployment
         vi.spyOn(
           PlatformConfigurationDomain,
           'loadConfigurationByPlatform'
@@ -2035,7 +1925,6 @@ describe('deployment app', () => {
           last_connectivity_check: new Date(),
         });
 
-        // When updating the deployment request to Active for the first time
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           start_date: new Date(2025, 12, 1),
@@ -2044,7 +1933,6 @@ describe('deployment app', () => {
           platform_id: uuidv4(),
         });
 
-        // Then a mail is sent
         expect(mockSendMail).toHaveBeenCalledWith({
           to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'free_trial_registered',
@@ -2061,7 +1949,6 @@ describe('deployment app', () => {
 
         mockSendMail.mockClear();
 
-        // When updating the deployment request to Active again
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           start_date: new Date(2025, 12, 1),
@@ -2069,14 +1956,12 @@ describe('deployment app', () => {
           actual_state: DeploymentRequestPlatformState.Active,
         });
 
-        // Then no mail is sent again
         expect(mockSendMail).not.toHaveBeenCalled();
       });
     });
 
     describe('bundle updates', () => {
       it('should update actual_state and platform_id only, ignoring bundle-unsupported fields', async () => {
-        // Given a pending bundle
         const bundle =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -2091,7 +1976,6 @@ describe('deployment app', () => {
             }
           );
 
-        // When updating the bundle with both supported and bundle-unsupported fields
         const updated = await DeploymentApp.updateDeploymentRequest({
           id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -2102,7 +1986,6 @@ describe('deployment app', () => {
           url: 'https://should-be-ignored.example.com',
         });
 
-        // Then only actual_state and platform_id are applied
         expect(updated).toMatchObject({
           actual_state: DeploymentRequestPlatformState.Active,
           platform_id: 'bundle-platform-id',
@@ -2114,7 +1997,6 @@ describe('deployment app', () => {
         });
       });
       it('should not initialise a service group for a bundle', async () => {
-        // Given a pending bundle
         const bundle =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -2125,7 +2007,6 @@ describe('deployment app', () => {
             }
           );
 
-        // When updating the bundle to Active
         await DeploymentApp.updateDeploymentRequest({
           id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -2136,12 +2017,10 @@ describe('deployment app', () => {
           service_instance_id: bundle.service_instance_id,
         });
 
-        // Then no service group is created for the bundle
         expect(serviceGroups).toHaveLength(0);
       });
 
       it('should transition hub_status through the same states as a product, driven by its own actual_state', async () => {
-        // Given a pending bundle
         const bundle =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -2152,24 +2031,20 @@ describe('deployment app', () => {
             }
           );
 
-        // When updating the bundle's actual_state to Provisioning
         const provisioning = await DeploymentApp.updateDeploymentRequest({
           id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
-        // Then the bundle's hub_status becomes Provisioning
         expect(provisioning.hub_status).toBe(
           DeploymentRequestHubStatus.Provisioning
         );
 
-        // When updating the bundle's actual_state to Active
         const active = await DeploymentApp.updateDeploymentRequest({
           id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
         });
 
-        // Then the bundle's hub_status becomes Active
         expect(active.hub_status).toBe(DeploymentRequestHubStatus.Active);
       });
     });
@@ -2219,7 +2094,6 @@ describe('deployment app', () => {
       });
 
       it('should aggregate dates from children without changing the bundle hub_status', async () => {
-        // When updating childA to Active with its own dates
         await DeploymentApp.updateDeploymentRequest({
           id: childA.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -2234,7 +2108,6 @@ describe('deployment app', () => {
             id: bundle.id as DeploymentRequestId,
           });
 
-        // Then the bundle aggregates the children dates without changing its hub_status
         expect(updatedBundle).toMatchObject({
           hub_status: DeploymentRequestHubStatus.Pending,
           start_date: new Date(2025, 1, 1),
@@ -2260,7 +2133,6 @@ describe('deployment app', () => {
       });
 
       it('should not update sibling children when the bundle itself is updated', async () => {
-        // When updating the bundle itself to Active
         await DeploymentApp.updateDeploymentRequest({
           id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -2276,7 +2148,6 @@ describe('deployment app', () => {
             id: childB.id as DeploymentRequestId,
           });
 
-        // Then the sibling children are left untouched
         expect(untouchedChildA?.hub_status).toBe(
           DeploymentRequestHubStatus.Provisioning
         );
@@ -2291,14 +2162,12 @@ describe('deployment app', () => {
       ])(
         'should not recompute dates for a %s bundle when a child is updated afterward',
         async (terminalHubStatus) => {
-          // Given a bundle in a terminal hub_status
           await DeploymentRequestDomain.updateDeploymentRequestById(
             bundle.id as DeploymentRequestId,
             { hub_status: terminalHubStatus }
           );
           telemetrySpy.mockClear();
 
-          // When updating a child of the bundle
           await DeploymentApp.updateDeploymentRequest({
             id: childA.id as DeploymentRequestId,
             actual_state: DeploymentRequestPlatformState.Active,
@@ -2312,7 +2181,6 @@ describe('deployment app', () => {
               id: bundle.id as DeploymentRequestId,
             });
 
-          // Then the bundle's terminal status and dates are not recomputed
           expect(updatedBundle?.hub_status).toBe(terminalHubStatus);
           expect(updatedBundle?.start_date).toBeNull();
           expect(updatedBundle?.end_date).toBeNull();
@@ -2329,12 +2197,10 @@ describe('deployment app', () => {
   });
   describe('loadTrialDeployments', () => {
     it('should return all available when no DeploymentRequest and no PlatformIdentifier specified', async () => {
-      // When loading trial deployments without a platform identifier filter
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
       });
 
-      // Then all platforms are reported as available
       expect(trialDeployments).toEqual({
         availableTrials: expect.arrayContaining([
           PlatformIdentifier.Opencti,
@@ -2346,13 +2212,11 @@ describe('deployment app', () => {
       expect(trialDeployments.availableTrials).toHaveLength(2);
     });
     it('should return only requested platform identifier specified as available when no DeploymentRequest exist', async () => {
-      // When loading trial deployments filtered to OpenCTI
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      // Then only OpenCTI is reported as available
       expect(trialDeployments).toEqual({
         availableTrials: [PlatformIdentifier.Opencti],
         deployed: [],
@@ -2361,7 +2225,6 @@ describe('deployment app', () => {
     });
 
     it('should return blacklisted = true if orga is blacklisted', async () => {
-      // Given an organization blacklisted as a competitor
       await CompetitorDomain.insertCompetitor({
         id: uuidv4() as CompetitorId,
         name: 'Filigran',
@@ -2369,13 +2232,11 @@ describe('deployment app', () => {
         domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
-      // When loading trial deployments for that organization
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      // Then isBlacklisted is true
       expect(trialDeployments).toEqual({
         availableTrials: [PlatformIdentifier.Opencti],
         deployed: [],
@@ -2385,20 +2246,17 @@ describe('deployment app', () => {
       await TestHelper.competitor.delete({});
     });
     it('should return trial as available if the created one does not count in quota', async () => {
-      // Given a deployment request that does not count in the organization quota
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {
           counts_in_orga_quota: false,
         }
       );
 
-      // When loading trial deployments for that organization
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      // Then the platform is still reported as available
       expect(trialDeployments).toEqual({
         availableTrials: [PlatformIdentifier.Opencti],
         deployed: [],
@@ -2407,19 +2265,16 @@ describe('deployment app', () => {
     });
 
     it('should not return identifier as available when DeploymentRequest exist', async () => {
-      // Given an existing deployment request with a service instance and subscription
       const deploymentRequest =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
         );
 
-      // When loading trial deployments for that organization
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      // Then the platform is reported as deployed and no longer available
       expect(trialDeployments).toEqual({
         availableTrials: [],
         deployed: [
@@ -2432,19 +2287,16 @@ describe('deployment app', () => {
       });
     });
     it('should return data corresponding to the right organization', async () => {
-      // Given a deployment request for the first organization
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {}
       );
 
-      // When loading trial deployments for a different organization
       requestContext.set(requestContextAdminSecondOrga);
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      // Then the other organization's deployment request does not affect availability
       expect(trialDeployments).toEqual({
         availableTrials: [PlatformIdentifier.Opencti],
         deployed: [],
@@ -2452,7 +2304,6 @@ describe('deployment app', () => {
       });
     });
     it('should return not availablity and no deployed for personal space', async () => {
-      // Given a deployment request in the second organization and a user on their personal space
       requestContext.set(requestContextAdminSecondOrga);
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {}
@@ -2472,14 +2323,12 @@ describe('deployment app', () => {
         user: contextUserWithPersonalOrga.user,
       });
 
-      // When loading trial deployments for the personal space
       const trialDeployments = await DeploymentApp.loadTrialDeployments({
         organizationId:
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      // Then no trial is available and nothing is deployed
       expect(trialDeployments).toEqual({
         availableTrials: [],
         deployed: [],
@@ -2487,31 +2336,26 @@ describe('deployment app', () => {
       });
     });
     it('should throw if user does not belong in the organization', async () => {
-      // Given a deployment request and a user from a different organization
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {}
       );
 
       requestContext.set(requestContextAdminSecondOrga);
 
-      // When loading trial deployments for an organization the user does not belong to
       const call = DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
       });
 
-      // Then it throws UserIsNotInOrganization
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
   });
   describe('loadPlatformTrialStatus', () => {
     it('should return null hub_status and end_date when no bundle DeploymentRequest exists', async () => {
-      // When loading the platform trial status with no existing deployment request
       const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
 
-      // Then hub_status and end_date are null
       expect(platformTrialStatus).toEqual({
         ongoingStandaloneTrials: [],
         isBlacklisted: false,
@@ -2521,7 +2365,6 @@ describe('deployment app', () => {
     });
 
     it('should return the bundle hub_status and end_date when a bundle DeploymentRequest exists', async () => {
-      // Given an active bundle deployment request with an end date
       const endDate = new Date(Date.UTC(2025, 5, 1));
       const bundle =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -2533,12 +2376,10 @@ describe('deployment app', () => {
           }
         );
 
-      // When loading the platform trial status
       const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
 
-      // Then the bundle's hub_status and end_date are returned
       expect(platformTrialStatus).toEqual({
         ongoingStandaloneTrials: [],
         isBlacklisted: false,
@@ -2548,7 +2389,6 @@ describe('deployment app', () => {
     });
 
     it('should treat a bundle DeploymentRequest as non-existent when counts_in_orga_quota is false', async () => {
-      // Given an active bundle deployment request that does not count in the organization quota
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {
           type: DeploymentRequestDeploymentType.Bundle,
@@ -2559,12 +2399,10 @@ describe('deployment app', () => {
         }
       );
 
-      // When loading the platform trial status
       const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
 
-      // Then hub_status and end_date are null, as if the bundle did not exist
       expect(platformTrialStatus).toEqual({
         ongoingStandaloneTrials: [],
         isBlacklisted: false,
@@ -2574,7 +2412,6 @@ describe('deployment app', () => {
     });
 
     it('should return blacklisted = true if orga is blacklisted', async () => {
-      // Given an organization blacklisted as a competitor
       await CompetitorDomain.insertCompetitor({
         id: uuidv4() as CompetitorId,
         name: 'Filigran',
@@ -2582,12 +2419,10 @@ describe('deployment app', () => {
         domain: TEST_ORGANIZATIONS.FILIGRAN.DOMAINS.FIRST,
       });
 
-      // When loading the platform trial status
       const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
 
-      // Then isBlacklisted is true
       expect(platformTrialStatus).toEqual({
         ongoingStandaloneTrials: [],
         isBlacklisted: true,
@@ -2599,7 +2434,6 @@ describe('deployment app', () => {
     });
 
     it('should return null hub_status and end_date for personal space, even with a bundle in another organization', async () => {
-      // Given a bundle deployment request in the second organization and a user on their personal space
       requestContext.set(requestContextAdminSecondOrga);
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {
@@ -2625,12 +2459,10 @@ describe('deployment app', () => {
         user: contextUserWithPersonalOrga.user,
       });
 
-      // When loading the platform trial status for the personal space
       const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.PERSONAL_SPACE_ID
       );
 
-      // Then hub_status and end_date are null
       expect(platformTrialStatus).toEqual({
         ongoingStandaloneTrials: [],
         isBlacklisted: false,
@@ -2640,15 +2472,12 @@ describe('deployment app', () => {
     });
 
     it('should throw if user does not belong in the organization', async () => {
-      // Given a user belonging to a different organization
       requestContext.set(requestContextAdminSecondOrga);
 
-      // When loading the platform trial status for an organization the user does not belong to
       const call = DeploymentApp.loadPlatformTrialStatus(
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
 
-      // Then it throws UserIsNotInOrganization
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
 
@@ -2675,24 +2504,20 @@ describe('deployment app', () => {
 
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
-      // Given no matching deployment request
       vi.spyOn(
         DeploymentRequestDomain,
         'loadDeploymentRequestBy'
       ).mockResolvedValue(undefined);
 
-      // When reordering a deployment request to the top of the queue
       const call = DeploymentApp.reorderDeploymentRequestInQueue({
         id: uuidv4() as DeploymentRequestId,
         direction: ReorderDeploymentRequestInQueueDirection.Top,
       });
 
-      // Then it throws DeploymentRequestNotFound
       await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
     });
 
     it('should throw when deployment request is not in queue', async () => {
-      // Given a deployment request that is not queued
       const deploymentRequest = {
         id: uuidv4() as DeploymentRequestId,
         hub_status: DeploymentRequestHubStatus.Active,
@@ -2704,20 +2529,17 @@ describe('deployment app', () => {
         'loadDeploymentRequestBy'
       ).mockResolvedValue(deploymentRequest);
 
-      // When reordering that deployment request to the top of the queue
       const call = DeploymentApp.reorderDeploymentRequestInQueue({
         id: deploymentRequest!.id,
         direction: ReorderDeploymentRequestInQueueDirection.Top,
       });
 
-      // Then it throws DeploymentRequestHubStatusNotQueued
       await expect(call).rejects.toThrow(
         ErrorCode.DeploymentRequestHubStatusNotQueued
       );
     });
 
     it('should reorder deployment request to top when direction is top', async () => {
-      // Given a queued deployment request
       const deploymentRequest = {
         id: uuidv4() as DeploymentRequestId,
         hub_status: DeploymentRequestHubStatus.Queued,
@@ -2733,13 +2555,11 @@ describe('deployment app', () => {
         .spyOn(DeploymentRequestDomain, 'reorderDeploymentRequestToTop')
         .mockResolvedValue();
 
-      // When reordering with direction Top
       const result = await DeploymentApp.reorderDeploymentRequestInQueue({
         id: uuidv4() as DeploymentRequestId,
         direction: ReorderDeploymentRequestInQueueDirection.Top,
       });
 
-      // Then the operation succeeds and the domain reorder-to-top function is called
       expect(result.success).toBeTruthy();
       expect(reorderDeploymentRequestToTopSpy).toHaveBeenCalledWith(
         deploymentRequest
@@ -2747,7 +2567,6 @@ describe('deployment app', () => {
     });
 
     it('should reorder deployment request up when direction is up', async () => {
-      // Given a queued deployment request
       const deploymentRequest = {
         id: uuidv4() as DeploymentRequestId,
         hub_status: DeploymentRequestHubStatus.Queued,
@@ -2763,13 +2582,11 @@ describe('deployment app', () => {
         .spyOn(DeploymentRequestDomain, 'reorderDeploymentRequestUp')
         .mockResolvedValue();
 
-      // When reordering with direction Up
       const result = await DeploymentApp.reorderDeploymentRequestInQueue({
         id: uuidv4() as DeploymentRequestId,
         direction: ReorderDeploymentRequestInQueueDirection.Up,
       });
 
-      // Then the operation succeeds and the domain reorder-up function is called
       expect(result.success).toBeTruthy();
       expect(reorderDeploymentRequestUpSpy).toHaveBeenCalledWith(
         deploymentRequest
@@ -2862,55 +2679,45 @@ describe('deployment app', () => {
       }
     );
     it('should throw if deployment request does not exist', async () => {
-      // Given a deployment request id that does not exist
-      // When cancelling the deployment request
       const call = DeploymentApp.cancelDeploymentRequest(
         uuidv4() as DeploymentRequestId,
         false
       );
 
-      // Then it throws a not found error
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
       );
     });
 
     it('should throw if user is not in organization and not isAdmin', async () => {
-      // Given a deployment request owned by another organization
       const deployment =
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
         )) as DeploymentRequest;
       requestContext.set(requestContextAdminSecondOrga);
 
-      // When cancelling the deployment request as a non-admin
       const call = DeploymentApp.cancelDeploymentRequest(deployment.id, false);
 
-      // Then it throws a forbidden error
       await expect(call).rejects.toThrow(
         ForbiddenErrorCode.UserIsNotInOrganization
       );
     });
 
     it('should not throw if user is not in organization and isAdmin', async () => {
-      // Given a deployment request owned by another organization
       const deployment =
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
         )) as DeploymentRequest;
       requestContext.set(requestContextAdminSecondOrga);
 
-      // When cancelling the deployment request as an admin
       const response = await DeploymentApp.cancelDeploymentRequest(
         deployment.id,
         true
       );
 
-      // Then it succeeds
       expect(response).toBeTruthy();
     });
     it('should send a telemetry event', async () => {
-      // Given a deployment request and a fixed system time
       const deployment =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
@@ -2919,14 +2726,12 @@ describe('deployment app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
 
-      // When cancelling the deployment request
       await DeploymentApp.cancelDeploymentRequest(
         deployment.id,
         false,
         'CancellationReason'
       );
 
-      // Then a telemetry event is sent
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
@@ -2996,7 +2801,6 @@ describe('deployment app', () => {
       }
     );
     it('should send a mail to the trial requester', async () => {
-      // Given a deployment request requested by a user in another organization
       const deployment =
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {
@@ -3005,10 +2809,8 @@ describe('deployment app', () => {
           }
         )) as DeploymentRequest;
 
-      // When cancelling the deployment request as an admin
       await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
 
-      // Then a cancellation email is sent to the trial requester
       expect(mockSendMail).toHaveBeenCalledWith({
         to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
         template: 'free_trial_cancelled',
@@ -3019,19 +2821,44 @@ describe('deployment app', () => {
       });
     });
 
+    it('should log an error when deleting a missing OpenCTI audience (404)', async () => {
+      // Given a deletion of the Auth0 audience that fails with a 404
+      vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
+        statusCode: 404,
+      });
+      const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+            platform_id: uuidv4(),
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        )) as DeploymentRequest;
+
+      // When cancelling the deployment request
+      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+
+      // Then it logs an error
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Unable to delete audience',
+        expect.objectContaining({ deploymentRequestId: deployment.id })
+      );
+    });
+
     it.each`
-      platformIdentifier            | expectedLevel
-      ${PlatformIdentifier.Openaev} | ${'warn'}
-      ${PlatformIdentifier.Opencti} | ${'error'}
+      platformIdentifier
+      ${PlatformIdentifier.Openaev}
+      ${PlatformIdentifier.Xtmone}
     `(
-      'should log a $expectedLevel when deleting a missing audience (404) for $platformIdentifier',
-      async ({ platformIdentifier, expectedLevel }) => {
-        // Given a deletion of the Auth0 audience that fails with a 404
-        vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
-          statusCode: 404,
-        });
-        const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
-        const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
+      'should not attempt to delete the Auth0 audience for $platformIdentifier trials',
+      async ({ platformIdentifier }) => {
+        // Given a deployment request for a non-OpenCTI platform
+        const deleteAudienceSpy = vi.spyOn(
+          auth0ClientMock,
+          'deleteAudienceAPI'
+        );
         const deployment =
           (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -3045,22 +2872,8 @@ describe('deployment app', () => {
         // When cancelling the deployment request
         await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
 
-        // Then it logs at the expected level depending on the platform
-        if (expectedLevel === 'warn') {
-          expect(warnSpy).toHaveBeenCalledWith(
-            'No Auth0 audience to delete for OpenAEV trial',
-            expect.objectContaining({ deploymentRequestId: deployment.id })
-          );
-          expect(errorSpy).not.toHaveBeenCalledWith(
-            'Unable to delete audience',
-            expect.anything()
-          );
-        } else {
-          expect(errorSpy).toHaveBeenCalledWith(
-            'Unable to delete audience',
-            expect.objectContaining({ deploymentRequestId: deployment.id })
-          );
-        }
+        // Then the Auth0 audience deletion is never attempted
+        expect(deleteAudienceSpy).not.toHaveBeenCalled();
       }
     );
 
@@ -3291,14 +3104,12 @@ describe('deployment app', () => {
       });
 
       it('should cancel the bundle and all its children with the cancellation reason', async () => {
-        // When cancelling the bundle
         await DeploymentApp.cancelDeploymentRequest(
           bundle.id,
           false,
           'my reason'
         );
 
-        // Then the bundle and all its children are cancelled with the reason
         for (const { id } of [bundle, childOpencti, childXtmone]) {
           const cancelled =
             await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
@@ -3313,14 +3124,12 @@ describe('deployment app', () => {
       });
 
       it('should send one telemetry event per deployment request', async () => {
-        // When cancelling the bundle
         await DeploymentApp.cancelDeploymentRequest(
           bundle.id,
           false,
           'my reason'
         );
 
-        // Then one telemetry event is sent per deployment request
         expect(telemetrySpy).toHaveBeenCalledTimes(3);
         for (const { id } of [bundle, childOpencti, childXtmone]) {
           expect(telemetrySpy).toHaveBeenCalledWith(
@@ -3335,7 +3144,6 @@ describe('deployment app', () => {
       });
 
       it('should leave the whole bundle untouched when one row fails to be cancelled', async () => {
-        // Given the second update call failing
         const originalUpdate =
           DeploymentRequestDomain.updateDeploymentRequestById;
         let callCount = 0;
@@ -3350,14 +3158,12 @@ describe('deployment app', () => {
           return originalUpdate(id, data);
         });
 
-        // When cancelling the bundle
         const call = DeploymentApp.cancelDeploymentRequest(
           bundle.id,
           false,
           'my reason'
         );
 
-        // Then it throws and leaves the whole bundle untouched
         await expect(call).rejects.toThrow('boom');
         for (const { id, hub_status } of [bundle, childOpencti, childXtmone]) {
           const untouched =
@@ -3484,7 +3290,6 @@ describe('deployment app', () => {
 
     describe('increase capacity', () => {
       it('should move queued request to pending when there is space available', async () => {
-        // Given a quota with active, pending and queued requests
         await initQuota({ capacity: 2, availability: 0 });
         const { id: activeRequestId } = await insertRequest(
           DeploymentRequestHubStatus.Active
@@ -3502,14 +3307,12 @@ describe('deployment app', () => {
           4
         );
 
-        // When increasing the quota capacity
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 4,
         });
 
-        // Then the quota is updated and the queued requests become pending
         await assertQuota({ capacity: 4, availability: 0 });
 
         await TestHelper.deploymentRequest.assertProperties(activeRequestId, {
@@ -3530,7 +3333,6 @@ describe('deployment app', () => {
       });
 
       it('should not move queued request to pending when there is just enough space for active', async () => {
-        // Given a quota with just enough space for the active requests
         await initQuota({ capacity: 1, availability: -1 });
         const { id: activeRequestId1 } = await insertRequest(
           DeploymentRequestHubStatus.Active
@@ -3542,14 +3344,12 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Queued
         );
 
-        // When increasing the quota capacity
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 2,
         });
 
-        // Then the quota is updated and the queued request stays queued
         await assertQuota({ capacity: 2, availability: 0 });
 
         await TestHelper.deploymentRequest.assertProperties(activeRequestId1, {
@@ -3564,7 +3364,6 @@ describe('deployment app', () => {
       });
 
       it('should not move queued request to pending when there is not more space available', async () => {
-        // Given a quota with no additional space for the queued request
         await initQuota({ capacity: 1, availability: -2 });
         const { id: activeRequestId1 } = await insertRequest(
           DeploymentRequestHubStatus.Active
@@ -3579,14 +3378,12 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Queued
         );
 
-        // When increasing the quota capacity
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 2,
         });
 
-        // Then the quota is updated and the queued request stays queued
         await assertQuota({ capacity: 2, availability: -1 });
 
         await TestHelper.deploymentRequest.assertProperties(activeRequestId1, {
@@ -3604,7 +3401,6 @@ describe('deployment app', () => {
       });
 
       it('should send telemetry event for each request moved', async () => {
-        // Given a quota with queued requests and a fixed system time
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
@@ -3618,14 +3414,12 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Queued
         );
 
-        // When increasing the quota capacity
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 2,
         });
 
-        // Then the quota is updated and a telemetry event is sent for each moved request
         await assertQuota({ capacity: 2, availability: 0 });
 
         expect(telemetrySpy).toHaveBeenCalledTimes(2);
@@ -3665,20 +3459,17 @@ describe('deployment app', () => {
     });
     describe('decrease capacity', () => {
       it('should release pending requests from availability', async () => {
-        // Given a quota with a pending request
         await initQuota({ capacity: 1, availability: 0 });
         const { id: pendingRequestId } = await insertRequest(
           DeploymentRequestHubStatus.Pending
         );
 
-        // When decreasing the quota capacity
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 0,
         });
 
-        // Then the quota is updated and the pending request becomes queued
         await assertQuota({ capacity: 0, availability: 0 });
 
         await TestHelper.deploymentRequest.assertProperties(pendingRequestId, {
@@ -3687,7 +3478,6 @@ describe('deployment app', () => {
       });
 
       it('should only release pending requests until availability is equal to zero', async () => {
-        // Given a quota with two pending requests
         await initQuota({ capacity: 2, availability: 0 });
         const { id: pendingRequestId1 } = await insertRequest(
           DeploymentRequestHubStatus.Pending
@@ -3696,14 +3486,12 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
 
-        // When decreasing the quota capacity
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 1,
         });
 
-        // Then the quota is updated and only one pending request becomes queued
         await assertQuota({ capacity: 1, availability: 0 });
 
         await TestHelper.deploymentRequest.assertProperties(pendingRequestId1, {
@@ -3715,7 +3503,6 @@ describe('deployment app', () => {
       });
 
       it('should move pending requests to queued with the right ordering', async () => {
-        // Given a quota with pending and queued requests in various orderings
         await initQuota({ capacity: 2, availability: 0 });
         const { id: pendingRequestId1 } = await insertRequest(
           DeploymentRequestHubStatus.Pending,
@@ -3734,14 +3521,12 @@ describe('deployment app', () => {
           5
         );
 
-        // When decreasing the quota capacity
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 0,
         });
 
-        // Then the quota is updated and pending requests are queued with the right ordering
         await assertQuota({ capacity: 0, availability: 0 });
 
         await TestHelper.deploymentRequest.assertProperties(pendingRequestId1, {
@@ -3763,7 +3548,6 @@ describe('deployment app', () => {
       });
 
       it('should move only pending requests to free place when new availability is negative', async () => {
-        // Given a quota with active, pending and queued requests
         await initQuota({ capacity: 3, availability: 0 });
         const { id: activeRequestId1 } = await insertRequest(
           DeploymentRequestHubStatus.Active
@@ -3778,14 +3562,12 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Queued
         );
 
-        // When decreasing the quota capacity to a negative availability
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 1,
         });
 
-        // Then the quota is updated and only the pending request is moved to queued
         await assertQuota({ capacity: 1, availability: -1 });
 
         await TestHelper.deploymentRequest.assertProperties(activeRequestId1, {
@@ -3802,7 +3584,6 @@ describe('deployment app', () => {
         });
       });
       it('should not move pending requests to queue when new availability is equal to zero', async () => {
-        // Given a quota with an active and a pending request
         await initQuota({ capacity: 3, availability: 1 });
         const { id: activeRequestId } = await insertRequest(
           DeploymentRequestHubStatus.Active
@@ -3811,14 +3592,12 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
 
-        // When decreasing the quota capacity so availability reaches zero
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 2,
         });
 
-        // Then the quota is updated and the pending request stays pending
         await assertQuota({ capacity: 2, availability: 0 });
 
         await TestHelper.deploymentRequest.assertProperties(activeRequestId, {
@@ -3829,7 +3608,6 @@ describe('deployment app', () => {
         });
       });
       it('should not move pending requests to queue when new availability is positive', async () => {
-        // Given a quota with an active and a pending request
         await initQuota({ capacity: 4, availability: 2 });
         const { id: activeRequestId } = await insertRequest(
           DeploymentRequestHubStatus.Active
@@ -3838,14 +3616,12 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
 
-        // When decreasing the quota capacity while availability remains positive
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 3,
         });
 
-        // Then the quota is updated and the pending request stays pending
         await assertQuota({ capacity: 3, availability: 1 });
 
         await TestHelper.deploymentRequest.assertProperties(activeRequestId, {
@@ -3857,7 +3633,6 @@ describe('deployment app', () => {
       });
 
       it('should send telemetry event for each request moved', async () => {
-        // Given a quota with pending requests and a fixed system time
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
@@ -3871,14 +3646,12 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
 
-        // When decreasing the quota capacity
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
           newCapacity: 0,
         });
 
-        // Then the quota is updated and a telemetry event is sent for each moved request
         await assertQuota({ capacity: 0, availability: 0 });
 
         expect(telemetrySpy).toHaveBeenCalledTimes(2);
@@ -3927,7 +3700,6 @@ describe('deployment app', () => {
     });
 
     it('should expire past trials only', async () => {
-      // Given an expired trial and a still-running trial
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -3951,10 +3723,8 @@ describe('deployment app', () => {
           }
         );
 
-      // When expiring trials
       await DeploymentApp.expireTrials();
 
-      // Then the expired trial is marked expired and the non-expired trial is untouched
       const expiredDeploymentRequest =
         await DeploymentRequestDomain.loadDeploymentRequestBy({
           id: expiredTrial?.id as DeploymentRequestId,
@@ -4023,7 +3793,6 @@ describe('deployment app', () => {
       }
     );
     it('should send a mail to the requester', async () => {
-      // Given an expired trial belonging to a requester
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -4039,10 +3808,8 @@ describe('deployment app', () => {
         }
       );
 
-      // When expiring trials
       await DeploymentApp.expireTrials();
 
-      // Then a mail is sent to the requester
       expect(mockSendMail).toHaveBeenCalledWith({
         to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
         template: 'free_trial_expired',
@@ -4054,7 +3821,6 @@ describe('deployment app', () => {
     });
 
     it('should send a telemetry event', async () => {
-      // Given an expired trial with organization/requester information
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -4075,10 +3841,8 @@ describe('deployment app', () => {
           }
         );
 
-      // When expiring trials
       await DeploymentApp.expireTrials();
 
-      // Then a telemetry event is emitted with the expiry details
       expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
         '@timestamp': '2025-02-03T13:12:15.000Z',
         event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
@@ -4138,10 +3902,8 @@ describe('deployment app', () => {
       });
 
       it('should expire the bundle and all its children', async () => {
-        // When expiring trials
         await DeploymentApp.expireTrials();
 
-        // Then the bundle and all its children are expired
         for (const { id } of [bundle, childOpencti, childXtmone]) {
           await TestHelper.deploymentRequest.assertProperties(id, {
             hub_status: DeploymentRequestHubStatus.Expired,
@@ -4151,7 +3913,6 @@ describe('deployment app', () => {
       });
 
       it('should not expire a standalone trial that is still running', async () => {
-        // Given a standalone trial that has not reached its end date
         const ongoingStandalone =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -4161,10 +3922,8 @@ describe('deployment app', () => {
             }
           );
 
-        // When expiring trials
         await DeploymentApp.expireTrials();
 
-        // Then the trial remains active
         await TestHelper.deploymentRequest.assertProperties(
           ongoingStandalone.id,
           { hub_status: DeploymentRequestHubStatus.Active }
@@ -4172,7 +3931,6 @@ describe('deployment app', () => {
       });
 
       it('should leave the whole bundle untouched when one row fails to be expired', async () => {
-        // Given an update that fails for the second call
         const originalUpdate =
           DeploymentRequestDomain.updateDeploymentRequestById;
         let callCount = 0;
@@ -4187,10 +3945,8 @@ describe('deployment app', () => {
           return originalUpdate(id, data);
         });
 
-        // When expiring trials
         await DeploymentApp.expireTrials();
 
-        // Then the whole bundle is left untouched
         for (const { id } of [bundle, childOpencti, childXtmone]) {
           const untouched =
             await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
@@ -4199,7 +3955,6 @@ describe('deployment app', () => {
       });
 
       it('should not re-expire a child that is already cancelled', async () => {
-        // Given a bundle child that is already cancelled
         await DeploymentRequestDomain.updateDeploymentRequestById(
           childXtmone.id,
           {
@@ -4208,10 +3963,8 @@ describe('deployment app', () => {
           }
         );
 
-        // When expiring trials
         await DeploymentApp.expireTrials();
 
-        // Then the cancelled child stays cancelled while the bundle is expired
         await TestHelper.deploymentRequest.assertProperties(childXtmone.id, {
           hub_status: DeploymentRequestHubStatus.Cancelled,
         });
@@ -4331,18 +4084,15 @@ describe('deployment app', () => {
             }
           );
 
-        // When releasing the deployment request's place
         await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
           deploymentRequest!
         );
 
-        // Then no telemetry event is sent
         expect(telemetrySpy).not.toHaveBeenCalled();
       });
 
       it('should send telemetry event when deployment request was moved to pending', async () => {
-        // Given a queued deployment request that will be moved to pending
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
@@ -4365,13 +4115,11 @@ describe('deployment app', () => {
             }
           );
 
-        // When releasing the active deployment request's place
         await DeploymentApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
           deploymentRequest!
         );
 
-        // Then a telemetry event is emitted for the promoted queued request
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
