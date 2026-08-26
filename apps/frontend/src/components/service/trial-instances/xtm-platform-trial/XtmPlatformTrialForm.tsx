@@ -4,6 +4,7 @@ import {
   REGIONS_VALUES,
   USE_CASES_BY_PLATFORM_IDENTIFIER,
 } from '@/components/service/trial-instances/form-constants';
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
 import { WarningIcon } from '@filigran/icon';
 import {
@@ -29,7 +30,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -77,6 +78,11 @@ export const XtmPlatformTrialForm = ({
 }: XtmPlatformTrialFormProps) => {
   const t = useTranslations();
   const { me } = useContext(PortalContext);
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [pendingValues, setPendingValues] = useState<z.infer<
+    typeof xtmPlatformTrialFormSchema
+  > | null>(null);
 
   const form = useForm<z.infer<typeof xtmPlatformTrialFormSchema>>({
     resolver: zodResolver(xtmPlatformTrialFormSchema),
@@ -129,6 +135,23 @@ export const XtmPlatformTrialForm = ({
     }
   };
 
+  const onSubmit = (values: z.infer<typeof xtmPlatformTrialFormSchema>) => {
+    if (hasOngoingStandaloneTrials) {
+      setPendingValues(values);
+      setIsConfirmOpen(true);
+      return;
+    }
+    handleSubmit(values);
+  };
+
+  const onConfirmOngoingTrial = () => {
+    if (pendingValues) {
+      handleSubmit(pendingValues);
+    }
+    setIsConfirmOpen(false);
+    setPendingValues(null);
+  };
+
   return (
     <div className="flex w-full flex-col gap-xl rounded bg-elevation-background-layer-2 p-xl">
       <div className="flex items-center gap-l">
@@ -141,7 +164,7 @@ export const XtmPlatformTrialForm = ({
       <Form {...form}>
         <form
           className="flex w-full flex-col gap-l"
-          onSubmit={form.handleSubmit(handleSubmit)}>
+          onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-s rounded bg-hover p-l bg-elevation-background-layer-2">
             <h3 className="txt-title-xs">
               {t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}
@@ -337,6 +360,28 @@ export const XtmPlatformTrialForm = ({
           </div>
         </form>
       </Form>
+
+      <AlertDialogComponent
+        AlertTitle=""
+        isOpen={isConfirmOpen}
+        onOpenChange={setIsConfirmOpen}
+        actionButtonText={t('Utils.Confirm')}
+        variantName="destructive"
+        onClickContinue={onConfirmOngoingTrial}>
+        <div className="flex items-start gap-xs rounded border border-solid border-red p-s">
+          <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
+          <div className="flex flex-col gap-xs">
+            <span>
+              {t('Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning')}
+            </span>
+            <span>
+              {t(
+                'Service.Trials.XtmPlatform.Page.Form.OngoingTrialDescription'
+              )}
+            </span>
+          </div>
+        </div>
+      </AlertDialogComponent>
     </div>
   );
 };
