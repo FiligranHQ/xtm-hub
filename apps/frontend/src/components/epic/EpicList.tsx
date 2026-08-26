@@ -73,13 +73,18 @@ export const EpicList = ({
     ServiceRestriction.Delete,
     detailedServiceInstance
   );
-  const { me, hasOrganizationCapability } = useContext(PortalContext);
-
-  const canManageService =
+  const { hasOrganizationCapability } = useContext(PortalContext);
+  const { hasCapability: canManageServiceCapability, subscriptionId } =
     useServiceCapability(
       ServiceRestriction.ManageAccess,
-      detailedServiceInstance
-    ) ||
+      detailedServiceInstance,
+      {
+        withSubscriptionId: true,
+      }
+    );
+
+  const canManageService =
+    canManageServiceCapability ||
     (hasOrganizationCapability &&
       (hasOrganizationCapability(
         OrganizationCapability.AdministrateOrganization
@@ -137,10 +142,6 @@ export const EpicList = ({
     DEBOUNCE_TIME
   );
 
-  const currentSubscription = detailedServiceInstance?.subscriptions?.find(
-    (sub) => sub?.organization_id === me?.selected_organization_id
-  );
-
   return (
     <>
       <div className="flex m-s">
@@ -152,12 +153,12 @@ export const EpicList = ({
               setOpen={setOpenSheet}
             />
           )}
-          {(canManageService || isBypass) && currentSubscription?.id && (
+          {(canManageService || isBypass) && subscriptionId && (
             <Button
               asChild
               variant="secondary">
               <Link
-                href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentSubscription.id}`}>
+                href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${subscriptionId}`}>
                 {t('Service.Capabilities.ManageAccessName')}
               </Link>
             </Button>

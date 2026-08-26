@@ -1833,6 +1833,7 @@ export type Query = {
   updateOpenCTIManifest: Success;
   useCases: Maybe<UseCaseConnection>;
   userOrganizations: Array<Organization>;
+  userServiceCapabilities: Maybe<Array<Maybe<UserServiceCapability>>>;
   userServiceFromSubscription: Maybe<UserServiceConnection>;
   users: UserConnection;
   usersWithCapabilitiesInOrganization: Array<User>;
@@ -2107,6 +2108,11 @@ export type QueryUseCasesArgs = {
   orderMode: OrderingMode;
   product: InputMaybe<FiligranProduct>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryUserServiceCapabilitiesArgs = {
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2912,6 +2918,7 @@ export type UserServiceCapability = Node & {
   generic_service_capability: Maybe<GenericServiceCapability>;
   id: Scalars['ID']['output'];
   subscription_capability: Maybe<SubscriptionCapability>;
+  subscription_id: Maybe<Scalars['SubscriptionId']['output']>;
   user_service_id: Scalars['ID']['output'];
 };
 
@@ -3184,6 +3191,13 @@ export type EditSeoServiceInstanceMetadataMutationVariables = Exact<{
 
 
 export type EditSeoServiceInstanceMetadataMutation = { __typename?: 'Mutation', editSeoServiceInstance: { __typename?: 'SeoServiceInstanceMetadata', service_instance_id: any, language: SeoServiceInstanceLanguage, meta_title: string, meta_description: string } };
+
+export type ServiceUserCapabilitiesQueryVariables = Exact<{
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+}>;
+
+
+export type ServiceUserCapabilitiesQuery = { __typename?: 'Query', userServiceCapabilities: Array<{ __typename?: 'UserServiceCapability', id: string, user_service_id: string, subscription_id: any | null, generic_service_capability: { __typename?: 'GenericServiceCapability', id: string, name: string | null } | null, subscription_capability: { __typename?: 'SubscriptionCapability', id: string, service_capability: { __typename?: 'ServiceCapability', name: string | null, id: string } | null } | null } | null> | null };
 
 export type SolutionCategoryAddMutationVariables = Exact<{
   input: AddSolutionCategoryInput;
@@ -4367,6 +4381,72 @@ export const useEditSeoServiceInstanceMetadataMutation = <
 useEditSeoServiceInstanceMetadataMutation.getKey = () => ['EditSeoServiceInstanceMetadata'];
 useEditSeoServiceInstanceMetadataMutation.getRootKey = () => ['EditSeoServiceInstanceMetadata'] as const;
 useEditSeoServiceInstanceMetadataMutation.fetcher = (client: GraphQLClient, variables: EditSeoServiceInstanceMetadataMutationVariables, headers?: RequestInit['headers']) => fetcher<EditSeoServiceInstanceMetadataMutation, EditSeoServiceInstanceMetadataMutationVariables>(client, EditSeoServiceInstanceMetadataDocument, variables, headers);
+
+export const ServiceUserCapabilitiesDocument = `
+    query ServiceUserCapabilities($service_instance_id: ServiceInstanceId!) {
+  userServiceCapabilities(service_instance_id: $service_instance_id) {
+    id
+    user_service_id
+    subscription_id
+    generic_service_capability {
+      id
+      name
+    }
+    subscription_capability {
+      id
+      service_capability {
+        name
+        id
+      }
+    }
+  }
+}
+    `;
+
+export const useServiceUserCapabilitiesQuery = <
+      TData = ServiceUserCapabilitiesQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ServiceUserCapabilitiesQueryVariables,
+      options?: Omit<UseQueryOptions<ServiceUserCapabilitiesQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ServiceUserCapabilitiesQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ServiceUserCapabilitiesQuery, TError, TData>(
+      {
+    queryKey: ['ServiceUserCapabilities', variables],
+    queryFn: fetcher<ServiceUserCapabilitiesQuery, ServiceUserCapabilitiesQueryVariables>(client, ServiceUserCapabilitiesDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useServiceUserCapabilitiesQuery.getKey = (variables: ServiceUserCapabilitiesQueryVariables) => ['ServiceUserCapabilities', variables];
+useServiceUserCapabilitiesQuery.getRootKey = () => ['ServiceUserCapabilities'] as const;
+export const useInfiniteServiceUserCapabilitiesQuery = <
+      TData = InfiniteData<ServiceUserCapabilitiesQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ServiceUserCapabilitiesQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ServiceUserCapabilitiesQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ServiceUserCapabilitiesQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ServiceUserCapabilitiesQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['ServiceUserCapabilities.infinite', variables],
+      queryFn: (metaData) => fetcher<ServiceUserCapabilitiesQuery, ServiceUserCapabilitiesQueryVariables>(client, ServiceUserCapabilitiesDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteServiceUserCapabilitiesQuery.getKey = (variables: ServiceUserCapabilitiesQueryVariables) => ['ServiceUserCapabilities.infinite', variables];
+useInfiniteServiceUserCapabilitiesQuery.getRootKey = () => ['ServiceUserCapabilities.infinite'] as const;
+useServiceUserCapabilitiesQuery.fetcher = (client: GraphQLClient, variables: ServiceUserCapabilitiesQueryVariables, headers?: RequestInit['headers']) => fetcher<ServiceUserCapabilitiesQuery, ServiceUserCapabilitiesQueryVariables>(client, ServiceUserCapabilitiesDocument, variables, headers);
 
 export const SolutionCategoryAddDocument = `
     mutation SolutionCategoryAdd($input: AddSolutionCategoryInput!) {

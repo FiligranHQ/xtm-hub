@@ -1,13 +1,19 @@
 import { db } from '../../../../knexfile';
-import { ServiceRestriction } from '../../../__generated__/resolvers-types';
+import {
+  ServiceRestriction,
+  UserServiceCapability,
+} from '../../../__generated__/resolvers-types';
 import ServiceCapability, {
   ServiceCapabilityMutator,
 } from '../../../model/kanel/public/ServiceCapability';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../../model/kanel/public/UserService';
 import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
 import { addPrefixToObject } from '../../../utils/typescript';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 
 export const ServiceCapabilityDomain = {
   loadServiceCapabilitiesBy: async (
@@ -18,6 +24,91 @@ export const ServiceCapabilityDomain = {
     return db<ServiceCapability>('Service_Capability')
       .where(field)
       .select('Service_Capability.*');
+  },
+
+  loadServiceCapabilitiesByServiceId: async (
+    serviceInstanceId: ServiceInstanceId,
+    userId: UserId
+  ): Promise<UserServiceCapability[]> => {
+    const capabilitiesRows: {
+      user_service_capability_id: string;
+      user_service_id: string;
+      generic_service_capability_id: string | null;
+      generic_service_capability_name: string | null;
+      subscription_capability_id: string | null;
+      service_capability_id: string | null;
+      service_capability_name: string | null;
+      subscription_id: SubscriptionId;
+    }[] = await db('UserService_Capability')
+      .innerJoin(
+        'User_Service',
+        'UserService_Capability.user_service_id',
+        '=',
+        'User_Service.id'
+      )
+      .innerJoin(
+        'Subscription',
+        'User_Service.subscription_id',
+        '=',
+        'Subscription.id'
+      )
+      .leftJoin(
+        'Generic_Service_Capability',
+        'UserService_Capability.generic_service_capability_id',
+        '=',
+        'Generic_Service_Capability.id'
+      )
+      .leftJoin(
+        'Subscription_Capability',
+        'UserService_Capability.subscription_capability_id',
+        '=',
+        'Subscription_Capability.id'
+      )
+      .leftJoin(
+        'Service_Capability',
+        'Subscription_Capability.service_capability_id',
+        '=',
+        'Service_Capability.id'
+      )
+      .tap(restrictSubscriptionToUserOrganization)
+      .where('Subscription.service_instance_id', serviceInstanceId)
+      .andWhere('User_Service.user_id', userId)
+      .select([
+        'UserService_Capability.id as user_service_capability_id',
+        'UserService_Capability.user_service_id',
+        'Generic_Service_Capability.id as generic_service_capability_id',
+        'Generic_Service_Capability.name as generic_service_capability_name',
+        'Subscription_Capability.id as subscription_capability_id',
+        'Service_Capability.id as service_capability_id',
+        'Service_Capability.name as service_capability_name',
+        'Subscription.id as subscription_id',
+      ]);
+
+    return capabilitiesRows.map((capabilityRow) => ({
+      id: capabilityRow.user_service_capability_id,
+      user_service_id: capabilityRow.user_service_id,
+      subscription_id: capabilityRow.subscription_id,
+      generic_service_capability:
+        capabilityRow.generic_service_capability_id &&
+        capabilityRow.generic_service_capability_name
+          ? {
+              id: capabilityRow.generic_service_capability_id,
+              name: capabilityRow.generic_service_capability_name,
+            }
+          : null,
+      subscription_capability:
+        capabilityRow.subscription_capability_id &&
+        capabilityRow.service_capability_id &&
+        capabilityRow.service_capability_name
+          ? {
+              id: capabilityRow.subscription_capability_id,
+              service_capability: {
+                id: capabilityRow.service_capability_id,
+                name: capabilityRow.service_capability_name,
+              },
+            }
+          : null,
+    }));
   },
 
   getManageAccessLeft: async (userServiceId: UserServiceId) => {

@@ -16,23 +16,23 @@ const ServiceListHeaderButtons = ({}) => {
   const t = useTranslations();
   const { hasOrganizationCapability } = useContext(PortalContext);
 
-  const {
-    serviceInstance,
-    translationKey,
-    type,
-    setIntegrationType,
-    currentUserSubscriptionId,
-  } = useServiceContext();
+  const { serviceInstance, translationKey, type, setIntegrationType } =
+    useServiceContext();
   const [openSheet, setOpenSheet] = useState(false);
   const isBypass = useAdminByPass();
 
-  const canManageService =
-    serviceInstance.capabilities.includes(ServiceRestriction.ManageAccess) ||
-    (hasOrganizationCapability &&
-      (hasOrganizationCapability(
-        OrganizationCapability.AdministrateOrganization
-      ) ||
-        hasOrganizationCapability(OrganizationCapability.ManageSubscription)));
+  const { hasCapability: canManageService, subscriptionId } =
+    useServiceCapability(ServiceRestriction.ManageAccess, serviceInstance, {
+      withSubscriptionId: true,
+    });
+
+  const isAdminOrga =
+    hasOrganizationCapability &&
+    (hasOrganizationCapability(
+      OrganizationCapability.AdministrateOrganization
+    ) ||
+      hasOrganizationCapability(OrganizationCapability.ManageSubscription));
+
   const userCanUpdate = useServiceCapability(
     ServiceRestriction.Upload,
     serviceInstance
@@ -41,11 +41,11 @@ const ServiceListHeaderButtons = ({}) => {
 
   return (
     <div className="flex gap-s">
-      {(canManageService || isBypass) && currentUserSubscriptionId && (
+      {(canManageService || isAdminOrga || isBypass) && subscriptionId && (
         <>
           <Button variant="secondary">
             <Link
-              href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentUserSubscriptionId}`}>
+              href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${subscriptionId}`}>
               {t('Service.Capabilities.ManageAccessName')}
             </Link>
           </Button>

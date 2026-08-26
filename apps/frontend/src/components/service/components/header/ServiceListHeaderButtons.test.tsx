@@ -13,9 +13,15 @@ const { mockUseServiceContext, mockSetIntegrationType } = vi.hoisted(() => ({
   mockUseServiceContext: vi.fn(),
   mockSetIntegrationType: vi.fn(),
 }));
+const { mockUseServiceCapability } = vi.hoisted(() => ({
+  mockUseServiceCapability: vi.fn(),
+}));
 
 vi.mock('@/components/service/components/ServiceContext', () => ({
   useServiceContext: mockUseServiceContext,
+}));
+vi.mock('@/hooks/use-service-capability', () => ({
+  default: mockUseServiceCapability,
 }));
 
 const buildServiceContext = (overrides = {}) => ({
@@ -26,13 +32,31 @@ const buildServiceContext = (overrides = {}) => ({
   translationKey: 'Service.OpenctiCustomDashboards',
   type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
   setIntegrationType: mockSetIntegrationType,
-  currentUserSubscriptionId: 'subscription-1',
   ...overrides,
 });
 
 describe('ServiceListHeaderButtons', () => {
   beforeEach(() => {
     mockUseServiceContext.mockReturnValue(buildServiceContext());
+    mockUseServiceCapability.mockImplementation(
+      (
+        capability: ServiceRestriction,
+        serviceInstance?: { capabilities?: ServiceRestriction[] },
+        options?: { withSubscriptionId?: boolean }
+      ) => {
+        const hasCapability =
+          serviceInstance?.capabilities?.includes(capability) ?? false;
+
+        if (options?.withSubscriptionId) {
+          return {
+            hasCapability,
+            subscriptionId: 'subscription-1',
+          };
+        }
+
+        return hasCapability;
+      }
+    );
   });
 
   it.each`

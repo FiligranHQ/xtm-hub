@@ -1,18 +1,22 @@
 scalar ServiceCapabilityId
 
 type GenericServiceCapability implements Node {
-  id: ID!
-  name: String
+    id: ID!
+    name: String
 }
 
 input EditServiceCapabilityInput {
-  user_service_id: UserServiceId
-  capabilities: [String]!
+    user_service_id: UserServiceId
+    capabilities: [String]!
+}
+
+type Query {
+    userServiceCapabilities(service_instance_id: ServiceInstanceId!): [UserServiceCapability] @auth
 }
 
 type Mutation {
-  editServiceCapability(
-    input: EditServiceCapabilityInput
-    serviceInstanceId: ServiceInstanceId
-  ): SubscriptionModel @auth
+    editServiceCapability(
+        input: EditServiceCapabilityInput
+        serviceInstanceId: ServiceInstanceId
+    ): SubscriptionModel @auth
 }

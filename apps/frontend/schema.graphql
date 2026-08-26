@@ -143,6 +143,7 @@ type Query {
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
+  userServiceCapabilities(service_instance_id: ServiceInstanceId!): [UserServiceCapability]
   seoServiceInstanceMetadata(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage): [SeoServiceInstanceMetadata!]!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!], includeInaccessible: Boolean): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
@@ -1267,6 +1268,7 @@ input AddSubscriptionCapabilityInput {
 type UserServiceCapability implements Node {
   id: ID!
   user_service_id: ID!
+  subscription_id: SubscriptionId
   generic_service_capability: GenericServiceCapability
   subscription_capability: SubscriptionCapability
 }

@@ -1826,6 +1826,7 @@ export type Query = {
   updateOpenCTIManifest: Success;
   useCases?: Maybe<UseCaseConnection>;
   userOrganizations: Array<Organization>;
+  userServiceCapabilities?: Maybe<Array<Maybe<UserServiceCapability>>>;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   users: UserConnection;
   usersWithCapabilitiesInOrganization: Array<User>;
@@ -2100,6 +2101,11 @@ export type QueryUseCasesArgs = {
   orderMode: OrderingMode;
   product?: InputMaybe<FiligranProduct>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryUserServiceCapabilitiesArgs = {
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2905,6 +2911,7 @@ export type UserServiceCapability = Node & {
   generic_service_capability?: Maybe<GenericServiceCapability>;
   id: Scalars['ID']['output'];
   subscription_capability?: Maybe<SubscriptionCapability>;
+  subscription_id?: Maybe<Scalars['SubscriptionId']['output']>;
   user_service_id: Scalars['ID']['output'];
 };
 
@@ -4350,6 +4357,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<QueryUpdateOpenCtiManifestArgs, 'tag'>>;
   useCases?: Resolver<Maybe<ResolversTypes['UseCaseConnection']>, ParentType, ContextType, RequireFields<QueryUseCasesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
+  userServiceCapabilities?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserServiceCapability']>>>, ParentType, ContextType, RequireFields<QueryUserServiceCapabilitiesArgs, 'service_instance_id'>>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
@@ -4861,6 +4869,7 @@ export type UserServiceCapabilityResolvers<ContextType = PortalContext, ParentTy
   generic_service_capability?: Resolver<Maybe<ResolversTypes['GenericServiceCapability']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   subscription_capability?: Resolver<Maybe<ResolversTypes['SubscriptionCapability']>, ParentType, ContextType>;
+  subscription_id?: Resolver<Maybe<ResolversTypes['SubscriptionId']>, ParentType, ContextType>;
   user_service_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

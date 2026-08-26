@@ -1,0 +1,18 @@
+query ServiceUserCapabilities($service_instance_id: ServiceInstanceId!) {
+  userServiceCapabilities(service_instance_id: $service_instance_id) {
+    id
+    user_service_id
+    subscription_id
+    generic_service_capability {
+      id
+      name
+    }
+    subscription_capability {
+      id
+      service_capability {
+        name
+        id
+      }
+    }
+  }
+}

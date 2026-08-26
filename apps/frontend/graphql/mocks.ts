@@ -1362,6 +1362,7 @@ export const mockQuery = (overrides?: Partial<Query>, _relationshipsToOmit: Set<
         updateOpenCTIManifest: overrides && overrides.hasOwnProperty('updateOpenCTIManifest') ? overrides.updateOpenCTIManifest! : relationshipsToOmit.has('Success') ? {} as Success : mockSuccess({}, relationshipsToOmit),
         useCases: overrides && overrides.hasOwnProperty('useCases') ? overrides.useCases! : relationshipsToOmit.has('UseCaseConnection') ? {} as UseCaseConnection : mockUseCaseConnection({}, relationshipsToOmit),
         userOrganizations: overrides && overrides.hasOwnProperty('userOrganizations') ? overrides.userOrganizations! : [relationshipsToOmit.has('Organization') ? {} as Organization : mockOrganization({}, relationshipsToOmit)],
+        userServiceCapabilities: overrides && overrides.hasOwnProperty('userServiceCapabilities') ? overrides.userServiceCapabilities! : [relationshipsToOmit.has('UserServiceCapability') ? {} as UserServiceCapability : mockUserServiceCapability({}, relationshipsToOmit)],
         userServiceFromSubscription: overrides && overrides.hasOwnProperty('userServiceFromSubscription') ? overrides.userServiceFromSubscription! : relationshipsToOmit.has('UserServiceConnection') ? {} as UserServiceConnection : mockUserServiceConnection({}, relationshipsToOmit),
         users: overrides && overrides.hasOwnProperty('users') ? overrides.users! : relationshipsToOmit.has('UserConnection') ? {} as UserConnection : mockUserConnection({}, relationshipsToOmit),
         usersWithCapabilitiesInOrganization: overrides && overrides.hasOwnProperty('usersWithCapabilitiesInOrganization') ? overrides.usersWithCapabilitiesInOrganization! : [relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit)],
@@ -2298,6 +2299,7 @@ export const mockUserServiceCapability = (overrides?: Partial<UserServiceCapabil
         generic_service_capability: overrides && overrides.hasOwnProperty('generic_service_capability') ? overrides.generic_service_capability! : relationshipsToOmit.has('GenericServiceCapability') ? {} as GenericServiceCapability : mockGenericServiceCapability({}, relationshipsToOmit),
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : '4b3020a6-d085-466d-8db7-3ca4c4b383fe',
         subscription_capability: overrides && overrides.hasOwnProperty('subscription_capability') ? overrides.subscription_capability! : relationshipsToOmit.has('SubscriptionCapability') ? {} as SubscriptionCapability : mockSubscriptionCapability({}, relationshipsToOmit),
+        subscription_id: overrides && overrides.hasOwnProperty('subscription_id') ? overrides.subscription_id! : 'surgo',
         user_service_id: overrides && overrides.hasOwnProperty('user_service_id') ? overrides.user_service_id! : '90cafcef-0c3b-4c84-9592-1beb4bc23d12',
     };
 };
