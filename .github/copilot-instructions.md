@@ -16,6 +16,11 @@ Shared, repository-wide context. Anything scoped to a single area lives in
 Deeper task guidance lives in [`.github/skills/`](skills/) and
 [`.github/agents/`](agents/); repeatable recipes live in [`.github/prompts/`](prompts/).
 
+This content drifts as the codebase changes. Run `yarn check:ai-instructions` for a mechanical check
+(broken paths/commands, dead `applyTo` globs), or the
+[`review-instructions`](prompts/review-instructions.prompt.md) prompt for a full audit against the real
+code — it asks a question (or flags a PR comment) instead of guessing when something doesn't match.
+
 ## Critical rules
 
 Follow [`.github/skills/coding-conventions/SKILL.md`](skills/coding-conventions/SKILL.md) for the mandatory coding

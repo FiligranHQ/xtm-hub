@@ -85,4 +85,5 @@ This file is the portable summary. The authoritative, path-scoped guidance lives
 - [`.github/agents/`](.github/agents/) — specialised agent definitions
 - [`.github/prompts/`](.github/prompts/) — repeatable recipes for common changes
 
-Read the file matching the area you are touching before making changes.
+Read the file matching the area you are touching before making changes. Run `yarn check:ai-instructions`
+periodically to catch drift (broken paths/commands) in this content itself.

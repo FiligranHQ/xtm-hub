@@ -14,12 +14,15 @@ Ask me for the route path and whether it is user-facing or admin if I have not a
 1. **Route.** Create the directory under `app/(application)/app/(user)/` for user-facing pages, or
    `app/(application)/app/(admin)/admin/` for the admin panel. Follow the surrounding route-group conventions.
 
-2. **Query.** Preferred: write `apps/frontend/graphql/<domain>/<name>.query.graphql` (or `.mutation.graphql`), then
-   run `yarn workspace @xtm-hub/frontend codegen` to refresh `apps/frontend/graphql/generated.ts` (aliased
-   `@graphql/*`), which exports a typed `use<Name>Query`/`use<Name>Mutation` hook. Only use Relay's `graphql` tagged
-   template if the task explicitly asks to extend an existing Relay-backed page; if so, the operation must already
-   exist in `apps/frontend/schema.graphql` (see [`add-backend-module.prompt.md`](add-backend-module.prompt.md) if it
-   does not), and needs `yarn workspace @xtm-hub/frontend relay` to regenerate `apps/frontend/__generated__/`.
+2. **Query.** Always use `@tanstack/react-query` for a new page — write `apps/frontend/graphql/<domain>/<name>.query.graphql`
+   (or `.mutation.graphql`), then run `yarn workspace @xtm-hub/frontend codegen` to refresh
+   `apps/frontend/graphql/generated.ts` (aliased `@graphql/*`), which exports a typed
+   `use<Name>Query`/`use<Name>Mutation` hook. Only use Relay's `graphql` tagged template if the task explicitly asks
+   to extend an existing Relay-backed page; if so, the operation must already exist in
+   `apps/frontend/schema.graphql` (see [`add-backend-module.prompt.md`](add-backend-module.prompt.md) if it does
+   not), and needs `yarn workspace @xtm-hub/frontend relay` to regenerate `apps/frontend/__generated__/`. The
+   long-term goal is to remove Relay entirely, so never add a new Relay operation to a page that doesn't already
+   have one.
 
 3. **Component.** Call the generated hook with `portalGraphqlClient` from `@/lib/graphql-client` as the first
    argument, and manage cache invalidation with `useQueryClient()` from `@tanstack/react-query` (see

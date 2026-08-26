@@ -7,9 +7,10 @@ applyTo: 'apps/frontend/**'
 Next.js 16 (App Router + Turbopack) + React 19 + TailwindCSS 4 + `@filigran/ui`. Dev port **3002** (Docker production
 serves on 3000 internally).
 
-Two data layers coexist mid-migration: **`@tanstack/react-query` is preferred for new work** (see
-[Data fetching](#data-fetching)); **Relay** still backs existing pages and is only touched when a task's scope
-explicitly includes migrating that component.
+Two data layers coexist mid-migration: **`@tanstack/react-query` is mandatory for all new data-fetching work**
+(see [Data fetching](#data-fetching)); **Relay** only remains on existing pages, and the long-term goal is to
+remove it entirely — migrate a Relay component to react-query whenever you're already touching it and it's
+safe to do so.
 
 ## Commands
 
@@ -93,14 +94,31 @@ The backend is reached through `middleware.ts`, which proxies to `SERVER_HTTP_AP
 4. Invalidate or update the cache with `useQueryClient()` from `@tanstack/react-query`; see
    `src/utils/query-cache.ts` for the existing connection-editing helpers.
 
-Only touch the Relay path when a task's scope explicitly includes migrating that component, or the change is small
-and low-risk; after removing a component's last Relay usage, confirm nothing else still imports its generated
-artifacts before deleting them.
+**Never introduce new Relay usage, even for a small addition to an existing Relay page** — add it as a
+react-query call instead. The long-term goal is to remove Relay from this codebase entirely, so every
+new query or mutation should be react-query by default.
+
+When a task touches a component that still uses Relay for an unrelated reason, migrate that component's
+data fetching to react-query as part of the change, unless the migration is clearly out of scope for the
+task or too risky to fit safely (complex pagination/streaming, a large blast radius) — if you skip the
+migration for that reason, say so explicitly rather than silently leaving Relay in place. After removing
+a component's last Relay usage, confirm nothing else still imports its generated artifacts before
+deleting them.
 
 Existing Relay pages: add a `*.graphql.ts` file with the `graphql` tagged template, run `yarn relay` to regenerate
 `apps/frontend/__generated__/`, and consume it with `useLazyLoadQuery` or `usePreloadedQuery` from `react-relay`.
 
 Server-side fetches go through `src/relay/server-portal-api-fetch.ts`, which forwards Next.js cookies.
+
+## Routing & Links
+
+**Disable prefetch on side-effecting links.** Next.js `<Link>` prefetches its `href` in the background as
+soon as it enters the viewport (or on hover). Any `href` that resolves to a route with real side effects —
+for example paths under `/auth/*`, `/document/*`, `/user/picture`, or an App Router `route.ts` handler that
+authenticates, mutates data, or triggers a redirect with business logic (like
+`app/redirect/[identifier]/route.ts`) — must use `<Link href="..." prefetch={false}>`. Plain `<a href="...">`
+tags are unaffected and don't need this. When adding or reviewing any `<Link>`, check whether its target is
+a passive page/RSC route or a side-effecting endpoint before deciding on `prefetch`.
 
 ## Internationalisation
 

@@ -25,6 +25,13 @@ violation explicitly. Apply `performance-security-review/SKILL.md` for
 performance bottlenecks, security vulnerabilities, and likely future failure
 scenarios, using its output format and prioritization policy.
 
+## Documentation drift
+Also check the diff against the path-scoped `.github/instructions/*.md` files and any custom agent
+(`.github/agents/*.agent.md`) that would normally write this kind of file. If the code contradicts a
+documented convention (or the diff reveals the doc is stale), don't just critique the code — follow
+`.github/prompts/review-instructions.prompt.md` to flag the specific contradiction as an inline PR
+review comment instead of only noting it in prose.
+
 Structure your review into:
 - High‑level critique
 - Detailed line‑by‑line analysis
