@@ -16,7 +16,10 @@ import {
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
-import { DeploymentRequestDomain } from './deployment.domain';
+import {
+  DeploymentRequestDomain,
+  shouldDeleteDeploymentRequestAudience,
+} from './deployment.domain';
 import { ServiceGroupDomain } from './group/service-group.domain';
 import { trialQuotaKey } from './quota/deployment.quota.domain';
 
@@ -1634,5 +1637,67 @@ describe('deploymentRequestDomain', () => {
         [openctiTrial.id, openaevTrial.id].sort()
       );
     });
+  });
+
+  describe('shouldDeleteDeploymentRequestAudience', () => {
+    it('should return false for a bundle', () => {
+      expect(
+        shouldDeleteDeploymentRequestAudience({
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          parent_id: null,
+        })
+      ).toBe(false);
+    });
+
+    it('should return false for an xtmone trial', () => {
+      expect(
+        shouldDeleteDeploymentRequestAudience({
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_identifier: PlatformIdentifier.Xtmone,
+          parent_id: null,
+        })
+      ).toBe(false);
+    });
+
+    it('should return false for an openaev bundle child', () => {
+      expect(
+        shouldDeleteDeploymentRequestAudience({
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_identifier: PlatformIdentifier.Openaev,
+          parent_id: uuidv4() as DeploymentRequestId,
+        })
+      ).toBe(false);
+    });
+
+    it('should return true for a standalone openaev trial', () => {
+      expect(
+        shouldDeleteDeploymentRequestAudience({
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_identifier: PlatformIdentifier.Openaev,
+          parent_id: null,
+        })
+      ).toBe(true);
+    });
+
+    it.each`
+      description
+      ${'standalone'}
+      ${'bundle child'}
+    `(
+      'should return true for an opencti $description trial',
+      ({ description }) => {
+        expect(
+          shouldDeleteDeploymentRequestAudience({
+            type: DeploymentRequestDeploymentType.Trial,
+            platform_identifier: PlatformIdentifier.Opencti,
+            parent_id:
+              description === 'bundle child'
+                ? (uuidv4() as DeploymentRequestId)
+                : null,
+          })
+        ).toBe(true);
+      }
+    );
   });
 });

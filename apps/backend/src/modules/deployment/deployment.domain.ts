@@ -16,6 +16,7 @@ import DeploymentRequest, {
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
+import { getErrorNumberProperty } from '../../utils/error/error-guard.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { prefixObjectKeys } from '../../utils/utils';
 import {
@@ -132,10 +133,11 @@ export const DeploymentRequestDomain = {
       .where('organization_requester_id', '=', organizationId)
       .where('type', '=', DeploymentRequestDeploymentType.Trial)
       .whereNull('parent_id')
-      .whereNotIn('hub_status', [
-        DeploymentRequestHubStatus.Cancelled,
-        DeploymentRequestHubStatus.Expired,
-        DeploymentRequestHubStatus.Failed,
+      .whereIn('hub_status', [
+        DeploymentRequestHubStatus.Active,
+        DeploymentRequestHubStatus.Pending,
+        DeploymentRequestHubStatus.Provisioning,
+        DeploymentRequestHubStatus.Queued,
       ])
       .select('*');
   },
@@ -460,10 +462,6 @@ export const DeploymentRequestDomain = {
   deleteDeploymentRequestAudience: async (
     deploymentRequest: DeploymentRequest
   ): Promise<void> => {
-    if (deploymentRequest.platform_identifier !== PlatformIdentifier.Opencti) {
-      return;
-    }
-
     try {
       if (deploymentRequest.platform_id) {
         await auth0Client.deleteAudienceAPI(
@@ -477,12 +475,40 @@ export const DeploymentRequestDomain = {
         });
       }
     } catch (error) {
-      logApp.error('Unable to delete audience', {
-        error,
-        deploymentRequestId: deploymentRequest.id,
-      });
+      logDeleteAudienceError(error, deploymentRequest);
     }
   },
+};
+
+/**
+ * Bundles never create an Auth0 audience for themselves nor for their XtmOne
+ * or OpenAEV children, unlike standalone trials which do create one for
+ * OpenAEV (and Opencti). This tells callers whether it is worth attempting
+ * to delete an audience for a given deployment request.
+ */
+export const shouldDeleteDeploymentRequestAudience = (
+  deploymentRequest: Pick<
+    DeploymentRequest,
+    'type' | 'platform_identifier' | 'parent_id'
+  >
+): boolean => {
+  if (deploymentRequest.type === DeploymentRequestDeploymentType.Bundle) {
+    return false;
+  }
+
+  if (deploymentRequest.platform_identifier === PlatformIdentifier.Xtmone) {
+    return false;
+  }
+
+  const isBundleChild = deploymentRequest.parent_id !== null;
+  if (
+    deploymentRequest.platform_identifier === PlatformIdentifier.Openaev &&
+    isBundleChild
+  ) {
+    return false;
+  }
+
+  return true;
 };
 
 export type FullyQualifiedDeploymentRequest = DeploymentRequest & {
@@ -491,6 +517,27 @@ export type FullyQualifiedDeploymentRequest = DeploymentRequest & {
   requester_email: string;
   requester_first_name: string;
   requester_last_name: string;
+};
+
+const logDeleteAudienceError = (
+  error: unknown,
+  deploymentRequest: Pick<DeploymentRequest, 'id' | 'platform_identifier'>
+) => {
+  const isExpectedOpenaevAudienceMiss =
+    getErrorNumberProperty(error, 'statusCode') === 404 &&
+    deploymentRequest.platform_identifier === PlatformIdentifier.Openaev;
+
+  if (isExpectedOpenaevAudienceMiss) {
+    logApp.warn('No Auth0 audience to delete for OpenAEV trial', {
+      deploymentRequestId: deploymentRequest.id,
+    });
+    return;
+  }
+
+  logApp.error('Unable to delete audience', {
+    error,
+    deploymentRequestId: deploymentRequest.id,
+  });
 };
 
 const getDeploymentRequestWithUserDataQuery =

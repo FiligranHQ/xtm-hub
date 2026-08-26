@@ -2824,6 +2824,59 @@ describe('deployment app', () => {
       });
     });
 
+    it.each`
+      platformIdentifier            | description
+      ${PlatformIdentifier.Opencti} | ${'a standalone OpenCTI trial'}
+      ${PlatformIdentifier.Openaev} | ${'a standalone OpenAEV trial'}
+    `(
+      'should attempt to delete the Auth0 audience for $description',
+      async ({ platformIdentifier }) => {
+        // Given a deployment request that should have an Auth0 audience
+        const deleteAudienceSpy = vi.spyOn(
+          auth0ClientMock,
+          'deleteAudienceAPI'
+        );
+        const deployment =
+          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+              actual_state: DeploymentRequestPlatformState.Active,
+              platform_id: uuidv4(),
+              platform_identifier: platformIdentifier,
+            }
+          )) as DeploymentRequest;
+
+        // When cancelling the deployment request
+        await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+
+        // Then the Auth0 audience deletion is attempted
+        expect(deleteAudienceSpy).toHaveBeenCalledWith(
+          deployment.organization_requester_id,
+          deployment.platform_id
+        );
+      }
+    );
+
+    it('should not attempt to delete the Auth0 audience for a standalone XtmOne trial', async () => {
+      // Given a standalone XtmOne trial, which never has an Auth0 audience
+      const deleteAudienceSpy = vi.spyOn(auth0ClientMock, 'deleteAudienceAPI');
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+            platform_id: uuidv4(),
+            platform_identifier: PlatformIdentifier.Xtmone,
+          }
+        )) as DeploymentRequest;
+
+      // When cancelling the deployment request
+      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+
+      // Then the Auth0 audience deletion is never attempted
+      expect(deleteAudienceSpy).not.toHaveBeenCalled();
+    });
+
     it('should log an error when deleting a missing OpenCTI audience (404)', async () => {
       // Given a deletion of the Auth0 audience that fails with a 404
       vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
@@ -2850,35 +2903,36 @@ describe('deployment app', () => {
       );
     });
 
-    it.each`
-      platformIdentifier
-      ${PlatformIdentifier.Openaev}
-      ${PlatformIdentifier.Xtmone}
-    `(
-      'should not attempt to delete the Auth0 audience for $platformIdentifier trials',
-      async ({ platformIdentifier }) => {
-        // Given a deployment request for a non-OpenCTI platform
-        const deleteAudienceSpy = vi.spyOn(
-          auth0ClientMock,
-          'deleteAudienceAPI'
-        );
-        const deployment =
-          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
-              hub_status: DeploymentRequestHubStatus.Active,
-              actual_state: DeploymentRequestPlatformState.Active,
-              platform_id: uuidv4(),
-              platform_identifier: platformIdentifier,
-            }
-          )) as DeploymentRequest;
+    it('should log a warning instead of an error when deleting a missing OpenAEV audience (404)', async () => {
+      // Given a deletion of the Auth0 audience that fails with a 404
+      vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
+        statusCode: 404,
+      });
+      const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+            platform_id: uuidv4(),
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        )) as DeploymentRequest;
 
-        // When cancelling the deployment request
-        await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+      // When cancelling the deployment request
+      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
 
-        // Then the Auth0 audience deletion is never attempted
-        expect(deleteAudienceSpy).not.toHaveBeenCalled();
-      }
-    );
+      // Then it logs a warning, not an error
+      expect(warnSpy).toHaveBeenCalledWith(
+        'No Auth0 audience to delete for OpenAEV trial',
+        expect.objectContaining({ deploymentRequestId: deployment.id })
+      );
+      expect(errorSpy).not.toHaveBeenCalledWith(
+        'Unable to delete audience',
+        expect.anything()
+      );
+    });
 
     describe('quota', () => {
       beforeEach(async () => {
@@ -3093,6 +3147,7 @@ describe('deployment app', () => {
               platform_identifier: PlatformIdentifier.Opencti,
               hub_status: DeploymentRequestHubStatus.Active,
               actual_state: DeploymentRequestPlatformState.Active,
+              platform_id: uuidv4(),
             }
           );
         childXtmone =
@@ -3124,6 +3179,26 @@ describe('deployment app', () => {
             cancellation_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           });
         }
+      });
+
+      it('should only delete the Auth0 audience of the OpenCTI child', async () => {
+        const deleteAudienceSpy = vi.spyOn(
+          auth0ClientMock,
+          'deleteAudienceAPI'
+        );
+
+        await DeploymentApp.cancelDeploymentRequest(
+          bundle.id,
+          false,
+          'my reason'
+        );
+
+        // Then only the OpenCTI child's audience is deleted: bundles, XtmOne
+        // children and OpenAEV bundle children never have one
+        expect(deleteAudienceSpy).toHaveBeenCalledExactlyOnceWith(
+          childOpencti.organization_requester_id,
+          childOpencti.platform_id
+        );
       });
 
       it('should send one telemetry event per deployment request', async () => {

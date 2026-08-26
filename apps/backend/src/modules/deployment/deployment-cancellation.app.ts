@@ -12,7 +12,10 @@ import { OrganizationDomain } from '../organization-management/organization/orga
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
-import { DeploymentRequestDomain } from './deployment.domain';
+import {
+  DeploymentRequestDomain,
+  shouldDeleteDeploymentRequestAudience,
+} from './deployment.domain';
 import { DeploymentHelper } from './deployment.helper';
 import { DeploymentQuotaApp } from './quota/deployment.quota.app';
 import {
@@ -175,7 +178,10 @@ export const DeploymentCancellationApp = {
         isAdmin: false,
         cancellationReason: BUNDLE_REQUEST_CANCELLATION_REASON,
       });
-      await DeploymentRequestDomain.deleteDeploymentRequestAudience(trial);
+
+      if (shouldDeleteDeploymentRequestAudience(trial)) {
+        await DeploymentRequestDomain.deleteDeploymentRequestAudience(trial);
+      }
     }
   },
 };

@@ -76,6 +76,7 @@ import { DeploymentCancellationApp } from './deployment-cancellation.app';
 import {
   DeploymentRequestDomain,
   FullyQualifiedDeploymentRequest,
+  shouldDeleteDeploymentRequestAudience,
 } from './deployment.domain';
 import { DeploymentHelper } from './deployment.helper';
 import { DeploymentQuotaApp } from './quota/deployment.quota.app';
@@ -413,9 +414,11 @@ export const DeploymentApp = {
     });
 
     for (const previousRequest of family) {
-      await DeploymentRequestDomain.deleteDeploymentRequestAudience(
-        previousRequest
-      );
+      if (shouldDeleteDeploymentRequestAudience(previousRequest)) {
+        await DeploymentRequestDomain.deleteDeploymentRequestAudience(
+          previousRequest
+        );
+      }
     }
 
     const [updatedDeploymentRequest] = updatedFamily;
@@ -457,7 +460,11 @@ export const DeploymentApp = {
       }
 
       for (const request of family) {
-        await DeploymentRequestDomain.deleteDeploymentRequestAudience(request);
+        if (shouldDeleteDeploymentRequestAudience(request)) {
+          await DeploymentRequestDomain.deleteDeploymentRequestAudience(
+            request
+          );
+        }
       }
     }
   },
