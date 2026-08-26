@@ -86,6 +86,9 @@ import { ServiceInstanceDomain } from '../service/instance/service-instance.doma
 import { CompetitorDomain } from './competitor/competitor.domain';
 import {
   BUNDLE_REQUEST_CANCELLATION_REASON,
+  DeploymentCancellationApp,
+} from './deployment-cancellation.app';
+import {
   DeploymentApp,
   XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
 } from './deployment.app';
@@ -4060,7 +4063,7 @@ describe('deployment app', () => {
             );
 
           // When releasing its place
-          await DeploymentApp.releaseDeploymentRequestPlace(
+          await DeploymentCancellationApp.releaseDeploymentRequestPlace(
             deploymentRequest!.hub_status,
             deploymentRequest!
           );
@@ -4084,7 +4087,7 @@ describe('deployment app', () => {
             }
           );
 
-        await DeploymentApp.releaseDeploymentRequestPlace(
+        await DeploymentCancellationApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
           deploymentRequest!
         );
@@ -4115,7 +4118,7 @@ describe('deployment app', () => {
             }
           );
 
-        await DeploymentApp.releaseDeploymentRequestPlace(
+        await DeploymentCancellationApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
           deploymentRequest!
         );

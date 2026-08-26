@@ -72,6 +72,7 @@ import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { CompetitorApp } from './competitor/competitor.app';
+import { DeploymentCancellationApp } from './deployment-cancellation.app';
 import {
   DeploymentRequestDomain,
   FullyQualifiedDeploymentRequest,
@@ -86,8 +87,6 @@ import {
 } from './quota/deployment.quota.domain';
 
 export const XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME = 'XTM Platform Bundle';
-export const BUNDLE_REQUEST_CANCELLATION_REASON =
-  'Other: Cancelled automatically when the XTM Platform trial was requested';
 
 const DEPLOYMENT_REQUEST_LOCK_NAMESPACE = 'deployment_request';
 
@@ -231,7 +230,7 @@ export const DeploymentApp = {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
-    await sendUpdateDeploymentTelemetryEvent(
+    await DeploymentCancellationApp.sendUpdateDeploymentTelemetryEvent(
       updatedDeploymentRequest,
       updatedDeploymentRequest.user_requester_id,
       deploymentRequest
@@ -350,7 +349,10 @@ export const DeploymentApp = {
       region,
       newCapacity,
       onRequestMoved: (movedRequest) =>
-        sendUpdateDeploymentTelemetryEvent(movedRequest, user.id),
+        DeploymentCancellationApp.sendUpdateDeploymentTelemetryEvent(
+          movedRequest,
+          user.id
+        ),
     });
 
     return { success: true };
@@ -393,7 +395,7 @@ export const DeploymentApp = {
 
       for (const request of family) {
         const updatedRequest =
-          await DeploymentRequestDomain.applyCancellationToDeploymentRequest({
+          await DeploymentCancellationApp.applyCancellationToDeploymentRequest({
             deploymentRequest: request,
             userId: user.id,
             isAdmin,
@@ -460,21 +462,6 @@ export const DeploymentApp = {
     }
   },
 
-  releaseDeploymentRequestPlace: async (
-    previousHubStatus: DeploymentRequestHubStatus,
-    request: DeploymentRequestModel
-  ) => {
-    const promotedRequest = await DeploymentQuotaApp.releaseQuotaForRequest(
-      request,
-      previousHubStatus
-    );
-
-    if (promotedRequest) {
-      const user = requestContext.requireUser();
-
-      await sendUpdateDeploymentTelemetryEvent(promotedRequest, user.id);
-    }
-  },
   loadTrialDeployments: async (input: TrialDeploymentsInput) => {
     const user = requestContext.requireUser();
     await securityGuard.assertUserIsInOrganization(user, input.organizationId);
@@ -911,7 +898,7 @@ const createBundleDeploymentRequest = async ({
         });
 
       if (isPlaceAvailable) {
-        await DeploymentRequestDomain.cancelOngoingStandaloneTrialsForBundle(
+        await DeploymentCancellationApp.cancelOngoingStandaloneTrialsForBundle(
           bundleDeploymentRequest
         );
       }
@@ -985,7 +972,10 @@ const sendDeploymentRequestCancelledNotifications = async (
   deploymentRequest: DeploymentRequestModel,
   userId: UserId
 ): Promise<void> => {
-  await sendUpdateDeploymentTelemetryEvent(deploymentRequest, userId);
+  await DeploymentCancellationApp.sendUpdateDeploymentTelemetryEvent(
+    deploymentRequest,
+    userId
+  );
 
   try {
     const [requester] = await UserDomain.loadUser({
@@ -1034,7 +1024,7 @@ const applyExpirationToDeploymentRequest = async (
         throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
       }
 
-      await DeploymentApp.releaseDeploymentRequestPlace(
+      await DeploymentCancellationApp.releaseDeploymentRequestPlace(
         previousHubStatus,
         deploymentRequest
       );
@@ -1047,7 +1037,10 @@ const applyExpirationToDeploymentRequest = async (
 const sendDeploymentRequestExpiredNotifications = async (
   deploymentRequest: DeploymentRequestModel
 ): Promise<void> => {
-  await sendUpdateDeploymentTelemetryEvent(deploymentRequest, SYSTEM_USER_UUID);
+  await DeploymentCancellationApp.sendUpdateDeploymentTelemetryEvent(
+    deploymentRequest,
+    SYSTEM_USER_UUID
+  );
 
   try {
     const [requester] = await UserDomain.loadUser({
@@ -1176,7 +1169,7 @@ const recomputeBundleDates = async (bundleId: DeploymentRequestId) => {
     throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
   }
 
-  await sendUpdateDeploymentTelemetryEvent(
+  await DeploymentCancellationApp.sendUpdateDeploymentTelemetryEvent(
     updatedBundle,
     updatedBundle.user_requester_id,
     bundle
@@ -1347,56 +1340,5 @@ const sendActivePlatformEmail = async (
       error,
       deploymentRequestId: deploymentRequest.id,
     });
-  }
-};
-
-const sendUpdateDeploymentTelemetryEvent = async (
-  deploymentRequest: DeploymentRequestModel,
-  userId: UserId,
-  previousDeploymentRequest?: DeploymentRequestModel
-) => {
-  if (
-    previousDeploymentRequest &&
-    !DeploymentHelper.hasDeploymentTelemetryDataChanged(
-      previousDeploymentRequest,
-      deploymentRequest
-    )
-  ) {
-    return;
-  }
-
-  try {
-    const organization = await OrganizationDomain.loadOrganizationBy({
-      id: deploymentRequest.organization_requester_id,
-    });
-    if (!organization) {
-      throw new Error(ErrorCode.OrganizationNotFound);
-    }
-    const updateDeploymentEvent = TelemetryHelper.buildUpdateDeploymentEvent(
-      organization,
-      userId,
-      {
-        status: deploymentRequest.hub_status,
-        start_date: deploymentRequest.start_date,
-        end_date: deploymentRequest.end_date,
-        deployment_id: deploymentRequest.id,
-        deployment_type: deploymentRequest.type,
-        parent_id: deploymentRequest.parent_id ?? undefined,
-        platform_id: deploymentRequest.platform_id,
-        cancellation_reason:
-          deploymentRequest.hub_status === DeploymentRequestHubStatus.Cancelled
-            ? deploymentRequest.cancellation_reason
-            : undefined,
-      }
-    );
-
-    await TelemetryApp.sendTelemetryEvent(updateDeploymentEvent);
-  } catch (error) {
-    logApp.error(
-      `Unable to send telemetry event when updating deployment request with status ${deploymentRequest.hub_status}`,
-      {
-        error,
-      }
-    );
   }
 };
