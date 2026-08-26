@@ -18,7 +18,6 @@ enum LicenseType {
 enum DocumentMetadataKeyCode {
   feed_url
   integration_type
-  integration_subtype
   last_verified_date
   datasheet_url
   blogpost_url

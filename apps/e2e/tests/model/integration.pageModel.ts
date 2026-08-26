@@ -54,8 +54,6 @@ export default class IntegrationPage {
     await this.page
       .getByRole('checkbox', { name: 'Is the TAXII Feed published?' })
       .click();
-    await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Native').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
@@ -83,9 +81,6 @@ export default class IntegrationPage {
     await this.page
       .getByRole('textbox', { name: 'This is a paragraph to' })
       .fill(description);
-
-    await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Malware').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
@@ -117,8 +112,6 @@ export default class IntegrationPage {
     await this.page
       .getByRole('checkbox', { name: 'Is the Stream published?' })
       .click();
-    await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Native').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
@@ -184,8 +177,6 @@ export default class IntegrationPage {
         name: 'Is the Third party integration published?',
       })
       .click();
-    await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Orchestration').click();
     await this.page
       .getByRole('textbox', { name: 'Vendor link (url)' })
       .fill('https://example.com');

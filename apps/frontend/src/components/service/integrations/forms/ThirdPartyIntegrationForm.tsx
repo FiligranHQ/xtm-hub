@@ -29,7 +29,6 @@ const thirdPartyIntegrationFormSchema = z.object({
   use_cases: z.array(z.string()).min(1, 'Required'),
   solution_categories: z.array(z.string()).min(1, 'Required'),
   license_type: z.enum(['Free', 'Commercial']).optional(),
-  integration_subtype: z.string().min(1, 'Required'),
   vendor_url: z.url().min(1, 'Required'),
   github_url: z.url().nullish(),
   product_version: z
@@ -98,7 +97,6 @@ export const ThirdPartyIntegrationForm = ({
             ? me?.selected_organization_id
             : document?.uploader_organization?.id) ?? '',
         integration_type: IntegrationType.ThirdPartyIntegration,
-        integration_subtype: document?.integration_subtype ?? '',
         github_url: document?.github_url,
         product_version: document?.product_version,
         vendor_url: document?.vendor_url,
@@ -147,7 +145,6 @@ export const ThirdPartyIntegrationForm = ({
     uploader_id,
     uploader_organization_id,
     integration_type,
-    integration_subtype,
     datasheet_url,
     blogpost_url,
     demo_url,
@@ -205,7 +202,6 @@ export const ThirdPartyIntegrationForm = ({
           slug,
           name,
           integration_type,
-          integration_subtype,
           vendor_url,
           github_url,
           product_version,

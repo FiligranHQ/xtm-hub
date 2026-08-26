@@ -21,7 +21,6 @@ import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
   FiligranProduct,
-  IntegrationSubType,
   IntegrationType,
   PlatformIdentifier,
   QueryPublicDocumentsArgs,
@@ -115,10 +114,6 @@ describe('documentApp', () => {
       value: IntegrationType.ThirdPartyIntegration,
     },
     {
-      key: DocumentMetadataKeyCode.IntegrationSubtype,
-      value: IntegrationSubType.Orchestration,
-    },
-    {
       key: DocumentMetadataKeyCode.VendorUrl,
       value: 'https://example.com',
     },
@@ -190,7 +185,6 @@ describe('documentApp', () => {
       expect(result).toMatchObject({
         ...expected,
         integration_type: IntegrationType.ThirdPartyIntegration,
-        integration_subtype: IntegrationSubType.Orchestration,
         vendor_url: 'https://example.com',
         service_instance_id: SERVICES.INSTANCES.INTEGRATIONS.ID,
       });
@@ -236,7 +230,6 @@ describe('documentApp', () => {
       expect(result.integration_type).toBe(
         IntegrationType.ThirdPartyIntegration
       );
-      expect(result.integration_subtype).toBe(IntegrationSubType.Orchestration);
       expect(result.vendor_url).toBe('https://example.com');
 
       expect(persistedDocument).toMatchObject({
@@ -482,10 +475,6 @@ describe('documentApp', () => {
             value: IntegrationType.ThirdPartyIntegration,
           },
           {
-            key: DocumentMetadataKeyCode.IntegrationSubtype,
-            value: IntegrationSubType.Orchestration,
-          },
-          {
             key: DocumentMetadataKeyCode.VendorUrl,
             value: 'https://changed.com',
           },
@@ -643,33 +632,19 @@ describe('documentApp', () => {
     });
 
     it.each`
-      label          | integrationType              | integrationSubtype
-      ${'CsvFeed'}   | ${IntegrationType.CsvFeed}   | ${null}
-      ${'TaxiiFeed'} | ${IntegrationType.TaxiiFeed} | ${IntegrationSubType.Native}
-      ${'Stream'}    | ${IntegrationType.Stream}    | ${IntegrationSubType.Native}
+      label          | integrationType
+      ${'CsvFeed'}   | ${IntegrationType.CsvFeed}
+      ${'TaxiiFeed'} | ${IntegrationType.TaxiiFeed}
+      ${'Stream'}    | ${IntegrationType.Stream}
     `(
       'should preserve the existing feed_url when no document is uploaded for $label',
-      async ({
-        integrationType,
-        integrationSubtype,
-      }: {
-        integrationType: IntegrationType;
-        integrationSubtype: IntegrationSubType | null;
-      }) => {
+      async ({ integrationType }: { integrationType: IntegrationType }) => {
         // Given
         const metadata = [
           {
             key: DocumentMetadataKeyCode.IntegrationType,
             value: integrationType,
           },
-          ...(integrationSubtype
-            ? [
-                {
-                  key: DocumentMetadataKeyCode.IntegrationSubtype,
-                  value: integrationSubtype,
-                },
-              ]
-            : []),
         ];
 
         // When
@@ -694,19 +669,13 @@ describe('documentApp', () => {
     );
 
     it.each`
-      label          | integrationType              | integrationSubtype
-      ${'CsvFeed'}   | ${IntegrationType.CsvFeed}   | ${null}
-      ${'TaxiiFeed'} | ${IntegrationType.TaxiiFeed} | ${IntegrationSubType.Native}
-      ${'Stream'}    | ${IntegrationType.Stream}    | ${IntegrationSubType.Native}
+      label          | integrationType
+      ${'CsvFeed'}   | ${IntegrationType.CsvFeed}
+      ${'TaxiiFeed'} | ${IntegrationType.TaxiiFeed}
+      ${'Stream'}    | ${IntegrationType.Stream}
     `(
       'should preserve the existing feed_url when an image file is uploaded instead of a json file for $label',
-      async ({
-        integrationType,
-        integrationSubtype,
-      }: {
-        integrationType: IntegrationType;
-        integrationSubtype: IntegrationSubType | null;
-      }) => {
+      async ({ integrationType }: { integrationType: IntegrationType }) => {
         // Given
         const slug = 'integration-slug';
         const metadata = [
@@ -714,14 +683,6 @@ describe('documentApp', () => {
             key: DocumentMetadataKeyCode.IntegrationType,
             value: integrationType,
           },
-          ...(integrationSubtype
-            ? [
-                {
-                  key: DocumentMetadataKeyCode.IntegrationSubtype,
-                  value: integrationSubtype,
-                },
-              ]
-            : []),
         ];
 
         const createdDocument = await DocumentApp.createDocument({
@@ -767,7 +728,6 @@ describe('documentApp', () => {
           key: DocumentMetadataKeyCode.IntegrationType,
           value: IntegrationType.Connector,
         },
-        { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
         { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
         { key: DocumentMetadataKeyCode.Verified, value: 'false' },
         { key: DocumentMetadataKeyCode.ManagerSupported, value: 'false' },
@@ -796,7 +756,6 @@ describe('documentApp', () => {
           key: DocumentMetadataKeyCode.IntegrationType,
           value: IntegrationType.Connector,
         },
-        { key: DocumentMetadataKeyCode.IntegrationSubtype, value: 'native' },
         { key: DocumentMetadataKeyCode.ProductVersion, value: '2.0.0' },
         { key: DocumentMetadataKeyCode.Verified, value: 'true' },
         { key: DocumentMetadataKeyCode.ManagerSupported, value: 'true' },
@@ -1378,10 +1337,6 @@ describe('documentApp', () => {
       {
         key: DocumentMetadataKeyCode.IntegrationType,
         value: IntegrationType.ThirdPartyIntegration,
-      },
-      {
-        key: DocumentMetadataKeyCode.IntegrationSubtype,
-        value: IntegrationSubType.Orchestration,
       },
       { key: DocumentMetadataKeyCode.VendorUrl, value: 'https://example.com' },
     ] as unknown as DocumentMetadataKeys<ThirdPartyIntegration>;

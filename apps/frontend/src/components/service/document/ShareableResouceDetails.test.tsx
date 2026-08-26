@@ -2,7 +2,7 @@ import ShareableResourceDetails from '@/components/service/document/ShareableRes
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
-import { IntegrationSubType, IntegrationType } from '@graphql/generated';
+import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 
 const buildDocumentData = (
@@ -26,7 +26,6 @@ const buildDocumentData = (
       personal_space: false,
     },
     integration_type: IntegrationType.CsvFeed,
-    integration_subtype: IntegrationSubType.Native,
     solution_categories: [
       {
         id: 'cat-1',

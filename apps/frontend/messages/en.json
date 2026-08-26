@@ -1026,7 +1026,6 @@
       "LicenseTypeLabel": "License type",
       "Restore": "Restore",
       "SelectImage": "Select image(s)",
-      "SelectIntegrationSubType": "Subtype",
       "SelectJSONFile": "Select JSON file",
       "ShortDescriptionLabel": "Short Description",
       "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
@@ -1054,10 +1053,6 @@
       "AddService": "Add new Integration",
       "IntegrationType": "Integration type",
       "Filter": {
-        "IntegrationSubType": {
-          "Label": "Subtype",
-          "Placeholder": "Subtype..."
-        },
         "Type": {
           "Label": "Integration type",
           "Placeholder": "Integration type..."
@@ -1357,7 +1352,6 @@
         "IntegrationType": "Type",
         "IntegrationSolutionCategory": "Solution category",
         "IntegrationLicenseType": "License type",
-        "IntegrationSubType": "Subtype",
         "GithubURL": "Github URL",
         "VendorURL": "Vendor URL",
         "FeedURL": "Feed URL",
