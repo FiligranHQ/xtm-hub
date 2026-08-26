@@ -1,36 +1,35 @@
 type UserServiceCapability implements Node {
-    id: ID!
-    user_service_id: ID!
-    subscription_id: SubscriptionId
-    generic_service_capability: GenericServiceCapability
-    subscription_capability: SubscriptionCapability
+  id: ID!
+  user_service_id: ID!
+  generic_service_capability: GenericServiceCapability
+  subscription_capability: SubscriptionCapability
 }
 
 type SubscriptionCapability implements Node {
-    id: ID!
-    service_capability: ServiceCapability
+  id: ID!
+  service_capability: ServiceCapability
 }
 
 type ServiceCapability implements Node {
-    id: ID!
-    name: String
-    description: String
-    service_definition_id: ID
+  id: ID!
+  name: String
+  description: String
+  service_definition_id: ID
 }
 
 input UserServicesAddCapabilitiesInput {
-    userServiceIds: [UserServiceId!]!
-    capabilities: [String!]!
+  userServiceIds: [UserServiceId!]!
+  capabilities: [String!]!
 }
 
 type Mutation {
-    addCapabilitiesToUserServices(
-        input: UserServicesAddCapabilitiesInput!
-        service_instance_id: ServiceInstanceId!
-    ): [UserService]
+  addCapabilitiesToUserServices(
+    input: UserServicesAddCapabilitiesInput!
+    service_instance_id: ServiceInstanceId!
+  ): [UserService]
     @service_capa(requires: [MANAGE_ACCESS])
     @auth(
-        portalCapa: [BYPASS]
-        orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
+      portalCapa: [BYPASS]
+      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_SUBSCRIPTION]
     )
 }
