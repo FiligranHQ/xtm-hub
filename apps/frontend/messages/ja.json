@@ -246,7 +246,6 @@
       "EDIT_ME_USER_ERROR": "プロフィール編集中のエラー",
       "EDIT_ORGANIZATION_ERROR": "組織編集中のエラー",
       "EDIT_USER_ERROR": "ユーザー編集中のエラー",
-      "EDIT_USER_SESSION_ERROR": "不明なエラーが発生しました",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "メールドメインが組織外のユーザーを追加できない",
       "EPIC_CREATE_ERROR": "エピックの作成中にエラーが発生した。",
       "EPIC_UPDATE_ERROR": "叙事詩の更新中にエラーが発生した。",
