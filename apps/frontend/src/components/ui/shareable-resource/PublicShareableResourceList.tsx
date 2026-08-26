@@ -57,8 +57,7 @@ export const PublicShareableResourceList = ({
             ) ? (
               <IntegrationAccordion
                 key={integrationType}
-                integrationType={integrationType}
-                count={documents.length}>
+                integrationType={integrationType}>
                 <PublicShareableDocumentList
                   documents={documents}
                   displayMode={displayMode}

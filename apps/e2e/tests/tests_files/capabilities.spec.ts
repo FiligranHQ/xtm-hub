@@ -107,7 +107,6 @@ test.describe('Capabilities', () => {
     await test.step('Simple user can delete integration', async () => {
       await loginPage.navigateToAndLogin(TEST_CAPABILITY.userThalesEmail);
       await integrationPage.navigateToIntegrationsService();
-      await page.getByText('CSV Feeds').click();
 
       const openMenuButton = page.getByRole('button', {
         name: 'Open menu',

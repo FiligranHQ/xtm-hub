@@ -31,7 +31,7 @@ describe('PublicShareableResourceList', () => {
     expect(screen.getByText('Utils.DocumentNotFound')).toBeInTheDocument();
   });
 
-  it('groups integrations by integration_type and renders document names with correct links', async () => {
+  it('groups integrations by integration_type and renders document names with correct links', () => {
     const documents = [
       {
         id: 'doc-1',
@@ -49,7 +49,7 @@ describe('PublicShareableResourceList', () => {
       },
     ];
 
-    const { user } = testRender(
+    testRender(
       <PublicShareableResourceList
         documents={documents as publicDocumentListItemFragment$data[]}
         serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
@@ -65,13 +65,6 @@ describe('PublicShareableResourceList', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('My Dashboard')).toBeInTheDocument();
 
-    await user.click(
-      screen.getByRole('button', {
-        name: new RegExp(
-          `Service\\.OpenctiIntegrations\\.Type\\.${IntegrationType.Connector}`
-        ),
-      })
-    );
     expect(screen.getByText('My Connector')).toBeInTheDocument();
 
     const links = screen.getAllByRole('link');
