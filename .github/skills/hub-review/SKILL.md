@@ -11,57 +11,68 @@ description: >-
 
 # Hub Review
 
-Review the AI-instruction surface through four lenses, each a distinct check with its own evidence bar. Report only
-what you actually verified — never pad a report to look thorough, and never claim drift you did not confirm by
-reading the referenced file, command, or code.
+Review the AI-instruction surface through independent lenses, each a distinct check with its own evidence bar.
+Report only what you actually verified — never pad a report to look thorough, and never claim drift you did not
+confirm by reading the referenced file, command, or code. `0` findings for a lens is a valid, expected result.
 
-## Scope
+## Conventions
 
-Determine what is in scope before starting:
+Bare paths (e.g. `references/stale-reference.md`) resolve from `{skill-root}` — this skill's own directory,
+`.github/skills/hub-review/`. `{project-root}` resolves to the repository root.
 
-- **PR / diff review** — only the instruction-surface files the diff touches, plus anything they reference that the
-  diff did not update (a changed convention with a stale cross-reference elsewhere).
-- **Named file(s)** — whatever the caller pointed at.
-- **Full audit** — every file under `.github/instructions/`, `.github/agents/`, `.github/skills/`,
-  `.github/prompts/`, plus `.github/copilot-instructions.md` and `AGENTS.md`.
+## Inputs
+
+- **scope** (optional) — what to review. One of:
+  - **PR / diff** — only the instruction-surface files the diff touches, plus anything they reference that the diff
+    did not update (a changed convention with a stale cross-reference elsewhere).
+  - **Named file(s)** — whatever the caller pointed at.
+  - **Full audit** (default when nothing else is specified) — every file under `.github/instructions/`,
+    `.github/agents/`, `.github/skills/`, `.github/prompts/`, plus `.github/copilot-instructions.md` and
+    `AGENTS.md`.
+- **lenses** (optional) — one or more lens names. Default: all four lenses below.
 
 ## Lenses
 
-1. **Stale reference** — a backtick-quoted path, `yarn <script>` / `yarn workspace @xtm-hub/<name> <cmd>` command,
-   `applyTo` glob, or version literal that no longer resolves in the repo. Verify with `grep`/`glob`/`view`
-   (path exists, script exists in the relevant `package.json`'s `scripts` or `dependencies`, glob matches at least one
-   real file) before flagging — don't guess from the file name alone.
-2. **Contradiction** — two authoritative sources disagree on the same situation: an instructions file vs. a custom
-   agent, an agent vs. a skill, or a prompt vs. the instructions it's supposed to follow. Quote both sides.
-3. **Code-usage mismatch** — a documented convention or pattern the real code no longer follows, or a convention the
-   code has adopted that no doc captures. Sample actual usage (grep for the pattern, read a representative file)
-   before concluding drift either way.
-4. **Duplication** — content restated across instructions/agents/skills instead of one file linking to the other as
-   the single source of truth. Not every repetition is a problem — call it out only when it has already drifted, or
-   is likely to (the same rule phrased two different ways).
+Each lens is a reference file loaded just-in-time — read only the ones that run.
+
+| Lens | Reference | Catches |
+| --- | --- | --- |
+| Stale reference | `references/stale-reference.md` | Paths, `yarn` commands, `applyTo` globs, version literals that no longer resolve |
+| Contradiction | `references/contradiction.md` | Two authoritative sources giving conflicting guidance |
+| Code-usage mismatch | `references/code-usage-mismatch.md` | A documented convention the code no longer follows, or vice versa |
+| Duplication | `references/duplication.md` | Guidance restated across files instead of one linking to the other |
 
 ## Execution
 
-1. Resolve scope per above and load the in-scope files.
-2. Run each applicable lens against that content. Skip a lens with nothing to check (e.g. no version literals in
-   scope) rather than forcing a finding.
-3. Classify every finding:
+1. **Resolve scope** per Inputs above and load the in-scope files.
+2. **Select lenses** — all four unless the caller named specific ones.
+3. **Run each selected lens** — load its reference file from `{skill-root}` and follow it exactly; each lens sees
+   only the in-scope content, not another lens's findings. When subagents are available, run all selected lenses in
+   parallel: give each subagent its lens's `instruction` file (resolved absolute) and the in-scope content, and the
+   constraint "Return ONLY your findings in the canonical shape below — no other output, no fixes, no further
+   questions." Otherwise run them sequentially yourself.
+4. **Classify every finding**:
    - **Unambiguous** — a path/command/glob that objectively does not resolve, an exact stale literal (a hardcoded
      version that contradicts the "reference `.nvmrc`/`packageManager`/catalog" rule), or a duplicate paragraph with
      an obvious single source of truth. Fix it directly.
    - **Ambiguous** — the two sides of a contradiction are both plausible, resolving it requires a product/architecture
      decision, or the convention looks mid-migration (some code follows the old pattern, some the new one, and it's
-     unclear which the docs should mandate). Do not silently pick a side.
-4. Report ambiguous findings depending on context, and never resolve them yourself:
+     unclear which the docs should mandate). Never resolve this yourself.
+5. **Escalate every ambiguous finding**, depending on context:
    - Reviewing a PR/diff: use `add_pr_review_comment` on the relevant line, and `reply_and_resolve_review_thread`
      once the author responds.
    - Interactive session with a user present, no PR in scope: use `ask_user` with the concrete question, not a vague
      "does this look right?".
    - Unattended (no PR, no user to ask): open a GitHub issue describing the drift and where it was found.
-5. Summarize: which files/lenses were checked, what was fixed directly, and what was escalated and how.
+6. **Assemble and present** per Output below.
 
 ## Output
 
-A short report grouped by lens. Each finding states its location, what's stale/contradictory/mismatched, and either
-the fix already applied or how it was escalated. `0 findings` for a lens is a valid, and expected, result — do not
-invent a finding to avoid reporting a clean pass.
+One report grouped by lens. Each finding carries:
+
+- `lens` — which lens produced it
+- `location` — file (and line/section) where it lives
+- `finding` — what's stale, contradictory, mismatched, or duplicated, in one line
+- `status` — `fixed` (with what changed), or `escalated` (with how: PR comment, question asked, or issue link)
+
+A lens with nothing to report states so in one line — do not invent a finding to avoid reporting a clean pass.
