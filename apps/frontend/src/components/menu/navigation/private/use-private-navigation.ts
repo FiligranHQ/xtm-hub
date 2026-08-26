@@ -3,7 +3,6 @@ import {
   getPrivateNavigationRegisteredPlatformsByIdentifier,
   getPrivateNavigationServiceHrefs,
 } from '@/components/menu/navigation/private/private-navigation.utils';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import {
   BottomLink,
   NavigationConfig,
@@ -36,7 +35,6 @@ import {
   ServiceInstanceFilterKey,
   ServiceInstanceOrdering,
   ServiceInstancesListQueryVariables,
-  FeatureFlag,
   TrialDeploymentsEligibilityQueryVariables,
   useRegisteredPlatformsListQuery,
   useServiceInstancesListQuery,

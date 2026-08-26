@@ -1,8 +1,8 @@
 'use client';
 
 import { CONTRACT_LABEL_BY_CONTRACT } from '@/components/registration/PlatformIdentifierMapping';
-import { BundleCancelSheet } from '@/components/xtm-platform-trial/BundleCancelSheet';
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
+import { BundleCancelSheet } from '@/components/xtm-platform-trial/BundleCancelSheet';
 import { XtmPlatformBundleData } from '@/components/xtm-platform-trial/xtm-platform-bundle.types';
 import { daysUntil, useDateFormatter } from '@/utils/date';
 import { Badge, Button, Card, CardContent } from '@filigran/ui';
@@ -92,9 +92,7 @@ export const BundleInfoCard = ({
             <TrialsManageUsersDialog
               serviceInstanceId={bundle.service_instance_id}
               organizationId={organizationId}
-              trigger={
-                <Button>{t('Service.Trials.ManageUsers.Title')}</Button>
-              }
+              trigger={<Button>{t('Service.Trials.ManageUsers.Title')}</Button>}
             />
             <BundleCancelSheet
               deploymentRequestId={bundle.id}

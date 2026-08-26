@@ -3,7 +3,6 @@
 import { SelectWithEditableField } from '@/components/service/registration/SelectWithEditableField';
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
 import {
   AutoForm,
   Button,
@@ -13,6 +12,7 @@ import {
   toast,
 } from '@filigran/ui';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
+import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useMutation } from 'react-relay';
@@ -62,7 +62,9 @@ export const BundleCancelSheet = ({
       onCompleted: () => {
         toast({
           title: t('Utils.Success'),
-          description: t('Service.Trials.Cancellation.Toast.NoNewTrialPossible'),
+          description: t(
+            'Service.Trials.Cancellation.Toast.NoNewTrialPossible'
+          ),
         });
         queryClient.invalidateQueries({
           queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),

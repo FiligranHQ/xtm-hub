@@ -14,7 +14,9 @@ export const BundleGuideCard = () => {
           {tGuide('Content')}
         </p>
       </div>
-      <Button variant="secondary" className="self-start">
+      <Button
+        variant="secondary"
+        className="self-start">
         {tGuide('SeeMore')}
       </Button>
     </div>

@@ -3,8 +3,8 @@
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/ReachSalesButton';
 import { SlackSupportButton } from '@/components/service/trial-instances/SlackSupport';
-import { BundleInfoCard } from '@/components/xtm-platform-trial/BundleInfoCard';
 import { BundleGuideCard } from '@/components/xtm-platform-trial/BundleGuideCard';
+import { BundleInfoCard } from '@/components/xtm-platform-trial/BundleInfoCard';
 import { BundleProductCard } from '@/components/xtm-platform-trial/BundleProductCard';
 import { useXtmoneIntegrationStatus } from '@/components/xtm-platform-trial/useXtmoneIntegrationStatus';
 import { portalGraphqlClient } from '@/lib/graphql-client';

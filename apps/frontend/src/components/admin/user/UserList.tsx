@@ -326,7 +326,14 @@ const UserList = ({ organization }: UserListProps) => {
           ]
         : []),
     ],
-    [hasActionsColumn, isAdminPath, me?.id, me?.selected_organization_id, t, formatDate]
+    [
+      hasActionsColumn,
+      isAdminPath,
+      me?.id,
+      me?.selected_organization_id,
+      t,
+      formatDate,
+    ]
   );
 
   useEffect(() => {

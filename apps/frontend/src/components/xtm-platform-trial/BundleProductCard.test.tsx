@@ -23,9 +23,7 @@ const buildProduct = (
   ...overrides,
 });
 
-const buildXtmoneStatus = (
-  connected: boolean
-): XtmoneIntegrationStatus => ({
+const buildXtmoneStatus = (connected: boolean): XtmoneIntegrationStatus => ({
   opencti: {
     status: connected ? 'connected' : 'disconnected',
     connected,
@@ -70,10 +68,10 @@ describe('BundleProductCard', () => {
   });
 
   it.each`
-    status         | expected
-    ${'active'}    | ${'StatusActive'}
-    ${'inactive'}  | ${'ConnectionLost'}
-    ${null}        | ${'StatusUnavailable'}
+    status        | expected
+    ${'active'}   | ${'StatusActive'}
+    ${'inactive'} | ${'ConnectionLost'}
+    ${null}       | ${'StatusUnavailable'}
   `(
     'renders "$expected" for connectivity_status "$status" from the platform configuration',
     ({ status, expected }) => {
@@ -99,9 +97,7 @@ describe('BundleProductCard', () => {
     );
 
     expect(screen.getByText('NoRole NoRoleHint')).toBeInTheDocument();
-    expect(
-      screen.getByText('AccessProduct').closest('button')
-    ).toBeDisabled();
+    expect(screen.getByText('AccessProduct').closest('button')).toBeDisabled();
   });
 
   it('renders the XTM One connection rows from the integration status', () => {
@@ -133,9 +129,7 @@ describe('BundleProductCard', () => {
       />
     );
 
-    expect(
-      screen.queryByLabelText('EditName')
-    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('EditName')).not.toBeInTheDocument();
   });
 
   it('shows the edit-name button when the user can manage', () => {

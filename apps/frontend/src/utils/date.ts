@@ -47,7 +47,10 @@ export const useDateFormatter = () => {
   const format = useFormatter();
 
   return useCallback(
-    (date?: Date | string | null, dateStyle: FormatDateStyle = 'DATE_NUMERIC') => {
+    (
+      date?: Date | string | null,
+      dateStyle: FormatDateStyle = 'DATE_NUMERIC'
+    ) => {
       if (!date) {
         return null;
       }

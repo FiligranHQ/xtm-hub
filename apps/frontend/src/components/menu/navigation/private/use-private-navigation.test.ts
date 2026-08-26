@@ -214,9 +214,9 @@ describe('usePrivateNavigation', () => {
       selectedOrganizationId: 'org-1',
     });
 
-    expect(
-      result.current.sections.map((section) => section.key)
-    ).not.toContain('xtm-platform-trial');
+    expect(result.current.sections.map((section) => section.key)).not.toContain(
+      'xtm-platform-trial'
+    );
   });
 
   it('adds settings as a footer section when user is authorized', () => {
