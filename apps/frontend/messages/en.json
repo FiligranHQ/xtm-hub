@@ -543,7 +543,8 @@
     "OpenAEVTrial": "OpenAEV Trial",
     "Competitor": "Competitor",
     "NewsFeed": "News Feed",
-    "VotingRound": "Feature voting"
+    "VotingRound": "Feature voting",
+    "ManageTrials": "Manage trials"
   },
   "NewsFeedAdminPage": {
     "Title": "Title",
@@ -696,6 +697,34 @@
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
     "Registered": "Connected",
     "NotRegistered": "Not Connected"
+  },
+  "ManageTrials": {
+    "Columns": {
+      "Products": "Products"
+    },
+    "ProductStatus": {
+      "queued": "Queued",
+      "pending": "Pending",
+      "provisioning": "Provisioning",
+      "active": "Active",
+      "expired": "Expired",
+      "cancelled": "Cancelled",
+      "failed": "Failed"
+    },
+    "Actions": {
+      "CancelBundle": "Cancel the bundle trial",
+      "CancelTrial": "Cancel the trial"
+    },
+    "Cancellation": {
+      "Confirmation": "Are you sure you want to cancel the bundle trial of {organizationName}? Every product of the bundle will be cancelled."
+    },
+    "Toast": {
+      "BundleCancelled": "The bundle trial was cancelled successfully.",
+      "BundleReordered": "The bundle has been reordered in the queue."
+    },
+    "Quotas": {
+      "UpdateTitle": "Update the bundle quota in {region}"
+    }
   },
   "Parameters": {
     "Version": "Version"

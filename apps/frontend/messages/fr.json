@@ -543,7 +543,8 @@
     "OpenAEVTrial": "Essai OpenAEV",
     "Competitor": "Concurrent",
     "NewsFeed": "Fil d'actualité",
-    "VotingRound": "Vote des fonctionnalités"
+    "VotingRound": "Vote des fonctionnalités",
+    "ManageTrials": "Gestion des essais"
   },
   "NewsFeedAdminPage": {
     "Title": "Titre",
@@ -696,6 +697,34 @@
     "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai",
     "Registered": "Connecté",
     "NotRegistered": "Déconnecté"
+  },
+  "ManageTrials": {
+    "Columns": {
+      "Products": "Produits"
+    },
+    "ProductStatus": {
+      "queued": "Dans la file",
+      "pending": "En attente",
+      "provisioning": "Provisionnement",
+      "active": "Actif",
+      "expired": "Expiré",
+      "cancelled": "Annulé",
+      "failed": "En échec"
+    },
+    "Actions": {
+      "CancelBundle": "Annuler l'essai bundle",
+      "CancelTrial": "Annuler l'essai"
+    },
+    "Cancellation": {
+      "Confirmation": "Êtes-vous sûr de vouloir annuler l'essai bundle de {organizationName} ? Tous les produits du bundle seront annulés."
+    },
+    "Toast": {
+      "BundleCancelled": "L'essai bundle a bien été annulé.",
+      "BundleReordered": "Le bundle a été réordonné dans la file d'attente."
+    },
+    "Quotas": {
+      "UpdateTitle": "Modifier le quota bundle en {region}"
+    }
   },
   "Parameters": {
     "Version": "Version"

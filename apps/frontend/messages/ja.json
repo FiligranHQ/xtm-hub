@@ -543,7 +543,8 @@
     "OpenAEVTrial": "OpenAEVトライアル",
     "Competitor": "競技者",
     "NewsFeed": "ニュースフィード",
-    "VotingRound": "機能への投票"
+    "VotingRound": "機能への投票",
+    "ManageTrials": "トライアル管理"
   },
   "NewsFeedAdminPage": {
     "Title": "タイトル",
@@ -696,6 +697,34 @@
     "WarningCancellation": "キャンセルすると、その組織は新しいトライアルを要求できなくなります。",
     "Registered": "接続済み",
     "NotRegistered": "未接続"
+  },
+  "ManageTrials": {
+    "Columns": {
+      "Products": "製品"
+    },
+    "ProductStatus": {
+      "queued": "待機中",
+      "pending": "保留中",
+      "provisioning": "プロビジョニング中",
+      "active": "アクティブ",
+      "expired": "期限切れ",
+      "cancelled": "キャンセル済み",
+      "failed": "失敗"
+    },
+    "Actions": {
+      "CancelBundle": "バンドルトライアルをキャンセル",
+      "CancelTrial": "トライアルをキャンセルする"
+    },
+    "Cancellation": {
+      "Confirmation": "{organizationName} のバンドルトライアルをキャンセルしてもよろしいですか？バンドルのすべての製品がキャンセルされます。"
+    },
+    "Toast": {
+      "BundleCancelled": "バンドルトライアルをキャンセルしました。",
+      "BundleReordered": "バンドルの待ち行列の順序を変更しました。"
+    },
+    "Quotas": {
+      "UpdateTitle": "{region} のバンドルクォータを変更"
+    }
   },
   "Parameters": {
     "Version": "バージョン"

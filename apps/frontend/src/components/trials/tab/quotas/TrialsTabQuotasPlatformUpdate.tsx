@@ -1,11 +1,12 @@
 import { TrialsTabQuotasPlatformUpdateForm } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdateForm';
+import { trialsRegionKey } from '@/components/trials/trials.const';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
+import { TrialsQuotaFragment } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { ReactNode, useState } from 'react';
 
 interface TrialsTabQuotasPlatformUpdateProps {
-  quota: trialsDeploymentAvailabilityFragment$data;
+  quota: TrialsQuotaFragment;
   trigger?: ReactNode;
   onCloseSheet?: () => void;
   defaultStateOpen?: boolean;
@@ -29,7 +30,7 @@ export const TrialsTabQuotasPlatformUpdate = ({
     });
   };
 
-  const translatedRegion = t(`Region.${quota.region.toUpperCase()}`);
+  const translatedRegion = t(trialsRegionKey(quota.region));
   const translatedPlatform = t(
     `PlatformIdentifier.${quota.platform_identifier}`
   );
