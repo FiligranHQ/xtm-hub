@@ -52,6 +52,10 @@ export type Scalars = {
   UserId: { input: any; output: any; }
   /** A Relay global ID for User_Service, extracted to a branded User_ServiceId string */
   User_ServiceId: { input: any; output: any; }
+  /** A Relay global ID for VotableFeature, extracted to a branded VotableFeatureId string */
+  VotableFeatureId: { input: any; output: any; }
+  /** A Relay global ID for VotingRound, extracted to a branded VotingRoundId string */
+  VotingRoundId: { input: any; output: any; }
 };
 
 export type AddServiceInput = {
@@ -258,6 +262,24 @@ export type CreateSubscriptionsInput = {
   organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
   start_date: Scalars['Date']['input'];
+};
+
+export type CreateVotableFeatureInput = {
+  active: InputMaybe<Scalars['Boolean']['input']>;
+  description: Scalars['String']['input'];
+  image_url: InputMaybe<Scalars['String']['input']>;
+  labels: InputMaybe<Array<Scalars['String']['input']>>;
+  position: InputMaybe<Scalars['Int']['input']>;
+  product: FiligranProduct;
+  short_description: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  voting_round_id: Scalars['VotingRoundId']['input'];
+};
+
+export type CreateVotingRoundInput = {
+  copy_features_from_round_id: InputMaybe<Scalars['VotingRoundId']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 export type CsvFeed = Document & Integration & Node & {
@@ -969,6 +991,8 @@ export type Mutation = {
   createDocument: Document;
   createEpic: Epic;
   createSubscriptions: Array<SubscriptionModel>;
+  createVotableFeature: VotableFeature;
+  createVotingRound: VotingRound;
   deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic: Maybe<Epic>;
@@ -979,6 +1003,8 @@ export type Mutation = {
   deleteUseCase: UseCase;
   deleteUser: User;
   deleteUserServices: Maybe<Array<Maybe<UserService>>>;
+  deleteVotableFeature: VotableFeature;
+  deleteVotingRound: VotingRound;
   editMeUser: User;
   editOrganization: Maybe<Organization>;
   editSeoServiceInstance: SeoServiceInstanceMetadata;
@@ -1005,6 +1031,7 @@ export type Mutation = {
   requestTransferPersonalSpace: Success;
   resetPassword: Success;
   sendTelemetryEvent: Maybe<SendTelemetryMutation>;
+  setVotingRoundStatus: Array<VotingRound>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
   updateCompetitor: Competitor;
@@ -1015,7 +1042,10 @@ export type Mutation = {
   updatePlatformServiceMetadata: Maybe<RegisteredPlatform>;
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription: Maybe<SubscriptionModel>;
+  updateVotableFeature: VotableFeature;
+  updateVotingRound: VotingRound;
   uploadUserPicture: User;
+  voteForFeature: Array<VotableFeature>;
 };
 
 
@@ -1155,6 +1185,16 @@ export type MutationCreateSubscriptionsArgs = {
 };
 
 
+export type MutationCreateVotableFeatureArgs = {
+  input: CreateVotableFeatureInput;
+};
+
+
+export type MutationCreateVotingRoundArgs = {
+  input: CreateVotingRoundInput;
+};
+
+
 export type MutationDeleteCompetitorArgs = {
   id: Scalars['CompetitorId']['input'];
 };
@@ -1205,6 +1245,16 @@ export type MutationDeleteUserArgs = {
 export type MutationDeleteUserServicesArgs = {
   input: UserServicesDeleteInput;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationDeleteVotableFeatureArgs = {
+  id: Scalars['VotableFeatureId']['input'];
+};
+
+
+export type MutationDeleteVotingRoundArgs = {
+  id: Scalars['VotingRoundId']['input'];
 };
 
 
@@ -1334,6 +1384,12 @@ export type MutationRequestTransferPersonalSpaceArgs = {
 };
 
 
+export type MutationSetVotingRoundStatusArgs = {
+  id: Scalars['VotingRoundId']['input'];
+  status: VotingRoundStatus;
+};
+
+
 export type MutationTransferPersonalSpaceArgs = {
   requestId: Scalars['ID']['input'];
 };
@@ -1395,8 +1451,25 @@ export type MutationUpdateSubscriptionArgs = {
 };
 
 
+export type MutationUpdateVotableFeatureArgs = {
+  id: Scalars['VotableFeatureId']['input'];
+  input: UpdateVotableFeatureInput;
+};
+
+
+export type MutationUpdateVotingRoundArgs = {
+  id: Scalars['VotingRoundId']['input'];
+  input: UpdateVotingRoundInput;
+};
+
+
 export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
+};
+
+
+export type MutationVoteForFeatureArgs = {
+  feature_id: Scalars['VotableFeatureId']['input'];
 };
 
 export type NewsFeedItem = Node & {
@@ -1703,6 +1776,8 @@ export type Query = {
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
+  /** The round currently collecting votes, if any. Publicly readable. */
+  currentVotingRound: Maybe<VotingRound>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
@@ -1748,6 +1823,9 @@ export type Query = {
   userServiceFromSubscription: Maybe<UserServiceConnection>;
   users: UserConnection;
   usersWithCapabilitiesInOrganization: Array<User>;
+  votingRound: Maybe<VotingRound>;
+  votingRoundResults: VotingRoundResults;
+  votingRounds: Array<VotingRound>;
 };
 
 
@@ -2035,6 +2113,16 @@ export type QueryUsersArgs = {
 
 export type QueryUsersWithCapabilitiesInOrganizationArgs = {
   input: UsersWithCapabilitiesInOrganizationInput;
+};
+
+
+export type QueryVotingRoundArgs = {
+  id: Scalars['VotingRoundId']['input'];
+};
+
+
+export type QueryVotingRoundResultsArgs = {
+  id: Scalars['VotingRoundId']['input'];
 };
 
 export type RefreshPlatformRegistrationConnectivityStatusAllTenantsInput = {
@@ -2675,6 +2763,22 @@ export type UpdateSubscriptionInput = {
   start_date: InputMaybe<Scalars['Date']['input']>;
 };
 
+export type UpdateVotableFeatureInput = {
+  active: InputMaybe<Scalars['Boolean']['input']>;
+  description: InputMaybe<Scalars['String']['input']>;
+  image_url: InputMaybe<Scalars['String']['input']>;
+  labels: InputMaybe<Array<Scalars['String']['input']>>;
+  position: InputMaybe<Scalars['Int']['input']>;
+  product: InputMaybe<FiligranProduct>;
+  short_description: InputMaybe<Scalars['String']['input']>;
+  title: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateVotingRoundInput = {
+  description: InputMaybe<Scalars['String']['input']>;
+  name: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UseCase = Node & {
   __typename?: 'UseCase';
   color: Scalars['String']['output'];
@@ -2837,6 +2941,55 @@ export type UsersWithCapabilitiesInOrganizationInput = {
   capabilities: Array<OrganizationCapability>;
   organizationId: Scalars['OrganizationId']['input'];
 };
+
+export type VotableFeature = Node & {
+  __typename?: 'VotableFeature';
+  active: Scalars['Boolean']['output'];
+  created_at: Scalars['Date']['output'];
+  description: Scalars['String']['output'];
+  has_my_vote: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  image_url: Maybe<Scalars['String']['output']>;
+  labels: Array<Scalars['String']['output']>;
+  position: Scalars['Int']['output'];
+  product: FiligranProduct;
+  short_description: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  updated_at: Maybe<Scalars['Date']['output']>;
+  voting_round_id: Scalars['VotingRoundId']['output'];
+};
+
+export type VotableFeatureResult = {
+  __typename?: 'VotableFeatureResult';
+  feature: VotableFeature;
+  vote_count: Scalars['Int']['output'];
+};
+
+export type VotingRound = Node & {
+  __typename?: 'VotingRound';
+  closed_at: Maybe<Scalars['Date']['output']>;
+  created_at: Scalars['Date']['output'];
+  description: Maybe<Scalars['String']['output']>;
+  features: Array<VotableFeature>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  opened_at: Maybe<Scalars['Date']['output']>;
+  status: VotingRoundStatus;
+  updated_at: Maybe<Scalars['Date']['output']>;
+};
+
+export type VotingRoundResults = {
+  __typename?: 'VotingRoundResults';
+  results: Array<VotableFeatureResult>;
+  round: VotingRound;
+  total_voters: Scalars['Int']['output'];
+};
+
+export enum VotingRoundStatus {
+  Closed = 'closed',
+  Draft = 'draft',
+  Open = 'open'
+}
 
 type HomepageDocument_Connector_Fragment = { __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
 
@@ -3065,6 +3218,81 @@ export type ChangeSelectedOrganizationMutationVariables = Exact<{
 
 export type ChangeSelectedOrganizationMutation = { __typename?: 'Mutation', changeSelectedOrganization: { __typename?: 'User', id: string, selected_organization_id: any | null, selected_org_capabilities: Array<OrganizationCapability> | null } | null };
 
+export type VotingRoundCreateMutationVariables = Exact<{
+  input: CreateVotingRoundInput;
+}>;
+
+
+export type VotingRoundCreateMutation = { __typename?: 'Mutation', createVotingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } };
+
+export type VotingRoundUpdateMutationVariables = Exact<{
+  id: Scalars['VotingRoundId']['input'];
+  input: UpdateVotingRoundInput;
+}>;
+
+
+export type VotingRoundUpdateMutation = { __typename?: 'Mutation', updateVotingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } };
+
+export type VotingRoundSetStatusMutationVariables = Exact<{
+  id: Scalars['VotingRoundId']['input'];
+  status: VotingRoundStatus;
+}>;
+
+
+export type VotingRoundSetStatusMutation = { __typename?: 'Mutation', setVotingRoundStatus: Array<{ __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> }> };
+
+export type VotingRoundDeleteMutationVariables = Exact<{
+  id: Scalars['VotingRoundId']['input'];
+}>;
+
+
+export type VotingRoundDeleteMutation = { __typename?: 'Mutation', deleteVotingRound: { __typename?: 'VotingRound', id: string } };
+
+export type VotableFeatureCreateMutationVariables = Exact<{
+  input: CreateVotableFeatureInput;
+}>;
+
+
+export type VotableFeatureCreateMutation = { __typename?: 'Mutation', createVotableFeature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean } };
+
+export type VotableFeatureUpdateMutationVariables = Exact<{
+  id: Scalars['VotableFeatureId']['input'];
+  input: UpdateVotableFeatureInput;
+}>;
+
+
+export type VotableFeatureUpdateMutation = { __typename?: 'Mutation', updateVotableFeature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean } };
+
+export type VotableFeatureDeleteMutationVariables = Exact<{
+  id: Scalars['VotableFeatureId']['input'];
+}>;
+
+
+export type VotableFeatureDeleteMutation = { __typename?: 'Mutation', deleteVotableFeature: { __typename?: 'VotableFeature', id: string } };
+
+export type VotableFeatureAdminRowFragment = { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean };
+
+export type VotingRoundRowFragment = { __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> };
+
+export type VotingRoundsListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type VotingRoundsListQuery = { __typename?: 'Query', votingRounds: Array<{ __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> }> };
+
+export type VotingRoundDetailQueryVariables = Exact<{
+  id: Scalars['VotingRoundId']['input'];
+}>;
+
+
+export type VotingRoundDetailQuery = { __typename?: 'Query', votingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } | null };
+
+export type VotingRoundRankingQueryVariables = Exact<{
+  id: Scalars['VotingRoundId']['input'];
+}>;
+
+
+export type VotingRoundRankingQuery = { __typename?: 'Query', votingRoundResults: { __typename?: 'VotingRoundResults', total_voters: number, round: { __typename?: 'VotingRound', id: string, name: string, status: VotingRoundStatus }, results: Array<{ __typename?: 'VotableFeatureResult', vote_count: number, feature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean } }> } };
+
 export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3126,6 +3354,34 @@ export const UseCaseRowFragmentDoc = `
   product
 }
     `;
+export const VotableFeatureAdminRowFragmentDoc = `
+    fragment VotableFeatureAdminRow on VotableFeature {
+  id
+  voting_round_id
+  title
+  short_description
+  description
+  product
+  labels
+  image_url
+  position
+  active
+}
+    `;
+export const VotingRoundRowFragmentDoc = `
+    fragment VotingRoundRow on VotingRound {
+  id
+  name
+  description
+  status
+  opened_at
+  closed_at
+  created_at
+  features {
+    ...VotableFeatureAdminRow
+  }
+}
+    ${VotableFeatureAdminRowFragmentDoc}`;
 export const MostDeployedDocumentsQueryDocument = `
     query MostDeployedDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
   mostDeployedDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {
@@ -4345,6 +4601,379 @@ export const useChangeSelectedOrganizationMutation = <
 useChangeSelectedOrganizationMutation.getKey = () => ['ChangeSelectedOrganization'];
 useChangeSelectedOrganizationMutation.getRootKey = () => ['ChangeSelectedOrganization'] as const;
 useChangeSelectedOrganizationMutation.fetcher = (client: GraphQLClient, variables: ChangeSelectedOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<ChangeSelectedOrganizationMutation, ChangeSelectedOrganizationMutationVariables>(client, ChangeSelectedOrganizationDocument, variables, headers);
+
+export const VotingRoundCreateDocument = `
+    mutation VotingRoundCreate($input: CreateVotingRoundInput!) {
+  createVotingRound(input: $input) {
+    ...VotingRoundRow
+  }
+}
+    ${VotingRoundRowFragmentDoc}`;
+
+export const useVotingRoundCreateMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<VotingRoundCreateMutation, TError, VotingRoundCreateMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<VotingRoundCreateMutation, TError, VotingRoundCreateMutationVariables, TContext>(
+      {
+    mutationKey: ['VotingRoundCreate'],
+    mutationFn: (variables?: VotingRoundCreateMutationVariables) => fetcher<VotingRoundCreateMutation, VotingRoundCreateMutationVariables>(client, VotingRoundCreateDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useVotingRoundCreateMutation.getKey = () => ['VotingRoundCreate'];
+useVotingRoundCreateMutation.getRootKey = () => ['VotingRoundCreate'] as const;
+useVotingRoundCreateMutation.fetcher = (client: GraphQLClient, variables: VotingRoundCreateMutationVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundCreateMutation, VotingRoundCreateMutationVariables>(client, VotingRoundCreateDocument, variables, headers);
+
+export const VotingRoundUpdateDocument = `
+    mutation VotingRoundUpdate($id: VotingRoundId!, $input: UpdateVotingRoundInput!) {
+  updateVotingRound(id: $id, input: $input) {
+    ...VotingRoundRow
+  }
+}
+    ${VotingRoundRowFragmentDoc}`;
+
+export const useVotingRoundUpdateMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<VotingRoundUpdateMutation, TError, VotingRoundUpdateMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<VotingRoundUpdateMutation, TError, VotingRoundUpdateMutationVariables, TContext>(
+      {
+    mutationKey: ['VotingRoundUpdate'],
+    mutationFn: (variables?: VotingRoundUpdateMutationVariables) => fetcher<VotingRoundUpdateMutation, VotingRoundUpdateMutationVariables>(client, VotingRoundUpdateDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useVotingRoundUpdateMutation.getKey = () => ['VotingRoundUpdate'];
+useVotingRoundUpdateMutation.getRootKey = () => ['VotingRoundUpdate'] as const;
+useVotingRoundUpdateMutation.fetcher = (client: GraphQLClient, variables: VotingRoundUpdateMutationVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundUpdateMutation, VotingRoundUpdateMutationVariables>(client, VotingRoundUpdateDocument, variables, headers);
+
+export const VotingRoundSetStatusDocument = `
+    mutation VotingRoundSetStatus($id: VotingRoundId!, $status: VotingRoundStatus!) {
+  setVotingRoundStatus(id: $id, status: $status) {
+    ...VotingRoundRow
+  }
+}
+    ${VotingRoundRowFragmentDoc}`;
+
+export const useVotingRoundSetStatusMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<VotingRoundSetStatusMutation, TError, VotingRoundSetStatusMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<VotingRoundSetStatusMutation, TError, VotingRoundSetStatusMutationVariables, TContext>(
+      {
+    mutationKey: ['VotingRoundSetStatus'],
+    mutationFn: (variables?: VotingRoundSetStatusMutationVariables) => fetcher<VotingRoundSetStatusMutation, VotingRoundSetStatusMutationVariables>(client, VotingRoundSetStatusDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useVotingRoundSetStatusMutation.getKey = () => ['VotingRoundSetStatus'];
+useVotingRoundSetStatusMutation.getRootKey = () => ['VotingRoundSetStatus'] as const;
+useVotingRoundSetStatusMutation.fetcher = (client: GraphQLClient, variables: VotingRoundSetStatusMutationVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundSetStatusMutation, VotingRoundSetStatusMutationVariables>(client, VotingRoundSetStatusDocument, variables, headers);
+
+export const VotingRoundDeleteDocument = `
+    mutation VotingRoundDelete($id: VotingRoundId!) {
+  deleteVotingRound(id: $id) {
+    id
+  }
+}
+    `;
+
+export const useVotingRoundDeleteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<VotingRoundDeleteMutation, TError, VotingRoundDeleteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<VotingRoundDeleteMutation, TError, VotingRoundDeleteMutationVariables, TContext>(
+      {
+    mutationKey: ['VotingRoundDelete'],
+    mutationFn: (variables?: VotingRoundDeleteMutationVariables) => fetcher<VotingRoundDeleteMutation, VotingRoundDeleteMutationVariables>(client, VotingRoundDeleteDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useVotingRoundDeleteMutation.getKey = () => ['VotingRoundDelete'];
+useVotingRoundDeleteMutation.getRootKey = () => ['VotingRoundDelete'] as const;
+useVotingRoundDeleteMutation.fetcher = (client: GraphQLClient, variables: VotingRoundDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundDeleteMutation, VotingRoundDeleteMutationVariables>(client, VotingRoundDeleteDocument, variables, headers);
+
+export const VotableFeatureCreateDocument = `
+    mutation VotableFeatureCreate($input: CreateVotableFeatureInput!) {
+  createVotableFeature(input: $input) {
+    ...VotableFeatureAdminRow
+  }
+}
+    ${VotableFeatureAdminRowFragmentDoc}`;
+
+export const useVotableFeatureCreateMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<VotableFeatureCreateMutation, TError, VotableFeatureCreateMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<VotableFeatureCreateMutation, TError, VotableFeatureCreateMutationVariables, TContext>(
+      {
+    mutationKey: ['VotableFeatureCreate'],
+    mutationFn: (variables?: VotableFeatureCreateMutationVariables) => fetcher<VotableFeatureCreateMutation, VotableFeatureCreateMutationVariables>(client, VotableFeatureCreateDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useVotableFeatureCreateMutation.getKey = () => ['VotableFeatureCreate'];
+useVotableFeatureCreateMutation.getRootKey = () => ['VotableFeatureCreate'] as const;
+useVotableFeatureCreateMutation.fetcher = (client: GraphQLClient, variables: VotableFeatureCreateMutationVariables, headers?: RequestInit['headers']) => fetcher<VotableFeatureCreateMutation, VotableFeatureCreateMutationVariables>(client, VotableFeatureCreateDocument, variables, headers);
+
+export const VotableFeatureUpdateDocument = `
+    mutation VotableFeatureUpdate($id: VotableFeatureId!, $input: UpdateVotableFeatureInput!) {
+  updateVotableFeature(id: $id, input: $input) {
+    ...VotableFeatureAdminRow
+  }
+}
+    ${VotableFeatureAdminRowFragmentDoc}`;
+
+export const useVotableFeatureUpdateMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<VotableFeatureUpdateMutation, TError, VotableFeatureUpdateMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<VotableFeatureUpdateMutation, TError, VotableFeatureUpdateMutationVariables, TContext>(
+      {
+    mutationKey: ['VotableFeatureUpdate'],
+    mutationFn: (variables?: VotableFeatureUpdateMutationVariables) => fetcher<VotableFeatureUpdateMutation, VotableFeatureUpdateMutationVariables>(client, VotableFeatureUpdateDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useVotableFeatureUpdateMutation.getKey = () => ['VotableFeatureUpdate'];
+useVotableFeatureUpdateMutation.getRootKey = () => ['VotableFeatureUpdate'] as const;
+useVotableFeatureUpdateMutation.fetcher = (client: GraphQLClient, variables: VotableFeatureUpdateMutationVariables, headers?: RequestInit['headers']) => fetcher<VotableFeatureUpdateMutation, VotableFeatureUpdateMutationVariables>(client, VotableFeatureUpdateDocument, variables, headers);
+
+export const VotableFeatureDeleteDocument = `
+    mutation VotableFeatureDelete($id: VotableFeatureId!) {
+  deleteVotableFeature(id: $id) {
+    id
+  }
+}
+    `;
+
+export const useVotableFeatureDeleteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<VotableFeatureDeleteMutation, TError, VotableFeatureDeleteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<VotableFeatureDeleteMutation, TError, VotableFeatureDeleteMutationVariables, TContext>(
+      {
+    mutationKey: ['VotableFeatureDelete'],
+    mutationFn: (variables?: VotableFeatureDeleteMutationVariables) => fetcher<VotableFeatureDeleteMutation, VotableFeatureDeleteMutationVariables>(client, VotableFeatureDeleteDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useVotableFeatureDeleteMutation.getKey = () => ['VotableFeatureDelete'];
+useVotableFeatureDeleteMutation.getRootKey = () => ['VotableFeatureDelete'] as const;
+useVotableFeatureDeleteMutation.fetcher = (client: GraphQLClient, variables: VotableFeatureDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<VotableFeatureDeleteMutation, VotableFeatureDeleteMutationVariables>(client, VotableFeatureDeleteDocument, variables, headers);
+
+export const VotingRoundsListDocument = `
+    query VotingRoundsList {
+  votingRounds {
+    ...VotingRoundRow
+  }
+}
+    ${VotingRoundRowFragmentDoc}`;
+
+export const useVotingRoundsListQuery = <
+      TData = VotingRoundsListQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: VotingRoundsListQueryVariables,
+      options?: Omit<UseQueryOptions<VotingRoundsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<VotingRoundsListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<VotingRoundsListQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['VotingRoundsList'] : ['VotingRoundsList', variables],
+    queryFn: fetcher<VotingRoundsListQuery, VotingRoundsListQueryVariables>(client, VotingRoundsListDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useVotingRoundsListQuery.getKey = (variables?: VotingRoundsListQueryVariables) => variables === undefined ? ['VotingRoundsList'] : ['VotingRoundsList', variables];
+useVotingRoundsListQuery.getRootKey = () => ['VotingRoundsList'] as const;
+export const useInfiniteVotingRoundsListQuery = <
+      TData = InfiniteData<VotingRoundsListQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: VotingRoundsListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<VotingRoundsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<VotingRoundsListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<VotingRoundsListQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['VotingRoundsList.infinite'] : ['VotingRoundsList.infinite', variables],
+      queryFn: (metaData) => fetcher<VotingRoundsListQuery, VotingRoundsListQueryVariables>(client, VotingRoundsListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteVotingRoundsListQuery.getKey = (variables?: VotingRoundsListQueryVariables) => variables === undefined ? ['VotingRoundsList.infinite'] : ['VotingRoundsList.infinite', variables];
+useInfiniteVotingRoundsListQuery.getRootKey = () => ['VotingRoundsList.infinite'] as const;
+useVotingRoundsListQuery.fetcher = (client: GraphQLClient, variables?: VotingRoundsListQueryVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundsListQuery, VotingRoundsListQueryVariables>(client, VotingRoundsListDocument, variables, headers);
+
+export const VotingRoundDetailDocument = `
+    query VotingRoundDetail($id: VotingRoundId!) {
+  votingRound(id: $id) {
+    ...VotingRoundRow
+  }
+}
+    ${VotingRoundRowFragmentDoc}`;
+
+export const useVotingRoundDetailQuery = <
+      TData = VotingRoundDetailQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: VotingRoundDetailQueryVariables,
+      options?: Omit<UseQueryOptions<VotingRoundDetailQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<VotingRoundDetailQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<VotingRoundDetailQuery, TError, TData>(
+      {
+    queryKey: ['VotingRoundDetail', variables],
+    queryFn: fetcher<VotingRoundDetailQuery, VotingRoundDetailQueryVariables>(client, VotingRoundDetailDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useVotingRoundDetailQuery.getKey = (variables: VotingRoundDetailQueryVariables) => ['VotingRoundDetail', variables];
+useVotingRoundDetailQuery.getRootKey = () => ['VotingRoundDetail'] as const;
+export const useInfiniteVotingRoundDetailQuery = <
+      TData = InfiniteData<VotingRoundDetailQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: VotingRoundDetailQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<VotingRoundDetailQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<VotingRoundDetailQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<VotingRoundDetailQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['VotingRoundDetail.infinite', variables],
+      queryFn: (metaData) => fetcher<VotingRoundDetailQuery, VotingRoundDetailQueryVariables>(client, VotingRoundDetailDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteVotingRoundDetailQuery.getKey = (variables: VotingRoundDetailQueryVariables) => ['VotingRoundDetail.infinite', variables];
+useInfiniteVotingRoundDetailQuery.getRootKey = () => ['VotingRoundDetail.infinite'] as const;
+useVotingRoundDetailQuery.fetcher = (client: GraphQLClient, variables: VotingRoundDetailQueryVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundDetailQuery, VotingRoundDetailQueryVariables>(client, VotingRoundDetailDocument, variables, headers);
+
+export const VotingRoundRankingDocument = `
+    query VotingRoundRanking($id: VotingRoundId!) {
+  votingRoundResults(id: $id) {
+    total_voters
+    round {
+      id
+      name
+      status
+    }
+    results {
+      vote_count
+      feature {
+        ...VotableFeatureAdminRow
+      }
+    }
+  }
+}
+    ${VotableFeatureAdminRowFragmentDoc}`;
+
+export const useVotingRoundRankingQuery = <
+      TData = VotingRoundRankingQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: VotingRoundRankingQueryVariables,
+      options?: Omit<UseQueryOptions<VotingRoundRankingQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<VotingRoundRankingQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<VotingRoundRankingQuery, TError, TData>(
+      {
+    queryKey: ['VotingRoundRanking', variables],
+    queryFn: fetcher<VotingRoundRankingQuery, VotingRoundRankingQueryVariables>(client, VotingRoundRankingDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useVotingRoundRankingQuery.getKey = (variables: VotingRoundRankingQueryVariables) => ['VotingRoundRanking', variables];
+useVotingRoundRankingQuery.getRootKey = () => ['VotingRoundRanking'] as const;
+export const useInfiniteVotingRoundRankingQuery = <
+      TData = InfiniteData<VotingRoundRankingQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: VotingRoundRankingQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<VotingRoundRankingQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<VotingRoundRankingQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<VotingRoundRankingQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['VotingRoundRanking.infinite', variables],
+      queryFn: (metaData) => fetcher<VotingRoundRankingQuery, VotingRoundRankingQueryVariables>(client, VotingRoundRankingDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteVotingRoundRankingQuery.getKey = (variables: VotingRoundRankingQueryVariables) => ['VotingRoundRanking.infinite', variables];
+useInfiniteVotingRoundRankingQuery.getRootKey = () => ['VotingRoundRanking.infinite'] as const;
+useVotingRoundRankingQuery.fetcher = (client: GraphQLClient, variables: VotingRoundRankingQueryVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundRankingQuery, VotingRoundRankingQueryVariables>(client, VotingRoundRankingDocument, variables, headers);
 
 export const EpicCountPerTimelineQueryDocument = `
     query EpicCountPerTimelineQuery {

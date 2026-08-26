@@ -1,0 +1,116 @@
+scalar VotableFeatureId
+scalar VotingRoundId
+
+enum VotingRoundStatus {
+  draft
+  open
+  closed
+}
+
+type VotingRound implements Node {
+  id: ID!
+  name: String!
+  description: String
+  status: VotingRoundStatus!
+  opened_at: Date
+  closed_at: Date
+  created_at: Date!
+  updated_at: Date
+  features: [VotableFeature!]!
+}
+
+type VotableFeature implements Node {
+  id: ID!
+  voting_round_id: VotingRoundId!
+  title: String!
+  short_description: String!
+  description: String!
+  product: FiligranProduct!
+  labels: [String!]!
+  image_url: String
+  position: Int!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  has_my_vote: Boolean!
+}
+
+type VotableFeatureResult {
+  feature: VotableFeature!
+  vote_count: Int!
+}
+
+type VotingRoundResults {
+  round: VotingRound!
+  total_voters: Int!
+  results: [VotableFeatureResult!]!
+}
+
+input CreateVotingRoundInput {
+  name: String!
+  description: String
+  copy_features_from_round_id: VotingRoundId
+}
+
+input UpdateVotingRoundInput {
+  name: String
+  description: String
+}
+
+input CreateVotableFeatureInput {
+  voting_round_id: VotingRoundId!
+  title: String!
+  short_description: String!
+  description: String!
+  product: FiligranProduct!
+  labels: [String!]
+  image_url: String
+  position: Int
+  active: Boolean
+}
+
+input UpdateVotableFeatureInput {
+  title: String
+  short_description: String
+  description: String
+  product: FiligranProduct
+  labels: [String!]
+  image_url: String
+  position: Int
+  active: Boolean
+}
+
+type Query {
+  "The round currently collecting votes, if any. Publicly readable."
+  currentVotingRound: VotingRound
+  votingRounds: [VotingRound!]! @auth(portalCapa: [BYPASS])
+  votingRound(id: VotingRoundId!): VotingRound @auth(portalCapa: [BYPASS])
+  votingRoundResults(id: VotingRoundId!): VotingRoundResults!
+    @auth(portalCapa: [BYPASS])
+}
+
+type Mutation {
+  voteForFeature(feature_id: VotableFeatureId!): [VotableFeature!]! @auth
+
+  createVotingRound(input: CreateVotingRoundInput!): VotingRound!
+    @auth(portalCapa: [BYPASS])
+  updateVotingRound(
+    id: VotingRoundId!
+    input: UpdateVotingRoundInput!
+  ): VotingRound! @auth(portalCapa: [BYPASS])
+  setVotingRoundStatus(
+    id: VotingRoundId!
+    status: VotingRoundStatus!
+  ): [VotingRound!]! @auth(portalCapa: [BYPASS])
+  deleteVotingRound(id: VotingRoundId!): VotingRound!
+    @auth(portalCapa: [BYPASS])
+
+  createVotableFeature(input: CreateVotableFeatureInput!): VotableFeature!
+    @auth(portalCapa: [BYPASS])
+  updateVotableFeature(
+    id: VotableFeatureId!
+    input: UpdateVotableFeatureInput!
+  ): VotableFeature! @auth(portalCapa: [BYPASS])
+  deleteVotableFeature(id: VotableFeatureId!): VotableFeature!
+    @auth(portalCapa: [BYPASS])
+}

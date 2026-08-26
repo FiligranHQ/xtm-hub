@@ -183,6 +183,12 @@ describe('usePrivateNavigation', () => {
     expect(result.current.footerSections).toEqual([]);
     expect(result.current.bottomLinks).toEqual([
       {
+        key: 'feature-voting',
+        href: '/app/feature-voting',
+        icon: expect.any(Function),
+        label: 'FeatureVoting',
+      },
+      {
         key: 'filigran-academy',
         href: 'https://academy.filigran.io/',
         icon: expect.any(Function),
@@ -236,7 +242,7 @@ describe('usePrivateNavigation', () => {
 
   it.each`
     capabilities                                                         | expectedSettingsLabels
-    ${[PortalCapability.Bypass]}                                         | ${['Parameter', 'Security', 'UseCase', 'SolutionCategory', 'Organization', 'Service', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor', 'NewsFeed']}
+    ${[PortalCapability.Bypass]}                                         | ${['Parameter', 'Security', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor', 'NewsFeed']}
     ${[PortalCapability.ReadTrials]}                                     | ${['OpenCTITrial', 'OpenAEVTrial']}
     ${[PortalCapability.ModifyCompetitors]}                              | ${['Competitor']}
     ${[PortalCapability.ReadTrials, PortalCapability.ModifyCompetitors]} | ${['OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
@@ -295,6 +301,12 @@ describe('usePrivateNavigation', () => {
       )
     ).toBeUndefined();
     expect(result.current.bottomLinks).toEqual([
+      {
+        key: 'feature-voting',
+        href: '/app/feature-voting',
+        icon: expect.any(Function),
+        label: 'FeatureVoting',
+      },
       {
         key: 'filigran-academy',
         href: 'https://academy.filigran.io/',

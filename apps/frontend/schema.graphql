@@ -119,6 +119,12 @@ type Query {
   mostDeployedDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   newestDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   lastDeployedOverview(limit: Int!, serviceInstanceId: ServiceInstanceId!): LastDeployedOverview!
+
+  """The round currently collecting votes, if any. Publicly readable."""
+  currentVotingRound: VotingRound
+  votingRounds: [VotingRound!]!
+  votingRound(id: VotingRoundId!): VotingRound
+  votingRoundResults(id: VotingRoundId!): VotingRoundResults!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -167,6 +173,14 @@ type Mutation {
   updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
   deleteDocument(documentId: DocumentId!, service_instance_id: ServiceInstanceId!, forceDelete: Boolean): Document!
   incrementShareNumberDocument(documentId: DocumentId!): Document!
+  voteForFeature(feature_id: VotableFeatureId!): [VotableFeature!]!
+  createVotingRound(input: CreateVotingRoundInput!): VotingRound!
+  updateVotingRound(id: VotingRoundId!, input: UpdateVotingRoundInput!): VotingRound!
+  setVotingRoundStatus(id: VotingRoundId!, status: VotingRoundStatus!): [VotingRound!]!
+  deleteVotingRound(id: VotingRoundId!): VotingRound!
+  createVotableFeature(input: CreateVotableFeatureInput!): VotableFeature!
+  updateVotableFeature(id: VotableFeatureId!, input: UpdateVotableFeatureInput!): VotableFeature!
+  deleteVotableFeature(id: VotableFeatureId!): VotableFeature!
   frontendErrorLog(message: String!, codeStack: String, componentStack: String): Boolean
   newProductVersion(product: PlatformIdentifier!, version: String!): Success!
   consumeProvisionedNewsFeedItems: ConsumeProvisionedNewsFeedItemsResponse!
@@ -710,6 +724,95 @@ type DeployedResource {
 
 type LastDeployedOverview {
   resources: [DeployedResource!]!
+}
+
+"""
+A Relay global ID for VotableFeature, extracted to a branded VotableFeatureId string
+"""
+scalar VotableFeatureId
+
+"""
+A Relay global ID for VotingRound, extracted to a branded VotingRoundId string
+"""
+scalar VotingRoundId
+
+enum VotingRoundStatus {
+  draft
+  open
+  closed
+}
+
+type VotingRound implements Node {
+  id: ID!
+  name: String!
+  description: String
+  status: VotingRoundStatus!
+  opened_at: Date
+  closed_at: Date
+  created_at: Date!
+  updated_at: Date
+  features: [VotableFeature!]!
+}
+
+type VotableFeature implements Node {
+  id: ID!
+  voting_round_id: VotingRoundId!
+  title: String!
+  short_description: String!
+  description: String!
+  product: FiligranProduct!
+  labels: [String!]!
+  image_url: String
+  position: Int!
+  active: Boolean!
+  created_at: Date!
+  updated_at: Date
+  has_my_vote: Boolean!
+}
+
+type VotableFeatureResult {
+  feature: VotableFeature!
+  vote_count: Int!
+}
+
+type VotingRoundResults {
+  round: VotingRound!
+  total_voters: Int!
+  results: [VotableFeatureResult!]!
+}
+
+input CreateVotingRoundInput {
+  name: String!
+  description: String
+  copy_features_from_round_id: VotingRoundId
+}
+
+input UpdateVotingRoundInput {
+  name: String
+  description: String
+}
+
+input CreateVotableFeatureInput {
+  voting_round_id: VotingRoundId!
+  title: String!
+  short_description: String!
+  description: String!
+  product: FiligranProduct!
+  labels: [String!]
+  image_url: String
+  position: Int
+  active: Boolean
+}
+
+input UpdateVotableFeatureInput {
+  title: String
+  short_description: String
+  description: String
+  product: FiligranProduct
+  labels: [String!]
+  image_url: String
+  position: Int
+  active: Boolean
 }
 
 """

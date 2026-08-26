@@ -27,3 +27,5 @@ generates:
         NewsFeedItemId: "../model/kanel/public/NewsFeedItem.js#NewsFeedItemId"
         UserServiceId: "../model/kanel/public/UserService.js#UserServiceId"
         SubscriptionCapabilityId: "../model/kanel/public/SubscriptionCapability.js#SubscriptionCapabilityId"
+        VotableFeatureId: "../model/kanel/public/VotableFeature.js#VotableFeatureId"
+        VotingRoundId: "../model/kanel/public/VotingRound.js#VotingRoundId"

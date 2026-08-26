@@ -10,6 +10,7 @@ import {
 } from '@/utils/path/constant';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import {
+  CampaignIcon,
   HomeIcon,
   LogoXtmOneIcon,
   OpenAevIconIcon,
@@ -142,6 +143,12 @@ export const usePublicNavigation = (
           },
         ]
       : []),
+    {
+      key: 'feature-voting',
+      href: `/${locale}/feature-voting`,
+      icon: CampaignIcon,
+      label: t('Menu.FeatureVoting'),
+    },
     {
       key: 'filigran-academy',
       href: 'https://academy.filigran.io/',

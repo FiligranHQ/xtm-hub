@@ -1,0 +1,111 @@
+import VotingRounds from '@/components/admin/voting-round/VotingRounds';
+import { mockGraphqlQuery } from '@/utils/test/msw/graphql-api';
+import { mswServer } from '@/utils/test/msw/server';
+import testRender from '@/utils/test/test-render';
+import { VotingRoundsListQuery, VotingRoundStatus } from '@graphql/generated';
+import { mockVotableFeature, mockVotingRound } from '@graphql/mocks';
+import { screen } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
+
+const GQL_OPERATION_VOTING_ROUNDS_LIST = 'VotingRoundsList';
+
+const votingRoundsResponse: VotingRoundsListQuery = {
+  votingRounds: [
+    mockVotingRound({
+      id: 'round-1',
+      name: 'Feature vote #1',
+      status: VotingRoundStatus.Open,
+      features: [mockVotableFeature({ id: 'feature-1' })],
+    }),
+    mockVotingRound({
+      id: 'round-2',
+      name: 'Feature vote #2',
+      status: VotingRoundStatus.Draft,
+      features: [],
+    }),
+  ],
+};
+
+const mockRounds = () =>
+  mswServer.use(
+    mockGraphqlQuery({
+      queryName: GQL_OPERATION_VOTING_ROUNDS_LIST,
+      data: votingRoundsResponse,
+    })
+  );
+
+describe('VotingRounds', () => {
+  const push = vi.fn();
+
+  beforeEach(() => {
+    vi.mocked(useRouter).mockReturnValue({
+      push,
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      refresh: vi.fn(),
+    });
+  });
+
+  it('should render one row per round with its status and feature count', async () => {
+    mockRounds();
+
+    testRender(<VotingRounds />);
+
+    expect(await screen.findByText('Feature vote #1')).toBeInTheDocument();
+    expect(await screen.findByText('Feature vote #2')).toBeInTheDocument();
+    expect(
+      await screen.findByText('VotingRound.Status.open')
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText('VotingRound.Status.draft')
+    ).toBeInTheDocument();
+  });
+
+  it('should navigate to the round detail when clicking a row', async () => {
+    mockRounds();
+
+    const { user } = testRender(<VotingRounds />);
+
+    await user.click(await screen.findByText('Feature vote #1'));
+
+    expect(push).toHaveBeenCalledWith('/app/admin/voting-rounds/round-1');
+  });
+
+  // Opening and closing a round is only offered on the detail page, so the
+  // action cannot be triggered by mistake while scanning the list.
+  it('should not offer the open or close actions in the list', async () => {
+    mockRounds();
+
+    testRender(<VotingRounds />);
+
+    await screen.findByText('Feature vote #1');
+    expect(
+      screen.queryByRole('button', { name: 'VotingRound.Actions.Open' })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'VotingRound.Actions.Close' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('should open the edit sheet from the row actions menu', async () => {
+    mockRounds();
+
+    const { user } = testRender(<VotingRounds />);
+
+    const [menuButton] = await screen.findAllByRole('button', {
+      name: 'Utils.OpenMenu',
+    });
+    await user.click(menuButton!);
+    await user.click(
+      await screen.findByRole('menuitem', {
+        name: 'VotingRound.Actions.Edit',
+      })
+    );
+
+    expect(
+      await screen.findByLabelText(/VotingRound.Form.Name/i)
+    ).toBeInTheDocument();
+  });
+});

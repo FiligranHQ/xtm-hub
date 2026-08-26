@@ -34,6 +34,10 @@ export enum ForbiddenErrorCode {
   DeleteOrganizationPendingUsers = 'DELETE_ORGANIZATION_PENDING_USERS',
   DeleteOrganizationRequiresSingleUser = 'DELETE_ORGANIZATION_REQUIRES_SINGLE_USER',
   DeleteOrganizationBlockedByConnectedProduct = 'DELETE_ORGANIZATION_BLOCKED_BY_CONNECTED_PRODUCT',
+  VotingRoundNotOpen = 'VOTING_ROUND_NOT_OPEN',
+  VotingRoundClosed = 'VOTING_ROUND_CLOSED',
+  DeleteVotingRoundBlockedByVotes = 'DELETE_VOTING_ROUND_BLOCKED_BY_VOTES',
+  DeleteVotableFeatureBlockedByVotes = 'DELETE_VOTABLE_FEATURE_BLOCKED_BY_VOTES',
 }
 
 export enum BadRequestErrorCode {
@@ -103,6 +107,9 @@ export enum UnknownErrorCode {
   DeploymentRequestUnknownError = 'DEPLOYMENT_REQUEST_UNKNOWN_ERROR',
   HubspotError = 'HUBSPOT_ERROR',
   MissingMetadataMapping = 'MISSING_METADATA_MAPPING',
+  VoteForFeatureError = 'VOTE_FOR_FEATURE_ERROR',
+  VotingRoundMutationError = 'VOTING_ROUND_MUTATION_ERROR',
+  VotableFeatureMutationError = 'VOTABLE_FEATURE_MUTATION_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {
@@ -129,6 +136,8 @@ export enum NotFoundErrorCode {
   OrganizationNotFound = 'ORGANIZATION_NOT_FOUND',
   UseCaseNotFound = 'USE_CASE_NOT_FOUND',
   SolutionCategoryNotFound = 'SOLUTION_CATEGORY_NOT_FOUND',
+  VotableFeatureNotFound = 'VOTABLE_FEATURE_NOT_FOUND',
+  VotingRoundNotFound = 'VOTING_ROUND_NOT_FOUND',
 }
 
 export const ErrorCode = {
