@@ -44,7 +44,6 @@ export const PlatformMetadataMapping: Record<
     Icon: ({ className }) => <OpenAevIconIcon className={className} />,
     iconClassName: 'text-filigran-brand-primary',
   },
-  // Placeholder: xtmone has no trial UI yet, replace when built.
   [PlatformIdentifier.Xtmone]: {
     name: 'XTM One',
     learnMorePublicUrl: '',

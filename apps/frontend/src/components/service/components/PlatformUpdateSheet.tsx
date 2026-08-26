@@ -39,6 +39,7 @@ interface PlatformUpdateSheetProps {
   serviceDefinitionIdentifier: ServiceDefinitionIdentifier;
   open: boolean;
   setOpen: (open: boolean) => void;
+  onUpdated?: () => void;
 }
 
 export const PlatformUpdateSheet = ({
@@ -48,6 +49,7 @@ export const PlatformUpdateSheet = ({
   serviceDefinitionIdentifier,
   open,
   setOpen,
+  onUpdated,
 }: PlatformUpdateSheetProps) => {
   const t = useTranslations();
   const { toast } = useToast();
@@ -86,6 +88,7 @@ export const PlatformUpdateSheet = ({
       onCompleted: () => {
         setOpen(false);
         invalidatePrivateNavigationQueries(queryClient);
+        onUpdated?.();
         toast({
           title: t('Utils.Success'),
           description: t('Platform.Updated', {
