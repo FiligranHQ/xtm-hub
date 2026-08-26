@@ -243,6 +243,27 @@ type DeploymentAvailability {
   platform_identifier: PlatformIdentifier
 }
 
+type XtmPlatformBundleProduct {
+  platform_identifier: PlatformIdentifier!
+  service_instance_id: ServiceInstanceId!
+  name: String
+  connectivity_status: PlatformConfigurationStatus
+  last_connectivity_check: Date
+  roles: [ServiceGroup!]!
+  url: String
+}
+
+type XtmPlatformBundle {
+  id: ID!
+  service_instance_id: ServiceInstanceId!
+  organization_name: String
+  start_date: Date
+  end_date: Date
+  license: PlatformContract
+  requester_email: String
+  products: [XtmPlatformBundleProduct!]!
+}
+
 type DeployedPlatform {
   serviceInstanceId: ServiceInstanceId!
   platformIdentifier: PlatformIdentifier!
@@ -321,6 +342,7 @@ extend type Query {
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments! @auth
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
     @auth
+  activeXtmPlatformBundle: XtmPlatformBundle @auth
 }
 
 extend type Mutation {

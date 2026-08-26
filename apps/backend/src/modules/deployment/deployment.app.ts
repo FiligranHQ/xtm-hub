@@ -12,6 +12,7 @@ import {
   DeploymentRequestPlatformState,
   OrderingMode,
   PlatformConfigurationStatus,
+  PlatformContract,
   PlatformDeploymentRequest,
   PlatformDeploymentRequestConnection,
   PlatformIdentifier,
@@ -24,6 +25,7 @@ import {
   Success,
   TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
+  XtmPlatformBundle,
 } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
 import {
@@ -79,6 +81,7 @@ import {
   shouldDeleteDeploymentRequestAudience,
 } from './deployment.domain';
 import { DeploymentHelper } from './deployment.helper';
+import { ServiceGroupDomain } from './group/service-group.domain';
 import { DeploymentQuotaApp } from './quota/deployment.quota.app';
 import {
   bundleQuotaKey,
@@ -565,6 +568,76 @@ export const DeploymentApp = {
         .filter(
           (identifier): identifier is PlatformIdentifier => identifier !== null
         ),
+    };
+  },
+
+  loadActiveXtmPlatformBundle: async (
+    user: UserLoadUserBy
+  ): Promise<XtmPlatformBundle | null> => {
+    const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest({
+      type: DeploymentRequestDeploymentType.Bundle,
+      hub_status: DeploymentRequestHubStatus.Active,
+      organization_requester_id: user.selected_organization_id,
+    });
+    if (!bundle) {
+      return null;
+    }
+
+    const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+      parent_id: bundle.id,
+    });
+
+    const productData = await Promise.all(
+      children
+        .filter(
+          (
+            child
+          ): child is DeploymentRequestModel & {
+            platform_identifier: PlatformIdentifier;
+          } => child.platform_identifier !== null
+        )
+        .map(async (child) => {
+          const [configuration] =
+            await RegistrationDomain.loadRegisteredPlatform(
+              child.service_instance_id
+            );
+          const roles =
+            await ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
+              child.service_instance_id,
+              user.id
+            );
+          const childServiceInstance =
+            await ServiceInstanceDomain.loadServiceInstanceBy({
+              id: child.service_instance_id,
+            });
+          return { child, configuration, roles, childServiceInstance };
+        })
+    );
+
+    const license =
+      productData.find(({ configuration }) => configuration?.platform_contract)
+        ?.configuration?.platform_contract ?? PlatformContract.Trial;
+
+    return {
+      id: bundle.id,
+      service_instance_id: bundle.service_instance_id,
+      organization_name: bundle.organization_name,
+      start_date: bundle.start_date,
+      end_date: bundle.end_date,
+      license,
+      requester_email: bundle.requester_email,
+      products: productData.map(
+        ({ child, configuration, roles, childServiceInstance }) => ({
+          platform_identifier: child.platform_identifier,
+          service_instance_id: child.service_instance_id,
+          name: childServiceInstance?.name ?? null,
+          connectivity_status: configuration?.status ?? null,
+          last_connectivity_check:
+            configuration?.last_connectivity_check ?? null,
+          roles,
+          url: child.url,
+        })
+      ),
     };
   },
 };

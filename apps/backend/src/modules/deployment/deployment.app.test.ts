@@ -4154,4 +4154,119 @@ describe('deployment app', () => {
       });
     });
   });
+
+  describe('loadActiveXtmPlatformBundle', () => {
+    beforeEach(() => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+      vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
+        isPlaceAvailable: true,
+      });
+    });
+
+    const createActiveBundle = async () => {
+      const bundle = await DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        type: DeploymentRequestDeploymentType.Bundle,
+        products: [
+          PlatformIdentifier.Xtmone,
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ],
+      });
+      await DeploymentRequestDomain.updateDeploymentRequestById(bundle.id, {
+        hub_status: DeploymentRequestHubStatus.Active,
+        start_date: new Date('2025-01-01T00:00:00.000Z'),
+        end_date: new Date('2025-01-31T00:00:00.000Z'),
+      });
+      return bundle;
+    };
+
+    it('should return null when the organization has no active bundle', async () => {
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
+        contextRegistererUserSecondOrga.user
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it('should return the active bundle with its products for the organization', async () => {
+      await createActiveBundle();
+
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
+        contextRegistererUserSecondOrga.user
+      );
+
+      expect(result).toMatchObject({
+        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+        requester_email:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.EMAIL,
+        license: PlatformContract.Trial,
+        start_date: expect.any(Date),
+        end_date: expect.any(Date),
+        service_instance_id: expect.any(String),
+      });
+      expect(result?.products).toHaveLength(3);
+      expect(
+        result?.products.map((product) => product.platform_identifier).sort()
+      ).toEqual(
+        [
+          PlatformIdentifier.Openaev,
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Xtmone,
+        ].sort()
+      );
+      expect(result?.products).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            name: expect.any(String),
+            connectivity_status: null,
+            last_connectivity_check: null,
+            roles: [],
+          }),
+        ])
+      );
+    });
+
+    it('should expose connectivity status, last connection date and roles when a product is registered', async () => {
+      const bundle = await createActiveBundle();
+      const [child] = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+        parent_id: bundle.id,
+      });
+      const lastConnectivityCheck = new Date('2025-01-10T10:00:00.000Z');
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockImplementation(
+        async (serviceInstanceId) =>
+          serviceInstanceId === child.service_instance_id
+            ? [
+                {
+                  status: PlatformConfigurationStatus.Active,
+                  last_connectivity_check: lastConnectivityCheck,
+                  platform_contract: PlatformContract.Ee,
+                } as never,
+              ]
+            : []
+      );
+      vi.spyOn(
+        ServiceGroupDomain,
+        'loadServiceGroupsByServiceInstanceAndUser'
+      ).mockImplementation(async (serviceInstanceId) =>
+        serviceInstanceId === child.service_instance_id
+          ? ([{ id: 'group-1', name: ServiceGroupName.Admin }] as never)
+          : []
+      );
+
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
+        contextRegistererUserSecondOrga.user
+      );
+
+      expect(result?.license).toBe(PlatformContract.Ee);
+      const registeredProduct = result?.products.find(
+        (product) => product.service_instance_id === child.service_instance_id
+      );
+      expect(registeredProduct).toMatchObject({
+        connectivity_status: PlatformConfigurationStatus.Active,
+        last_connectivity_check: lastConnectivityCheck,
+        roles: [{ id: 'group-1', name: ServiceGroupName.Admin }],
+      });
+    });
+  });
 });

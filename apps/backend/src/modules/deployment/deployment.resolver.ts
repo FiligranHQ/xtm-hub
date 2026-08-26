@@ -82,6 +82,16 @@ const resolvers: Resolvers = {
         );
       }
     },
+    activeXtmPlatformBundle: async (_, __, context) => {
+      try {
+        return await DeploymentApp.loadActiveXtmPlatformBundle(context.user);
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
+        );
+      }
+    },
   },
 
   Mutation: {
