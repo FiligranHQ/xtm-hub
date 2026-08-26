@@ -1,5 +1,111 @@
 export async function seed(knex) {
   // Document Metadata seed data from production
+  const taxiiFeedMetadataBatch = Array.from({ length: 15 }, (_, index) => {
+    const itemNumber = index + 1;
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+
+    return [
+      {
+        document_id: `60000000-0000-4000-8000-${idSuffix}`,
+        key: 'integration_type',
+        value: 'taxii_feed',
+      },
+      {
+        document_id: `60000000-0000-4000-8000-${idSuffix}`,
+        key: 'integration_subtype',
+        value: 'NATIVE',
+      },
+      {
+        document_id: `60000000-0000-4000-8000-${idSuffix}`,
+        key: 'feed_url',
+        value: `https://taxii-feed-${paddedNumber}.example.com`,
+      },
+    ];
+  }).flat();
+
+  const thirdPartyMetadataBatch = Array.from({ length: 15 }, (_, index) => {
+    const itemNumber = index + 1;
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+
+    return [
+      {
+        document_id: `70000000-0000-4000-8000-${idSuffix}`,
+        key: 'integration_type',
+        value: 'third_party_integration',
+      },
+      {
+        document_id: `70000000-0000-4000-8000-${idSuffix}`,
+        key: 'integration_subtype',
+        value: 'ORCHESTRATION',
+      },
+      {
+        document_id: `70000000-0000-4000-8000-${idSuffix}`,
+        key: 'vendor_url',
+        value: `https://vendor-${paddedNumber}.example.com`,
+      },
+      {
+        document_id: `70000000-0000-4000-8000-${idSuffix}`,
+        key: 'github_url',
+        value: `https://github.com/filigran/third-party-${paddedNumber}`,
+      },
+      {
+        document_id: `70000000-0000-4000-8000-${idSuffix}`,
+        key: 'product_version',
+        value: '1.0.0',
+      },
+    ];
+  }).flat();
+
+  const openctiStreamMetadataBatch = Array.from({ length: 15 }, (_, index) => {
+    const itemNumber = index + 1;
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+
+    return [
+      {
+        document_id: `80000000-0000-4000-8000-${idSuffix}`,
+        key: 'integration_type',
+        value: 'stream',
+      },
+      {
+        document_id: `80000000-0000-4000-8000-${idSuffix}`,
+        key: 'integration_subtype',
+        value: 'NATIVE',
+      },
+      {
+        document_id: `80000000-0000-4000-8000-${idSuffix}`,
+        key: 'feed_url',
+        value: `https://stream-${paddedNumber}.example.com`,
+      },
+    ];
+  }).flat();
+
+  const rssFeedMetadataBatch = Array.from({ length: 15 }, (_, index) => {
+    const itemNumber = index + 1;
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+
+    return [
+      {
+        document_id: `90000000-0000-4000-8000-${idSuffix}`,
+        key: 'integration_type',
+        value: 'rss_feed',
+      },
+      {
+        document_id: `90000000-0000-4000-8000-${idSuffix}`,
+        key: 'integration_subtype',
+        value: 'MALWARE',
+      },
+      {
+        document_id: `90000000-0000-4000-8000-${idSuffix}`,
+        key: 'feed_url',
+        value: `https://rss-feed-${paddedNumber}.example.com`,
+      },
+    ];
+  }).flat();
+
   await knex('Document_Metadata')
     .insert([
       {
@@ -117,6 +223,10 @@ export async function seed(knex) {
         key: 'product_version',
         value: '1.7.0',
       },
+      ...taxiiFeedMetadataBatch,
+      ...thirdPartyMetadataBatch,
+      ...openctiStreamMetadataBatch,
+      ...rssFeedMetadataBatch,
     ])
     .onConflict(['document_id', 'key'])
     .ignore();
