@@ -7,7 +7,6 @@ import {
   UpdatePlatformServiceMetadataInput,
 } from '../../../__generated__/resolvers-types';
 import { withTransaction } from '../../../context/database.context';
-import { requestContext } from '../../../context/request.context';
 import {
   ServiceInstanceId,
   ServiceInstanceMutator,
@@ -19,61 +18,9 @@ import { ErrorCode } from '../../../utils/error/error.code';
 import { NotFoundError } from '../../../utils/error/error.util';
 import { DocumentHelper } from '../../document/document.helper';
 import { Upload } from '../../document/document.uploads.helper';
-import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
-import { subscriptionApp } from '../../subscription/subscription.app';
-import { SubscriptionDomain } from '../../subscription/subscription.domain';
-import { UserServiceDomain } from '../../user-service/user-service.domain';
 import { ServiceInstanceDomain } from './service-instance.domain';
 
 export const ServiceInstanceApp = {
-  loadServiceInstanceAndGrantAccess: async (
-    serviceInstanceId: ServiceInstanceId
-  ): Promise<ServiceInstance> => {
-    const user = requestContext.requireUser();
-
-    const [service, existingSubscription] = await Promise.all([
-      ServiceInstanceDomain.loadServiceInstanceBy({ id: serviceInstanceId }),
-      SubscriptionDomain.loadSubscriptionBy({
-        service_instance_id: serviceInstanceId,
-        organization_id: user.selected_organization_id,
-      }),
-    ]);
-    if (!service) {
-      throw new Error(ErrorCode.ServiceInstanceNotFound);
-    }
-    let subscription = existingSubscription;
-
-    if (!subscription) {
-      if (!service.public) {
-        throw new Error(ErrorCode.ServiceInstanceNotPublic);
-      }
-      const [createdSubscription] =
-        await subscriptionApp.subscribeOrganizationsToService({
-          organizationIds: [user.selected_organization_id],
-          serviceInstanceId: serviceInstanceId,
-          startDate: new Date(),
-          endDate: null,
-          capabilityIds: [],
-        });
-      if (!createdSubscription) {
-        throw NotFoundError(ErrorCode.SubscriptionNotFound);
-      }
-      subscription = createdSubscription;
-    }
-    const userService = await UserServiceDomain.doesUserServiceExist(
-      user.id,
-      subscription.id
-    );
-    if (!userService) {
-      await ServiceInstanceDomain.grantServiceAccess(
-        GenericServiceCapabilityIds.AccessId,
-        user.id,
-        subscription.id
-      );
-    }
-    return service as unknown as ServiceInstance;
-  },
-
   loadServiceInstance: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<ServiceInstance> => {
@@ -90,6 +37,7 @@ export const ServiceInstanceApp = {
           : ErrorCode.ServiceInstanceNotFound
       );
     }
+    console.log('SERVIIIICE', service);
     return service as unknown as ServiceInstance;
   },
   addServicePicture: async (

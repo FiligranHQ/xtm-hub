@@ -1816,7 +1816,6 @@ export type Query = {
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById?: Maybe<ServiceInstance>;
-  serviceInstanceByIdAndGrantAccess?: Maybe<ServiceInstance>;
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
@@ -2038,11 +2037,6 @@ export type QueryServiceGroupsArgs = {
 
 
 export type QueryServiceInstanceByIdArgs = {
-  service_instance_id: Scalars['ServiceInstanceId']['input'];
-};
-
-
-export type QueryServiceInstanceByIdAndGrantAccessArgs = {
   service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
@@ -4346,7 +4340,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceByIdArgs, 'service_instance_id'>>;
-  serviceInstanceByIdAndGrantAccess?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceByIdAndGrantAccessArgs, 'service_instance_id'>>;
   serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;

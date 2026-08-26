@@ -62,15 +62,6 @@ const resolvers: Resolvers = {
     serviceInstanceLinksByTags: async (_, { tags }) => {
       return ServiceInstanceApp.loadLinkServiceInstancesByTags(tags);
     },
-    serviceInstanceByIdAndGrantAccess: async (_, { service_instance_id }) => {
-      try {
-        return await ServiceInstanceApp.loadServiceInstanceAndGrantAccess(
-          service_instance_id
-        );
-      } catch (error) {
-        throw mapToGraphQLError(error);
-      }
-    },
     serviceInstanceById: async (_, { service_instance_id }) => {
       try {
         return await ServiceInstanceApp.loadServiceInstance(

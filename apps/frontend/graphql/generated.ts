@@ -1823,7 +1823,6 @@ export type Query = {
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById: Maybe<ServiceInstance>;
-  serviceInstanceByIdAndGrantAccess: Maybe<ServiceInstance>;
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
@@ -2045,11 +2044,6 @@ export type QueryServiceGroupsArgs = {
 
 
 export type QueryServiceInstanceByIdArgs = {
-  service_instance_id: Scalars['ServiceInstanceId']['input'];
-};
-
-
-export type QueryServiceInstanceByIdAndGrantAccessArgs = {
   service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
