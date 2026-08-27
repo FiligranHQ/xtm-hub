@@ -15,6 +15,7 @@ generates:
       contextType: '../model/portal-context.js#PortalContext'
       mappers:
         VotingRound: '../modules/feature-voting/feature-voting.app.js#VotingRoundModel'
+        VotableFeature: '../modules/feature-voting/feature-voting.app.js#VotableFeatureModel'
       scalars:
         SolutionCategoryId: '../model/kanel/public/SolutionCategory.js#SolutionCategoryId'
         ServiceInstanceId: '../model/kanel/public/ServiceInstance.js#ServiceInstanceId'

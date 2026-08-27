@@ -1,4 +1,5 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { v4 as uuidv4 } from 'uuid';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
@@ -6,6 +7,7 @@ import {
   VotingRoundStatus,
 } from '../../__generated__/resolvers-types';
 import ServiceInstance from '../../model/kanel/public/ServiceInstance';
+import UseCase, { UseCaseId } from '../../model/kanel/public/UseCase';
 import { UserId } from '../../model/kanel/public/User';
 import VotableFeature, {
   VotableFeatureId,
@@ -371,11 +373,154 @@ describe('featureVotingDomain', () => {
 
       const results = await featureVotingDomain.loadRoundResults(round.id);
 
-      expect(results.map(({ id, vote_count }) => [id, vote_count])).toEqual([
-        [winner.id, 2],
-        [runnerUp.id, 1],
-        [unvoted.id, 0],
+        expect(results.map(({ id, vote_count }) => [id, vote_count])).toEqual([
+          [winner.id, 2],
+          [runnerUp.id, 1],
+          [unvoted.id, 0],
+        ]);
+      });
+    });
+
+    describe('use cases', () => {
+    let useCaseA: UseCase;
+    let useCaseB: UseCase;
+
+    beforeAll(async () => {
+      useCaseA = await TestHelper.useCase.create({
+        id: uuidv4() as UseCaseId,
+        name: `test-use-case-a-${uuidv4()}`,
+        color: '#001122',
+        product: [FiligranProduct.Opencti],
+      });
+      useCaseB = await TestHelper.useCase.create({
+        id: uuidv4() as UseCaseId,
+        name: `test-use-case-b-${uuidv4()}`,
+        color: '#334455',
+        product: [FiligranProduct.Opencti],
+      });
+    });
+
+    afterAll(async () => {
+      await TestHelper.useCase.delete({ id: useCaseA.id });
+      await TestHelper.useCase.delete({ id: useCaseB.id });
+    });
+
+    it('should attach the selected use cases to the feature', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, [
+        useCaseA.id,
+        useCaseB.id,
       ]);
+      const grouped = await featureVotingDomain.loadUseCasesByFeature([
+        feature.id,
+      ]);
+
+      expect(grouped.get(feature.id)?.map(({ id }) => id)).toEqual(
+        expect.arrayContaining([useCaseA.id, useCaseB.id])
+      );
+    });
+
+    it('should replace the previous selection rather than add to it', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, [
+        useCaseA.id,
+      ]);
+
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, [
+        useCaseB.id,
+      ]);
+      const grouped = await featureVotingDomain.loadUseCasesByFeature([
+        feature.id,
+      ]);
+
+      expect(grouped.get(feature.id)?.map(({ id }) => id)).toEqual([
+        useCaseB.id,
+      ]);
+    });
+
+    it('should clear the selection when given an empty list', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, [
+        useCaseA.id,
+      ]);
+
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, []);
+      const grouped = await featureVotingDomain.loadUseCasesByFeature([
+        feature.id,
+      ]);
+
+      expect(grouped.get(feature.id)).toBeUndefined();
+    });
+
+    // Submitting the same use case twice must not violate the primary key.
+    it('should ignore a use case selected twice', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, [
+        useCaseA.id,
+        useCaseA.id,
+      ]);
+      const grouped = await featureVotingDomain.loadUseCasesByFeature([
+        feature.id,
+      ]);
+
+      expect(grouped.get(feature.id)?.map(({ id }) => id)).toEqual([
+        useCaseA.id,
+      ]);
+    });
+
+    it('should group the use cases per feature in a single load', async () => {
+      const round = await createRound();
+      const withA = await createFeature(round.id);
+      const withB = await createFeature(round.id);
+      const withNone = await createFeature(round.id);
+      await featureVotingDomain.replaceFeatureUseCases(withA.id, [useCaseA.id]);
+      await featureVotingDomain.replaceFeatureUseCases(withB.id, [useCaseB.id]);
+
+      const grouped = await featureVotingDomain.loadUseCasesByFeature([
+        withA.id,
+        withB.id,
+        withNone.id,
+      ]);
+
+      expect(grouped.get(withA.id)?.map(({ id }) => id)).toEqual([useCaseA.id]);
+      expect(grouped.get(withB.id)?.map(({ id }) => id)).toEqual([useCaseB.id]);
+      expect(grouped.get(withNone.id)).toBeUndefined();
+    });
+
+    // The join rows must not outlive the feature they describe.
+    it('should drop the join rows when the feature is deleted', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, [
+        useCaseA.id,
+      ]);
+
+      await featureVotingDomain.deleteVotableFeature(feature.id);
+      const grouped = await featureVotingDomain.loadUseCasesByFeature([
+        feature.id,
+      ]);
+
+      expect(grouped.get(feature.id)).toBeUndefined();
+    });
+
+    it('should expose the use cases alongside the features of a round', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, [
+        useCaseA.id,
+      ]);
+
+      const [loaded] = await featureVotingDomain.loadVotableFeatures({
+        roundId: round.id,
+      });
+
+      expect(loaded!.use_cases?.map(({ id }) => id)).toEqual([useCaseA.id]);
     });
   });
 });

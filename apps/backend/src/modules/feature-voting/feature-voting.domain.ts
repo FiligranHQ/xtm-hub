@@ -7,12 +7,14 @@ import FeatureVote, {
   FeatureVoteInitializer,
 } from '../../model/kanel/public/FeatureVote';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import UseCase, { UseCaseId } from '../../model/kanel/public/UseCase';
 import { UserId } from '../../model/kanel/public/User';
 import VotableFeature, {
   VotableFeatureId,
   VotableFeatureInitializer,
   VotableFeatureMutator,
 } from '../../model/kanel/public/VotableFeature';
+import VotableFeatureUseCase from '../../model/kanel/public/VotableFeatureUseCase';
 import VotingRound, {
   VotingRoundId,
   VotingRoundInitializer,
@@ -22,6 +24,7 @@ import { UnknownErrorCode } from '../../utils/error/error.code';
 
 export type VotableFeatureWithVote = VotableFeature & {
   has_my_vote: boolean;
+  use_cases?: UseCase[];
 };
 
 export type VotableFeatureWithCount = VotableFeature & {
@@ -119,7 +122,7 @@ export const featureVotingDomain = {
     userId?: UserId;
     onlyActive?: boolean;
   }): Promise<VotableFeatureWithVote[]> => {
-    return db<VotableFeature>('VotableFeature')
+    const features = await db<VotableFeature>('VotableFeature')
       .where('VotableFeature.voting_round_id', opts.roundId)
       .modify((queryBuilder) => {
         if (opts.onlyActive) {
@@ -139,6 +142,16 @@ export const featureVotingDomain = {
             )
           : dbRaw('false as has_my_vote')
       );
+
+    // Attached here rather than left to the field resolver, which would run one
+    // query per feature on a page that lists them all.
+    const useCases = await featureVotingDomain.loadUseCasesByFeature(
+      features.map(({ id }) => id)
+    );
+    return features.map((feature) => ({
+      ...feature,
+      use_cases: useCases.get(feature.id) ?? [],
+    }));
   },
 
   loadVotableFeatureBy: (
@@ -185,6 +198,60 @@ export const featureVotingDomain = {
       .where({ id })
       .delete('*');
     return deleted;
+  },
+
+  /**
+   * The whole set of use cases of a feature, replaced in one go: the admin form
+   * always submits the complete selection, so diffing would only add failure
+   * modes for no gain.
+   */
+  replaceFeatureUseCases: async (
+    featureId: VotableFeatureId,
+    useCaseIds: UseCaseId[]
+  ): Promise<void> => {
+    await db<VotableFeatureUseCase>('VotableFeature_UseCase')
+      .where({ votable_feature_id: featureId })
+      .delete();
+    const deduped = Array.from(new Set(useCaseIds));
+    if (deduped.length === 0) {
+      return;
+    }
+    await db<VotableFeatureUseCase>('VotableFeature_UseCase').insert(
+      deduped.map((useCaseId) => ({
+        votable_feature_id: featureId,
+        use_case_id: useCaseId,
+      }))
+    );
+  },
+
+  /**
+   * Grouped by feature in a single round trip: the public page renders every
+   * feature of a round at once, so resolving this per feature would put the
+   * page one query away from the number of features it displays.
+   */
+  loadUseCasesByFeature: async (
+    featureIds: VotableFeatureId[]
+  ): Promise<Map<VotableFeatureId, UseCase[]>> => {
+    const grouped = new Map<VotableFeatureId, UseCase[]>();
+    if (featureIds.length === 0) {
+      return grouped;
+    }
+
+    const rows = await db<VotableFeatureUseCase>('VotableFeature_UseCase')
+      .join('UseCase', 'UseCase.id', 'VotableFeature_UseCase.use_case_id')
+      .whereIn('VotableFeature_UseCase.votable_feature_id', featureIds)
+      .orderBy('UseCase.name', 'asc')
+      .select<(UseCase & { votable_feature_id: VotableFeatureId })[]>(
+        'UseCase.*',
+        'VotableFeature_UseCase.votable_feature_id'
+      );
+
+    for (const { votable_feature_id, ...useCase } of rows) {
+      const current = grouped.get(votable_feature_id) ?? [];
+      current.push(useCase as UseCase);
+      grouped.set(votable_feature_id, current);
+    }
+    return grouped;
   },
 
   upsertFeatureVote: async (input: FeatureVoteInitializer): Promise<void> => {

@@ -205,7 +205,10 @@ describe('votable feature admin GraphQL mutations', () => {
     );
 
     // Then
-    expect(featureVotingApp.createVotableFeature).toHaveBeenCalledWith(input);
+    expect(featureVotingApp.createVotableFeature).toHaveBeenCalledWith(
+      input,
+      []
+    );
     expect(result).toEqual(expected);
   });
 
@@ -232,7 +235,8 @@ describe('votable feature admin GraphQL mutations', () => {
     // Then
     expect(featureVotingApp.updateVotableFeature).toHaveBeenCalledWith(
       featureId,
-      input
+      input,
+      []
     );
     expect(result).toMatchObject({ title: 'Renamed feature' });
   });

@@ -10,7 +10,6 @@ import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
 import { VotingRoundId } from '../../model/kanel/public/VotingRound';
 import {
-  BadRequestErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
@@ -615,39 +614,42 @@ describe('featureVotingApp.updateVotableFeature', () => {
     vi.spyOn(featureVotingDomain, 'countVotesForFeature').mockResolvedValue(0);
   });
 
-  // An explicit null is how the admin clears the illustration: it must reach
-  // the database instead of being stripped away as an absent field.
-  it('should clear the image when it is explicitly set to null', async () => {
+  // An explicit empty list is how the admin clears the selection: it must reach
+  // the database instead of being read as an absent field.
+  it('should clear the use cases when an empty list is sent', async () => {
     // Given
-    const feature = buildVotableFeature({ image_url: '/images/old.png' });
+    const feature = buildVotableFeature();
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
-    const updateSpy = vi
-      .spyOn(featureVotingDomain, 'updateVotableFeature')
-      .mockResolvedValue({ ...feature, image_url: null });
+    vi.spyOn(featureVotingDomain, 'updateVotableFeature').mockResolvedValue(
+      feature
+    );
+    const replaceSpy = vi
+      .spyOn(featureVotingDomain, 'replaceFeatureUseCases')
+      .mockResolvedValue();
 
     // When
     await featureVotingApp.updateVotableFeature(feature.id, {
-      image_url: null,
+      use_case_ids: [],
     });
 
     // Then
-    expect(updateSpy).toHaveBeenCalledWith(
-      feature.id,
-      expect.objectContaining({ image_url: null })
-    );
+    expect(replaceSpy).toHaveBeenCalledWith(feature.id, []);
   });
 
-  it('should leave the image untouched when the field is absent', async () => {
+  it('should leave the use cases untouched when the field is absent', async () => {
     // Given
-    const feature = buildVotableFeature({ image_url: '/images/old.png' });
+    const feature = buildVotableFeature();
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
-    const updateSpy = vi
-      .spyOn(featureVotingDomain, 'updateVotableFeature')
-      .mockResolvedValue(feature);
+    vi.spyOn(featureVotingDomain, 'updateVotableFeature').mockResolvedValue(
+      feature
+    );
+    const replaceSpy = vi
+      .spyOn(featureVotingDomain, 'replaceFeatureUseCases')
+      .mockResolvedValue();
 
     // When
     await featureVotingApp.updateVotableFeature(feature.id, {
@@ -655,10 +657,7 @@ describe('featureVotingApp.updateVotableFeature', () => {
     });
 
     // Then
-    expect(updateSpy).toHaveBeenCalledWith(
-      feature.id,
-      expect.not.objectContaining({ image_url: expect.anything() })
-    );
+    expect(replaceSpy).not.toHaveBeenCalled();
   });
 
   // The results of a closed round are published: editing a feature afterwards
@@ -725,21 +724,27 @@ describe('featureVotingApp.updateVotableFeature', () => {
     );
   });
 
-  it('should refuse an image the public page could not render', async () => {
+  it('should replace the use cases with the submitted selection', async () => {
     // Given
     const feature = buildVotableFeature();
+    const useCaseIds = [uuidv4(), uuidv4()] as UseCaseId[];
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
-    const updateSpy = vi.spyOn(featureVotingDomain, 'updateVotableFeature');
+    vi.spyOn(featureVotingDomain, 'updateVotableFeature').mockResolvedValue(
+      feature
+    );
+    const replaceSpy = vi
+      .spyOn(featureVotingDomain, 'replaceFeatureUseCases')
+      .mockResolvedValue();
 
-    // When / Then
-    await expect(
-      featureVotingApp.updateVotableFeature(feature.id, {
-        image_url: 'https://evil.example.com/pwn.png',
-      })
-    ).rejects.toThrow(BadRequestErrorCode.InvalidImageUrl);
-    expect(updateSpy).not.toHaveBeenCalled();
+    // When
+    await featureVotingApp.updateVotableFeature(feature.id, {
+      use_case_ids: useCaseIds,
+    });
+
+    // Then
+    expect(replaceSpy).toHaveBeenCalledWith(feature.id, useCaseIds);
   });
 });
 

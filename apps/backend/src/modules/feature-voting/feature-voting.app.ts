@@ -11,23 +11,29 @@ import {
   withTransaction,
 } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
+import { DocumentId } from '../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import UseCase, { UseCaseId } from '../../model/kanel/public/UseCase';
 import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
 import VotingRound, {
   VotingRoundId,
 } from '../../model/kanel/public/VotingRound';
 import {
-  BadRequestErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
+  UnknownErrorCode,
 } from '../../utils/error/error.code';
 import { applyUpdate, stripNulls } from '../../utils/typescript';
+import {
+  DocumentUploadsHelper,
+  Upload,
+} from '../document/document.uploads.helper';
+import { DocumentDomain } from '../document/domain/document.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import {
   featureVotingDomain,
   VotableFeatureWithVote,
 } from './feature-voting.domain';
-import { isAllowedImageUrl } from './feature-voting.utils';
 
 export type VotingRoundWithFeatures = VotingRound & {
   features: VotableFeatureWithVote[];
@@ -53,6 +59,14 @@ export type VotingRoundModel = VotingRound & {
   feature_count?: number;
 };
 
+/**
+ * Same idea for a feature: `use_cases` is filled in when the feature comes from
+ * a round, and left out when it comes back alone from a mutation.
+ */
+export type VotableFeatureModel = VotableFeatureWithVote & {
+  __typename?: 'VotableFeature';
+};
+
 export interface VotingRoundResults {
   round: VotingRoundWithFeatures;
   total_voters: number;
@@ -67,10 +81,41 @@ const requireRound = async (id: VotingRoundId): Promise<VotingRound> => {
   return round;
 };
 
-const requireValidImageUrl = (imageUrl?: string | null): void => {
-  if (imageUrl && !isAllowedImageUrl(imageUrl)) {
-    throw new Error(BadRequestErrorCode.InvalidImageUrl);
+/**
+ * Stores the illustration alongside every other image of the hub, on the very
+ * service instance the round belongs to, so removing a roadmap takes its
+ * feature illustrations with it.
+ */
+const storeIllustration = async (
+  uploads: Upload[],
+  serviceInstanceId: ServiceInstanceId
+): Promise<DocumentId | undefined> => {
+  if (uploads.length === 0) {
+    return undefined;
   }
+
+  const [file] = await DocumentUploadsHelper.processUploads(
+    uploads,
+    serviceInstanceId
+  );
+  if (!file) {
+    throw new Error(UnknownErrorCode.UnknownError);
+  }
+
+  const document = await DocumentDomain.createDocument(
+    {
+      service_instance_id: serviceInstanceId,
+      description: 'Votable feature illustration',
+      file_name: file.fileName,
+      minio_name: file.minioName,
+      active: true,
+      mime_type: file.mimeType,
+      type: 'image',
+      source_type: 'internal',
+    },
+    []
+  );
+  return document?.id;
 };
 
 /**
@@ -176,6 +221,11 @@ export const featureVotingApp = {
       userId: requestContext.get()?.user?.id,
     }),
 
+  loadFeatureUseCases: async (id: VotableFeatureId): Promise<UseCase[]> => {
+    const useCases = await featureVotingDomain.loadUseCasesByFeature([id]);
+    return useCases.get(id) ?? [];
+  },
+
   loadVotingRound: async (
     id: VotingRoundId
   ): Promise<VotingRoundWithFeatures | null> => {
@@ -220,19 +270,28 @@ export const featureVotingApp = {
         const sourceFeatures = await featureVotingDomain.loadVotableFeatures({
           roundId: sourceRound.id,
         });
-        await featureVotingDomain.insertVotableFeatures(
+        const copies = await featureVotingDomain.insertVotableFeatures(
           sourceFeatures.map((feature) => ({
             voting_round_id: createdRound.id,
             title: feature.title,
             short_description: feature.short_description,
             description: feature.description,
             product: feature.product,
-            labels: feature.labels,
-            image_url: feature.image_url,
+            illustration_document_id: feature.illustration_document_id,
             position: feature.position,
             active: feature.active,
             created_at: new Date(),
           }))
+        );
+        // The copies are returned in insertion order, so they line up with the
+        // features they were built from and inherit their use cases.
+        await Promise.all(
+          copies.map((copy, index) =>
+            featureVotingDomain.replaceFeatureUseCases(
+              copy.id,
+              (sourceFeatures[index]?.use_cases ?? []).map(({ id }) => id)
+            )
+          )
         );
       }
 
@@ -343,25 +402,53 @@ export const featureVotingApp = {
     }),
 
   createVotableFeature: async (
-    input: CreateVotableFeatureInput
+    input: CreateVotableFeatureInput,
+    uploads: Upload[] = []
   ): Promise<VotableFeatureWithVote> => {
     const round = await requireRound(input.voting_round_id);
     if (round.status === VotingRoundStatus.Closed) {
       throw new Error(ForbiddenErrorCode.VotingRoundClosed);
     }
-    requireValidImageUrl(input.image_url);
 
-    const created = await featureVotingDomain.insertVotableFeature({
-      ...stripNulls(input),
-      created_at: new Date(),
+    // Uploading writes to object storage, which no database transaction can
+    // roll back, so it happens before the transaction rather than inside it.
+    const illustrationDocumentId = await storeIllustration(
+      uploads,
+      round.service_instance_id
+    );
+
+    const { use_case_ids, ...featureInput } = input;
+    const created = await withTransaction(async () => {
+      const feature = await featureVotingDomain.insertVotableFeature({
+        ...stripNulls(featureInput),
+        illustration_document_id: illustrationDocumentId,
+        created_at: new Date(),
+      });
+      await featureVotingDomain.replaceFeatureUseCases(
+        feature.id,
+        (use_case_ids ?? []) as UseCaseId[]
+      );
+      return feature;
     });
     return { ...created, has_my_vote: false };
   },
 
   updateVotableFeature: async (
     id: VotableFeatureId,
-    input: UpdateVotableFeatureInput
+    input: UpdateVotableFeatureInput,
+    uploads: Upload[] = []
   ): Promise<VotableFeatureWithVote> => {
+    const existing = await featureVotingDomain.loadVotableFeatureBy({ id });
+    if (!existing) {
+      throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
+    }
+    const existingRound = await requireRound(existing.voting_round_id);
+    const illustrationDocumentId = await storeIllustration(
+      uploads,
+      existingRound.service_instance_id
+    );
+
+    const { use_case_ids, ...featureInput } = input;
     const updated = await withTransaction(async () => {
       const feature = await featureVotingDomain.loadVotableFeatureBy({ id });
       if (!feature) {
@@ -373,7 +460,6 @@ export const featureVotingApp = {
       if (round.status === VotingRoundStatus.Closed) {
         throw new Error(ForbiddenErrorCode.VotingRoundClosed);
       }
-      requireValidImageUrl(input.image_url);
 
       // One vote is allowed per user, per round and per product. Moving a
       // feature to another product after it collected votes would let the same
@@ -390,12 +476,23 @@ export const featureVotingApp = {
       const updatedFeature = await featureVotingDomain.updateVotableFeature(
         id,
         {
-          ...applyUpdate(input, ['image_url']),
+          ...applyUpdate(featureInput, []),
+          ...(illustrationDocumentId
+            ? { illustration_document_id: illustrationDocumentId }
+            : {}),
           updated_at: new Date(),
         }
       );
       if (!updatedFeature) {
         throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
+      }
+      // Omitting the field leaves the selection alone; sending an empty list
+      // clears it, like every other clearable field of this input.
+      if (use_case_ids) {
+        await featureVotingDomain.replaceFeatureUseCases(
+          id,
+          use_case_ids as UseCaseId[]
+        );
       }
       return updatedFeature;
     });

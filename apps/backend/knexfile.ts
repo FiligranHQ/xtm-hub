@@ -98,6 +98,7 @@ type BaseDatabaseType =
   | 'OneClickDeployment'
   | 'VotingRound'
   | 'VotableFeature'
+  | 'VotableFeature_UseCase'
   | 'FeatureVote';
 
 export type DatabaseType =

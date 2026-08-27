@@ -35,8 +35,9 @@ type VotableFeature implements Node {
   short_description: String!
   description: String!
   product: FiligranProduct!
-  labels: [String!]!
-  image_url: String
+  use_cases: [UseCase!]!
+  illustration_document_id: DocumentId
+  illustration_document: Document
   position: Int!
   active: Boolean!
   created_at: Date!
@@ -75,8 +76,7 @@ input CreateVotableFeatureInput {
   short_description: String!
   description: String!
   product: FiligranProduct!
-  labels: [String!]
-  image_url: String
+  use_case_ids: [UseCaseId!]
   position: Int
   active: Boolean
 }
@@ -86,8 +86,7 @@ input UpdateVotableFeatureInput {
   short_description: String
   description: String
   product: FiligranProduct
-  labels: [String!]
-  image_url: String
+  use_case_ids: [UseCaseId!]
   position: Int
   active: Boolean
 }
@@ -121,11 +120,14 @@ type Mutation {
   deleteVotingRound(id: VotingRoundId!): VotingRound!
     @auth(portalCapa: [BYPASS])
 
-  createVotableFeature(input: CreateVotableFeatureInput!): VotableFeature!
-    @auth(portalCapa: [BYPASS])
+  createVotableFeature(
+    input: CreateVotableFeatureInput!
+    document: [Upload!]
+  ): VotableFeature! @auth(portalCapa: [BYPASS])
   updateVotableFeature(
     id: VotableFeatureId!
     input: UpdateVotableFeatureInput!
+    document: [Upload!]
   ): VotableFeature! @auth(portalCapa: [BYPASS])
   deleteVotableFeature(id: VotableFeatureId!): VotableFeature!
     @auth(portalCapa: [BYPASS])

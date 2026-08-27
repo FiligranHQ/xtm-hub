@@ -1,9 +1,11 @@
 import { Resolvers } from '../../__generated__/resolvers-types';
+import { DocumentId } from '../../model/kanel/public/Document';
 import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
 import { VotingRoundId } from '../../model/kanel/public/VotingRound';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { createRelayIdScalar } from '../../utils/scalar.util';
+import { DocumentDomain } from '../document/domain/document.domain';
 import { featureVotingApp } from './feature-voting.app';
 
 const resolvers: Resolvers = {
@@ -19,6 +21,22 @@ const resolvers: Resolvers = {
       round.features ?? featureVotingApp.loadRoundFeatures(round.id),
     feature_count: (round) =>
       round.feature_count ?? round.features?.length ?? 0,
+  },
+
+  // Features arrive from a round with their use cases already batched in. The
+  // fallback only covers the features returned on their own, by a mutation.
+  VotableFeature: {
+    use_cases: (feature) =>
+      feature.use_cases ?? featureVotingApp.loadFeatureUseCases(feature.id),
+    illustration_document: async (feature) => {
+      if (!feature.illustration_document_id) {
+        return null;
+      }
+      const document = await DocumentDomain.loadDocumentBy({
+        id: feature.illustration_document_id as DocumentId,
+      });
+      return document ?? null;
+    },
   },
 
   Query: {
@@ -79,9 +97,12 @@ const resolvers: Resolvers = {
         );
       }
     },
-    createVotableFeature: async (_, { input }) => {
+    createVotableFeature: async (_, { input, document }) => {
       try {
-        return await featureVotingApp.createVotableFeature(input);
+        return await featureVotingApp.createVotableFeature(
+          input,
+          document ?? []
+        );
       } catch (error) {
         throw mapToGraphQLError(
           error,
@@ -89,9 +110,13 @@ const resolvers: Resolvers = {
         );
       }
     },
-    updateVotableFeature: async (_, { id, input }) => {
+    updateVotableFeature: async (_, { id, input, document }) => {
       try {
-        return await featureVotingApp.updateVotableFeature(id, input);
+        return await featureVotingApp.updateVotableFeature(
+          id,
+          input,
+          document ?? []
+        );
       } catch (error) {
         throw mapToGraphQLError(
           error,

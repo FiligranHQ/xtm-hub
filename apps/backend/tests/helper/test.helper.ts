@@ -358,7 +358,6 @@ export const TestHelper = {
           short_description: 'Short',
           description: 'Long',
           product: FiligranProduct.Opencti,
-          labels: [],
           position: 0,
           active: true,
           created_at: new Date(),
