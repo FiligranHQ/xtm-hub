@@ -34,6 +34,270 @@ export async function seed(knex) {
     .select('ServiceInstance.id')
     .first();
 
+  const customViewService = await knex('ServiceInstance')
+    .join(
+      'ServiceDefinition',
+      'ServiceInstance.service_definition_id',
+      'ServiceDefinition.id'
+    )
+    .where('ServiceDefinition.identifier', 'opencti_custom_views')
+    .select('ServiceInstance.id')
+    .first();
+
+  const playbookService = await knex('ServiceInstance')
+    .join(
+      'ServiceDefinition',
+      'ServiceInstance.service_definition_id',
+      'ServiceDefinition.id'
+    )
+    .where('ServiceDefinition.identifier', 'opencti_playbooks')
+    .select('ServiceInstance.id')
+    .first();
+
+  const cyberThreatThemes = [
+    'threat hunting',
+    'incident response',
+    'attack surface management',
+    'vulnerability prioritization',
+    'identity protection',
+    'cloud security posture',
+    'ransomware preparedness',
+    'supply chain defense',
+    'endpoint detection',
+    'SOC operations',
+  ];
+
+  const cyberDashboardBatch = Array.from({ length: 300 }, (_, index) => {
+    const itemNumber = index + 1;
+    const dashboardNumber = itemNumber + 30;
+    const paddedNumber = dashboardNumber.toString().padStart(3, '0');
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const theme = cyberThreatThemes[index % cyberThreatThemes.length];
+    const isActive = itemNumber > 7;
+    const dateOffset = String((itemNumber % 27) + 1).padStart(2, '0');
+    const minuteOffset = String(itemNumber % 60).padStart(2, '0');
+
+    return {
+      id: `20000000-0000-4000-8000-${idSuffix}`,
+      uploader_id: BYPASS_USER_ID,
+      service_instance_id: customDashboardService?.id || null,
+      description: `Cybersecurity dashboard ${paddedNumber} focused on ${theme}. It helps security teams prioritize alerts, monitor trends, and improve defensive posture through actionable intelligence.`,
+      file_name: `cybersecurity-dashboard-${paddedNumber}.json`,
+      minio_name: `Cybersecurity Dashboard ${paddedNumber}.json`,
+      active: isActive,
+      created_at: `2025-08-${dateOffset} 10:${minuteOffset}:00.000+00`,
+      remover_id: null,
+      mime_type: 'application/json',
+      name: `Cybersecurity Dashboard ${paddedNumber}`,
+      updated_at: `2025-08-${dateOffset} 10:${minuteOffset}:00.000+00`,
+      updater_id: BYPASS_USER_ID,
+      short_description: `Dashboard ${paddedNumber} for ${theme} monitoring and decision support.`,
+      slug: `cybersecurity-dashboard-${paddedNumber}`,
+      uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      type: 'opencti_custom_dashboard',
+      source_type: 'internal',
+    };
+  });
+
+  const customViewBatch = Array.from({ length: 250 }, (_, index) => {
+    const itemNumber = index + 1;
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const dateOffset = String((itemNumber % 27) + 1).padStart(2, '0');
+    const minuteOffset = String(itemNumber % 60).padStart(2, '0');
+
+    return {
+      id: `30000000-0000-4000-8000-${idSuffix}`,
+      uploader_id: BYPASS_USER_ID,
+      service_instance_id: customViewService?.id || null,
+      description: `Custom View ${paddedNumber} long description`,
+      active: true,
+      created_at: `2025-06-${dateOffset} 09:${minuteOffset}:34.912159+00`,
+      remover_id: null,
+      name: `Custom View ${paddedNumber}`,
+      file_name: `custom-view-${paddedNumber}.json`,
+      minio_name: `custom-view-${paddedNumber}.json`,
+      updated_at: `2025-07-${dateOffset} 07:${minuteOffset}:32.088+00`,
+      updater_id: BYPASS_USER_ID,
+      short_description: `This is custom view ${paddedNumber} short description`,
+      slug: `custom-view-${paddedNumber}`,
+      uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      type: 'opencti_custom_view',
+      source_type: 'internal',
+    };
+  });
+
+  const playbookBatch = Array.from({ length: 300 }, (_, index) => {
+    const itemNumber = index + 1;
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const dateOffset = String((itemNumber % 27) + 1).padStart(2, '0');
+    const minuteOffset = String(itemNumber % 60).padStart(2, '0');
+
+    return {
+      id: `40000000-0000-4000-8000-${idSuffix}`,
+      uploader_id: BYPASS_USER_ID,
+      service_instance_id: playbookService?.id || null,
+      description: `Playbook ${paddedNumber} long description`,
+      active: true,
+      created_at: `2025-08-${dateOffset} 11:${minuteOffset}:34.912159+00`,
+      remover_id: null,
+      mime_type: 'application/json',
+      name: `Playbook ${paddedNumber}`,
+      file_name: `playbook-${paddedNumber}.json`,
+      minio_name: `playbook-${paddedNumber}.json`,
+      updated_at: `2025-08-${dateOffset} 11:${minuteOffset}:32.088+00`,
+      updater_id: BYPASS_USER_ID,
+      short_description: `This is playbook ${paddedNumber} short description`,
+      slug: `playbook-${paddedNumber}`,
+      uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      type: 'opencti_playbook',
+      source_type: 'internal',
+    };
+  });
+
+  const scenarioBatch = Array.from({ length: 300 }, (_, index) => {
+    const itemNumber = index + 1;
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const dateOffset = String((itemNumber % 27) + 1).padStart(2, '0');
+    const minuteOffset = String(itemNumber % 60).padStart(2, '0');
+
+    return {
+      id: `50000000-0000-4000-8000-${idSuffix}`,
+      uploader_id: BYPASS_USER_ID,
+      service_instance_id: openaevScenariosService?.id || null,
+      name: `Scenario ${paddedNumber}`,
+      short_description: `Scenario ${paddedNumber} short description`,
+      description: `Scenario ${paddedNumber} long description`,
+      file_name: `scenario-${paddedNumber}.zip`,
+      minio_name: `scenario-${paddedNumber}.zip`,
+      slug: `scenario-${paddedNumber}`,
+      type: 'openaev_scenario',
+      source_type: 'internal',
+      mime_type: 'application/x-zip-compressed',
+      active: true,
+      created_at: `2025-10-${dateOffset} 12:${minuteOffset}:00.000+00`,
+      updated_at: `2025-10-${dateOffset} 12:${minuteOffset}:00.000+00`,
+      updater_id: BYPASS_USER_ID,
+      uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      remover_id: null,
+    };
+  });
+
+  const taxiiFeedBatch = Array.from({ length: 15 }, (_, index) => {
+    const itemNumber = index + 1;
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const dateOffset = String((itemNumber % 27) + 1).padStart(2, '0');
+    const minuteOffset = String(itemNumber % 60).padStart(2, '0');
+
+    return {
+      id: `60000000-0000-4000-8000-${idSuffix}`,
+      uploader_id: BYPASS_USER_ID,
+      service_instance_id: integrationFeedsService?.id || null,
+      description: `Taxii Feed ${paddedNumber} long description`,
+      file_name: `taxii-feed-${paddedNumber}.json`,
+      minio_name: `taxii-feed-${paddedNumber}.json`,
+      active: true,
+      created_at: `2025-07-${dateOffset} 08:${minuteOffset}:34.912159+00`,
+      remover_id: null,
+      mime_type: 'application/json',
+      name: `Taxii Feed ${paddedNumber}`,
+      updated_at: `2025-07-${dateOffset} 08:${minuteOffset}:32.088+00`,
+      updater_id: BYPASS_USER_ID,
+      short_description: `A TAXII feed ${paddedNumber} for OpenCTI`,
+      slug: `taxii-feed-${paddedNumber}`,
+      uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      type: 'opencti_integration',
+      source_type: 'internal',
+    };
+  });
+
+  const thirdPartyBatch = Array.from({ length: 15 }, (_, index) => {
+    const itemNumber = index + 1;
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const dateOffset = String((itemNumber % 27) + 1).padStart(2, '0');
+    const minuteOffset = String(itemNumber % 60).padStart(2, '0');
+
+    return {
+      id: `70000000-0000-4000-8000-${idSuffix}`,
+      uploader_id: BYPASS_USER_ID,
+      service_instance_id: integrationFeedsService?.id || null,
+      description: `Third party integration ${paddedNumber} long description`,
+      active: true,
+      created_at: `2025-07-${dateOffset} 09:${minuteOffset}:34.912159+00`,
+      remover_id: null,
+      name: `Third Party Integration ${paddedNumber}`,
+      updated_at: `2025-07-${dateOffset} 09:${minuteOffset}:32.088+00`,
+      updater_id: BYPASS_USER_ID,
+      short_description: `Third party integration ${paddedNumber} for OpenCTI`,
+      slug: `third-party-integration-${paddedNumber}`,
+      uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      type: 'opencti_integration',
+      source_type: 'internal',
+    };
+  });
+
+  const openctiStreamBatch = Array.from({ length: 15 }, (_, index) => {
+    const itemNumber = index + 1;
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const dateOffset = String((itemNumber % 27) + 1).padStart(2, '0');
+    const minuteOffset = String(itemNumber % 60).padStart(2, '0');
+
+    return {
+      id: `80000000-0000-4000-8000-${idSuffix}`,
+      uploader_id: BYPASS_USER_ID,
+      service_instance_id: integrationFeedsService?.id || null,
+      description: `OpenCTI Stream ${paddedNumber} long description`,
+      file_name: `opencti-stream-${paddedNumber}.json`,
+      minio_name: `opencti-stream-${paddedNumber}.json`,
+      active: true,
+      created_at: `2025-07-${dateOffset} 10:${minuteOffset}:34.912159+00`,
+      remover_id: null,
+      mime_type: 'application/json',
+      name: `OpenCTI Stream ${paddedNumber}`,
+      updated_at: `2025-07-${dateOffset} 10:${minuteOffset}:32.088+00`,
+      updater_id: BYPASS_USER_ID,
+      short_description: `A Stream ${paddedNumber} for OpenCTI`,
+      slug: `opencti-stream-${paddedNumber}`,
+      uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      type: 'opencti_integration',
+      source_type: 'internal',
+    };
+  });
+
+  const rssFeedBatch = Array.from({ length: 15 }, (_, index) => {
+    const itemNumber = index + 1;
+    const paddedNumber = itemNumber.toString().padStart(3, '0');
+    const idSuffix = itemNumber.toString(16).padStart(12, '0');
+    const dateOffset = String((itemNumber % 27) + 1).padStart(2, '0');
+    const minuteOffset = String(itemNumber % 60).padStart(2, '0');
+
+    return {
+      id: `90000000-0000-4000-8000-${idSuffix}`,
+      uploader_id: BYPASS_USER_ID,
+      service_instance_id: integrationFeedsService?.id || null,
+      description: `This is RSS Feed ${paddedNumber}`,
+      file_name: `rss-feed-${paddedNumber}.json`,
+      minio_name: `rss-feed-${paddedNumber}.json`,
+      active: true,
+      created_at: `2025-07-${dateOffset} 11:${minuteOffset}:35.912159+00`,
+      remover_id: null,
+      mime_type: 'application/json',
+      name: `RSS Feed ${paddedNumber}`,
+      updated_at: `2025-07-${dateOffset} 11:${minuteOffset}:12.088+00`,
+      updater_id: BYPASS_USER_ID,
+      short_description: `A RSS Feed ${paddedNumber} from OpenCTI`,
+      slug: `rss-feed-${paddedNumber}`,
+      uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+      type: 'opencti_integration',
+      source_type: 'internal',
+    };
+  });
+
   await knex('Document')
     .insert([
       {
@@ -288,6 +552,33 @@ export async function seed(knex) {
         type: 'opencti_integration',
         source_type: 'internal',
       },
+      {
+        id: 'c7cb4751-7000-4e31-a7de-8e3500987fb5',
+        uploader_id: BYPASS_USER_ID,
+        service_instance_id: customViewService?.id || null,
+        description: 'Custom View long description',
+        active: true,
+        created_at: '2025-06-26 09:50:34.912159+00',
+        remover_id: null,
+        name: 'Custom View',
+        file_name: 'custom-view.json',
+        minio_name: 'custom-view.json',
+        updated_at: '2025-07-24 07:09:32.088+00',
+        updater_id: BYPASS_USER_ID,
+        short_description: 'This is a custom view short description',
+        slug: 'custom-view',
+        uploader_organization_id: 'ba091095-418f-4b4f-b150-6c9295e232c4',
+        type: 'opencti_custom_view',
+        source_type: 'internal',
+      },
+      ...customViewBatch,
+      ...playbookBatch,
+      ...cyberDashboardBatch,
+      ...scenarioBatch,
+      ...taxiiFeedBatch,
+      ...thirdPartyBatch,
+      ...openctiStreamBatch,
+      ...rssFeedBatch,
     ])
     .onConflict('id')
     .ignore();
