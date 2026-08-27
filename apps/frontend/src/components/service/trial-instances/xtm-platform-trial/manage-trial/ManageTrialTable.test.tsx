@@ -1,4 +1,4 @@
-import { ManageTrialTable } from '@/components/service/bundle/manage-trial/ManageTrialTable';
+import { ManageTrialTable } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialTable';
 import testRender from '@/utils/test/test-render';
 import { SelectionState } from '@filigran/ui';
 import {

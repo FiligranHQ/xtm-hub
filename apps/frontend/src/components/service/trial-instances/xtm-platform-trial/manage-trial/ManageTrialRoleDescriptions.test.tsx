@@ -1,4 +1,4 @@
-import { ManageTrialRoleDescriptions } from '@/components/service/bundle/manage-trial/ManageTrialRoleDescriptions';
+import { ManageTrialRoleDescriptions } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialRoleDescriptions';
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifier } from '@graphql/generated';
 import { screen } from '@testing-library/react';

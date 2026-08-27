@@ -1,7 +1,7 @@
 import {
   getBundleRolePanels,
   ROLE_PANELS,
-} from '@/components/service/bundle/manage-trial/manage-trial.const';
+} from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/manage-trial.const';
 import { PlatformIdentifier } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 

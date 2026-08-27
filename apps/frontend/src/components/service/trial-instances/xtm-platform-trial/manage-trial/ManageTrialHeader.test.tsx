@@ -1,4 +1,4 @@
-import { ManageTrialHeader } from '@/components/service/bundle/manage-trial/ManageTrialHeader';
+import { ManageTrialHeader } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialHeader';
 import { mockGraphqlQuery } from '@/utils/test/msw/graphql-api';
 import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';

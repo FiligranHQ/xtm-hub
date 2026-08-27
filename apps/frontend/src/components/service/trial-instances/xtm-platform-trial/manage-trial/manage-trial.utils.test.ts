@@ -2,7 +2,7 @@ import {
   computeMixedRoleDefaults,
   formatEmailList,
   UserPlatformGroups,
-} from '@/components/service/bundle/manage-trial/manage-trial.utils';
+} from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/manage-trial.utils';
 import { PlatformIdentifier, ServiceGroupName } from '@graphql/generated';
 import { describe, expect, it } from 'vitest';
 

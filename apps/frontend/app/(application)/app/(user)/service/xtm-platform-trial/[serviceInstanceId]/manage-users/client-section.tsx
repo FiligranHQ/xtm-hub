@@ -1,9 +1,9 @@
 'use client';
 
 import Loader from '@/components/Loader';
-import { ManageTrialHeader } from '@/components/service/bundle/manage-trial/ManageTrialHeader';
-import { ManageTrialRoleDescriptions } from '@/components/service/bundle/manage-trial/ManageTrialRoleDescriptions';
-import { ManageTrialTable } from '@/components/service/bundle/manage-trial/ManageTrialTable';
+import { ManageTrialHeader } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialHeader';
+import { ManageTrialRoleDescriptions } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialRoleDescriptions';
+import { ManageTrialTable } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialTable';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';

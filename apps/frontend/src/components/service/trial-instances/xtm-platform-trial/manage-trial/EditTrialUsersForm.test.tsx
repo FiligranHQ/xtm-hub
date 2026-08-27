@@ -1,4 +1,4 @@
-import { EditTrialUsersForm } from '@/components/service/bundle/manage-trial/EditTrialUsersForm';
+import { EditTrialUsersForm } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/EditTrialUsersForm';
 import { mockGraphqlQuery } from '@/utils/test/msw/graphql-api';
 import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';
