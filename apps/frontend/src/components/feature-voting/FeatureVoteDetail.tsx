@@ -3,14 +3,14 @@ import { FeatureVoteButton } from '@/components/feature-voting/FeatureVoteButton
 import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 import { Separator } from '@filigran/ui/clients';
 import { Badge } from '@filigran/ui/servers';
-import { featureVoting_fragment$data } from '@generated/featureVoting_fragment.graphql';
+import { VotableFeaturePublicFragment } from '@graphql/generated';
 import Image from 'next/image';
 
 const BADGE_CLASS =
   'border-0 content-body-compact-medium bg-feedback-info-secondary-transparency';
 
 interface FeatureVoteDetailProps {
-  feature: featureVoting_fragment$data;
+  feature: VotableFeaturePublicFragment;
   isAuthenticated: boolean;
 }
 

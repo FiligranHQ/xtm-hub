@@ -3065,6 +3065,29 @@ export type LastDeployedOverviewQueryQueryVariables = Exact<{
 
 export type LastDeployedOverviewQueryQuery = { __typename?: 'Query', lastDeployedOverview: { __typename?: 'LastDeployedOverview', resources: Array<{ __typename?: 'DeployedResource', deployedAt: any, document: { __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomDashboard', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'CustomView', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'DefaultDocument', id: string, name: string | null, short_description: string | null, type: string, active: boolean, slug: string | null, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'IntegrationHack', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenAEVScenario', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'OpenCTIPlaybook', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'RssFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'Stream', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'TaxiiFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null } | { __typename?: 'ThirdPartyIntegration', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null }, deployedBy: { __typename?: 'User', id: string, first_name: string | null, last_name: string | null, email: string, picture: string | null } | null }> } };
 
+export type FeatureVoteMutationVariables = Exact<{
+  feature_id: Scalars['VotableFeatureId']['input'];
+}>;
+
+
+export type FeatureVoteMutation = { __typename?: 'Mutation', voteForFeature: Array<{ __typename?: 'VotableFeature', id: string, has_my_vote: boolean }> };
+
+export type VotableFeaturePublicFragment = { __typename?: 'VotableFeature', id: string, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, has_my_vote: boolean };
+
+export type CurrentVotingRoundQueryVariables = Exact<{
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+}>;
+
+
+export type CurrentVotingRoundQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string } | null, currentVotingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, features: Array<{ __typename?: 'VotableFeature', id: string, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, has_my_vote: boolean }> } | null };
+
+export type CurrentVotingRoundCalloutQueryVariables = Exact<{
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+}>;
+
+
+export type CurrentVotingRoundCalloutQuery = { __typename?: 'Query', currentVotingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, theme: VotingRoundTheme } | null };
+
 export type MeCheckQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3346,6 +3369,19 @@ export const HomepageDocumentFragmentDoc = `
   }
 }
     `;
+export const VotableFeaturePublicFragmentDoc = `
+    fragment VotableFeaturePublic on VotableFeature {
+  id
+  title
+  short_description
+  description
+  product
+  labels
+  image_url
+  position
+  has_my_vote
+}
+    `;
 export const OrganizationSubscribedServiceRowFragmentDoc = `
     fragment OrganizationSubscribedServiceRow on SubscriptionModel {
   id
@@ -3578,6 +3614,153 @@ export const useInfiniteLastDeployedOverviewQueryQuery = <
 useInfiniteLastDeployedOverviewQueryQuery.getKey = (variables: LastDeployedOverviewQueryQueryVariables) => ['LastDeployedOverviewQuery.infinite', variables];
 useInfiniteLastDeployedOverviewQueryQuery.getRootKey = () => ['LastDeployedOverviewQuery.infinite'] as const;
 useLastDeployedOverviewQueryQuery.fetcher = (client: GraphQLClient, variables: LastDeployedOverviewQueryQueryVariables, headers?: RequestInit['headers']) => fetcher<LastDeployedOverviewQueryQuery, LastDeployedOverviewQueryQueryVariables>(client, LastDeployedOverviewQueryDocument, variables, headers);
+
+export const FeatureVoteDocument = `
+    mutation FeatureVote($feature_id: VotableFeatureId!) {
+  voteForFeature(feature_id: $feature_id) {
+    id
+    has_my_vote
+  }
+}
+    `;
+
+export const useFeatureVoteMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<FeatureVoteMutation, TError, FeatureVoteMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<FeatureVoteMutation, TError, FeatureVoteMutationVariables, TContext>(
+      {
+    mutationKey: ['FeatureVote'],
+    mutationFn: (variables?: FeatureVoteMutationVariables) => fetcher<FeatureVoteMutation, FeatureVoteMutationVariables>(client, FeatureVoteDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useFeatureVoteMutation.getKey = () => ['FeatureVote'];
+useFeatureVoteMutation.getRootKey = () => ['FeatureVote'] as const;
+useFeatureVoteMutation.fetcher = (client: GraphQLClient, variables: FeatureVoteMutationVariables, headers?: RequestInit['headers']) => fetcher<FeatureVoteMutation, FeatureVoteMutationVariables>(client, FeatureVoteDocument, variables, headers);
+
+export const CurrentVotingRoundDocument = `
+    query CurrentVotingRound($service_instance_id: ServiceInstanceId!) {
+  me {
+    id
+  }
+  currentVotingRound(service_instance_id: $service_instance_id) {
+    id
+    name
+    description
+    features {
+      ...VotableFeaturePublic
+    }
+  }
+}
+    ${VotableFeaturePublicFragmentDoc}`;
+
+export const useCurrentVotingRoundQuery = <
+      TData = CurrentVotingRoundQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: CurrentVotingRoundQueryVariables,
+      options?: Omit<UseQueryOptions<CurrentVotingRoundQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<CurrentVotingRoundQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<CurrentVotingRoundQuery, TError, TData>(
+      {
+    queryKey: ['CurrentVotingRound', variables],
+    queryFn: fetcher<CurrentVotingRoundQuery, CurrentVotingRoundQueryVariables>(client, CurrentVotingRoundDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useCurrentVotingRoundQuery.getKey = (variables: CurrentVotingRoundQueryVariables) => ['CurrentVotingRound', variables];
+useCurrentVotingRoundQuery.getRootKey = () => ['CurrentVotingRound'] as const;
+export const useInfiniteCurrentVotingRoundQuery = <
+      TData = InfiniteData<CurrentVotingRoundQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: CurrentVotingRoundQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<CurrentVotingRoundQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<CurrentVotingRoundQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<CurrentVotingRoundQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['CurrentVotingRound.infinite', variables],
+      queryFn: (metaData) => fetcher<CurrentVotingRoundQuery, CurrentVotingRoundQueryVariables>(client, CurrentVotingRoundDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteCurrentVotingRoundQuery.getKey = (variables: CurrentVotingRoundQueryVariables) => ['CurrentVotingRound.infinite', variables];
+useInfiniteCurrentVotingRoundQuery.getRootKey = () => ['CurrentVotingRound.infinite'] as const;
+useCurrentVotingRoundQuery.fetcher = (client: GraphQLClient, variables: CurrentVotingRoundQueryVariables, headers?: RequestInit['headers']) => fetcher<CurrentVotingRoundQuery, CurrentVotingRoundQueryVariables>(client, CurrentVotingRoundDocument, variables, headers);
+
+export const CurrentVotingRoundCalloutDocument = `
+    query CurrentVotingRoundCallout($service_instance_id: ServiceInstanceId!) {
+  currentVotingRound(service_instance_id: $service_instance_id) {
+    id
+    name
+    description
+    theme
+  }
+}
+    `;
+
+export const useCurrentVotingRoundCalloutQuery = <
+      TData = CurrentVotingRoundCalloutQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: CurrentVotingRoundCalloutQueryVariables,
+      options?: Omit<UseQueryOptions<CurrentVotingRoundCalloutQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<CurrentVotingRoundCalloutQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<CurrentVotingRoundCalloutQuery, TError, TData>(
+      {
+    queryKey: ['CurrentVotingRoundCallout', variables],
+    queryFn: fetcher<CurrentVotingRoundCalloutQuery, CurrentVotingRoundCalloutQueryVariables>(client, CurrentVotingRoundCalloutDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useCurrentVotingRoundCalloutQuery.getKey = (variables: CurrentVotingRoundCalloutQueryVariables) => ['CurrentVotingRoundCallout', variables];
+useCurrentVotingRoundCalloutQuery.getRootKey = () => ['CurrentVotingRoundCallout'] as const;
+export const useInfiniteCurrentVotingRoundCalloutQuery = <
+      TData = InfiniteData<CurrentVotingRoundCalloutQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: CurrentVotingRoundCalloutQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<CurrentVotingRoundCalloutQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<CurrentVotingRoundCalloutQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<CurrentVotingRoundCalloutQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['CurrentVotingRoundCallout.infinite', variables],
+      queryFn: (metaData) => fetcher<CurrentVotingRoundCalloutQuery, CurrentVotingRoundCalloutQueryVariables>(client, CurrentVotingRoundCalloutDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteCurrentVotingRoundCalloutQuery.getKey = (variables: CurrentVotingRoundCalloutQueryVariables) => ['CurrentVotingRoundCallout.infinite', variables];
+useInfiniteCurrentVotingRoundCalloutQuery.getRootKey = () => ['CurrentVotingRoundCallout.infinite'] as const;
+useCurrentVotingRoundCalloutQuery.fetcher = (client: GraphQLClient, variables: CurrentVotingRoundCalloutQueryVariables, headers?: RequestInit['headers']) => fetcher<CurrentVotingRoundCalloutQuery, CurrentVotingRoundCalloutQueryVariables>(client, CurrentVotingRoundCalloutDocument, variables, headers);
 
 export const MeCheckDocument = `
     query meCheck {

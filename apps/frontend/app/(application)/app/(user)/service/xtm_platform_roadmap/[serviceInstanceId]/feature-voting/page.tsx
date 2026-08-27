@@ -1,4 +1,4 @@
-import { FeatureVotingPageLoader } from '@/components/feature-voting/FeatureVotingPageLoader';
+import { FeatureVotingList } from '@/components/feature-voting/FeatureVotingList';
 import { APP_PATH } from '@/utils/path/constant';
 import { ServiceDefinitionIdentifier } from '@graphql/generated';
 
@@ -13,7 +13,7 @@ const Page = async ({ params }: FeatureVotingPageProps) => {
   const decodedServiceInstanceId = decodeURIComponent(serviceInstanceId);
 
   return (
-    <FeatureVotingPageLoader
+    <FeatureVotingList
       serviceInstanceId={decodedServiceInstanceId}
       roadmapHref={`/${APP_PATH}/service/${ServiceDefinitionIdentifier.XtmPlatformRoadmap}/${serviceInstanceId}`}
     />

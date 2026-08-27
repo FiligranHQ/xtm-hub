@@ -1,20 +1,36 @@
 import { FeatureVotingItem } from '@/components/feature-voting/FeatureVotingItem';
+import { mockGraphqlMutation } from '@/utils/test/msw/graphql-api';
+import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';
-import { featureVoting_fragment$data } from '@generated/featureVoting_fragment.graphql';
+import {
+  FeatureVoteMutation,
+  FiligranProduct,
+  VotableFeaturePublicFragment,
+} from '@graphql/generated';
+import { mockVotableFeature } from '@graphql/mocks';
 import { screen } from '@testing-library/react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-const feature = {
+const feature: VotableFeaturePublicFragment = mockVotableFeature({
   id: 'feature-1',
   title: 'AI-powered report triage',
   short_description: 'Automatically extract entities from reports.',
   description: 'Long description of the feature',
-  product: 'opencti',
+  product: FiligranProduct.Opencti,
   labels: ['AI'],
   image_url: null,
   position: 1,
   has_my_vote: false,
-} as unknown as featureVoting_fragment$data;
+});
+
+const mockSearchParams = (featureId: string | null) => {
+  vi.mocked(useSearchParams).mockReturnValue({
+    get: vi.fn().mockReturnValue(featureId),
+    toString: vi
+      .fn()
+      .mockReturnValue(featureId ? `featureId=${featureId}` : ''),
+  } as unknown as ReturnType<typeof useSearchParams>);
+};
 
 describe('FeatureVotingItem', () => {
   const replace = vi.fn();
@@ -29,10 +45,15 @@ describe('FeatureVotingItem', () => {
       refresh: vi.fn(),
     });
     vi.mocked(usePathname).mockReturnValue('/en/feature-voting');
-    vi.mocked(useSearchParams).mockReturnValue({
-      get: vi.fn().mockReturnValue(null),
-      toString: vi.fn().mockReturnValue(''),
-    } as unknown as ReturnType<typeof useSearchParams>);
+    mockSearchParams(null);
+    mswServer.use(
+      mockGraphqlMutation<FeatureVoteMutation>({
+        queryName: 'FeatureVote',
+        data: {
+          voteForFeature: { id: 'feature-1', has_my_vote: true },
+        },
+      })
+    );
   });
 
   it('should put the feature id in the URL when clicking the card', async () => {
@@ -69,10 +90,7 @@ describe('FeatureVotingItem', () => {
   });
 
   it('should render the detail and its long description when the URL selects the feature', () => {
-    vi.mocked(useSearchParams).mockReturnValue({
-      get: vi.fn().mockReturnValue('feature-1'),
-      toString: vi.fn().mockReturnValue('featureId=feature-1'),
-    } as unknown as ReturnType<typeof useSearchParams>);
+    mockSearchParams('feature-1');
 
     testRender(
       <FeatureVotingItem
@@ -90,10 +108,7 @@ describe('FeatureVotingItem', () => {
   });
 
   it('should drop the feature id from the URL when closing the detail', async () => {
-    vi.mocked(useSearchParams).mockReturnValue({
-      get: vi.fn().mockReturnValue('feature-1'),
-      toString: vi.fn().mockReturnValue('featureId=feature-1'),
-    } as unknown as ReturnType<typeof useSearchParams>);
+    mockSearchParams('feature-1');
 
     const { user } = testRender(
       <FeatureVotingItem

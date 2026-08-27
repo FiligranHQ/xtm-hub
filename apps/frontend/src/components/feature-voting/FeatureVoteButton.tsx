@@ -1,14 +1,15 @@
 'use client';
 
-import { FeatureVotingVoteMutation } from '@/components/feature-voting/feature-voting.graphql';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { buildSignupRedirect } from '@/utils/redirect';
 import { CheckCircleIcon } from '@filigran/icon';
 import { toast } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
-import { featureVotingVoteMutation } from '@generated/featureVotingVoteMutation.graphql';
+import { featureVotingKeys } from '@graphql/feature-voting/feature-voting.keys';
+import { useFeatureVoteMutation } from '@graphql/generated';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMutation } from 'react-relay';
 
 interface FeatureVoteButtonProps {
   featureId: string;
@@ -26,8 +27,32 @@ export const FeatureVoteButton = ({
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
-  const [commitVote, isInFlight] = useMutation<featureVotingVoteMutation>(
-    FeatureVotingVoteMutation
+  const queryClient = useQueryClient();
+
+  const { mutate: commitVote, isPending } = useFeatureVoteMutation(
+    portalGraphqlClient,
+    {
+      onSuccess: () => {
+        // A vote moves the one vote allowed per product, so the whole round has
+        // to be refetched for the previously voted feature to lose its badge.
+        queryClient.invalidateQueries({
+          queryKey: featureVotingKeys.currentAll(),
+        });
+        toast({
+          title: t('FeatureVoting.VoteRecordedTitle'),
+          description: t('FeatureVoting.VoteRecordedDescription'),
+        });
+      },
+      onError: (error: unknown) => {
+        const errorMessage =
+          error instanceof Error ? error.message : 'UnknownError';
+        toast({
+          variant: 'destructive',
+          title: t('Utils.Error'),
+          description: <>{t(`Error.Server.${errorMessage}`)}</>,
+        });
+      },
+    }
   );
 
   const handleVote = () => {
@@ -35,22 +60,7 @@ export const FeatureVoteButton = ({
       router.push(buildSignupRedirect(pathname));
       return;
     }
-    commitVote({
-      variables: { feature_id: featureId },
-      onError(error) {
-        toast({
-          variant: 'destructive',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-      onCompleted() {
-        toast({
-          title: t('FeatureVoting.VoteRecordedTitle'),
-          description: t('FeatureVoting.VoteRecordedDescription'),
-        });
-      },
-    });
+    commitVote({ feature_id: featureId });
   };
 
   if (hasMyVote) {
@@ -69,7 +79,7 @@ export const FeatureVoteButton = ({
     <Button
       className={className}
       onClick={handleVote}
-      disabled={isInFlight}>
+      disabled={isPending}>
       {t('FeatureVoting.Vote')}
     </Button>
   );

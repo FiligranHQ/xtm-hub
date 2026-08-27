@@ -2,7 +2,7 @@
 
 import { FeatureVoteButton } from '@/components/feature-voting/FeatureVoteButton';
 import { Badge } from '@filigran/ui/servers';
-import { featureVoting_fragment$data } from '@generated/featureVoting_fragment.graphql';
+import { VotableFeaturePublicFragment } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -12,7 +12,7 @@ const BADGE_CLASS =
   'border-0 content-body-compact-medium bg-feedback-info-secondary-transparency';
 
 interface FeatureVoteCardProps {
-  feature: featureVoting_fragment$data;
+  feature: VotableFeaturePublicFragment;
   isAuthenticated: boolean;
 }
 

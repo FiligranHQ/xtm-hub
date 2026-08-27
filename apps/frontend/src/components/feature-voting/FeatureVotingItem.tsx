@@ -3,12 +3,12 @@
 import { FeatureVoteCard } from '@/components/feature-voting/FeatureVoteCard';
 import { FeatureVoteDetail } from '@/components/feature-voting/FeatureVoteDetail';
 import { Dialog, DialogContent } from '@filigran/ui';
-import { featureVoting_fragment$data } from '@generated/featureVoting_fragment.graphql';
+import { VotableFeaturePublicFragment } from '@graphql/generated';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
 interface FeatureVotingItemProps {
-  feature: featureVoting_fragment$data;
+  feature: VotableFeaturePublicFragment;
   isAuthenticated: boolean;
 }
 

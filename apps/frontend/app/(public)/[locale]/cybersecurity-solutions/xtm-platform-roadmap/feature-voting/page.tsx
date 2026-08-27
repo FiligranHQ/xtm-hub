@@ -1,6 +1,5 @@
-import { FeatureVotingPageLoader } from '@/components/feature-voting/FeatureVotingPageLoader';
+import { FeatureVotingList } from '@/components/feature-voting/FeatureVotingList';
 import type { PublicLocale } from '@/i18n/config';
-import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { buildSeoPageMetadata, getBaseUrl } from '@/utils/generate-metadata';
 import {
@@ -58,12 +57,10 @@ const Page = async ({
   const serviceInstance = await getRoadmapServiceInstance();
 
   return (
-    <RelayProvider>
-      <FeatureVotingPageLoader
-        serviceInstanceId={serviceInstance.id}
-        roadmapHref={`/${locale}${ROADMAP_PATH}`}
-      />
-    </RelayProvider>
+    <FeatureVotingList
+      serviceInstanceId={serviceInstance.id}
+      roadmapHref={`/${locale}${ROADMAP_PATH}`}
+    />
   );
 };
 
