@@ -227,6 +227,16 @@ export const featureVotingDomain = {
     return new Map(rows.map((row) => [row.voting_round_id, Number(row.count)]));
   },
 
+  countActiveFeaturesInRound: async (
+    roundId: VotingRoundId
+  ): Promise<number> => {
+    const row = await db<VotableFeature>('VotableFeature')
+      .where({ voting_round_id: roundId, active: true })
+      .count<{ count: string | number }>({ count: '*' })
+      .first();
+    return Number(row?.count ?? 0);
+  },
+
   loadRoundResults: async (
     roundId: VotingRoundId
   ): Promise<VotableFeatureWithCount[]> => {

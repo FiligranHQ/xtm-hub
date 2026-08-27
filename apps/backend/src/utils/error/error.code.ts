@@ -40,6 +40,7 @@ export enum ForbiddenErrorCode {
   DeleteVotableFeatureBlockedByVotes = 'DELETE_VOTABLE_FEATURE_BLOCKED_BY_VOTES',
   VotableFeatureProductLocked = 'VOTABLE_FEATURE_PRODUCT_LOCKED',
   CopyFeaturesFromAnotherRoadmap = 'COPY_FEATURES_FROM_ANOTHER_ROADMAP',
+  OpenVotingRoundWithoutActiveFeature = 'OPEN_VOTING_ROUND_WITHOUT_ACTIVE_FEATURE',
 }
 
 export enum BadRequestErrorCode {

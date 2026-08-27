@@ -434,6 +434,10 @@ describe('featureVotingApp.setVotingRoundStatus', () => {
     vi.restoreAllMocks();
     requestContext.set(requestContextSimpleUserFiligran2);
     vi.spyOn(featureVotingDomain, 'loadVotableFeatures').mockResolvedValue([]);
+    vi.spyOn(
+      featureVotingDomain,
+      'countActiveFeaturesInRound'
+    ).mockResolvedValue(1);
   });
 
   it('should close the previously open round when opening another one', async () => {
@@ -512,6 +516,48 @@ describe('featureVotingApp.setVotingRoundStatus', () => {
 
     // Then
     expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  // The disabled button is a convenience; the mutation is reachable on its own.
+  it('should refuse to open a round that has no active feature', async () => {
+    // Given
+    vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
+      buildRound({ status: VotingRoundStatus.Draft })
+    );
+    vi.spyOn(
+      featureVotingDomain,
+      'countActiveFeaturesInRound'
+    ).mockResolvedValue(0);
+    const updateSpy = vi.spyOn(featureVotingDomain, 'updateVotingRound');
+
+    // When / Then
+    await expect(
+      featureVotingApp.setVotingRoundStatus(ROUND_ID, VotingRoundStatus.Open)
+    ).rejects.toThrow(ForbiddenErrorCode.OpenVotingRoundWithoutActiveFeature);
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('should still allow closing a round that has no active feature', async () => {
+    // Given
+    vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
+      buildRound({ status: VotingRoundStatus.Open })
+    );
+    vi.spyOn(
+      featureVotingDomain,
+      'countActiveFeaturesInRound'
+    ).mockResolvedValue(0);
+    vi.spyOn(featureVotingDomain, 'updateVotingRound').mockResolvedValue(
+      buildRound({ status: VotingRoundStatus.Closed })
+    );
+
+    // When
+    await featureVotingApp.setVotingRoundStatus(
+      ROUND_ID,
+      VotingRoundStatus.Closed
+    );
+
+    // Then
+    expect(featureVotingDomain.updateVotingRound).toHaveBeenCalled();
   });
 });
 

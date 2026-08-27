@@ -303,6 +303,17 @@ export const featureVotingApp = {
       return [await withAllFeatures(round)];
     }
 
+    // Opening a round publishes it on the public page, so a round with nothing
+    // to vote on must be refused here and not only by the disabled button:
+    // the mutation is reachable on its own.
+    if (status === VotingRoundStatus.Open) {
+      const activeFeatures =
+        await featureVotingDomain.countActiveFeaturesInRound(id);
+      if (activeFeatures === 0) {
+        throw new Error(ForbiddenErrorCode.OpenVotingRoundWithoutActiveFeature);
+      }
+    }
+
     const changedRounds = await withAdvisoryLock(
       'voting-round-status',
       round.service_instance_id,
