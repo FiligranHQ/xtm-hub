@@ -21,7 +21,7 @@ import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
-import { stripNulls } from '../../utils/typescript';
+import { applyUpdate, stripNulls } from '../../utils/typescript';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import {
   featureVotingDomain,
@@ -98,34 +98,6 @@ const withFeatures = async (
 /** Rounds returned by the BYPASS-only admin fields, features included. */
 const withAllFeatures = (round: VotingRound) =>
   withFeatures(round, { onlyActive: false });
-
-/** Nulls stripped everywhere, except on the fields declared as clearable. */
-type UpdateFields<T, K extends keyof T> = {
-  [P in keyof T]: P extends K
-    ? T[P]
-    : null extends T[P]
-      ? Exclude<T[P], null> | undefined
-      : T[P];
-};
-
-/**
- * `stripNulls` protects non-nullable columns from being overwritten with null,
- * but it also swallows the explicit null the admin sends to clear a nullable
- * column. Clearable fields are therefore reapplied afterwards, so `undefined`
- * still means "leave untouched" while `null` means "clear".
- */
-const applyUpdate = <T extends object, K extends keyof T>(
-  input: T,
-  clearableFields: readonly K[]
-): UpdateFields<T, K> => {
-  const fields = stripNulls(input) as UpdateFields<T, K>;
-  for (const field of clearableFields) {
-    if (field in input && input[field] === null) {
-      (fields as Record<K, T[K]>)[field] = input[field];
-    }
-  }
-  return fields;
-};
 
 export const featureVotingApp = {
   loadCurrentVotingRound: async (
