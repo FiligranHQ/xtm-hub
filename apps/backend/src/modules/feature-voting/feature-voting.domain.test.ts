@@ -1,253 +1,328 @@
-import { v4 as uuidv4 } from 'uuid';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { TestHelper } from '../../../tests/helper/test.helper';
+import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   FiligranProduct,
   VotingRoundStatus,
 } from '../../__generated__/resolvers-types';
+import ServiceInstance from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
-import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
-import { VotingRoundId } from '../../model/kanel/public/VotingRound';
+import VotableFeature, {
+  VotableFeatureId,
+} from '../../model/kanel/public/VotableFeature';
+import VotingRound, {
+  VotingRoundId,
+} from '../../model/kanel/public/VotingRound';
 import { featureVotingDomain } from './feature-voting.domain';
 
-vi.mock('../../../knexfile', () => ({
-  db: vi.fn(),
-  dbRaw: vi.fn((sql: string, bindings?: unknown[]) => ({ sql, bindings })),
-}));
+const VOTER = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID;
+const OTHER_VOTER = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE.ID;
 
-import { db, dbRaw } from '../../../knexfile';
+let serviceInstance: ServiceInstance;
 
-const ROUND_ID = uuidv4() as VotingRoundId;
+const createRound = (overrides: Partial<VotingRound> = {}) =>
+  TestHelper.votingRound.create({
+    service_instance_id: serviceInstance.id,
+    ...overrides,
+  });
 
-describe('feature-voting.domain', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+const createFeature = (
+  roundId: VotingRoundId,
+  overrides: Partial<VotableFeature> = {}
+) =>
+  TestHelper.votableFeature.create({
+    voting_round_id: roundId,
+    ...overrides,
+  });
+
+const vote = (
+  roundId: VotingRoundId,
+  featureId: VotableFeatureId,
+  userId: UserId = VOTER,
+  product: FiligranProduct = FiligranProduct.Opencti
+) =>
+  featureVotingDomain.upsertFeatureVote({
+    user_id: userId,
+    voting_round_id: roundId,
+    votable_feature_id: featureId,
+    product,
+    created_at: new Date(),
+  });
+
+describe('featureVotingDomain', () => {
+  beforeAll(async () => {
+    serviceInstance = await TestHelper.serviceInstance.create();
+  });
+
+  // Rounds cascade to their features and votes, so removing them is enough.
+  afterEach(async () => {
+    await TestHelper.votingRound.delete({
+      service_instance_id: serviceInstance.id,
+    });
   });
 
   describe('loadVotableFeatures', () => {
-    const buildQueryMock = () => {
-      const selectMock = vi.fn().mockResolvedValue([]);
-      const orderByMock = vi.fn().mockReturnValue({ select: selectMock });
-      const andWhereMock = vi.fn();
-      const modifyMock = vi
-        .fn()
-        .mockImplementation(
-          (
-            callback: (queryBuilder: { andWhere: typeof andWhereMock }) => void
-          ) => {
-            callback({ andWhere: andWhereMock });
-            return { orderBy: orderByMock };
-          }
-        );
-      const whereMock = vi.fn().mockReturnValue({ modify: modifyMock });
-      vi.mocked(db).mockReturnValue({
-        where: whereMock,
-      } as unknown as ReturnType<typeof db>);
-      return { whereMock, andWhereMock, orderByMock, selectMock };
-    };
+    it('should only return the features of the requested round', async () => {
+      const round = await createRound();
+      const otherRound = await createRound();
+      const feature = await createFeature(round.id);
+      await createFeature(otherRound.id);
 
-    it('should scope features to the round and filter by product when provided', async () => {
-      // Given
-      const { whereMock, andWhereMock } = buildQueryMock();
+      const features = await featureVotingDomain.loadVotableFeatures({
+        roundId: round.id,
+      });
 
-      // When
-      await featureVotingDomain.loadVotableFeatures({
-        roundId: ROUND_ID,
+      expect(features.map(({ id }) => id)).toEqual([feature.id]);
+    });
+
+    it('should narrow the features down to a product when one is given', async () => {
+      const round = await createRound();
+      const openctiFeature = await createFeature(round.id);
+      await createFeature(round.id, { product: FiligranProduct.Openaev });
+
+      const features = await featureVotingDomain.loadVotableFeatures({
+        roundId: round.id,
         product: FiligranProduct.Opencti,
       });
 
-      // Then
-      expect(db).toHaveBeenCalledWith('VotableFeature');
-      expect(whereMock).toHaveBeenCalledWith(
-        'VotableFeature.voting_round_id',
-        ROUND_ID
-      );
-      expect(andWhereMock).toHaveBeenCalledWith(
-        'VotableFeature.product',
-        FiligranProduct.Opencti
-      );
+      expect(features.map(({ id }) => id)).toEqual([openctiFeature.id]);
     });
 
-    it('should restrict to active features only when asked', async () => {
-      // Given
-      const { andWhereMock } = buildQueryMock();
+    it.each`
+      onlyActive   | expectedTitles               | description
+      ${true}      | ${['active']}                | ${'the public page, which must not offer a deactivated feature'}
+      ${undefined} | ${['active', 'deactivated']} | ${'the admin screens, which must keep it reactivatable'}
+    `(
+      'should list $expectedTitles for $description',
+      async ({ onlyActive, expectedTitles }) => {
+        const round = await createRound();
+        await createFeature(round.id, { title: 'active', position: 0 });
+        await createFeature(round.id, {
+          title: 'deactivated',
+          active: false,
+          position: 1,
+        });
 
-      // When
-      await featureVotingDomain.loadVotableFeatures({
-        roundId: ROUND_ID,
-        onlyActive: true,
+        const features = await featureVotingDomain.loadVotableFeatures({
+          roundId: round.id,
+          onlyActive,
+        });
+
+        expect(features.map(({ title }) => title)).toEqual(expectedTitles);
+      }
+    );
+
+    it('should flag the feature the given user voted for', async () => {
+      const round = await createRound();
+      const voted = await createFeature(round.id, { position: 0 });
+      const notVoted = await createFeature(round.id, { position: 1 });
+      await vote(round.id, voted.id);
+
+      const features = await featureVotingDomain.loadVotableFeatures({
+        roundId: round.id,
+        userId: VOTER,
       });
 
-      // Then
-      expect(andWhereMock).toHaveBeenCalledWith('VotableFeature.active', true);
-    });
-
-    it('should include inactive features by default', async () => {
-      // Given
-      const { andWhereMock } = buildQueryMock();
-
-      // When
-      await featureVotingDomain.loadVotableFeatures({ roundId: ROUND_ID });
-
-      // Then
-      expect(andWhereMock).not.toHaveBeenCalledWith(
-        'VotableFeature.active',
-        true
-      );
-    });
-
-    it('should compute has_my_vote with the user id when provided', async () => {
-      // Given
-      buildQueryMock();
-      const userId = uuidv4() as UserId;
-
-      // When
-      await featureVotingDomain.loadVotableFeatures({
-        roundId: ROUND_ID,
-        userId,
-      });
-
-      // Then
-      expect(dbRaw).toHaveBeenCalledWith(expect.stringContaining('EXISTS'), [
-        userId,
+      expect(features).toEqual([
+        expect.objectContaining({ id: voted.id, has_my_vote: true }),
+        expect.objectContaining({ id: notVoted.id, has_my_vote: false }),
       ]);
     });
 
-    it('should select has_my_vote as false when no user is provided', async () => {
-      // Given
-      buildQueryMock();
+    it('should never flag a vote for an anonymous visitor', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+      await vote(round.id, feature.id);
 
-      // When
-      await featureVotingDomain.loadVotableFeatures({ roundId: ROUND_ID });
+      const features = await featureVotingDomain.loadVotableFeatures({
+        roundId: round.id,
+      });
 
-      // Then
-      expect(dbRaw).toHaveBeenCalledWith('false as has_my_vote');
+      expect(features).toEqual([
+        expect.objectContaining({ has_my_vote: false }),
+      ]);
     });
   });
 
   describe('upsertFeatureVote', () => {
-    it('should replace the previous vote of the user for that product and round', async () => {
-      // Given
-      const mergeMock = vi.fn().mockResolvedValue(undefined);
-      const onConflictMock = vi.fn().mockReturnValue({ merge: mergeMock });
-      const insertMock = vi
-        .fn()
-        .mockReturnValue({ onConflict: onConflictMock });
-      vi.mocked(db).mockReturnValue({
-        insert: insertMock,
-      } as unknown as ReturnType<typeof db>);
-      const input = {
-        user_id: uuidv4() as UserId,
-        voting_round_id: ROUND_ID,
-        votable_feature_id: uuidv4() as VotableFeatureId,
+    // The primary key is what enforces one vote per user, round and product.
+    it('should move the vote of a user instead of adding a second one', async () => {
+      const round = await createRound();
+      const first = await createFeature(round.id);
+      const second = await createFeature(round.id);
+      await vote(round.id, first.id);
+
+      await vote(round.id, second.id);
+
+      const votes = await TestHelper.featureVote.loadAll({
+        voting_round_id: round.id,
+        user_id: VOTER,
+      });
+      expect(votes).toEqual([
+        expect.objectContaining({ votable_feature_id: second.id }),
+      ]);
+    });
+
+    it('should let the same user vote once per product', async () => {
+      const round = await createRound();
+      const opencti = await createFeature(round.id);
+      const openaev = await createFeature(round.id, {
         product: FiligranProduct.Openaev,
-        created_at: new Date(),
-      };
+      });
+      await vote(round.id, opencti.id);
 
-      // When
-      await featureVotingDomain.upsertFeatureVote(input);
+      await vote(round.id, openaev.id, VOTER, FiligranProduct.Openaev);
 
-      // Then
-      expect(db).toHaveBeenCalledWith('FeatureVote');
-      expect(insertMock).toHaveBeenCalledWith(input);
-      expect(onConflictMock).toHaveBeenCalledWith([
-        'user_id',
-        'voting_round_id',
-        'product',
-      ]);
-      expect(mergeMock).toHaveBeenCalledWith([
-        'votable_feature_id',
-        'created_at',
-      ]);
+      expect(await featureVotingDomain.countVotesInRound(round.id)).toBe(2);
+      expect(await featureVotingDomain.countVotersInRound(round.id)).toBe(1);
     });
   });
 
   describe('closeOpenRoundsExcept', () => {
-    it('should close every other open round', async () => {
-      // Given
-      const returningMock = vi.fn().mockResolvedValue([]);
-      const updateMock = vi.fn().mockReturnValue({ returning: returningMock });
-      const whereNotMock = vi.fn().mockReturnValue({ update: updateMock });
-      const whereMock = vi.fn().mockReturnValue({ whereNot: whereNotMock });
-      vi.mocked(db).mockReturnValue({
-        where: whereMock,
-      } as unknown as ReturnType<typeof db>);
-
-      // When
-      await featureVotingDomain.closeOpenRoundsExcept(ROUND_ID);
-
-      // Then
-      expect(db).toHaveBeenCalledWith('VotingRound');
-      expect(whereMock).toHaveBeenCalledWith({
+    it('should close the other open round of the same roadmap', async () => {
+      const previouslyOpen = await createRound({
         status: VotingRoundStatus.Open,
       });
-      expect(whereNotMock).toHaveBeenCalledWith({ id: ROUND_ID });
-      expect(updateMock).toHaveBeenCalledWith(
+      const opening = await createRound();
+
+      const closed = await featureVotingDomain.closeOpenRoundsExcept(
+        opening.id,
+        serviceInstance.id
+      );
+
+      expect(closed).toEqual([
         expect.objectContaining({
+          id: previouslyOpen.id,
           status: VotingRoundStatus.Closed,
           closed_at: expect.any(Date),
-        })
+        }),
+      ]);
+    });
+
+    it('should leave the open round of another roadmap alone', async () => {
+      const otherInstance = await TestHelper.serviceInstance.create();
+      const foreignRound = await TestHelper.votingRound.create({
+        service_instance_id: otherInstance.id,
+        status: VotingRoundStatus.Open,
+      });
+      const opening = await createRound();
+
+      const closed = await featureVotingDomain.closeOpenRoundsExcept(
+        opening.id,
+        serviceInstance.id
+      );
+
+      expect(closed).toEqual([]);
+      const untouched = await TestHelper.votingRound.load({
+        id: foreignRound.id,
+      });
+      expect(untouched?.status).toBe(VotingRoundStatus.Open);
+      await TestHelper.votingRound.delete({ id: foreignRound.id });
+      await TestHelper.serviceInstance.delete({ id: otherInstance.id });
+    });
+
+    // This is what makes the transition safe: the database refuses the second
+    // open round even if two admins race past the application checks.
+    it('should be backed by a unique index rejecting a second open round', async () => {
+      await createRound({ status: VotingRoundStatus.Open });
+
+      await expect(
+        createRound({ status: VotingRoundStatus.Open })
+      ).rejects.toThrow(/VotingRound_single_open_per_service_instance/);
+    });
+
+    it('should still allow several closed rounds on a roadmap', async () => {
+      await createRound({ status: VotingRoundStatus.Closed });
+
+      await expect(
+        createRound({ status: VotingRoundStatus.Closed })
+      ).resolves.toEqual(
+        expect.objectContaining({ status: VotingRoundStatus.Closed })
+      );
+    });
+  });
+
+  describe('deleteVotingRound', () => {
+    it('should take the features and the votes of the round down with it', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+      await vote(round.id, feature.id);
+
+      await featureVotingDomain.deleteVotingRound(round.id);
+
+      expect(
+        await TestHelper.votableFeature.loadAll({ voting_round_id: round.id })
+      ).toEqual([]);
+      expect(
+        await TestHelper.featureVote.loadAll({ voting_round_id: round.id })
+      ).toEqual([]);
+    });
+  });
+
+  describe('counters', () => {
+    it('should count the votes and the distinct voters of a round', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+      const other = await createFeature(round.id);
+      await vote(round.id, feature.id, VOTER);
+      await vote(round.id, other.id, OTHER_VOTER);
+
+      expect(await featureVotingDomain.countVotesInRound(round.id)).toBe(2);
+      expect(await featureVotingDomain.countVotersInRound(round.id)).toBe(2);
+      expect(await featureVotingDomain.countVotesForFeature(feature.id)).toBe(
+        1
+      );
+    });
+
+    it('should count only the active features of a round', async () => {
+      const round = await createRound();
+      await createFeature(round.id);
+      await createFeature(round.id, { active: false });
+
+      expect(
+        await featureVotingDomain.countActiveFeaturesInRound(round.id)
+      ).toBe(1);
+    });
+
+    it('should count the features of several rounds in one go', async () => {
+      const withTwo = await createRound();
+      const withNone = await createRound();
+      await createFeature(withTwo.id);
+      await createFeature(withTwo.id);
+
+      const counts = await featureVotingDomain.countFeaturesByRound([
+        withTwo.id,
+        withNone.id,
+      ]);
+
+      expect(counts.get(withTwo.id)).toBe(2);
+      expect(counts.has(withNone.id)).toBe(false);
+    });
+
+    it('should not query the database for an empty list of rounds', async () => {
+      expect(await featureVotingDomain.countFeaturesByRound([])).toEqual(
+        new Map()
       );
     });
   });
 
   describe('loadRoundResults', () => {
-    it('should count votes per feature of the round and normalize the counts', async () => {
-      // Given
-      const featureId = uuidv4() as VotableFeatureId;
-      const orderByMock = vi
-        .fn()
-        .mockResolvedValue([{ id: featureId, vote_count: '4' }]);
-      const countMock = vi.fn().mockReturnValue({ orderBy: orderByMock });
-      const selectMock = vi.fn().mockReturnValue({ count: countMock });
-      const groupByMock = vi.fn().mockReturnValue({ select: selectMock });
-      const whereMock = vi.fn().mockReturnValue({ groupBy: groupByMock });
-      const leftJoinMock = vi.fn().mockReturnValue({ where: whereMock });
-      vi.mocked(db).mockReturnValue({
-        leftJoin: leftJoinMock,
-      } as unknown as ReturnType<typeof db>);
+    it('should rank the features of the round by vote count', async () => {
+      const round = await createRound();
+      const winner = await createFeature(round.id, { position: 0 });
+      const runnerUp = await createFeature(round.id, { position: 1 });
+      const unvoted = await createFeature(round.id, { position: 2 });
+      await vote(round.id, winner.id, VOTER);
+      await vote(round.id, winner.id, OTHER_VOTER);
+      await vote(round.id, runnerUp.id, VOTER, FiligranProduct.Openaev);
 
-      // When
-      const result = await featureVotingDomain.loadRoundResults(ROUND_ID);
+      const results = await featureVotingDomain.loadRoundResults(round.id);
 
-      // Then
-      expect(db).toHaveBeenCalledWith('VotableFeature');
-      expect(leftJoinMock).toHaveBeenCalledWith(
-        'FeatureVote',
-        'FeatureVote.votable_feature_id',
-        'VotableFeature.id'
-      );
-      expect(whereMock).toHaveBeenCalledWith(
-        'VotableFeature.voting_round_id',
-        ROUND_ID
-      );
-      expect(groupByMock).toHaveBeenCalledWith('VotableFeature.id');
-      expect(countMock).toHaveBeenCalledWith({
-        vote_count: 'FeatureVote.user_id',
-      });
-      expect(result).toEqual([{ id: featureId, vote_count: 4 }]);
-    });
-  });
-
-  describe('countVotersInRound', () => {
-    it('should count distinct voters of the round', async () => {
-      // Given
-      const firstMock = vi.fn().mockResolvedValue({ count: '9' });
-      const countDistinctMock = vi.fn().mockReturnValue({ first: firstMock });
-      const whereMock = vi
-        .fn()
-        .mockReturnValue({ countDistinct: countDistinctMock });
-      vi.mocked(db).mockReturnValue({
-        where: whereMock,
-      } as unknown as ReturnType<typeof db>);
-
-      // When
-      const result = await featureVotingDomain.countVotersInRound(ROUND_ID);
-
-      // Then
-      expect(db).toHaveBeenCalledWith('FeatureVote');
-      expect(whereMock).toHaveBeenCalledWith({ voting_round_id: ROUND_ID });
-      expect(countDistinctMock).toHaveBeenCalledWith({ count: 'user_id' });
-      expect(result).toBe(9);
+      expect(results.map(({ id, vote_count }) => [id, vote_count])).toEqual([
+        [winner.id, 2],
+        [runnerUp.id, 1],
+        [unvoted.id, 0],
+      ]);
     });
   });
 });
