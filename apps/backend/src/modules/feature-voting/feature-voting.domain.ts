@@ -28,6 +28,23 @@ export type VotableFeatureWithCount = VotableFeature & {
   vote_count: number;
 };
 
+/**
+ * The order the products are presented in across the product, which is neither
+ * alphabetical nor the declaration order of the enum. Sorting on the column
+ * itself would put OpenAEV before OpenCTI and scatter a round's features.
+ */
+const PRODUCT_DISPLAY_ORDER: FiligranProduct[] = [
+  FiligranProduct.Opencti,
+  FiligranProduct.Openaev,
+  FiligranProduct.Xtmone,
+  FiligranProduct.Xtmhub,
+];
+
+// created_at breaks ties so two features sharing a position keep a stable
+// order instead of whichever one Postgres happens to return first.
+const PRODUCT_THEN_POSITION_SQL =
+  'array_position(?::text[], "VotableFeature"."product"), "VotableFeature"."position" asc, "VotableFeature"."created_at" asc';
+
 export const featureVotingDomain = {
   loadVotingRounds: (
     serviceInstanceId?: ServiceInstanceId | null
@@ -112,10 +129,7 @@ export const featureVotingDomain = {
           queryBuilder.andWhere('VotableFeature.product', opts.product);
         }
       })
-      .orderBy([
-        { column: 'VotableFeature.product', order: 'asc' },
-        { column: 'VotableFeature.position', order: 'asc' },
-      ])
+      .orderByRaw(PRODUCT_THEN_POSITION_SQL, [PRODUCT_DISPLAY_ORDER])
       .select<VotableFeatureWithVote[]>(
         'VotableFeature.*',
         opts.userId
@@ -250,10 +264,8 @@ export const featureVotingDomain = {
       .groupBy('VotableFeature.id')
       .select('VotableFeature.*')
       .count({ vote_count: 'FeatureVote.user_id' })
-      .orderBy([
-        { column: 'vote_count', order: 'desc' },
-        { column: 'VotableFeature.product', order: 'asc' },
-        { column: 'VotableFeature.position', order: 'asc' },
+      .orderByRaw(`vote_count desc, ${PRODUCT_THEN_POSITION_SQL}`, [
+        PRODUCT_DISPLAY_ORDER,
       ])) as unknown as (VotableFeature & { vote_count: string | number })[];
 
     return rows.map((row) => ({

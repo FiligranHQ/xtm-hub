@@ -75,6 +75,59 @@ describe('featureVotingDomain', () => {
       expect(features.map(({ id }) => id)).toEqual([feature.id]);
     });
 
+    // An OpenAEV feature used to sort ahead of every OpenCTI one, because the
+    // products were ordered alphabetically rather than the way they are shown.
+    it('should order the features by product display order then position', async () => {
+      const round = await createRound();
+      const openaev = await createFeature(round.id, {
+        position: 5,
+        product: FiligranProduct.Openaev,
+        title: 'openaev-5',
+      });
+      const opencti = [];
+      for (const position of [1, 2, 3, 4]) {
+        opencti.push(
+          await createFeature(round.id, {
+            position,
+            product: FiligranProduct.Opencti,
+            title: `opencti-${position}`,
+          })
+        );
+      }
+
+      const features = await featureVotingDomain.loadVotableFeatures({
+        roundId: round.id,
+      });
+
+      expect(features.map(({ title }) => title)).toEqual([
+        'opencti-1',
+        'opencti-2',
+        'opencti-3',
+        'opencti-4',
+        'openaev-5',
+      ]);
+      expect(features.at(-1)!.id).toBe(openaev.id);
+      expect(features[0]!.id).toBe(opencti[0]!.id);
+    });
+
+    it('should keep features sharing a position in a stable creation order', async () => {
+      const round = await createRound();
+      const first = await createFeature(round.id, {
+        position: 1,
+        created_at: new Date('2026-01-01'),
+      });
+      const second = await createFeature(round.id, {
+        position: 1,
+        created_at: new Date('2026-01-02'),
+      });
+
+      const features = await featureVotingDomain.loadVotableFeatures({
+        roundId: round.id,
+      });
+
+      expect(features.map(({ id }) => id)).toEqual([first.id, second.id]);
+    });
+
     it('should narrow the features down to a product when one is given', async () => {
       const round = await createRound();
       const openctiFeature = await createFeature(round.id);
