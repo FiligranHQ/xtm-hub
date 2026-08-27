@@ -46,8 +46,12 @@ Only run linters, builds and tests that already exist; do not add new tooling un
 
 ## Critical rules
 
-- **No `console.log`.** Use `logApp` from `apps/backend/src/utils/app-logger.util.ts` on the backend. `console.warn`
-  and `console.error` are allowed only in scripts and launch code outside the running app.
+- **No `console.log`** in new application code. Backend: use `logApp` from
+  `apps/backend/src/utils/app-logger.util.ts`; `console.warn`/`console.error` are allowed only in scripts and launch
+  code outside the running app. Frontend: ESLint enforces this too, with one existing intentional exception (dev-only
+  GraphQL operation tracing, gated and lint-disabled per call site) documented in
+  [`frontend.instructions.md`](.github/instructions/frontend.instructions.md#logging) — don't remove it or copy the
+  pattern outside that guard without being asked.
 - **Prefix unused variables with `_`.**
 - **Comment only what needs clarifying.**
 - **Never edit generated output**: `apps/frontend/__generated__/`, `apps/frontend/schema.graphql`,

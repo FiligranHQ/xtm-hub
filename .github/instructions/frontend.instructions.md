@@ -112,6 +112,14 @@ Existing Relay pages: add a `*.graphql.ts` file with the `graphql` tagged templa
 
 Server-side fetches go through `src/relay/server-portal-api-fetch.ts`, which forwards Next.js cookies.
 
+## Logging
+
+`console.log` is not acceptable in new application code (ESLint enforces `no-console` repo-wide, `warn`/`error`
+excepted). The one existing exception is intentional dev-only GraphQL operation tracing — `src/lib/graphql-client.ts`,
+`src/lib/server-graphql-fetch.ts`, and `src/relay/environment/fetch-fn.ts` each log the operation name and variables
+behind an `isDevelopment()` guard with an explicit `// eslint-disable-next-line no-console`. Do not remove these
+without being asked, and do not add a new one outside that same guarded, narrowly-scoped pattern.
+
 ## Routing & Links
 
 **Disable prefetch on side-effecting links.** Next.js `<Link>` prefetches its `href` in the background as
