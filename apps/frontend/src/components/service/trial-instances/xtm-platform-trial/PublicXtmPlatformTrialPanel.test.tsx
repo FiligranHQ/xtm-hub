@@ -19,14 +19,24 @@ describe('PublicXtmPlatformTrialPanel', () => {
       )
     ).toBeInTheDocument();
 
+    const expectedRedirect = encodeURIComponent(
+      btoa('/app/service/xtm-platform-trial')
+    );
+
     const loginLink = screen.getByRole('link', {
       name: 'PublicLayout.Login',
     });
-    expect(loginLink).toHaveAttribute('href', '/auth/oidc');
+    expect(loginLink).toHaveAttribute(
+      'href',
+      `/auth/oidc?redirect=${expectedRedirect}`
+    );
 
     const signUpLink = screen.getByRole('link', {
       name: 'PublicLayout.SignUp',
     });
-    expect(signUpLink).toHaveAttribute('href', '/sign-up');
+    expect(signUpLink).toHaveAttribute(
+      'href',
+      `/sign-up?redirect=${expectedRedirect}`
+    );
   });
 });
