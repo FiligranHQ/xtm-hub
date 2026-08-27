@@ -8,17 +8,21 @@ import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpd
 import { XtmoneStatusState } from '@/components/xtm-platform-trial/useXtmoneIntegrationStatus';
 import { XtmPlatformBundleProduct } from '@/components/xtm-platform-trial/xtm-platform-bundle.types';
 import { XtmoneConnectionStatus } from '@/components/xtm-platform-trial/XtmoneConnectionStatus';
-import { cn } from '@/lib/utils';
 import { useDateFormatter } from '@/utils/date';
 import { EditIcon } from '@filigran/icon';
 import { Badge, Button, Card, CardContent, Separator } from '@filigran/ui';
+import { GradientButton } from '@filigran/ui/servers';
 import {
   PlatformConfigurationStatus,
   PlatformIdentifier,
 } from '@graphql/generated';
 import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
+import openaevTextLogo from '@public/logo_openaev_text.png';
+import openctiTextLogo from '@public/logo_opencti_text.png';
+import xtmoneTextLogo from '@public/logo_xtmone_text.png';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import Image, { StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -28,10 +32,10 @@ interface BundleProductCardProps {
   canManage: boolean;
 }
 
-const PRODUCT_LOGO_COLOR: Record<PlatformIdentifier, string> = {
-  [PlatformIdentifier.Opencti]: 'text-filigran-brand-primary',
-  [PlatformIdentifier.Openaev]: 'text-filigran-brand-primary',
-  [PlatformIdentifier.Xtmone]: 'text-filigran-ia-main',
+const PRODUCT_TEXT_LOGO: Record<PlatformIdentifier, StaticImageData> = {
+  [PlatformIdentifier.Opencti]: openctiTextLogo,
+  [PlatformIdentifier.Openaev]: openaevTextLogo,
+  [PlatformIdentifier.Xtmone]: xtmoneTextLogo,
 };
 
 export const BundleProductCard = ({
@@ -44,11 +48,13 @@ export const BundleProductCard = ({
   const queryClient = useQueryClient();
   const [openEditName, setOpenEditName] = useState(false);
 
-  const { name, Icon } = PlatformMetadataMapping[product.platform_identifier];
+  const { name } = PlatformMetadataMapping[product.platform_identifier];
   const isXtmone = product.platform_identifier === PlatformIdentifier.Xtmone;
   const hasAccess = product.roles.length > 0;
   const accessUrl = product.url ?? null;
+  const canAccess = isXtmone ? !!accessUrl : hasAccess && !!accessUrl;
   const roleLabel = product.roles.map((role) => role.name).join(', ');
+  const accessLabel = tProducts('AccessProduct', { productName: name });
 
   const hasConnectivityInfo = product.connectivity_status != null;
   const isConnected =
@@ -81,13 +87,11 @@ export const BundleProductCard = ({
     <Card className="h-full bg-elevation-background-layer-1">
       <CardContent className="p-4 flex flex-col gap-m h-full">
         <div className="flex gap-s items-center min-w-0">
-          <Icon
-            className={cn(
-              'size-9 shrink-0',
-              PRODUCT_LOGO_COLOR[product.platform_identifier]
-            )}
+          <Image
+            src={PRODUCT_TEXT_LOGO[product.platform_identifier]}
+            alt={name}
+            className="h-9 w-auto shrink-0"
           />
-          <span className="text-header-heading-lg truncate">{name}</span>
         </div>
         {isXtmone ? (
           <div className="flex flex-col">
@@ -147,20 +151,38 @@ export const BundleProductCard = ({
           </div>
         )}
         <div className="flex justify-end mt-auto">
-          <Button
-            asChild={hasAccess && !!accessUrl}
-            disabled={!hasAccess || !accessUrl}>
-            {hasAccess && accessUrl ? (
+          {isXtmone ? (
+            canAccess && accessUrl ? (
               <Link
                 href={accessUrl}
                 target="_blank"
                 rel="noopener noreferrer">
-                {tProducts('AccessProduct', { productName: name })}
+                <GradientButton
+                  variant="ia"
+                  className="bg-background dark:bg-none"
+                  tabIndex={-1}>
+                  {accessLabel}
+                </GradientButton>
               </Link>
             ) : (
-              <span>{tProducts('AccessProduct', { productName: name })}</span>
-            )}
-          </Button>
+              <Button disabled>{accessLabel}</Button>
+            )
+          ) : (
+            <Button
+              asChild={canAccess}
+              disabled={!canAccess}>
+              {canAccess && accessUrl ? (
+                <Link
+                  href={accessUrl}
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  {accessLabel}
+                </Link>
+              ) : (
+                <span>{accessLabel}</span>
+              )}
+            </Button>
+          )}
         </div>
       </CardContent>
       {canManage && (

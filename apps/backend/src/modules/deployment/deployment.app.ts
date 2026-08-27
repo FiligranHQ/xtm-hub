@@ -597,19 +597,19 @@ export const DeploymentApp = {
           } => child.platform_identifier !== null
         )
         .map(async (child) => {
-          const [configuration] =
-            await RegistrationDomain.loadRegisteredPlatform(
-              child.service_instance_id
-            );
-          const roles =
-            await ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
-              child.service_instance_id,
-              user.id
-            );
-          const childServiceInstance =
-            await ServiceInstanceDomain.loadServiceInstanceBy({
-              id: child.service_instance_id,
-            });
+          const [[configuration], roles, childServiceInstance] =
+            await Promise.all([
+              RegistrationDomain.loadRegisteredPlatform(
+                child.service_instance_id
+              ),
+              ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
+                child.service_instance_id,
+                user.id
+              ),
+              ServiceInstanceDomain.loadServiceInstanceBy({
+                id: child.service_instance_id,
+              }),
+            ]);
           return { child, configuration, roles, childServiceInstance };
         })
     );
@@ -635,7 +635,7 @@ export const DeploymentApp = {
           last_connectivity_check:
             configuration?.last_connectivity_check ?? null,
           roles,
-          url: child.url,
+          url: configuration?.platform_url ?? null,
         })
       ),
     };

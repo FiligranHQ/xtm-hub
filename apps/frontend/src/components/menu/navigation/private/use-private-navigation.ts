@@ -361,18 +361,6 @@ export const usePrivateNavigation = (): NavigationConfig => {
       href: `/${APP_PATH}`,
       links: [],
     },
-    ...(isXtmPlatformBundleEnabled
-      ? [
-          {
-            key: 'xtm-platform-trial',
-            label: tMenu('XTMPlatformTrial'),
-            icon: DiamondOutlinedIcon,
-            pathPrefix: `/${APP_PATH}/xtm-platform-trial`,
-            href: `/${APP_PATH}/xtm-platform-trial`,
-            links: [],
-          },
-        ]
-      : []),
     {
       key: 'opencti',
       label: 'OpenCTI',
@@ -498,6 +486,17 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenu('Slack'),
       external: true,
     },
+    ...(isXtmPlatformBundleEnabled
+      ? [
+          {
+            key: 'xtm-platform-trial',
+            href: `/${APP_PATH}/xtm-platform-trial`,
+            icon: DiamondOutlinedIcon,
+            label: tMenu('XTMPlatformTrial'),
+            highlight: true,
+          },
+        ]
+      : []),
   ];
   return { sections, bottomLinks, footerSections };
 };

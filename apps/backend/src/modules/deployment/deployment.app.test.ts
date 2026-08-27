@@ -79,7 +79,10 @@ import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import { PortalContext } from '../../model/portal-context';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
-import { RegistrationDomain } from '../registration/registration.domain';
+import {
+  DomainRegisteredPlatform,
+  RegistrationDomain,
+} from '../registration/registration.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
 import {
@@ -4234,14 +4237,26 @@ describe('deployment app', () => {
       });
       const lastConnectivityCheck = new Date('2025-01-10T10:00:00.000Z');
       vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockImplementation(
-        async (serviceInstanceId) =>
+        async (serviceInstanceId): Promise<DomainRegisteredPlatform[]> =>
           serviceInstanceId === child.service_instance_id
             ? [
                 {
-                  status: PlatformConfigurationStatus.Active,
-                  last_connectivity_check: lastConnectivityCheck,
+                  id: serviceInstanceId,
+                  identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+                  illustration_document_id: null,
+                  service_instance_id: serviceInstanceId,
+                  registerer_id: contextRegistererUserSecondOrga.user.id,
+                  platform_id: 'platform-id',
+                  tenant_id: null,
+                  tenant_name: null,
+                  platform_url: 'https://example.io',
+                  platform_title: 'Example platform',
+                  platform_version: null,
                   platform_contract: PlatformContract.Ee,
-                } as never,
+                  last_connectivity_check: lastConnectivityCheck,
+                  token: 'token',
+                  status: PlatformConfigurationStatus.Active,
+                },
               ]
             : []
       );
@@ -4250,7 +4265,17 @@ describe('deployment app', () => {
         'loadServiceGroupsByServiceInstanceAndUser'
       ).mockImplementation(async (serviceInstanceId) =>
         serviceInstanceId === child.service_instance_id
-          ? ([{ id: 'group-1', name: ServiceGroupName.Admin }] as never)
+          ? ([
+              {
+                id: 'group-1',
+                name: ServiceGroupName.Admin,
+                service_instance_id: serviceInstanceId,
+              },
+            ] as unknown as Awaited<
+              ReturnType<
+                typeof ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser
+              >
+            >)
           : []
       );
 
@@ -4266,6 +4291,7 @@ describe('deployment app', () => {
         connectivity_status: PlatformConfigurationStatus.Active,
         last_connectivity_check: lastConnectivityCheck,
         roles: [{ id: 'group-1', name: ServiceGroupName.Admin }],
+        url: 'https://example.io',
       });
     });
   });

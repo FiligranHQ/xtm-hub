@@ -98,6 +98,13 @@
       "Title": "XTM Platform Trial Guide",
       "Content": "Explore what we're building, what's coming next, and where the XTM Platform is headed. Full transparency. No surprises.",
       "SeeMore": "See more"
+    },
+    "Limitations": {
+      "Title": "Trial limitations",
+      "Intro": "The XTM platform free trial comes includes all Enterprise Edition SaaS features, but with limited computing power and storage:",
+      "Opencti": "For OpenCTI: up to 40GB in intelligence data storage and 3GB in file storage.",
+      "Openaev": "For OpenAEV: 16GB",
+      "Warning": "Ingesting large, premium feed with rich data sets during this trial could impact your storage quickly. Note that this trial does not include SLAs. In the event of a cloud provider outage, recovery time is not guaranteed. We recommend not storing critical or irreplaceable data in your trial environment."
     }
   },
   "Datatable": {
@@ -1641,7 +1648,8 @@
           "CancellationReason": "Cancellation reason",
           "CancellationReasonPlaceholder": "Select a reason",
           "CancellationReasonOther": "Other",
-          "CancellationReasonOtherPlaceholder": "Write your reason here"
+          "CancellationReasonOtherPlaceholder": "Write your reason here",
+          "CancellationReasonRequired": "Please select a cancellation reason"
         },
         "Confirmation": {
           "Title": "Trial Cancellation",

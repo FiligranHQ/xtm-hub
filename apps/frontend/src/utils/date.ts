@@ -1,5 +1,5 @@
 import { DateTimeFormatOptions, useFormatter } from 'next-intl';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 // Define FormatDateStyle as a type instead of an enum
 export type FormatDateStyle =
@@ -45,6 +45,10 @@ export const daysUntil = (targetDate: Date) => {
 
 export const useDateFormatter = () => {
   const format = useFormatter();
+  const timeZone = useMemo(
+    () => Intl.DateTimeFormat().resolvedOptions().timeZone,
+    []
+  );
 
   return useCallback(
     (
@@ -57,10 +61,10 @@ export const useDateFormatter = () => {
 
       return format.dateTime(new Date(date), {
         ...DATE_STYLE_FORMAT[dateStyle],
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timeZone,
       });
     },
-    [format]
+    [format, timeZone]
   );
 };
 

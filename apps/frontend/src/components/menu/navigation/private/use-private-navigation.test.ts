@@ -176,7 +176,6 @@ describe('usePrivateNavigation', () => {
 
     expect(result.current.sections.map((section) => section.key)).toEqual([
       'xtm-platform',
-      'xtm-platform-trial',
       'opencti',
       'openaev',
       'xtm-one',
@@ -204,17 +203,24 @@ describe('usePrivateNavigation', () => {
         label: 'Slack',
         external: true,
       },
+      {
+        key: 'xtm-platform-trial',
+        href: `/${APP_PATH}/xtm-platform-trial`,
+        icon: expect.any(Function),
+        label: 'XTMPlatformTrial',
+        highlight: true,
+      },
     ]);
   });
 
-  it('hides the xtm-platform-trial section when the feature flag is off', () => {
+  it('hides the xtm-platform-trial bottom link when the feature flag is off', () => {
     vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
 
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
     });
 
-    expect(result.current.sections.map((section) => section.key)).not.toContain(
+    expect(result.current.bottomLinks.map((link) => link.key)).not.toContain(
       'xtm-platform-trial'
     );
   });
@@ -227,7 +233,6 @@ describe('usePrivateNavigation', () => {
 
     expect(result.current.sections.map((section) => section.key)).toEqual([
       'xtm-platform',
-      'xtm-platform-trial',
       'opencti',
       'openaev',
       'xtm-one',
@@ -329,6 +334,13 @@ describe('usePrivateNavigation', () => {
         icon: expect.any(Function),
         label: 'Slack',
         external: true,
+      },
+      {
+        key: 'xtm-platform-trial',
+        href: `/${APP_PATH}/xtm-platform-trial`,
+        icon: expect.any(Function),
+        label: 'XTMPlatformTrial',
+        highlight: true,
       },
     ]);
   });
@@ -696,7 +708,6 @@ describe('usePrivateNavigation', () => {
 
       expect(result.current.sections.map((section) => section.key)).toEqual([
         'xtm-platform',
-        'xtm-platform-trial',
         'opencti',
         'openaev',
         'xtm-one',

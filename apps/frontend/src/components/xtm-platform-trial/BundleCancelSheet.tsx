@@ -15,12 +15,16 @@ import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialI
 import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
-const bundleCancelSchema = z.object({
-  cancellation_reason: z.string().optional(),
-});
+const buildBundleCancelSchema = (requiredMessage: string) =>
+  z.object({
+    cancellation_reason: z.string().min(1, requiredMessage),
+  });
+
+type BundleCancelSchema = ReturnType<typeof buildBundleCancelSchema>;
 
 const REASONS = [
   'value',
@@ -42,6 +46,15 @@ export const BundleCancelSheet = ({
   setOpen,
 }: BundleCancelSheetProps) => {
   const t = useTranslations();
+  const bundleCancelSchema = useMemo(
+    () =>
+      buildBundleCancelSchema(
+        t(
+          'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonRequired'
+        )
+      ),
+    [t]
+  );
   const queryClient = useQueryClient();
   const cancellationReasons = REASONS.map((reason) => ({
     value: reason,
@@ -53,7 +66,7 @@ export const BundleCancelSheet = ({
       CancelDeploymentRequestMutation
     );
 
-  const onSubmit = (values: z.infer<typeof bundleCancelSchema>) => {
+  const onSubmit = (values: z.infer<BundleCancelSchema>) => {
     cancelDeploymentRequestMutation({
       variables: {
         deploymentRequestId,
@@ -92,7 +105,9 @@ export const BundleCancelSheet = ({
         onSubmit={onSubmit}
         fieldConfig={{
           cancellation_reason: {
-            label: 'Cancel Trial',
+            label: t(
+              'Service.Trials.Cancellation.ConfirmationForm.CancellationReason'
+            ),
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>

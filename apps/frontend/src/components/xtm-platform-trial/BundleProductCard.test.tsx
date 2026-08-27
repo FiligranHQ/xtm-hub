@@ -62,7 +62,7 @@ describe('BundleProductCard', () => {
       />
     );
 
-    expect(screen.getByText('OpenCTI')).toBeInTheDocument();
+    expect(screen.getByAltText('OpenCTI')).toBeInTheDocument();
     expect(screen.getByText('OpenCTI Instance')).toBeInTheDocument();
     expect(screen.getByText('Admin')).toBeInTheDocument();
   });
@@ -118,6 +118,26 @@ describe('BundleProductCard', () => {
     expect(screen.getByText('ConnectionOpenaev:')).toBeInTheDocument();
     expect(screen.getByText('ProductName:')).toBeInTheDocument();
     expect(screen.getByText('XTM One Instance')).toBeInTheDocument();
+  });
+
+  it('enables the XTM One access link from its url even without a role', () => {
+    testRender(
+      <BundleProductCard
+        product={buildProduct({
+          platform_identifier:
+            'xtmone' as XtmPlatformBundleProduct['platform_identifier'],
+          name: 'XTM One Instance',
+          url: 'https://xtmone.example.io',
+          roles: [],
+        })}
+        xtmoneStatus={connectedXtmoneStatus}
+        canManage={false}
+      />
+    );
+
+    const accessLink = screen.getByText('AccessProduct').closest('a');
+    expect(accessLink).not.toBeNull();
+    expect(accessLink).toHaveAttribute('href', 'https://xtmone.example.io');
   });
 
   it('hides the edit-name button when the user cannot manage', () => {

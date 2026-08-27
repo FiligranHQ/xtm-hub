@@ -6,6 +6,7 @@ import { SlackSupportButton } from '@/components/service/trial-instances/SlackSu
 import { BundleGuideCard } from '@/components/xtm-platform-trial/BundleGuideCard';
 import { BundleInfoCard } from '@/components/xtm-platform-trial/BundleInfoCard';
 import { BundleProductCard } from '@/components/xtm-platform-trial/BundleProductCard';
+import { TrialLimitationsCard } from '@/components/xtm-platform-trial/TrialLimitationsCard';
 import { useXtmoneIntegrationStatus } from '@/components/xtm-platform-trial/useXtmoneIntegrationStatus';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
@@ -33,7 +34,7 @@ export const XtmPlatformTrialPage = () => {
     ) ||
     false;
 
-  const { data } = useActiveXtmPlatformBundleQuery(
+  const { data, isLoading } = useActiveXtmPlatformBundleQuery(
     portalGraphqlClient,
     {},
     { queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle() }
@@ -53,6 +54,16 @@ export const XtmPlatformTrialPage = () => {
     isError: xtmoneQuery.isError,
     hasUrl: !!xtmoneUrl,
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-m">
+        <div className="h-8 w-64 rounded bg-elevation-surface-highlight-layer-1" />
+        <div className="h-4 w-full rounded bg-elevation-surface-highlight-layer-1" />
+        <div className="h-4 w-5/6 rounded bg-elevation-surface-highlight-layer-1" />
+      </div>
+    );
+  }
 
   if (!bundle) {
     return null;
@@ -80,7 +91,7 @@ export const XtmPlatformTrialPage = () => {
         </div>
         <div className="flex items-center gap-s shrink-0">
           <ReachSalesButton
-            variant="secondary"
+            variant="gradient"
             platformIdentifier={PlatformIdentifier.Xtmone}
           />
           <SlackSupportButton />
@@ -106,6 +117,7 @@ export const XtmPlatformTrialPage = () => {
           />
         ))}
       </div>
+      <TrialLimitationsCard />
     </div>
   );
 };

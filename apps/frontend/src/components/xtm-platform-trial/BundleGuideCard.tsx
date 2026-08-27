@@ -7,7 +7,7 @@ export const BundleGuideCard = () => {
   const tGuide = useTranslations('XtmPlatformTrial.Guide');
 
   return (
-    <div className="flex w-[417.33px] max-w-full flex-col gap-l rounded-lg bg-elevation-background-layer-3 p-xl">
+    <div className="flex w-full max-w-md flex-col gap-l rounded-lg bg-elevation-background-layer-3 p-xl">
       <div className="flex flex-col">
         <h2 className="text-header-heading-xl">{tGuide('Title')}</h2>
         <p className="text-content-body-compact text-text-default-primary">
