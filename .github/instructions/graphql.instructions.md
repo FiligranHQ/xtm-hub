@@ -55,4 +55,4 @@ resolver.
 ## Subscriptions
 
 Delivered over GraphQL SSE (`graphql-sse`) on `/graphql-sse`, backed by the PubSub in `apps/backend/src/pub.ts`. The
-Next.js `middleware.ts` proxies that path to the API.
+Next.js `proxy.ts` (the Next.js 16 convention file, renamed from `middleware.ts`) proxies that path to the API.

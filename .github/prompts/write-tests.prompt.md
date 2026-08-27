@@ -23,12 +23,9 @@ that skill doesn't name.
    `*.utils.ts` beside the component and test that in isolation. A utility that imports React, Relay or `next/*` is a
    sign the split is in the wrong place.
 
-4. **Frontend specifics.** Render with `testRender` from `@/utils/test/test-render`. Mock `next-intl` with
-   `useTranslations: () => (key: string) => key` and assert on i18n keys, not translated copy. For
-   `@tanstack/react-query` code, mock the hooks directly; for Relay code, mock mutations with
-   `useMutation: () => [vi.fn(), {}]` and use `createMockEnvironment()` from `relay-test-utils` for queries. Stub
-   heavy components not under test with a plain `<div>`. Framework-level modules (`next/image`, `next/navigation`)
-   are already mocked globally in `setup-vitest.ts` — don't repeat them.
+4. **Frontend specifics.** Follow [`.github/instructions/testing.instructions.md`](../instructions/testing.instructions.md)'s
+   "Frontend tooling" section for `testRender`, `next-intl` mocking, react-query vs. Relay mocking, and the global
+   `setup-vitest.ts` mocks.
 
 5. **Backend specifics.** Integration tests hit the real `test_database` (`VITEST_MODE=true`) and run with
    `fileParallelism: false`, so they share state — clean up after yourself.

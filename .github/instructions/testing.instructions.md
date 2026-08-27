@@ -15,10 +15,10 @@ don't name.
 
 - Render with `testRender` from `@/utils/test/test-render` (wraps the providers).
 - Mock `next-intl` with `useTranslations: () => (key: string) => key` and assert on i18n keys, not translated copy.
-- For `@tanstack/react-query` code (preferred for new work), mock the query/mutation hooks directly rather than the
+- For `@tanstack/react-query` code (mandatory for new work), mock the query/mutation hooks directly rather than the
   network layer.
-- For Relay code (existing pages only), mock mutations with `useMutation: () => [vi.fn(), {}]` and use
-  `createMockEnvironment()` from `relay-test-utils` for queries.
+- For Relay code (existing pages only, being phased out), mock mutations with `useMutation: () => [vi.fn(), {}]` and
+  use `createMockEnvironment()` from `relay-test-utils` for queries.
 - Stub heavy components that are not under test (for example `DataTable`) with a simple `<div>`.
 - `next/image`, `next/navigation` and other framework-level modules are already mocked globally in
   `setup-vitest.ts` — don't repeat them per file.

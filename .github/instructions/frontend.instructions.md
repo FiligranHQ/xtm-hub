@@ -56,7 +56,7 @@ src/lib/  src/utils/                Helpers, server actions, middleware helpers,
 graphql/                            *.query.graphql / *.mutation.graphql + generated.ts (react-query, new work)
 __generated__/                      Relay output — generated, never edit
 messages/                           en.json, fr.json
-middleware.ts                       Proxies /graphql-api, /graphql-sse, /auth/*, /document/*
+proxy.ts                            Next.js 16 proxy convention (was middleware.ts); i18n + auth/document/GraphQL proxying
 schema.graphql                      Written by the backend, read by Relay
 ```
 
@@ -81,7 +81,9 @@ for buttons, inputs, tables, dialogs and the like. Fall back to raw TailwindCSS 
 
 ## Data fetching
 
-The backend is reached through `middleware.ts`, which proxies to `SERVER_HTTP_API` (default `http://localhost:4002`).
+The backend is reached through `proxy.ts` (Next.js 16's convention file, renamed from `middleware.ts`), which
+delegates GraphQL/auth/document routes to `src/utils/middleware/graphql-request.util.ts` and rewrites them to
+`SERVER_HTTP_API` (default `http://localhost:4002`).
 
 **For new work, use `@tanstack/react-query`**, not Relay:
 
