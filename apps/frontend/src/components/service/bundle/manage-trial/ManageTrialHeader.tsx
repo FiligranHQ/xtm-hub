@@ -139,7 +139,7 @@ export const ManageTrialHeader = ({
                         : visible,
                   })}
                 </AlertDialogComponent>
-                <TooltipContent className="bg-elevation-border-subtle-layer-0 dark:bg-elevation-border-subtle-layer-0">
+                <TooltipContent className="bg-elevation-border-subtle-layer-0 dark:bg-elevation-border-subtle-layer-0 text-text-default-primary">
                   {t('Service.Bundle.ManageTrial.BulkDeleteTooltip')}
                 </TooltipContent>
               </Tooltip>
@@ -161,7 +161,7 @@ export const ManageTrialHeader = ({
                     </Button>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-elevation-border-subtle-layer-0 dark:bg-elevation-border-subtle-layer-0">
+                <TooltipContent className="bg-elevation-border-subtle-layer-0 dark:bg-elevation-border-subtle-layer-0 text-text-default-primary">
                   {t('Service.Bundle.ManageTrial.GroupActionDisabledTooltip')}
                 </TooltipContent>
               </Tooltip>

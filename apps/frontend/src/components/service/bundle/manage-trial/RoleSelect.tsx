@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import {
   Select,
   SelectContent,
@@ -38,21 +39,22 @@ export const RoleSelect = ({
       onValueChange={onValueChange}
       value={value}
       disabled={disabled}>
-      <SelectTrigger className={triggerClassName}>
+      <SelectTrigger className={cn('content-body-base', triggerClassName)}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent className="bg-elevation-surface-highlight-layer-2">
+      <SelectContent className="layer-2 bg-input-default">
         {isOptional && (
           <SelectItem
             value={NO_ROLE_VALUE}
-            className="bg-input-bg-default">
+            className="focus:bg-input-hover">
             {t('Service.Bundle.ManageTrial.Roles.NoAccess')}
           </SelectItem>
         )}
         {roles.map((role) => (
           <SelectItem
             key={role}
-            value={role}>
+            value={role}
+            className="focus:bg-input-hover content-body-base">
             {t(`${namespace}.${role}.Label`)}
           </SelectItem>
         ))}

@@ -6,10 +6,9 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@filigran/ui';
-import { MultiSelectFormField } from '@filigran/ui/clients';
+import { FormLabel, MultiSelectFormField } from '@filigran/ui/clients';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { UseFormReturn, useFormState, useWatch } from 'react-hook-form';
@@ -31,7 +30,7 @@ interface TrialUserFormSkeletonProps {
   form: UseFormReturn<TrialUserRolesFormValues>;
   onSubmit: (values: TrialUserRolesFormValues) => void;
   usersOptions: UserOption[];
-  pickerLabel: string;
+  pickerLabel?: string;
   pickerPlaceholder: string;
   products: PlatformIdentifier[];
   bundleRolePanels: RolePanelConfig[];
@@ -72,18 +71,28 @@ export const TrialUserFormSkeleton = ({
           name="userIds"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{pickerLabel}</FormLabel>
+              {pickerLabel && (
+                <FormLabel className="content-body-compact-medium text-text-default-secondary">
+                  {pickerLabel}
+                </FormLabel>
+              )}
               <FormControl>
-                <MultiSelectFormField
-                  options={usersOptions}
-                  defaultValue={field.value}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  noResultString={t('Utils.NotFound')}
-                  placeholder={pickerPlaceholder}
-                  variant="inverted"
-                  popoverContentClassName="bg-elevation-surface-highlight-layer-2"
-                />
+                <div className="layer-2">
+                  <MultiSelectFormField
+                    options={usersOptions}
+                    defaultValue={field.value}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    noResultString={t('Utils.NotFound')}
+                    placeholder={pickerPlaceholder}
+                    variant="inverted"
+                    placeholderClassName="content-body-base"
+                    className={'bg-input-default hover:bg-input-hover'}
+                    popoverContentClassName="layer-2 bg-input-default hover:bg-input-hover content-body-compact
+                    [&_[cmdk-item]]:content-body-compact   [&_[cmdk-input]]:content-body-compact
+    [&_[cmdk-input]]:placeholder:content-body-compact  "
+                  />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

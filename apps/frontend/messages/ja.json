@@ -1722,12 +1722,11 @@
         },
         "AddUserDialog": {
           "Title": "トライアルユーザーを追加",
-          "Email": "メールアドレス",
           "EmailPlaceholder": "メールアドレスを追加"
         },
         "EditUsersDialog": {
           "Title": "ユーザーを編集",
-          "Users": "ユーザー",
+          "Users": "トライアルユーザーを管理",
           "UsersPlaceholder": "ユーザーを選択",
           "MixedRoles": "異なるロールを持つユーザーが選択されています"
         },

@@ -150,7 +150,6 @@ export const AddTrialUserForm = ({
       form={form}
       onSubmit={onSubmit}
       usersOptions={usersOptions}
-      pickerLabel={t('Service.Bundle.ManageTrial.AddUserDialog.Email')}
       pickerPlaceholder={t(
         'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
       )}

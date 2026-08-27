@@ -2,7 +2,6 @@
 
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { cn } from '@/lib/utils';
 import { i18nKey } from '@/utils/datatable';
 import { DeleteIcon } from '@filigran/icon';
 import { Button, DataTable, SelectionState, toast } from '@filigran/ui';
@@ -215,12 +214,7 @@ export const ManageTrialTable = ({
                   pendingRoleUpdate?.userId === row.original.id &&
                   pendingRoleUpdate?.platform === platform
                 }
-                triggerClassName={cn(
-                  'h-auto w-[200px] gap-xs border-0 shadow-none focus:ring-0 focus:ring-offset-0',
-                  row.original[accessorKey] === NO_ROLE_VALUE
-                    ? 'bg-elevation-background-layer-1'
-                    : 'bg-elevation-background-layer-2'
-                )}
+                triggerClassName="h-auto w-[200px] gap-xs border-0 shadow-none focus:ring-0 focus:ring-offset-0 layer-0 bg-input-default hover:bg-input-hover"
               />
             ),
           };

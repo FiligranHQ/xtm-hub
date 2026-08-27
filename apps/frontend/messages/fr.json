@@ -1722,12 +1722,11 @@
         },
         "AddUserDialog": {
           "Title": "Ajouter un utilisateur d'essai",
-          "Email": "Email",
           "EmailPlaceholder": "Ajouter un email"
         },
         "EditUsersDialog": {
           "Title": "Modifier les utilisateurs",
-          "Users": "Utilisateurs",
+          "Users": "Gérer les utilisateurs d'essai",
           "UsersPlaceholder": "Sélectionner des utilisateurs",
           "MixedRoles": "Des utilisateurs avec des rôles différents sont sélectionnés"
         },

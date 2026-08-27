@@ -1722,12 +1722,11 @@
         },
         "AddUserDialog": {
           "Title": "Add trial user",
-          "Email": "Email",
           "EmailPlaceholder": "Add email"
         },
         "EditUsersDialog": {
           "Title": "Edit users",
-          "Users": "Users",
+          "Users": "Manage trial users",
           "UsersPlaceholder": "Select users",
           "MixedRoles": "Users with different roles are selected"
         },

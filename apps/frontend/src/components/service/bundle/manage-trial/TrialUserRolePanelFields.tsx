@@ -52,10 +52,11 @@ export const TrialUserRolePanelFields = ({
               } else {
                 value = untouchedRoleDefault ?? noAccessFallback;
               }
-              const isNoAccessSelected = value === NO_ROLE_VALUE;
               return (
                 <FormItem className="gap-m md:flex-1">
-                  <FormLabel>{title}</FormLabel>
+                  <FormLabel className="content-body-compact-medium text-text-default-secondary">
+                    {title}
+                  </FormLabel>
                   <FormControl>
                     <RoleSelect
                       value={value ?? ''}
@@ -69,11 +70,7 @@ export const TrialUserRolePanelFields = ({
                       namespace={namespace}
                       isOptional={isOptional}
                       placeholder={isUntouchedAndMixed ? title : undefined}
-                      triggerClassName={
-                        isNoAccessSelected || isUntouchedAndMixed
-                          ? 'bg-input-bg-default'
-                          : 'bg-elevation-surface-highlight-layer-2'
-                      }
+                      triggerClassName="layer-2 bg-input-default hover:bg-input-hover"
                     />
                   </FormControl>
                   {isUntouchedAndMixed && (
