@@ -83,6 +83,9 @@ export async function up(knex) {
     // round and product moves the vote, while previous rounds keep their votes.
     table.primary(['user_id', 'voting_round_id', 'product']);
     table.index('votable_feature_id');
+    // The primary key leads with user_id, so counting the votes of a round
+    // would otherwise scan the whole table.
+    table.index('voting_round_id');
   });
 }
 

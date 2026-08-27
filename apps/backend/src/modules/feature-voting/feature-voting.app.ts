@@ -7,12 +7,17 @@ import {
   VotingRoundStatus,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import {
+  withAdvisoryLock,
+  withTransaction,
+} from '../../context/database.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
 import VotingRound, {
   VotingRoundId,
 } from '../../model/kanel/public/VotingRound';
 import {
+  BadRequestErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
@@ -22,6 +27,7 @@ import {
   featureVotingDomain,
   VotableFeatureWithVote,
 } from './feature-voting.domain';
+import { isAllowedImageUrl } from './feature-voting.utils';
 
 export type VotingRoundWithFeatures = VotingRound & {
   features: VotableFeatureWithVote[];
@@ -39,6 +45,12 @@ const requireRound = async (id: VotingRoundId): Promise<VotingRound> => {
     throw new Error(NotFoundErrorCode.VotingRoundNotFound);
   }
   return round;
+};
+
+const requireValidImageUrl = (imageUrl?: string | null): void => {
+  if (imageUrl && !isAllowedImageUrl(imageUrl)) {
+    throw new Error(BadRequestErrorCode.InvalidImageUrl);
+  }
 };
 
 /**
@@ -99,6 +111,15 @@ export const featureVotingApp = {
   loadCurrentVotingRound: async (
     serviceInstanceId: ServiceInstanceId
   ): Promise<VotingRoundWithFeatures | null> => {
+    // The field is reachable without authentication, so a guessed service
+    // instance id must not expose the roadmap of a private instance.
+    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
+      id: serviceInstanceId,
+    });
+    if (!serviceInstance?.public) {
+      return null;
+    }
+
     const round = await featureVotingDomain.loadVotingRoundBy({
       service_instance_id: serviceInstanceId,
       status: VotingRoundStatus.Open,
@@ -160,40 +181,55 @@ export const featureVotingApp = {
     const user = requestContext.requireUser();
     const { copy_features_from_round_id, ...roundInput } = input;
 
-    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
-      id: input.service_instance_id,
-    });
-    if (!serviceInstance) {
-      throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
-    }
-
-    const round = await featureVotingDomain.insertVotingRound({
-      ...stripNulls(roundInput),
-      status: VotingRoundStatus.Draft,
-      creator_id: user.id,
-      created_at: new Date(),
-    });
-
-    if (copy_features_from_round_id) {
-      const sourceRound = await requireRound(copy_features_from_round_id);
-      const sourceFeatures = await featureVotingDomain.loadVotableFeatures({
-        roundId: sourceRound.id,
-      });
-      await featureVotingDomain.insertVotableFeatures(
-        sourceFeatures.map((feature) => ({
-          voting_round_id: round.id,
-          title: feature.title,
-          short_description: feature.short_description,
-          description: feature.description,
-          product: feature.product,
-          labels: feature.labels,
-          image_url: feature.image_url,
-          position: feature.position,
-          active: feature.active,
-          created_at: new Date(),
-        }))
+    // The round and its copied features are one unit: a failure midway would
+    // otherwise leave an empty round behind, with the error surfaced to the
+    // admin as if nothing had been created.
+    const round = await withTransaction(async () => {
+      const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy(
+        { id: input.service_instance_id }
       );
-    }
+      if (!serviceInstance) {
+        throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
+      }
+
+      const createdRound = await featureVotingDomain.insertVotingRound({
+        ...stripNulls(roundInput),
+        status: VotingRoundStatus.Draft,
+        creator_id: user.id,
+        created_at: new Date(),
+      });
+
+      if (copy_features_from_round_id) {
+        const sourceRound = await requireRound(copy_features_from_round_id);
+        // Copying across roadmaps would mix unrelated feedback, and the picker
+        // only ever lists rounds of the selected service instance.
+        if (
+          sourceRound.service_instance_id !== createdRound.service_instance_id
+        ) {
+          throw new Error(ForbiddenErrorCode.CopyFeaturesFromAnotherRoadmap);
+        }
+
+        const sourceFeatures = await featureVotingDomain.loadVotableFeatures({
+          roundId: sourceRound.id,
+        });
+        await featureVotingDomain.insertVotableFeatures(
+          sourceFeatures.map((feature) => ({
+            voting_round_id: createdRound.id,
+            title: feature.title,
+            short_description: feature.short_description,
+            description: feature.description,
+            product: feature.product,
+            labels: feature.labels,
+            image_url: feature.image_url,
+            position: feature.position,
+            active: feature.active,
+            created_at: new Date(),
+          }))
+        );
+      }
+
+      return createdRound;
+    });
 
     return withAllFeatures(round);
   },
@@ -217,6 +253,10 @@ export const featureVotingApp = {
    * Applies a status transition. Opening a round closes whichever round was
    * open before, so previous results stay untouched and readable.
    * Returns every round whose status changed.
+   *
+   * The advisory lock serialises concurrent transitions on a roadmap: without
+   * it, two admins opening a round at the same time could leave the roadmap
+   * with no open round at all, or trip the single-open-round unique index.
    */
   setVotingRoundStatus: async (
     id: VotingRoundId,
@@ -227,45 +267,59 @@ export const featureVotingApp = {
       return [await withAllFeatures(round)];
     }
 
-    const closedRounds =
-      status === VotingRoundStatus.Open
-        ? await featureVotingDomain.closeOpenRoundsExcept(
-            id,
-            round.service_instance_id
-          )
-        : [];
+    const changedRounds = await withAdvisoryLock(
+      'voting-round-status',
+      round.service_instance_id,
+      async () => {
+        const closedRounds =
+          status === VotingRoundStatus.Open
+            ? await featureVotingDomain.closeOpenRoundsExcept(
+                id,
+                round.service_instance_id
+              )
+            : [];
 
-    const updated = await featureVotingDomain.updateVotingRound(id, {
-      status,
-      updated_at: new Date(),
-      ...(status === VotingRoundStatus.Open && { opened_at: new Date() }),
-      ...(status === VotingRoundStatus.Closed && { closed_at: new Date() }),
-    });
-    if (!updated) {
-      throw new Error(NotFoundErrorCode.VotingRoundNotFound);
-    }
+        const updated = await featureVotingDomain.updateVotingRound(id, {
+          status,
+          updated_at: new Date(),
+          // Reopening a round must clear the closure date, otherwise an open
+          // round would keep advertising when it ended.
+          ...(status === VotingRoundStatus.Open && {
+            opened_at: new Date(),
+            closed_at: null,
+          }),
+          ...(status === VotingRoundStatus.Closed && { closed_at: new Date() }),
+        });
+        if (!updated) {
+          throw new Error(NotFoundErrorCode.VotingRoundNotFound);
+        }
 
-    return Promise.all(
-      [updated, ...closedRounds].map((changed) => withAllFeatures(changed))
+        return [updated, ...closedRounds];
+      }
     );
+
+    return Promise.all(changedRounds.map((changed) => withAllFeatures(changed)));
   },
 
   deleteVotingRound: async (
     id: VotingRoundId
-  ): Promise<VotingRoundWithFeatures> => {
-    await requireRound(id);
+  ): Promise<VotingRoundWithFeatures> =>
+    // The vote count and the delete must see the same snapshot, otherwise a
+    // vote cast in between would be silently cascaded away.
+    withTransaction(async () => {
+      await requireRound(id);
 
-    const voteCount = await featureVotingDomain.countVotesInRound(id);
-    if (voteCount > 0) {
-      throw new Error(ForbiddenErrorCode.DeleteVotingRoundBlockedByVotes);
-    }
+      const voteCount = await featureVotingDomain.countVotesInRound(id);
+      if (voteCount > 0) {
+        throw new Error(ForbiddenErrorCode.DeleteVotingRoundBlockedByVotes);
+      }
 
-    const deleted = await featureVotingDomain.deleteVotingRound(id);
-    if (!deleted) {
-      throw new Error(NotFoundErrorCode.VotingRoundNotFound);
-    }
-    return { ...deleted, features: [] };
-  },
+      const deleted = await featureVotingDomain.deleteVotingRound(id);
+      if (!deleted) {
+        throw new Error(NotFoundErrorCode.VotingRoundNotFound);
+      }
+      return { ...deleted, features: [] };
+    }),
 
   createVotableFeature: async (
     input: CreateVotableFeatureInput
@@ -274,6 +328,7 @@ export const featureVotingApp = {
     if (round.status === VotingRoundStatus.Closed) {
       throw new Error(ForbiddenErrorCode.VotingRoundClosed);
     }
+    requireValidImageUrl(input.image_url);
 
     const created = await featureVotingDomain.insertVotableFeature({
       ...stripNulls(input),
@@ -286,18 +341,40 @@ export const featureVotingApp = {
     id: VotableFeatureId,
     input: UpdateVotableFeatureInput
   ): Promise<VotableFeatureWithVote> => {
-    const feature = await featureVotingDomain.loadVotableFeatureBy({ id });
-    if (!feature) {
-      throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
-    }
+    const updated = await withTransaction(async () => {
+      const feature = await featureVotingDomain.loadVotableFeatureBy({ id });
+      if (!feature) {
+        throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
+      }
 
-    const updated = await featureVotingDomain.updateVotableFeature(id, {
-      ...applyUpdate(input, ['image_url']),
-      updated_at: new Date(),
+      const round = await requireRound(feature.voting_round_id);
+      // Published results must not change meaning after the fact.
+      if (round.status === VotingRoundStatus.Closed) {
+        throw new Error(ForbiddenErrorCode.VotingRoundClosed);
+      }
+      requireValidImageUrl(input.image_url);
+
+      // One vote is allowed per user, per round and per product. Moving a
+      // feature to another product after it collected votes would let the same
+      // user weigh twice on the target product's ranking.
+      const isChangingProduct =
+        !!input.product && input.product !== feature.product;
+      if (isChangingProduct) {
+        const voteCount = await featureVotingDomain.countVotesForFeature(id);
+        if (voteCount > 0) {
+          throw new Error(ForbiddenErrorCode.VotableFeatureProductLocked);
+        }
+      }
+
+      const updatedFeature = await featureVotingDomain.updateVotableFeature(id, {
+        ...applyUpdate(input, ['image_url']),
+        updated_at: new Date(),
+      });
+      if (!updatedFeature) {
+        throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
+      }
+      return updatedFeature;
     });
-    if (!updated) {
-      throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
-    }
 
     const roundFeatures = await featureVotingDomain.loadVotableFeatures({
       roundId: updated.voting_round_id,
@@ -317,26 +394,26 @@ export const featureVotingApp = {
    */
   deleteVotableFeature: async (
     id: VotableFeatureId
-  ): Promise<VotableFeatureWithVote> => {
-    const feature = await featureVotingDomain.loadVotableFeatureBy({ id });
-    if (!feature) {
-      throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
-    }
+  ): Promise<VotableFeatureWithVote> =>
+    // The vote check and the delete must see the same snapshot, otherwise a
+    // vote cast in between would be silently cascaded away.
+    withTransaction(async () => {
+      const feature = await featureVotingDomain.loadVotableFeatureBy({ id });
+      if (!feature) {
+        throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
+      }
 
-    const results = await featureVotingDomain.loadRoundResults(
-      feature.voting_round_id
-    );
-    const featureResult = results.find((result) => result.id === id);
-    if (featureResult && featureResult.vote_count > 0) {
-      throw new Error(ForbiddenErrorCode.DeleteVotableFeatureBlockedByVotes);
-    }
+      const voteCount = await featureVotingDomain.countVotesForFeature(id);
+      if (voteCount > 0) {
+        throw new Error(ForbiddenErrorCode.DeleteVotableFeatureBlockedByVotes);
+      }
 
-    const deleted = await featureVotingDomain.deleteVotableFeature(id);
-    if (!deleted) {
-      throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
-    }
-    return { ...deleted, has_my_vote: false };
-  },
+      const deleted = await featureVotingDomain.deleteVotableFeature(id);
+      if (!deleted) {
+        throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
+      }
+      return { ...deleted, has_my_vote: false };
+    }),
 
   loadVotingRoundResults: async (
     id: VotingRoundId

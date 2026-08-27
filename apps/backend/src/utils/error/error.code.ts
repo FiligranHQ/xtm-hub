@@ -38,6 +38,8 @@ export enum ForbiddenErrorCode {
   VotingRoundClosed = 'VOTING_ROUND_CLOSED',
   DeleteVotingRoundBlockedByVotes = 'DELETE_VOTING_ROUND_BLOCKED_BY_VOTES',
   DeleteVotableFeatureBlockedByVotes = 'DELETE_VOTABLE_FEATURE_BLOCKED_BY_VOTES',
+  VotableFeatureProductLocked = 'VOTABLE_FEATURE_PRODUCT_LOCKED',
+  CopyFeaturesFromAnotherRoadmap = 'COPY_FEATURES_FROM_ANOTHER_ROADMAP',
 }
 
 export enum BadRequestErrorCode {

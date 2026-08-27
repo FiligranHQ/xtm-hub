@@ -17,6 +17,7 @@ import VotingRound, {
   VotingRoundId,
 } from '../../model/kanel/public/VotingRound';
 import {
+  BadRequestErrorCode,
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
@@ -64,6 +65,10 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     requestContext.set(requestContextSimpleUserFiligran2);
+    vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue({
+      id: SERVICE_INSTANCE_ID,
+      public: true,
+    } as ServiceInstance);
   });
 
   it('should return the round open on that service instance, with only its active features', async () => {
@@ -105,6 +110,31 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
     // Then
     expect(result).toBeNull();
   });
+
+  // The field is public, so a guessed service instance id must not leak the
+  // roadmap of a private instance.
+  it.each`
+    serviceInstance                                | description
+    ${{ id: SERVICE_INSTANCE_ID, public: false }}  | ${'a private service instance'}
+    ${undefined}                                   | ${'a service instance that does not exist'}
+  `(
+    'should return null for $description without querying the rounds',
+    async ({ serviceInstance }) => {
+      // Given
+      vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue(
+        serviceInstance as ServiceInstance | undefined
+      );
+      const loadRoundSpy = vi.spyOn(featureVotingDomain, 'loadVotingRoundBy');
+
+      // When
+      const result =
+        await featureVotingApp.loadCurrentVotingRound(SERVICE_INSTANCE_ID);
+
+      // Then
+      expect(result).toBeNull();
+      expect(loadRoundSpy).not.toHaveBeenCalled();
+    }
+  );
 });
 
 describe('admin reads of a voting round', () => {
@@ -174,6 +204,10 @@ describe('admin reads of a voting round', () => {
 
   it('should keep hiding inactive features from the public page', async () => {
     // Given
+    vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue({
+      id: SERVICE_INSTANCE_ID,
+      public: true,
+    } as ServiceInstance);
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
       buildRound({ status: VotingRoundStatus.Open })
     );
@@ -182,7 +216,7 @@ describe('admin reads of a voting round', () => {
       .mockResolvedValue([]);
 
     // When
-    await featureVotingApp.loadCurrentVotingRound();
+    await featureVotingApp.loadCurrentVotingRound(SERVICE_INSTANCE_ID);
 
     // Then
     expect(loadSpy).toHaveBeenCalledWith(
@@ -517,6 +551,10 @@ describe('featureVotingApp.updateVotableFeature', () => {
     vi.restoreAllMocks();
     requestContext.set(requestContextSimpleUserFiligran2);
     vi.spyOn(featureVotingDomain, 'loadVotableFeatures').mockResolvedValue([]);
+    vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
+      buildRound({ status: VotingRoundStatus.Open })
+    );
+    vi.spyOn(featureVotingDomain, 'countVotesForFeature').mockResolvedValue(0);
   });
 
   // An explicit null is how the admin clears the illustration: it must reach
@@ -564,6 +602,87 @@ describe('featureVotingApp.updateVotableFeature', () => {
       expect.not.objectContaining({ image_url: expect.anything() })
     );
   });
+
+  // The results of a closed round are published: editing a feature afterwards
+  // would silently change what people voted on.
+  it('should refuse to edit a feature of a closed round', async () => {
+    // Given
+    const feature = buildFeature();
+    vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
+      feature
+    );
+    vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
+      buildRound({ status: VotingRoundStatus.Closed })
+    );
+    const updateSpy = vi.spyOn(featureVotingDomain, 'updateVotableFeature');
+
+    // When / Then
+    await expect(
+      featureVotingApp.updateVotableFeature(feature.id, { title: 'Renamed' })
+    ).rejects.toThrow(ForbiddenErrorCode.VotingRoundClosed);
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  // One vote is allowed per user, per round and per product: moving a voted
+  // feature to another product would let the same user weigh twice there.
+  it('should refuse to move a feature that already collected votes to another product', async () => {
+    // Given
+    const feature = buildFeature({ product: FiligranProduct.Opencti });
+    vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
+      feature
+    );
+    vi.spyOn(featureVotingDomain, 'countVotesForFeature').mockResolvedValue(3);
+    const updateSpy = vi.spyOn(featureVotingDomain, 'updateVotableFeature');
+
+    // When / Then
+    await expect(
+      featureVotingApp.updateVotableFeature(feature.id, {
+        product: FiligranProduct.Openaev,
+      })
+    ).rejects.toThrow(ForbiddenErrorCode.VotableFeatureProductLocked);
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
+  it('should still allow editing a voted feature as long as its product is unchanged', async () => {
+    // Given
+    const feature = buildFeature({ product: FiligranProduct.Opencti });
+    vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
+      feature
+    );
+    vi.spyOn(featureVotingDomain, 'countVotesForFeature').mockResolvedValue(3);
+    const updateSpy = vi
+      .spyOn(featureVotingDomain, 'updateVotableFeature')
+      .mockResolvedValue({ ...feature, title: 'Renamed' });
+
+    // When
+    await featureVotingApp.updateVotableFeature(feature.id, {
+      title: 'Renamed',
+      product: FiligranProduct.Opencti,
+    });
+
+    // Then
+    expect(updateSpy).toHaveBeenCalledWith(
+      feature.id,
+      expect.objectContaining({ title: 'Renamed' })
+    );
+  });
+
+  it('should refuse an image the public page could not render', async () => {
+    // Given
+    const feature = buildFeature();
+    vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
+      feature
+    );
+    const updateSpy = vi.spyOn(featureVotingDomain, 'updateVotableFeature');
+
+    // When / Then
+    await expect(
+      featureVotingApp.updateVotableFeature(feature.id, {
+        image_url: 'https://evil.example.com/pwn.png',
+      })
+    ).rejects.toThrow(BadRequestErrorCode.InvalidImageUrl);
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
 });
 
 describe('featureVotingApp.updateVotingRound', () => {
@@ -605,9 +724,7 @@ describe('featureVotingApp.deleteVotableFeature', () => {
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
-    vi.spyOn(featureVotingDomain, 'loadRoundResults').mockResolvedValue([
-      { ...feature, vote_count: 3 },
-    ]);
+    vi.spyOn(featureVotingDomain, 'countVotesForFeature').mockResolvedValue(3);
     const deleteSpy = vi.spyOn(featureVotingDomain, 'deleteVotableFeature');
 
     // When / Then
@@ -623,9 +740,7 @@ describe('featureVotingApp.deleteVotableFeature', () => {
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
-    vi.spyOn(featureVotingDomain, 'loadRoundResults').mockResolvedValue([
-      { ...feature, vote_count: 0 },
-    ]);
+    vi.spyOn(featureVotingDomain, 'countVotesForFeature').mockResolvedValue(0);
     vi.spyOn(featureVotingDomain, 'deleteVotableFeature').mockResolvedValue(
       feature
     );

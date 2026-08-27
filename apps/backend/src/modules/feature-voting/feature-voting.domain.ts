@@ -196,6 +196,16 @@ export const featureVotingDomain = {
     return Number(row?.count ?? 0);
   },
 
+  countVotesForFeature: async (
+    featureId: VotableFeatureId
+  ): Promise<number> => {
+    const row = await db<FeatureVote>('FeatureVote')
+      .where({ votable_feature_id: featureId })
+      .count<{ count: string | number }>({ count: '*' })
+      .first();
+    return Number(row?.count ?? 0);
+  },
+
   loadRoundResults: async (
     roundId: VotingRoundId
   ): Promise<VotableFeatureWithCount[]> => {

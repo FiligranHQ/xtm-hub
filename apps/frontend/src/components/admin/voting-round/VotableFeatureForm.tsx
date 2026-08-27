@@ -1,3 +1,4 @@
+import { isAllowedImageUrl } from '@/components/admin/voting-round/votable-feature.utils';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { DeleteIcon } from '@filigran/icon';
@@ -51,11 +52,11 @@ export const votableFeatureFormSchema = z.object({
     .min(2, { error: 'VotingRound.Feature.Error.Description' }),
   product: z.enum(productValues),
   labels: z.string().optional(),
-  // next/image only allows local paths and a short remote allow-list, and the
-  // CSP blocks arbitrary hosts, so an absolute URL would break the public page.
+  // next/image serves local paths directly and only allows the remote hosts of
+  // the CSP allow-list, so any other absolute URL would break the public page.
   image_url: z
     .string()
-    .refine((value) => value === '' || value.startsWith('/'), {
+    .refine((value) => value === '' || isAllowedImageUrl(value), {
       error: 'VotingRound.Feature.Error.ImageUrl',
     })
     .optional(),
