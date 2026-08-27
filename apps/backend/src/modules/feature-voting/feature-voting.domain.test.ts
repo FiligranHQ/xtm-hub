@@ -422,6 +422,22 @@ describe('featureVotingDomain', () => {
       );
     });
 
+    it('should tag the use cases with their own typename so their global ID resolves as a UseCase', async () => {
+      const round = await createRound();
+      const feature = await createFeature(round.id);
+
+      await featureVotingDomain.replaceFeatureUseCases(feature.id, [
+        useCaseA.id,
+      ]);
+      const grouped = await featureVotingDomain.loadUseCasesByFeature([
+        feature.id,
+      ]);
+
+      expect(grouped.get(feature.id)).toEqual([
+        expect.objectContaining({ id: useCaseA.id, __typename: 'UseCase' }),
+      ]);
+    });
+
     it('should replace the previous selection rather than add to it', async () => {
       const round = await createRound();
       const feature = await createFeature(round.id);

@@ -229,6 +229,12 @@ export const featureVotingDomain = {
    * feature of a round at once, so resolving this per feature would put the
    * page one query away from the number of features it displays.
    */
+  /**
+   * The query must start from `UseCase`: `db()` stamps every row with the
+   * `__typename` of the table it was called on, and that typename is what the
+   * Relay global ID is built from. Starting from the join table would expose
+   * `VotableFeature_UseCase` ids, which the `UseCaseId` scalar then rejects.
+   */
   loadUseCasesByFeature: async (
     featureIds: VotableFeatureId[]
   ): Promise<Map<VotableFeatureId, UseCase[]>> => {
@@ -237,8 +243,12 @@ export const featureVotingDomain = {
       return grouped;
     }
 
-    const rows = await db<VotableFeatureUseCase>('VotableFeature_UseCase')
-      .join('UseCase', 'UseCase.id', 'VotableFeature_UseCase.use_case_id')
+    const rows = await db<UseCase>('UseCase')
+      .join(
+        'VotableFeature_UseCase',
+        'VotableFeature_UseCase.use_case_id',
+        'UseCase.id'
+      )
       .whereIn('VotableFeature_UseCase.votable_feature_id', featureIds)
       .orderBy('UseCase.name', 'asc')
       .select<(UseCase & { votable_feature_id: VotableFeatureId })[]>(
