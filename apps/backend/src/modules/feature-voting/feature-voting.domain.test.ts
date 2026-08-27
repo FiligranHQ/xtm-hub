@@ -1,5 +1,5 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { v4 as uuidv4 } from 'uuid';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
@@ -373,15 +373,15 @@ describe('featureVotingDomain', () => {
 
       const results = await featureVotingDomain.loadRoundResults(round.id);
 
-        expect(results.map(({ id, vote_count }) => [id, vote_count])).toEqual([
-          [winner.id, 2],
-          [runnerUp.id, 1],
-          [unvoted.id, 0],
-        ]);
-      });
+      expect(results.map(({ id, vote_count }) => [id, vote_count])).toEqual([
+        [winner.id, 2],
+        [runnerUp.id, 1],
+        [unvoted.id, 0],
+      ]);
     });
+  });
 
-    describe('use cases', () => {
+  describe('use cases', () => {
     let useCaseA: UseCase;
     let useCaseB: UseCase;
 

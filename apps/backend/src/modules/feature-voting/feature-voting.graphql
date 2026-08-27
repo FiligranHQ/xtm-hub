@@ -87,7 +87,9 @@ input UpdateVotableFeatureInput {
   description: String
   product: FiligranProduct
   use_case_ids: [UseCaseId!]
-  """Send null to remove the current illustration."""
+  """
+  Send null to remove the current illustration.
+  """
   illustration_document_id: DocumentId
   position: Int
   active: Boolean
