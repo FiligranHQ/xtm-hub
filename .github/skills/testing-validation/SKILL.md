@@ -54,6 +54,10 @@ integration testing) build on top of these.
 - **Extract repeated fixture values to named constants.** Any primitive value (string, number, boolean) that appears in
   both the fixture object and in assertions must be declared as a `const` at the top of the test file and reused
   everywhere. This prevents silent drift between test setup and assertion.
+- **Verify new/changed tests actually assert something.** After writing or changing a test for new or changed
+  behavior, briefly break the logic it's supposed to protect (comment out the line, invert a condition, remove a
+  guard) and rerun that test — it must fail. If it still passes, the assertion is too loose or checking the wrong
+  thing; fix the test, then revert the deliberate breakage before finishing.
 - Strict determinism: Freeze time, use fixed random seeds, and avoid any dependency on test execution order.
 - High-quality it.each datasets: Always include nominal cases, boundary cases, invalid inputs, and known regressions.
 - Readable fixtures: Prefer builders/factories (makeUser, makeOrg) over large inline objects.
