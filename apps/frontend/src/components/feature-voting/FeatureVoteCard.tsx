@@ -13,11 +13,13 @@ const BADGE_CLASS =
 
 interface FeatureVoteCardProps {
   feature: VotableFeaturePublicFragment;
+  serviceInstanceId: string;
   isAuthenticated: boolean;
 }
 
 export const FeatureVoteCard = ({
   feature,
+  serviceInstanceId,
   isAuthenticated,
 }: FeatureVoteCardProps) => {
   const t = useTranslations();
@@ -57,10 +59,10 @@ export const FeatureVoteCard = ({
     <div
       onClick={handleCardClick}
       className="flex h-full cursor-pointer flex-col overflow-hidden rounded bg-elevation-background-layer-1 hover:bg-hover">
-      {feature.image_url && (
+      {feature.illustration_document_id && (
         <div className="relative h-32 w-full shrink-0">
           <Image
-            src={feature.image_url}
+            src={`/document/images/${serviceInstanceId}/${feature.illustration_document_id}`}
             alt={feature.title}
             fill
             className="object-cover"
@@ -74,13 +76,13 @@ export const FeatureVoteCard = ({
         <p className="text-muted-foreground text-sm line-clamp-3">
           {feature.short_description}
         </p>
-        {feature.labels.length > 0 && (
+        {feature.use_cases.length > 0 && (
           <div className="flex flex-wrap items-center gap-s">
-            {feature.labels.map((label) => (
+            {feature.use_cases.map((useCase) => (
               <Badge
-                key={label}
+                key={useCase.id}
                 className={BADGE_CLASS}>
-                {label}
+                {useCase.name}
               </Badge>
             ))}
           </div>

@@ -29,7 +29,12 @@ const fillForm = async (user: ReturnType<typeof testRender>['user']) => {
 
 describe('AddVotableFeature', () => {
   it('should open the sheet from its trigger', async () => {
-    const { user } = testRender(<AddVotableFeature roundId="round-1" />);
+    const { user } = testRender(
+      <AddVotableFeature
+        roundId="round-1"
+        serviceInstanceId="instance-1"
+      />
+    );
 
     await user.click(
       screen.getByRole('button', { name: 'VotingRound.Feature.Actions.Add' })
@@ -51,7 +56,12 @@ describe('AddVotableFeature', () => {
       })
     );
 
-    const { user } = testRender(<AddVotableFeature roundId="round-1" />);
+    const { user } = testRender(
+      <AddVotableFeature
+        roundId="round-1"
+        serviceInstanceId="instance-1"
+      />
+    );
     await fillForm(user);
 
     await waitFor(() => {
@@ -71,7 +81,12 @@ describe('AddVotableFeature', () => {
       })
     );
 
-    const { user } = testRender(<AddVotableFeature roundId="round-1" />);
+    const { user } = testRender(
+      <AddVotableFeature
+        roundId="round-1"
+        serviceInstanceId="instance-1"
+      />
+    );
     await fillForm(user);
 
     expect(

@@ -1,20 +1,35 @@
+import type { VotableFeatureFormValues } from '@/components/admin/voting-round/VotableFeatureForm';
+import type { GraphqlUploads } from '@/lib/graphql-upload-client';
+
 /**
- * Hosts `next/image` is configured to serve, mirroring the `remotePatterns`
- * allow-list of `next.config.mjs`. Anything else is refused so the public
- * voting page cannot be broken by an admin typo.
+ * Splits the form values into the parts the API expects: the plain input, and
+ * the file that has to travel as a multipart upload.
  */
-const ALLOWED_IMAGE_HOSTS = ['res.cloudinary.com'];
+export const buildVotableFeatureInput = (values: VotableFeatureFormValues) => ({
+  title: values.title,
+  short_description: values.short_description,
+  description: values.description,
+  product: values.product,
+  use_case_ids: values.use_case_ids,
+  position: Number(values.position),
+  active: values.active,
+});
 
-export const isAllowedImageUrl = (value: string): boolean => {
-  // A local path is served by Next itself and needs no allow-list.
-  if (value.startsWith('/')) {
-    return true;
-  }
+export const extractIllustrationFiles = (
+  values: VotableFeatureFormValues
+): File[] => Array.from(values.illustration_document ?? []);
 
-  try {
-    const { protocol, hostname } = new URL(value);
-    return protocol === 'https:' && ALLOWED_IMAGE_HOSTS.includes(hostname);
-  } catch {
-    return false;
-  }
-};
+export const toGraphqlUploads = (files: File[]): GraphqlUploads => ({
+  document: files,
+});
+
+/**
+ * Every field of the input is required, so the current document id is resent
+ * untouched unless the admin asked for a removal. A newly uploaded file makes
+ * the value irrelevant: the API overrides it with the document it just stored.
+ */
+export const resolveIllustrationDocumentId = (
+  values: VotableFeatureFormValues,
+  currentDocumentId: string | null | undefined
+): string | null =>
+  values.remove_illustration ? null : (currentDocumentId ?? null);

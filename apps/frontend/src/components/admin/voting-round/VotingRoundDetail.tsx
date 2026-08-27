@@ -61,16 +61,16 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
       cell: ({ row }) => <span className="truncate">{row.original.title}</span>,
     },
     {
-      id: 'labels',
-      header: t('VotingRound.Feature.Labels'),
+      id: 'use_cases',
+      header: t('Service.Form.UseCasesLabel'),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-xs">
-          {row.original.labels.map((label) => (
+          {row.original.use_cases.map((useCase) => (
             <Badge
-              key={label}
+              key={useCase.id}
               variant="outline">
-              {label}
+              {useCase.name}
             </Badge>
           ))}
         </div>
@@ -121,7 +121,10 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
             {t('VotingRound.Feature.SectionTitle')}
           </h2>
           {round.status !== VotingRoundStatus.Closed && (
-            <AddVotableFeature roundId={round.id} />
+            <AddVotableFeature
+              roundId={round.id}
+              serviceInstanceId={round.service_instance_id}
+            />
           )}
         </div>
         <DataTable
@@ -135,8 +138,8 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
               short_description: original.short_description,
               description: original.description,
               product: original.product,
-              labels: original.labels,
-              image_url: original.image_url,
+              use_cases: original.use_cases,
+              illustration_document_id: original.illustration_document_id,
               position: original.position,
               active: original.active,
             })
@@ -149,6 +152,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
       {featureToEdit && (
         <EditVotableFeature
           feature={featureToEdit}
+          serviceInstanceId={round.service_instance_id}
           open={!!featureToEdit}
           onClose={() =>
             useExecuteAfterAnimation(() => setFeatureToEdit(undefined))

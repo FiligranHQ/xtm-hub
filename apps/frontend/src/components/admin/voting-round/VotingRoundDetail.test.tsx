@@ -22,7 +22,7 @@ const feature = mockVotableFeature({
   id: 'feature-1',
   title: 'AI-powered report triage',
   product: FiligranProduct.Opencti,
-  labels: ['AI'],
+  use_cases: [{ id: 'use-case-1', name: 'Threat hunting', color: '#001122' }],
   position: 1,
   active: true,
 });

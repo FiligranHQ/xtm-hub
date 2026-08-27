@@ -9,11 +9,13 @@ import { useCallback } from 'react';
 
 interface FeatureVotingItemProps {
   feature: VotableFeaturePublicFragment;
+  serviceInstanceId: string;
   isAuthenticated: boolean;
 }
 
 export const FeatureVotingItem = ({
   feature,
+  serviceInstanceId,
   isAuthenticated,
 }: FeatureVotingItemProps) => {
   const router = useRouter();
@@ -42,6 +44,7 @@ export const FeatureVotingItem = ({
     <li className="group">
       <FeatureVoteCard
         feature={feature}
+        serviceInstanceId={serviceInstanceId}
         isAuthenticated={isAuthenticated}
       />
       <Dialog
@@ -50,6 +53,7 @@ export const FeatureVotingItem = ({
         <DialogContent className="flex h-[80vh] max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden p-0">
           <FeatureVoteDetail
             feature={feature}
+            serviceInstanceId={serviceInstanceId}
             isAuthenticated={isAuthenticated}
           />
         </DialogContent>

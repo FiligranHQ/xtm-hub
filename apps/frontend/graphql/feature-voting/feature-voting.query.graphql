@@ -4,8 +4,12 @@ fragment VotableFeaturePublic on VotableFeature {
   short_description
   description
   product
-  labels
-  image_url
+  use_cases {
+    id
+    name
+    color
+  }
+  illustration_document_id
   position
   has_my_vote
 }
@@ -16,6 +20,7 @@ query CurrentVotingRound($service_instance_id: ServiceInstanceId!) {
   }
   currentVotingRound(service_instance_id: $service_instance_id) {
     id
+    service_instance_id
     name
     description
     features {

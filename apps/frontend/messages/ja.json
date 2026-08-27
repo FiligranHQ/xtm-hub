@@ -1907,10 +1907,7 @@
       "Product": "製品",
       "ShortDescription": "概要",
       "Description": "説明",
-      "Labels": "ラベル",
-      "LabelsPlaceholder": "カンマ区切り（例：AI, Import）",
-      "ImageUrl": "画像URL",
-      "ImageUrlPlaceholder": "/images/my-feature.png",
+      "Illustration": "イラスト",
       "Position": "表示順",
       "Active": "有効",
       "ActiveYes": "はい",
@@ -1923,10 +1920,9 @@
         "Title": "タイトルは必須です",
         "ShortDescription": "概要は必須です",
         "Description": "説明は必須です",
-        "Position": "表示順は0以上の数値で入力してください",
-        "ImageUrl": "画像はハブ上のパス（/ で始まる）を指定してください"
+        "Position": "表示順は0以上の数値で入力してください"
       },
-      "RemoveImage": "画像を削除",
+      "RemoveIllustration": "イラストを削除",
       "DescriptionPlaceholder": "ユーザーが機能を開いたときに表示される詳細説明。Markdown に対応しています。"
     },
     "Results": {

@@ -288,12 +288,11 @@ export const mockCreateVotableFeatureInput = (overrides?: Partial<CreateVotableF
     return {
         active: overrides && overrides.hasOwnProperty('active') ? overrides.active! : true,
         description: overrides && overrides.hasOwnProperty('description') ? overrides.description! : 'eius',
-        image_url: overrides && overrides.hasOwnProperty('image_url') ? overrides.image_url! : 'amiculum',
-        labels: overrides && overrides.hasOwnProperty('labels') ? overrides.labels! : ['sunt'],
         position: overrides && overrides.hasOwnProperty('position') ? overrides.position! : 4155,
         product: overrides && overrides.hasOwnProperty('product') ? overrides.product! : FiligranProduct.Openaev,
         short_description: overrides && overrides.hasOwnProperty('short_description') ? overrides.short_description! : 'supra',
         title: overrides && overrides.hasOwnProperty('title') ? overrides.title! : 'illum',
+        use_case_ids: overrides && overrides.hasOwnProperty('use_case_ids') ? overrides.use_case_ids! : ['abundans'],
         voting_round_id: overrides && overrides.hasOwnProperty('voting_round_id') ? overrides.voting_round_id! : 'tripudio',
     };
 };
@@ -2129,12 +2128,12 @@ export const mockUpdateVotableFeatureInput = (overrides?: Partial<UpdateVotableF
     return {
         active: overrides && overrides.hasOwnProperty('active') ? overrides.active! : true,
         description: overrides && overrides.hasOwnProperty('description') ? overrides.description! : 'amitto',
-        image_url: overrides && overrides.hasOwnProperty('image_url') ? overrides.image_url! : 'comprehendo',
-        labels: overrides && overrides.hasOwnProperty('labels') ? overrides.labels! : ['caritas'],
+        illustration_document_id: overrides && overrides.hasOwnProperty('illustration_document_id') ? overrides.illustration_document_id! : 'trado',
         position: overrides && overrides.hasOwnProperty('position') ? overrides.position! : 2723,
         product: overrides && overrides.hasOwnProperty('product') ? overrides.product! : FiligranProduct.Openaev,
         short_description: overrides && overrides.hasOwnProperty('short_description') ? overrides.short_description! : 'viduo',
         title: overrides && overrides.hasOwnProperty('title') ? overrides.title! : 'deinde',
+        use_case_ids: overrides && overrides.hasOwnProperty('use_case_ids') ? overrides.use_case_ids! : ['tricesimus'],
     };
 };
 
@@ -2371,13 +2370,14 @@ export const mockVotableFeature = (overrides?: Partial<VotableFeature>, _relatio
         description: overrides && overrides.hasOwnProperty('description') ? overrides.description! : 'absens',
         has_my_vote: overrides && overrides.hasOwnProperty('has_my_vote') ? overrides.has_my_vote! : false,
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : 'b74a85ce-5e15-4d3b-a103-2124060ee36a',
-        image_url: overrides && overrides.hasOwnProperty('image_url') ? overrides.image_url! : 'ullam',
-        labels: overrides && overrides.hasOwnProperty('labels') ? overrides.labels! : ['verumtamen'],
+        illustration_document: overrides && overrides.hasOwnProperty('illustration_document') ? overrides.illustration_document! : relationshipsToOmit.has('Document') ? {} as Document : mockDocument({}, relationshipsToOmit),
+        illustration_document_id: overrides && overrides.hasOwnProperty('illustration_document_id') ? overrides.illustration_document_id! : 'ager',
         position: overrides && overrides.hasOwnProperty('position') ? overrides.position! : 1999,
         product: overrides && overrides.hasOwnProperty('product') ? overrides.product! : FiligranProduct.Openaev,
         short_description: overrides && overrides.hasOwnProperty('short_description') ? overrides.short_description! : 'absconditus',
         title: overrides && overrides.hasOwnProperty('title') ? overrides.title! : 'thesis',
         updated_at: overrides && overrides.hasOwnProperty('updated_at') ? overrides.updated_at! : '2021-06-23T10:40:12.999Z',
+        use_cases: overrides && overrides.hasOwnProperty('use_cases') ? overrides.use_cases! : [relationshipsToOmit.has('UseCase') ? {} as UseCase : mockUseCase({}, relationshipsToOmit)],
         voting_round_id: overrides && overrides.hasOwnProperty('voting_round_id') ? overrides.voting_round_id! : 'deduco',
     };
 };

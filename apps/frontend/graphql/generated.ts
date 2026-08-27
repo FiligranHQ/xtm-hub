@@ -267,12 +267,11 @@ export type CreateSubscriptionsInput = {
 export type CreateVotableFeatureInput = {
   active: InputMaybe<Scalars['Boolean']['input']>;
   description: Scalars['String']['input'];
-  image_url: InputMaybe<Scalars['String']['input']>;
-  labels: InputMaybe<Array<Scalars['String']['input']>>;
   position: InputMaybe<Scalars['Int']['input']>;
   product: FiligranProduct;
   short_description: Scalars['String']['input'];
   title: Scalars['String']['input'];
+  use_case_ids: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
   voting_round_id: Scalars['VotingRoundId']['input'];
 };
 
@@ -1188,6 +1187,7 @@ export type MutationCreateSubscriptionsArgs = {
 
 
 export type MutationCreateVotableFeatureArgs = {
+  document: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateVotableFeatureInput;
 };
 
@@ -1454,6 +1454,7 @@ export type MutationUpdateSubscriptionArgs = {
 
 
 export type MutationUpdateVotableFeatureArgs = {
+  document: InputMaybe<Array<Scalars['Upload']['input']>>;
   id: Scalars['VotableFeatureId']['input'];
   input: UpdateVotableFeatureInput;
 };
@@ -2781,12 +2782,13 @@ export type UpdateSubscriptionInput = {
 export type UpdateVotableFeatureInput = {
   active: InputMaybe<Scalars['Boolean']['input']>;
   description: InputMaybe<Scalars['String']['input']>;
-  image_url: InputMaybe<Scalars['String']['input']>;
-  labels: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Send null to remove the current illustration. */
+  illustration_document_id: InputMaybe<Scalars['DocumentId']['input']>;
   position: InputMaybe<Scalars['Int']['input']>;
   product: InputMaybe<FiligranProduct>;
   short_description: InputMaybe<Scalars['String']['input']>;
   title: InputMaybe<Scalars['String']['input']>;
+  use_case_ids: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
 };
 
 export type UpdateVotingRoundInput = {
@@ -2965,13 +2967,14 @@ export type VotableFeature = Node & {
   description: Scalars['String']['output'];
   has_my_vote: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
-  image_url: Maybe<Scalars['String']['output']>;
-  labels: Array<Scalars['String']['output']>;
+  illustration_document: Maybe<Document>;
+  illustration_document_id: Maybe<Scalars['DocumentId']['output']>;
   position: Scalars['Int']['output'];
   product: FiligranProduct;
   short_description: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updated_at: Maybe<Scalars['Date']['output']>;
+  use_cases: Array<UseCase>;
   voting_round_id: Scalars['VotingRoundId']['output'];
 };
 
@@ -3073,14 +3076,14 @@ export type FeatureVoteMutationVariables = Exact<{
 
 export type FeatureVoteMutation = { __typename?: 'Mutation', voteForFeature: Array<{ __typename?: 'VotableFeature', id: string, has_my_vote: boolean }> };
 
-export type VotableFeaturePublicFragment = { __typename?: 'VotableFeature', id: string, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, has_my_vote: boolean };
+export type VotableFeaturePublicFragment = { __typename?: 'VotableFeature', id: string, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, has_my_vote: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> };
 
 export type CurrentVotingRoundQueryVariables = Exact<{
   service_instance_id: Scalars['ServiceInstanceId']['input'];
 }>;
 
 
-export type CurrentVotingRoundQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string } | null, currentVotingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, features: Array<{ __typename?: 'VotableFeature', id: string, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, has_my_vote: boolean }> } | null };
+export type CurrentVotingRoundQuery = { __typename?: 'Query', me: { __typename?: 'User', id: string } | null, currentVotingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, features: Array<{ __typename?: 'VotableFeature', id: string, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, has_my_vote: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> }> } | null };
 
 export type CurrentVotingRoundCalloutQueryVariables = Exact<{
   service_instance_id: Scalars['ServiceInstanceId']['input'];
@@ -3298,18 +3301,20 @@ export type VotingRoundDeleteMutation = { __typename?: 'Mutation', deleteVotingR
 
 export type VotableFeatureCreateMutationVariables = Exact<{
   input: CreateVotableFeatureInput;
+  document: InputMaybe<Array<Scalars['Upload']['input']> | Scalars['Upload']['input']>;
 }>;
 
 
-export type VotableFeatureCreateMutation = { __typename?: 'Mutation', createVotableFeature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean } };
+export type VotableFeatureCreateMutation = { __typename?: 'Mutation', createVotableFeature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, active: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> } };
 
 export type VotableFeatureUpdateMutationVariables = Exact<{
   id: Scalars['VotableFeatureId']['input'];
   input: UpdateVotableFeatureInput;
+  document: InputMaybe<Array<Scalars['Upload']['input']> | Scalars['Upload']['input']>;
 }>;
 
 
-export type VotableFeatureUpdateMutation = { __typename?: 'Mutation', updateVotableFeature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean } };
+export type VotableFeatureUpdateMutation = { __typename?: 'Mutation', updateVotableFeature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, active: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> } };
 
 export type VotableFeatureDeleteMutationVariables = Exact<{
   id: Scalars['VotableFeatureId']['input'];
@@ -3318,7 +3323,7 @@ export type VotableFeatureDeleteMutationVariables = Exact<{
 
 export type VotableFeatureDeleteMutation = { __typename?: 'Mutation', deleteVotableFeature: { __typename?: 'VotableFeature', id: string } };
 
-export type VotableFeatureAdminRowFragment = { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean };
+export type VotableFeatureAdminRowFragment = { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, active: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> };
 
 export type VotingRoundRowFragment = { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any };
 
@@ -3332,14 +3337,14 @@ export type VotingRoundDetailQueryVariables = Exact<{
 }>;
 
 
-export type VotingRoundDetailQuery = { __typename?: 'Query', votingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } | null };
+export type VotingRoundDetailQuery = { __typename?: 'Query', votingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, active: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> }> } | null };
 
 export type VotingRoundRankingQueryVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
 }>;
 
 
-export type VotingRoundRankingQuery = { __typename?: 'Query', votingRoundResults: { __typename?: 'VotingRoundResults', total_voters: number, round: { __typename?: 'VotingRound', id: string, name: string, status: VotingRoundStatus }, results: Array<{ __typename?: 'VotableFeatureResult', vote_count: number, feature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean } }> } };
+export type VotingRoundRankingQuery = { __typename?: 'Query', votingRoundResults: { __typename?: 'VotingRoundResults', total_voters: number, round: { __typename?: 'VotingRound', id: string, name: string, status: VotingRoundStatus }, results: Array<{ __typename?: 'VotableFeatureResult', vote_count: number, feature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, active: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> } }> } };
 
 export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3377,8 +3382,12 @@ export const VotableFeaturePublicFragmentDoc = `
   short_description
   description
   product
-  labels
-  image_url
+  use_cases {
+    id
+    name
+    color
+  }
+  illustration_document_id
   position
   has_my_vote
 }
@@ -3423,8 +3432,12 @@ export const VotableFeatureAdminRowFragmentDoc = `
   short_description
   description
   product
-  labels
-  image_url
+  use_cases {
+    id
+    name
+    color
+  }
+  illustration_document_id
   position
   active
 }
@@ -3650,6 +3663,7 @@ export const CurrentVotingRoundDocument = `
   }
   currentVotingRound(service_instance_id: $service_instance_id) {
     id
+    service_instance_id
     name
     description
     features {
@@ -4926,8 +4940,8 @@ useVotingRoundDeleteMutation.getRootKey = () => ['VotingRoundDelete'] as const;
 useVotingRoundDeleteMutation.fetcher = (client: GraphQLClient, variables: VotingRoundDeleteMutationVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundDeleteMutation, VotingRoundDeleteMutationVariables>(client, VotingRoundDeleteDocument, variables, headers);
 
 export const VotableFeatureCreateDocument = `
-    mutation VotableFeatureCreate($input: CreateVotableFeatureInput!) {
-  createVotableFeature(input: $input) {
+    mutation VotableFeatureCreate($input: CreateVotableFeatureInput!, $document: [Upload!]) {
+  createVotableFeature(input: $input, document: $document) {
     ...VotableFeatureAdminRow
   }
 }
@@ -4955,8 +4969,8 @@ useVotableFeatureCreateMutation.getRootKey = () => ['VotableFeatureCreate'] as c
 useVotableFeatureCreateMutation.fetcher = (client: GraphQLClient, variables: VotableFeatureCreateMutationVariables, headers?: RequestInit['headers']) => fetcher<VotableFeatureCreateMutation, VotableFeatureCreateMutationVariables>(client, VotableFeatureCreateDocument, variables, headers);
 
 export const VotableFeatureUpdateDocument = `
-    mutation VotableFeatureUpdate($id: VotableFeatureId!, $input: UpdateVotableFeatureInput!) {
-  updateVotableFeature(id: $id, input: $input) {
+    mutation VotableFeatureUpdate($id: VotableFeatureId!, $input: UpdateVotableFeatureInput!, $document: [Upload!]) {
+  updateVotableFeature(id: $id, input: $input, document: $document) {
     ...VotableFeatureAdminRow
   }
 }

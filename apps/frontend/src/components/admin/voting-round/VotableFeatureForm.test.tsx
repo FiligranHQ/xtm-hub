@@ -1,7 +1,13 @@
 import VotableFeatureForm from '@/components/admin/voting-round/VotableFeatureForm';
 import testRender from '@/utils/test/test-render';
 import { FiligranProduct } from '@graphql/generated';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+
+vi.mock('@/components/admin/use-case/use-use-cases', () => ({
+  useUseCases: () => [
+    { id: 'use-case-1', name: 'Threat hunting', color: '#001122' },
+  ],
+}));
 
 const buildFeature = () => ({
   id: 'feature-1',
@@ -9,75 +15,43 @@ const buildFeature = () => ({
   short_description: 'Automatically extract entities.',
   description: 'Long **markdown** description',
   product: FiligranProduct.Opencti,
-  labels: ['AI', 'Import'],
-  image_url: '/images/triage.png',
+  use_cases: [{ id: 'use-case-1', name: 'Threat hunting' }],
+  illustration_document_id: 'document-1',
   position: 2,
   active: true,
 });
 
 describe('VotableFeatureForm', () => {
-  describe('form validation', () => {
-    it('should reject an absolute image URL, which the CSP and next/image would block', async () => {
-      const handleSubmit = vi.fn();
-      const { user } = testRender(
-        <VotableFeatureForm
-          onClose={vi.fn()}
-          handleSubmit={handleSubmit}
-        />
-      );
-
-      await user.type(
-        screen.getByLabelText(/VotingRound.Feature.Title/i),
-        'New feature'
-      );
-      await user.type(
-        screen.getByLabelText(/VotingRound.Feature.ShortDescription/i),
-        'Short'
-      );
-      await user.type(
-        screen.getByLabelText(/VotingRound.Feature.ImageUrl/i),
-        'https://example.com/image.png'
-      );
-      await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));
-
-      await waitFor(() => {
-        expect(handleSubmit).not.toHaveBeenCalled();
-      });
-      expect(
-        await screen.findByText('VotingRound.Feature.Error.ImageUrl')
-      ).toBeInTheDocument();
-    });
-  });
-
-  describe('image field', () => {
-    it('should preview the current image and clear it from the remove button', async () => {
+  describe('illustration field', () => {
+    it('should preview the current illustration and hide it once removed', async () => {
       const { user } = testRender(
         <VotableFeatureForm
           feature={buildFeature()}
+          serviceInstanceId="instance-1"
           onClose={vi.fn()}
           handleDelete={vi.fn()}
           handleSubmit={vi.fn()}
         />
       );
 
-      expect(
-        screen.getByDisplayValue('/images/triage.png')
-      ).toBeInTheDocument();
+      const removeButton = screen.getByRole('button', {
+        name: 'VotingRound.Feature.RemoveIllustration',
+      });
+      expect(removeButton).toBeInTheDocument();
 
-      await user.click(
-        screen.getByRole('button', {
-          name: 'VotingRound.Feature.RemoveImage',
+      await user.click(removeButton);
+
+      expect(
+        screen.queryByRole('button', {
+          name: 'VotingRound.Feature.RemoveIllustration',
         })
-      );
-
-      expect(
-        screen.queryByDisplayValue('/images/triage.png')
       ).not.toBeInTheDocument();
     });
 
-    it('should not show the remove button when there is no image', () => {
+    it('should not show the remove button when there is no illustration', () => {
       testRender(
         <VotableFeatureForm
+          serviceInstanceId="instance-1"
           onClose={vi.fn()}
           handleSubmit={vi.fn()}
         />
@@ -85,7 +59,7 @@ describe('VotableFeatureForm', () => {
 
       expect(
         screen.queryByRole('button', {
-          name: 'VotingRound.Feature.RemoveImage',
+          name: 'VotingRound.Feature.RemoveIllustration',
         })
       ).not.toBeInTheDocument();
     });
@@ -96,6 +70,7 @@ describe('VotableFeatureForm', () => {
       testRender(
         <VotableFeatureForm
           feature={buildFeature()}
+          serviceInstanceId="instance-1"
           onClose={vi.fn()}
           handleDelete={vi.fn()}
           handleSubmit={vi.fn()}
@@ -105,7 +80,6 @@ describe('VotableFeatureForm', () => {
       expect(
         screen.getByDisplayValue('AI-powered report triage')
       ).toBeInTheDocument();
-      expect(screen.getByDisplayValue('AI, Import')).toBeInTheDocument();
       expect(screen.getByDisplayValue('2')).toBeInTheDocument();
       expect(screen.getByLabelText('VotingRound.Feature.Active')).toBeChecked();
     });
@@ -114,6 +88,7 @@ describe('VotableFeatureForm', () => {
       const onClose = vi.fn();
       const { user } = testRender(
         <VotableFeatureForm
+          serviceInstanceId="instance-1"
           onClose={onClose}
           handleSubmit={vi.fn()}
         />
@@ -129,6 +104,7 @@ describe('VotableFeatureForm', () => {
       const { user } = testRender(
         <VotableFeatureForm
           feature={buildFeature()}
+          serviceInstanceId="instance-1"
           onClose={vi.fn()}
           handleDelete={handleDelete}
           handleSubmit={vi.fn()}

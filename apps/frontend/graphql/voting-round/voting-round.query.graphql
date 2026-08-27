@@ -5,8 +5,12 @@ fragment VotableFeatureAdminRow on VotableFeature {
   short_description
   description
   product
-  labels
-  image_url
+  use_cases {
+    id
+    name
+    color
+  }
+  illustration_document_id
   position
   active
 }

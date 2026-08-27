@@ -1907,10 +1907,7 @@
       "Product": "Produit",
       "ShortDescription": "Description courte",
       "Description": "Description",
-      "Labels": "Labels",
-      "LabelsPlaceholder": "Séparés par des virgules, ex. IA, Import",
-      "ImageUrl": "URL de l'image",
-      "ImageUrlPlaceholder": "/images/ma-fonctionnalite.png",
+      "Illustration": "Illustration",
       "Position": "Position",
       "Active": "Active",
       "ActiveYes": "Oui",
@@ -1923,10 +1920,9 @@
         "Title": "Le titre est obligatoire",
         "ShortDescription": "La description courte est obligatoire",
         "Description": "La description est obligatoire",
-        "Position": "La position doit être un nombre positif",
-        "ImageUrl": "L'image doit être un chemin hébergé par le hub, commençant par /"
+        "Position": "La position doit être un nombre positif"
       },
-      "RemoveImage": "Retirer l'image",
+      "RemoveIllustration": "Retirer l'illustration",
       "DescriptionPlaceholder": "Description complète affichée quand un utilisateur ouvre la fonctionnalité. Markdown pris en charge."
     },
     "Results": {

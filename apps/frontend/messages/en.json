@@ -1907,10 +1907,7 @@
       "Product": "Product",
       "ShortDescription": "Short description",
       "Description": "Description",
-      "Labels": "Labels",
-      "LabelsPlaceholder": "Comma-separated, e.g. AI, Import",
-      "ImageUrl": "Image URL",
-      "ImageUrlPlaceholder": "/images/my-feature.png",
+      "Illustration": "Illustration",
       "Position": "Position",
       "Active": "Active",
       "ActiveYes": "Yes",
@@ -1923,10 +1920,9 @@
         "Title": "Title is required",
         "ShortDescription": "Short description is required",
         "Description": "Description is required",
-        "Position": "Position must be a positive number",
-        "ImageUrl": "The image must be a path hosted by the hub, starting with /"
+        "Position": "Position must be a positive number"
       },
-      "RemoveImage": "Remove the image",
+      "RemoveIllustration": "Remove the illustration",
       "DescriptionPlaceholder": "Full description shown when a user opens the feature. Markdown is supported."
     },
     "Results": {

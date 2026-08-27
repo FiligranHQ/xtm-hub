@@ -1,9 +1,10 @@
-import { isAllowedImageUrl } from '@/components/admin/voting-round/votable-feature.utils';
+import { ServiceFormUseCasesField } from '@/components/service/form/UseCasesField';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { DeleteIcon } from '@filigran/icon';
 import {
   Button,
+  FileInput,
   Form,
   FormControl,
   FormField,
@@ -22,7 +23,7 @@ import {
 import { FiligranProduct } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 const productValues = Object.values(FiligranProduct) as [
@@ -36,8 +37,8 @@ export interface VotableFeatureFormModel {
   short_description: string;
   description: string;
   product: FiligranProduct;
-  labels: string[];
-  image_url?: string | null;
+  use_cases: { id: string; name: string }[];
+  illustration_document_id?: string | null;
   position: number;
   active: boolean;
 }
@@ -51,15 +52,9 @@ export const votableFeatureFormSchema = z.object({
     .string()
     .min(2, { error: 'VotingRound.Feature.Error.Description' }),
   product: z.enum(productValues),
-  labels: z.string().optional(),
-  // next/image serves local paths directly and only allows the remote hosts of
-  // the CSP allow-list, so any other absolute URL would break the public page.
-  image_url: z
-    .string()
-    .refine((value) => value === '' || isAllowedImageUrl(value), {
-      error: 'VotingRound.Feature.Error.ImageUrl',
-    })
-    .optional(),
+  use_case_ids: z.array(z.string()),
+  illustration_document: z.custom<FileList>().optional(),
+  remove_illustration: z.boolean(),
   position: z.string().regex(/^\d+$/, {
     error: 'VotingRound.Feature.Error.Position',
   }),
@@ -68,20 +63,15 @@ export const votableFeatureFormSchema = z.object({
 
 export type VotableFeatureFormValues = z.infer<typeof votableFeatureFormSchema>;
 
-/** Labels are edited as a comma-separated list and stored as an array. */
-export const parseLabels = (labels?: string): string[] =>
-  (labels ?? '')
-    .split(',')
-    .map((label) => label.trim())
-    .filter((label) => label.length > 0);
-
 const VotableFeatureForm = ({
   feature,
+  serviceInstanceId,
   onClose,
   handleDelete,
   handleSubmit,
 }: {
   feature?: VotableFeatureFormModel;
+  serviceInstanceId: string;
   onClose: () => void;
   handleDelete?: () => void;
   handleSubmit: (values: VotableFeatureFormValues) => void;
@@ -94,12 +84,24 @@ const VotableFeatureForm = ({
       short_description: feature?.short_description ?? '',
       description: feature?.description ?? '',
       product: feature?.product ?? FiligranProduct.Opencti,
-      labels: feature?.labels.join(', ') ?? '',
-      image_url: feature?.image_url ?? '',
+      use_case_ids: feature?.use_cases.map(({ id }) => id) ?? [],
+      illustration_document: undefined,
+      remove_illustration: false,
       position: String(feature?.position ?? 0),
       active: feature?.active ?? true,
     },
   });
+
+  const selectedProduct = useWatch({
+    control: form.control,
+    name: 'product',
+  });
+  const removeIllustration = useWatch({
+    control: form.control,
+    name: 'remove_illustration',
+  });
+  const showCurrentIllustration =
+    !!feature?.illustration_document_id && !removeIllustration;
 
   return (
     <Form {...form}>
@@ -131,7 +133,12 @@ const VotableFeatureForm = ({
               <FormControl>
                 <Select
                   value={field.value}
-                  onValueChange={field.onChange}>
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    // Use cases are scoped per product, so the previous
+                    // selection no longer applies.
+                    form.setValue('use_case_ids', [], { shouldDirty: true });
+                  }}>
                   <SelectTrigger aria-label={t('VotingRound.Feature.Product')}>
                     <SelectValue />
                   </SelectTrigger>
@@ -185,53 +192,53 @@ const VotableFeatureForm = ({
         />
         <FormField
           control={form.control}
-          name="labels"
+          name="use_case_ids"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('VotingRound.Feature.Labels')}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('VotingRound.Feature.LabelsPlaceholder')}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+            <ServiceFormUseCasesField
+              field={field}
+              product={selectedProduct}
+            />
           )}
         />
         <FormField
           control={form.control}
-          name="image_url"
+          name="illustration_document"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('VotingRound.Feature.ImageUrl')}</FormLabel>
-              {field.value && (
+              <FormLabel>{t('VotingRound.Feature.Illustration')}</FormLabel>
+              {showCurrentIllustration && (
                 <div
                   style={{
-                    backgroundImage: `url(${field.value})`,
+                    backgroundImage: `url(/document/images/${serviceInstanceId}/${feature!.illustration_document_id})`,
                     backgroundSize: 'cover',
                   }}
                   className="relative min-h-[10rem] rounded border">
-                  <div className="flex h-12 flex-row items-center bg-elevation-background-layer-1 opacity-90">
-                    <div className="ml-s mr-s min-w-0 flex-1 truncate">
-                      {field.value}
-                    </div>
+                  <div className="flex h-12 flex-row items-center justify-end bg-elevation-background-layer-1 opacity-90">
                     <Button
                       variant="secondary-destructive"
                       size="icon"
                       type="button"
-                      aria-label={t('VotingRound.Feature.RemoveImage')}
-                      className="m-s ml-auto"
-                      onClick={() => field.onChange('')}>
+                      aria-label={t('VotingRound.Feature.RemoveIllustration')}
+                      className="m-s"
+                      onClick={() =>
+                        form.setValue('remove_illustration', true, {
+                          shouldDirty: true,
+                        })
+                      }>
                       <DeleteIcon className="size-4" />
                     </Button>
                   </div>
                 </div>
               )}
               <FormControl>
-                <Input
-                  placeholder={t('VotingRound.Feature.ImageUrlPlaceholder')}
+                <FileInput
                   {...field}
+                  texts={{
+                    selectFile: t('Service.Vault.FileForm.SelectDocument'),
+                    noFile: t('Service.Vault.FileForm.NoDocument'),
+                    dropFiles: t('Service.Vault.FileForm.DropDocuments'),
+                  }}
+                  allowedTypes={'image/jpeg, image/gif, image/png, image/svg'}
                 />
               </FormControl>
               <FormMessage />

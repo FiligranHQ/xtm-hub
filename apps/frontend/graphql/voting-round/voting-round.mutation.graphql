@@ -28,8 +28,11 @@ mutation VotingRoundDelete($id: VotingRoundId!) {
   }
 }
 
-mutation VotableFeatureCreate($input: CreateVotableFeatureInput!) {
-  createVotableFeature(input: $input) {
+mutation VotableFeatureCreate(
+  $input: CreateVotableFeatureInput!
+  $document: [Upload!]
+) {
+  createVotableFeature(input: $input, document: $document) {
     ...VotableFeatureAdminRow
   }
 }
@@ -37,8 +40,9 @@ mutation VotableFeatureCreate($input: CreateVotableFeatureInput!) {
 mutation VotableFeatureUpdate(
   $id: VotableFeatureId!
   $input: UpdateVotableFeatureInput!
+  $document: [Upload!]
 ) {
-  updateVotableFeature(id: $id, input: $input) {
+  updateVotableFeature(id: $id, input: $input, document: $document) {
     ...VotableFeatureAdminRow
   }
 }

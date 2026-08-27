@@ -17,8 +17,8 @@ const feature: VotableFeaturePublicFragment = mockVotableFeature({
   short_description: 'Automatically extract entities from reports.',
   description: 'Long description of the feature',
   product: FiligranProduct.Opencti,
-  labels: ['AI'],
-  image_url: null,
+  use_cases: [{ id: 'use-case-1', name: 'Threat hunting', color: '#001122' }],
+  illustration_document_id: null,
   position: 1,
   has_my_vote: false,
 });
@@ -60,6 +60,7 @@ describe('FeatureVotingItem', () => {
     const { user } = testRender(
       <FeatureVotingItem
         feature={feature}
+        serviceInstanceId="instance-1"
         isAuthenticated
       />
     );
@@ -78,6 +79,7 @@ describe('FeatureVotingItem', () => {
     const { user } = testRender(
       <FeatureVotingItem
         feature={feature}
+        serviceInstanceId="instance-1"
         isAuthenticated
       />
     );
@@ -93,6 +95,7 @@ describe('FeatureVotingItem', () => {
     const { user } = testRender(
       <FeatureVotingItem
         feature={feature}
+        serviceInstanceId="instance-1"
         isAuthenticated
       />
     );
@@ -115,6 +118,7 @@ describe('FeatureVotingItem', () => {
     testRender(
       <FeatureVotingItem
         feature={feature}
+        serviceInstanceId="instance-1"
         isAuthenticated
       />
     );
@@ -133,6 +137,7 @@ describe('FeatureVotingItem', () => {
     const { user } = testRender(
       <FeatureVotingItem
         feature={feature}
+        serviceInstanceId="instance-1"
         isAuthenticated
       />
     );

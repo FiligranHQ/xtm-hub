@@ -11,21 +11,23 @@ const BADGE_CLASS =
 
 interface FeatureVoteDetailProps {
   feature: VotableFeaturePublicFragment;
+  serviceInstanceId: string;
   isAuthenticated: boolean;
 }
 
 export const FeatureVoteDetail = ({
   feature,
+  serviceInstanceId,
   isAuthenticated,
 }: FeatureVoteDetailProps) => {
   return (
     <div className="p-l bg-elevation-background-layer-1 markdown-content flex h-full min-h-0 flex-1 flex-col gap-m">
       <h2>{feature.title}</h2>
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {feature.image_url && (
+        {feature.illustration_document_id && (
           <div className="relative mb-m h-48 w-full">
             <Image
-              src={feature.image_url}
+              src={`/document/images/${serviceInstanceId}/${feature.illustration_document_id}`}
               alt={feature.title}
               fill
               className="rounded object-cover"
@@ -41,13 +43,13 @@ export const FeatureVoteDetail = ({
             {FiligranProductMapping[feature.product].logo}
             {FiligranProductMapping[feature.product].name}
           </span>
-          {feature.labels.length > 0 && (
+          {feature.use_cases.length > 0 && (
             <div className="flex flex-wrap items-center gap-s">
-              {feature.labels.map((label) => (
+              {feature.use_cases.map((useCase) => (
                 <Badge
-                  key={label}
+                  key={useCase.id}
                   className={BADGE_CLASS}>
-                  {label}
+                  {useCase.name}
                 </Badge>
               ))}
             </div>

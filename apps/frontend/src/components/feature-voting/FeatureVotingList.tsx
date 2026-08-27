@@ -105,6 +105,7 @@ export const FeatureVotingList = ({
                   <FeatureVotingItem
                     key={feature.id}
                     feature={feature}
+                    serviceInstanceId={serviceInstanceId}
                     isAuthenticated={isAuthenticated}
                   />
                 ))}

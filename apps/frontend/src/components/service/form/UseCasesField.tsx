@@ -7,21 +7,27 @@ import {
 } from '@filigran/ui';
 import type { FiligranProduct } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
-import { ControllerRenderProps, FieldValues } from 'react-hook-form';
+import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 
-interface ServiceFormUseCasesFieldProps {
-  field: ControllerRenderProps<FieldValues, string>;
+interface ServiceFormUseCasesFieldProps<
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+> {
+  field: ControllerRenderProps<TFieldValues, TName>;
   disabled?: boolean;
   product?: FiligranProduct;
   required?: boolean;
 }
 
-export const ServiceFormUseCasesField = ({
+export const ServiceFormUseCasesField = <
+  TFieldValues extends FieldValues,
+  TName extends FieldPath<TFieldValues>,
+>({
   field,
   disabled,
   product,
   required,
-}: ServiceFormUseCasesFieldProps) => {
+}: ServiceFormUseCasesFieldProps<TFieldValues, TName>) => {
   const t = useTranslations();
   return (
     <FormItem>

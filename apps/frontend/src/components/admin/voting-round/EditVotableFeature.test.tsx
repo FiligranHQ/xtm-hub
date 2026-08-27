@@ -10,6 +10,12 @@ import {
 import { mockVotableFeature } from '@graphql/mocks';
 import { screen, waitFor, within } from '@testing-library/react';
 
+vi.mock('@/components/admin/use-case/use-use-cases', () => ({
+  useUseCases: () => [
+    { id: 'use-case-1', name: 'Threat hunting', color: '#001122' },
+  ],
+}));
+
 const GQL_OPERATION_VOTABLE_FEATURE_UPDATE = 'VotableFeatureUpdate';
 const GQL_OPERATION_VOTABLE_FEATURE_DELETE = 'VotableFeatureDelete';
 
@@ -19,8 +25,8 @@ const feature = {
   short_description: 'Extract entities automatically.',
   description: 'Leverage AI to ingest unstructured threat reports.',
   product: FiligranProduct.Opencti,
-  labels: ['AI'],
-  image_url: null,
+  use_cases: [{ id: 'use-case-1', name: 'Threat hunting' }],
+  illustration_document_id: null,
   position: 1,
   active: true,
 };
@@ -32,6 +38,7 @@ const renderEdit = (onClose = vi.fn()) => ({
       open
       onClose={onClose}
       feature={feature}
+      serviceInstanceId="instance-1"
     />
   ),
 });
