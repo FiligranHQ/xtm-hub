@@ -1544,6 +1544,162 @@
         "Email": "Email"
       }
     },
+    "TrialGuide": {
+      "Breadcrumb": {
+        "TrialPlatform": "XTM Platform Trial",
+        "TrialGuide": "XTM Platform Trial guide"
+      },
+      "Eyebrow": "XTM Platform trial guide",
+      "Title": "Key resources",
+      "Description": "This short guide is here to direct you to helpful resources about how to get the best experience out of your XTM Platform trial",
+      "SeeMore": "See more",
+      "ReadMore": "Read more",
+      "ChecklistTitle": "Suggested Actions Checklist",
+      "ChecklistIntroTitle": "Don't know where to start?",
+      "ChecklistIntroSubtitle": "Here are some suggested actions that could help you discover the platform",
+      "Opencti": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "OpenCTI Documentation",
+            "Description": "Technical docs and user guides to help you understand how the platform works"
+          },
+          "Academy": {
+            "Title": "Academy: OpenCTI 101-301",
+            "Description": "Practical courses to how to get started with OpenCTI"
+          },
+          "Community": {
+            "Title": "OpenCTI Community",
+            "Description": "The best place to ask any and all questions to the OpenCTI community"
+          },
+          "ReleaseNotes": {
+            "Title": "Release notes",
+            "Description": "List of latest updates"
+          }
+        },
+        "ChecklistItems": {
+          "ActivateFeeds": {
+            "Title": "Activate 2-3 Free CTI Feeds",
+            "Description": "Go to <strong>Integrations</strong> in the left menu. In Type, select 'External import'. Select the <strong>AlienVault</strong> connector. Then click on <strong>Deploy</strong> and <strong>Start</strong>. Within minutes you'll watch real threat data (techniques, vulnerabilities, reports) flow in automatically. Then add other feeds such as CISA KEV, NIST NVD CVE, or MITRE ATT&CK."
+          },
+          "ConfigurePir": {
+            "Title": "Configure Priority Intelligence Requirements (PIR)",
+            "Description": "Go to <strong>PIR → Create PIR</strong>. Define a PIR name, rescan period, and the entity criteria/filters that matter to you (e.g., \"Malware targeting the Energy sector\" with confidence ≥ 60). OpenCTI will now continuously listen to platform activity and automatically flag any matching entities as \"of interest,\" surfacing a live news feed, scored relevance, and related reports/graphs for each."
+          },
+          "FollowGraph": {
+            "Title": "Open a Threat Actor or Intrusion Set and Follow the Graph",
+            "Description": "Go to <strong>Entities</strong>. Pick any imported entity and explore its relationships (malware used, TTPs, victims, related reports). From the entity's <strong>Knowledge</strong> tab, click into the interactive graph view to visually pivot from node to node. Expand out to related campaigns, infrastructure, or observables and use the timeline and relationship filters to see how the picture evolves over time."
+          },
+          "CreateCase": {
+            "Title": "Create a Case from a Detected Indicator",
+            "Description": "Go to <strong>Cases → Incident Response → Create Incident Response</strong>, spin up a case using a built-in template, and attach the indicator/report you worked with earlier. From there, assign a priority and severity, tag an assignee, and add related tasks to track remediation steps. Notice how the case stays linked to the underlying entities, so any new correlated intel will automatically surface in context."
+          },
+          "CreateFintelReport": {
+            "Title": "Create a FINTEL report",
+            "Description": "Go to <strong>Analyses → Reports → Create Report</strong>. Draft a Finished Intelligence (FINTEL) report summarizing your analysis of the threat actor, malware, or campaign you've been exploring, pulling in the entities, indicators, and relationships you've already ingested. Attach supporting observables and link related intrusion sets or TTPs directly from the graph."
+          },
+          "BuildDashboardWidget": {
+            "Title": "Build a Custom Dashboard Widget",
+            "Description": "Under <strong>Dashboards → Custom Dashboards</strong>, click <strong>Create Dashboard</strong> and add a widget (e.g., \"Indicators by type\" or \"Reports over time\"). Or select a pre-built dashboard by clicking on <strong>Import from Hub</strong>."
+          },
+          "ConnectSecurityStack": {
+            "Title": "Connect to Your Security Stack",
+            "Description": "Go to <strong>Integrations</strong>. Click <strong>Browse More</strong>. Select some of the tools you already run (SIEM, EDR, firewall, TIP, or SOAR) to connect them to OpenCTI. Once connected, monitor the connector dashboard to confirm data is flowing, then verify that newly pushed indicators appear in your downstream tool."
+          },
+          "CreateNoCodePlaybook": {
+            "Title": "Create a No-Code Playbook",
+            "Description": "Go to <strong>Data → Processing</strong>. Click <strong>Create Playbook</strong>. Use the visual, drag-and-drop builder to chain triggers, filters, and actions, such as auto-enriching new indicators, promoting high-confidence reports to a case, or pushing matching observables straight to a connector. Or select a pre-built playbook by clicking on <strong>Import from Hub</strong>."
+          },
+          "CheckSecurityCoverage": {
+            "Title": "Check your Security Coverage with OpenAEV",
+            "Description": "Link your OpenAEV instance under <strong>Settings → Integrations</strong>, then in OpenAEV go to <strong>Scenarios → Create</strong> and build a scenario from the ATT&CK techniques of the threat actor you've been investigating in OpenCTI. Add each TTP as an injection, assigning target assets, and hit <strong>Launch</strong> to execute the simulation in a controlled way."
+          },
+          "EnableAgent": {
+            "Title": "Enable an Agent in XTM One",
+            "Description": "Open <strong>XTM One → Agents</strong> and activate one of the pre-packaged agents (e.g., the <strong>CTEM Assistant</strong>) to orchestrate a workflow across OpenCTI and OpenAEV - such as automatically enriching a new threat, summarizing it, and generating a validation scenario, all in plain English with no manual handoffs."
+          }
+        }
+      },
+      "Openaev": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "OpenAEV Documentation",
+            "Description": "Technical docs and user guides to help you understand how the platform works"
+          },
+          "Academy": {
+            "Title": "Academy: OpenAEV 101",
+            "Description": "Free, practical courses to how to get started with OpenAEV"
+          },
+          "Community": {
+            "Title": "OpenAEV Community",
+            "Description": "The best place to ask any and all questions to the OpenAEV community"
+          },
+          "ReleaseNotes": {
+            "Title": "Release notes",
+            "Description": "List of latest updates"
+          }
+        },
+        "ChecklistItems": {
+          "InstallStarterPack": {
+            "Title": "Install the OpenAEV Starter Pack",
+            "Description": "Do you need to some content to get started? OpenAEV ships with a starter pack that provides ready-to-use content so you can run your first Simulation immediately after installation, including Pre-built Scenarios, dashboards, injectors, collectors, and agentless endpoints. The starter pack is available from the XTM Hub. Import it from <strong>Settings > XTM Hub</strong> after registering your platform."
+          },
+          "RunAtomicTest": {
+            "Title": "Run an Atomic Test",
+            "Description": "Go to the Arsenal, pick a single technique, and select an endpoint to run it against. Install the OpenAEV agent first, or run agentless if supported. Launch the test and check the endpoint or wait for the report to see what executed and what got caught."
+          },
+          "LaunchTimeBasedScenario": {
+            "Title": "Launch a Time Based Scenario",
+            "Description": "Create a scenario and add injects in the order you want them to fire. Instead of running it immediately, set a schedule with a start time and, if wanted, a recurring frequency. Save it and let it run on its own, then compare results across runs to track trends like detection time."
+          },
+          "RunAttackChainingScenario": {
+            "Title": "Run an Attack Chaining Scenario",
+            "Description": "Build a scenario linking several techniques into a realistic attack path (initial access, lateral movement, exfiltration). Run it operator led, manually triggering each step yourself, or agent led, where the platform executes the whole chain automatically once started. Try both to feel the difference in control versus speed."
+          },
+          "DriveTabletopExercise": {
+            "Title": "Drive a Tabletop Exercise",
+            "Description": "Create a tabletop scenario with communication or decision based injects instead of technical ones (e.g. \"notify legal\"). Assign participants and run it as a live, facilitated session, recording how the team responds. No endpoint involved, it's purely process and people."
+          },
+          "ConnectThreatIntelSource": {
+            "Title": "Connect a Threat Intelligence Source",
+            "Description": "In integrations settings, connect OpenCTI or another supported source with its API credentials. Then pull techniques or indicators mapped to MITRE ATT&CK directly into the Arsenal or scenario builder, so tests reflect threats relevant to you instead of generic actions."
+          },
+          "ValidateExpectations": {
+            "Title": "Validate Expectations",
+            "Description": "After a simulation finishes, open its results and review the expectations it generated. Tool integrated expectations often fill in automatically; for expectations needing human judgment (e.g. \"did the analyst notice within 30 minutes\"), fill in the outcome manually based on what you observed."
+          },
+          "ExploreResultsReport": {
+            "Title": "Explore Results and Report Out",
+            "Description": "Start on the Home dashboard to see your overall Adversarial Exposure Score, then drill into performance trackers, trend charts, control breakdowns, and the kill chain view to spot gaps. Use the report generation option to export a summary you can send to leadership without manually compiling the data."
+          }
+        }
+      },
+      "Xtmone": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "XTM One Documentation",
+            "Description": "Technical docs and user guides to help you understand how the platform works"
+          },
+          "Community": {
+            "Title": "XTM One Community",
+            "Description": "The best place to ask any and all questions to the Filigran community"
+          }
+        },
+        "ChecklistItems": {
+          "ActivateCtemAssistant": {
+            "Title": "Activate the CTEM Assistant",
+            "Description": "Go to XTM One → Agents and enable the CTEM Assistant, your primary entry point into the platform. It connects directly to both OpenCTI and OpenAEV, orchestrating agents across both to move threat intelligence processing straight into scenario building and execution in OpenAEV - all from a single conversation."
+          },
+          "AskQuestionPlainEnglish": {
+            "Title": "Ask a Question in Plain English",
+            "Description": "Open the XTM One chat interface and ask something like \"What are the top five threats facing financial sector in the UK?\" XTM One will pull relevant entities from OpenCTI (once you have added some feeds) and return a synthesized answer with links back to the underlying data - no query language or dashboard-hopping required."
+          },
+          "BuildThreatHuntingPackage": {
+            "Title": "Build a Threat Hunting Package in Minutes",
+            "Description": "Ask the threat hunting agent to turn a set of high-confidence indicators into a hunting package. It searches for high-value indicators, converts them into native detection rules for your platforms, and groups everything together in OpenCTI — cutting hunting prep time significantly."
+          }
+        }
+      }
+    },
     "Vault": {
       "DeleteDocument": "Delete document",
       "DropFile": "Drop the document here",
