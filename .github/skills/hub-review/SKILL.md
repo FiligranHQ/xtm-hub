@@ -2,9 +2,9 @@
 name: hub-review
 description: >-
   Reviews the XTM Hub AI-instruction surface — `.github/copilot-instructions.md`, `AGENTS.md`,
-  `.github/instructions/*.md`, `.github/agents/*.agent.md`, `.github/skills/*/SKILL.md`, `.github/prompts/*.md` —
+  `.github/instructions/*.md`, `.github/agents/*.agent.md`, `.github/skills/*/SKILL.md` —
   for drift against the real codebase and against each other. Use when asked to review AI instructions, docs, agents,
-  skills, or prompts; when reviewing a PR/diff that touches any of those paths; or when directed here as
+  or skills; when reviewing a PR/diff that touches any of those paths; or when directed here as
   `skill:hub-review` from another instruction (e.g. the reviewer agent's "Documentation drift" step). Never invoke
   this uninvited on edits you just made without being asked.
 ---
@@ -27,7 +27,7 @@ Bare paths (e.g. `references/stale-reference.md`) resolve from `{skill-root}` �
     did not update (a changed convention with a stale cross-reference elsewhere).
   - **Named file(s)** — whatever the caller pointed at.
   - **Full audit** (default when nothing else is specified) — every file under `.github/instructions/`,
-    `.github/agents/`, `.github/skills/`, `.github/prompts/`, plus `.github/copilot-instructions.md` and
+    `.github/agents/`, `.github/skills/`, plus `.github/copilot-instructions.md` and
     `AGENTS.md`.
 - **lenses** (optional) — one or more lens names. Default: all four lenses below.
 

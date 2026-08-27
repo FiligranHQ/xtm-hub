@@ -14,7 +14,7 @@ Shared, repository-wide context. Anything scoped to a single area lives in
 | Workflows, Docker, Helm | [`ci.instructions.md`](instructions/ci.instructions.md) |
 
 Deeper task guidance lives in [`.github/skills/`](skills/) and
-[`.github/agents/`](agents/); repeatable recipes live in [`.github/prompts/`](prompts/).
+[`.github/agents/`](agents/).
 
 This content drifts as the codebase changes. Use the [`hub-review`](skills/hub-review/SKILL.md) skill to audit it
 against the real code — it asks a question (or flags a PR comment) instead of guessing when something doesn't match.

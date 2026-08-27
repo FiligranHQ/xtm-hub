@@ -83,7 +83,6 @@ This file is the portable summary. The authoritative, path-scoped guidance lives
   (`backend`, `frontend`, `e2e`, `graphql`, `migrations`, `testing`, `ci`)
 - [`.github/skills/`](.github/skills/) — task-specific playbooks
 - [`.github/agents/`](.github/agents/) — specialised agent definitions
-- [`.github/prompts/`](.github/prompts/) — repeatable recipes for common changes
 
 Read the file matching the area you are touching before making changes. To review AI instructions/docs/agents/skills
 for drift, use the `hub-review` skill (`.github/skills/hub-review/SKILL.md`) rather than guessing.

@@ -6,9 +6,7 @@ situation — guidance that cannot both be followed at once.
 ## Evidence rules
 
 - "Authoritative source" means `.github/copilot-instructions.md`, `AGENTS.md`, `.github/instructions/*.md`,
-  `.github/agents/*.agent.md`, or `.github/skills/*/SKILL.md` — not a `.github/prompts/*.md` file, which is a
-  repeatable recipe rather than a standing rule, so a prompt disagreeing with an instruction is not by itself a
-  contradiction (though it may be worth a note).
+  `.github/agents/*.agent.md`, or `.github/skills/*/SKILL.md`.
 - Quote both sides verbatim before calling something a contradiction; a difference in emphasis, scope, or level of
   detail is not automatically a conflict.
 - A more specific, path-scoped instructions file legitimately narrows a general rule — that is not a contradiction
