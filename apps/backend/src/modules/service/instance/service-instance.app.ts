@@ -37,7 +37,6 @@ export const ServiceInstanceApp = {
           : ErrorCode.ServiceInstanceNotFound
       );
     }
-    console.log('SERVIIIICE', service);
     return service as unknown as ServiceInstance;
   },
   addServicePicture: async (

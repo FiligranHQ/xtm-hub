@@ -7,13 +7,13 @@ import ServiceCapability, {
   ServiceCapabilityMutator,
 } from '../../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 import { UserId } from '../../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../../model/kanel/public/UserService';
 import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
 import { addPrefixToObject } from '../../../utils/typescript';
-import { SubscriptionId } from '../../../model/kanel/public/Subscription';
 
 export const ServiceCapabilityDomain = {
   loadServiceCapabilitiesBy: async (

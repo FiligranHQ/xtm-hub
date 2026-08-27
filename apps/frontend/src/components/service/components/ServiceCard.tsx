@@ -106,8 +106,7 @@ const ServiceCard = ({
                   <MoreVertIcon className="h-4 w-4 text-primary" />
                   <span className="sr-only">{t('Utils.OpenMenu')}</span>
                 </>
-              }
-            >
+              }>
               {userCanUpdate && (
                 <IconActionsItem onClick={() => onClickOnUpdate()}>
                   {t('MenuActions.Update')}

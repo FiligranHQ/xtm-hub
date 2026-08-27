@@ -703,11 +703,6 @@ export type EditSeoServiceInstanceInput = {
   meta_title: Scalars['String']['input'];
 };
 
-export type EditServiceCapabilityInput = {
-  capabilities: Array<InputMaybe<Scalars['String']['input']>>;
-  user_service_id: InputMaybe<Scalars['User_ServiceId']['input']>;
-};
-
 export type EditSolutionCategoryInput = {
   name: InputMaybe<Scalars['String']['input']>;
   product: InputMaybe<Array<FiligranProduct>>;
@@ -1010,7 +1005,6 @@ export type Mutation = {
   editMeUser: User;
   editOrganization: Maybe<Organization>;
   editSeoServiceInstance: SeoServiceInstanceMetadata;
-  editServiceCapability: Maybe<SubscriptionModel>;
   editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
   editUserCapabilities: User;
@@ -1276,12 +1270,6 @@ export type MutationEditSeoServiceInstanceArgs = {
   input: EditSeoServiceInstanceInput;
   language: SeoServiceInstanceLanguage;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
-};
-
-
-export type MutationEditServiceCapabilityArgs = {
-  input: InputMaybe<EditServiceCapabilityInput>;
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 

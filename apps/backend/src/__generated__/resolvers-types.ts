@@ -696,11 +696,6 @@ export type EditSeoServiceInstanceInput = {
   meta_title: Scalars['String']['input'];
 };
 
-export type EditServiceCapabilityInput = {
-  capabilities: Array<InputMaybe<Scalars['String']['input']>>;
-  user_service_id?: InputMaybe<Scalars['UserServiceId']['input']>;
-};
-
 export type EditSolutionCategoryInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   product?: InputMaybe<Array<FiligranProduct>>;
@@ -1003,7 +998,6 @@ export type Mutation = {
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
   editSeoServiceInstance: SeoServiceInstanceMetadata;
-  editServiceCapability?: Maybe<SubscriptionModel>;
   editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
   editUserCapabilities: User;
@@ -1269,12 +1263,6 @@ export type MutationEditSeoServiceInstanceArgs = {
   input: EditSeoServiceInstanceInput;
   language: SeoServiceInstanceLanguage;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
-};
-
-
-export type MutationEditServiceCapabilityArgs = {
-  input?: InputMaybe<EditServiceCapabilityInput>;
-  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -2911,7 +2899,6 @@ export type UserServiceCapability = Node & {
   generic_service_capability?: Maybe<GenericServiceCapability>;
   id: Scalars['ID']['output'];
   subscription_capability?: Maybe<SubscriptionCapability>;
-  subscription_id?: Maybe<Scalars['SubscriptionId']['output']>;
   user_service_id: Scalars['ID']['output'];
 };
 
@@ -3169,7 +3156,6 @@ export type ResolversTypes = ResolversObject<{
   DocumentSourceType: DocumentSourceType;
   EditMeUserInput: EditMeUserInput;
   EditSeoServiceInstanceInput: EditSeoServiceInstanceInput;
-  EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSolutionCategoryInput: EditSolutionCategoryInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
@@ -3405,7 +3391,6 @@ export type ResolversParentTypes = ResolversObject<{
   DocumentMetadata: DocumentMetadata;
   EditMeUserInput: EditMeUserInput;
   EditSeoServiceInstanceInput: EditSeoServiceInstanceInput;
-  EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSolutionCategoryInput: EditSolutionCategoryInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
@@ -4064,7 +4049,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editSeoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstanceMetadata'], ParentType, ContextType, RequireFields<MutationEditSeoServiceInstanceArgs, 'input' | 'language' | 'service_instance_id'>>;
-  editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editSolutionCategory?: Resolver<ResolversTypes['SolutionCategory'], ParentType, ContextType, RequireFields<MutationEditSolutionCategoryArgs, 'id' | 'input'>>;
   editUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationEditUseCaseArgs, 'id' | 'input'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
@@ -4869,7 +4853,6 @@ export type UserServiceCapabilityResolvers<ContextType = PortalContext, ParentTy
   generic_service_capability?: Resolver<Maybe<ResolversTypes['GenericServiceCapability']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   subscription_capability?: Resolver<Maybe<ResolversTypes['SubscriptionCapability']>, ParentType, ContextType>;
-  subscription_id?: Resolver<Maybe<ResolversTypes['SubscriptionId']>, ParentType, ContextType>;
   user_service_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

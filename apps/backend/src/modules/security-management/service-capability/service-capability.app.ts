@@ -15,16 +15,13 @@ export const ServiceCapabilityApp = {
         serviceInstanceId,
         user.id
       );
-    console.log('serviceCapabilities', serviceCapabilities);
 
-    const apres = serviceCapabilities.filter(
+    return serviceCapabilities.filter(
       (
         serviceCapability
       ): serviceCapability is UserServiceCapabilityModel & {
         user_service_id: string;
       } => serviceCapability.user_service_id !== null
     );
-    console.log('apres', apres);
-    return apres;
   },
 };

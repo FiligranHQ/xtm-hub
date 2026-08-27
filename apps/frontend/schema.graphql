@@ -218,7 +218,6 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusSingleTenant(input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
-  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
   addCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
   editSeoServiceInstance(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage!, input: EditSeoServiceInstanceInput!): SeoServiceInstanceMetadata!
@@ -1255,11 +1254,6 @@ type GenericServiceCapability implements Node {
   name: String
 }
 
-input EditServiceCapabilityInput {
-  user_service_id: User_ServiceId
-  capabilities: [String]!
-}
-
 input AddSubscriptionCapabilityInput {
   subscriptionsId: [SubscriptionId!]!
   capabilitiesId: [Service_CapabilityId!]!
@@ -1268,7 +1262,6 @@ input AddSubscriptionCapabilityInput {
 type UserServiceCapability implements Node {
   id: ID!
   user_service_id: ID!
-  subscription_id: SubscriptionId
   generic_service_capability: GenericServiceCapability
   subscription_capability: SubscriptionCapability
 }
