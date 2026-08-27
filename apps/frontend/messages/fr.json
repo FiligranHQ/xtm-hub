@@ -1372,7 +1372,7 @@
     "Trials": {
       "ExploreBold": "Essai gratuit !",
       "ExplorePlatform": "Explorez {platformName} pendant 30 jours",
-      "ExploreProducts": "Explorez OpenCTI ou OpenAEV pendant 30 jours",
+      "ExploreProducts": "Explorez le produit OpenCTI ou OpenAEV pendant 30 jours",
       "Active": "Votre essai gratuit d'OpenCTI est actif",
       "Provisioning": "Votre essai gratuit d'OpenCTI est en cours de provisionnement.",
       "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
@@ -1628,6 +1628,12 @@
     "Dark": "Foncé",
     "Light": "Clair",
     "SetTheme": "Appliquer le thème"
+  },
+  "ThreadConference": {
+    "Description": "Le rendez-vous annuel de la communauté mondiale du renseignement sur les menaces et de la cyberdéfense, où se croisent renseignement, gestion des risques et action.",
+    "Date": "15 octobre 2026 | Paris",
+    "ImageAlt": "Bannière de la conférence Thread",
+    "Cta": "En savoir plus"
   },
   "UnexpectedErrorDialog": {
     "Description": "Veuillez essayer de vous connecter à nouveau. Si le problème persiste, contactez-nous pour obtenir de l'aide.",
