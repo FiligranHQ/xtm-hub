@@ -2775,6 +2775,8 @@ export type UpdateSubscriptionInput = {
 export type UpdateVotableFeatureInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Send null to remove the current illustration. */
+  illustration_document_id?: InputMaybe<Scalars['DocumentId']['input']>;
   position?: InputMaybe<Scalars['Int']['input']>;
   product?: InputMaybe<FiligranProduct>;
   short_description?: InputMaybe<Scalars['String']['input']>;

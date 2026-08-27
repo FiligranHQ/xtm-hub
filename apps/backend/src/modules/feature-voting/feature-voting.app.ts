@@ -476,7 +476,7 @@ export const featureVotingApp = {
       const updatedFeature = await featureVotingDomain.updateVotableFeature(
         id,
         {
-          ...applyUpdate(featureInput, []),
+          ...applyUpdate(featureInput, ['illustration_document_id']),
           ...(illustrationDocumentId
             ? { illustration_document_id: illustrationDocumentId }
             : {}),

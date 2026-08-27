@@ -614,6 +614,54 @@ describe('featureVotingApp.updateVotableFeature', () => {
     vi.spyOn(featureVotingDomain, 'countVotesForFeature').mockResolvedValue(0);
   });
 
+  // An explicit null is how the admin removes the illustration: it must reach
+  // the database instead of being stripped away as an absent field.
+  it('should clear the illustration when it is explicitly set to null', async () => {
+    // Given
+    const feature = buildVotableFeature();
+    vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
+      feature
+    );
+    const updateSpy = vi
+      .spyOn(featureVotingDomain, 'updateVotableFeature')
+      .mockResolvedValue(feature);
+
+    // When
+    await featureVotingApp.updateVotableFeature(feature.id, {
+      illustration_document_id: null,
+    });
+
+    // Then
+    expect(updateSpy).toHaveBeenCalledWith(
+      feature.id,
+      expect.objectContaining({ illustration_document_id: null })
+    );
+  });
+
+  it('should leave the illustration untouched when the field is absent', async () => {
+    // Given
+    const feature = buildVotableFeature();
+    vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
+      feature
+    );
+    const updateSpy = vi
+      .spyOn(featureVotingDomain, 'updateVotableFeature')
+      .mockResolvedValue(feature);
+
+    // When
+    await featureVotingApp.updateVotableFeature(feature.id, {
+      title: 'Renamed',
+    });
+
+    // Then
+    expect(updateSpy).toHaveBeenCalledWith(
+      feature.id,
+      expect.not.objectContaining({
+        illustration_document_id: expect.anything(),
+      })
+    );
+  });
+
   // An explicit empty list is how the admin clears the selection: it must reach
   // the database instead of being read as an absent field.
   it('should clear the use cases when an empty list is sent', async () => {
