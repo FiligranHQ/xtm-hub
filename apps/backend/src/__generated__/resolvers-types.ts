@@ -1721,6 +1721,7 @@ export type Query = {
   publicDocumentsByServiceSlug: Array<Document>;
   registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
+  registeredProductVersions: Array<RegisteredProductVersion>;
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstanceMetadata: Array<SeoServiceInstanceMetadata>;
   seoServiceInstances: Array<SeoServiceInstance>;
@@ -1918,6 +1919,11 @@ export type QueryRegisteredPlatformsArgs = {
 };
 
 
+export type QueryRegisteredProductVersionsArgs = {
+  product: PlatformIdentifier;
+};
+
+
 export type QuerySeoServiceInstanceArgs = {
   slug: Scalars['String']['input'];
 };
@@ -2101,6 +2107,13 @@ export type RegisteredPlatformsInput = {
   identifier?: InputMaybe<PlatformIdentifier>;
   onlyActive?: InputMaybe<Scalars['Boolean']['input']>;
   onlyTrial?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type RegisteredProductVersion = {
+  __typename?: 'RegisteredProductVersion';
+  created_at: Scalars['Date']['output'];
+  product: PlatformIdentifier;
+  version: Scalars['String']['output'];
 };
 
 export type RegistrationResponse = {
@@ -3047,6 +3060,7 @@ export type ResolversTypes = ResolversObject<{
   RegisteredPlatform: ResolverTypeWrapper<RegisteredPlatform>;
   RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
+  RegisteredProductVersion: ResolverTypeWrapper<RegisteredProductVersion>;
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   ReorderDeploymentRequestInQueueDirection: ReorderDeploymentRequestInQueueDirection;
   ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
@@ -3248,6 +3262,7 @@ export type ResolversParentTypes = ResolversObject<{
   RegisteredPlatform: RegisteredPlatform;
   RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
+  RegisteredProductVersion: RegisteredProductVersion;
   RegistrationResponse: RegistrationResponse;
   ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
   RolePortal: RolePortal;
@@ -4102,6 +4117,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicDocumentsByServiceSlug?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryPublicDocumentsByServiceSlugArgs, 'serviceInstanceSlug'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
+  registeredProductVersions?: Resolver<Array<ResolversTypes['RegisteredProductVersion']>, ParentType, ContextType, RequireFields<QueryRegisteredProductVersionsArgs, 'product'>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstanceMetadata?: Resolver<Array<ResolversTypes['SeoServiceInstanceMetadata']>, ParentType, ContextType, RequireFields<QuerySeoServiceInstanceMetadataArgs, 'service_instance_id'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
@@ -4153,6 +4169,13 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RegisteredProductVersionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegisteredProductVersion'] = ResolversParentTypes['RegisteredProductVersion']> = ResolversObject<{
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4721,6 +4744,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
   RefreshUserPlatformTokenResponse?: RefreshUserPlatformTokenResponseResolvers<ContextType>;
   RegisteredPlatform?: RegisteredPlatformResolvers<ContextType>;
+  RegisteredProductVersion?: RegisteredProductVersionResolvers<ContextType>;
   RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
   RssFeed?: RssFeedResolvers<ContextType>;

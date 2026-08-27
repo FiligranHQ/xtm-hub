@@ -41,6 +41,11 @@ import Organization, {
   OrganizationInitializer,
   OrganizationMutator,
 } from '../../src/model/kanel/public/Organization';
+import ProductVersion, {
+  ProductVersionId,
+  ProductVersionInitializer,
+  ProductVersionMutator,
+} from '../../src/model/kanel/public/ProductVersion';
 import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
@@ -313,6 +318,40 @@ export const TestHelper = {
     },
     delete: async (field: ManifestDocumentMutator): Promise<void> => {
       await db<ManifestDocument>('Manifest_Document').where(field).del();
+    },
+  },
+  productVersion: {
+    create: async (
+      data?: Partial<ProductVersionInitializer>
+    ): Promise<ProductVersion> => {
+      const version = data?.version ?? '6.4.0';
+      const [row] = await db<ProductVersion>('ProductVersion')
+        .insert({
+          id: uuidv4() as ProductVersionId,
+          product: PlatformIdentifier.Opencti,
+          version,
+          version_padded:
+            ManifestFragmentHelper.validateAndFormatManifestVersion(version),
+          ...data,
+        })
+        .returning('*');
+      return row!;
+    },
+    loadAll: async (
+      field: ProductVersionMutator
+    ): Promise<ProductVersion[]> => {
+      return db<ProductVersion[]>('ProductVersion').where(field).select('*');
+    },
+    load: async (
+      field: ProductVersionMutator
+    ): Promise<ProductVersion | undefined> => {
+      return db<ProductVersion>('ProductVersion')
+        .where(field)
+        .select('*')
+        .first();
+    },
+    delete: async (field: ProductVersionMutator): Promise<void> => {
+      await db<ProductVersion>('ProductVersion').where(field).del();
     },
   },
 };

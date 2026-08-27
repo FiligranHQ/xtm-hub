@@ -38,6 +38,7 @@ import {
 } from './server/apollo-plugins/metrics';
 import { healthEndpoint } from './server/endpoints/health';
 import { manifestEndpoint } from './server/endpoints/manifest-endpoint';
+import { productVersionEndpoint } from './server/endpoints/product-version-endpoint';
 import { userPictureEndpoint } from './server/endpoints/user-picture-endpoint';
 import createSchema from './server/graphql-schema';
 import platformInit, { minioInit } from './server/initialize';
@@ -419,6 +420,7 @@ documentVisualizeEndpoint(app);
 healthEndpoint(app);
 userPictureEndpoint(app);
 manifestEndpoint(app);
+productVersionEndpoint(app);
 // Modified server startup
 if (!process.env.VITEST_MODE || process.env.START_DEV_SERVER) {
   // Ensure migrate the schema
