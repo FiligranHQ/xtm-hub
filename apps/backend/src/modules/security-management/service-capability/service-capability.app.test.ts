@@ -1,12 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SERVICES, TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import { requestContext } from '../../../context/request.context';
+import { SubscriptionDomain } from '../../subscription/subscription.domain';
 import { ServiceCapabilityApp } from './service-capability.app';
 import { ServiceCapabilityDomain } from './service-capability.domain';
 
 describe('serviceCapability app', () => {
   const serviceInstanceId = SERVICES.INSTANCES.EPIC.ID;
   const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+  const selectedOrganizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
+  const subscriptionId = 'subscription-id';
   const keptUserServiceId = 'user-service-id-kept';
 
   afterEach(() => {
@@ -17,6 +20,7 @@ describe('serviceCapability app', () => {
     // Given
     vi.spyOn(requestContext, 'requireUser').mockReturnValue({
       id: userId,
+      selected_organization_id: selectedOrganizationId,
     } as unknown as ReturnType<typeof requestContext.requireUser>);
     vi.spyOn(
       ServiceCapabilityDomain,
@@ -35,6 +39,9 @@ describe('serviceCapability app', () => {
         subscription_capability: null,
       },
     ]);
+    vi.spyOn(SubscriptionDomain, 'loadSubscriptionBy').mockResolvedValue({
+      id: subscriptionId,
+    } as Awaited<ReturnType<typeof SubscriptionDomain.loadSubscriptionBy>>);
 
     // When
     const result =
@@ -46,12 +53,19 @@ describe('serviceCapability app', () => {
     expect(
       ServiceCapabilityDomain.loadServiceCapabilitiesByServiceId
     ).toHaveBeenCalledWith(serviceInstanceId, userId);
-    expect(result).toEqual([
-      expect.objectContaining({
-        id: 'capability-id-2',
-        user_service_id: keptUserServiceId,
-      }),
-    ]);
+    expect(SubscriptionDomain.loadSubscriptionBy).toHaveBeenCalledWith({
+      service_instance_id: serviceInstanceId,
+      organization_id: selectedOrganizationId,
+    });
+    expect(result).toEqual({
+      subscription_id: subscriptionId,
+      userServiceCapabilities: [
+        expect.objectContaining({
+          id: 'capability-id-2',
+          user_service_id: keptUserServiceId,
+        }),
+      ],
+    });
   });
 
   it('should propagate domain error when loading capabilities fails', async () => {
@@ -59,6 +73,7 @@ describe('serviceCapability app', () => {
     const domainError = new Error('Domain failure');
     vi.spyOn(requestContext, 'requireUser').mockReturnValue({
       id: userId,
+      selected_organization_id: selectedOrganizationId,
     } as unknown as ReturnType<typeof requestContext.requireUser>);
     vi.spyOn(
       ServiceCapabilityDomain,

@@ -1821,7 +1821,7 @@ export type Query = {
   updateOpenCTIManifest: Success;
   useCases: Maybe<UseCaseConnection>;
   userOrganizations: Array<Organization>;
-  userServiceCapabilities: Maybe<Array<Maybe<UserServiceCapability>>>;
+  userServiceCapabilities: UserServiceCapabilitiesResponse;
   userServiceFromSubscription: Maybe<UserServiceConnection>;
   users: UserConnection;
   usersWithCapabilitiesInOrganization: Array<User>;
@@ -2901,12 +2901,17 @@ export type UserServiceAddYourselfInput = {
   serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
+export type UserServiceCapabilitiesResponse = {
+  __typename?: 'UserServiceCapabilitiesResponse';
+  subscription_id: Maybe<Scalars['SubscriptionId']['output']>;
+  userServiceCapabilities: Array<UserServiceCapability>;
+};
+
 export type UserServiceCapability = Node & {
   __typename?: 'UserServiceCapability';
   generic_service_capability: Maybe<GenericServiceCapability>;
   id: Scalars['ID']['output'];
   subscription_capability: Maybe<SubscriptionCapability>;
-  subscription_id: Maybe<Scalars['SubscriptionId']['output']>;
   user_service_id: Scalars['ID']['output'];
 };
 
@@ -3185,7 +3190,7 @@ export type ServiceUserCapabilitiesQueryVariables = Exact<{
 }>;
 
 
-export type ServiceUserCapabilitiesQuery = { __typename?: 'Query', userServiceCapabilities: Array<{ __typename?: 'UserServiceCapability', id: string, user_service_id: string, subscription_id: any | null, generic_service_capability: { __typename?: 'GenericServiceCapability', id: string, name: string | null } | null, subscription_capability: { __typename?: 'SubscriptionCapability', id: string, service_capability: { __typename?: 'ServiceCapability', name: string | null, id: string } | null } | null } | null> | null };
+export type ServiceUserCapabilitiesQuery = { __typename?: 'Query', userServiceCapabilities: { __typename?: 'UserServiceCapabilitiesResponse', subscription_id: any | null, userServiceCapabilities: Array<{ __typename?: 'UserServiceCapability', id: string, user_service_id: string, generic_service_capability: { __typename?: 'GenericServiceCapability', id: string, name: string | null } | null, subscription_capability: { __typename?: 'SubscriptionCapability', id: string, service_capability: { __typename?: 'ServiceCapability', name: string | null, id: string } | null } | null }> } };
 
 export type SolutionCategoryAddMutationVariables = Exact<{
   input: AddSolutionCategoryInput;
@@ -4373,18 +4378,20 @@ useEditSeoServiceInstanceMetadataMutation.fetcher = (client: GraphQLClient, vari
 export const ServiceUserCapabilitiesDocument = `
     query ServiceUserCapabilities($service_instance_id: ServiceInstanceId!) {
   userServiceCapabilities(service_instance_id: $service_instance_id) {
-    id
-    user_service_id
     subscription_id
-    generic_service_capability {
+    userServiceCapabilities {
       id
-      name
-    }
-    subscription_capability {
-      id
-      service_capability {
-        name
+      user_service_id
+      generic_service_capability {
         id
+        name
+      }
+      subscription_capability {
+        id
+        service_capability {
+          name
+          id
+        }
       }
     }
   }

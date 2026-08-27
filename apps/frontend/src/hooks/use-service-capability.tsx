@@ -41,12 +41,12 @@ function useServiceCapability(
       queryKey: ['service-user-capabilities', serviceInstance?.id],
     }
   );
-  const rawSubscriptionId = data?.userServiceCapabilities?.[0]?.subscription_id;
-  const subscriptionId =
-    typeof rawSubscriptionId === 'string' ? rawSubscriptionId : null;
+  const userServiceCapabilities =
+    data?.userServiceCapabilities?.userServiceCapabilities;
+  const subscriptionId = data?.userServiceCapabilities?.subscription_id;
 
   const hasCapability = useMemo(() => {
-    const fetchedServiceCapabilities = data?.userServiceCapabilities?.flatMap(
+    const fetchedServiceCapabilities = userServiceCapabilities?.flatMap(
       (userServiceCapability) => [
         userServiceCapability?.generic_service_capability?.name,
         userServiceCapability?.subscription_capability?.service_capability
@@ -60,7 +60,7 @@ function useServiceCapability(
       canBypass ||
       !!userCapabilities?.some((capa) => capa?.toUpperCase() === capability)
     );
-  }, [canBypass, data, serviceInstance, capability]);
+  }, [canBypass, serviceInstance, capability, userServiceCapabilities]);
 
   if (options?.withSubscriptionId) {
     return {

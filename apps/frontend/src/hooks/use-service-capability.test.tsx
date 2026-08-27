@@ -1,3 +1,4 @@
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 import useServiceCapability from '@/hooks/use-service-capability';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
@@ -7,7 +8,6 @@ import {
 } from '@graphql/generated';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useAdminByPass } from './use-portal-capability';
 
 vi.mock('@/hooks/use-portal-capability', () => ({
   useAdminByPass: vi.fn(),
@@ -55,20 +55,24 @@ describe('useServiceCapability', () => {
     // Given
     mockCapabilitiesQueryResult({
       __typename: 'Query',
-      userServiceCapabilities: [
-        {
-          __typename: 'UserServiceCapability',
-          id: UserServiceCapabilityId,
-          user_service_id: UserServiceId,
-          subscription_id: SubscriptionId,
-          generic_service_capability: {
-            __typename: 'GenericServiceCapability',
-            id: GenericCapabilityId,
-            name: GenericCapabilityName,
+      userServiceCapabilities: {
+        __typename: 'UserServiceCapabilitiesResponse',
+        subscription_id: SubscriptionId,
+        userServiceCapabilities: [
+          {
+            __typename: 'UserServiceCapability',
+            id: UserServiceCapabilityId,
+            user_service_id: UserServiceId,
+            subscription_id: SubscriptionId,
+            generic_service_capability: {
+              __typename: 'GenericServiceCapability',
+              id: GenericCapabilityId,
+              name: GenericCapabilityName,
+            },
+            subscription_capability: null,
           },
-          subscription_capability: null,
-        },
-      ],
+        ],
+      },
     });
 
     // When
@@ -84,20 +88,24 @@ describe('useServiceCapability', () => {
     // Given
     mockCapabilitiesQueryResult({
       __typename: 'Query',
-      userServiceCapabilities: [
-        {
-          __typename: 'UserServiceCapability',
-          id: UserServiceCapabilityId,
-          user_service_id: UserServiceId,
-          subscription_id: SubscriptionId,
-          generic_service_capability: {
-            __typename: 'GenericServiceCapability',
-            id: GenericCapabilityId,
-            name: GenericCapabilityName,
+      userServiceCapabilities: {
+        __typename: 'UserServiceCapabilitiesResponse',
+        subscription_id: SubscriptionId,
+        userServiceCapabilities: [
+          {
+            __typename: 'UserServiceCapability',
+            id: UserServiceCapabilityId,
+            user_service_id: UserServiceId,
+            subscription_id: SubscriptionId,
+            generic_service_capability: {
+              __typename: 'GenericServiceCapability',
+              id: GenericCapabilityId,
+              name: GenericCapabilityName,
+            },
+            subscription_capability: null,
           },
-          subscription_capability: null,
-        },
-      ],
+        ],
+      },
     });
 
     // When

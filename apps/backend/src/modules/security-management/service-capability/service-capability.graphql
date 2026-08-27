@@ -5,8 +5,13 @@ type GenericServiceCapability implements Node {
   name: String
 }
 
+type UserServiceCapabilitiesResponse {
+  userServiceCapabilities: [UserServiceCapability!]!
+  subscription_id: SubscriptionId
+}
+
 type Query {
   userServiceCapabilities(
     service_instance_id: ServiceInstanceId!
-  ): [UserServiceCapability] @auth
+  ): UserServiceCapabilitiesResponse! @auth
 }
