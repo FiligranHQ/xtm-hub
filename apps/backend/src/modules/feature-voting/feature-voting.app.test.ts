@@ -114,16 +114,17 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
   // The field is public, so a guessed service instance id must not leak the
   // roadmap of a private instance.
   it.each`
-    serviceInstance                                | description
-    ${{ id: SERVICE_INSTANCE_ID, public: false }}  | ${'a private service instance'}
-    ${undefined}                                   | ${'a service instance that does not exist'}
+    serviceInstance                               | description
+    ${{ id: SERVICE_INSTANCE_ID, public: false }} | ${'a private service instance'}
+    ${undefined}                                  | ${'a service instance that does not exist'}
   `(
     'should return null for $description without querying the rounds',
     async ({ serviceInstance }) => {
       // Given
-      vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue(
-        serviceInstance as ServiceInstance | undefined
-      );
+      vi.spyOn(
+        ServiceInstanceDomain,
+        'loadServiceInstanceBy'
+      ).mockResolvedValue(serviceInstance as ServiceInstance | undefined);
       const loadRoundSpy = vi.spyOn(featureVotingDomain, 'loadVotingRoundBy');
 
       // When
@@ -171,22 +172,56 @@ describe('admin reads of a voting round', () => {
     }
   );
 
-  it('should expose inactive features in the admin round list', async () => {
+  it('should expose inactive features when the admin round list asks for them', async () => {
     // Given
-    vi.spyOn(featureVotingDomain, 'loadVotingRounds').mockResolvedValue([
-      buildRound({ status: VotingRoundStatus.Open }),
-    ]);
     const loadSpy = vi
       .spyOn(featureVotingDomain, 'loadVotableFeatures')
       .mockResolvedValue([]);
 
     // When
-    await featureVotingApp.loadVotingRounds();
+    await featureVotingApp.loadRoundFeatures(ROUND_ID);
 
     // Then
     expect(loadSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ onlyActive: false })
+      expect.objectContaining({ roundId: ROUND_ID, onlyActive: false })
     );
+  });
+
+  it('should count features without reading them when listing rounds', async () => {
+    // Given
+    const round = buildRound({ status: VotingRoundStatus.Open });
+    vi.spyOn(featureVotingDomain, 'loadVotingRounds').mockResolvedValue([
+      round,
+    ]);
+    vi.spyOn(featureVotingDomain, 'countFeaturesByRound').mockResolvedValue(
+      new Map([[round.id, 3]])
+    );
+    const loadSpy = vi
+      .spyOn(featureVotingDomain, 'loadVotableFeatures')
+      .mockResolvedValue([]);
+
+    // When
+    const rounds = await featureVotingApp.loadVotingRounds();
+
+    // Then
+    expect(rounds).toEqual([expect.objectContaining({ feature_count: 3 })]);
+    expect(loadSpy).not.toHaveBeenCalled();
+  });
+
+  it('should report no feature for a round absent from the grouped count', async () => {
+    // Given
+    vi.spyOn(featureVotingDomain, 'loadVotingRounds').mockResolvedValue([
+      buildRound({ status: VotingRoundStatus.Open }),
+    ]);
+    vi.spyOn(featureVotingDomain, 'countFeaturesByRound').mockResolvedValue(
+      new Map()
+    );
+
+    // When
+    const rounds = await featureVotingApp.loadVotingRounds();
+
+    // Then
+    expect(rounds).toEqual([expect.objectContaining({ feature_count: 0 })]);
   });
 
   it('should restrict the admin round list to a service instance when asked', async () => {

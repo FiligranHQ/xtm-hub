@@ -6,11 +6,11 @@ import {
   UpdateVotingRoundInput,
   VotingRoundStatus,
 } from '../../__generated__/resolvers-types';
-import { requestContext } from '../../context/request.context';
 import {
   withAdvisoryLock,
   withTransaction,
 } from '../../context/database.context';
+import { requestContext } from '../../context/request.context';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
 import VotingRound, {
@@ -31,6 +31,26 @@ import { isAllowedImageUrl } from './feature-voting.utils';
 
 export type VotingRoundWithFeatures = VotingRound & {
   features: VotableFeatureWithVote[];
+};
+
+/**
+ * The admin list only shows how many features a round holds. Carrying the count
+ * instead of the features keeps the whole descriptions, which are markdown
+ * documents, out of a response that would never display them.
+ */
+export type VotingRoundWithFeatureCount = VotingRound & {
+  feature_count: number;
+};
+
+/**
+ * What a resolver is allowed to hand back for a `VotingRound`. Both derived
+ * fields are optional here because the field resolvers fill in whichever one
+ * the caller did not already compute.
+ */
+export type VotingRoundModel = VotingRound & {
+  __typename?: 'VotingRound';
+  features?: VotableFeatureWithVote[];
+  feature_count?: number;
 };
 
 export interface VotingRoundResults {
@@ -162,11 +182,27 @@ export const featureVotingApp = {
 
   loadVotingRounds: async (
     serviceInstanceId?: ServiceInstanceId | null
-  ): Promise<VotingRoundWithFeatures[]> => {
+  ): Promise<VotingRoundWithFeatureCount[]> => {
     const rounds =
       await featureVotingDomain.loadVotingRounds(serviceInstanceId);
-    return Promise.all(rounds.map((round) => withAllFeatures(round)));
+    const counts = await featureVotingDomain.countFeaturesByRound(
+      rounds.map((round) => round.id)
+    );
+    return rounds.map((round) => ({
+      ...round,
+      feature_count: counts.get(round.id) ?? 0,
+    }));
   },
+
+  /** Backs the `features` field when a round was listed without them. */
+  loadRoundFeatures: (
+    roundId: VotingRoundId
+  ): Promise<VotableFeatureWithVote[]> =>
+    featureVotingDomain.loadVotableFeatures({
+      roundId,
+      onlyActive: false,
+      userId: requestContext.get()?.user?.id,
+    }),
 
   loadVotingRound: async (
     id: VotingRoundId
@@ -298,7 +334,9 @@ export const featureVotingApp = {
       }
     );
 
-    return Promise.all(changedRounds.map((changed) => withAllFeatures(changed)));
+    return Promise.all(
+      changedRounds.map((changed) => withAllFeatures(changed))
+    );
   },
 
   deleteVotingRound: async (
@@ -366,10 +404,13 @@ export const featureVotingApp = {
         }
       }
 
-      const updatedFeature = await featureVotingDomain.updateVotableFeature(id, {
-        ...applyUpdate(input, ['image_url']),
-        updated_at: new Date(),
-      });
+      const updatedFeature = await featureVotingDomain.updateVotableFeature(
+        id,
+        {
+          ...applyUpdate(input, ['image_url']),
+          updated_at: new Date(),
+        }
+      );
       if (!updatedFeature) {
         throw new Error(NotFoundErrorCode.VotableFeatureNotFound);
       }

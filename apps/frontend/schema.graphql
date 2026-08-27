@@ -765,6 +765,7 @@ type VotingRound implements Node {
   created_at: Date!
   updated_at: Date
   features: [VotableFeature!]!
+  feature_count: Int!
 }
 
 type VotableFeature implements Node {

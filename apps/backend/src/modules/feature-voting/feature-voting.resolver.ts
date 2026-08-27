@@ -10,6 +10,17 @@ const resolvers: Resolvers = {
   VotableFeatureId: createRelayIdScalar<VotableFeatureId>('VotableFeature'),
   VotingRoundId: createRelayIdScalar<VotingRoundId>('VotingRound'),
 
+  // Rounds come either with their features already resolved and filtered for
+  // the audience, or as a bare row from the admin listing. Both fields fall
+  // back to a query only when the value is missing, so listing rounds never
+  // pays for feature bodies it will not render.
+  VotingRound: {
+    features: (round) =>
+      round.features ?? featureVotingApp.loadRoundFeatures(round.id),
+    feature_count: (round) =>
+      round.feature_count ?? round.features?.length ?? 0,
+  },
+
   Query: {
     currentVotingRound: (_, { service_instance_id }) =>
       featureVotingApp.loadCurrentVotingRound(service_instance_id),

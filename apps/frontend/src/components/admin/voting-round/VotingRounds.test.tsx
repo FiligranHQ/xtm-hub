@@ -3,7 +3,7 @@ import { mockGraphqlQuery } from '@/utils/test/msw/graphql-api';
 import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';
 import { VotingRoundsListQuery, VotingRoundStatus } from '@graphql/generated';
-import { mockVotableFeature, mockVotingRound } from '@graphql/mocks';
+import { mockVotingRound } from '@graphql/mocks';
 import { screen } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
@@ -32,13 +32,13 @@ const votingRoundsResponse: VotingRoundsListQuery = {
       id: 'round-1',
       name: 'Feature vote #1',
       status: VotingRoundStatus.Open,
-      features: [mockVotableFeature({ id: 'feature-1' })],
+      feature_count: 3,
     }),
     mockVotingRound({
       id: 'round-2',
       name: 'Feature vote #2',
       status: VotingRoundStatus.Draft,
-      features: [],
+      feature_count: 0,
     }),
   ],
 };
@@ -79,6 +79,8 @@ describe('VotingRounds', () => {
     expect(
       await screen.findByText('VotingRound.Status.draft')
     ).toBeInTheDocument();
+    expect(await screen.findByText('3')).toBeInTheDocument();
+    expect(await screen.findByText('0')).toBeInTheDocument();
   });
 
   it('should navigate to the round detail when clicking a row', async () => {

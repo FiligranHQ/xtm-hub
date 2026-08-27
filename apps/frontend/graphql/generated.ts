@@ -2986,6 +2986,7 @@ export type VotingRound = Node & {
   closed_at: Maybe<Scalars['Date']['output']>;
   created_at: Scalars['Date']['output'];
   description: Maybe<Scalars['String']['output']>;
+  feature_count: Scalars['Int']['output'];
   features: Array<VotableFeature>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -3270,7 +3271,7 @@ export type VotingRoundCreateMutationVariables = Exact<{
 }>;
 
 
-export type VotingRoundCreateMutation = { __typename?: 'Mutation', createVotingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } };
+export type VotingRoundCreateMutation = { __typename?: 'Mutation', createVotingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any } };
 
 export type VotingRoundUpdateMutationVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
@@ -3278,7 +3279,7 @@ export type VotingRoundUpdateMutationVariables = Exact<{
 }>;
 
 
-export type VotingRoundUpdateMutation = { __typename?: 'Mutation', updateVotingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } };
+export type VotingRoundUpdateMutation = { __typename?: 'Mutation', updateVotingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any } };
 
 export type VotingRoundSetStatusMutationVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
@@ -3286,7 +3287,7 @@ export type VotingRoundSetStatusMutationVariables = Exact<{
 }>;
 
 
-export type VotingRoundSetStatusMutation = { __typename?: 'Mutation', setVotingRoundStatus: Array<{ __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> }> };
+export type VotingRoundSetStatusMutation = { __typename?: 'Mutation', setVotingRoundStatus: Array<{ __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any }> };
 
 export type VotingRoundDeleteMutationVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
@@ -3319,12 +3320,12 @@ export type VotableFeatureDeleteMutation = { __typename?: 'Mutation', deleteVota
 
 export type VotableFeatureAdminRowFragment = { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean };
 
-export type VotingRoundRowFragment = { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> };
+export type VotingRoundRowFragment = { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any };
 
 export type VotingRoundsListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type VotingRoundsListQuery = { __typename?: 'Query', votingRounds: Array<{ __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> }> };
+export type VotingRoundsListQuery = { __typename?: 'Query', votingRounds: Array<{ __typename?: 'VotingRound', feature_count: number, id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any }> };
 
 export type VotingRoundDetailQueryVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
@@ -3439,11 +3440,8 @@ export const VotingRoundRowFragmentDoc = `
   opened_at
   closed_at
   created_at
-  features {
-    ...VotableFeatureAdminRow
-  }
 }
-    ${VotableFeatureAdminRowFragmentDoc}`;
+    `;
 export const MostDeployedDocumentsQueryDocument = `
     query MostDeployedDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
   mostDeployedDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {
@@ -5018,6 +5016,7 @@ export const VotingRoundsListDocument = `
     query VotingRoundsList {
   votingRounds {
     ...VotingRoundRow
+    feature_count
   }
 }
     ${VotingRoundRowFragmentDoc}`;
@@ -5071,9 +5070,13 @@ export const VotingRoundDetailDocument = `
     query VotingRoundDetail($id: VotingRoundId!) {
   votingRound(id: $id) {
     ...VotingRoundRow
+    features {
+      ...VotableFeatureAdminRow
+    }
   }
 }
-    ${VotingRoundRowFragmentDoc}`;
+    ${VotingRoundRowFragmentDoc}
+${VotableFeatureAdminRowFragmentDoc}`;
 
 export const useVotingRoundDetailQuery = <
       TData = VotingRoundDetailQuery,

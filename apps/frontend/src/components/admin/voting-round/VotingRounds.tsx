@@ -14,12 +14,15 @@ import { DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import {
   useVotingRoundsListQuery,
   VotingRoundRowFragment,
+  VotingRoundsListQuery,
 } from '@graphql/generated';
 import { votingRoundKeys } from '@graphql/voting-round/voting-round.keys';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+
+type VotingRoundListRow = VotingRoundsListQuery['votingRounds'][number];
 
 const VotingRounds = () => {
   const t = useTranslations();
@@ -34,7 +37,7 @@ const VotingRounds = () => {
     { queryKey: votingRoundKeys.list() }
   );
 
-  const rounds = useMemo<VotingRoundRowFragment[]>(
+  const rounds = useMemo<VotingRoundListRow[]>(
     () => queryData?.votingRounds ?? [],
     [queryData]
   );
@@ -45,7 +48,7 @@ const VotingRounds = () => {
     [serviceInstances]
   );
 
-  const columns: ColumnDef<VotingRoundRowFragment>[] = [
+  const columns: ColumnDef<VotingRoundListRow>[] = [
     {
       accessorKey: 'name',
       id: 'name',
@@ -72,7 +75,7 @@ const VotingRounds = () => {
       id: 'features',
       header: t('VotingRound.ListPage.FeatureCount'),
       enableSorting: false,
-      cell: ({ row }) => row.original.features.length,
+      cell: ({ row }) => row.original.feature_count,
     },
     {
       id: 'actions',

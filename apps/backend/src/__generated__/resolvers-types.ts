@@ -13,6 +13,7 @@ import type { UserServiceId } from '../model/kanel/public/UserService.js';
 import type { VotableFeatureId } from '../model/kanel/public/VotableFeature.js';
 import type { VotingRoundId } from '../model/kanel/public/VotingRound.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import type { VotingRoundModel } from '../modules/feature-voting/feature-voting.app.js';
 import type { PortalContext } from '../model/portal-context.js';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null;
@@ -2978,6 +2979,7 @@ export type VotingRound = Node & {
   closed_at?: Maybe<Scalars['Date']['output']>;
   created_at: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  feature_count: Scalars['Int']['output'];
   features: Array<VotableFeature>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -3076,7 +3078,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( NewsFeedItem ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( ProvisionedNewsFeedItem ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SolutionCategory ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted ) | ( VotableFeature ) | ( VotingRound );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( NewsFeedItem ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( ProvisionedNewsFeedItem ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SolutionCategory ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted ) | ( VotableFeature ) | ( VotingRoundModel );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -3322,9 +3324,9 @@ export type ResolversTypes = ResolversObject<{
   VotableFeature: ResolverTypeWrapper<VotableFeature>;
   VotableFeatureId: ResolverTypeWrapper<Scalars['VotableFeatureId']['output']>;
   VotableFeatureResult: ResolverTypeWrapper<VotableFeatureResult>;
-  VotingRound: ResolverTypeWrapper<VotingRound>;
+  VotingRound: ResolverTypeWrapper<VotingRoundModel>;
   VotingRoundId: ResolverTypeWrapper<Scalars['VotingRoundId']['output']>;
-  VotingRoundResults: ResolverTypeWrapper<VotingRoundResults>;
+  VotingRoundResults: ResolverTypeWrapper<Omit<VotingRoundResults, 'round'> & { round: ResolversTypes['VotingRound'] }>;
   VotingRoundStatus: VotingRoundStatus;
   VotingRoundTheme: VotingRoundTheme;
 }>;
@@ -3520,9 +3522,9 @@ export type ResolversParentTypes = ResolversObject<{
   VotableFeature: VotableFeature;
   VotableFeatureId: Scalars['VotableFeatureId']['output'];
   VotableFeatureResult: VotableFeatureResult;
-  VotingRound: VotingRound;
+  VotingRound: VotingRoundModel;
   VotingRoundId: Scalars['VotingRoundId']['output'];
-  VotingRoundResults: VotingRoundResults;
+  VotingRoundResults: Omit<VotingRoundResults, 'round'> & { round: ResolversParentTypes['VotingRound'] };
 }>;
 
 export type AuthDirectiveArgs = {
@@ -4897,6 +4899,7 @@ export type VotingRoundResolvers<ContextType = PortalContext, ParentType extends
   closed_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  feature_count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   features?: Resolver<Array<ResolversTypes['VotableFeature']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

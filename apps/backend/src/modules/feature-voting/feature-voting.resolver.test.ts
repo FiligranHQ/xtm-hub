@@ -284,3 +284,71 @@ describe('votable feature admin GraphQL mutations', () => {
     expect(result).toEqual(expected);
   });
 });
+
+describe('votingRound field resolvers', () => {
+  it('should keep the features the caller already filtered for its audience', async () => {
+    // Given
+    const features = [buildFeature()];
+    const loadSpy = vi.spyOn(featureVotingApp, 'loadRoundFeatures');
+
+    // When
+    const result = await featureVotingResolver.VotingRound!.features!(
+      buildRound({ features }),
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(result).toEqual(features);
+    expect(loadSpy).not.toHaveBeenCalled();
+  });
+
+  it('should load the features of a round that was listed without them', async () => {
+    // Given
+    const features = [buildFeature()];
+    vi.spyOn(featureVotingApp, 'loadRoundFeatures').mockResolvedValue(features);
+    const { features: _omitted, ...roundWithoutFeatures } = buildRound();
+
+    // When
+    const result = await featureVotingResolver.VotingRound!.features!(
+      roundWithoutFeatures,
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(featureVotingApp.loadRoundFeatures).toHaveBeenCalledWith(ROUND_ID);
+    expect(result).toEqual(features);
+  });
+
+  it('should report the precomputed count when the round was listed', async () => {
+    // Given
+    const { features: _omitted, ...round } = buildRound();
+
+    // When
+    const result = await featureVotingResolver.VotingRound!.feature_count!(
+      { ...round, feature_count: 4 },
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(result).toBe(4);
+  });
+
+  it('should count the features already attached to the round', async () => {
+    // When
+    const result = await featureVotingResolver.VotingRound!.feature_count!(
+      buildRound({ features: [buildFeature(), buildFeature()] }),
+      {},
+      contextSimpleUserFiligran2,
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(result).toBe(2);
+  });
+});

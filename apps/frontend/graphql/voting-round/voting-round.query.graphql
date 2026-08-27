@@ -21,20 +21,21 @@ fragment VotingRoundRow on VotingRound {
   opened_at
   closed_at
   created_at
-  features {
-    ...VotableFeatureAdminRow
-  }
 }
 
 query VotingRoundsList {
   votingRounds {
     ...VotingRoundRow
+    feature_count
   }
 }
 
 query VotingRoundDetail($id: VotingRoundId!) {
   votingRound(id: $id) {
     ...VotingRoundRow
+    features {
+      ...VotableFeatureAdminRow
+    }
   }
 }
 

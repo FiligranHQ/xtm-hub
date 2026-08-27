@@ -206,6 +206,27 @@ export const featureVotingDomain = {
     return Number(row?.count ?? 0);
   },
 
+  /**
+   * Counts the features of several rounds at once, so listing rounds stays at a
+   * fixed number of queries instead of one per row.
+   */
+  countFeaturesByRound: async (
+    roundIds: VotingRoundId[]
+  ): Promise<Map<VotingRoundId, number>> => {
+    if (roundIds.length === 0) {
+      return new Map();
+    }
+    const rows = (await db<VotableFeature>('VotableFeature')
+      .whereIn('voting_round_id', roundIds)
+      .groupBy('voting_round_id')
+      .select('voting_round_id')
+      .count({ count: '*' })) as unknown as {
+      voting_round_id: VotingRoundId;
+      count: string | number;
+    }[];
+    return new Map(rows.map((row) => [row.voting_round_id, Number(row.count)]));
+  },
+
   loadRoundResults: async (
     roundId: VotingRoundId
   ): Promise<VotableFeatureWithCount[]> => {

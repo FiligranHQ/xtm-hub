@@ -2400,6 +2400,7 @@ export const mockVotingRound = (overrides?: Partial<VotingRound>, _relationships
         closed_at: overrides && overrides.hasOwnProperty('closed_at') ? overrides.closed_at! : '2021-07-31T22:31:47.510Z',
         created_at: overrides && overrides.hasOwnProperty('created_at') ? overrides.created_at! : '2021-06-02T15:52:07.194Z',
         description: overrides && overrides.hasOwnProperty('description') ? overrides.description! : 'conforto',
+        feature_count: overrides && overrides.hasOwnProperty('feature_count') ? overrides.feature_count! : 5525,
         features: overrides && overrides.hasOwnProperty('features') ? overrides.features! : [relationshipsToOmit.has('VotableFeature') ? {} as VotableFeature : mockVotableFeature({}, relationshipsToOmit)],
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : 'a95c3939-5c47-4e86-b4df-3f6f4e731430',
         name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : 'adhuc',
