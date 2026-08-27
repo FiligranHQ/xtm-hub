@@ -17,6 +17,16 @@ integration testing) build on top of these.
 - If an existing test looks wrong, outdated, redundant, or in need of restructuring for reasons unrelated to the above,
   stop and ask before touching it — do not silently rewrite it.
 
+## Keeping the Suite Lean
+
+- While working, actively look for tests your change makes redundant, obsolete, or unnecessarily long-winded (e.g. a
+  near-duplicate of another case, or a scenario that's now fully covered by a broader `it.each` dataset). Don't just
+  leave them or add a new test alongside them.
+- Propose the specific consolidation or removal and what it would keep/drop — then follow the ask-first rule above
+  before actually touching the existing test.
+- Prefer folding a new case into an existing `it.each` dataset over adding a near-duplicate `it` block, when the
+  scenarios genuinely share setup and only differ in data.
+
 ## Adding Tests
 
 - Add or update tests near the changed files (`*.test.ts` / `*.test.tsx`).
