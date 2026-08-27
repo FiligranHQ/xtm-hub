@@ -89,6 +89,26 @@ describe('FeatureVotingItem', () => {
     expect(replace).not.toHaveBeenCalled();
   });
 
+  it('should open the detail from the keyboard through the see details button', async () => {
+    const { user } = testRender(
+      <FeatureVotingItem
+        feature={feature}
+        isAuthenticated
+      />
+    );
+
+    await user.tab();
+    await user.keyboard('{Enter}');
+
+    expect(
+      screen.getByRole('button', { name: 'FeatureVoting.SeeDetails' })
+    ).toHaveFocus();
+    expect(replace).toHaveBeenCalledWith(
+      '/en/feature-voting?featureId=feature-1',
+      { scroll: false }
+    );
+  });
+
   it('should render the detail and its long description when the URL selects the feature', () => {
     mockSearchParams('feature-1');
 

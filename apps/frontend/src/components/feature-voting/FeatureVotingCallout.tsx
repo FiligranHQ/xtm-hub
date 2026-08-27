@@ -73,11 +73,19 @@ export const FeatureVotingCallout = ({
           </p>
         </div>
       </div>
+      {/* asChild keeps the link itself as the only interactive element, so the
+          gradient has to be applied by hand rather than through textGradient. */}
       <GradientButton
+        asChild
+        textGradient={false}
         gradientFrom={theme.gradientFrom}
         gradientTo={theme.gradientTo}
         gradientBg={theme.gradientBg}>
-        <Link href={href}>{t('FeatureVoting.CalloutButton')}</Link>
+        <Link href={href}>
+          <span className="bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] bg-clip-text text-transparent">
+            {t('FeatureVoting.CalloutButton')}
+          </span>
+        </Link>
       </GradientButton>
     </div>
   );

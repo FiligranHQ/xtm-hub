@@ -25,7 +25,16 @@ export const FeatureVoteCard = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const handleOpenDetail = useCallback(
+  const openDetail = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('featureId', feature.id);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [router, pathname, searchParams, feature.id]);
+
+  // Clicking anywhere on the card is a mouse convenience only. Keyboard users
+  // reach the detail through the "see details" button below, so the card stays
+  // a plain container rather than a widget wrapping other widgets.
+  const handleCardClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       const { currentTarget, target } = event;
       if (!(target instanceof Node) || !currentTarget.contains(target)) {
@@ -39,16 +48,14 @@ export const FeatureVoteCard = ({
         return;
       }
 
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('featureId', feature.id);
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      openDetail();
     },
-    [router, pathname, searchParams, feature.id]
+    [openDetail]
   );
 
   return (
     <div
-      onClick={handleOpenDetail}
+      onClick={handleCardClick}
       className="flex h-full cursor-pointer flex-col overflow-hidden rounded bg-elevation-background-layer-1 hover:bg-hover">
       {feature.image_url && (
         <div className="relative h-32 w-full shrink-0">
@@ -78,9 +85,13 @@ export const FeatureVoteCard = ({
             ))}
           </div>
         )}
-        <p className="text-muted-foreground text-xs">
+        <button
+          type="button"
+          onClick={openDetail}
+          data-no-open-detail
+          className="text-muted-foreground focus-visible:ring-primary w-fit text-xs underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2">
           {t('FeatureVoting.SeeDetails')}
-        </p>
+        </button>
         {/* Voting must not open the detail dialog. */}
         <div
           className="mt-auto pt-s"
