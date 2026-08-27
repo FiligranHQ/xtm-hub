@@ -6,10 +6,10 @@ import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDi
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { Button, toast } from '@filigran/ui';
 import { useVotableFeatureCreateMutation } from '@graphql/generated';
-import { votingRoundKeys } from '@graphql/voting-round/voting-round.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { invalidateVotingRoundQueries } from './voting-round-query-invalidation';
 
 const AddVotableFeature = ({ roundId }: { roundId: string }) => {
   const t = useTranslations();
@@ -21,10 +21,7 @@ const AddVotableFeature = ({ roundId }: { roundId: string }) => {
     {
       onSuccess: () => {
         setOpenSheet(false);
-        queryClient.invalidateQueries({ queryKey: votingRoundKeys.all() });
-        queryClient.invalidateQueries({
-          queryKey: votingRoundKeys.detailAll(),
-        });
+        invalidateVotingRoundQueries(queryClient);
         toast({ title: t('Utils.Success') });
       },
       onError: (error: unknown) => {

@@ -10,10 +10,10 @@ import {
   useVotableFeatureDeleteMutation,
   useVotableFeatureUpdateMutation,
 } from '@graphql/generated';
-import { votingRoundKeys } from '@graphql/voting-round/voting-round.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { invalidateVotingRoundQueries } from './voting-round-query-invalidation';
 
 const EditVotableFeature = ({
   open,
@@ -48,17 +48,12 @@ const EditVotableFeature = ({
     });
   };
 
-  const invalidateRounds = () => {
-    queryClient.invalidateQueries({ queryKey: votingRoundKeys.all() });
-    queryClient.invalidateQueries({ queryKey: votingRoundKeys.detailAll() });
-  };
-
   const { mutate: updateVotableFeature } = useVotableFeatureUpdateMutation(
     portalGraphqlClient,
     {
       onSuccess: () => {
         toast({ title: t('Utils.Success') });
-        invalidateRounds();
+        invalidateVotingRoundQueries(queryClient);
         handleOpenSheet(false);
       },
       onError: handleError,
@@ -70,7 +65,7 @@ const EditVotableFeature = ({
     {
       onSuccess: () => {
         toast({ title: t('Utils.Success') });
-        invalidateRounds();
+        invalidateVotingRoundQueries(queryClient);
         handleOpenSheet(false);
       },
       onError: handleError,

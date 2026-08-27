@@ -7,11 +7,11 @@ import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDi
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { Button, toast } from '@filigran/ui';
 import { useVotingRoundCreateMutation } from '@graphql/generated';
-import { votingRoundKeys } from '@graphql/voting-round/voting-round.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { z } from 'zod';
+import { invalidateVotingRoundQueries } from './voting-round-query-invalidation';
 
 const AddVotingRound = ({
   copySources,
@@ -28,7 +28,7 @@ const AddVotingRound = ({
     {
       onSuccess: () => {
         setOpenSheet(false);
-        queryClient.invalidateQueries({ queryKey: votingRoundKeys.all() });
+        invalidateVotingRoundQueries(queryClient);
         toast({ title: t('Utils.Success') });
       },
       onError: (error: unknown) => {

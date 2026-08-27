@@ -7,9 +7,9 @@ import {
   useVotingRoundSetStatusMutation,
   VotingRoundStatus,
 } from '@graphql/generated';
-import { votingRoundKeys } from '@graphql/voting-round/voting-round.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { invalidateVotingRoundQueries } from './voting-round-query-invalidation';
 
 interface VotingRoundStatusActionsProps {
   roundId: string;
@@ -32,10 +32,7 @@ export const VotingRoundStatusActions = ({
     {
       onSuccess: () => {
         toast({ title: t('Utils.Success') });
-        queryClient.invalidateQueries({ queryKey: votingRoundKeys.all() });
-        queryClient.invalidateQueries({
-          queryKey: votingRoundKeys.detailAll(),
-        });
+        invalidateVotingRoundQueries(queryClient);
       },
       onError: (error: unknown) => {
         const errorMessage =
