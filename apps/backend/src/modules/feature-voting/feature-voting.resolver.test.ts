@@ -14,6 +14,7 @@ import {
   buildVotableFeature,
   buildVotingRoundWithFeatures,
   FIXTURE_ROUND_ID,
+  FIXTURE_SERVICE_INSTANCE_ID,
 } from './feature-voting.fixtures';
 import featureVotingResolver from './feature-voting.resolver';
 
@@ -28,13 +29,15 @@ describe('currentVotingRound GraphQL query', () => {
     // When
     const result = await featureVotingResolver.Query!.currentVotingRound!(
       {},
-      {},
+      { service_instance_id: FIXTURE_SERVICE_INSTANCE_ID },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     // Then
-    expect(featureVotingApp.loadCurrentVotingRound).toHaveBeenCalled();
+    expect(featureVotingApp.loadCurrentVotingRound).toHaveBeenCalledWith(
+      FIXTURE_SERVICE_INSTANCE_ID
+    );
     expect(result).toEqual(expected);
   });
 });
@@ -48,12 +51,15 @@ describe('votingRounds GraphQL query', () => {
     // When
     const result = await featureVotingResolver.Query!.votingRounds!(
       {},
-      {},
+      { service_instance_id: FIXTURE_SERVICE_INSTANCE_ID },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     // Then
+    expect(featureVotingApp.loadVotingRounds).toHaveBeenCalledWith(
+      FIXTURE_SERVICE_INSTANCE_ID
+    );
     expect(result).toEqual(expected);
   });
 });
