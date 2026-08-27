@@ -794,3 +794,92 @@ jobs:
           done
           echo "❌ All $max_attempts attempts failed"
           exit 1
+
+  # Notifies the team channel when CI fails on a protected branch (main/development)
+  # or in the merge queue. Regular PR-branch CI failures are intentionally excluded,
+  # since those are expected to be worked on by the PR author and don't indicate a
+  # broken mainline/merge-queue state.
+  notify-on-failure:
+    name: Notify team on CI failure (mainline / merge queue)
+    needs:
+      - detect-changes
+      - run-lint
+      - build-images-tests
+      - run-e2e-tests-shards
+      - run-e2e-tests
+      - run-front-unit-tests-shards
+      - run-front-unit-tests
+      - run-api-unit-tests-shards
+      - run-api-unit-tests
+      - build-images-prod
+      - deploy
+    if: |
+      always() &&
+      contains(needs.*.result, 'failure') &&
+      (
+        github.event_name == 'merge_group' ||
+        (github.event_name == 'push' && github.ref == 'refs/heads/main')
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Send Teams notification on CI failure
+        env:
+          TEAMS_WEBHOOK_CI_FAILURE: ${{ secrets.TEAMS_WEBHOOK_CI_FAILURE }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          REPO: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ -z "$TEAMS_WEBHOOK_CI_FAILURE" ]; then
+            echo "⚠️ TEAMS_WEBHOOK_CI_FAILURE secret is not set, skipping notification"
+            exit 0
+          fi
+
+          if [ "$EVENT_NAME" = "merge_group" ]; then
+            TRIGGER="the merge queue"
+          else
+            TRIGGER="a push to $REF_NAME"
+          fi
+
+          curl -sS -X POST "$TEAMS_WEBHOOK_CI_FAILURE" \
+            -H "Content-Type: application/json" \
+            -d @- <<EOF || true
+          {
+            "type": "message",
+            "attachments": [
+              {
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "type": "AdaptiveCard",
+                  "\$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "version": "1.2",
+                  "body": [
+                    {
+                      "type": "TextBlock",
+                      "size": "medium",
+                      "weight": "bolder",
+                      "color": "attention",
+                      "text": "🚨 CI failed on $TRIGGER",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "Workflow $WORKFLOW_NAME failed for $REPO (commit $COMMIT_SHA).",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "text": "[View failed run]($RUN_URL)",
+                      "weight": "bolder",
+                      "wrap": true
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+          EOF

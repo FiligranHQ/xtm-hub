@@ -3,3 +3,11 @@ mutation UserDelete($id: ID!) {
     id
   }
 }
+
+mutation ChangeSelectedOrganization($organization_id: OrganizationId!) {
+  changeSelectedOrganization(organization_id: $organization_id) {
+    id
+    selected_organization_id
+    selected_org_capabilities
+  }
+}

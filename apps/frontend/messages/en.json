@@ -246,7 +246,6 @@
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
-      "EDIT_USER_SESSION_ERROR": "An unknown error occurred",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
       "EPIC_CREATE_ERROR": "An error occurred while creating the epic.",
       "EPIC_UPDATE_ERROR": "An error occurred while updating the epic.",
@@ -297,6 +296,7 @@
       "SERVICE_NOT_MANAGEABLE": "This service is not manageable.",
       "SERVICE_SUBSCRIPTION_ERROR": "Error while adding a subscription to the service",
       "SHORT_DESCRIPTION_TOO_LONG": "The short description is too long",
+      "SOLUTION_CATEGORIES_REQUIRED": "At least one solution category is required",
       "SOLUTION_CATEGORY_NOT_FOUND": "Solution category not found",
       "SUBSCRIPTION_NOT_FOUND": "Subscription was not found",
       "TENANT_ID_MANDATORY": "Tenant id is mandatory",
@@ -677,23 +677,34 @@
     "ActionSuccessDeny": "User request for {email} has been denied",
     "WarningUserAccept": {
       "Confirm": "Confirm",
-      "Description": "You are about to accept {email} in your organization. This user won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
-      "Title": "Are you sure?"
+      "Description": "<strong>{email}</strong> will be added to your organization without any permissions by default. You can manage their access & permissions anytime from the <strong>Users</strong> tab on the left menu.",
+      "Title": "Add this user to your organization?"
     },
     "WarningUserRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse {email} from your organization. This action can’t be undone. Are you sure ?",
-      "Title": "Are you sure?"
+      "Description": "<strong>{email}</strong> will be refused from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Refuse this user from your organization?"
     },
     "WarningUsersRejection": {
       "Confirm": "Confirm",
-      "Description": "You are about to refuse these users from your organization. This action can’t be undone. Are you sure ?",
-      "Title": "Are you sure?"
+      "Description": "Selected users will be refused from your organization. This action can’t be undone. Are you sure ?",
+      "Title": "Refuse this users from your organization?"
     },
     "WarningUsersAccept": {
       "Confirm": "Confirm",
-      "Description": "You are about to accept these users in your organization. These users won’t have any specific permissions by default. If you’d like to assign or update permissions, visit the Users tab. Are you sure ?",
-      "Title": "Are you sure?"
+      "Description": "Selected users will be added to your organization without any permissions by default. You can manage their access & permissions anytime from the <strong>Users</strong> tab on the left menu.",
+      "Title": "Add this users to your organization?"
+    },
+    "AlreadyProcessed": {
+      "Title": "Request already processed",
+      "Description": "This user request has already been approved or denied.",
+      "Confirm": "OK"
+    }
+  },
+  "PendingUserRedirect": {
+    "Unauthorized": {
+      "Title": "Insufficient permissions",
+      "Description": "You do not have the required permissions to manage user requests for this organization."
     }
   },
   "RegistrationDetails": {
@@ -1015,7 +1026,6 @@
       "LicenseTypeLabel": "License type",
       "Restore": "Restore",
       "SelectImage": "Select image(s)",
-      "SelectIntegrationSubType": "Subtype",
       "SelectJSONFile": "Select JSON file",
       "ShortDescriptionLabel": "Short Description",
       "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
@@ -1043,10 +1053,6 @@
       "AddService": "Add new Integration",
       "IntegrationType": "Integration type",
       "Filter": {
-        "IntegrationSubType": {
-          "Label": "Subtype",
-          "Placeholder": "Subtype..."
-        },
         "Type": {
           "Label": "Integration type",
           "Placeholder": "Integration type..."
@@ -1223,6 +1229,16 @@
     "GoTo": "Go to service page",
     "GoToAdminLabel": "Manage",
     "List": {
+      "ViewTab": "Select tab view",
+      "ViewList": "Select list view",
+      "Tab": {
+        "Name": "Name",
+        "Description": "Description",
+        "UseCases": "Use cases",
+        "Actions": "Actions",
+        "Author": "Author",
+        "MinimumDeployableVersion": "Minimum deployable version"
+      },
       "Filter": {
         "Add": "Add filter",
         "NoOptions": "No options",
@@ -1336,7 +1352,6 @@
         "IntegrationType": "Type",
         "IntegrationSolutionCategory": "Solution category",
         "IntegrationLicenseType": "License type",
-        "IntegrationSubType": "Subtype",
         "GithubURL": "Github URL",
         "VendorURL": "Vendor URL",
         "FeedURL": "Feed URL",

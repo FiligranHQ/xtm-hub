@@ -24,7 +24,6 @@ enum FilterKey {
   organization_id
   personal_space
   integration_type
-  integration_subtype
   slug
   product_version
   manager_supported
@@ -563,7 +562,6 @@ enum LicenseType {
 enum DocumentMetadataKeyCode {
   feed_url
   integration_type
-  integration_subtype
   last_verified_date
   datasheet_url
   blogpost_url
@@ -1343,7 +1341,7 @@ input ManifestFragmentInput {
   use_cases: [String!]!
   verified: Boolean
   last_verified_date: String
-  subscription_link: String!
+  subscription_link: String
   source_code: String!
   manager_supported: Boolean!
   min_version: String!
@@ -1356,7 +1354,7 @@ input ManifestFragmentInput {
   config_schema: JSON!
   license_type: LicenseType
   contact: String
-  solution_categories: [String!]
+  solution_categories: [String!]!
 }
 
 enum ManifestType {
@@ -1443,29 +1441,6 @@ enum IntegrationType {
   taxii_feed
   stream
   third_party_integration
-}
-
-enum IntegrationSubType {
-  EXTERNAL_IMPORT
-  INTERNAL_ENRICHMENT
-  INTERNAL_EXPORT_FILE
-  INTERNAL_IMPORT_FILE
-  STREAM
-  NATIVE
-  ORCHESTRATION
-  DETECTION
-  CASE_MANAGEMENT
-  THREAT_ACTORS
-  MALWARE
-  CYBER_INDUSTRY
-  PERIODIC_BRIEFING
-  SECURITY_RESEARCHER
-  VENDORS
-  FEDERAL_ORGANIZATION
-  JOURNALISTS
-  NOT_FOR_PROFIT_ORGANIZATION
-  SOCIAL_MEDIA
-  DARKWEB
 }
 
 interface Integration implements Node & Document {
@@ -1588,7 +1563,6 @@ type Connector implements Node & Document & Integration {
   verified: Boolean!
   source_code: String
   subscription_link: String
-  integration_subtype: IntegrationSubType!
   manager_supported: Boolean!
   playbook_supported: Boolean!
   datasheet_url: String
@@ -1624,7 +1598,6 @@ type TaxiiFeed implements Node & Document & Integration {
   remover_id: ID
   feed_url: String
   integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
   datasheet_url: String
   blogpost_url: String
   demo_url: String
@@ -1656,7 +1629,6 @@ type RssFeed implements Node & Document & Integration {
   remover_id: ID
   feed_url: String
   integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
   datasheet_url: String
   blogpost_url: String
   demo_url: String
@@ -1688,7 +1660,6 @@ type Stream implements Node & Document & Integration {
   remover_id: ID
   feed_url: String
   integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
   datasheet_url: String
   blogpost_url: String
   demo_url: String
@@ -1719,7 +1690,6 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
   vendor_url: String!
   product_version: String
   github_url: String

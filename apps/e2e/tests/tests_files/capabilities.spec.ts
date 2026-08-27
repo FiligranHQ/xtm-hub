@@ -107,11 +107,15 @@ test.describe('Capabilities', () => {
     await test.step('Simple user can delete integration', async () => {
       await loginPage.navigateToAndLogin(TEST_CAPABILITY.userThalesEmail);
       await integrationPage.navigateToIntegrationsService();
-      await page.getByText('CSV Feeds').click();
 
-      await page
-        .getByRole('button', { name: 'Open menu', exact: true })
-        .click();
+      const openMenuButton = page.getByRole('button', {
+        name: 'Open menu',
+        exact: true,
+      });
+      await openMenuButton.evaluate((el) =>
+        el.scrollIntoView({ block: 'center' })
+      );
+      await openMenuButton.click();
       await integrationPage.deleteIntegration('menuitem');
       await expect(
         page.getByText(TEST_INTEGRATION.name, { exact: true })

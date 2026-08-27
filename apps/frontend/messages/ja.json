@@ -202,9 +202,9 @@
       "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "製品の切断中に不明なエラーが発生しました。",
       "CANT_ADD_DISABLED_USER": "プラットフォームで無効になっているユーザーを追加できない",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "パーソナルスペースにユーザーを追加することはできません",
+      "CANT_CANCEL_BUNDLE_PRODUCT": "XTM Platform Trial 内の個別の製品はキャンセルできない",
       "CANT_DELETE_BUILTIN_USER": "この組み込みユーザーは削除できません",
       "CANT_DELETE_YOURSELF": "自分のアカウントを削除することはできません",
-      "CANT_CANCEL_BUNDLE_PRODUCT": "XTM Platform Trial 内の個別の製品はキャンセルできない",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "組織の最後の管理者を削除することはできない",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "組織から自分自身を削除することはできない",
       "CANT_REQUEST_FREE_TRIAL": "無料トライアルのリクエストはできない",
@@ -246,7 +246,6 @@
       "EDIT_ME_USER_ERROR": "プロフィール編集中のエラー",
       "EDIT_ORGANIZATION_ERROR": "組織編集中のエラー",
       "EDIT_USER_ERROR": "ユーザー編集中のエラー",
-      "EDIT_USER_SESSION_ERROR": "不明なエラーが発生しました",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "メールドメインが組織外のユーザーを追加できない",
       "EPIC_CREATE_ERROR": "エピックの作成中にエラーが発生した。",
       "EPIC_UPDATE_ERROR": "叙事詩の更新中にエラーが発生した。",
@@ -297,6 +296,7 @@
       "SERVICE_NOT_MANAGEABLE": "このサービスは管理できません。",
       "SERVICE_SUBSCRIPTION_ERROR": "サービスにサブスクリプションを追加する際にエラーが発生した",
       "SHORT_DESCRIPTION_TOO_LONG": "短い説明が長すぎます",
+      "SOLUTION_CATEGORIES_REQUIRED": "少なくとも1つのソリューションカテゴリが必要です",
       "SOLUTION_CATEGORY_NOT_FOUND": "ソリューションカテゴリが見つかりません",
       "SUBSCRIPTION_NOT_FOUND": "購読が見つからない",
       "TENANT_ID_MANDATORY": "テナントIDは必須です",
@@ -677,23 +677,34 @@
     "ActionSuccessDeny": "{email} のユーザー申請を拒否しました",
     "WarningUserAccept": {
       "Confirm": "確認",
-      "Description": "{email} を組織に受け入れます。デフォルトでは、このユーザーに特別な権限は付与されません。権限を割り当てたり更新したりする場合は、[ユーザー] タブにアクセスしてください。よろしいですか？",
-      "Title": "よろしいですか？"
+      "Description": "<strong>{email}</strong>は、デフォルトでは権限なしで組織に追加されます。左側のメニューにある<strong>ユーザー</strong>タブから、いつでもこのユーザーのアクセス権や権限を管理できます。",
+      "Title": "このユーザーを組織に追加しますか？"
     },
     "WarningUserRejection": {
       "Confirm": "確認",
-      "Description": "{email} を組織から拒否しようとしています。この操作は取り消せません。本当によろしいですか？",
-      "Title": "本当によろしいですか？"
+      "Description": "<strong>{email}</strong> は組織から拒否されます。この操作は元に戻せません。本当に実行しますか？",
+      "Title": "このユーザーを組織から拒否しますか？"
     },
     "WarningUsersRejection": {
       "Confirm": "確認する",
-      "Description": "これらのユーザーを組織から拒否しようとしています。この操作は取り消せません。本当によろしいですか？",
-      "Title": "本気ですか？"
+      "Description": "選択したユーザーは、組織から拒否されます。この操作は元に戻せません。本当に実行しますか？",
+      "Title": "これらのユーザーを組織から拒否しますか？"
     },
     "WarningUsersAccept": {
       "Confirm": "確認する",
-      "Description": "これらのユーザーを組織に受け入れます。デフォルトでは、これらのユーザーには特別な権限はありません。権限を割り当てたり更新したりしたい場合は、[ユーザー]タブにアクセスしてください。よろしいですか？",
-      "Title": "よろしいですか？"
+      "Description": "選択したユーザーは、デフォルトで権限なしで組織に追加されます。左側のメニューにある<strong>ユーザー</strong>タブから、いつでもアクセス権や権限を管理できます。",
+      "Title": "このユーザーを組織に追加しますか？"
+    },
+    "AlreadyProcessed": {
+      "Title": "リクエストはすでに処理されています",
+      "Description": "このユーザーのリクエストは、すでに承認または却下されています。",
+      "Confirm": "OK"
+    }
+  },
+  "PendingUserRedirect": {
+    "Unauthorized": {
+      "Title": "権限が不足しています",
+      "Description": "この組織のユーザーリクエストを管理するために必要な権限がありません。"
     }
   },
   "RegistrationDetails": {
@@ -1015,7 +1026,6 @@
       "LicenseTypeLabel": "ライセンスの種類",
       "Restore": "リストア",
       "SelectImage": "画像を選択",
-      "SelectIntegrationSubType": "サブタイプ",
       "SelectJSONFile": "JSONファイルを選択",
       "ShortDescriptionLabel": "短い説明",
       "ShortDescriptionPlaceholder": "ドキュメントを説明するためのキャッチフレーズです。",
@@ -1043,10 +1053,6 @@
       "AddService": "新しい統合を追加する",
       "IntegrationType": "統合タイプ",
       "Filter": {
-        "IntegrationSubType": {
-          "Label": "サブタイプ",
-          "Placeholder": "サブタイプ..."
-        },
         "Type": {
           "Label": "統合タイプ",
           "Placeholder": "統合タイプ..."
@@ -1223,6 +1229,16 @@
     "GoTo": "サービスページへ",
     "GoToAdminLabel": "管理する",
     "List": {
+      "ViewTab": "タブ表示を選択",
+      "ViewList": "リスト表示を選択",
+      "Tab": {
+        "Name": "名前",
+        "Description": "説明",
+        "UseCases": "ユースケース",
+        "Actions": "アクション",
+        "Author": "作成者",
+        "MinimumDeployableVersion": "デプロイ可能な最小バージョン"
+      },
       "Filter": {
         "Add": "フィルターの追加",
         "NoOptions": "オプションなし",
@@ -1336,7 +1352,6 @@
         "IntegrationType": "タイプ",
         "IntegrationSolutionCategory": "解答カテゴリ",
         "IntegrationLicenseType": "ライセンスの種類",
-        "IntegrationSubType": "サブタイプ",
         "GithubURL": "Github URL",
         "VendorURL": "ベンダーURL",
         "FeedURL": "フィードURL",

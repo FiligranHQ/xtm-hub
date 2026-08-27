@@ -54,15 +54,12 @@ export default class IntegrationPage {
     await this.page
       .getByRole('checkbox', { name: 'Is the TAXII Feed published?' })
       .click();
-    await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Native').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('TAXII Feeds').click();
   }
   async fillRssFeed({
     name,
@@ -84,16 +81,12 @@ export default class IntegrationPage {
     await this.page
       .getByRole('textbox', { name: 'This is a paragraph to' })
       .fill(description);
-
-    await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Malware').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('RSS Feeds').click();
   }
 
   async fillStream({
@@ -119,15 +112,12 @@ export default class IntegrationPage {
     await this.page
       .getByRole('checkbox', { name: 'Is the Stream published?' })
       .click();
-    await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Native').click();
     await this.uploadJsonDocument(TEST_JSON_FILE.path);
     await this.uploadImageDocument(TEST_IMAGE_FILE.path);
     await selectUseCase(this.page);
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('OpenCTI Streams').click();
   }
   async fillCsvFeed({
     name,
@@ -158,7 +148,6 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('CSV Feeds').click();
   }
 
   async fillThirdPartyIntegration({
@@ -188,8 +177,6 @@ export default class IntegrationPage {
         name: 'Is the Third party integration published?',
       })
       .click();
-    await this.page.getByLabel('Type').click();
-    await this.page.getByLabel('Orchestration').click();
     await this.page
       .getByRole('textbox', { name: 'Vendor link (url)' })
       .fill('https://example.com');
@@ -204,7 +191,6 @@ export default class IntegrationPage {
     await selectSolutionCategories(this.page);
     await this.page.getByRole('radio', { name: 'Commercial' }).click();
     await this.page.getByRole('button', { name: 'Validate' }).click();
-    await this.page.getByText('Third Party integrations').click();
   }
 
   async navigateToIntegration(shortDescription: string) {
@@ -213,15 +199,16 @@ export default class IntegrationPage {
 
   async deleteIntegration(deleteButtonRole: 'menuitem' | 'button') {
     if (deleteButtonRole === 'menuitem') {
-      const deleteAction = this.page
-        .getByRole('menu')
-        .first()
-        .getByRole('menuitem', { name: 'Delete' });
-      await deleteAction.click({ force: true });
+      const menu = this.page.getByRole('menu').last();
+      await menu.waitFor({ state: 'visible' });
+      await menu.getByRole('menuitem', { name: 'Delete' }).click();
     } else {
       await this.page.getByRole('button', { name: 'Delete' }).first().click();
     }
 
-    await this.page.getByRole('button', { name: 'Delete' }).last().click();
+    await this.page
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Delete' })
+      .click();
   }
 }

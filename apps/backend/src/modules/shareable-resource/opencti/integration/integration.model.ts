@@ -32,18 +32,14 @@ export type CsvFeed = Integration & {
 };
 export type TaxiiFeed = Integration & {
   feed_url: string;
-  integration_subtype: string;
 };
 export type RssFeed = Integration & {
   feed_url: string;
-  integration_subtype: string;
 };
 export type Stream = Integration & {
   feed_url: string;
-  integration_subtype: string;
 };
 export type ThirdPartyIntegration = Integration & {
-  integration_subtype: string;
   vendor_url: string;
   github_url?: string;
   product_version?: string;
@@ -54,7 +50,6 @@ export type Connector = Integration & {
   verified: boolean;
   source_code?: string | null; // URL to repository
   subscription_link?: string | null; // URL to subscription page
-  integration_subtype: string;
   manager_supported: boolean;
   playbook_supported: boolean;
   minimum_deployable_version?: string;
@@ -114,7 +109,6 @@ export const INTEGRATION_CSV_FEED_METADATA_KEYS =
 export const INTEGRATION_TAXII_FEED_METADATA: TaxiiFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
   { key: DocumentMetadataKeyCode.IntegrationType },
-  { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
@@ -126,7 +120,6 @@ export const INTEGRATION_TAXII_FEED_METADATA_KEYS =
 export const INTEGRATION_RSS_FEED_METADATA: RssFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
   { key: DocumentMetadataKeyCode.IntegrationType },
-  { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
@@ -139,7 +132,6 @@ export const INTEGRATION_RSS_FEED_METADATA_KEYS =
 export const INTEGRATION_STREAM_METADATA: StreamFeedMetadata = [
   { key: DocumentMetadataKeyCode.FeedUrl },
   { key: DocumentMetadataKeyCode.IntegrationType },
-  { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.DatasheetUrl, optional: true },
   { key: DocumentMetadataKeyCode.BlogpostUrl, optional: true },
   { key: DocumentMetadataKeyCode.DemoUrl, optional: true },
@@ -151,7 +143,6 @@ export const INTEGRATION_STREAM_METADATA_KEYS = INTEGRATION_STREAM_METADATA.map(
 
 export const INTEGRATION_THIRD_PARTY_INTEGRATION_METADATA: ThirdPartyIntegrationMetadata =
   [
-    { key: DocumentMetadataKeyCode.IntegrationSubtype },
     { key: DocumentMetadataKeyCode.ProductVersion, optional: true },
     { key: DocumentMetadataKeyCode.VendorUrl },
     { key: DocumentMetadataKeyCode.GithubUrl, optional: true },
@@ -169,7 +160,6 @@ export const INTEGRATION_CONNECTOR_METADATA: ConnectorMetadata = [
   { key: DocumentMetadataKeyCode.Verified },
   { key: DocumentMetadataKeyCode.SourceCode },
   { key: DocumentMetadataKeyCode.SubscriptionLink, optional: true },
-  { key: DocumentMetadataKeyCode.IntegrationSubtype },
   { key: DocumentMetadataKeyCode.IntegrationType },
   { key: DocumentMetadataKeyCode.ManagerSupported },
   { key: DocumentMetadataKeyCode.PlaybookSupported },

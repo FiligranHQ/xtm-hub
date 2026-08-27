@@ -1,6 +1,5 @@
 import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
 import { ServiceFormEntityTypesField } from '@/components/service/form/EntityTypesField';
-import { ServiceFormIntegrationSubtypeField } from '@/components/service/form/IntegrationSubtypeField';
 import { ServiceFormLogoField } from '@/components/service/form/LogoField';
 import {
   ServiceFormMultipleImagesField,
@@ -66,7 +65,6 @@ type AvailableFields =
   | 'solution_categories'
   | 'license_type'
   | 'entity_types'
-  | 'integration_subtype'
   | 'images'
   | 'integration_type'
   | 'active'
@@ -198,26 +196,6 @@ export const useServiceFormFields = ({
           />
         ),
       },
-      ...(integrationType
-        ? {
-            integration_subtype: {
-              fieldType: ({
-                field,
-              }: {
-                field: ControllerRenderProps<FieldValues, string>;
-              }) => (
-                <ServiceFormIntegrationSubtypeField
-                  field={field}
-                  integrationType={integrationType}
-                  document={document}
-                  disabled={disabledFields.includes(
-                    DocumentMetadataKeyCode.IntegrationSubtype
-                  )}
-                />
-              ),
-            },
-          }
-        : {}),
       imagesField: {
         fieldType: ({
           field,

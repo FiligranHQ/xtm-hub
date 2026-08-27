@@ -1,6 +1,7 @@
 import BlueBlurDecoration from '@/components/homepage/BlueBlurDecoration';
 import { buildDistinctPlatformIdentifiersFromServiceDefinition } from '@/components/homepage/Homepage.utils';
 import LastDeployedResourcesSection from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
+import PendingUserRedirectErrorToast from '@/components/homepage/PendingUserRedirectErrorToast';
 import { RegisteredPlatformsSection } from '@/components/homepage/registered-platforms/RegisteredPlatformsSection';
 import MostDeployedResources from '@/components/homepage/resources/MostDeployedResources';
 import NewestResources from '@/components/homepage/resources/NewestResources';
@@ -55,6 +56,7 @@ export const PrivateHomepage = async () => {
   return (
     <>
       <BlueBlurDecoration />
+      <PendingUserRedirectErrorToast />
       {platformIdentifiers.length !== 0 && (
         <BreadcrumbNav value={breadcrumbValue} />
       )}

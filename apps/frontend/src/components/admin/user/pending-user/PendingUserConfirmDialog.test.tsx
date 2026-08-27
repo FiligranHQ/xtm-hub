@@ -42,8 +42,12 @@ const pendingUser = {
 
 describe('PendingUserConfirmDialog', () => {
   beforeEach(() => {
-    vi.mocked(useTranslations).mockReturnValue((key, values) =>
-      values?.email ? `${key}:${values.email}` : key
+    const translate = (key: string, values?: Record<string, unknown>) =>
+      values?.email ? `${key}:${values.email}` : key;
+    vi.mocked(useTranslations).mockReturnValue(
+      Object.assign(translate, {
+        rich: translate,
+      }) as unknown as ReturnType<typeof useTranslations>
     );
   });
 

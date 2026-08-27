@@ -1,6 +1,6 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import testRender from '@/utils/test/test-render';
-import { IntegrationSubType, IntegrationType } from '@graphql/generated';
+import { IntegrationType } from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { IntegrationTypeFilter } from './IntegrationTypeFilter';
@@ -8,14 +8,6 @@ import { IntegrationTypeFilter } from './IntegrationTypeFilter';
 const removeFilterMock = vi.fn();
 const setIntegrationTypesMock = vi.fn();
 const removeIntegrationTypesMock = vi.fn();
-
-vi.mock('@/components/service/integrations/Integration.utils', () => ({
-  availableIntegrationTypes: [IntegrationType.Connector],
-  SubTypesPerIntegrationType: new Map([
-    [IntegrationType.Connector, [IntegrationSubType.ExternalImport]],
-  ]),
-  getIntegrationSubTypeMetadata: () => ({ label: 'External import' }),
-}));
 
 vi.mock('@/hooks/use-service-list-local-storage', () => ({
   ServiceListLocalStorageKey: {

@@ -1,3 +1,4 @@
+import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import testRender from '@/utils/test/test-render';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
@@ -23,13 +24,14 @@ describe('PublicShareableResourceList', () => {
         documents={[]}
         serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
         baseUrl="https://xtm.local"
+        displayMode={ServiceListDisplayMode.Tab}
       />
     );
 
     expect(screen.getByText('Utils.DocumentNotFound')).toBeInTheDocument();
   });
 
-  it('groups integrations by integration_type and renders document names with correct links', async () => {
+  it('groups integrations by integration_type and renders document names with correct links', () => {
     const documents = [
       {
         id: 'doc-1',
@@ -47,11 +49,12 @@ describe('PublicShareableResourceList', () => {
       },
     ];
 
-    const { user } = testRender(
+    testRender(
       <PublicShareableResourceList
         documents={documents as publicDocumentListItemFragment$data[]}
         serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
         baseUrl="https://xtm.local"
+        displayMode={ServiceListDisplayMode.Tab}
       />
     );
 
@@ -62,13 +65,6 @@ describe('PublicShareableResourceList', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('My Dashboard')).toBeInTheDocument();
 
-    await user.click(
-      screen.getByRole('button', {
-        name: new RegExp(
-          `Service\\.OpenctiIntegrations\\.Type\\.${IntegrationType.Connector}`
-        ),
-      })
-    );
     expect(screen.getByText('My Connector')).toBeInTheDocument();
 
     const links = screen.getAllByRole('link');

@@ -1,3 +1,4 @@
+import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import IntegrationAccordion from '@/components/ui/shareable-resource/IntegrationAccordion';
 import { PublicShareableDocumentList } from '@/components/ui/shareable-resource/PublicShareableDocumentList';
 import { isIntegrationItem } from '@/utils/shareable-resources/shareable-resources.types';
@@ -11,12 +12,14 @@ interface PublicShareableResourceListProps {
   documents: publicDocumentListItemFragment$data[];
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
+  displayMode: ServiceListDisplayMode;
 }
 
 export const PublicShareableResourceList = ({
   documents,
   serviceInstance,
   baseUrl,
+  displayMode,
 }: PublicShareableResourceListProps) => {
   const t = useTranslations();
 
@@ -54,10 +57,10 @@ export const PublicShareableResourceList = ({
             ) ? (
               <IntegrationAccordion
                 key={integrationType}
-                integrationType={integrationType}
-                count={documents.length}>
+                integrationType={integrationType}>
                 <PublicShareableDocumentList
                   documents={documents}
+                  displayMode={displayMode}
                   serviceInstance={serviceInstance}
                   baseUrl={baseUrl}
                 />
@@ -67,6 +70,7 @@ export const PublicShareableResourceList = ({
                 documents={documents}
                 serviceInstance={serviceInstance}
                 baseUrl={baseUrl}
+                displayMode={displayMode}
               />
             )}
           </Fragment>

@@ -87,17 +87,11 @@ export async function seedDocuments(
 
         if (metadataVariant === 'integration') {
           return [
-            // --- type / subtype ---
+            // --- type ---
             TestDocumentHelper.documentMetadata.create({
               document_id: doc.id,
               key: toMetaKey(DocumentMetadataKeyCode.IntegrationType),
               value: 'connector',
-            }),
-            TestDocumentHelper.documentMetadata.create({
-              document_id: doc.id,
-              key: toMetaKey(DocumentMetadataKeyCode.IntegrationSubtype),
-              value:
-                globalI % 2 === 0 ? 'INTERNAL_IMPORT_FILE' : 'EXTERNAL_IMPORT',
             }),
             // --- version ---
             TestDocumentHelper.documentMetadata.create({
