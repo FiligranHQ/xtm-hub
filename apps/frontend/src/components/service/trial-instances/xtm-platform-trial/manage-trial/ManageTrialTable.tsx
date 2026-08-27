@@ -172,13 +172,15 @@ export const ManageTrialTable = ({
 
   const rows = useMemo<ManageTrialTableRow[]>(
     () =>
-      (queryData?.bundleUserServiceGroups ?? []).map((row) => ({
-        id: row.user.id,
-        email: row.user.email,
-        openctiRole: findRoleValue(row.groups, PlatformIdentifier.Opencti),
-        openaevRole: findRoleValue(row.groups, PlatformIdentifier.Openaev),
-        xtmoneRole: findRoleValue(row.groups, PlatformIdentifier.Xtmone),
-      })),
+      (queryData?.bundleUserServiceGroups ?? [])
+        .map((row) => ({
+          id: row.user.id,
+          email: row.user.email,
+          openctiRole: findRoleValue(row.groups, PlatformIdentifier.Opencti),
+          openaevRole: findRoleValue(row.groups, PlatformIdentifier.Openaev),
+          xtmoneRole: findRoleValue(row.groups, PlatformIdentifier.Xtmone),
+        }))
+        .sort((a, b) => a.email.localeCompare(b.email)),
     [queryData]
   );
 

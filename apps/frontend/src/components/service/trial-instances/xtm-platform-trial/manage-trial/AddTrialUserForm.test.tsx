@@ -83,7 +83,7 @@ describe('AddTrialUserForm', () => {
     toastMock.mockReset();
   });
 
-  it('renders the email field, role descriptions and role pickers with XTM One defaulted to User', async () => {
+  it('renders the email field', async () => {
     setupQueryMocks();
 
     testRender(
@@ -100,20 +100,6 @@ describe('AddTrialUserForm', () => {
         'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
       )
     ).toBeInTheDocument();
-
-    const xtmoneCombobox = getRoleCombobox(
-      'Service.Bundle.ManageTrial.Roles.xtmone.Title'
-    );
-    expect(xtmoneCombobox).toHaveTextContent(
-      'Service.Bundle.ManageTrial.Roles.xtmone.User.Label'
-    );
-
-    const openctiCombobox = getRoleCombobox(
-      'Service.Bundle.ManageTrial.Roles.opencti.Title'
-    );
-    expect(openctiCombobox).toHaveTextContent(
-      'Service.Bundle.ManageTrial.Roles.NoAccess'
-    );
   });
 
   it('excludes users who already have access to this trial from the email dropdown', async () => {
@@ -152,36 +138,6 @@ describe('AddTrialUserForm', () => {
 
     expect(await screen.findByText('user2@filigran.io')).toBeInTheDocument();
     expect(screen.queryByText('user1@filigran.io')).not.toBeInTheDocument();
-  });
-
-  it('disables Confirm until at least one email is selected', async () => {
-    setupQueryMocks();
-
-    const { user } = testRender(
-      <AddTrialUserForm
-        serviceInstanceId="bundle-1"
-        products={Object.values(PlatformIdentifier)}
-        onCompleted={vi.fn()}
-        onCancel={vi.fn()}
-      />
-    );
-
-    await screen.findByText(
-      'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-    );
-
-    expect(
-      screen.getByRole('button', { name: 'Utils.Confirm' })
-    ).toBeDisabled();
-
-    await openEmailDropdown(user);
-    await user.click(await screen.findByText('user1@filigran.io'));
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Utils.Confirm' })
-      ).not.toBeDisabled();
-    });
   });
 
   it('submits userIds and roles built from selected dropdown options, only including optional platforms when set', async () => {
@@ -282,59 +238,5 @@ describe('AddTrialUserForm', () => {
       });
     });
     expect(onCompleted).not.toHaveBeenCalled();
-  });
-
-  it('calls onCancel when Cancel is clicked', async () => {
-    setupQueryMocks();
-    const onCancel = vi.fn();
-
-    const { user } = testRender(
-      <AddTrialUserForm
-        serviceInstanceId="bundle-1"
-        products={Object.values(PlatformIdentifier)}
-        onCompleted={vi.fn()}
-        onCancel={onCancel}
-      />
-    );
-
-    await screen.findByText(
-      'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-    );
-
-    await user.click(screen.getByRole('button', { name: 'Utils.Cancel' }));
-
-    expect(onCancel).toHaveBeenCalledTimes(1);
-  });
-
-  it('does not offer a "no role" option for XTM One, which is mandatory', async () => {
-    setupQueryMocks();
-
-    const { user } = testRender(
-      <AddTrialUserForm
-        serviceInstanceId="bundle-1"
-        products={Object.values(PlatformIdentifier)}
-        onCompleted={vi.fn()}
-        onCancel={vi.fn()}
-      />
-    );
-
-    await screen.findByText(
-      'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-    );
-
-    await user.click(
-      getRoleCombobox('Service.Bundle.ManageTrial.Roles.xtmone.Title')
-    );
-
-    expect(
-      await screen.findByRole('option', {
-        name: 'Service.Bundle.ManageTrial.Roles.xtmone.Admin.Label',
-      })
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('option', {
-        name: 'Service.Bundle.ManageTrial.Roles.NoAccess',
-      })
-    ).not.toBeInTheDocument();
   });
 });

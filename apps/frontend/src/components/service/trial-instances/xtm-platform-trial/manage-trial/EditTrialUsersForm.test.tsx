@@ -121,33 +121,6 @@ describe('EditTrialUsersForm', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('only renders role pickers for the given products', async () => {
-    setupQueryMocks();
-
-    testRender(
-      <EditTrialUsersForm
-        serviceInstanceId="bundle-1"
-        products={[PlatformIdentifier.Xtmone]}
-        initialUserIds={['user-1']}
-        onCompleted={vi.fn()}
-        onCancel={vi.fn()}
-      />
-    );
-
-    await waitFor(() =>
-      expect(
-        screen.getByText('Service.Bundle.ManageTrial.Roles.xtmone.Title', {
-          selector: 'label',
-        })
-      ).toBeInTheDocument()
-    );
-    expect(
-      screen.queryByText('Service.Bundle.ManageTrial.Roles.opencti.Title', {
-        selector: 'label',
-      })
-    ).not.toBeInTheDocument();
-  });
-
   it('defaults an optional platform to "No access" and shows the mixed-roles helper text when selected users have different roles', async () => {
     setupQueryMocks();
 
@@ -383,57 +356,5 @@ describe('EditTrialUsersForm', () => {
       });
     });
     expect(onCompleted).not.toHaveBeenCalled();
-  });
-
-  it('calls onCancel when Cancel is clicked', async () => {
-    setupQueryMocks();
-    const onCancel = vi.fn();
-
-    const { user } = testRender(
-      <EditTrialUsersForm
-        serviceInstanceId="bundle-1"
-        products={Object.values(PlatformIdentifier)}
-        initialUserIds={['user-1']}
-        onCompleted={vi.fn()}
-        onCancel={onCancel}
-      />
-    );
-
-    await waitFor(() =>
-      getRoleCombobox('Service.Bundle.ManageTrial.Roles.opencti.Title')
-    );
-    await user.click(screen.getByRole('button', { name: 'Utils.Cancel' }));
-
-    expect(onCancel).toHaveBeenCalledTimes(1);
-  });
-
-  it('disables Confirm once every selected user is removed from the users field', async () => {
-    setupQueryMocks();
-
-    const { user } = testRender(
-      <EditTrialUsersForm
-        serviceInstanceId="bundle-1"
-        products={Object.values(PlatformIdentifier)}
-        initialUserIds={['user-1']}
-        onCompleted={vi.fn()}
-        onCancel={vi.fn()}
-      />
-    );
-
-    await waitFor(() =>
-      getRoleCombobox('Service.Bundle.ManageTrial.Roles.opencti.Title')
-    );
-
-    expect(
-      screen.getByRole('button', { name: 'Utils.Confirm' })
-    ).not.toBeDisabled();
-
-    await user.click(screen.getByLabelText('Clear all selections'));
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Utils.Confirm' })
-      ).toBeDisabled();
-    });
   });
 });

@@ -177,6 +177,49 @@ describe('ManageTrialTable', () => {
     expect(await screen.findByText('user1@filigran.io')).toBeInTheDocument();
   });
 
+  it('sorts rows by email regardless of the order returned by the query', async () => {
+    const userCharlie = mockBundleUserServiceGroup({
+      user: mockUser({ id: 'user-charlie', email: 'charlie@filigran.io' }),
+      groups: [],
+    });
+    const userAlice = mockBundleUserServiceGroup({
+      user: mockUser({ id: 'user-alice', email: 'alice@filigran.io' }),
+      groups: [],
+    });
+    const userBob = mockBundleUserServiceGroup({
+      user: mockUser({ id: 'user-bob', email: 'bob@filigran.io' }),
+      groups: [],
+    });
+    graphqlMocks.useBundleUserServiceGroupsQuery.mockReturnValue({
+      data: {
+        __typename: 'Query',
+        bundleUserServiceGroups: [userCharlie, userAlice, userBob],
+      },
+      isError: false,
+      isLoading: false,
+    });
+
+    testRender(
+      <ManageTrialTable
+        serviceInstanceId="bundle-1"
+        products={Object.values(PlatformIdentifier)}
+        selection={emptySelection}
+        onSelectionChange={vi.fn()}
+      />
+    );
+
+    await screen.findByText('alice@filigran.io');
+
+    const emails = screen
+      .getAllByTestId(/^cell-.*-email$/)
+      .map((cell) => cell.textContent);
+    expect(emails).toEqual([
+      'alice@filigran.io',
+      'bob@filigran.io',
+      'charlie@filigran.io',
+    ]);
+  });
+
   it('shows error message when query fails', async () => {
     graphqlMocks.useBundleUserServiceGroupsQuery.mockReturnValue({
       data: undefined,
