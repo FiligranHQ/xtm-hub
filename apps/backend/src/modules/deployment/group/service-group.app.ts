@@ -18,7 +18,10 @@ import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 import { sendMail } from '../../../server/mail-service';
-import { auth0Client } from '../../../thirdparty/auth0/client';
+import {
+  Auth0UpdateUserRBACInstance,
+  auth0Client,
+} from '../../../thirdparty/auth0/client';
 import { logApp } from '../../../utils/app-logger.util';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
@@ -108,13 +111,23 @@ const loadEmailByUserId = async (
   };
 };
 
-const syncAuth0GroupsForChild = async (
-  child: DeploymentRequest,
+const syncAuth0GroupsForChildren = async (
+  childGroupAssignments: {
+    child: DeploymentRequest;
+    groupNames: ServiceGroupName[];
+  }[],
   userIds: UserId[],
-  emailByUserId: Map<UserId, string>,
-  groupNames: ServiceGroupName[]
+  emailByUserId: Map<UserId, string>
 ): Promise<void> => {
-  if (!child.platform_id) {
+  const rbacInstance: Auth0UpdateUserRBACInstance = {};
+  childGroupAssignments.forEach(({ child, groupNames }) => {
+    if (!child.platform_id) {
+      return;
+    }
+    rbacInstance[child.platform_id] = { groups: groupNames };
+  });
+
+  if (Object.keys(rbacInstance).length === 0) {
     return;
   }
 
@@ -124,9 +137,7 @@ const syncAuth0GroupsForChild = async (
       if (!email) {
         return undefined;
       }
-      return auth0Client.updateUserRBACInstance(email, {
-        [child.platform_id as string]: { groups: groupNames },
-      });
+      return auth0Client.updateUserRBACInstance(email, rbacInstance);
     })
   );
 };
@@ -303,16 +314,21 @@ export const ServiceGroupApp = {
 
     const { users, emailByUserId } = await loadEmailByUserId(input.userIds);
 
+    const grantedAssignments = platformRoleAssignments.filter(
+      ({ child, role }) => child.platform_identifier && role
+    );
+
+    await syncAuth0GroupsForChildren(
+      grantedAssignments.map(({ child, role }) => ({
+        child,
+        groupNames: role ? [role] : [],
+      })),
+      input.userIds,
+      emailByUserId
+    );
+
     await Promise.all(
-      platformRoleAssignments.map(async ({ child, role }) => {
-        if (!child.platform_identifier || !role) {
-          return;
-        }
-
-        await syncAuth0GroupsForChild(child, input.userIds, emailByUserId, [
-          role,
-        ]);
-
+      grantedAssignments.map(async ({ child }) => {
         await sendFreeTrialWelcomeEmails({
           platformId: child.platform_id,
           platformIdentifier: child.platform_identifier,
@@ -343,10 +359,10 @@ export const ServiceGroupApp = {
 
     const { emailByUserId } = await loadEmailByUserId(userIds);
 
-    await Promise.all(
-      children.map((child) =>
-        syncAuth0GroupsForChild(child, userIds, emailByUserId, [])
-      )
+    await syncAuth0GroupsForChildren(
+      children.map((child) => ({ child, groupNames: [] })),
+      userIds,
+      emailByUserId
     );
 
     return userIds;
@@ -393,15 +409,13 @@ export const ServiceGroupApp = {
 
     const { emailByUserId } = await loadEmailByUserId(input.userIds);
 
-    await Promise.all(
-      platformRoleAssignments.map(({ child, role }) =>
-        syncAuth0GroupsForChild(
-          child,
-          input.userIds,
-          emailByUserId,
-          role ? [role] : []
-        )
-      )
+    await syncAuth0GroupsForChildren(
+      platformRoleAssignments.map(({ child, role }) => ({
+        child,
+        groupNames: role ? [role] : [],
+      })),
+      input.userIds,
+      emailByUserId
     );
 
     return ServiceGroupApp.loadBundleUserServiceGroups(serviceInstanceId);

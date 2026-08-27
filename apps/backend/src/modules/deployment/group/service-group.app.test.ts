@@ -1117,10 +1117,9 @@ describe('serviceGroupApp', () => {
       });
 
       // Then
+      expect(auth0Spy).toHaveBeenCalledTimes(1);
       expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
         [openctiChild.platform_id as string]: { groups: ['Admin'] },
-      });
-      expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
         [xtmoneChild.platform_id as string]: { groups: ['User'] },
       });
 
@@ -1302,10 +1301,9 @@ describe('serviceGroupApp', () => {
       expect(openctiMembers).toEqual([]);
       expect(xtmoneMembers).toEqual([]);
 
+      expect(auth0Spy).toHaveBeenCalledTimes(1);
       expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
         [openctiChild.platform_id as string]: { groups: [] },
-      });
-      expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
         [xtmoneChild.platform_id as string]: { groups: [] },
       });
     });
@@ -1597,10 +1595,9 @@ describe('serviceGroupApp', () => {
       });
 
       // Then
+      expect(auth0Spy).toHaveBeenCalledTimes(1);
       expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
         [openctiChild.platform_id as string]: { groups: [] },
-      });
-      expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
         [xtmoneChild.platform_id as string]: { groups: ['Admin'] },
       });
     });
