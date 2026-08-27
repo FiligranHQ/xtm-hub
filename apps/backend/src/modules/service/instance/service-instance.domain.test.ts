@@ -7,7 +7,6 @@ import {
   describe,
   expect,
   it,
-  vi,
 } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import {
@@ -29,16 +28,11 @@ import PlatformConfiguration from '../../../model/kanel/public/PlatformConfigura
 import ServiceInstance, {
   ServiceInstanceId,
 } from '../../../model/kanel/public/ServiceInstance';
-import { SubscriptionId } from '../../../model/kanel/public/Subscription';
-import { UserServiceId } from '../../../model/kanel/public/UserService';
-import * as mailService from '../../../server/mail-service';
 import { PlatformConfigurationInput } from '../../registration/registration.domain';
-import { GenericServiceCapabilityIds } from '../../security-management/service-capability/generic-service-capability.const';
 import { ServiceInstanceDomain } from './service-instance.domain';
 
 const {
   getUserJoined,
-  grantServiceAccess,
   loadLinks,
   loadLinksByServiceInstanceIds,
   loadIsSubscribedByKeys,
@@ -472,147 +466,6 @@ describe('service instance domain', () => {
 
       // Then
       expect(result).toBeUndefined();
-    });
-  });
-
-  describe('grantServiceAccess', () => {
-    let testServiceInstanceId: ServiceInstanceId;
-    let otherServiceInstanceId: ServiceInstanceId;
-    let filigranSubscriptionId: SubscriptionId;
-    let secondOrgaSubscriptionId: SubscriptionId;
-
-    beforeEach(async () => {
-      vi.spyOn(mailService, 'sendMail').mockResolvedValue();
-      testServiceInstanceId = uuidv4() as ServiceInstanceId;
-      otherServiceInstanceId = uuidv4() as ServiceInstanceId;
-      filigranSubscriptionId = uuidv4() as SubscriptionId;
-      secondOrgaSubscriptionId = uuidv4() as SubscriptionId;
-
-      await TestHelper.serviceInstance.create({
-        id: testServiceInstanceId,
-        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_INTEGRATIONS.ID,
-        name: 'Test Service for Grant Access',
-      });
-
-      await TestHelper.subscription.create({
-        id: filigranSubscriptionId,
-        service_instance_id: testServiceInstanceId,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
-      await TestHelper.subscription.create({
-        id: secondOrgaSubscriptionId,
-        service_instance_id: testServiceInstanceId,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
-    });
-
-    afterEach(async () => {
-      await TestHelper.user_Service.delete({
-        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-      });
-      await TestHelper.platformConfiguration.delete({
-        service_instance_id: testServiceInstanceId,
-      });
-      await TestHelper.platformConfiguration.delete({
-        service_instance_id: otherServiceInstanceId,
-      });
-      await TestHelper.serviceInstance.delete({
-        id: testServiceInstanceId,
-      });
-      await TestHelper.serviceInstance.delete({
-        id: otherServiceInstanceId,
-      });
-    });
-
-    it('should create user_service linked to the correct subscription', async () => {
-      // When
-      const result = await grantServiceAccess(
-        GenericServiceCapabilityIds.AccessId,
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        secondOrgaSubscriptionId
-      );
-
-      // Then
-      // Check the return
-      expect(result).toHaveLength(1);
-      expect(result[0]!.user_id).toBe(
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
-      );
-      expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
-
-      // Check in DB
-      const userServiceInDb = await TestHelper.user_Service.load({
-        id: result[0]?.id as UserServiceId,
-      });
-
-      expect(userServiceInDb).toBeDefined();
-      expect(userServiceInDb?.subscription_id).toBe(secondOrgaSubscriptionId);
-    });
-
-    it('should not link user_service to a different organization subscription', async () => {
-      // When
-      const result = await grantServiceAccess(
-        GenericServiceCapabilityIds.AccessId,
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        secondOrgaSubscriptionId
-      );
-
-      // Then
-      // Check the return
-      expect(result[0]!.subscription_id).toBe(secondOrgaSubscriptionId);
-
-      // Check in DB
-      const userServicesInDb = await TestHelper.user_Service.load({
-        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-      });
-
-      expect(userServicesInDb?.subscription_id).toBe(secondOrgaSubscriptionId);
-    });
-
-    it('should send an email when there is a mail template associated to the service', async () => {
-      // Given
-      const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
-      // When
-      await grantServiceAccess(
-        GenericServiceCapabilityIds.AccessId,
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        secondOrgaSubscriptionId
-      );
-
-      // Then
-      expect(sendMailSpy).toHaveBeenCalledWith({
-        params: {
-          name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
-          serviceLink: expect.any(String),
-          serviceName: 'Test Service for Grant Access',
-        },
-        template: 'opencti_integrations',
-        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.EMAIL,
-      });
-    });
-
-    it('should not send an email when there is no mail template associated to the service', async () => {
-      // Given
-      const sendMailSpy = vi.spyOn(mailService, 'sendMail').mockResolvedValue();
-
-      const anyServiceInstance = await TestHelper.serviceInstance.create({
-        id: otherServiceInstanceId,
-        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-      });
-
-      const subscription = await TestHelper.subscription.create({
-        service_instance_id: anyServiceInstance.id,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
-
-      // When
-      await grantServiceAccess(
-        GenericServiceCapabilityIds.AccessId,
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        subscription!.id
-      );
-      // Then
-      expect(sendMailSpy).not.toHaveBeenCalled();
     });
   });
 
