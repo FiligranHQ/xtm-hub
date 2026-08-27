@@ -7,59 +7,20 @@ import {
 import {
   FiligranProduct,
   VotingRoundStatus,
-  VotingRoundTheme,
 } from '../../__generated__/resolvers-types';
 import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
-import { VotingRoundId } from '../../model/kanel/public/VotingRound';
+import { featureVotingApp } from './feature-voting.app';
 import {
-  featureVotingApp,
-  VotingRoundWithFeatures,
-} from './feature-voting.app';
-import { VotableFeatureWithVote } from './feature-voting.domain';
+  buildVotableFeature,
+  buildVotingRoundWithFeatures,
+  FIXTURE_ROUND_ID,
+} from './feature-voting.fixtures';
 import featureVotingResolver from './feature-voting.resolver';
-
-const ROUND_ID = uuidv4() as VotingRoundId;
-
-const buildFeature = (
-  overrides: Partial<VotableFeatureWithVote> = {}
-): VotableFeatureWithVote => ({
-  id: uuidv4() as VotableFeatureId,
-  voting_round_id: ROUND_ID,
-  title: 'AI-powered report triage',
-  short_description: 'Automatically extract entities from reports.',
-  description: 'Leverage AI to ingest unstructured threat reports.',
-  product: FiligranProduct.Opencti,
-  labels: ['AI', 'Import'],
-  image_url: null,
-  position: 1,
-  active: true,
-  created_at: new Date(),
-  updated_at: null,
-  has_my_vote: false,
-  ...overrides,
-});
-
-const buildRound = (
-  overrides: Partial<VotingRoundWithFeatures> = {}
-): VotingRoundWithFeatures => ({
-  id: ROUND_ID,
-  name: 'Feature vote #1',
-  description: null,
-  status: VotingRoundStatus.Open,
-  theme: VotingRoundTheme.Default,
-  opened_at: null,
-  closed_at: null,
-  creator_id: null,
-  created_at: new Date(),
-  updated_at: null,
-  features: [],
-  ...overrides,
-});
 
 describe('currentVotingRound GraphQL query', () => {
   it('should delegate to featureVotingApp.loadCurrentVotingRound', async () => {
     // Given
-    const expected = buildRound();
+    const expected = buildVotingRoundWithFeatures();
     vi.spyOn(featureVotingApp, 'loadCurrentVotingRound').mockResolvedValue(
       expected
     );
@@ -81,7 +42,7 @@ describe('currentVotingRound GraphQL query', () => {
 describe('votingRounds GraphQL query', () => {
   it('should delegate to featureVotingApp.loadVotingRounds', async () => {
     // Given
-    const expected = [buildRound()];
+    const expected = [buildVotingRoundWithFeatures()];
     vi.spyOn(featureVotingApp, 'loadVotingRounds').mockResolvedValue(expected);
 
     // When
@@ -101,9 +62,9 @@ describe('votingRoundResults GraphQL query', () => {
   it('should delegate to featureVotingApp.loadVotingRoundResults with the round id', async () => {
     // Given
     const expected = {
-      round: buildRound(),
+      round: buildVotingRoundWithFeatures(),
       total_voters: 4,
-      results: [{ feature: buildFeature(), vote_count: 4 }],
+      results: [{ feature: buildVotableFeature(), vote_count: 4 }],
     };
     vi.spyOn(featureVotingApp, 'loadVotingRoundResults').mockResolvedValue(
       expected
@@ -112,14 +73,14 @@ describe('votingRoundResults GraphQL query', () => {
     // When
     const result = await featureVotingResolver.Query!.votingRoundResults!(
       {},
-      { id: ROUND_ID },
+      { id: FIXTURE_ROUND_ID },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     // Then
     expect(featureVotingApp.loadVotingRoundResults).toHaveBeenCalledWith(
-      ROUND_ID
+      FIXTURE_ROUND_ID
     );
     expect(result).toEqual(expected);
   });
@@ -129,7 +90,9 @@ describe('voteForFeature GraphQL mutation', () => {
   it('should delegate to featureVotingApp.voteForFeature and return the round features', async () => {
     // Given
     const featureId = uuidv4() as VotableFeatureId;
-    const expected = [buildFeature({ id: featureId, has_my_vote: true })];
+    const expected = [
+      buildVotableFeature({ id: featureId, has_my_vote: true }),
+    ];
     vi.spyOn(featureVotingApp, 'voteForFeature').mockResolvedValue(expected);
 
     // When
@@ -150,7 +113,7 @@ describe('voting round admin GraphQL mutations', () => {
   it('should delegate createVotingRound to the app layer', async () => {
     // Given
     const input = { name: 'Feature vote #2' };
-    const expected = buildRound();
+    const expected = buildVotingRoundWithFeatures();
     vi.spyOn(featureVotingApp, 'createVotingRound').mockResolvedValue(expected);
 
     // When
@@ -168,7 +131,9 @@ describe('voting round admin GraphQL mutations', () => {
 
   it('should delegate setVotingRoundStatus to the app layer', async () => {
     // Given
-    const expected = [buildRound({ status: VotingRoundStatus.Open })];
+    const expected = [
+      buildVotingRoundWithFeatures({ status: VotingRoundStatus.Open }),
+    ];
     vi.spyOn(featureVotingApp, 'setVotingRoundStatus').mockResolvedValue(
       expected
     );
@@ -176,14 +141,14 @@ describe('voting round admin GraphQL mutations', () => {
     // When
     const result = await featureVotingResolver.Mutation!.setVotingRoundStatus!(
       {},
-      { id: ROUND_ID, status: VotingRoundStatus.Open },
+      { id: FIXTURE_ROUND_ID, status: VotingRoundStatus.Open },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     // Then
     expect(featureVotingApp.setVotingRoundStatus).toHaveBeenCalledWith(
-      ROUND_ID,
+      FIXTURE_ROUND_ID,
       VotingRoundStatus.Open
     );
     expect(result).toEqual(expected);
@@ -191,19 +156,21 @@ describe('voting round admin GraphQL mutations', () => {
 
   it('should delegate deleteVotingRound to the app layer', async () => {
     // Given
-    const expected = buildRound();
+    const expected = buildVotingRoundWithFeatures();
     vi.spyOn(featureVotingApp, 'deleteVotingRound').mockResolvedValue(expected);
 
     // When
     const result = await featureVotingResolver.Mutation!.deleteVotingRound!(
       {},
-      { id: ROUND_ID },
+      { id: FIXTURE_ROUND_ID },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
 
     // Then
-    expect(featureVotingApp.deleteVotingRound).toHaveBeenCalledWith(ROUND_ID);
+    expect(featureVotingApp.deleteVotingRound).toHaveBeenCalledWith(
+      FIXTURE_ROUND_ID
+    );
     expect(result).toEqual(expected);
   });
 });
@@ -212,13 +179,13 @@ describe('votable feature admin GraphQL mutations', () => {
   it('should delegate createVotableFeature to the app layer', async () => {
     // Given
     const input = {
-      voting_round_id: ROUND_ID,
+      voting_round_id: FIXTURE_ROUND_ID,
       title: 'New feature',
       short_description: 'Short',
       description: 'Long',
       product: FiligranProduct.Opencti,
     };
-    const expected = buildFeature();
+    const expected = buildVotableFeature();
     vi.spyOn(featureVotingApp, 'createVotableFeature').mockResolvedValue(
       expected
     );
@@ -240,7 +207,10 @@ describe('votable feature admin GraphQL mutations', () => {
     // Given
     const featureId = uuidv4() as VotableFeatureId;
     const input = { title: 'Renamed feature' };
-    const expected = buildFeature({ id: featureId, title: 'Renamed feature' });
+    const expected = buildVotableFeature({
+      id: featureId,
+      title: 'Renamed feature',
+    });
     vi.spyOn(featureVotingApp, 'updateVotableFeature').mockResolvedValue(
       expected
     );
@@ -264,7 +234,7 @@ describe('votable feature admin GraphQL mutations', () => {
   it('should delegate deleteVotableFeature to the app layer', async () => {
     // Given
     const featureId = uuidv4() as VotableFeatureId;
-    const expected = buildFeature({ id: featureId });
+    const expected = buildVotableFeature({ id: featureId });
     vi.spyOn(featureVotingApp, 'deleteVotableFeature').mockResolvedValue(
       expected
     );
@@ -288,12 +258,12 @@ describe('votable feature admin GraphQL mutations', () => {
 describe('votingRound field resolvers', () => {
   it('should keep the features the caller already filtered for its audience', async () => {
     // Given
-    const features = [buildFeature()];
+    const features = [buildVotableFeature()];
     const loadSpy = vi.spyOn(featureVotingApp, 'loadRoundFeatures');
 
     // When
     const result = await featureVotingResolver.VotingRound!.features!(
-      buildRound({ features }),
+      buildVotingRoundWithFeatures({ features }),
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
@@ -306,9 +276,10 @@ describe('votingRound field resolvers', () => {
 
   it('should load the features of a round that was listed without them', async () => {
     // Given
-    const features = [buildFeature()];
+    const features = [buildVotableFeature()];
     vi.spyOn(featureVotingApp, 'loadRoundFeatures').mockResolvedValue(features);
-    const { features: _omitted, ...roundWithoutFeatures } = buildRound();
+    const { features: _omitted, ...roundWithoutFeatures } =
+      buildVotingRoundWithFeatures();
 
     // When
     const result = await featureVotingResolver.VotingRound!.features!(
@@ -319,13 +290,15 @@ describe('votingRound field resolvers', () => {
     );
 
     // Then
-    expect(featureVotingApp.loadRoundFeatures).toHaveBeenCalledWith(ROUND_ID);
+    expect(featureVotingApp.loadRoundFeatures).toHaveBeenCalledWith(
+      FIXTURE_ROUND_ID
+    );
     expect(result).toEqual(features);
   });
 
   it('should report the precomputed count when the round was listed', async () => {
     // Given
-    const { features: _omitted, ...round } = buildRound();
+    const { features: _omitted, ...round } = buildVotingRoundWithFeatures();
 
     // When
     const result = await featureVotingResolver.VotingRound!.feature_count!(
@@ -342,7 +315,9 @@ describe('votingRound field resolvers', () => {
   it('should count the features already attached to the round', async () => {
     // When
     const result = await featureVotingResolver.VotingRound!.feature_count!(
-      buildRound({ features: [buildFeature(), buildFeature()] }),
+      buildVotingRoundWithFeatures({
+        features: [buildVotableFeature(), buildVotableFeature()],
+      }),
       {},
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO

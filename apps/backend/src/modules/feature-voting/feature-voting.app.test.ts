@@ -4,18 +4,11 @@ import { requestContextSimpleUserFiligran2 } from '../../../tests/tests.const';
 import {
   FiligranProduct,
   VotingRoundStatus,
-  VotingRoundTheme,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
-import ServiceInstance, {
-  ServiceInstanceId,
-} from '../../model/kanel/public/ServiceInstance';
-import VotableFeature, {
-  VotableFeatureId,
-} from '../../model/kanel/public/VotableFeature';
-import VotingRound, {
-  VotingRoundId,
-} from '../../model/kanel/public/VotingRound';
+import ServiceInstance from '../../model/kanel/public/ServiceInstance';
+import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
+import { VotingRoundId } from '../../model/kanel/public/VotingRound';
 import {
   BadRequestErrorCode,
   ForbiddenErrorCode,
@@ -24,77 +17,48 @@ import {
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { featureVotingApp } from './feature-voting.app';
 import { featureVotingDomain } from './feature-voting.domain';
-
-const ROUND_ID = uuidv4() as VotingRoundId;
-const SERVICE_INSTANCE_ID = uuidv4() as ServiceInstanceId;
-
-const buildRound = (overrides: Partial<VotingRound> = {}): VotingRound => ({
-  id: ROUND_ID,
-  service_instance_id: SERVICE_INSTANCE_ID,
-  name: 'Feature vote #1',
-  description: null,
-  status: VotingRoundStatus.Open,
-  theme: VotingRoundTheme.Default,
-  opened_at: null,
-  closed_at: null,
-  creator_id: null,
-  created_at: new Date(),
-  updated_at: null,
-  ...overrides,
-});
-
-const buildFeature = (
-  overrides: Partial<VotableFeature> = {}
-): VotableFeature => ({
-  id: uuidv4() as VotableFeatureId,
-  voting_round_id: ROUND_ID,
-  title: 'AI-powered report triage',
-  short_description: 'Automatically extract entities from reports.',
-  description: 'Leverage AI to ingest unstructured threat reports.',
-  product: FiligranProduct.Opencti,
-  labels: ['AI', 'Import'],
-  image_url: null,
-  position: 1,
-  active: true,
-  created_at: new Date(),
-  updated_at: null,
-  ...overrides,
-});
+import {
+  buildVotableFeature,
+  buildVotingRound,
+  FIXTURE_ROUND_ID,
+  FIXTURE_SERVICE_INSTANCE_ID,
+} from './feature-voting.fixtures';
 
 describe('featureVotingApp.loadCurrentVotingRound', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     requestContext.set(requestContextSimpleUserFiligran2);
     vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue({
-      id: SERVICE_INSTANCE_ID,
+      id: FIXTURE_SERVICE_INSTANCE_ID,
       public: true,
     } as ServiceInstance);
   });
 
   it('should return the round open on that service instance, with only its active features', async () => {
     // Given
-    const round = buildRound({ status: VotingRoundStatus.Open });
+    const round = buildVotingRound({ status: VotingRoundStatus.Open });
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(round);
     const loadSpy = vi
       .spyOn(featureVotingDomain, 'loadVotableFeatures')
       .mockResolvedValue([]);
 
     // When
-    const result =
-      await featureVotingApp.loadCurrentVotingRound(SERVICE_INSTANCE_ID);
+    const result = await featureVotingApp.loadCurrentVotingRound(
+      FIXTURE_SERVICE_INSTANCE_ID
+    );
 
     // Then
     expect(featureVotingDomain.loadVotingRoundBy).toHaveBeenCalledWith({
-      service_instance_id: SERVICE_INSTANCE_ID,
+      service_instance_id: FIXTURE_SERVICE_INSTANCE_ID,
       status: VotingRoundStatus.Open,
     });
     expect(loadSpy).toHaveBeenCalledWith({
-      roundId: ROUND_ID,
+      roundId: FIXTURE_ROUND_ID,
       product: undefined,
       onlyActive: true,
       userId: requestContextSimpleUserFiligran2.user.id,
     });
-    expect(result).toMatchObject({ id: ROUND_ID, features: [] });
+    expect(result).toMatchObject({ id: FIXTURE_ROUND_ID, features: [] });
   });
 
   it('should return null when that service instance has no round collecting votes', async () => {
@@ -104,8 +68,9 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
     );
 
     // When
-    const result =
-      await featureVotingApp.loadCurrentVotingRound(SERVICE_INSTANCE_ID);
+    const result = await featureVotingApp.loadCurrentVotingRound(
+      FIXTURE_SERVICE_INSTANCE_ID
+    );
 
     // Then
     expect(result).toBeNull();
@@ -114,9 +79,9 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
   // The field is public, so a guessed service instance id must not leak the
   // roadmap of a private instance.
   it.each`
-    serviceInstance                               | description
-    ${{ id: SERVICE_INSTANCE_ID, public: false }} | ${'a private service instance'}
-    ${undefined}                                  | ${'a service instance that does not exist'}
+    serviceInstance                                       | description
+    ${{ id: FIXTURE_SERVICE_INSTANCE_ID, public: false }} | ${'a private service instance'}
+    ${undefined}                                          | ${'a service instance that does not exist'}
   `(
     'should return null for $description without querying the rounds',
     async ({ serviceInstance }) => {
@@ -128,8 +93,9 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
       const loadRoundSpy = vi.spyOn(featureVotingDomain, 'loadVotingRoundBy');
 
       // When
-      const result =
-        await featureVotingApp.loadCurrentVotingRound(SERVICE_INSTANCE_ID);
+      const result = await featureVotingApp.loadCurrentVotingRound(
+        FIXTURE_SERVICE_INSTANCE_ID
+      );
 
       // Then
       expect(result).toBeNull();
@@ -156,14 +122,14 @@ describe('admin reads of a voting round', () => {
     async (status) => {
       // Given
       vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-        buildRound({ status })
+        buildVotingRound({ status })
       );
       const loadSpy = vi
         .spyOn(featureVotingDomain, 'loadVotableFeatures')
         .mockResolvedValue([]);
 
       // When
-      await featureVotingApp.loadVotingRound(ROUND_ID);
+      await featureVotingApp.loadVotingRound(FIXTURE_ROUND_ID);
 
       // Then
       expect(loadSpy).toHaveBeenCalledWith(
@@ -179,17 +145,17 @@ describe('admin reads of a voting round', () => {
       .mockResolvedValue([]);
 
     // When
-    await featureVotingApp.loadRoundFeatures(ROUND_ID);
+    await featureVotingApp.loadRoundFeatures(FIXTURE_ROUND_ID);
 
     // Then
     expect(loadSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ roundId: ROUND_ID, onlyActive: false })
+      expect.objectContaining({ roundId: FIXTURE_ROUND_ID, onlyActive: false })
     );
   });
 
   it('should count features without reading them when listing rounds', async () => {
     // Given
-    const round = buildRound({ status: VotingRoundStatus.Open });
+    const round = buildVotingRound({ status: VotingRoundStatus.Open });
     vi.spyOn(featureVotingDomain, 'loadVotingRounds').mockResolvedValue([
       round,
     ]);
@@ -211,7 +177,7 @@ describe('admin reads of a voting round', () => {
   it('should report no feature for a round absent from the grouped count', async () => {
     // Given
     vi.spyOn(featureVotingDomain, 'loadVotingRounds').mockResolvedValue([
-      buildRound({ status: VotingRoundStatus.Open }),
+      buildVotingRound({ status: VotingRoundStatus.Open }),
     ]);
     vi.spyOn(featureVotingDomain, 'countFeaturesByRound').mockResolvedValue(
       new Map()
@@ -231,27 +197,27 @@ describe('admin reads of a voting round', () => {
       .mockResolvedValue([]);
 
     // When
-    await featureVotingApp.loadVotingRounds(SERVICE_INSTANCE_ID);
+    await featureVotingApp.loadVotingRounds(FIXTURE_SERVICE_INSTANCE_ID);
 
     // Then
-    expect(listSpy).toHaveBeenCalledWith(SERVICE_INSTANCE_ID);
+    expect(listSpy).toHaveBeenCalledWith(FIXTURE_SERVICE_INSTANCE_ID);
   });
 
   it('should keep hiding inactive features from the public page', async () => {
     // Given
     vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue({
-      id: SERVICE_INSTANCE_ID,
+      id: FIXTURE_SERVICE_INSTANCE_ID,
       public: true,
     } as ServiceInstance);
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Open })
+      buildVotingRound({ status: VotingRoundStatus.Open })
     );
     const loadSpy = vi
       .spyOn(featureVotingDomain, 'loadVotableFeatures')
       .mockResolvedValue([]);
 
     // When
-    await featureVotingApp.loadCurrentVotingRound(SERVICE_INSTANCE_ID);
+    await featureVotingApp.loadCurrentVotingRound(FIXTURE_SERVICE_INSTANCE_ID);
 
     // Then
     expect(loadSpy).toHaveBeenCalledWith(
@@ -268,12 +234,12 @@ describe('featureVotingApp.voteForFeature', () => {
 
   it('should record the vote against the round of the feature', async () => {
     // Given
-    const feature = buildFeature({ product: FiligranProduct.Xtmhub });
+    const feature = buildVotableFeature({ product: FiligranProduct.Xtmhub });
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Open })
+      buildVotingRound({ status: VotingRoundStatus.Open })
     );
     const upsertSpy = vi
       .spyOn(featureVotingDomain, 'upsertFeatureVote')
@@ -290,7 +256,7 @@ describe('featureVotingApp.voteForFeature', () => {
     expect(upsertSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         user_id: requestContextSimpleUserFiligran2.user.id,
-        voting_round_id: ROUND_ID,
+        voting_round_id: FIXTURE_ROUND_ID,
         votable_feature_id: feature.id,
         product: FiligranProduct.Xtmhub,
       })
@@ -302,12 +268,12 @@ describe('featureVotingApp.voteForFeature', () => {
     'should refuse to vote when the round is %s',
     async (status) => {
       // Given
-      const feature = buildFeature();
+      const feature = buildVotableFeature();
       vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
         feature
       );
       vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-        buildRound({ status })
+        buildVotingRound({ status })
       );
       const upsertSpy = vi
         .spyOn(featureVotingDomain, 'upsertFeatureVote')
@@ -324,7 +290,7 @@ describe('featureVotingApp.voteForFeature', () => {
   it('should refuse to vote for an inactive feature', async () => {
     // Given
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
-      buildFeature({ active: false })
+      buildVotableFeature({ active: false })
     );
     const upsertSpy = vi
       .spyOn(featureVotingDomain, 'upsertFeatureVote')
@@ -343,7 +309,7 @@ describe('featureVotingApp.createVotingRound', () => {
     vi.restoreAllMocks();
     requestContext.set(requestContextSimpleUserFiligran2);
     vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue({
-      id: SERVICE_INSTANCE_ID,
+      id: FIXTURE_SERVICE_INSTANCE_ID,
     } as ServiceInstance);
   });
 
@@ -357,7 +323,7 @@ describe('featureVotingApp.createVotingRound', () => {
     // When / Then
     await expect(
       featureVotingApp.createVotingRound({
-        service_instance_id: SERVICE_INSTANCE_ID,
+        service_instance_id: FIXTURE_SERVICE_INSTANCE_ID,
         name: 'Feature vote #2',
       })
     ).rejects.toThrow(NotFoundErrorCode.ServiceInstanceNotFound);
@@ -368,7 +334,7 @@ describe('featureVotingApp.createVotingRound', () => {
     // Given
     const insertSpy = vi
       .spyOn(featureVotingDomain, 'insertVotingRound')
-      .mockResolvedValue(buildRound({ status: VotingRoundStatus.Draft }));
+      .mockResolvedValue(buildVotingRound({ status: VotingRoundStatus.Draft }));
     vi.spyOn(featureVotingDomain, 'loadVotableFeatures').mockResolvedValue([]);
     const copySpy = vi
       .spyOn(featureVotingDomain, 'insertVotableFeatures')
@@ -376,14 +342,14 @@ describe('featureVotingApp.createVotingRound', () => {
 
     // When
     await featureVotingApp.createVotingRound({
-      service_instance_id: SERVICE_INSTANCE_ID,
+      service_instance_id: FIXTURE_SERVICE_INSTANCE_ID,
       name: 'Feature vote #2',
     });
 
     // Then
     expect(insertSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        service_instance_id: SERVICE_INSTANCE_ID,
+        service_instance_id: FIXTURE_SERVICE_INSTANCE_ID,
         name: 'Feature vote #2',
         status: VotingRoundStatus.Draft,
         creator_id: requestContextSimpleUserFiligran2.user.id,
@@ -395,14 +361,16 @@ describe('featureVotingApp.createVotingRound', () => {
   it('should copy the features of the source round without copying its votes', async () => {
     // Given
     const sourceRoundId = uuidv4() as VotingRoundId;
-    const newRound = buildRound({ id: uuidv4() as VotingRoundId });
+    const newRound = buildVotingRound({ id: uuidv4() as VotingRoundId });
     vi.spyOn(featureVotingDomain, 'insertVotingRound').mockResolvedValue(
       newRound
     );
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ id: sourceRoundId })
+      buildVotingRound({ id: sourceRoundId })
     );
-    const sourceFeature = buildFeature({ voting_round_id: sourceRoundId });
+    const sourceFeature = buildVotableFeature({
+      voting_round_id: sourceRoundId,
+    });
     vi.spyOn(featureVotingDomain, 'loadVotableFeatures').mockResolvedValue([
       { ...sourceFeature, has_my_vote: true },
     ]);
@@ -412,7 +380,7 @@ describe('featureVotingApp.createVotingRound', () => {
 
     // When
     await featureVotingApp.createVotingRound({
-      service_instance_id: SERVICE_INSTANCE_ID,
+      service_instance_id: FIXTURE_SERVICE_INSTANCE_ID,
       name: 'Feature vote #2',
       copy_features_from_round_id: sourceRoundId,
     });
@@ -442,58 +410,64 @@ describe('featureVotingApp.setVotingRoundStatus', () => {
 
   it('should close the previously open round when opening another one', async () => {
     // Given
-    const previouslyOpen = buildRound({
+    const previouslyOpen = buildVotingRound({
       id: uuidv4() as VotingRoundId,
       status: VotingRoundStatus.Closed,
     });
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Draft })
+      buildVotingRound({ status: VotingRoundStatus.Draft })
     );
     const closeSpy = vi
       .spyOn(featureVotingDomain, 'closeOpenRoundsExcept')
       .mockResolvedValue([previouslyOpen]);
     vi.spyOn(featureVotingDomain, 'updateVotingRound').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Open })
+      buildVotingRound({ status: VotingRoundStatus.Open })
     );
 
     // When
     const result = await featureVotingApp.setVotingRoundStatus(
-      ROUND_ID,
+      FIXTURE_ROUND_ID,
       VotingRoundStatus.Open
     );
 
     // Then: only the round open on the same service instance is closed
-    expect(closeSpy).toHaveBeenCalledWith(ROUND_ID, SERVICE_INSTANCE_ID);
+    expect(closeSpy).toHaveBeenCalledWith(
+      FIXTURE_ROUND_ID,
+      FIXTURE_SERVICE_INSTANCE_ID
+    );
     expect(featureVotingDomain.updateVotingRound).toHaveBeenCalledWith(
-      ROUND_ID,
+      FIXTURE_ROUND_ID,
       expect.objectContaining({
         status: VotingRoundStatus.Open,
         opened_at: expect.any(Date),
       })
     );
-    expect(result.map(({ id }) => id)).toEqual([ROUND_ID, previouslyOpen.id]);
+    expect(result.map(({ id }) => id)).toEqual([
+      FIXTURE_ROUND_ID,
+      previouslyOpen.id,
+    ]);
   });
 
   it('should stamp closed_at when closing a round', async () => {
     // Given
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Open })
+      buildVotingRound({ status: VotingRoundStatus.Open })
     );
     const closeSpy = vi.spyOn(featureVotingDomain, 'closeOpenRoundsExcept');
     vi.spyOn(featureVotingDomain, 'updateVotingRound').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Closed })
+      buildVotingRound({ status: VotingRoundStatus.Closed })
     );
 
     // When
     await featureVotingApp.setVotingRoundStatus(
-      ROUND_ID,
+      FIXTURE_ROUND_ID,
       VotingRoundStatus.Closed
     );
 
     // Then
     expect(closeSpy).not.toHaveBeenCalled();
     expect(featureVotingDomain.updateVotingRound).toHaveBeenCalledWith(
-      ROUND_ID,
+      FIXTURE_ROUND_ID,
       expect.objectContaining({
         status: VotingRoundStatus.Closed,
         closed_at: expect.any(Date),
@@ -504,13 +478,13 @@ describe('featureVotingApp.setVotingRoundStatus', () => {
   it('should be a no-op when the round already has the target status', async () => {
     // Given
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Open })
+      buildVotingRound({ status: VotingRoundStatus.Open })
     );
     const updateSpy = vi.spyOn(featureVotingDomain, 'updateVotingRound');
 
     // When
     await featureVotingApp.setVotingRoundStatus(
-      ROUND_ID,
+      FIXTURE_ROUND_ID,
       VotingRoundStatus.Open
     );
 
@@ -522,7 +496,7 @@ describe('featureVotingApp.setVotingRoundStatus', () => {
   it('should refuse to open a round that has no active feature', async () => {
     // Given
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Draft })
+      buildVotingRound({ status: VotingRoundStatus.Draft })
     );
     vi.spyOn(
       featureVotingDomain,
@@ -532,7 +506,10 @@ describe('featureVotingApp.setVotingRoundStatus', () => {
 
     // When / Then
     await expect(
-      featureVotingApp.setVotingRoundStatus(ROUND_ID, VotingRoundStatus.Open)
+      featureVotingApp.setVotingRoundStatus(
+        FIXTURE_ROUND_ID,
+        VotingRoundStatus.Open
+      )
     ).rejects.toThrow(ForbiddenErrorCode.OpenVotingRoundWithoutActiveFeature);
     expect(updateSpy).not.toHaveBeenCalled();
   });
@@ -540,19 +517,19 @@ describe('featureVotingApp.setVotingRoundStatus', () => {
   it('should still allow closing a round that has no active feature', async () => {
     // Given
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Open })
+      buildVotingRound({ status: VotingRoundStatus.Open })
     );
     vi.spyOn(
       featureVotingDomain,
       'countActiveFeaturesInRound'
     ).mockResolvedValue(0);
     vi.spyOn(featureVotingDomain, 'updateVotingRound').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Closed })
+      buildVotingRound({ status: VotingRoundStatus.Closed })
     );
 
     // When
     await featureVotingApp.setVotingRoundStatus(
-      ROUND_ID,
+      FIXTURE_ROUND_ID,
       VotingRoundStatus.Closed
     );
 
@@ -566,7 +543,7 @@ describe('featureVotingApp.deleteVotingRound', () => {
     vi.restoreAllMocks();
     requestContext.set(requestContextSimpleUserFiligran2);
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound()
+      buildVotingRound()
     );
   });
 
@@ -576,9 +553,9 @@ describe('featureVotingApp.deleteVotingRound', () => {
     const deleteSpy = vi.spyOn(featureVotingDomain, 'deleteVotingRound');
 
     // When / Then
-    await expect(featureVotingApp.deleteVotingRound(ROUND_ID)).rejects.toThrow(
-      ForbiddenErrorCode.DeleteVotingRoundBlockedByVotes
-    );
+    await expect(
+      featureVotingApp.deleteVotingRound(FIXTURE_ROUND_ID)
+    ).rejects.toThrow(ForbiddenErrorCode.DeleteVotingRoundBlockedByVotes);
     expect(deleteSpy).not.toHaveBeenCalled();
   });
 
@@ -586,17 +563,17 @@ describe('featureVotingApp.deleteVotingRound', () => {
     // Given
     vi.spyOn(featureVotingDomain, 'countVotesInRound').mockResolvedValue(0);
     vi.spyOn(featureVotingDomain, 'deleteVotingRound').mockResolvedValue(
-      buildRound()
+      buildVotingRound()
     );
 
     // When
-    const result = await featureVotingApp.deleteVotingRound(ROUND_ID);
+    const result = await featureVotingApp.deleteVotingRound(FIXTURE_ROUND_ID);
 
     // Then
     expect(featureVotingDomain.deleteVotingRound).toHaveBeenCalledWith(
-      ROUND_ID
+      FIXTURE_ROUND_ID
     );
-    expect(result).toMatchObject({ id: ROUND_ID, features: [] });
+    expect(result).toMatchObject({ id: FIXTURE_ROUND_ID, features: [] });
   });
 });
 
@@ -609,14 +586,14 @@ describe('featureVotingApp.createVotableFeature', () => {
   it('should refuse to add a feature to a closed round', async () => {
     // Given
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Closed })
+      buildVotingRound({ status: VotingRoundStatus.Closed })
     );
     const insertSpy = vi.spyOn(featureVotingDomain, 'insertVotableFeature');
 
     // When / Then
     await expect(
       featureVotingApp.createVotableFeature({
-        voting_round_id: ROUND_ID,
+        voting_round_id: FIXTURE_ROUND_ID,
         title: 'New feature',
         short_description: 'Short',
         description: 'Long',
@@ -633,7 +610,7 @@ describe('featureVotingApp.updateVotableFeature', () => {
     requestContext.set(requestContextSimpleUserFiligran2);
     vi.spyOn(featureVotingDomain, 'loadVotableFeatures').mockResolvedValue([]);
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Open })
+      buildVotingRound({ status: VotingRoundStatus.Open })
     );
     vi.spyOn(featureVotingDomain, 'countVotesForFeature').mockResolvedValue(0);
   });
@@ -642,7 +619,7 @@ describe('featureVotingApp.updateVotableFeature', () => {
   // the database instead of being stripped away as an absent field.
   it('should clear the image when it is explicitly set to null', async () => {
     // Given
-    const feature = buildFeature({ image_url: '/images/old.png' });
+    const feature = buildVotableFeature({ image_url: '/images/old.png' });
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
@@ -664,7 +641,7 @@ describe('featureVotingApp.updateVotableFeature', () => {
 
   it('should leave the image untouched when the field is absent', async () => {
     // Given
-    const feature = buildFeature({ image_url: '/images/old.png' });
+    const feature = buildVotableFeature({ image_url: '/images/old.png' });
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
@@ -688,12 +665,12 @@ describe('featureVotingApp.updateVotableFeature', () => {
   // would silently change what people voted on.
   it('should refuse to edit a feature of a closed round', async () => {
     // Given
-    const feature = buildFeature();
+    const feature = buildVotableFeature();
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound({ status: VotingRoundStatus.Closed })
+      buildVotingRound({ status: VotingRoundStatus.Closed })
     );
     const updateSpy = vi.spyOn(featureVotingDomain, 'updateVotableFeature');
 
@@ -708,7 +685,7 @@ describe('featureVotingApp.updateVotableFeature', () => {
   // feature to another product would let the same user weigh twice there.
   it('should refuse to move a feature that already collected votes to another product', async () => {
     // Given
-    const feature = buildFeature({ product: FiligranProduct.Opencti });
+    const feature = buildVotableFeature({ product: FiligranProduct.Opencti });
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
@@ -726,7 +703,7 @@ describe('featureVotingApp.updateVotableFeature', () => {
 
   it('should still allow editing a voted feature as long as its product is unchanged', async () => {
     // Given
-    const feature = buildFeature({ product: FiligranProduct.Opencti });
+    const feature = buildVotableFeature({ product: FiligranProduct.Opencti });
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
@@ -750,7 +727,7 @@ describe('featureVotingApp.updateVotableFeature', () => {
 
   it('should refuse an image the public page could not render', async () => {
     // Given
-    const feature = buildFeature();
+    const feature = buildVotableFeature();
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
@@ -772,7 +749,7 @@ describe('featureVotingApp.updateVotingRound', () => {
     requestContext.set(requestContextSimpleUserFiligran2);
     vi.spyOn(featureVotingDomain, 'loadVotableFeatures').mockResolvedValue([]);
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound()
+      buildVotingRound()
     );
   });
 
@@ -780,14 +757,16 @@ describe('featureVotingApp.updateVotingRound', () => {
     // Given
     const updateSpy = vi
       .spyOn(featureVotingDomain, 'updateVotingRound')
-      .mockResolvedValue(buildRound({ description: null }));
+      .mockResolvedValue(buildVotingRound({ description: null }));
 
     // When
-    await featureVotingApp.updateVotingRound(ROUND_ID, { description: null });
+    await featureVotingApp.updateVotingRound(FIXTURE_ROUND_ID, {
+      description: null,
+    });
 
     // Then
     expect(updateSpy).toHaveBeenCalledWith(
-      ROUND_ID,
+      FIXTURE_ROUND_ID,
       expect.objectContaining({ description: null })
     );
   });
@@ -801,7 +780,7 @@ describe('featureVotingApp.deleteVotableFeature', () => {
 
   it('should refuse to delete a feature that already collected votes', async () => {
     // Given
-    const feature = buildFeature();
+    const feature = buildVotableFeature();
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
@@ -817,7 +796,7 @@ describe('featureVotingApp.deleteVotableFeature', () => {
 
   it('should delete a feature without votes', async () => {
     // Given
-    const feature = buildFeature();
+    const feature = buildVotableFeature();
     vi.spyOn(featureVotingDomain, 'loadVotableFeatureBy').mockResolvedValue(
       feature
     );
@@ -842,9 +821,9 @@ describe('featureVotingApp.loadVotingRoundResults', () => {
 
   it('should return the ranking and the number of distinct voters', async () => {
     // Given
-    const feature = buildFeature();
+    const feature = buildVotableFeature();
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
-      buildRound()
+      buildVotingRound()
     );
     vi.spyOn(featureVotingDomain, 'loadVotableFeatures').mockResolvedValue([]);
     vi.spyOn(featureVotingDomain, 'loadRoundResults').mockResolvedValue([
@@ -853,7 +832,8 @@ describe('featureVotingApp.loadVotingRoundResults', () => {
     vi.spyOn(featureVotingDomain, 'countVotersInRound').mockResolvedValue(5);
 
     // When
-    const result = await featureVotingApp.loadVotingRoundResults(ROUND_ID);
+    const result =
+      await featureVotingApp.loadVotingRoundResults(FIXTURE_ROUND_ID);
 
     // Then
     expect(result.total_voters).toBe(5);
