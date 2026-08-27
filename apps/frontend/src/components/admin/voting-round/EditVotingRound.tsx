@@ -83,6 +83,7 @@ const EditVotingRound = ({
       input: {
         name: values.name,
         description: values.description || null,
+        theme: values.theme,
       },
     });
   };

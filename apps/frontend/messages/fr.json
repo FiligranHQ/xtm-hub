@@ -197,7 +197,10 @@
     "VoteRecordedTitle": "Vote enregistré",
     "VoteRecordedDescription": "Merci ! Votre vote a bien été pris en compte.",
     "NoOpenRound": "Aucun vote n'est ouvert pour le moment. Revenez bientôt !",
-    "SeeDetails": "Cliquez sur la carte pour la description complète"
+    "SeeDetails": "Cliquez sur la carte pour la description complète",
+    "CalloutTitle": "Participez à la roadmap",
+    "CalloutSubtitle": "Un vote est ouvert en ce moment : dites-nous ce que vous voulez voir arriver.",
+    "CalloutButton": "Votez pour votre prochaine fonctionnalité"
   },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
@@ -1871,13 +1874,18 @@
       "CopyFeaturesFrom": "Copier les fonctionnalités de",
       "CopyFeaturesNone": "Partir d'un round vide",
       "Error": {
-        "Name": "Le nom est obligatoire"
-      }
+        "Name": "Le nom est obligatoire",
+        "ServiceInstance": "La roadmap est obligatoire"
+      },
+      "ServiceInstance": "Roadmap",
+      "ServiceInstancePlaceholder": "Sélectionnez une roadmap",
+      "Theme": "Style de bannière"
     },
     "ListPage": {
       "Name": "Nom",
       "Status": "Statut",
-      "FeatureCount": "Fonctionnalités"
+      "FeatureCount": "Fonctionnalités",
+      "ServiceInstance": "Roadmap"
     },
     "Status": {
       "draft": "Brouillon",
@@ -1923,6 +1931,10 @@
       "TotalVoters": "{count} votants",
       "Empty": "Aucun vote pour ce round.",
       "InactiveFeature": "Désactivée"
+    },
+    "Theme": {
+      "default": "Par défaut",
+      "thread": "Thread"
     }
   }
 }

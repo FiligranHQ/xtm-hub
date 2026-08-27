@@ -4,8 +4,12 @@ import { requestContextSimpleUserFiligran2 } from '../../../tests/tests.const';
 import {
   FiligranProduct,
   VotingRoundStatus,
+  VotingRoundTheme,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import ServiceInstance, {
+  ServiceInstanceId,
+} from '../../model/kanel/public/ServiceInstance';
 import VotableFeature, {
   VotableFeatureId,
 } from '../../model/kanel/public/VotableFeature';
@@ -16,16 +20,20 @@ import {
   ForbiddenErrorCode,
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { featureVotingApp } from './feature-voting.app';
 import { featureVotingDomain } from './feature-voting.domain';
 
 const ROUND_ID = uuidv4() as VotingRoundId;
+const SERVICE_INSTANCE_ID = uuidv4() as ServiceInstanceId;
 
 const buildRound = (overrides: Partial<VotingRound> = {}): VotingRound => ({
   id: ROUND_ID,
+  service_instance_id: SERVICE_INSTANCE_ID,
   name: 'Feature vote #1',
   description: null,
   status: VotingRoundStatus.Open,
+  theme: VotingRoundTheme.Default,
   opened_at: null,
   closed_at: null,
   creator_id: null,
@@ -58,7 +66,7 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
     requestContext.set(requestContextSimpleUserFiligran2);
   });
 
-  it('should return the open round with only its active features', async () => {
+  it('should return the round open on that service instance, with only its active features', async () => {
     // Given
     const round = buildRound({ status: VotingRoundStatus.Open });
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(round);
@@ -67,10 +75,12 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
       .mockResolvedValue([]);
 
     // When
-    const result = await featureVotingApp.loadCurrentVotingRound();
+    const result =
+      await featureVotingApp.loadCurrentVotingRound(SERVICE_INSTANCE_ID);
 
     // Then
     expect(featureVotingDomain.loadVotingRoundBy).toHaveBeenCalledWith({
+      service_instance_id: SERVICE_INSTANCE_ID,
       status: VotingRoundStatus.Open,
     });
     expect(loadSpy).toHaveBeenCalledWith({
@@ -82,14 +92,15 @@ describe('featureVotingApp.loadCurrentVotingRound', () => {
     expect(result).toMatchObject({ id: ROUND_ID, features: [] });
   });
 
-  it('should return null when no round is collecting votes', async () => {
+  it('should return null when that service instance has no round collecting votes', async () => {
     // Given
     vi.spyOn(featureVotingDomain, 'loadVotingRoundBy').mockResolvedValue(
       undefined
     );
 
     // When
-    const result = await featureVotingApp.loadCurrentVotingRound();
+    const result =
+      await featureVotingApp.loadCurrentVotingRound(SERVICE_INSTANCE_ID);
 
     // Then
     expect(result).toBeNull();
@@ -146,6 +157,19 @@ describe('admin reads of a voting round', () => {
     expect(loadSpy).toHaveBeenCalledWith(
       expect.objectContaining({ onlyActive: false })
     );
+  });
+
+  it('should restrict the admin round list to a service instance when asked', async () => {
+    // Given
+    const listSpy = vi
+      .spyOn(featureVotingDomain, 'loadVotingRounds')
+      .mockResolvedValue([]);
+
+    // When
+    await featureVotingApp.loadVotingRounds(SERVICE_INSTANCE_ID);
+
+    // Then
+    expect(listSpy).toHaveBeenCalledWith(SERVICE_INSTANCE_ID);
   });
 
   it('should keep hiding inactive features from the public page', async () => {
@@ -249,9 +273,29 @@ describe('featureVotingApp.createVotingRound', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     requestContext.set(requestContextSimpleUserFiligran2);
+    vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue({
+      id: SERVICE_INSTANCE_ID,
+    } as ServiceInstance);
   });
 
-  it('should create the round as a draft owned by the current user', async () => {
+  it('should refuse to create a round on a service instance that does not exist', async () => {
+    // Given
+    vi.spyOn(ServiceInstanceDomain, 'loadServiceInstanceBy').mockResolvedValue(
+      undefined
+    );
+    const insertSpy = vi.spyOn(featureVotingDomain, 'insertVotingRound');
+
+    // When / Then
+    await expect(
+      featureVotingApp.createVotingRound({
+        service_instance_id: SERVICE_INSTANCE_ID,
+        name: 'Feature vote #2',
+      })
+    ).rejects.toThrow(NotFoundErrorCode.ServiceInstanceNotFound);
+    expect(insertSpy).not.toHaveBeenCalled();
+  });
+
+  it('should create the round as a draft attached to the service instance', async () => {
     // Given
     const insertSpy = vi
       .spyOn(featureVotingDomain, 'insertVotingRound')
@@ -262,11 +306,15 @@ describe('featureVotingApp.createVotingRound', () => {
       .mockResolvedValue([]);
 
     // When
-    await featureVotingApp.createVotingRound({ name: 'Feature vote #2' });
+    await featureVotingApp.createVotingRound({
+      service_instance_id: SERVICE_INSTANCE_ID,
+      name: 'Feature vote #2',
+    });
 
     // Then
     expect(insertSpy).toHaveBeenCalledWith(
       expect.objectContaining({
+        service_instance_id: SERVICE_INSTANCE_ID,
         name: 'Feature vote #2',
         status: VotingRoundStatus.Draft,
         creator_id: requestContextSimpleUserFiligran2.user.id,
@@ -295,6 +343,7 @@ describe('featureVotingApp.createVotingRound', () => {
 
     // When
     await featureVotingApp.createVotingRound({
+      service_instance_id: SERVICE_INSTANCE_ID,
       name: 'Feature vote #2',
       copy_features_from_round_id: sourceRoundId,
     });
@@ -340,8 +389,8 @@ describe('featureVotingApp.setVotingRoundStatus', () => {
       VotingRoundStatus.Open
     );
 
-    // Then
-    expect(closeSpy).toHaveBeenCalledWith(ROUND_ID);
+    // Then: only the round open on the same service instance is closed
+    expect(closeSpy).toHaveBeenCalledWith(ROUND_ID, SERVICE_INSTANCE_ID);
     expect(featureVotingDomain.updateVotingRound).toHaveBeenCalledWith(
       ROUND_ID,
       expect.objectContaining({

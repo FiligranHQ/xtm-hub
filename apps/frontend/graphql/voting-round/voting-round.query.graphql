@@ -13,9 +13,11 @@ fragment VotableFeatureAdminRow on VotableFeature {
 
 fragment VotingRoundRow on VotingRound {
   id
+  service_instance_id
   name
   description
   status
+  theme
   opened_at
   closed_at
   created_at

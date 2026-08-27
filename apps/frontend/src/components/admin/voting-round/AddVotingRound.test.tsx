@@ -1,14 +1,38 @@
 import AddVotingRound from '@/components/admin/voting-round/AddVotingRound';
-import { mockGraphqlMutation } from '@/utils/test/msw/graphql-api';
+import {
+  mockGraphqlMutation,
+  mockGraphqlQuery,
+} from '@/utils/test/msw/graphql-api';
 import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';
 import { VotingRoundCreateMutation } from '@graphql/generated';
 import { mockVotingRound } from '@graphql/mocks';
 import { screen, waitFor } from '@testing-library/react';
 
+const serviceInstancesHandler = mockGraphqlQuery({
+  queryName: 'ServiceInstancesList',
+  data: {
+    serviceInstances: {
+      edges: [
+        {
+          node: {
+            id: 'instance-1',
+            name: 'XTM Platform Roadmap',
+            service_definition: { identifier: 'xtm_platform_roadmap' },
+          },
+        },
+      ],
+    },
+  },
+});
+
 const GQL_OPERATION_VOTING_ROUND_CREATE = 'VotingRoundCreate';
 
 describe('AddVotingRound', () => {
+  beforeEach(() => {
+    mswServer.use(serviceInstancesHandler);
+  });
+
   it('should open the sheet from its trigger', async () => {
     const { user } = testRender(<AddVotingRound copySources={[]} />);
 

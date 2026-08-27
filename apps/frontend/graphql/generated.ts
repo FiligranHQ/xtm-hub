@@ -280,6 +280,8 @@ export type CreateVotingRoundInput = {
   copy_features_from_round_id: InputMaybe<Scalars['VotingRoundId']['input']>;
   description: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+  theme: InputMaybe<VotingRoundTheme>;
 };
 
 export type CsvFeed = Document & Integration & Node & {
@@ -1776,7 +1778,10 @@ export type Query = {
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
-  /** The round currently collecting votes, if any. Publicly readable. */
+  /**
+   * The round currently collecting votes on a service instance, if any.
+   * Publicly readable, like the roadmap the round belongs to.
+   */
   currentVotingRound: Maybe<VotingRound>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
@@ -1839,6 +1844,11 @@ export type QueryCompetitorsArgs = {
   first: Scalars['Int']['input'];
   orderBy: CompetitorOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryCurrentVotingRoundArgs = {
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2123,6 +2133,11 @@ export type QueryVotingRoundArgs = {
 
 export type QueryVotingRoundResultsArgs = {
   id: Scalars['VotingRoundId']['input'];
+};
+
+
+export type QueryVotingRoundsArgs = {
+  service_instance_id: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 export type RefreshPlatformRegistrationConnectivityStatusAllTenantsInput = {
@@ -2777,6 +2792,7 @@ export type UpdateVotableFeatureInput = {
 export type UpdateVotingRoundInput = {
   description: InputMaybe<Scalars['String']['input']>;
   name: InputMaybe<Scalars['String']['input']>;
+  theme: InputMaybe<VotingRoundTheme>;
 };
 
 export type UseCase = Node & {
@@ -2974,7 +2990,9 @@ export type VotingRound = Node & {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   opened_at: Maybe<Scalars['Date']['output']>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   status: VotingRoundStatus;
+  theme: VotingRoundTheme;
   updated_at: Maybe<Scalars['Date']['output']>;
 };
 
@@ -2989,6 +3007,12 @@ export enum VotingRoundStatus {
   Closed = 'closed',
   Draft = 'draft',
   Open = 'open'
+}
+
+/** Visual identity applied to the public banner and voting page of a round. */
+export enum VotingRoundTheme {
+  Default = 'default',
+  Thread = 'thread'
 }
 
 type HomepageDocument_Connector_Fragment = { __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
@@ -3223,7 +3247,7 @@ export type VotingRoundCreateMutationVariables = Exact<{
 }>;
 
 
-export type VotingRoundCreateMutation = { __typename?: 'Mutation', createVotingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } };
+export type VotingRoundCreateMutation = { __typename?: 'Mutation', createVotingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } };
 
 export type VotingRoundUpdateMutationVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
@@ -3231,7 +3255,7 @@ export type VotingRoundUpdateMutationVariables = Exact<{
 }>;
 
 
-export type VotingRoundUpdateMutation = { __typename?: 'Mutation', updateVotingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } };
+export type VotingRoundUpdateMutation = { __typename?: 'Mutation', updateVotingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } };
 
 export type VotingRoundSetStatusMutationVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
@@ -3239,7 +3263,7 @@ export type VotingRoundSetStatusMutationVariables = Exact<{
 }>;
 
 
-export type VotingRoundSetStatusMutation = { __typename?: 'Mutation', setVotingRoundStatus: Array<{ __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> }> };
+export type VotingRoundSetStatusMutation = { __typename?: 'Mutation', setVotingRoundStatus: Array<{ __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> }> };
 
 export type VotingRoundDeleteMutationVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
@@ -3272,19 +3296,19 @@ export type VotableFeatureDeleteMutation = { __typename?: 'Mutation', deleteVota
 
 export type VotableFeatureAdminRowFragment = { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean };
 
-export type VotingRoundRowFragment = { __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> };
+export type VotingRoundRowFragment = { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> };
 
 export type VotingRoundsListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type VotingRoundsListQuery = { __typename?: 'Query', votingRounds: Array<{ __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> }> };
+export type VotingRoundsListQuery = { __typename?: 'Query', votingRounds: Array<{ __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> }> };
 
 export type VotingRoundDetailQueryVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
 }>;
 
 
-export type VotingRoundDetailQuery = { __typename?: 'Query', votingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, status: VotingRoundStatus, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } | null };
+export type VotingRoundDetailQuery = { __typename?: 'Query', votingRound: { __typename?: 'VotingRound', id: string, service_instance_id: any, name: string, description: string | null, status: VotingRoundStatus, theme: VotingRoundTheme, opened_at: any | null, closed_at: any | null, created_at: any, features: Array<{ __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, labels: Array<string>, image_url: string | null, position: number, active: boolean }> } | null };
 
 export type VotingRoundRankingQueryVariables = Exact<{
   id: Scalars['VotingRoundId']['input'];
@@ -3371,9 +3395,11 @@ export const VotableFeatureAdminRowFragmentDoc = `
 export const VotingRoundRowFragmentDoc = `
     fragment VotingRoundRow on VotingRound {
   id
+  service_instance_id
   name
   description
   status
+  theme
   opened_at
   closed_at
   created_at

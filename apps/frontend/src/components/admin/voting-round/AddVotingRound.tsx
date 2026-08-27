@@ -1,3 +1,4 @@
+import { useRoadmapServiceInstances } from '@/components/admin/voting-round/use-roadmap-service-instances';
 import VotingRoundForm, {
   VotingRoundCopySource,
   votingRoundFormSchema,
@@ -20,6 +21,7 @@ const AddVotingRound = ({
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
   const queryClient = useQueryClient();
+  const serviceInstances = useRoadmapServiceInstances();
 
   const { mutate: createVotingRound } = useVotingRoundCreateMutation(
     portalGraphqlClient,
@@ -44,8 +46,10 @@ const AddVotingRound = ({
   const onSubmit = (values: z.infer<typeof votingRoundFormSchema>) => {
     createVotingRound({
       input: {
+        service_instance_id: values.service_instance_id,
         name: values.name,
         description: values.description || null,
+        theme: values.theme,
         copy_features_from_round_id: values.copy_features_from_round_id ?? null,
       },
     });
@@ -59,6 +63,7 @@ const AddVotingRound = ({
       trigger={<Button>{t('VotingRound.Actions.Add')}</Button>}>
       <VotingRoundForm
         copySources={copySources}
+        serviceInstances={serviceInstances}
         onClose={() => setOpenSheet(false)}
         handleSubmit={onSubmit}
       />

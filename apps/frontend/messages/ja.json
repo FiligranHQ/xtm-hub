@@ -197,7 +197,10 @@
     "VoteRecordedTitle": "投票を受け付けました",
     "VoteRecordedDescription": "ありがとうございます。投票が反映されました。",
     "NoOpenRound": "現在、投票は開催されていません。またお越しください。",
-    "SeeDetails": "カードをクリックすると詳細が表示されます"
+    "SeeDetails": "カードをクリックすると詳細が表示されます",
+    "CalloutTitle": "ロードマップづくりに参加",
+    "CalloutSubtitle": "現在、機能への投票を受付中です。次に見たい機能をお知らせください。",
+    "CalloutButton": "次の機能に投票する"
   },
   "Error": {
     "AnErrorOccured": "エラーが発生しました",
@@ -1871,13 +1874,18 @@
       "CopyFeaturesFrom": "機能のコピー元",
       "CopyFeaturesNone": "空のラウンドから開始",
       "Error": {
-        "Name": "名称は必須です"
-      }
+        "Name": "名称は必須です",
+        "ServiceInstance": "ロードマップは必須です"
+      },
+      "ServiceInstance": "ロードマップ",
+      "ServiceInstancePlaceholder": "ロードマップを選択",
+      "Theme": "バナースタイル"
     },
     "ListPage": {
       "Name": "名称",
       "Status": "ステータス",
-      "FeatureCount": "機能数"
+      "FeatureCount": "機能数",
+      "ServiceInstance": "ロードマップ"
     },
     "Status": {
       "draft": "下書き",
@@ -1923,6 +1931,10 @@
       "TotalVoters": "投票者数：{count}",
       "Empty": "このラウンドにはまだ投票がありません。",
       "InactiveFeature": "無効"
+    },
+    "Theme": {
+      "default": "デフォルト",
+      "thread": "Thread"
     }
   }
 }

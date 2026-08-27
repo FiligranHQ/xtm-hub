@@ -2,12 +2,15 @@ import VotingRoundForm from '@/components/admin/voting-round/VotingRoundForm';
 import testRender from '@/utils/test/test-render';
 import { screen, waitFor } from '@testing-library/react';
 
+const SERVICE_INSTANCES = [{ id: 'instance-1', name: 'XTM Platform Roadmap' }];
+
 describe('VotingRoundForm', () => {
   describe('form validation', () => {
     it('should not submit when the name is too short', async () => {
       const handleSubmit = vi.fn();
       const { user } = testRender(
         <VotingRoundForm
+          serviceInstances={SERVICE_INSTANCES}
           onClose={vi.fn()}
           handleSubmit={handleSubmit}
         />
@@ -25,6 +28,7 @@ describe('VotingRoundForm', () => {
       const handleSubmit = vi.fn();
       const { user } = testRender(
         <VotingRoundForm
+          serviceInstances={SERVICE_INSTANCES}
           onClose={vi.fn()}
           handleSubmit={handleSubmit}
         />
@@ -43,6 +47,7 @@ describe('VotingRoundForm', () => {
       await waitFor(() => {
         expect(handleSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
+            service_instance_id: 'instance-1',
             name: 'Feature vote #2',
             description: 'Second round',
           }),
@@ -52,12 +57,59 @@ describe('VotingRoundForm', () => {
     });
   });
 
+  describe('banner style', () => {
+    it('should default a new round to the default identity', async () => {
+      const handleSubmit = vi.fn();
+      const { user } = testRender(
+        <VotingRoundForm
+          serviceInstances={SERVICE_INSTANCES}
+          onClose={vi.fn()}
+          handleSubmit={handleSubmit}
+        />
+      );
+
+      await user.type(
+        screen.getByLabelText(/VotingRound.Form.Name/i),
+        'Feature vote #2'
+      );
+      await user.click(screen.getByRole('button', { name: /Utils.Validate/i }));
+
+      await waitFor(() => {
+        expect(handleSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({ theme: 'default' }),
+          expect.anything()
+        );
+      });
+    });
+
+    it('should prefill the identity of the edited round', () => {
+      testRender(
+        <VotingRoundForm
+          votingRound={{
+            id: 'round-1',
+            service_instance_id: 'instance-1',
+            name: 'Feature vote #1',
+            theme: 'thread',
+          }}
+          onClose={vi.fn()}
+          handleDelete={vi.fn()}
+          handleSubmit={vi.fn()}
+        />
+      );
+
+      expect(screen.getByLabelText('VotingRound.Form.Theme')).toHaveTextContent(
+        'VotingRound.Theme.thread'
+      );
+    });
+  });
+
   describe('actions', () => {
     it('should prefill the values of the edited round', () => {
       testRender(
         <VotingRoundForm
           votingRound={{
             id: 'round-1',
+            service_instance_id: 'instance-1',
             name: 'Feature vote #1',
             description: 'First round',
           }}
@@ -89,7 +141,11 @@ describe('VotingRoundForm', () => {
       const handleDelete = vi.fn();
       const { user } = testRender(
         <VotingRoundForm
-          votingRound={{ id: 'round-1', name: 'Feature vote #1' }}
+          votingRound={{
+            id: 'round-1',
+            service_instance_id: 'instance-1',
+            name: 'Feature vote #1',
+          }}
           onClose={vi.fn()}
           handleDelete={handleDelete}
           handleSubmit={vi.fn()}
@@ -109,7 +165,11 @@ describe('VotingRoundForm', () => {
     it('should not offer the copy-features field when editing an existing round', () => {
       testRender(
         <VotingRoundForm
-          votingRound={{ id: 'round-1', name: 'Feature vote #1' }}
+          votingRound={{
+            id: 'round-1',
+            service_instance_id: 'instance-1',
+            name: 'Feature vote #1',
+          }}
           copySources={[{ id: 'round-0', name: 'Feature vote #0' }]}
           onClose={vi.fn()}
           handleDelete={vi.fn()}

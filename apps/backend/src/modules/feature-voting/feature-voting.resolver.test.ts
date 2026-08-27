@@ -7,6 +7,7 @@ import {
 import {
   FiligranProduct,
   VotingRoundStatus,
+  VotingRoundTheme,
 } from '../../__generated__/resolvers-types';
 import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
 import { VotingRoundId } from '../../model/kanel/public/VotingRound';
@@ -45,6 +46,7 @@ const buildRound = (
   name: 'Feature vote #1',
   description: null,
   status: VotingRoundStatus.Open,
+  theme: VotingRoundTheme.Default,
   opened_at: null,
   closed_at: null,
   creator_id: null,

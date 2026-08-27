@@ -6,6 +6,7 @@ import {
 import FeatureVote, {
   FeatureVoteInitializer,
 } from '../../model/kanel/public/FeatureVote';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import VotableFeature, {
   VotableFeatureId,
@@ -28,8 +29,15 @@ export type VotableFeatureWithCount = VotableFeature & {
 };
 
 export const featureVotingDomain = {
-  loadVotingRounds: (): Promise<VotingRound[]> =>
+  loadVotingRounds: (
+    serviceInstanceId?: ServiceInstanceId | null
+  ): Promise<VotingRound[]> =>
     db<VotingRound>('VotingRound')
+      .modify((queryBuilder) => {
+        if (serviceInstanceId) {
+          queryBuilder.where({ service_instance_id: serviceInstanceId });
+        }
+      })
       .orderBy('created_at', 'desc')
       .select<VotingRound[]>('*'),
 
@@ -62,12 +70,19 @@ export const featureVotingDomain = {
   },
 
   /**
-   * Closes every round left open, except the one being opened. Keeps the
-   * "single open round" database index satisfiable when switching rounds.
+   * Closes the round left open on the same service instance, except the one
+   * being opened. Keeps the "single open round per service instance" database
+   * index satisfiable when switching rounds, without touching other roadmaps.
    */
-  closeOpenRoundsExcept: async (id: VotingRoundId): Promise<VotingRound[]> =>
+  closeOpenRoundsExcept: async (
+    id: VotingRoundId,
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<VotingRound[]> =>
     db<VotingRound>('VotingRound')
-      .where({ status: VotingRoundStatus.Open })
+      .where({
+        status: VotingRoundStatus.Open,
+        service_instance_id: serviceInstanceId,
+      })
       .whereNot({ id })
       .update({ status: VotingRoundStatus.Closed, closed_at: new Date() })
       .returning('*'),

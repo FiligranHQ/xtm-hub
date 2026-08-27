@@ -11,8 +11,10 @@ const resolvers: Resolvers = {
   VotingRoundId: createRelayIdScalar<VotingRoundId>('VotingRound'),
 
   Query: {
-    currentVotingRound: () => featureVotingApp.loadCurrentVotingRound(),
-    votingRounds: () => featureVotingApp.loadVotingRounds(),
+    currentVotingRound: (_, { service_instance_id }) =>
+      featureVotingApp.loadCurrentVotingRound(service_instance_id),
+    votingRounds: (_, { service_instance_id }) =>
+      featureVotingApp.loadVotingRounds(service_instance_id),
     votingRound: (_, { id }) => featureVotingApp.loadVotingRound(id),
     votingRoundResults: (_, { id }) =>
       featureVotingApp.loadVotingRoundResults(id),

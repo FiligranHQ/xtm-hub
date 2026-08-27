@@ -5,20 +5,36 @@
 export async function up(knex) {
   await knex.schema.createTable('VotingRound', (table) => {
     table.uuid('id', { primaryKey: true }).defaultTo(knex.fn.uuid());
+    // A round belongs to the service instance it collects feedback for, so a
+    // roadmap instance carries its own rounds and its own results.
+    table
+      .uuid('service_instance_id')
+      .notNullable()
+      .references('id')
+      .inTable('ServiceInstance')
+      .onDelete('CASCADE');
     table.string('name').notNullable();
     table.text('description').nullable();
     table.enum('status', ['draft', 'open', 'closed']).notNullable();
+    // Visual identity of the public banner: the default hub styling, or the
+    // Thread conference one.
+    table
+      .enum('theme', ['default', 'thread'])
+      .notNullable()
+      .defaultTo('default');
     table.timestamp('opened_at').nullable();
     table.timestamp('closed_at').nullable();
     table.uuid('creator_id').nullable().references('id').inTable('User');
     table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
     table.timestamp('updated_at').nullable();
+    table.index('service_instance_id');
   });
 
-  // At most one round can collect votes at a time. Enforced in the database so
-  // a concurrent open cannot slip through the application-level check.
+  // A service instance can only collect votes on one round at a time. Enforced
+  // in the database so a concurrent open cannot slip through the
+  // application-level check.
   await knex.raw(
-    `CREATE UNIQUE INDEX "VotingRound_single_open" ON "VotingRound" (status) WHERE status = 'open'`
+    `CREATE UNIQUE INDEX "VotingRound_single_open_per_service_instance" ON "VotingRound" (service_instance_id) WHERE status = 'open'`
   );
 
   await knex.schema.createTable('VotableFeature', (table) => {

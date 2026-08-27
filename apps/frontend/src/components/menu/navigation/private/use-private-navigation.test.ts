@@ -183,12 +183,6 @@ describe('usePrivateNavigation', () => {
     expect(result.current.footerSections).toEqual([]);
     expect(result.current.bottomLinks).toEqual([
       {
-        key: 'feature-voting',
-        href: '/app/feature-voting',
-        icon: expect.any(Function),
-        label: 'FeatureVoting',
-      },
-      {
         key: 'filigran-academy',
         href: 'https://academy.filigran.io/',
         icon: expect.any(Function),
@@ -301,12 +295,6 @@ describe('usePrivateNavigation', () => {
       )
     ).toBeUndefined();
     expect(result.current.bottomLinks).toEqual([
-      {
-        key: 'feature-voting',
-        href: '/app/feature-voting',
-        icon: expect.any(Function),
-        label: 'FeatureVoting',
-      },
       {
         key: 'filigran-academy',
         href: 'https://academy.filigran.io/',

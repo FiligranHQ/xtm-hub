@@ -7,6 +7,7 @@ import {
   VotingRoundStatus,
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { VotableFeatureId } from '../../model/kanel/public/VotableFeature';
 import VotingRound, {
   VotingRoundId,
@@ -16,6 +17,7 @@ import {
   NotFoundErrorCode,
 } from '../../utils/error/error.code';
 import { stripNulls } from '../../utils/typescript';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import {
   featureVotingDomain,
   VotableFeatureWithVote,
@@ -94,8 +96,11 @@ const applyUpdate = <T extends object, K extends keyof T>(
 };
 
 export const featureVotingApp = {
-  loadCurrentVotingRound: async (): Promise<VotingRoundWithFeatures | null> => {
+  loadCurrentVotingRound: async (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<VotingRoundWithFeatures | null> => {
     const round = await featureVotingDomain.loadVotingRoundBy({
+      service_instance_id: serviceInstanceId,
       status: VotingRoundStatus.Open,
     });
     return round ? withFeatures(round, { onlyActive: true }) : null;
@@ -134,8 +139,11 @@ export const featureVotingApp = {
     });
   },
 
-  loadVotingRounds: async (): Promise<VotingRoundWithFeatures[]> => {
-    const rounds = await featureVotingDomain.loadVotingRounds();
+  loadVotingRounds: async (
+    serviceInstanceId?: ServiceInstanceId | null
+  ): Promise<VotingRoundWithFeatures[]> => {
+    const rounds =
+      await featureVotingDomain.loadVotingRounds(serviceInstanceId);
     return Promise.all(rounds.map((round) => withAllFeatures(round)));
   },
 
@@ -151,6 +159,13 @@ export const featureVotingApp = {
   ): Promise<VotingRoundWithFeatures> => {
     const user = requestContext.requireUser();
     const { copy_features_from_round_id, ...roundInput } = input;
+
+    const serviceInstance = await ServiceInstanceDomain.loadServiceInstanceBy({
+      id: input.service_instance_id,
+    });
+    if (!serviceInstance) {
+      throw new Error(NotFoundErrorCode.ServiceInstanceNotFound);
+    }
 
     const round = await featureVotingDomain.insertVotingRound({
       ...stripNulls(roundInput),
@@ -214,7 +229,10 @@ export const featureVotingApp = {
 
     const closedRounds =
       status === VotingRoundStatus.Open
-        ? await featureVotingDomain.closeOpenRoundsExcept(id)
+        ? await featureVotingDomain.closeOpenRoundsExcept(
+            id,
+            round.service_instance_id
+          )
         : [];
 
     const updated = await featureVotingDomain.updateVotingRound(id, {

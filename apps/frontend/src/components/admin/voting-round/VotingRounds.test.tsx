@@ -7,6 +7,23 @@ import { mockVotableFeature, mockVotingRound } from '@graphql/mocks';
 import { screen } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 
+const serviceInstancesHandler = mockGraphqlQuery({
+  queryName: 'ServiceInstancesList',
+  data: {
+    serviceInstances: {
+      edges: [
+        {
+          node: {
+            id: 'instance-1',
+            name: 'XTM Platform Roadmap',
+            service_definition: { identifier: 'xtm_platform_roadmap' },
+          },
+        },
+      ],
+    },
+  },
+});
+
 const GQL_OPERATION_VOTING_ROUNDS_LIST = 'VotingRoundsList';
 
 const votingRoundsResponse: VotingRoundsListQuery = {
@@ -28,6 +45,7 @@ const votingRoundsResponse: VotingRoundsListQuery = {
 
 const mockRounds = () =>
   mswServer.use(
+    serviceInstancesHandler,
     mockGraphqlQuery({
       queryName: GQL_OPERATION_VOTING_ROUNDS_LIST,
       data: votingRoundsResponse,

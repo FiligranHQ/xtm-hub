@@ -2,6 +2,7 @@
 
 import AddVotingRound from '@/components/admin/voting-round/AddVotingRound';
 import EditVotingRound from '@/components/admin/voting-round/EditVotingRound';
+import { useRoadmapServiceInstances } from '@/components/admin/voting-round/use-roadmap-service-instances';
 import { VotingRoundStatusBadge } from '@/components/admin/voting-round/VotingRoundStatusBadge';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
@@ -38,12 +39,26 @@ const VotingRounds = () => {
     [queryData]
   );
 
+  const serviceInstances = useRoadmapServiceInstances();
+  const serviceInstanceNames = useMemo(
+    () => new Map(serviceInstances.map(({ id, name }) => [id, name])),
+    [serviceInstances]
+  );
+
   const columns: ColumnDef<VotingRoundRowFragment>[] = [
     {
       accessorKey: 'name',
       id: 'name',
       header: t('VotingRound.ListPage.Name'),
       cell: ({ row }) => <span className="truncate">{row.original.name}</span>,
+    },
+    {
+      id: 'service_instance',
+      header: t('VotingRound.ListPage.ServiceInstance'),
+      enableSorting: false,
+      cell: ({ row }) =>
+        serviceInstanceNames.get(row.original.service_instance_id) ??
+        row.original.service_instance_id,
     },
     {
       accessorKey: 'status',

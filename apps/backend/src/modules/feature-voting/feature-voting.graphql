@@ -7,11 +7,19 @@ enum VotingRoundStatus {
   closed
 }
 
+"Visual identity applied to the public banner and voting page of a round."
+enum VotingRoundTheme {
+  default
+  thread
+}
+
 type VotingRound implements Node {
   id: ID!
+  service_instance_id: ServiceInstanceId!
   name: String!
   description: String
   status: VotingRoundStatus!
+  theme: VotingRoundTheme!
   opened_at: Date
   closed_at: Date
   created_at: Date!
@@ -47,14 +55,17 @@ type VotingRoundResults {
 }
 
 input CreateVotingRoundInput {
+  service_instance_id: ServiceInstanceId!
   name: String!
   description: String
+  theme: VotingRoundTheme
   copy_features_from_round_id: VotingRoundId
 }
 
 input UpdateVotingRoundInput {
   name: String
   description: String
+  theme: VotingRoundTheme
 }
 
 input CreateVotableFeatureInput {
@@ -81,9 +92,13 @@ input UpdateVotableFeatureInput {
 }
 
 type Query {
-  "The round currently collecting votes, if any. Publicly readable."
-  currentVotingRound: VotingRound
-  votingRounds: [VotingRound!]! @auth(portalCapa: [BYPASS])
+  """
+  The round currently collecting votes on a service instance, if any.
+  Publicly readable, like the roadmap the round belongs to.
+  """
+  currentVotingRound(service_instance_id: ServiceInstanceId!): VotingRound
+  votingRounds(service_instance_id: ServiceInstanceId): [VotingRound!]!
+    @auth(portalCapa: [BYPASS])
   votingRound(id: VotingRoundId!): VotingRound @auth(portalCapa: [BYPASS])
   votingRoundResults(id: VotingRoundId!): VotingRoundResults!
     @auth(portalCapa: [BYPASS])

@@ -272,6 +272,8 @@ export type CreateVotingRoundInput = {
   copy_features_from_round_id?: InputMaybe<Scalars['VotingRoundId']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+  theme?: InputMaybe<VotingRoundTheme>;
 };
 
 export type CsvFeed = Document & Integration & Node & {
@@ -1768,7 +1770,10 @@ export type Query = {
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
-  /** The round currently collecting votes, if any. Publicly readable. */
+  /**
+   * The round currently collecting votes on a service instance, if any.
+   * Publicly readable, like the roadmap the round belongs to.
+   */
   currentVotingRound?: Maybe<VotingRound>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
@@ -1831,6 +1836,11 @@ export type QueryCompetitorsArgs = {
   first: Scalars['Int']['input'];
   orderBy: CompetitorOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryCurrentVotingRoundArgs = {
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2115,6 +2125,11 @@ export type QueryVotingRoundArgs = {
 
 export type QueryVotingRoundResultsArgs = {
   id: Scalars['VotingRoundId']['input'];
+};
+
+
+export type QueryVotingRoundsArgs = {
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 export type RefreshPlatformRegistrationConnectivityStatusAllTenantsInput = {
@@ -2769,6 +2784,7 @@ export type UpdateVotableFeatureInput = {
 export type UpdateVotingRoundInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  theme?: InputMaybe<VotingRoundTheme>;
 };
 
 export type UseCase = Node & {
@@ -2966,7 +2982,9 @@ export type VotingRound = Node & {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   opened_at?: Maybe<Scalars['Date']['output']>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
   status: VotingRoundStatus;
+  theme: VotingRoundTheme;
   updated_at?: Maybe<Scalars['Date']['output']>;
 };
 
@@ -2981,6 +2999,12 @@ export enum VotingRoundStatus {
   Closed = 'closed',
   Draft = 'draft',
   Open = 'open'
+}
+
+/** Visual identity applied to the public banner and voting page of a round. */
+export enum VotingRoundTheme {
+  Default = 'default',
+  Thread = 'thread'
 }
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -3302,6 +3326,7 @@ export type ResolversTypes = ResolversObject<{
   VotingRoundId: ResolverTypeWrapper<Scalars['VotingRoundId']['output']>;
   VotingRoundResults: ResolverTypeWrapper<VotingRoundResults>;
   VotingRoundStatus: VotingRoundStatus;
+  VotingRoundTheme: VotingRoundTheme;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -4259,7 +4284,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   countEpicsPerTimeline?: Resolver<Array<ResolversTypes['EpicCountPerTimeline']>, ParentType, ContextType>;
-  currentVotingRound?: Resolver<Maybe<ResolversTypes['VotingRound']>, ParentType, ContextType>;
+  currentVotingRound?: Resolver<Maybe<ResolversTypes['VotingRound']>, ParentType, ContextType, RequireFields<QueryCurrentVotingRoundArgs, 'service_instance_id'>>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, RequireFields<QueryDeploymentRequestsAvailableArgs, 'platformIdentifier'>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -4306,7 +4331,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
   votingRound?: Resolver<Maybe<ResolversTypes['VotingRound']>, ParentType, ContextType, RequireFields<QueryVotingRoundArgs, 'id'>>;
   votingRoundResults?: Resolver<ResolversTypes['VotingRoundResults'], ParentType, ContextType, RequireFields<QueryVotingRoundResultsArgs, 'id'>>;
-  votingRounds?: Resolver<Array<ResolversTypes['VotingRound']>, ParentType, ContextType>;
+  votingRounds?: Resolver<Array<ResolversTypes['VotingRound']>, ParentType, ContextType, Partial<QueryVotingRoundsArgs>>;
 }>;
 
 export type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse'] = ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse']> = ResolversObject<{
@@ -4876,7 +4901,9 @@ export type VotingRoundResolvers<ContextType = PortalContext, ParentType extends
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   opened_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['VotingRoundStatus'], ParentType, ContextType>;
+  theme?: Resolver<ResolversTypes['VotingRoundTheme'], ParentType, ContextType>;
   updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

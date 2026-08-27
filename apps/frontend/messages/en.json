@@ -197,7 +197,10 @@
     "VoteRecordedTitle": "Vote recorded",
     "VoteRecordedDescription": "Thank you! Your vote has been taken into account.",
     "NoOpenRound": "No feature vote is open at the moment. Come back soon!",
-    "SeeDetails": "Click the card for the full description"
+    "SeeDetails": "Click the card for the full description",
+    "CalloutTitle": "Help shape the roadmap",
+    "CalloutSubtitle": "A feature vote is open right now: tell us what you want to see next.",
+    "CalloutButton": "Vote for your next feature"
   },
   "Error": {
     "AnErrorOccured": "An error occurred",
@@ -1871,13 +1874,18 @@
       "CopyFeaturesFrom": "Copy features from",
       "CopyFeaturesNone": "Start from an empty round",
       "Error": {
-        "Name": "Name is required"
-      }
+        "Name": "Name is required",
+        "ServiceInstance": "A roadmap is required"
+      },
+      "ServiceInstance": "Roadmap",
+      "ServiceInstancePlaceholder": "Select a roadmap",
+      "Theme": "Banner style"
     },
     "ListPage": {
       "Name": "Name",
       "Status": "Status",
-      "FeatureCount": "Features"
+      "FeatureCount": "Features",
+      "ServiceInstance": "Roadmap"
     },
     "Status": {
       "draft": "Draft",
@@ -1923,6 +1931,10 @@
       "TotalVoters": "{count} voters",
       "Empty": "No vote yet for this round.",
       "InactiveFeature": "Deactivated"
+    },
+    "Theme": {
+      "default": "Default",
+      "thread": "Thread"
     }
   }
 }

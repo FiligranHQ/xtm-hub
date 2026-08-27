@@ -15,11 +15,11 @@ export const featureVotingFragment = graphql`
 `;
 
 export const FeatureVotingQuery = graphql`
-  query featureVotingQuery {
+  query featureVotingQuery($service_instance_id: ServiceInstanceId!) {
     me {
       id
     }
-    currentVotingRound {
+    currentVotingRound(service_instance_id: $service_instance_id) {
       id
       name
       description
@@ -27,6 +27,17 @@ export const FeatureVotingQuery = graphql`
         id
         ...featureVoting_fragment @relay(mask: false)
       }
+    }
+  }
+`;
+
+export const FeatureVotingCalloutQuery = graphql`
+  query featureVotingCalloutQuery($service_instance_id: ServiceInstanceId!) {
+    currentVotingRound(service_instance_id: $service_instance_id) {
+      id
+      name
+      description
+      theme
     }
   }
 `;

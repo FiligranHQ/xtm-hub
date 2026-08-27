@@ -12,7 +12,6 @@ import {
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import {
-  CampaignIcon,
   HomeIcon,
   IndividualIcon,
   LogoXtmOneIcon,
@@ -448,12 +447,6 @@ export const usePrivateNavigation = (): NavigationConfig => {
           },
         ]
       : []),
-    {
-      key: 'feature-voting',
-      href: `/${APP_PATH}/feature-voting`,
-      icon: CampaignIcon,
-      label: tMenu('FeatureVoting'),
-    },
     {
       key: 'filigran-academy',
       href: 'https://academy.filigran.io/',
