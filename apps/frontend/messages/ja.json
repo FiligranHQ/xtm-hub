@@ -333,6 +333,8 @@
       "DELETE_VOTING_ROUND_BLOCKED_BY_VOTES": "このラウンドには既に投票があるため削除できません",
       "DELETE_VOTABLE_FEATURE_BLOCKED_BY_VOTES": "この機能には既に投票があります。無効化してください",
       "VOTING_ROUND_MUTATION_ERROR": "投票ラウンドの保存中にエラーが発生しました",
+      "VOTABLE_FEATURE_PRODUCT_LOCKED": "この機能には既に投票があるため、製品を変更できません",
+      "COPY_FEATURES_FROM_ANOTHER_ROADMAP": "機能は同じロードマップのラウンドからのみコピーできます",
       "VOTABLE_FEATURE_MUTATION_ERROR": "機能の保存中にエラーが発生しました"
     },
     "SomethingWentWrong": "何かが間違っている",
