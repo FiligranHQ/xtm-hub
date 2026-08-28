@@ -64,7 +64,7 @@ into your OpenCTI product.
 
 Before utilizing this functionality, the following prerequisites must be met:
 
-- Your OpenCTI product must be properly connected in the XTM Hub (see [OpenCTI connection documentation](../user/opencti-registration.md)).
+- Your OpenCTI product must be properly connected in the XTM Hub (see [OpenCTI connection documentation](../user/opencti-connection.md)).
 - Your user account must possess the necessary `Manage customization` capability within OpenCTI.
 
 The deployment process is straightforward: select your desired custom view, click the `Deploy in OpenCTI` button,

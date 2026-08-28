@@ -1,7 +1,7 @@
 site_name: XTM Hub Documentation
 site_description: Documentation about XTM Hub, the central forum to access resources, share tradecraft, and optimize the use of Filigran’s products, fostering collaboration and empowering the community.
 site_author: Filigran
-site_url: https://docs.xtmhub.filigran.io
+site_url: https://docs.hub.filigran.io
 copyright: © <script>document.write(new Date().getFullYear())</script> Filigran. All rights reserved
 repo_name: GitHub
 repo_url: https://github.com/XTM-Hub/xtm-hub

@@ -6,8 +6,8 @@ This guide will help you quickly set up XTM Hub for local development and contri
 
 Before you start, make sure you have the following installed:
 
-- **Node.js** (v18 or higher, v23.6.0+ recommended)
-- **Yarn** (v3.6.3 or higher)
+- **Node.js** (v24.19.0; see `.nvmrc`)
+- **Yarn** (v4.18.0 via Corepack; see `package.json#packageManager`)
 - **Docker** and **Docker Compose**
 - **Git**
 
