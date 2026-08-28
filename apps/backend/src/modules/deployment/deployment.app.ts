@@ -572,12 +572,14 @@ export const DeploymentApp = {
   },
 
   loadActiveXtmPlatformBundle: async (
-    user: UserLoadUserBy
+    user: UserLoadUserBy,
+    serviceInstanceId?: ServiceInstanceId | null
   ): Promise<XtmPlatformBundle | null> => {
     const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest({
       type: DeploymentRequestDeploymentType.Bundle,
       hub_status: DeploymentRequestHubStatus.Active,
       organization_requester_id: user.selected_organization_id,
+      ...(serviceInstanceId ? { service_instance_id: serviceInstanceId } : {}),
     });
     if (!bundle) {
       return null;
@@ -635,7 +637,7 @@ export const DeploymentApp = {
           last_connectivity_check:
             configuration?.last_connectivity_check ?? null,
           roles,
-          url: configuration?.platform_url ?? null,
+          url: configuration?.platform_url ?? child.url ?? null,
         })
       ),
     };

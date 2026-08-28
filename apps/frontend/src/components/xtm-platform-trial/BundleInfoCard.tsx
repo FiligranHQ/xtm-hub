@@ -1,18 +1,18 @@
 'use client';
 
 import { CONTRACT_LABEL_BY_CONTRACT } from '@/components/registration/PlatformIdentifierMapping';
-import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
 import { BundleCancelSheet } from '@/components/xtm-platform-trial/BundleCancelSheet';
 import { XtmPlatformBundleData } from '@/components/xtm-platform-trial/xtm-platform-bundle.types';
 import { daysUntil, useDateFormatter } from '@/utils/date';
+import { xtmPlatformTrialManageUsersPath } from '@/utils/path/constant';
 import { Badge, Button, Card, CardContent } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { useState } from 'react';
 
 interface BundleInfoCardProps {
   bundle: XtmPlatformBundleData;
   canManage: boolean;
-  organizationId?: string;
 }
 
 const InfoRow = ({
@@ -30,11 +30,7 @@ const InfoRow = ({
   </div>
 );
 
-export const BundleInfoCard = ({
-  bundle,
-  canManage,
-  organizationId,
-}: BundleInfoCardProps) => {
+export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
   const t = useTranslations();
   const tBundle = useTranslations('XtmPlatformTrial');
   const tBundleInfo = useTranslations('XtmPlatformTrial.BundleInfo');
@@ -89,11 +85,14 @@ export const BundleInfoCard = ({
               onClick={() => setOpenCancel(true)}>
               {tBundle('CancelTrial')}
             </Button>
-            <TrialsManageUsersDialog
-              serviceInstanceId={bundle.service_instance_id}
-              organizationId={organizationId}
-              trigger={<Button>{t('Service.Trials.ManageUsers.Title')}</Button>}
-            />
+            <Button asChild>
+              <Link
+                href={xtmPlatformTrialManageUsersPath(
+                  bundle.service_instance_id
+                )}>
+                {t('Service.Trials.ManageUsers.Title')}
+              </Link>
+            </Button>
             <BundleCancelSheet
               deploymentRequestId={bundle.id}
               open={openCancel}

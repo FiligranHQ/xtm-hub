@@ -4230,6 +4230,29 @@ describe('deployment app', () => {
       );
     });
 
+    it('should return the active bundle when its service instance id is provided', async () => {
+      const bundle = await createActiveBundle();
+
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
+        contextRegistererUserSecondOrga.user,
+        bundle.service_instance_id
+      );
+
+      expect(result?.service_instance_id).toBe(bundle.service_instance_id);
+      expect(result?.products).toHaveLength(3);
+    });
+
+    it('should return null when the provided service instance id does not match the active bundle', async () => {
+      await createActiveBundle();
+
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
+        contextRegistererUserSecondOrga.user,
+        uuidv4() as ServiceInstanceId
+      );
+
+      expect(result).toBeNull();
+    });
+
     it('should expose connectivity status, last connection date and roles when a product is registered', async () => {
       const bundle = await createActiveBundle();
       const [child] = await DeploymentRequestDomain.loadDeploymentRequestsBy({
@@ -4293,6 +4316,25 @@ describe('deployment app', () => {
         roles: [{ id: 'group-1', name: ServiceGroupName.Admin }],
         url: 'https://example.io',
       });
+    });
+
+    it('should fall back to the deployment request url when the product is not registered', async () => {
+      const bundle = await createActiveBundle();
+      const [child] = await DeploymentRequestDomain.loadDeploymentRequestsBy({
+        parent_id: bundle.id,
+      });
+      await DeploymentRequestDomain.updateDeploymentRequestById(child.id, {
+        url: 'https://deployment-request.example.com',
+      });
+
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
+        contextRegistererUserSecondOrga.user
+      );
+
+      const product = result?.products.find(
+        (item) => item.service_instance_id === child.service_instance_id
+      );
+      expect(product?.url).toBe('https://deployment-request.example.com');
     });
   });
 });

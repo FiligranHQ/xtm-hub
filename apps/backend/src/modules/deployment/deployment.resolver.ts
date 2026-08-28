@@ -82,9 +82,12 @@ const resolvers: Resolvers = {
         );
       }
     },
-    activeXtmPlatformBundle: async (_, __, context) => {
+    activeXtmPlatformBundle: async (_, { serviceInstanceId }, context) => {
       try {
-        return await DeploymentApp.loadActiveXtmPlatformBundle(context.user);
+        return await DeploymentApp.loadActiveXtmPlatformBundle(
+          context.user,
+          serviceInstanceId
+        );
       } catch (error) {
         throw mapToGraphQLError(
           error,

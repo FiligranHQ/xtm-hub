@@ -14,11 +14,11 @@ const breadcrumbValue = [
   },
 ];
 
-const PageLoader = () => {
+const PageLoader = ({ serviceInstanceId }: { serviceInstanceId: string }) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <XtmPlatformTrialPage />
+      <XtmPlatformTrialPage serviceInstanceId={serviceInstanceId} />
     </>
   );
 };

@@ -1,7 +1,9 @@
 'use client';
 
+import { XTM_PLATFORM_TRIAL_GUIDE_PATH } from '@/utils/path/constant';
 import { Button } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 export const BundleGuideCard = () => {
   const tGuide = useTranslations('XtmPlatformTrial.Guide');
@@ -16,8 +18,9 @@ export const BundleGuideCard = () => {
       </div>
       <Button
         variant="secondary"
-        className="self-start">
-        {tGuide('SeeMore')}
+        className="self-start"
+        asChild>
+        <Link href={XTM_PLATFORM_TRIAL_GUIDE_PATH}>{tGuide('SeeMore')}</Link>
       </Button>
     </div>
   );

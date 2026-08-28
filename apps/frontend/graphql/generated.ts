@@ -1874,6 +1874,11 @@ export type Query = {
 };
 
 
+export type QueryActiveXtmPlatformBundleArgs = {
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+};
+
+
 export type QueryBundleProductsArgs = {
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
@@ -3569,7 +3574,9 @@ export type VotingRoundRankingQueryVariables = Exact<{
 
 export type VotingRoundRankingQuery = { __typename?: 'Query', votingRoundResults: { __typename?: 'VotingRoundResults', total_voters: number, round: { __typename?: 'VotingRound', id: string, name: string, status: VotingRoundStatus }, results: Array<{ __typename?: 'VotableFeatureResult', vote_count: number, feature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, active: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> } }> } };
 
-export type ActiveXtmPlatformBundleQueryVariables = Exact<{ [key: string]: never; }>;
+export type ActiveXtmPlatformBundleQueryVariables = Exact<{
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+}>;
 
 
 export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'XtmPlatformBundle', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, products: Array<{ __typename?: 'XtmPlatformBundleProduct', platform_identifier: PlatformIdentifier, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> }> } | null };
@@ -6052,8 +6059,8 @@ useInfiniteVotingRoundRankingQuery.getRootKey = () => ['VotingRoundRanking.infin
 useVotingRoundRankingQuery.fetcher = (client: GraphQLClient, variables: VotingRoundRankingQueryVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundRankingQuery, VotingRoundRankingQueryVariables>(client, VotingRoundRankingDocument, variables, headers);
 
 export const ActiveXtmPlatformBundleDocument = `
-    query ActiveXtmPlatformBundle {
-  activeXtmPlatformBundle {
+    query ActiveXtmPlatformBundle($serviceInstanceId: ServiceInstanceId) {
+  activeXtmPlatformBundle(serviceInstanceId: $serviceInstanceId) {
     id
     service_instance_id
     organization_name

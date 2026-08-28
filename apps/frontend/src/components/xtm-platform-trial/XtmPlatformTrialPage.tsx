@@ -19,9 +19,13 @@ import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform
 import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 
-export const XtmPlatformTrialPage = () => {
+export const XtmPlatformTrialPage = ({
+  serviceInstanceId,
+}: {
+  serviceInstanceId: string;
+}) => {
   const tBundle = useTranslations('XtmPlatformTrial');
-  const { me, hasCapability, hasOrganizationCapability } =
+  const { hasCapability, hasOrganizationCapability } =
     useContext(PortalContext);
 
   const canManage =
@@ -36,8 +40,12 @@ export const XtmPlatformTrialPage = () => {
 
   const { data, isLoading } = useActiveXtmPlatformBundleQuery(
     portalGraphqlClient,
-    {},
-    { queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle() }
+    { serviceInstanceId },
+    {
+      queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundleByServiceInstance({
+        serviceInstanceId,
+      }),
+    }
   );
 
   const bundle = data?.activeXtmPlatformBundle;
@@ -101,7 +109,6 @@ export const XtmPlatformTrialPage = () => {
         <BundleInfoCard
           bundle={bundle}
           canManage={canManage}
-          organizationId={me?.selected_organization_id}
         />
         <div className="flex items-center justify-center lg:col-span-2">
           <BundleGuideCard />

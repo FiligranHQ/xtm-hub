@@ -6,12 +6,19 @@ import PageLoader from './page-loader';
 
 export const dynamic = 'force-dynamic';
 
-const Page = async () => {
+interface XtmPlatformTrialPageProps {
+  params: Promise<{ serviceInstanceId: string }>;
+}
+
+const Page = async ({ params }: XtmPlatformTrialPageProps) => {
   const enabled = await isFeatureEnabled(FeatureFlag.XtmPlatformTrial);
   if (!enabled) {
     redirect(`/${APP_PATH}`);
   }
-  return <PageLoader />;
+  const { serviceInstanceId } = await params;
+  return (
+    <PageLoader serviceInstanceId={decodeURIComponent(serviceInstanceId)} />
+  );
 };
 
 export default Page;

@@ -342,7 +342,9 @@ extend type Query {
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments! @auth
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
     @auth
-  activeXtmPlatformBundle: XtmPlatformBundle @auth
+  activeXtmPlatformBundle(
+    serviceInstanceId: ServiceInstanceId
+  ): XtmPlatformBundle @auth
 }
 
 extend type Mutation {

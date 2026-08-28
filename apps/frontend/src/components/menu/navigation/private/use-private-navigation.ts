@@ -11,7 +11,7 @@ import {
 } from '@/components/menu/navigation/shared/navigation.type';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { APP_PATH } from '@/utils/path/constant';
+import { APP_PATH, xtmPlatformTrialBundlePath } from '@/utils/path/constant';
 import {
   DiamondOutlinedIcon,
   HomeIcon,
@@ -36,6 +36,7 @@ import {
   ServiceInstanceOrdering,
   ServiceInstancesListQueryVariables,
   TrialDeploymentsEligibilityQueryVariables,
+  useActiveXtmPlatformBundleQuery,
   useRegisteredPlatformsListQuery,
   useServiceInstancesListQuery,
   useTrialDeploymentsEligibilityQuery,
@@ -43,6 +44,7 @@ import {
 import { registeredPlatformsKeys } from '@graphql/registered-platforms/registered-platforms.keys';
 import { serviceInstancesKeys } from '@graphql/service-instances/service-instances.keys';
 import { trialKeys } from '@graphql/trial/trial.keys';
+import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
 import { useLocale, useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 
@@ -97,6 +99,16 @@ export const usePrivateNavigation = (): NavigationConfig => {
   const isXtmPlatformBundleEnabled = useIsFeatureEnabled(
     FeatureFlag.XtmPlatformTrial
   );
+  const { data: xtmPlatformBundleData } = useActiveXtmPlatformBundleQuery(
+    portalGraphqlClient,
+    { serviceInstanceId: null },
+    {
+      queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),
+      enabled: isXtmPlatformBundleEnabled,
+    }
+  );
+  const xtmPlatformBundleServiceInstanceId =
+    xtmPlatformBundleData?.activeXtmPlatformBundle?.service_instance_id;
   const locale = useLocale();
   const selectedOrganizationId = me?.selected_organization_id;
   const currentOrganization = me?.organizations.find(
@@ -486,11 +498,13 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenu('Slack'),
       external: true,
     },
-    ...(isXtmPlatformBundleEnabled
+    ...(isXtmPlatformBundleEnabled && xtmPlatformBundleServiceInstanceId
       ? [
           {
             key: 'xtm-platform-trial',
-            href: `/${APP_PATH}/xtm-platform-trial`,
+            href: xtmPlatformTrialBundlePath(
+              xtmPlatformBundleServiceInstanceId
+            ),
             icon: DiamondOutlinedIcon,
             label: tMenu('XTMPlatformTrial'),
             highlight: true,

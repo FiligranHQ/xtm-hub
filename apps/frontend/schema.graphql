@@ -109,7 +109,7 @@ type Query {
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments!
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
-  activeXtmPlatformBundle: XtmPlatformBundle
+  activeXtmPlatformBundle(serviceInstanceId: ServiceInstanceId): XtmPlatformBundle
   serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
   bundleUserServiceGroups(serviceInstanceId: ServiceInstanceId!): [BundleUserServiceGroup!]!
   bundleProducts(serviceInstanceId: ServiceInstanceId!): [PlatformIdentifier!]!

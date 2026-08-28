@@ -41,6 +41,14 @@ const graphqlMocks = vi.hoisted(() => ({
     ]),
     getRootKey: vi.fn(() => ['TrialDeploymentsEligibility']),
   }),
+  useActiveXtmPlatformBundleQuery: Object.assign(vi.fn(), {
+    getKey: vi.fn((variables?: unknown) =>
+      variables === undefined
+        ? ['ActiveXtmPlatformBundle']
+        : ['ActiveXtmPlatformBundle', variables]
+    ),
+    getRootKey: vi.fn(() => ['ActiveXtmPlatformBundle']),
+  }),
 }));
 
 vi.mock('@graphql/generated', async (importOriginal) => {
@@ -53,6 +61,8 @@ vi.mock('@graphql/generated', async (importOriginal) => {
       graphqlMocks.useRegisteredPlatformsListQuery,
     useTrialDeploymentsEligibilityQuery:
       graphqlMocks.useTrialDeploymentsEligibilityQuery,
+    useActiveXtmPlatformBundleQuery:
+      graphqlMocks.useActiveXtmPlatformBundleQuery,
   };
 });
 
@@ -167,6 +177,12 @@ describe('usePrivateNavigation', () => {
       isLoading: false,
       isPending: false,
     });
+
+    graphqlMocks.useActiveXtmPlatformBundleQuery.mockReturnValue({
+      data: {
+        activeXtmPlatformBundle: { service_instance_id: 'bundle-si-1' },
+      },
+    });
   });
 
   it('returns base sections and bottom links with translated labels', () => {
@@ -205,7 +221,7 @@ describe('usePrivateNavigation', () => {
       },
       {
         key: 'xtm-platform-trial',
-        href: `/${APP_PATH}/xtm-platform-trial`,
+        href: `/${APP_PATH}/service/xtm-platform-trial/bundle-si-1`,
         icon: expect.any(Function),
         label: 'XTMPlatformTrial',
         highlight: true,
@@ -215,6 +231,20 @@ describe('usePrivateNavigation', () => {
 
   it('hides the xtm-platform-trial bottom link when the feature flag is off', () => {
     vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    expect(result.current.bottomLinks.map((link) => link.key)).not.toContain(
+      'xtm-platform-trial'
+    );
+  });
+
+  it('hides the xtm-platform-trial bottom link when no active bundle exists', () => {
+    graphqlMocks.useActiveXtmPlatformBundleQuery.mockReturnValue({
+      data: { activeXtmPlatformBundle: null },
+    });
 
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
@@ -337,7 +367,7 @@ describe('usePrivateNavigation', () => {
       },
       {
         key: 'xtm-platform-trial',
-        href: `/${APP_PATH}/xtm-platform-trial`,
+        href: `/${APP_PATH}/service/xtm-platform-trial/bundle-si-1`,
         icon: expect.any(Function),
         label: 'XTMPlatformTrial',
         highlight: true,
