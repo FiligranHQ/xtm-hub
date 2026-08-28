@@ -3,6 +3,7 @@ import { db, dbRaw, paginate } from '../../../../knexfile';
 import {
   DocumentConnection,
   DocumentMetadataKeyCode,
+  FeatureFlag,
   IntegrationType,
   Organization,
   QueryDocumentsArgs,
@@ -17,11 +18,13 @@ import {
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 import { UnknownErrorCode } from '../../../utils/error/error.code';
+import { isFeatureEnabled } from '../../../utils/feature-flag.util';
 import { omit } from '../../../utils/utils';
 import { isLtsVersion } from '../../../utils/versioning';
 import {
   ConnectorV2,
   INTEGRATION_CONNECTOR_V2_METADATA_KEYS,
+  OPENCTI_INTEGRATION_DOCUMENT_TYPE,
 } from '../../shareable-resource/opencti/integration/integration.model';
 import { Document, DOCUMENT_TYPE, WithDocumentId } from '../document.helper';
 
@@ -45,6 +48,7 @@ import { stripNulls } from '../../../utils/typescript';
 import {
   ManifestFragmentHelper,
   TAG_DECOUPLING,
+  TAG_LATEST,
 } from '../../shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { isUserRestrictedToActiveDocument } from '../document.security';
 import {
@@ -61,6 +65,40 @@ const excludeDecouplingTag = (query: Knex.QueryBuilder) =>
     `NOT (? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[])))`,
     [TAG_DECOUPLING]
   );
+
+// Matches rows whose IntegrationType metadata is "connector".
+const buildIsConnectorSubquery = (query: Knex.QueryBuilder) =>
+  query
+    .select(dbRaw('1'))
+    .from('Document_Metadata')
+    .whereRaw('"Document_Metadata"."document_id" = "Document"."id"')
+    .andWhere('Document_Metadata.key', DocumentMetadataKeyCode.IntegrationType)
+    .andWhere('Document_Metadata.value', IntegrationType.Connector);
+
+// For connector documents, only keep those tagged with both TAG_LATEST and TAG_DECOUPLING
+// (case-insensitive). Other integration subtypes keep the default excludeDecouplingTag behaviour.
+// Used behind the DECOUPLING_CONNECTORS feature flag.
+const restrictConnectorsToLatestDecoupling = (query: Knex.QueryBuilder) =>
+  query.where((outer) => {
+    outer
+      .where((nonConnectorBuilder) => {
+        nonConnectorBuilder
+          .whereNotExists(buildIsConnectorSubquery)
+          .modify(excludeDecouplingTag);
+      })
+      .orWhere((connectorBuilder) => {
+        connectorBuilder
+          .whereExists(buildIsConnectorSubquery)
+          .whereRaw(
+            `? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[]))`,
+            [TAG_LATEST]
+          )
+          .whereRaw(
+            `? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[]))`,
+            [TAG_DECOUPLING]
+          );
+      });
+  });
 
 export type DocumentData<
   T extends DocumentModel,
@@ -292,7 +330,18 @@ export const DocumentDomain = {
       .tap(restrictDocumentToUserOrganization)
       .tap(restrictDocumentToAccessibleServiceInstance)
       .where(field)
-      .modify(excludeDecouplingTag);
+      .modify((qb) => {
+        const isIntegrationsListing =
+          field['Document.type'] === OPENCTI_INTEGRATION_DOCUMENT_TYPE;
+        if (
+          isIntegrationsListing &&
+          isFeatureEnabled(FeatureFlag.DecouplingConnectors)
+        ) {
+          restrictConnectorsToLatestDecoupling(qb);
+        } else {
+          excludeDecouplingTag(qb);
+        }
+      });
 
     if (
       field['Document.service_instance_id'] &&

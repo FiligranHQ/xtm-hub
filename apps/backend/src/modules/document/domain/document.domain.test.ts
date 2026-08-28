@@ -20,6 +20,10 @@ import {
   OrderingMode,
 } from '../../../__generated__/resolvers-types';
 import type { DocumentMetadataKey } from '../../../model/kanel/public/DocumentMetadata';
+import {
+  TAG_DECOUPLING,
+  TAG_LATEST,
+} from '../../shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { OPENAEV_SCENARIO_DOCUMENT_TYPE } from '../../shareable-resource/openaev/scenario/scenario.model';
 import { OPENCTI_CUSTOM_VIEW_DOCUMENT_TYPE } from '../../shareable-resource/opencti/custom-view/custom-view.model';
 import { IngestManifestDomain } from '../../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
@@ -49,8 +53,16 @@ import {
   PLATFORM_ORGANIZATION_UUID,
   SYSTEM_USER_UUID,
 } from '../../../portal.const';
+import { isFeatureEnabled } from '../../../utils/feature-flag.util';
 import { DocumentUploadsHelper } from '../document.uploads.helper';
 import { DocumentDomain } from './document.domain';
+
+// isFeatureEnabled is mocked (defaulting to disabled) so that tests are deterministic and
+// independent of the local `enabled_features` config (which may enable everything, e.g. via a
+// wildcard in a developer's local.json).
+vi.mock('../../../utils/feature-flag.util', () => ({
+  isFeatureEnabled: vi.fn(() => false),
+}));
 
 describe('document domain', () => {
   const minioFileMock = {
@@ -403,6 +415,62 @@ describe('document domain', () => {
             }),
           ])
         );
+      });
+    });
+
+    describe('decoupling connectors feature flag', () => {
+      beforeEach(() => {
+        vi.mocked(isFeatureEnabled).mockReturnValue(true);
+      });
+
+      afterEach(() => {
+        vi.mocked(isFeatureEnabled).mockReturnValue(false);
+      });
+
+      let connectorSlugCounter = 0;
+      const createConnector = async (tags: string[]): Promise<Document> => {
+        connectorSlugCounter += 1;
+        const doc = await TestHelper.document.create({
+          type: OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+          service_instance_id: INTEGRATION_SERVICE_INSTANCE_ID,
+          slug: `decoupling-connector-${connectorSlugCounter}`,
+          active: true,
+          tags,
+        });
+        await TestHelper.documentMetadata.create({
+          document_id: doc.id,
+          key: DocumentMetadataKeyCode.IntegrationType as unknown as DocumentMetadataKey,
+          value: IntegrationType.Connector,
+        });
+        return doc;
+      };
+
+      it('should only return connectors tagged with both latest and decoupling when the flag is enabled, leaving other integration types untouched', async () => {
+        const latestDecoupledConnector = await createConnector([
+          TAG_LATEST,
+          TAG_DECOUPLING,
+        ]);
+        const decoupledOnlyConnector = await createConnector([TAG_DECOUPLING]);
+        const legacyConnector = await createConnector([]);
+
+        const connection =
+          await DocumentDomain.loadParentDocumentsByServiceInstance(
+            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
+            {
+              orderBy: DocumentOrdering.CreatedAt,
+              orderMode: OrderingMode.Desc,
+              first: 10,
+              serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
+            },
+            INTEGRATION_METADATA_KEYS
+          );
+
+        const ids = connection.edges.map((edge) => edge.node.id);
+        expect(ids).toContain(latestDecoupledConnector.id);
+        expect(ids).not.toContain(decoupledOnlyConnector.id);
+        expect(ids).not.toContain(legacyConnector.id);
+        // Non-connector integration types are unaffected by the flag.
+        expect(ids).toContain(csvFeed.id);
       });
     });
 

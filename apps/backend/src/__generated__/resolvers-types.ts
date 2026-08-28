@@ -746,6 +746,7 @@ export enum EpicType {
 }
 
 export enum FeatureFlag {
+  DecouplingConnectors = 'DECOUPLING_CONNECTORS',
   Dummy = 'DUMMY',
   XtmPlatformTrial = 'XTM_PLATFORM_TRIAL'
 }
