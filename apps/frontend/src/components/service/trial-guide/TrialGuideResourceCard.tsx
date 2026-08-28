@@ -20,22 +20,22 @@ export const TrialGuideResourceCard = ({ resourceCard }: ResourceCardProps) => {
           <p className="heading-xs">{t(titleKey)}</p>
         </div>
         <p className="text-content-body-compact grow">{t(descriptionKey)}</p>
-        <div>
-          <Button
-            asChild
-            variant="secondary"
-            className="border-elevation-border-default-layer-3"
-            disabled={!url}>
-            <Link
-              href={url || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-disabled={!url}>
-              {t('Service.TrialGuide.SeeMore')}
-              <OpenInNewIcon className="size-3 ml-m" />
-            </Link>
-          </Button>
-        </div>
+        {url && (
+          <div>
+            <Button
+              asChild
+              variant="secondary"
+              className="border-elevation-border-default-layer-3">
+              <Link
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer">
+                {t('Service.TrialGuide.SeeMore')}
+                <OpenInNewIcon className="size-3 ml-m" />
+              </Link>
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

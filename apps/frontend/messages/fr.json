@@ -1554,6 +1554,7 @@
       "Description": "Ce petit guide a pour but de vous orienter vers des ressources utiles qui vous permettront de tirer le meilleur parti de votre essai de la plateforme XTM",
       "SeeMore": "En savoir plus",
       "ReadMore": "En savoir plus",
+      "MoreInformationHere": "Plus d'informations ici",
       "ChecklistTitle": "Liste de contrôle des actions suggérées",
       "ChecklistIntroTitle": "Vous ne savez pas par où commencer ?",
       "ChecklistIntroSubtitle": "Voici quelques actions suggérées qui pourraient vous aider à découvrir la plateforme",
@@ -1641,7 +1642,7 @@
         "ChecklistItems": {
           "InstallStarterPack": {
             "Title": "Installer le pack de démarrage OpenAEV",
-            "Description": "Vous avez besoin de contenu pour vous lancer ? OpenAEV est livré avec un pack de démarrage qui fournit du contenu prêt à l'emploi afin que vous puissiez lancer votre première simulation immédiatement après l'installation, notamment des scénarios prédéfinis, des tableaux de bord, des injecteurs, des collecteurs et des terminaux sans agent. Le pack de démarrage est disponible sur le XTM Hub. Importez-le depuis <strong>Paramètres > XTM Hub</strong> après avoir enregistré votre plateforme."
+            "Description": "Vous avez besoin de contenu pour vous lancer ? OpenAEV est fourni avec un pack de démarrage contenant du contenu prêt à l'emploi qui vous permettra d'exécuter votre première simulation dès l'installation. Ce pack comprend notamment des scénarios prédéfinis, des tableaux de bord, des injecteurs, des collecteurs et des terminaux sans agent. Le pack de démarrage est disponible sur le XTM Hub. Importez-le depuis <strong>Paramètres > XTM Hub</strong> après avoir enregistré votre plateforme."
           },
           "RunAtomicTest": {
             "Title": "Lancer un test « Atomic »",

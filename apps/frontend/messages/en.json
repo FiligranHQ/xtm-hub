@@ -1554,6 +1554,7 @@
       "Description": "This short guide is here to direct you to helpful resources about how to get the best experience out of your XTM Platform trial",
       "SeeMore": "See more",
       "ReadMore": "Read more",
+      "MoreInformationHere": "More information here",
       "ChecklistTitle": "Suggested Actions Checklist",
       "ChecklistIntroTitle": "Don't know where to start?",
       "ChecklistIntroSubtitle": "Here are some suggested actions that could help you discover the platform",
@@ -1641,7 +1642,7 @@
         "ChecklistItems": {
           "InstallStarterPack": {
             "Title": "Install the OpenAEV Starter Pack",
-            "Description": "Do you need to some content to get started? OpenAEV ships with a starter pack that provides ready-to-use content so you can run your first Simulation immediately after installation, including Pre-built Scenarios, dashboards, injectors, collectors, and agentless endpoints. The starter pack is available from the XTM Hub. Import it from <strong>Settings > XTM Hub</strong> after registering your platform."
+            "Description": "Do you need some content to get started? OpenAEV ships with a starter pack that provides ready-to-use content so you can run your first Simulation immediately after installation, including Pre-built Scenarios, dashboards, injectors, collectors, and agentless endpoints. The starter pack is available from the XTM Hub. Import it from <strong>Settings > XTM Hub</strong> after registering your platform."
           },
           "RunAtomicTest": {
             "Title": "Run an Atomic Test",

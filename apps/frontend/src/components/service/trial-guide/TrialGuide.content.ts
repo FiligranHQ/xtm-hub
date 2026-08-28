@@ -20,6 +20,7 @@ export interface TrialGuideChecklistItem {
   titleKey: string;
   descriptionKey: string;
   readMoreUrl?: string;
+  readMoreLabelKey?: string;
 }
 
 export interface TrialGuideTabContent {
@@ -196,6 +197,7 @@ export const TRIAL_GUIDE_CONTENT: Record<
           'Service.TrialGuide.Openaev.ChecklistItems.InstallStarterPack.Description',
         readMoreUrl:
           'https://docs.openaev.io/latest/usage/getting-started/?h=starter+pack#starter-pack',
+        readMoreLabelKey: 'Service.TrialGuide.MoreInformationHere',
       },
       {
         id: 'run-atomic-test',
