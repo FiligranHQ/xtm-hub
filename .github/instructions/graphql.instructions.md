@@ -28,6 +28,8 @@ flowchart LR
   bogus frontend type errors.
 - Resolvers are merged in `apps/backend/src/server/graphql-schema.ts`. A new module's resolver has to be registered
   there or its fields silently do not exist.
+- Adding, renaming, or reshaping an operation? Update the matching `.bru` request under `bruno/` too — see
+  [`backend.instructions.md`](backend.instructions.md#api-collection-bruno).
 
 ## Authorization
 

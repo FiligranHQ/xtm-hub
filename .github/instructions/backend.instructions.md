@@ -95,6 +95,17 @@ Never read `process.env` directly in application code — go through `src/config
 Use `logApp` from `src/utils/app-logger.util.ts`. `console.log` is never acceptable. `console.warn` and
 `console.error` are tolerated only in standalone scripts and launch code that is not part of the running app.
 
+## API collection (Bruno)
+
+`bruno/` at the repo root (`bruno/bruno.json`) is a Bruno collection mirroring the real GraphQL and REST surface, one
+folder per module (e.g. `bruno/manifest/`, `bruno/deployment/`, `bruno/solution-category/`). Whenever you add,
+rename, or change the shape of a GraphQL operation (query/mutation/subscription) or a REST endpoint
+(`src/server/endpoints/`, `*-endpoint.ts` files), add or update the matching `.bru` request(s) so the collection
+keeps matching the API instead of going stale. Match the existing shape: `type: graphql` requests carry the exact
+query/mutation in `body:graphql` and its variables in `body:graphql:vars`; `type: http` requests use the plain
+`get`/`post`/... block. Reuse the variables already defined in `bruno/environments/local.bru` (`{{baseUrl}}`,
+`{{cookie}}`, `{{xtm-hub-token}}`) rather than hardcoding a host or secret.
+
 ## Tests
 
 See [`testing.instructions.md`](testing.instructions.md) for structure, mocking policy and backend-specific tooling
