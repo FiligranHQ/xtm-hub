@@ -1735,6 +1735,7 @@ export type Query = {
   publicDocumentsByServiceSlug: Array<Document>;
   registeredPlatform: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
+  registeredProductVersions: Array<RegisteredProductVersion>;
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstanceMetadata: Array<SeoServiceInstanceMetadata>;
   seoServiceInstances: Array<SeoServiceInstance>;
@@ -1932,6 +1933,11 @@ export type QueryRegisteredPlatformsArgs = {
 };
 
 
+export type QueryRegisteredProductVersionsArgs = {
+  product: PlatformIdentifier;
+};
+
+
 export type QuerySeoServiceInstanceArgs = {
   slug: Scalars['String']['input'];
 };
@@ -2115,6 +2121,13 @@ export type RegisteredPlatformsInput = {
   identifier: InputMaybe<PlatformIdentifier>;
   onlyActive: InputMaybe<Scalars['Boolean']['input']>;
   onlyTrial: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type RegisteredProductVersion = {
+  __typename?: 'RegisteredProductVersion';
+  created_at: Scalars['Date']['output'];
+  product: PlatformIdentifier;
+  version: Scalars['String']['output'];
 };
 
 export type RegistrationResponse = {

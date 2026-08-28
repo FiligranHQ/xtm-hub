@@ -74,6 +74,9 @@ const COLUMN_ENUM_MAP = {
   Manifest: {
     type: 'ManifestType',
   },
+  ProductVersion: {
+    product: 'PlatformIdentifier',
+  },
 };
 
 /** @type {import('kanel').Config} */

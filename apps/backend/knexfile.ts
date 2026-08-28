@@ -94,6 +94,7 @@ type BaseDatabaseType =
   | 'ManifestRebuildQueue'
   | 'Manifest'
   | 'Manifest_Document'
+  | 'ProductVersion'
   | 'PlatformMetadata'
   | 'OneClickDeployment';
 
