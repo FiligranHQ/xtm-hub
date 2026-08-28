@@ -109,10 +109,15 @@ export const ServiceGroupApp = {
       throw new Error(ErrorCode.XtmOneRoleRequired);
     }
 
-    const { children } =
+    const { children, bundleOrganizationId } =
       await ServiceGroupSecurityHelper.assertBundleAccessAndLoadChildren(
         serviceInstanceId
       );
+
+    await ServiceGroupSecurityHelper.assertUsersBelongToOrganization(
+      input.userIds,
+      bundleOrganizationId
+    );
 
     const platformRoleAssignments = ServiceGroupHelper.matchRolesToChildren(
       children,
@@ -206,10 +211,15 @@ export const ServiceGroupApp = {
       throw new Error(ErrorCode.XtmOneRoleRequired);
     }
 
-    const { children } =
+    const { children, bundleOrganizationId } =
       await ServiceGroupSecurityHelper.assertBundleAccessAndLoadChildren(
         serviceInstanceId
       );
+
+    await ServiceGroupSecurityHelper.assertUsersBelongToOrganization(
+      input.userIds,
+      bundleOrganizationId
+    );
 
     const platformRoleAssignments = ServiceGroupHelper.matchRolesToChildren(
       children,

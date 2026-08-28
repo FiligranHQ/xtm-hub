@@ -132,7 +132,12 @@ export const ServiceGroupHelper = {
     newlyAddedUsers: User[];
     adminEmail: string;
   }): Promise<void> => {
-    if (!platformId || !platformIdentifier || newlyAddedUsers.length === 0) {
+    if (
+      !platformId ||
+      !platformIdentifier ||
+      deploymentType !== DeploymentRequestDeploymentType.Trial ||
+      newlyAddedUsers.length === 0
+    ) {
       return;
     }
 
@@ -141,11 +146,7 @@ export const ServiceGroupHelper = {
         await PlatformConfigurationDomain.loadConfigurationByPlatform(
           platformId
         );
-      if (
-        !platformConfiguration ||
-        deploymentType !== DeploymentRequestDeploymentType.Trial ||
-        !endDate
-      ) {
+      if (!platformConfiguration || !endDate) {
         return;
       }
 

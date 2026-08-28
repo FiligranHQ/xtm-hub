@@ -680,6 +680,32 @@ describe('serviceGroupApp', () => {
       await expect(call).rejects.toThrow(ErrorCode.XtmOneRoleRequired);
     });
 
+    it('should throw UserIsNotInOrganization when a userId does not belong to the bundle organization', async () => {
+      // Given
+      const { bundle } = await createBundleWithGroups();
+
+      // When
+      const call = ServiceGroupApp.addUsersToBundleGroups(
+        bundle.service_instance_id,
+        {
+          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID],
+          roles: [
+            {
+              product: PlatformIdentifier.Opencti,
+              role: ServiceGroupName.Admin,
+            },
+            {
+              product: PlatformIdentifier.Xtmone,
+              role: ServiceGroupName.User,
+            },
+          ],
+        }
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+
     it('should add users to the target group per platform and skip platforms not part of the bundle', async () => {
       // Given
       const { bundle, groups } = await createBundleWithGroups();
@@ -1173,6 +1199,28 @@ describe('serviceGroupApp', () => {
 
       // Then
       await expect(call).rejects.toThrow(ErrorCode.XtmOneRoleRequired);
+    });
+
+    it('should throw UserIsNotInOrganization when a userId does not belong to the bundle organization', async () => {
+      // Given
+      const { bundle } = await createBundleWithMembers();
+
+      // When
+      const call = ServiceGroupApp.updateBundleUserGroups(
+        bundle.service_instance_id,
+        {
+          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID],
+          roles: [
+            {
+              product: PlatformIdentifier.Opencti,
+              role: ServiceGroupName.Reader,
+            },
+          ],
+        }
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
 
     it('should move the submitted user to the new role group and leave other members untouched', async () => {

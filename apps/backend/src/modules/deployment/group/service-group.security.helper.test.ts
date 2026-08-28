@@ -276,4 +276,56 @@ describe('serviceGroupSecurityHelper', () => {
       await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
     });
   });
+
+  describe('assertUsersBelongToOrganization', () => {
+    it('should not throw when userIds is empty', async () => {
+      // When
+      const call = ServiceGroupSecurityHelper.assertUsersBelongToOrganization(
+        [],
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      // Then
+      await expect(call).resolves.not.toThrow();
+    });
+
+    it('should not throw when all users belong to the organization', async () => {
+      // When
+      const call = ServiceGroupSecurityHelper.assertUsersBelongToOrganization(
+        [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      // Then
+      await expect(call).resolves.not.toThrow();
+    });
+
+    it('should throw UserIsNotInOrganization when a user does not belong to the organization', async () => {
+      // When
+      const call = ServiceGroupSecurityHelper.assertUsersBelongToOrganization(
+        [
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+        ],
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+
+    it('should not throw for a bypass user even when users do not belong to the organization', async () => {
+      // Given
+      requestContext.set(requestContextAdminUser);
+
+      // When
+      const call = ServiceGroupSecurityHelper.assertUsersBelongToOrganization(
+        [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID],
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      // Then
+      await expect(call).resolves.not.toThrow();
+    });
+  });
 });

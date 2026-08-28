@@ -2,8 +2,10 @@ import { requestContext } from '../../../context/request.context';
 import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import { UserId } from '../../../model/kanel/public/User';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { OrganizationDomain } from '../../organization-management/organization/organization.domain';
+import { UserOrganizationDomain } from '../../organization-management/user/user-organization/user-organization.domain';
 import { AuthHelper } from '../../security-management/capability/auth.helper';
 import { DeploymentRequestDomain } from '../deployment.domain';
 
@@ -69,5 +71,24 @@ export const ServiceGroupSecurityHelper = {
     });
 
     return { bundleDeploymentRequest, bundleOrganizationId, children };
+  },
+
+  assertUsersBelongToOrganization: async (
+    userIds: UserId[],
+    organizationId: OrganizationId
+  ): Promise<void> => {
+    const user = requestContext.requireUser();
+    if (AuthHelper.userHasBypassCapability(user)) {
+      return;
+    }
+
+    const allUsersInOrganization =
+      await UserOrganizationDomain.areAllUsersInOrganization(
+        userIds,
+        organizationId
+      );
+    if (!allUsersInOrganization) {
+      throw new Error(ErrorCode.UserIsNotInOrganization);
+    }
   },
 };
