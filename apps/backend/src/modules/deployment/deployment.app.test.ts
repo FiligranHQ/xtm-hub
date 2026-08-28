@@ -85,6 +85,10 @@ import { RegistrationDomain } from '../registration/registration.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
 import {
+  BUNDLE_REQUEST_CANCELLATION_REASON,
+  DeploymentCancellationApp,
+} from './deployment-cancellation.app';
+import {
   DeploymentApp,
   XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
 } from './deployment.app';
@@ -262,16 +266,79 @@ describe('deployment app', () => {
         ErrorCode.CantRequestFreeTrialInPersonalSpace
       );
     });
-
     it('should throw when service definition is not found', async () => {
       const call = DeploymentApp.createDeploymentRequest({
         ...TEST_DEPLOYMENT,
         products: ['unknown-platform' as PlatformIdentifier],
+        use_cases_by_product: [
+          {
+            platform_identifier: 'unknown-platform' as PlatformIdentifier,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+        ],
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
     });
+    it('should throw when a requested product has no use case', async () => {
+      // When
+      const call = DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        use_cases_by_product: [],
+      });
 
+      // Then
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.InvalidUseCasesForProducts
+      );
+    });
+
+    it('should throw when a use case targets a product that was not requested', async () => {
+      // When
+      const call = DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        type: DeploymentRequestDeploymentType.Bundle,
+        products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        use_cases_by_product: [
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+          {
+            platform_identifier: PlatformIdentifier.Openaev,
+            use_case: DeploymentRequestUseCase.OaevPurpleTeam,
+          },
+        ],
+      });
+
+      // Then
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.InvalidUseCasesForProducts
+      );
+    });
+    it('should throw when two use cases target the same product', async () => {
+      // When
+      const call = DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        type: DeploymentRequestDeploymentType.Bundle,
+        products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        use_cases_by_product: [
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.DetectionEngineering,
+          },
+        ],
+      });
+
+      // Then
+      await expect(call).rejects.toThrow(
+        BadRequestErrorCode.InvalidUseCasesForProducts
+      );
+    });
     it.each([
       [[PlatformIdentifier.Xtmone]],
       [[PlatformIdentifier.Opencti, PlatformIdentifier.Openaev]],
@@ -317,6 +384,12 @@ describe('deployment app', () => {
           PlatformIdentifier.Xtmone,
           'unknown-platform' as PlatformIdentifier,
         ],
+        use_cases_by_product: [
+          {
+            platform_identifier: 'unknown-platform' as PlatformIdentifier,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+        ],
       });
 
       await expect(call).rejects.toThrow(ErrorCode.ServiceDefinitionNotFound);
@@ -328,6 +401,7 @@ describe('deployment app', () => {
         vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
           isPlaceAvailable: true,
         });
+        vi.spyOn(DeploymentQuotaDomain, 'freePlace').mockResolvedValue();
       });
 
       it('should create a bundle deployment request with a child trial deployment request per product', async () => {
@@ -338,6 +412,16 @@ describe('deployment app', () => {
             PlatformIdentifier.Xtmone,
             PlatformIdentifier.Opencti,
             PlatformIdentifier.Openaev,
+          ],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.OaevPurpleTeam,
+            },
           ],
         });
 
@@ -428,6 +512,39 @@ describe('deployment app', () => {
         expect(mockSendMail).toHaveBeenCalledTimes(6);
       });
 
+      it('should bypass the free trial limit check for bundle products', async () => {
+        // Given
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            organization_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            platform_identifier: PlatformIdentifier.Opencti,
+            hub_status: DeploymentRequestHubStatus.Active,
+            counts_in_orga_quota: true,
+          }
+        );
+
+        // When
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          type: DeploymentRequestDeploymentType.Bundle,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+          ],
+        });
+
+        // Then
+        expect(bundle.id).toBeDefined();
+        const children = await TestHelper.deploymentRequest.loadMany({
+          parent_id: bundle.id as DeploymentRequestId,
+        });
+        expect(children).toHaveLength(2);
+      });
+
       it('should allow a bundle when another organization has an on-going trial', async () => {
         requestContext.set(requestContextAdminUser);
         const otherOrgaTrial = await DeploymentApp.createDeploymentRequest({
@@ -489,6 +606,12 @@ describe('deployment app', () => {
           ...TEST_DEPLOYMENT,
           type: DeploymentRequestDeploymentType.Bundle,
           products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+          ],
         });
 
         await expect(call).rejects.toThrow(
@@ -549,6 +672,16 @@ describe('deployment app', () => {
             PlatformIdentifier.Opencti,
             PlatformIdentifier.Openaev,
           ],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.OaevPurpleTeam,
+            },
+          ],
         });
 
         await expect(call).rejects.toThrow('boom');
@@ -563,6 +696,113 @@ describe('deployment app', () => {
           name: XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
         });
         expect(serviceInstances).toBeUndefined();
+      });
+
+      describe('standalone trials cancellation', () => {
+        it('should cancel ongoing standalone trials of the organization when the bundle is requested', async () => {
+          // Given an ongoing standalone trial of the requesting organization
+          const standalone =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                organization_requester_id:
+                  TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+                hub_status: DeploymentRequestHubStatus.Active,
+              }
+            );
+
+          // When the bundle is requested
+          await DeploymentApp.createDeploymentRequest({
+            ...TEST_DEPLOYMENT,
+            type: DeploymentRequestDeploymentType.Bundle,
+            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          });
+
+          // Then the standalone trial is cancelled
+          await TestHelper.deploymentRequest.assertProperties(standalone.id, {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            cancellation_reason: BUNDLE_REQUEST_CANCELLATION_REASON,
+          });
+        });
+
+        it('should delete the Auth0 audience of cancelled standalone trials', async () => {
+          // Given an ongoing standalone trial of the requesting organization
+          const deleteAudienceSpy = vi.spyOn(
+            auth0ClientMock,
+            'deleteAudienceAPI'
+          );
+
+          const standalone =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                organization_requester_id:
+                  TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+                hub_status: DeploymentRequestHubStatus.Active,
+                platform_id: uuidv4(),
+              }
+            );
+
+          // When the bundle is requested
+          await DeploymentApp.createDeploymentRequest({
+            ...TEST_DEPLOYMENT,
+            type: DeploymentRequestDeploymentType.Bundle,
+            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          });
+
+          // Then the Auth0 audience of the cancelled standalone trial is deleted
+          expect(deleteAudienceSpy).toHaveBeenCalledWith(
+            standalone.organization_requester_id,
+            standalone.platform_id
+          );
+        });
+
+        it('should not cancel standalone trials of another organization', async () => {
+          // Given an ongoing standalone trial owned by another organization
+          const standalone =
+            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+              {
+                organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+                hub_status: DeploymentRequestHubStatus.Active,
+              }
+            );
+
+          // When a bundle is requested by another organization
+          await DeploymentApp.createDeploymentRequest({
+            ...TEST_DEPLOYMENT,
+            type: DeploymentRequestDeploymentType.Bundle,
+            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          });
+
+          const untouched =
+            await DeploymentRequestDomain.loadDeploymentRequestBy({
+              id: standalone.id,
+            });
+
+          // Then the other organization's standalone trial is untouched
+          expect(untouched).toMatchObject({
+            hub_status: DeploymentRequestHubStatus.Active,
+          });
+        });
+
+        it('should not cancel the children of the bundle itself', async () => {
+          // When the bundle is requested with its child trials
+          const bundle = await DeploymentApp.createDeploymentRequest({
+            ...TEST_DEPLOYMENT,
+            type: DeploymentRequestDeploymentType.Bundle,
+            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+          });
+
+          const children = await TestHelper.deploymentRequest.loadMany({
+            parent_id: bundle.id as DeploymentRequestId,
+          });
+
+          // Then the bundle's own children are untouched
+          expect(children).not.toHaveLength(0);
+          children.forEach((child) => {
+            expect(child.hub_status).not.toBe(
+              DeploymentRequestHubStatus.Cancelled
+            );
+          });
+        });
       });
     });
   });
@@ -617,23 +857,31 @@ describe('deployment app', () => {
       `(
         'should send a telemetry event when trial for $product platform is launched',
         async ({ product, targetProduct, source, telemetrySource }) => {
+          // Given
           requestContext.set(requestContextRegistererUserSecondOrga);
 
           vi.useFakeTimers();
           const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
           vi.setSystemTime(date);
 
+          // When
           const deployment = await DeploymentApp.createDeploymentRequest({
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CLevel,
-            use_case: DeploymentRequestUseCase.ThreatHunting,
+            use_cases_by_product: [
+              {
+                platform_identifier: product,
+                use_case: DeploymentRequestUseCase.ThreatHunting,
+              },
+            ],
             products: [product],
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
             source,
           });
 
+          // Then
           expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
             '@timestamp': '2025-02-03T13:12:15.000Z',
             event_type: TelemetryEventType.CREATE_DEPLOYMENT,
@@ -677,6 +925,7 @@ describe('deployment app', () => {
       describe('development environment', () => {
         it('should send a mail if status is pending to dev team', async () => {
           requestContext.set(requestContextAdminUser);
+
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -713,6 +962,7 @@ describe('deployment app', () => {
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
+
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -796,6 +1046,7 @@ describe('deployment app', () => {
           vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
             isPlaceAvailable: false,
           });
+
           await DeploymentApp.createDeploymentRequest(TEST_DEPLOYMENT);
 
           expect(mockSendMail).toHaveBeenCalledTimes(2);
@@ -895,6 +1146,16 @@ describe('deployment app', () => {
             PlatformIdentifier.Opencti,
             PlatformIdentifier.Openaev,
           ],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+          ],
         });
 
         expect(bundle.hub_status).toBe(DeploymentRequestHubStatus.Pending);
@@ -927,6 +1188,16 @@ describe('deployment app', () => {
             PlatformIdentifier.Opencti,
             PlatformIdentifier.Openaev,
           ],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+          ],
         });
 
         expect(bundle.hub_status).toBe(DeploymentRequestHubStatus.Pending);
@@ -945,6 +1216,16 @@ describe('deployment app', () => {
             PlatformIdentifier.Xtmone,
             PlatformIdentifier.Opencti,
             PlatformIdentifier.Openaev,
+          ],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
           ],
         });
 
@@ -985,6 +1266,12 @@ describe('deployment app', () => {
           region: QUOTA_REGION,
           type: DeploymentRequestDeploymentType.Bundle,
           products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+          ],
         });
 
         const request = await DeploymentApp.createDeploymentRequest({
@@ -1185,7 +1472,6 @@ describe('deployment app', () => {
       expect(deployments.totalCount).toBe('3');
       expect(deployments.edges).toHaveLength(3);
 
-      // Verify only out-of-sync deployments are returned
       const returnedIds = deployments.edges.map((edge) => edge.node.id);
       expect(returnedIds).toContain(outOfSync1!.id);
       expect(returnedIds).toContain(outOfSync2!.id);
@@ -1276,6 +1562,7 @@ describe('deployment app', () => {
       const subscription = await SubscriptionDomain.loadSubscriptionBy({
         service_instance_id: dbDeploymentRequest.service_instance_id,
       });
+
       expect(dbDeploymentRequest).toMatchObject({
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
@@ -1330,6 +1617,7 @@ describe('deployment app', () => {
       const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
+
       expect(serviceGroups).toHaveLength(3);
       expect(serviceGroups.map((g) => g.name).sort()).toEqual([
         ServiceGroupName.Admin,
@@ -1390,6 +1678,7 @@ describe('deployment app', () => {
       const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
+
       expect(serviceGroups).toHaveLength(3);
       expect(serviceGroups.map((g) => g.name).sort()).toEqual([
         ServiceGroupName.Admin,
@@ -1449,6 +1738,7 @@ describe('deployment app', () => {
       const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
         service_instance_id: dbDeploymentRequest!.service_instance_id,
       });
+
       expect(serviceGroups).toHaveLength(0);
     });
 
@@ -1484,6 +1774,7 @@ describe('deployment app', () => {
         id: uuidv4() as DeploymentRequestId,
         actual_state: DeploymentRequestPlatformState.Active,
       });
+
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
       );
@@ -1588,6 +1879,7 @@ describe('deployment app', () => {
           platform_id: 'fake product instance id',
           failure_reason: 'not failed',
         });
+
         expect(deployment).toBeDefined();
       });
     });
@@ -1597,6 +1889,7 @@ describe('deployment app', () => {
           id: initialDeployment?.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
+
         expect(mockSendMail).toHaveBeenCalledWith({
           to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
           template: 'free_trial_provisioning',
@@ -1634,6 +1927,7 @@ describe('deployment app', () => {
           status: PlatformConfigurationStatus.Active,
           last_connectivity_check: new Date(),
         });
+
         await DeploymentApp.updateDeploymentRequest({
           id: initialDeployment?.id as DeploymentRequestId,
           start_date: new Date(2025, 12, 1),
@@ -1664,6 +1958,7 @@ describe('deployment app', () => {
           end_date: new Date(2026, 1, 1),
           actual_state: DeploymentRequestPlatformState.Active,
         });
+
         expect(mockSendMail).not.toHaveBeenCalled();
       });
     });
@@ -1704,7 +1999,6 @@ describe('deployment app', () => {
           url: null,
         });
       });
-
       it('should not initialise a service group for a bundle', async () => {
         const bundle =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -1725,6 +2019,7 @@ describe('deployment app', () => {
         const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
           service_instance_id: bundle.service_instance_id,
         });
+
         expect(serviceGroups).toHaveLength(0);
       });
 
@@ -1743,6 +2038,7 @@ describe('deployment app', () => {
           id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
+
         expect(provisioning.hub_status).toBe(
           DeploymentRequestHubStatus.Provisioning
         );
@@ -1751,6 +2047,7 @@ describe('deployment app', () => {
           id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
         });
+
         expect(active.hub_status).toBe(DeploymentRequestHubStatus.Active);
       });
     });
@@ -1813,6 +2110,7 @@ describe('deployment app', () => {
           await DeploymentRequestDomain.loadDeploymentRequestBy({
             id: bundle.id as DeploymentRequestId,
           });
+
         expect(updatedBundle).toMatchObject({
           hub_status: DeploymentRequestHubStatus.Pending,
           start_date: new Date(2025, 1, 1),
@@ -1852,6 +2150,7 @@ describe('deployment app', () => {
           await DeploymentRequestDomain.loadDeploymentRequestBy({
             id: childB.id as DeploymentRequestId,
           });
+
         expect(untouchedChildA?.hub_status).toBe(
           DeploymentRequestHubStatus.Provisioning
         );
@@ -1884,6 +2183,7 @@ describe('deployment app', () => {
             await DeploymentRequestDomain.loadDeploymentRequestBy({
               id: bundle.id as DeploymentRequestId,
             });
+
           expect(updatedBundle?.hub_status).toBe(terminalHubStatus);
           expect(updatedBundle?.start_date).toBeNull();
           expect(updatedBundle?.end_date).toBeNull();
@@ -2044,6 +2344,7 @@ describe('deployment app', () => {
       );
 
       requestContext.set(requestContextAdminSecondOrga);
+
       const call = DeploymentApp.loadTrialDeployments({
         organizationId: TEST_ORGANIZATIONS.FILIGRAN.ID,
         platformIdentifiers: [PlatformIdentifier.Opencti],
@@ -2059,6 +2360,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -2082,6 +2384,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: DeploymentRequestHubStatus.Active,
         end_date: bundle.end_date,
@@ -2104,6 +2407,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -2123,6 +2427,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: true,
         hub_status: null,
         end_date: null,
@@ -2162,6 +2467,7 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
+        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -2170,13 +2476,35 @@ describe('deployment app', () => {
 
     it('should throw if user does not belong in the organization', async () => {
       requestContext.set(requestContextAdminSecondOrga);
+
       const call = DeploymentApp.loadPlatformTrialStatus(
         TEST_ORGANIZATIONS.FILIGRAN.ID
       );
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
+
+    it('should report the standalone product as ongoing when the organization has an active standalone trial', async () => {
+      // Given an organization with an ongoing standalone OpenCTI trial
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          platform_identifier: PlatformIdentifier.Opencti,
+          hub_status: DeploymentRequestHubStatus.Active,
+        }
+      );
+
+      // When loading the platform trial status
+      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
+        TEST_ORGANIZATIONS.FILIGRAN.ID
+      );
+
+      // Then the standalone product is reported as ongoing
+      expect(platformTrialStatus.ongoingStandaloneTrials).toEqual([
+        PlatformIdentifier.Opencti,
+      ]);
+    });
   });
+
   describe('reorderDeploymentRequestInQueue', () => {
     it('should throw when deployment request is not found', async () => {
       vi.spyOn(
@@ -2268,6 +2596,7 @@ describe('deployment app', () => {
       );
     });
   });
+
   describe('cancelDeploymentRequest', () => {
     let freePlaceSpy: MockInstance;
     beforeEach(() => {
@@ -2294,6 +2623,7 @@ describe('deployment app', () => {
         counts_in_orga_quota,
         target_state,
       }) => {
+        // Given a deployment request in the provided hub/actual state
         const initialDeployment =
           (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -2302,12 +2632,15 @@ describe('deployment app', () => {
             }
           )) as DeploymentRequest;
         const cancellationReason = isAdmin ? undefined : 'my reason';
+
+        // When cancelling the deployment request
         const deployment = await DeploymentApp.cancelDeploymentRequest(
           initialDeployment.id,
           isAdmin,
           cancellationReason
         );
 
+        // Then the deployment request is updated accordingly
         expect(deployment).toMatchObject({
           hub_status: DeploymentRequestHubStatus.Cancelled,
           target_state: target_state,
@@ -2353,6 +2686,7 @@ describe('deployment app', () => {
         uuidv4() as DeploymentRequestId,
         false
       );
+
       await expect(call).rejects.toThrow(
         NotFoundErrorCode.DeploymentRequestNotFound
       );
@@ -2363,9 +2697,10 @@ describe('deployment app', () => {
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
         )) as DeploymentRequest;
-
       requestContext.set(requestContextAdminSecondOrga);
+
       const call = DeploymentApp.cancelDeploymentRequest(deployment.id, false);
+
       await expect(call).rejects.toThrow(
         ForbiddenErrorCode.UserIsNotInOrganization
       );
@@ -2376,12 +2711,13 @@ describe('deployment app', () => {
         (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
         )) as DeploymentRequest;
-
       requestContext.set(requestContextAdminSecondOrga);
+
       const response = await DeploymentApp.cancelDeploymentRequest(
         deployment.id,
         true
       );
+
       expect(response).toBeTruthy();
     });
     it('should send a telemetry event', async () => {
@@ -2389,7 +2725,6 @@ describe('deployment app', () => {
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
           {}
         );
-
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -2425,6 +2760,7 @@ describe('deployment app', () => {
     `(
       'should refuse to cancel a single product of a bundle $description',
       async ({ isAdmin }) => {
+        // Given a bundle with an active child product
         const bundle =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -2444,16 +2780,17 @@ describe('deployment app', () => {
             }
           );
 
+        // When cancelling the child product directly
         const call = DeploymentApp.cancelDeploymentRequest(
           child.id,
           isAdmin,
           'my reason'
         );
 
+        // Then it throws a forbidden error and leaves both untouched
         await expect(call).rejects.toThrow(
           ForbiddenErrorCode.CantCancelBundleProduct
         );
-
         await TestHelper.deploymentRequest.assertProperties(child.id, {
           hub_status: DeploymentRequestHubStatus.Active,
           cancellation_date: null,
@@ -2488,18 +2825,17 @@ describe('deployment app', () => {
     });
 
     it.each`
-      platformIdentifier            | expectedLevel
-      ${PlatformIdentifier.Openaev} | ${'warn'}
-      ${PlatformIdentifier.Opencti} | ${'error'}
+      platformIdentifier            | description
+      ${PlatformIdentifier.Opencti} | ${'a standalone OpenCTI trial'}
+      ${PlatformIdentifier.Openaev} | ${'a standalone OpenAEV trial'}
     `(
-      'should log a $expectedLevel when deleting a missing audience (404) for $platformIdentifier',
-      async ({ platformIdentifier, expectedLevel }) => {
-        vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
-          statusCode: 404,
-        });
-        const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
-        const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
-
+      'should attempt to delete the Auth0 audience for $description',
+      async ({ platformIdentifier }) => {
+        // Given a deployment request that should have an Auth0 audience
+        const deleteAudienceSpy = vi.spyOn(
+          auth0ClientMock,
+          'deleteAudienceAPI'
+        );
         const deployment =
           (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
@@ -2510,25 +2846,93 @@ describe('deployment app', () => {
             }
           )) as DeploymentRequest;
 
+        // When cancelling the deployment request
         await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
 
-        if (expectedLevel === 'warn') {
-          expect(warnSpy).toHaveBeenCalledWith(
-            'No Auth0 audience to delete for OpenAEV trial',
-            expect.objectContaining({ deploymentRequestId: deployment.id })
-          );
-          expect(errorSpy).not.toHaveBeenCalledWith(
-            'Unable to delete audience',
-            expect.anything()
-          );
-        } else {
-          expect(errorSpy).toHaveBeenCalledWith(
-            'Unable to delete audience',
-            expect.objectContaining({ deploymentRequestId: deployment.id })
-          );
-        }
+        // Then the Auth0 audience deletion is attempted
+        expect(deleteAudienceSpy).toHaveBeenCalledWith(
+          deployment.organization_requester_id,
+          deployment.platform_id
+        );
       }
     );
+
+    it('should not attempt to delete the Auth0 audience for a standalone XtmOne trial', async () => {
+      // Given a standalone XtmOne trial, which never has an Auth0 audience
+      const deleteAudienceSpy = vi.spyOn(auth0ClientMock, 'deleteAudienceAPI');
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+            platform_id: uuidv4(),
+            platform_identifier: PlatformIdentifier.Xtmone,
+          }
+        )) as DeploymentRequest;
+
+      // When cancelling the deployment request
+      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+
+      // Then the Auth0 audience deletion is never attempted
+      expect(deleteAudienceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should log an error when deleting a missing OpenCTI audience (404)', async () => {
+      // Given a deletion of the Auth0 audience that fails with a 404
+      vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
+        statusCode: 404,
+      });
+      const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+            platform_id: uuidv4(),
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        )) as DeploymentRequest;
+
+      // When cancelling the deployment request
+      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+
+      // Then it logs an error
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Unable to delete audience',
+        expect.objectContaining({ deploymentRequestId: deployment.id })
+      );
+    });
+
+    it('should log a warning instead of an error when deleting a missing OpenAEV audience (404)', async () => {
+      // Given a deletion of the Auth0 audience that fails with a 404
+      vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
+        statusCode: 404,
+      });
+      const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
+      const deployment =
+        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            actual_state: DeploymentRequestPlatformState.Active,
+            platform_id: uuidv4(),
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        )) as DeploymentRequest;
+
+      // When cancelling the deployment request
+      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+
+      // Then it logs a warning, not an error
+      expect(warnSpy).toHaveBeenCalledWith(
+        'No Auth0 audience to delete for OpenAEV trial',
+        expect.objectContaining({ deploymentRequestId: deployment.id })
+      );
+      expect(errorSpy).not.toHaveBeenCalledWith(
+        'Unable to delete audience',
+        expect.anything()
+      );
+    });
 
     describe('quota', () => {
       beforeEach(async () => {
@@ -2633,6 +3037,12 @@ describe('deployment app', () => {
           region: QUOTA_REGION,
           type: DeploymentRequestDeploymentType.Bundle,
           products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+          ],
         });
         expect(bundle.hub_status).toBe(DeploymentRequestHubStatus.Queued);
 
@@ -2685,6 +3095,12 @@ describe('deployment app', () => {
           region: QUOTA_REGION,
           type: DeploymentRequestDeploymentType.Bundle,
           products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
+          use_cases_by_product: [
+            {
+              platform_identifier: PlatformIdentifier.Openaev,
+              use_case: DeploymentRequestUseCase.ThreatHunting,
+            },
+          ],
         });
         expect(queuedBundle.hub_status).toBe(DeploymentRequestHubStatus.Queued);
 
@@ -2731,6 +3147,7 @@ describe('deployment app', () => {
               platform_identifier: PlatformIdentifier.Opencti,
               hub_status: DeploymentRequestHubStatus.Active,
               actual_state: DeploymentRequestPlatformState.Active,
+              platform_id: uuidv4(),
             }
           );
         childXtmone =
@@ -2762,6 +3179,26 @@ describe('deployment app', () => {
             cancellation_user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
           });
         }
+      });
+
+      it('should only delete the Auth0 audience of the OpenCTI child', async () => {
+        const deleteAudienceSpy = vi.spyOn(
+          auth0ClientMock,
+          'deleteAudienceAPI'
+        );
+
+        await DeploymentApp.cancelDeploymentRequest(
+          bundle.id,
+          false,
+          'my reason'
+        );
+
+        // Then only the OpenCTI child's audience is deleted: bundles, XtmOne
+        // children and OpenAEV bundle children never have one
+        expect(deleteAudienceSpy).toHaveBeenCalledExactlyOnceWith(
+          childOpencti.organization_requester_id,
+          childOpencti.platform_id
+        );
       });
 
       it('should send one telemetry event per deployment request', async () => {
@@ -2806,7 +3243,6 @@ describe('deployment app', () => {
         );
 
         await expect(call).rejects.toThrow('boom');
-
         for (const { id, hub_status } of [bundle, childOpencti, childXtmone]) {
           const untouched =
             await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
@@ -3257,6 +3693,7 @@ describe('deployment app', () => {
         const { id: pendingRequestId } = await insertRequest(
           DeploymentRequestHubStatus.Pending
         );
+
         await DeploymentApp.updateDeploymentQuotaCapacity({
           platformIdentifier,
           region,
@@ -3404,6 +3841,7 @@ describe('deployment app', () => {
     `(
       `should not expire trials in status $hub_status`,
       async ({ hub_status, target_state }) => {
+        // Given a trial in a status that should not be expired
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
@@ -3417,8 +3855,10 @@ describe('deployment app', () => {
             }
           );
 
+        // When expiring trials
         await DeploymentApp.expireTrials();
 
+        // Then the trial is left untouched
         const expiredDeploymentRequest =
           await DeploymentRequestDomain.loadDeploymentRequestBy({
             id: trial?.id as DeploymentRequestId,
@@ -3689,6 +4129,7 @@ describe('deployment app', () => {
       `(
         'should not free place when request hub status is $hub_status',
         async ({ hub_status }) => {
+          // Given a deployment request in a status not counted in quotas
           const deploymentRequest =
             await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
               {
@@ -3696,11 +4137,13 @@ describe('deployment app', () => {
               }
             );
 
-          await DeploymentApp.releaseDeploymentRequestPlace(
+          // When releasing its place
+          await DeploymentCancellationApp.releaseDeploymentRequestPlace(
             deploymentRequest!.hub_status,
             deploymentRequest!
           );
 
+          // Then no place is freed
           expect(freePlaceSpy).not.toHaveBeenCalled();
         }
       );
@@ -3719,7 +4162,7 @@ describe('deployment app', () => {
             }
           );
 
-        await DeploymentApp.releaseDeploymentRequestPlace(
+        await DeploymentCancellationApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
           deploymentRequest!
         );
@@ -3750,7 +4193,7 @@ describe('deployment app', () => {
             }
           );
 
-        await DeploymentApp.releaseDeploymentRequestPlace(
+        await DeploymentCancellationApp.releaseDeploymentRequestPlace(
           deploymentRequest!.hub_status,
           deploymentRequest!
         );

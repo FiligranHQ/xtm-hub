@@ -189,7 +189,12 @@ export const CAPABILITY_MANAGE_DEPLOYMENT: CapabilityPortal = {
 export const TEST_DEPLOYMENT = {
   activity_sector: DeploymentRequestActivitySector.ComputerNetworkSecurity,
   job_title: DeploymentRequestJobTitle.CLevel,
-  use_case: DeploymentRequestUseCase.ThreatHunting,
+  use_cases_by_product: [
+    {
+      platform_identifier: PlatformIdentifier.Opencti,
+      use_case: DeploymentRequestUseCase.ThreatHunting,
+    },
+  ],
   products: [PlatformIdentifier.Opencti],
   region: DeploymentRequestPlatformRegion.UsEast,
   type: DeploymentRequestDeploymentType.Trial,
