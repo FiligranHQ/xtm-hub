@@ -1,12 +1,11 @@
 'use client';
 import { TrialsTabQuotasPlatformUpdate } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdate';
-import { trialsRegionKey } from '@/components/trials/trials.const';
+import { TrialsScope, trialsRegionKey } from '@/components/trials/trials.const';
 import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { DataTable } from '@filigran/ui';
 import { trialsQuotasKeys } from '@graphql/deployment/deployment.keys';
 import {
-  PlatformIdentifier,
   PortalCapability,
   TrialsQuotaFragment,
   useTrialsQuotasQuery,
@@ -18,11 +17,11 @@ import { useMemo, useState } from 'react';
 type QuotaRow = TrialsQuotaFragment & { id: string };
 
 interface TrialsTabQuotasPlatformProps {
-  platformIdentifier: PlatformIdentifier;
+  scope: TrialsScope;
 }
 
 export const TrialsTabQuotasPlatform = ({
-  platformIdentifier,
+  scope,
 }: TrialsTabQuotasPlatformProps) => {
   const t = useTranslations();
   const userHasModifyTrialQuotaCapa = useUserHasPortalCapability([
@@ -31,8 +30,11 @@ export const TrialsTabQuotasPlatform = ({
   const [quotaEdit, setQuotaEdit] = useState<QuotaRow | undefined>(undefined);
 
   const variables = useMemo(
-    () => ({ platformIdentifier }),
-    [platformIdentifier]
+    () => ({
+      platformIdentifier:
+        scope.kind === 'product' ? scope.platformIdentifier : null,
+    }),
+    [scope]
   );
 
   const { data } = useTrialsQuotasQuery(portalGraphqlClient, variables, {
@@ -98,6 +100,7 @@ export const TrialsTabQuotasPlatform = ({
       {quotaEdit && userHasModifyTrialQuotaCapa && (
         <TrialsTabQuotasPlatformUpdate
           quota={quotaEdit}
+          scope={scope}
           key={`${quotaEdit.platform_identifier}${quotaEdit.region}`}
           defaultStateOpen={!!quotaEdit}
           onCloseSheet={() => setQuotaEdit(undefined)}
