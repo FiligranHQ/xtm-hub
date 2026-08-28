@@ -224,7 +224,7 @@ export type CreateDeploymentRequestInput = {
   region: DeploymentRequestPlatformRegion;
   source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
-  use_case: InputMaybe<DeploymentRequestUseCase>;
+  use_cases_by_product: InputMaybe<Array<ProductUseCaseInput>>;
 };
 
 export type CreateDocumentInput = {
@@ -1672,6 +1672,7 @@ export type PlatformTrialStatus = {
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: Maybe<DeploymentRequestHubStatus>;
   isBlacklisted: Scalars['Boolean']['output'];
+  ongoingStandaloneTrials: Array<PlatformIdentifier>;
 };
 
 export enum PortalCapability {
@@ -1686,6 +1687,11 @@ export enum PortalCapability {
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
 }
+
+export type ProductUseCaseInput = {
+  platform_identifier: PlatformIdentifier;
+  use_case: DeploymentRequestUseCase;
+};
 
 export type ProvisionedNewsFeedItem = Node & {
   __typename?: 'ProvisionedNewsFeedItem';
@@ -3015,12 +3021,19 @@ export type SolutionCategoriesListQueryVariables = Exact<{
 
 export type SolutionCategoriesListQuery = { __typename?: 'Query', solutionCategories: { __typename?: 'SolutionCategoryConnection', totalCount: number, edges: Array<{ __typename?: 'SolutionCategoryEdge', node: { __typename?: 'SolutionCategory', id: string, name: string, product: Array<FiligranProduct> } }> } | null };
 
+export type CreateDeploymentRequestMutationVariables = Exact<{
+  input: CreateDeploymentRequestInput;
+}>;
+
+
+export type CreateDeploymentRequestMutation = { __typename?: 'Mutation', createDeploymentRequest: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any } };
+
 export type PlatformTrialStatusQueryVariables = Exact<{
   organizationId: Scalars['OrganizationId']['input'];
 }>;
 
 
-export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null } };
+export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null, ongoingStandaloneTrials: Array<PlatformIdentifier> } };
 
 export type TrialDeploymentsEligibilityQueryVariables = Exact<{
   input: TrialDeploymentsInput;
@@ -4036,12 +4049,43 @@ useInfiniteSolutionCategoriesListQuery.getKey = (variables: SolutionCategoriesLi
 useInfiniteSolutionCategoriesListQuery.getRootKey = () => ['SolutionCategoriesList.infinite'] as const;
 useSolutionCategoriesListQuery.fetcher = (client: GraphQLClient, variables: SolutionCategoriesListQueryVariables, headers?: RequestInit['headers']) => fetcher<SolutionCategoriesListQuery, SolutionCategoriesListQueryVariables>(client, SolutionCategoriesListDocument, variables, headers);
 
+export const CreateDeploymentRequestDocument = `
+    mutation CreateDeploymentRequest($input: CreateDeploymentRequestInput!) {
+  createDeploymentRequest(input: $input) {
+    id
+    service_instance_id
+  }
+}
+    `;
+
+export const useCreateDeploymentRequestMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<CreateDeploymentRequestMutation, TError, CreateDeploymentRequestMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<CreateDeploymentRequestMutation, TError, CreateDeploymentRequestMutationVariables, TContext>(
+      {
+    mutationKey: ['CreateDeploymentRequest'],
+    mutationFn: (variables?: CreateDeploymentRequestMutationVariables) => fetcher<CreateDeploymentRequestMutation, CreateDeploymentRequestMutationVariables>(client, CreateDeploymentRequestDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useCreateDeploymentRequestMutation.getKey = () => ['CreateDeploymentRequest'];
+useCreateDeploymentRequestMutation.getRootKey = () => ['CreateDeploymentRequest'] as const;
+useCreateDeploymentRequestMutation.fetcher = (client: GraphQLClient, variables: CreateDeploymentRequestMutationVariables, headers?: RequestInit['headers']) => fetcher<CreateDeploymentRequestMutation, CreateDeploymentRequestMutationVariables>(client, CreateDeploymentRequestDocument, variables, headers);
+
 export const PlatformTrialStatusDocument = `
     query PlatformTrialStatus($organizationId: OrganizationId!) {
   platformTrialStatus(organizationId: $organizationId) {
     isBlacklisted
     hub_status
     end_date
+    ongoingStandaloneTrials
   }
 }
     `;

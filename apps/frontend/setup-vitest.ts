@@ -46,6 +46,8 @@ vi.mock('next/navigation', async (importOriginal) => ({
   useRouter: vi.fn(),
   useParams: vi.fn(),
   useSearchParams: vi.fn(),
+  redirect: vi.fn(),
+  notFound: vi.fn(),
 }));
 
 vi.mock('next-intl', async (importOriginal) => ({

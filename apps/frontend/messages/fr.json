@@ -270,6 +270,7 @@
       "MISSING_CAPABILITY_ON_SERVICE": "Permissions manquantes",
       "MISSING_METADATA_MAPPING": "Cartographie des métadonnées manquante",
       "MISSING_START_OR_END_DATE": "Une erreur inconnue s'est produite",
+      "INVALID_USE_CASES_FOR_PRODUCTS": "Les cas d'usage ne correspondent pas aux produits demandés",
       "MIXED_LTS_MANIFEST_FRAGMENTS": "Un lot ne peut pas mélanger des fragments LTS et non-LTS",
       "NEWS_FEED_ITEM_MISSING_TITLE": "Le titre de l'article du fil d'actualité est manquant",
       "NEWS_FEED_ITEM_NOT_FOUND": "L'article du fil d'actualité n'a pas été trouvé",
@@ -714,7 +715,8 @@
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",
-    "xtmhub": "XTM Hub"
+    "xtmhub": "XTM Hub",
+    "xtmone": "XTM One"
   },
   "ProfilePage": {
     "Picture": "Photo de profil",
@@ -1372,7 +1374,7 @@
     "Trials": {
       "ExploreBold": "Essai gratuit !",
       "ExplorePlatform": "Explorez {platformName} pendant 30 jours",
-      "ExploreProducts": "Explorez OpenCTI ou OpenAEV pendant 30 jours",
+      "ExploreProducts": "Explorez le produit OpenCTI ou OpenAEV pendant 30 jours",
       "Active": "Votre essai gratuit d'OpenCTI est actif",
       "Provisioning": "Votre essai gratuit d'OpenCTI est en cours de provisionnement.",
       "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
@@ -1474,7 +1476,56 @@
         "Ending": {
           "Text": "Continuez à découvrir l'expérience complète de la XTM Platform avant la fin de votre essai."
         },
-        "DaysLeft": "{days, plural, =1 {# jour restant} other {# jours restants}}"
+        "DaysLeft": "{days, plural, =1 {# jour restant} other {# jours restants}}",
+        "Page": {
+          "Breadcrumb": "XTM Platform Trial",
+          "Overline": "Essai gratuit XTM Platform",
+          "Title": "Démarrez votre essai gratuit de 30 jours",
+          "PitchTitle": "Découvrez l'expérience XTM Platform complète",
+          "PitchDescription": "Profitez de 30 jours pour explorer les éditions entreprise en SaaS d'OpenCTI et OpenAEV, ainsi que les capacités d'orchestration agentique de XTM One. Unifiez votre threat intelligence et validez vos défenses grâce à une gestion continue et agentique de l'exposition et à la réduction du risque cyber.",
+          "Products": {
+            "opencti": {
+              "Tagline": "Unifiez et priorisez vos signaux de menace",
+              "Description": "Décloisonnez vos données et rendez la threat intelligence opérationnelle avec OpenCTI, une plateforme agentique conçue par des praticiens pour des praticiens, avec playbooks automatisés, PIR, FINTEL, ainsi qu'import, reporting et recherche assistés par IA. Gouvernance et souveraineté de niveau entreprise incluses."
+            },
+            "openaev": {
+              "Tagline": "Validez vos défenses",
+              "Description": "Simulez de véritables attaques contre vos défenses existantes, agents EDR inclus, avec génération automatisée de scénarios et recommandations de remédiation assistées par IA, pour identifier ce qui est réellement exploitable. Des exercices sur table à la validation complète de votre posture et aux rapports de résilience destinés à la direction."
+            },
+            "xtmone": {
+              "Tagline": "Votre cockpit agentique de gestion des menaces",
+              "Description": "XTM One est la couche d'IA agentique qui orchestre l'IA assistive et agentique entre OpenCTI et OpenAEV, vous faisant passer du signal de menace à l'action validée à la vitesse de la machine, avec l'humain dans la boucle, pour boucler le cycle CTEM."
+            }
+          },
+          "Limitations": {
+            "Title": "Limites de l'essai",
+            "Intro": "L'essai gratuit XTM Platform comprend toutes les fonctionnalités SaaS de l'Enterprise Edition, mais avec une puissance de calcul et un stockage limités :",
+            "OpenCTI": "Pour OpenCTI : jusqu'à 40 Go de stockage de données de renseignement et 3 Go de stockage de fichiers.",
+            "OpenAEV": "Pour OpenAEV : 16 Go",
+            "Ingestion": "L'ingestion de flux volumineux et premium contenant de riches jeux de données peut rapidement saturer votre stockage pendant cet essai.",
+            "NoSLA": "Notez que cet essai n'inclut aucun SLA. En cas de panne du fournisseur cloud, le délai de rétablissement n'est pas garanti. Nous vous recommandons de ne pas stocker de données critiques ou irremplaçables dans votre environnement d'essai."
+          },
+          "Form": {
+            "ProductsTitle": "Produits inclus dans cet essai",
+            "ProductsWarning": "Choisissez soigneusement votre offre d'essai.",
+            "ProductsWarningDescription": "Une fois votre période d'essai lancée, il n'est plus possible d'ajouter ou de modifier des produits, et aucune autre période d'essai ne peut être demandée pour la même organisation.",
+            "OngoingTrialWarning": "Vous avez {count, plural, one {un essai {products} en cours} other {des essais {products} en cours}}. Demander un essai XTM Platform annulera {count, plural, one {votre essai actuel} other {tous vos essais actuels}} et les données ne seront pas transférées.",
+            "OngoingTrialDescription": "Une fois votre nouvelle offre d'essai choisie, les produits ne peuvent plus être modifiés, et aucun autre essai ne pourra être demandé pour la même organisation.",
+            "UseCaseFor": "Cas d'usage {product}",
+            "Submit": "Demander l'essai XTM Platform"
+          },
+          "NotLoggedIn": {
+            "Title": "Vous devez être connecté pour pouvoir demander un essai",
+            "Description": "Créez un compte XTM ou connectez-vous à un compte existant."
+          },
+          "NotAdmin": {
+            "Title": "Vous devez être administrateur de l'organisation pour demander un essai",
+            "Description": "Contactez l'administrateur de l'organisation dans votre entreprise"
+          },
+          "PersonalSpace": {
+            "Title": "Les essais ne sont pas disponibles dans un espace personnel"
+          }
+        }
       },
       "QuickStart": {
         "Title": "Guide de démarrage rapide",
@@ -1510,14 +1561,14 @@
       },
       "Form": {
         "Region": "Région",
-        "RegionPlaceholder": "Veuillez sélectionner votre région préférée pour l'hébergement",
-        "AssociatedEmail": "Email associé",
+        "RegionPlaceholder": "Sélectionnez la région de votre choix pour l'hébergement",
+        "AssociatedEmail": "Email associé ：",
         "JobTitle": "Titre du poste",
-        "JobTitlePlaceholder": "Veuillez sélectionner votre titre de poste",
+        "JobTitlePlaceholder": "Sélectionnez votre fonction",
         "ActivitySector": "Secteur d'activité",
-        "ActivitySectorPlaceholder": "Veuillez sélectionner votre secteur d'activité",
+        "ActivitySectorPlaceholder": "Sélectionnez votre secteur d'activité",
         "UseCase": "Cas d'utilisation",
-        "UseCasePlaceholder": "Veuillez sélectionner votre cas d'utilisation",
+        "UseCasePlaceholder": "Sélectionnez votre cas d'utilisation",
         "MSSA": "MSSA",
         "MSSAAgreement": "*Je reconnais avoir lu, compris et accepté les conditions du procès de",
         "FormRequested": "Vous avez demandé un essai gratuit. Vous recevrez un e-mail dès que la plateforme sera prête !"
@@ -1628,6 +1679,12 @@
     "Dark": "Foncé",
     "Light": "Clair",
     "SetTheme": "Appliquer le thème"
+  },
+  "ThreadConference": {
+    "Description": "Le rendez-vous annuel de la communauté mondiale du renseignement sur les menaces et de la cyberdéfense, où se croisent renseignement, gestion des risques et action.",
+    "Date": "15 octobre 2026 | Paris",
+    "ImageAlt": "Bannière de la conférence Thread",
+    "Cta": "En savoir plus"
   },
   "UnexpectedErrorDialog": {
     "Description": "Veuillez essayer de vous connecter à nouveau. Si le problème persiste, contactez-nous pour obtenir de l'aide.",

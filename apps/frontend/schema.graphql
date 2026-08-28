@@ -406,12 +406,17 @@ type PlatformDeploymentRequest {
 
 input CreateDeploymentRequestInput {
   products: [PlatformIdentifier!]!
+  use_cases_by_product: [ProductUseCaseInput!]
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
-  use_case: DeploymentRequestUseCase
   source: DeploymentRequestSource!
+}
+
+input ProductUseCaseInput {
+  platform_identifier: PlatformIdentifier!
+  use_case: DeploymentRequestUseCase!
 }
 
 input UpdateDeploymentRequestInput {
@@ -483,6 +488,7 @@ type PlatformTrialStatus {
   isBlacklisted: Boolean!
   hub_status: DeploymentRequestHubStatus
   end_date: Date
+  ongoingStandaloneTrials: [PlatformIdentifier!]!
 }
 
 enum DeploymentRequestOrdering {

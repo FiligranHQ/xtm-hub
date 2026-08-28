@@ -2,6 +2,7 @@ import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import {
   buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
@@ -22,7 +23,7 @@ const getPageData = cache(async () => {
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
     SeoServiceInstanceQuery,
     { slug: 'xtm-platform-roadmap' },
-    { cache: undefined, next: { revalidate: 3600 } }
+    { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
   );
   const serviceInstance = serviceResponse.data
     .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
