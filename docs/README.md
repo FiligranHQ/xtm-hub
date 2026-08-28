@@ -61,26 +61,32 @@ Starting server at http://localhost:8000/
 
 ## Deploy the documentation
 
-Deployment is currently a **manual** step, run from this `docs/` folder
-(the same process as before, just from the new location).
+Deployment is **automated**. The
+[`docs-deploy.yml`](../.github/workflows/docs-deploy.yml) workflow runs on every
+`v*` tag push (i.e. on every release created by `Create Deployment`) and:
+
+1. compares the tag with the previous one and **stops early if nothing changed
+   under `docs/`**;
+2. builds the site and publishes it with `mike` as version `<tag without the
+   leading v>`, updating the `latest` alias;
+3. deploys the resulting `gh-pages` content to GitHub Pages
+   ([docs.hub.filigran.io](https://docs.hub.filigran.io)).
 
 ### Update the source
 
 Committing on the main branch does not impact the deployed documentation;
-commit and push as usual.
+commit and push as usual. The site is refreshed at the next release.
 
-### Deploy and update the current version
+### Deploy manually
 
-With the right version number (e.g. 1.5.X):
+Use the `Deploy documentation` workflow via `workflow_dispatch`. It accepts an
+optional `tag` (defaults to the latest `v*` tag) and a `force` flag to redeploy
+even when `docs/` has not changed.
+
+As a last resort, `mike` can still be run locally from the repository root:
+
 ```sh
-$ mike deploy --push [version]
-```
-
-### Deploy a new stable version
-
-With the right version number (e.g. 1.5.X), update the `latest` alias:
-```sh
-$ mike deploy --push --update-aliases [version] latest
+$ mike deploy --config-file docs/mkdocs.yml --push --update-aliases [version] latest
 ```
 
 ## Useful commands
