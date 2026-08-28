@@ -9,10 +9,12 @@ import {
   SelectValue,
 } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
-import { ControllerRenderProps } from 'react-hook-form';
+import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 
-interface TranslatableEnumSelectFieldProps {
-  field: ControllerRenderProps;
+interface TranslatableEnumSelectFieldProps<
+  T extends FieldValues = FieldValues,
+> {
+  field: ControllerRenderProps<T, FieldPath<T>>;
   label: string;
   placeholder: string;
   values: string[];
@@ -20,14 +22,14 @@ interface TranslatableEnumSelectFieldProps {
   className?: string;
 }
 
-export const TranslatableEnumSelectField = ({
+export const TranslatableEnumSelectField = <T extends FieldValues>({
   field,
   label,
   placeholder,
   values,
   translationNamespace,
   className = 'text-sm text-destructive',
-}: TranslatableEnumSelectFieldProps) => {
+}: TranslatableEnumSelectFieldProps<T>) => {
   const t = useTranslations();
   return (
     <FormItem>

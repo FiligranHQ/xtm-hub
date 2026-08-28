@@ -1,0 +1,39 @@
+meta {
+  name: RegisteredProductVersions
+  type: graphql
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: none
+}
+
+body:graphql {
+  query RegisteredProductVersions($product: PlatformIdentifier) {
+    registeredProductVersions(product: $product) {
+      product
+      version
+      created_at
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "product": "opencti"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Public query, no auth required.
+
+  Fill variables:
+  product: PlatformIdentifier enum value (e.g. opencti, openaev). Omit to list every registered product version.
+}

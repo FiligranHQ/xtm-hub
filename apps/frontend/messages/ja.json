@@ -270,6 +270,7 @@
       "MISSING_CAPABILITY_ON_SERVICE": "パーミッションが見つからない",
       "MISSING_METADATA_MAPPING": "メタデータのマッピングの欠落",
       "MISSING_START_OR_END_DATE": "不明なエラーが発生",
+      "INVALID_USE_CASES_FOR_PRODUCTS": "ユースケースが申請された製品と一致しません",
       "MIXED_LTS_MANIFEST_FRAGMENTS": "バッチ内でLTSと非LTSのフラグメントを混在させることはできません",
       "NEWS_FEED_ITEM_MISSING_TITLE": "ニュースフィードにタイトルがありません",
       "NEWS_FEED_ITEM_NOT_FOUND": "ニュースフィード項目が見つかりません",
@@ -714,7 +715,8 @@
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "オープンCTI",
-    "xtmhub": "XTM ハブ"
+    "xtmhub": "XTM ハブ",
+    "xtmone": "XTM One"
   },
   "ProfilePage": {
     "Picture": "写真",
@@ -1474,7 +1476,56 @@
         "Ending": {
           "Text": "トライアル終了前に、引き続き XTM Platform のフル体験をお楽しみください。"
         },
-        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}"
+        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}",
+        "Page": {
+          "Breadcrumb": "XTM Platform Trial",
+          "Overline": "XTM Platform 無料トライアル",
+          "Title": "30日間の無料トライアルを開始",
+          "PitchTitle": "XTM Platform のすべてを体験する",
+          "PitchDescription": "30日間、OpenCTI と OpenAEV の SaaS 版エンタープライズエディション、および XTM One のエージェンティックなオーケストレーション機能をご利用いただけます。脅威インテリジェンスを統合し、エージェンティックかつ継続的なエクスポージャー管理とサイバーリスク低減によって防御を検証しましょう。",
+          "Products": {
+            "opencti": {
+              "Tagline": "脅威シグナルを統合し、優先順位を付ける",
+              "Description": "実務者が実務者のために構築したエージェンティックプラットフォーム OpenCTI で、データのサイロを解消し脅威インテリジェンスを実運用に活かします。自動プレイブック、PIR、FINTEL、AI によるインポート・レポート作成・検索に対応。エンタープライズ級のガバナンスとソブリンティを備えています。"
+            },
+            "openaev": {
+              "Tagline": "防御を検証する",
+              "Description": "EDR エージェントを含む既存の防御に対して実際の攻撃をシミュレーションし、シナリオの自動生成と AI による修復ガイダンスで、本当に悪用可能な箇所を明らかにします。机上演習から、posture の全面的な検証、経営層向けのレジリエンスレポートまで対応します。"
+            },
+            "xtmone": {
+              "Tagline": "エージェンティックな脅威管理のコックピット",
+              "Description": "XTM One は、OpenCTI と OpenAEV をまたいでアシスティブ AI とエージェンティック AI を統括する AI レイヤーです。人間が関与しながら、脅威シグナルから検証済みのアクションへとマシンスピードで進み、CTEM のループを完結させます。"
+            }
+          },
+          "Limitations": {
+            "Title": "トライアルの制限事項",
+            "Intro": "XTM Platform の無料トライアルには Enterprise Edition の SaaS 機能がすべて含まれますが、計算リソースとストレージには制限があります：",
+            "OpenCTI": "OpenCTI：インテリジェンスデータ保存は最大 40GB、ファイル保存は 3GB まで。",
+            "OpenAEV": "OpenAEV：16GB",
+            "Ingestion": "トライアル期間中に大容量のプレミアムフィードや情報量の多いデータセットを取り込むと、ストレージをすぐに消費する可能性があります。",
+            "NoSLA": "本トライアルに SLA は含まれません。クラウドプロバイダーの障害が発生した場合、復旧時間は保証されません。トライアル環境には重要なデータや代替できないデータを保存しないことを推奨します。"
+          },
+          "Form": {
+            "ProductsTitle": "このトライアルに含まれる製品",
+            "ProductsWarning": "トライアルバンドルは慎重にお選びください。",
+            "ProductsWarningDescription": "トライアルが開始されると、製品の追加や変更はできなくなり、また、同じ組織に対して追加のトライアルを申請することもできません。",
+            "OngoingTrialWarning": "{count, plural, one {{products}の進行中のトライアルがあります} other {{products}の進行中のトライアルが複数あります}}。XTM Platform トライアルを申請すると、{count, plural, one {現在のトライアル} other {現在のすべてのトライアル}}はキャンセルされ、データは引き継がれません。",
+            "OngoingTrialDescription": "新しいトライアル構成を選択した後は製品を変更できず、同じ組織で追加のトライアルを申請することもできません。",
+            "UseCaseFor": "{product} のユースケース",
+            "Submit": "XTM Platform トライアルを申請"
+          },
+          "NotLoggedIn": {
+            "Title": "トライアルを申請するにはログインが必要です",
+            "Description": "XTM アカウントを作成するか、既存のアカウントでログインしてください。"
+          },
+          "NotAdmin": {
+            "Title": "トライアルを申請するには組織の管理者である必要があります",
+            "Description": "所属企業の組織管理者にお問い合わせください"
+          },
+          "PersonalSpace": {
+            "Title": "個人スペースではトライアルをご利用いただけません"
+          }
+        }
       },
       "QuickStart": {
         "Title": "クイックスタートガイド",
@@ -1510,12 +1561,12 @@
       },
       "Form": {
         "Region": "地域",
-        "RegionPlaceholder": "ご希望のホスティング地域を選択してください。",
-        "AssociatedEmail": "関連Eメール",
+        "RegionPlaceholder": "ホスティング先の希望地域を選択してください",
+        "AssociatedEmail": "関連メールアドレス：",
         "JobTitle": "役職名",
-        "JobTitlePlaceholder": "職種を選択してください",
+        "JobTitlePlaceholder": "役職を選択してください",
         "ActivitySector": "活動分野",
-        "ActivitySectorPlaceholder": "活動セクターを選択してください",
+        "ActivitySectorPlaceholder": "業種を選択してください",
         "UseCase": "用途",
         "UseCasePlaceholder": "ユースケースを選択してください",
         "MSSA": "MSSA",
@@ -1785,6 +1836,12 @@
     "Dark": "暗い",
     "Light": "明るい",
     "SetTheme": "セットテーマ"
+  },
+  "ThreadConference": {
+    "Description": "世界的な脅威インテリジェンスおよびサイバー防衛コミュニティによる年次集会――インテリジェンス、リスク管理、そして実践が一堂に会する場。",
+    "Date": "2026年10月15日 | パリ",
+    "ImageAlt": "Thread Conference バナー",
+    "Cta": "詳細はこちら"
   },
   "UnexpectedErrorDialog": {
     "Description": "再度ログインをお試しください。それでも問題が解決しない場合は、お問い合わせください。",

@@ -92,12 +92,15 @@ export const StartTrialButton = ({
     values: z.infer<typeof tryFiligranProductFormSchema>
   ) => {
     setOpenSheet(false);
-    const { acceptTerms: _, ...valuesWithoutAcceptTerms } = values;
+    const { acceptTerms: _, use_case, ...valuesWithoutAcceptTerms } = values;
     commitCreateDeploymentRequest({
       variables: {
         input: {
           ...valuesWithoutAcceptTerms,
           products: [platformIdentifier],
+          use_cases_by_product: [
+            { platform_identifier: platformIdentifier, use_case },
+          ],
           type: DeploymentRequestDeploymentType.Trial,
           source,
         },
