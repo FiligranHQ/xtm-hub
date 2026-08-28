@@ -1,7 +1,29 @@
-import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
+import {
+  DeploymentRequestDeploymentType,
+  PlatformIdentifier,
+  ServiceGroupName,
+  ServiceGroup as ServiceGroupResponse,
+} from '../../../__generated__/resolvers-types';
+import DeploymentRequest from '../../../model/kanel/public/DeploymentRequest';
+import ServiceGroupModel, {
+  ServiceGroupId,
+} from '../../../model/kanel/public/ServiceGroup';
 import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
-import { UserId } from '../../../model/kanel/public/User';
+import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
+import User, { UserId } from '../../../model/kanel/public/User';
+import { sendMail } from '../../../server/mail-service';
+import {
+  Auth0UpdateUserRBACInstance,
+  auth0Client,
+} from '../../../thirdparty/auth0/client';
+import { logApp } from '../../../utils/app-logger.util';
+import { ErrorCode } from '../../../utils/error/error.code';
+import { formatName } from '../../../utils/format';
+import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
+import { PlatformConfigurationDomain } from '../../registration/platform-configuration/platform-configuration.domain';
+import { DeploymentRequestDomain } from '../deployment.domain';
 import { UpdateGroupsPayload } from './service-group.app';
+import { ServiceGroupDomain } from './service-group.domain';
 
 export type UserGroups = { user_id: UserId; group_ids: ServiceGroupId[] };
 
@@ -33,6 +55,185 @@ export const ServiceGroupHelper = {
     }
 
     return modifiedUsers;
+  },
+
+  toServiceGroupResponse: (
+    serviceGroup: ServiceGroupModel
+  ): ServiceGroupResponse => ({
+    ...serviceGroup,
+    name: serviceGroup.name as ServiceGroupName,
+  }),
+
+  matchRolesToChildren: <T extends ServiceGroupName | null>(
+    children: DeploymentRequest[],
+    roles: { product: PlatformIdentifier; role?: T | null }[]
+  ): { child: DeploymentRequest; role: T | null }[] =>
+    roles.flatMap((roleAssignment) => {
+      const child = children.find(
+        (deploymentRequest) =>
+          deploymentRequest.platform_identifier === roleAssignment.product
+      );
+      return child ? [{ child, role: roleAssignment.role ?? null }] : [];
+    }),
+
+  loadEmailByUserId: async (
+    userIds: UserId[]
+  ): Promise<{ users: User[]; emailByUserId: Map<UserId, string> }> => {
+    const users = await UserDomain.loadUsers(userIds);
+    return {
+      users,
+      emailByUserId: new Map(users.map(({ id, email }) => [id, email])),
+    };
+  },
+
+  syncAuth0GroupsForChildren: async (
+    childGroupAssignments: {
+      child: DeploymentRequest;
+      groupNames: ServiceGroupName[];
+    }[],
+    userIds: UserId[],
+    emailByUserId: Map<UserId, string>
+  ): Promise<void> => {
+    const rbacInstance: Auth0UpdateUserRBACInstance = {};
+    childGroupAssignments.forEach(({ child, groupNames }) => {
+      if (!child.platform_id) {
+        return;
+      }
+      rbacInstance[child.platform_id] = { groups: groupNames };
+    });
+
+    if (Object.keys(rbacInstance).length === 0) {
+      return;
+    }
+
+    await Promise.all(
+      userIds.map((userId) => {
+        const email = emailByUserId.get(userId);
+        if (!email) {
+          return undefined;
+        }
+        return auth0Client.updateUserRBACInstance(email, rbacInstance);
+      })
+    );
+  },
+
+  sendFreeTrialWelcomeEmails: async ({
+    platformId,
+    platformIdentifier,
+    deploymentType,
+    endDate,
+    newlyAddedUsers,
+    adminEmail,
+  }: {
+    platformId: string | null;
+    platformIdentifier: PlatformIdentifier | null;
+    deploymentType: DeploymentRequestDeploymentType;
+    endDate: Date | null;
+    newlyAddedUsers: User[];
+    adminEmail: string;
+  }): Promise<void> => {
+    if (!platformId || !platformIdentifier || newlyAddedUsers.length === 0) {
+      return;
+    }
+
+    try {
+      const platformConfiguration =
+        await PlatformConfigurationDomain.loadConfigurationByPlatform(
+          platformId
+        );
+      if (
+        !platformConfiguration ||
+        deploymentType !== DeploymentRequestDeploymentType.Trial ||
+        !endDate
+      ) {
+        return;
+      }
+
+      const trialEndDate = endDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit',
+      });
+      await Promise.all(
+        newlyAddedUsers.map((addedUser) =>
+          sendMail({
+            to: addedUser.email,
+            template: 'free_trial_user_added',
+            params: {
+              firstName: formatName(addedUser.first_name),
+              platformUrl: platformConfiguration.platform_url,
+              platformIdentifier,
+              adminEmail,
+              trialEndDate,
+            },
+          })
+        )
+      );
+    } catch (error) {
+      logApp.error('Unable to send free_trial_user_added mail', { error });
+    }
+  },
+
+  updateAuth0Groups: async (
+    oldUsers: ServiceGroupUser[],
+    newUsers: UpdateGroupsPayload,
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<void> => {
+    const updatedUsers = ServiceGroupHelper.buildUserGroupsDiff(
+      oldUsers,
+      newUsers
+    );
+
+    const users = await UserDomain.loadUsers(
+      updatedUsers.map(({ user_id }) => user_id)
+    );
+    const userEmailMap: Map<UserId, string> = users.reduce(
+      (acc, current) => {
+        acc.set(current.id, current.email);
+        return acc;
+      },
+
+      new Map<UserId, string>()
+    );
+
+    const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
+      service_instance_id: serviceInstanceId,
+    });
+
+    const groupNameIndexedByGroupId = serviceGroups.reduce((acc, current) => {
+      acc.set(current.id, current.name);
+      return acc;
+    }, new Map<ServiceGroupId, string>());
+
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        service_instance_id: serviceInstanceId,
+      });
+
+    if (!deploymentRequest) {
+      throw new Error(ErrorCode.DeploymentRequestNotFound);
+    }
+    const { platform_id } = deploymentRequest;
+    if (!platform_id) {
+      throw new Error(ErrorCode.InvalidPlatformId);
+    }
+
+    await Promise.all(
+      updatedUsers.map(async (updatedUser) => {
+        const email = userEmailMap.get(updatedUser.user_id);
+        if (!email) {
+          return;
+        }
+
+        await auth0Client.updateUserRBACInstance(email, {
+          [platform_id]: {
+            groups: updatedUser.group_ids.flatMap(
+              (group_id) => groupNameIndexedByGroupId.get(group_id) ?? []
+            ),
+          },
+        });
+      })
+    );
   },
 };
 

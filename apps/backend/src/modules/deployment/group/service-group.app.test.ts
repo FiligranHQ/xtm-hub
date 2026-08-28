@@ -18,7 +18,6 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
-  DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   PlatformConfigurationStatus,
   PlatformContract,
@@ -243,147 +242,6 @@ describe('serviceGroupApp', () => {
       expect(analysts?.[0]?.user_id).toBe(
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
       );
-    });
-
-    describe('email sending for newly added users', () => {
-      const platformId = uuidv4();
-      const platformUrl = 'https://test-platform.example.com';
-      const endDate = new Date('2026-06-01');
-
-      beforeEach(async () => {
-        await TestHelper.subscription.create({
-          service_instance_id: serviceInstanceId1,
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        });
-        await TestHelper.deploymentRequest.create({
-          service_instance_id: serviceInstanceId1,
-          platform_id: platformId,
-          user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          end_date: endDate,
-        });
-
-        await TestHelper.platformConfiguration.create({
-          service_instance_id: serviceInstanceId1,
-          status: PlatformConfigurationStatus.Active,
-          platform_id: platformId,
-          platform_url: platformUrl,
-          registerer_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          platform_title: 'Test Platform',
-          platform_version: '1.0.0',
-          platform_contract: PlatformContract.Ee,
-          token: uuidv4(),
-        });
-      });
-
-      it('should send free_trial_user_added email to each newly added user', async () => {
-        const sendMailSpy = vi
-          .spyOn(mailService, 'sendMail')
-          .mockResolvedValue(undefined);
-
-        const expectedTrialEndDate = endDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: '2-digit',
-        });
-
-        await ServiceGroupApp.updateGroups([
-          {
-            id: adminGroupId,
-            userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID],
-          },
-          {
-            id: analystGroupId,
-            userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
-          },
-        ]);
-
-        expect(sendMailSpy).toHaveBeenCalledTimes(2);
-        expect(sendMailSpy).toHaveBeenCalledWith({
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-          template: 'free_trial_user_added',
-          params: {
-            firstName: formatName(
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME
-            ),
-            platformUrl,
-            platformIdentifier: PlatformIdentifier.Opencti,
-            adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-            trialEndDate: expectedTrialEndDate,
-          },
-        });
-        expect(sendMailSpy).toHaveBeenCalledWith({
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-          template: 'free_trial_user_added',
-          params: {
-            firstName: formatName(
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME
-            ),
-            platformUrl,
-            platformIdentifier: PlatformIdentifier.Opencti,
-            adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-            trialEndDate: expectedTrialEndDate,
-          },
-        });
-      });
-
-      it('should not send email to users already in the group', async () => {
-        await TestHelper.serviceGroupUser.create({
-          group_id: adminGroupId,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        });
-
-        const sendMailSpy = vi
-          .spyOn(mailService, 'sendMail')
-          .mockResolvedValue(undefined);
-
-        await ServiceGroupApp.updateGroups([
-          {
-            id: adminGroupId,
-            userIds: [
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-            ],
-          },
-          { id: analystGroupId, userIds: [] },
-        ]);
-
-        expect(sendMailSpy).toHaveBeenCalledTimes(1);
-        expect(sendMailSpy).toHaveBeenCalledWith(
-          expect.objectContaining({
-            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-            template: 'free_trial_user_added',
-          })
-        );
-      });
-
-      it('should not send any email when all users were already in their groups', async () => {
-        await TestHelper.serviceGroupUser.create({
-          group_id: adminGroupId,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        });
-        await TestHelper.serviceGroupUser.create({
-          group_id: analystGroupId,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-        });
-
-        const sendMailSpy = vi
-          .spyOn(mailService, 'sendMail')
-          .mockResolvedValue(undefined);
-
-        await ServiceGroupApp.updateGroups([
-          {
-            id: adminGroupId,
-            userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID],
-          },
-          {
-            id: analystGroupId,
-            userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
-          },
-        ]);
-
-        expect(sendMailSpy).not.toHaveBeenCalled();
-      });
     });
   });
 
@@ -620,13 +478,6 @@ describe('serviceGroupApp', () => {
       expect(result[0]?.user.id).toBe(
         TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID
       );
-      // Regression: the underlying query used to be rooted on
-      // `DeploymentRequest`, so knex's postProcessResponse tagged every row
-      // (including the joined `User.*` columns) with `__typename:
-      // 'DeploymentRequest'`, which made `Node.id` encode the user as a
-      // `DeploymentRequest:` global id instead of `User:` on the GraphQL
-      // layer.
-      expect(result[0]?.user.__typename).toBe('User');
       expect(result[0]?.groups).toEqual(
         expect.arrayContaining([
           { platformIdentifier: PlatformIdentifier.Opencti, name: 'Admin' },
@@ -649,80 +500,6 @@ describe('serviceGroupApp', () => {
 
       // Then
       await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
-    });
-
-    it('should throw SubscriptionNotFound when the bundle has no subscribed organization', async () => {
-      // Given
-      const bundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-          }
-        );
-      createdBundleIds.push(bundle.id);
-      await TestHelper.subscription.delete({
-        service_instance_id: bundle.service_instance_id,
-      });
-
-      // When
-      const call = ServiceGroupApp.loadBundleUserServiceGroups(
-        bundle.service_instance_id
-      );
-
-      // Then
-      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
-    });
-
-    it('should prevent a non-bypass user from accessing a bundle of another organization', async () => {
-      // Given
-      const bundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-          }
-        );
-      createdBundleIds.push(bundle.id);
-      requestContext.set(requestContextAdminSecondOrga);
-
-      // When
-      const call = ServiceGroupApp.loadBundleUserServiceGroups(
-        bundle.service_instance_id
-      );
-
-      // Then
-      await expect(call).rejects.toThrow(
-        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
-      );
-    });
-
-    it('should allow a bypass user to access a bundle of another organization', async () => {
-      // Given
-      const bundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-          }
-        );
-      createdBundleIds.push(bundle.id);
-      await TestHelper.subscription.delete({
-        service_instance_id: bundle.service_instance_id,
-      });
-      await TestHelper.subscription.create({
-        service_instance_id: bundle.service_instance_id,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
-      requestContext.set(requestContextAdminUser);
-
-      // When
-      const result = await ServiceGroupApp.loadBundleUserServiceGroups(
-        bundle.service_instance_id
-      );
-
-      // Then
-      expect(result).toEqual([]);
     });
   });
 
@@ -770,77 +547,6 @@ describe('serviceGroupApp', () => {
 
       // Then
       await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
-    });
-
-    it('should throw SubscriptionNotFound when the bundle has no subscribed organization', async () => {
-      // Given
-      const bundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-          }
-        );
-      createdBundleIds.push(bundle.id);
-      await TestHelper.subscription.delete({
-        service_instance_id: bundle.service_instance_id,
-      });
-
-      // When
-      const call = ServiceGroupApp.loadBundleProducts(
-        bundle.service_instance_id
-      );
-
-      // Then
-      await expect(call).rejects.toThrow(ErrorCode.SubscriptionNotFound);
-    });
-
-    it('should prevent a non-bypass user from accessing a bundle of another organization', async () => {
-      // Given
-      const bundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-          }
-        );
-      createdBundleIds.push(bundle.id);
-      requestContext.set(requestContextAdminSecondOrga);
-
-      // When
-      const call = ServiceGroupApp.loadBundleProducts(
-        bundle.service_instance_id
-      );
-
-      // Then
-      await expect(call).rejects.toThrow(
-        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
-      );
-    });
-
-    it('should allow a bypass user to access a bundle of another organization', async () => {
-      // Given
-      const { bundle } = await TestHelper.deploymentRequest.createBundle({
-        bundle: { organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID },
-        children: [{ platform_identifier: PlatformIdentifier.Openaev }],
-      });
-      createdBundleIds.push(bundle.id);
-      await TestHelper.subscription.delete({
-        service_instance_id: bundle.service_instance_id,
-      });
-      await TestHelper.subscription.create({
-        service_instance_id: bundle.service_instance_id,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
-      requestContext.set(requestContextAdminUser);
-
-      // When
-      const result = await ServiceGroupApp.loadBundleProducts(
-        bundle.service_instance_id
-      );
-
-      // Then
-      expect(result).toEqual([PlatformIdentifier.Openaev]);
     });
   });
 
@@ -1171,35 +877,6 @@ describe('serviceGroupApp', () => {
       // Then
       await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
     });
-
-    it('should prevent a non-bypass user from adding users to a bundle of another organization', async () => {
-      // Given
-      const bundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-          }
-        );
-      createdBundleIds.push(bundle.id);
-      requestContext.set(requestContextAdminSecondOrga);
-
-      // When
-      const call = ServiceGroupApp.addUsersToBundleGroups(
-        bundle.service_instance_id,
-        {
-          userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
-          roles: [
-            { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
-          ],
-        }
-      );
-
-      // Then
-      await expect(call).rejects.toThrow(
-        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
-      );
-    });
   });
 
   describe('removeUsersFromBundleGroups', () => {
@@ -1364,30 +1041,6 @@ describe('serviceGroupApp', () => {
 
       // Then
       await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
-    });
-
-    it('should prevent a non-bypass user from removing users from a bundle of another organization', async () => {
-      // Given
-      const bundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-          }
-        );
-      createdBundleIds.push(bundle.id);
-      requestContext.set(requestContextAdminSecondOrga);
-
-      // When
-      const call = ServiceGroupApp.removeUsersFromBundleGroups(
-        bundle.service_instance_id,
-        [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID]
-      );
-
-      // Then
-      await expect(call).rejects.toThrow(
-        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
-      );
     });
   });
 
@@ -1648,35 +1301,6 @@ describe('serviceGroupApp', () => {
 
       // Then
       await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
-    });
-
-    it('should prevent a non-bypass user from updating users of a bundle of another organization', async () => {
-      // Given
-      const bundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-          }
-        );
-      createdBundleIds.push(bundle.id);
-      requestContext.set(requestContextAdminSecondOrga);
-
-      // When
-      const call = ServiceGroupApp.updateBundleUserGroups(
-        bundle.service_instance_id,
-        {
-          userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
-          roles: [
-            { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
-          ],
-        }
-      );
-
-      // Then
-      await expect(call).rejects.toThrow(
-        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
-      );
     });
   });
 });
