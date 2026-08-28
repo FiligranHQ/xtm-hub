@@ -11,6 +11,8 @@ type UseServiceCapabilityOptions = {
   withSubscriptionId?: boolean;
 };
 
+const ServiceUserCapabilitiesStaleTime = 10 * 60 * 1000; // Cache: 10mns
+
 export type UseServiceCapabilityWithSubscriptionId = {
   hasCapability: boolean;
   subscriptionId: string | null;
@@ -39,6 +41,7 @@ function useServiceCapability(
     {
       enabled: !!serviceInstance?.id,
       queryKey: ['service-user-capabilities', serviceInstance?.id],
+      staleTime: ServiceUserCapabilitiesStaleTime,
     }
   );
   const userServiceCapabilities =

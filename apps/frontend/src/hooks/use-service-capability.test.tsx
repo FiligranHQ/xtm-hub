@@ -121,4 +121,25 @@ describe('useServiceCapability', () => {
       subscriptionId: SubscriptionId,
     });
   });
+
+  it('should configure caching for service capabilities query', () => {
+    // Given
+    mockCapabilitiesQueryResult(undefined);
+
+    // When
+    renderHook(() =>
+      useServiceCapability(ServiceRestriction.ManageAccess, ServiceInstance)
+    );
+
+    // Then
+    expect(useServiceUserCapabilitiesQuery).toHaveBeenCalledWith(
+      expect.anything(),
+      { service_instance_id: ServiceInstanceId },
+      expect.objectContaining({
+        enabled: true,
+        queryKey: ['service-user-capabilities', ServiceInstanceId],
+        staleTime: 10 * 60 * 1000,
+      })
+    );
+  });
 });
