@@ -1,3 +1,15 @@
+type RegisteredProductVersion {
+  product: PlatformIdentifier!
+  version: String!
+  created_at: Date!
+}
+
+type Query {
+  registeredProductVersions(
+    product: PlatformIdentifier!
+  ): [RegisteredProductVersion!]!
+}
+
 type Mutation {
   newProductVersion(product: PlatformIdentifier!, version: String!): Success!
     @system_token(portalCapa: [GENERATE_MANIFEST])

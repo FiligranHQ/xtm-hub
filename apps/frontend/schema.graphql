@@ -119,6 +119,7 @@ type Query {
   mostDeployedDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   newestDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   lastDeployedOverview(limit: Int!, serviceInstanceId: ServiceInstanceId!): LastDeployedOverview!
+  registeredProductVersions(product: PlatformIdentifier!): [RegisteredProductVersion!]!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -710,6 +711,12 @@ type DeployedResource {
 
 type LastDeployedOverview {
   resources: [DeployedResource!]!
+}
+
+type RegisteredProductVersion {
+  product: PlatformIdentifier!
+  version: String!
+  created_at: Date!
 }
 
 """
