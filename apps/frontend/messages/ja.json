@@ -1509,7 +1509,7 @@
             "ProductsTitle": "このトライアルに含まれる製品",
             "ProductsWarning": "トライアルバンドルは慎重にお選びください。",
             "ProductsWarningDescription": "トライアルが開始されると、製品の追加や変更はできなくなり、また、同じ組織に対して追加のトライアルを申請することもできません。",
-            "OngoingTrialWarning": "進行中のトライアルがあります。XTM Platform トライアルを申請すると、現在のトライアルはすべてキャンセルされ、データは引き継がれません。",
+            "OngoingTrialWarning": "{count, plural, one {{products}の進行中のトライアルがあります} other {{products}の進行中のトライアルが複数あります}}。XTM Platform トライアルを申請すると、{count, plural, one {現在のトライアル} other {現在のすべてのトライアル}}はキャンセルされ、データは引き継がれません。",
             "OngoingTrialDescription": "新しいトライアル構成を選択した後は製品を変更できず、同じ組織で追加のトライアルを申請することもできません。",
             "UseCaseFor": "{product} のユースケース",
             "Submit": "XTM Platform トライアルを申請"

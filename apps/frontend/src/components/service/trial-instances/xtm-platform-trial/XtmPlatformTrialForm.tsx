@@ -4,6 +4,7 @@ import {
   REGIONS_VALUES,
   USE_CASES_BY_PLATFORM_IDENTIFIER,
 } from '@/components/service/trial-instances/form-constants';
+import { buildOngoingTrialWarningParams } from '@/components/service/trial-instances/xtm-platform-trial/xtm-platform-trial-form.utils';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
 import { WarningIcon } from '@filigran/icon';
@@ -28,7 +29,7 @@ import {
   PlatformIdentifier,
 } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useContext, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -70,14 +71,23 @@ const SELECTABLE_PRODUCTS = [
 interface XtmPlatformTrialFormProps {
   handleSubmit: (values: z.infer<typeof xtmPlatformTrialFormSchema>) => void;
   hasOngoingStandaloneTrials?: boolean;
+  ongoingStandaloneTrialProducts?: PlatformIdentifier[];
 }
 
 export const XtmPlatformTrialForm = ({
   handleSubmit,
   hasOngoingStandaloneTrials = false,
+  ongoingStandaloneTrialProducts = [],
 }: XtmPlatformTrialFormProps) => {
   const t = useTranslations();
+  const locale = useLocale();
   const { me } = useContext(PortalContext);
+
+  const ongoingTrialWarningParams = buildOngoingTrialWarningParams(
+    ongoingStandaloneTrialProducts,
+    (platformIdentifier) => t(`PlatformIdentifier.${platformIdentifier}`),
+    locale
+  );
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<z.infer<
@@ -176,7 +186,8 @@ export const XtmPlatformTrialForm = ({
                 <div className="flex flex-col gap-xs">
                   <span>
                     {t(
-                      'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning'
+                      'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning',
+                      ongoingTrialWarningParams
                     )}
                   </span>
                   <span>
@@ -372,7 +383,10 @@ export const XtmPlatformTrialForm = ({
           <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
           <div className="flex flex-col gap-xs">
             <span>
-              {t('Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning')}
+              {t(
+                'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning',
+                ongoingTrialWarningParams
+              )}
             </span>
             <span>
               {t(

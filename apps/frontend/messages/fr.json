@@ -1509,7 +1509,7 @@
             "ProductsTitle": "Produits inclus dans cet essai",
             "ProductsWarning": "Choisissez soigneusement votre offre d'essai.",
             "ProductsWarningDescription": "Une fois votre période d'essai lancée, il n'est plus possible d'ajouter ou de modifier des produits, et aucune autre période d'essai ne peut être demandée pour la même organisation.",
-            "OngoingTrialWarning": "Vous avez un essai en cours : demander un essai XTM Platform annulera tous vos essais actuels et les données ne seront pas transférées.",
+            "OngoingTrialWarning": "Vous avez {count, plural, one {un essai {products} en cours} other {des essais {products} en cours}}. Demander un essai XTM Platform annulera {count, plural, one {votre essai actuel} other {tous vos essais actuels}} et les données ne seront pas transférées.",
             "OngoingTrialDescription": "Une fois votre nouvelle offre d'essai choisie, les produits ne peuvent plus être modifiés, et aucun autre essai ne pourra être demandé pour la même organisation.",
             "UseCaseFor": "Cas d'usage {product}",
             "Submit": "Demander l'essai XTM Platform"
@@ -1562,7 +1562,7 @@
       "Form": {
         "Region": "Région",
         "RegionPlaceholder": "Sélectionnez la région de votre choix pour l'hébergement",
-        "AssociatedEmail": "Email associé :",
+        "AssociatedEmail": "Email associé ：",
         "JobTitle": "Titre du poste",
         "JobTitlePlaceholder": "Sélectionnez votre fonction",
         "ActivitySector": "Secteur d'activité",

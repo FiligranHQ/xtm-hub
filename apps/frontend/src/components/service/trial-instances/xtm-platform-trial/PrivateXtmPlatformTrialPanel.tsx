@@ -94,11 +94,13 @@ export const PrivateXtmPlatformTrialPanel = () => {
     return null;
   }
 
+  const ongoingStandaloneTrials =
+    data?.platformTrialStatus?.ongoingStandaloneTrials ?? [];
+
   const state = deriveXtmPlatformTrialPanelState({
     isPersonalSpace: isPersonalSpace ?? false,
     isAllowed: canRequestTrial,
-    ongoingStandaloneTrials:
-      data?.platformTrialStatus?.ongoingStandaloneTrials ?? [],
+    ongoingStandaloneTrials,
   });
 
   if (state === XtmPlatformTrialPanelState.PersonalSpace) {
@@ -125,6 +127,7 @@ export const PrivateXtmPlatformTrialPanel = () => {
       hasOngoingStandaloneTrials={
         state === XtmPlatformTrialPanelState.RequestWithOngoingTrials
       }
+      ongoingStandaloneTrialProducts={ongoingStandaloneTrials}
     />
   );
 };
