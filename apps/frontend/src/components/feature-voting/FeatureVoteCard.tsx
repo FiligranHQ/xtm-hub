@@ -3,7 +3,6 @@
 import { FeatureVoteButton } from '@/components/feature-voting/FeatureVoteButton';
 import { Badge } from '@filigran/ui/servers';
 import { VotableFeaturePublicFragment } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { MouseEvent, useCallback } from 'react';
@@ -22,7 +21,6 @@ export const FeatureVoteCard = ({
   serviceInstanceId,
   isAuthenticated,
 }: FeatureVoteCardProps) => {
-  const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -34,8 +32,8 @@ export const FeatureVoteCard = ({
   }, [router, pathname, searchParams, feature.id]);
 
   // Clicking anywhere on the card is a mouse convenience only. Keyboard users
-  // reach the detail through the "see details" button below, so the card stays
-  // a plain container rather than a widget wrapping other widgets.
+  // reach the detail through the title, so the card stays a plain container
+  // rather than a widget wrapping other widgets.
   const handleCardClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       const { currentTarget, target } = event;
@@ -71,7 +69,13 @@ export const FeatureVoteCard = ({
       )}
       <div className="flex flex-1 flex-col gap-s p-m">
         <h3 className="text-base font-semibold leading-tight line-clamp-2">
-          {feature.title}
+          <button
+            type="button"
+            onClick={openDetail}
+            data-no-open-detail
+            className="focus-visible:ring-primary text-left underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2">
+            {feature.title}
+          </button>
         </h3>
         <p className="text-muted-foreground text-sm line-clamp-3">
           {feature.short_description}
@@ -87,13 +91,6 @@ export const FeatureVoteCard = ({
             ))}
           </div>
         )}
-        <button
-          type="button"
-          onClick={openDetail}
-          data-no-open-detail
-          className="text-muted-foreground focus-visible:ring-primary w-fit text-xs underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2">
-          {t('FeatureVoting.SeeDetails')}
-        </button>
         {/* Voting must not open the detail dialog. */}
         <div
           className="mt-auto pt-s"

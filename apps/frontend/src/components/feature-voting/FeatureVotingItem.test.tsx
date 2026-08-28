@@ -91,7 +91,7 @@ describe('FeatureVotingItem', () => {
     expect(replace).not.toHaveBeenCalled();
   });
 
-  it('should open the detail from the keyboard through the see details button', async () => {
+  it('should open the detail from the keyboard through the title', async () => {
     const { user } = testRender(
       <FeatureVotingItem
         feature={feature}
@@ -104,7 +104,7 @@ describe('FeatureVotingItem', () => {
     await user.keyboard('{Enter}');
 
     expect(
-      screen.getByRole('button', { name: 'FeatureVoting.SeeDetails' })
+      screen.getByRole('button', { name: 'AI-powered report triage' })
     ).toHaveFocus();
     expect(replace).toHaveBeenCalledWith(
       '/en/feature-voting?featureId=feature-1',
