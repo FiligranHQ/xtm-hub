@@ -1,12 +1,11 @@
 import { ManifestType, Resolvers } from '../../__generated__/resolvers-types';
-import { ManifestFragmentHelper } from '../shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { ManifestApp } from '../shareable-resource/manifest/manifest.app';
-import { ManageProductVersionDomain } from './manage-product-version.domain';
+import { ManageProductVersionApp } from './manage-product-version.app';
 
 const resolvers: Resolvers = {
   Query: {
     registeredProductVersions: async (_, { product }) => {
-      return ManageProductVersionDomain.loadRegisteredProductVersions(product);
+      return ManageProductVersionApp.loadRegisteredProductVersions(product);
     },
   },
   Mutation: {
@@ -17,11 +16,9 @@ const resolvers: Resolvers = {
         type: ManifestType.Connector,
       });
 
-      await ManageProductVersionDomain.registerProductVersion({
+      await ManageProductVersionApp.registerProductVersion({
         product,
         version,
-        version_padded:
-          ManifestFragmentHelper.validateAndFormatManifestVersion(version),
       });
 
       return {
