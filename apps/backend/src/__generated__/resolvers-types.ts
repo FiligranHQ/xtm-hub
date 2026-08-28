@@ -216,7 +216,7 @@ export type CreateDeploymentRequestInput = {
   region: DeploymentRequestPlatformRegion;
   source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
-  use_case?: InputMaybe<DeploymentRequestUseCase>;
+  use_cases_by_product?: InputMaybe<Array<ProductUseCaseInput>>;
 };
 
 export type CreateDocumentInput = {
@@ -1664,6 +1664,7 @@ export type PlatformTrialStatus = {
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status?: Maybe<DeploymentRequestHubStatus>;
   isBlacklisted: Scalars['Boolean']['output'];
+  ongoingStandaloneTrials: Array<PlatformIdentifier>;
 };
 
 export enum PortalCapability {
@@ -1678,6 +1679,11 @@ export enum PortalCapability {
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
 }
+
+export type ProductUseCaseInput = {
+  platform_identifier: PlatformIdentifier;
+  use_case: DeploymentRequestUseCase;
+};
 
 export type ProvisionedNewsFeedItem = Node & {
   __typename?: 'ProvisionedNewsFeedItem';
@@ -3048,6 +3054,7 @@ export type ResolversTypes = ResolversObject<{
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   PlatformTrialStatus: ResolverTypeWrapper<PlatformTrialStatus>;
   PortalCapability: PortalCapability;
+  ProductUseCaseInput: ProductUseCaseInput;
   ProvisionedNewsFeedItem: ResolverTypeWrapper<ProvisionedNewsFeedItem>;
   Query: ResolverTypeWrapper<{}>;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
@@ -3250,6 +3257,7 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
   PlatformTrialStatus: PlatformTrialStatus;
+  ProductUseCaseInput: ProductUseCaseInput;
   ProvisionedNewsFeedItem: ProvisionedNewsFeedItem;
   Query: {};
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
@@ -4074,6 +4082,7 @@ export type PlatformTrialStatusResolvers<ContextType = PortalContext, ParentType
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<Maybe<ResolversTypes['DeploymentRequestHubStatus']>, ParentType, ContextType>;
   isBlacklisted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  ongoingStandaloneTrials?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

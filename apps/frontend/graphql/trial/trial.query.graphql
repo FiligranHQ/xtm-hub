@@ -1,0 +1,15 @@
+query PlatformTrialStatus($organizationId: OrganizationId!) {
+  platformTrialStatus(organizationId: $organizationId) {
+    isBlacklisted
+    hub_status
+    end_date
+    ongoingStandaloneTrials
+  }
+}
+
+query TrialDeploymentsEligibility($input: TrialDeploymentsInput!) {
+  trialDeployments(input: $input) {
+    availableTrials
+    isBlacklisted
+  }
+}

@@ -1,5 +1,5 @@
 import {
-  LogoFiligranIcon,
+  LogoXtmOneIcon,
   OpenAevIconIcon,
   OpenCtiIconIcon,
 } from '@filigran/icon';
@@ -48,7 +48,7 @@ export const PlatformMetadataMapping: Record<
     learnMorePrivateUrl: '',
     logoUrl: '',
     docUrl: '',
-    Icon: ({ className }) => <LogoFiligranIcon className={className} />,
+    Icon: ({ className }) => <LogoXtmOneIcon className={className} />,
   },
 };
 
