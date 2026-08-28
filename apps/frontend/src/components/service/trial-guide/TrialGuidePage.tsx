@@ -18,37 +18,6 @@ const TRIAL_GUIDE_TABS = [
   PlatformIdentifier.Xtmone,
 ];
 
-const XTM_ONE_GRADIENT_ID = 'xtm-one-tab-gradient';
-
-const XtmOneTabGradientDefs = () => (
-  <svg
-    aria-hidden="true"
-    className="absolute h-0 w-0">
-    <defs>
-      <linearGradient
-        id={XTM_ONE_GRADIENT_ID}
-        x1="0"
-        y1="0"
-        x2="1"
-        y2="1">
-        <stop
-          offset="0%"
-          stopColor="var(--color-filigran-ia-secondary)"
-        />
-        <stop
-          offset="100%"
-          stopColor="var(--color-filigran-ia-main)"
-        />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
-// Note: this literal string must match XTM_ONE_GRADIENT_ID above, Tailwind
-// requires the full class name to be statically present in the source.
-const XTM_ONE_TAB_ICON_GRADIENT_CLASSES =
-  '[&_path]:fill-[url(#xtm-one-tab-gradient)] [&_path]:stroke-[url(#xtm-one-tab-gradient)] [&_circle]:stroke-[url(#xtm-one-tab-gradient)]';
-
 export const TrialGuidePage = () => {
   const t = useTranslations();
 
@@ -81,7 +50,6 @@ export const TrialGuidePage = () => {
         </div>
         <SlackSupportButton />
       </div>
-      <XtmOneTabGradientDefs />
       <Tabs
         defaultValue={PlatformIdentifier.Opencti}
         className="mt-l">
@@ -94,17 +62,17 @@ export const TrialGuidePage = () => {
                 key={platformIdentifier}
                 value={platformIdentifier}
                 className={cn(
-                  'flex-1',
+                  'group flex-1',
                   isXtmOne &&
-                    'data-[state=active]:border-[var(--color-filigran-ia-main)] data-[state=active]:text-[var(--color-filigran-ia-main)]'
+                    'data-[state=active]:border-[var(--color-filigran-ia-main)]'
                 )}>
-                <span className="flex items-center gap-s">
-                  <Icon
-                    className={cn(
-                      'w-4 h-4',
-                      isXtmOne && XTM_ONE_TAB_ICON_GRADIENT_CLASSES
-                    )}
-                  />
+                <span
+                  className={cn(
+                    'flex items-center gap-s',
+                    isXtmOne &&
+                      'group-data-[state=active]:text-[var(--color-filigran-ia-main)]'
+                  )}>
+                  <Icon className="w-4 h-4" />
                   {name}
                 </span>
               </TabsTrigger>

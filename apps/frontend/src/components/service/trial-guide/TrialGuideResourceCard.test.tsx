@@ -40,14 +40,13 @@ describe('TrialGuideResourceCard', () => {
     expect(link).toHaveAttribute('target', '_blank');
   });
 
-  it('disables the See more link when no url is provided', () => {
+  it('does not render the See more link when no url is provided', () => {
     testRender(
       <TrialGuideResourceCard resourceCard={buildResourceCard({ url: '' })} />
     );
 
-    const link = screen.getByRole('link', {
-      name: /Service.TrialGuide.SeeMore/,
-    });
-    expect(link).toHaveAttribute('aria-disabled', 'true');
+    expect(
+      screen.queryByRole('link', { name: /Service.TrialGuide.SeeMore/ })
+    ).not.toBeInTheDocument();
   });
 });
