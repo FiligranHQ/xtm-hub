@@ -28,6 +28,7 @@ import { portalGraphqlClient } from '@/lib/graphql-client';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { i18nKey } from '@/utils/datatable';
 import { daysUntil, formatDate } from '@/utils/date';
+import { APP_PATH } from '@/utils/path/constant';
 import {
   ArrowShapeUpIcon,
   ArrowShapeUpStackIcon,
@@ -60,6 +61,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { ReactNode, useMemo, useState } from 'react';
 import { useDebounceCallback } from 'usehooks-ts';
 
@@ -171,9 +173,10 @@ const productColumns = (scope: TrialsScope, t: Translate): TrialsColumn[] => {
 interface TrialsRowActionsProps {
   request: TrialsRowFragment;
   type: TrialsTabType;
+  scope: TrialsScope;
 }
 
-const TrialsRowActions = ({ request, type }: TrialsRowActionsProps) => {
+const TrialsRowActions = ({ request, type, scope }: TrialsRowActionsProps) => {
   const t = useTranslations();
   const queryClient = useQueryClient();
   const isAdminByPass = useAdminByPass();
@@ -181,6 +184,8 @@ const TrialsRowActions = ({ request, type }: TrialsRowActionsProps) => {
     PortalCapability.ModifyTrials,
   ]);
   const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
+
+  const isBundle = scope.kind === 'bundle';
 
   const invalidateTrials = () =>
     queryClient.invalidateQueries({ queryKey: trialsKeys.all() });
@@ -201,7 +206,11 @@ const TrialsRowActions = ({ request, type }: TrialsRowActionsProps) => {
         await invalidateTrials();
         toast({
           title: t('Utils.Success'),
-          description: t('Service.Trials.Cancellation.Toast.Admin'),
+          description: t(
+            isBundle
+              ? 'ManageTrials.Toast.BundleCancelled'
+              : 'Service.Trials.Cancellation.Toast.Admin'
+          ),
         });
       },
       onError,
@@ -213,16 +222,23 @@ const TrialsRowActions = ({ request, type }: TrialsRowActionsProps) => {
         await invalidateTrials();
         toast({
           title: t('Utils.Success'),
-          description: t('TrialsDashboard.Toast.TrialsReordered'),
+          description: t(
+            isBundle
+              ? 'ManageTrials.Toast.BundleReordered'
+              : 'TrialsDashboard.Toast.TrialsReordered'
+          ),
         });
       },
       onError,
     });
 
+  const isBundleProduct = request.parent_id !== null;
   const isCancellable =
     canModifyTrial &&
+    !isBundleProduct &&
     (type === TrialsTabType.Running || type === TrialsTabType.Waiting);
-  const isReorderable = canModifyTrial && type === TrialsTabType.Waiting;
+  const isReorderable =
+    canModifyTrial && !isBundleProduct && type === TrialsTabType.Waiting;
   const canManageUsers =
     type === TrialsTabType.Running &&
     isAdminByPass &&
@@ -239,16 +255,23 @@ const TrialsRowActions = ({ request, type }: TrialsRowActionsProps) => {
               variant="tertiary-destructive"
               size="icon"
               className="border m-1"
-              aria-label={t('ManageTrials.Actions.CancelTrial')}>
+              aria-label={t(
+                isBundle
+                  ? 'ManageTrials.Actions.CancelBundle'
+                  : 'ManageTrials.Actions.CancelTrial'
+              )}>
               <CloseIcon className="h-4 w-4" />
             </Button>
           }
           onClickContinue={() =>
             cancelRequest({ deploymentRequestId: request.id })
           }>
-          {t('Service.Trials.Cancellation.Confirmation.Admin', {
-            organizationName: request.organization_name ?? '',
-          })}
+          {t(
+            isBundle
+              ? 'ManageTrials.Cancellation.Confirmation'
+              : 'Service.Trials.Cancellation.Confirmation.Admin',
+            { organizationName: request.organization_name ?? '' }
+          )}
         </AlertDialogComponent>
       )}
       {isReorderable && (
@@ -307,19 +330,33 @@ const TrialsRowActions = ({ request, type }: TrialsRowActionsProps) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <TrialsManageUsersDialog
-                serviceInstanceId={request.service_instance_id}
-                organizationId={request.organization_requester_id}
-                trigger={
-                  <Button
-                    variant="tertiary"
-                    size="icon"
-                    className="border m-1"
-                    aria-label={t('Service.Trials.ManageUsers.Title')}>
+              {isBundle ? (
+                <Button
+                  asChild
+                  variant="tertiary"
+                  size="icon"
+                  className="border m-1"
+                  aria-label={t('Service.Trials.ManageUsers.Title')}>
+                  <Link
+                    href={`/${APP_PATH}/service/xtm-platform-trial/${request.service_instance_id}/manage-users`}>
                     <GroupIcon className="h-4 w-4" />
-                  </Button>
-                }
-              />
+                  </Link>
+                </Button>
+              ) : (
+                <TrialsManageUsersDialog
+                  serviceInstanceId={request.service_instance_id}
+                  organizationId={request.organization_requester_id}
+                  trigger={
+                    <Button
+                      variant="tertiary"
+                      size="icon"
+                      className="border m-1"
+                      aria-label={t('Service.Trials.ManageUsers.Title')}>
+                      <GroupIcon className="h-4 w-4" />
+                    </Button>
+                  }
+                />
+              )}
             </TooltipTrigger>
             <TooltipContent>
               {t('Service.Trials.ManageUsers.Title')}
@@ -510,6 +547,7 @@ const TrialsTab = ({ type, scope }: TrialsTabProps) => {
         <TrialsRowActions
           request={request}
           type={type}
+          scope={scope}
         />
       )),
     [type, scope, t, isReorderTrialsAllowed]

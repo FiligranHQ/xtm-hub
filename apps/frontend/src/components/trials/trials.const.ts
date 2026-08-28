@@ -69,3 +69,9 @@ export const productScope = (
 
 export const trialsScopeKey = (scope: TrialsScope): string =>
   scope.kind === 'bundle' ? 'bundle' : scope.platformIdentifier;
+
+export const trialsScopeMessage = (
+  scope: TrialsScope,
+  suffix: string
+): string =>
+  `ManageTrials.${scope.kind === 'bundle' ? 'Bundle' : 'Trial'}.${suffix}`;
