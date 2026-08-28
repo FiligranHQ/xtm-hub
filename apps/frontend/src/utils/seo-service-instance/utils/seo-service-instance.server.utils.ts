@@ -1,4 +1,5 @@
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstancesQuery, {
   seoServiceInstancesQuery,
@@ -10,7 +11,7 @@ export async function fetchSeoServiceInstances(): Promise<
   const response = await serverFetchGraphQL<seoServiceInstancesQuery>(
     SeoServiceInstancesQuery,
     {},
-    { cache: undefined, next: { revalidate: 3600 } }
+    { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
   );
 
   return response.data
