@@ -13,8 +13,9 @@ import { VotingRoundWithFeatures } from './feature-voting.app';
 import { VotableFeatureWithVote } from './feature-voting.domain';
 
 /**
- * In-memory shapes shared by the unit tests that mock the domain layer. The
- * tests exercising real Postgres build their rows through the domain instead.
+ * In-memory shapes shared by the unit tests that mock the domain layer, namely
+ * the resolver tests. The app tests exercise real Postgres and build their rows
+ * through TestHelper instead.
  */
 export const FIXTURE_ROUND_ID = uuidv4() as VotingRoundId;
 export const FIXTURE_SERVICE_INSTANCE_ID = uuidv4() as ServiceInstanceId;
