@@ -365,7 +365,8 @@
       "GoToPlatform": "Go to {title}",
       "Details": "Details",
       "Documentation": "Documentation",
-      "ConnectPlatform": "Connect {platformName}"
+      "ConnectPlatform": "Connect {platformName}",
+      "Trial": "Trial"
     }
   },
   "HomePage": {

@@ -365,7 +365,8 @@
       "GoToPlatform": "{title} に移動",
       "Details": "詳細",
       "Documentation": "ドキュメント",
-      "ConnectPlatform": "{platformName} を接続"
+      "ConnectPlatform": "{platformName} を接続",
+      "Trial": "トライアル"
     }
   },
   "HomePage": {
