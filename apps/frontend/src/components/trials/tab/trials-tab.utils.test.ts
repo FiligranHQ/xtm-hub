@@ -5,6 +5,7 @@ import {
 } from '@/components/trials/tab/trials-tab.utils';
 import {
   BUNDLE_SCOPE,
+  STANDALONE_PARENT_ID_FILTER_VALUE,
   TrialsTabType,
   productScope,
 } from '@/components/trials/trials.const';
@@ -50,6 +51,23 @@ describe('manageTrialsUtils', () => {
         expect(filters).toContainEqual({
           key: DeploymentRequestFilterKey.PlatformIdentifier,
           value: [PlatformIdentifier.Opencti],
+        });
+      }
+    );
+
+    it.each(Object.values(TrialsTabType))(
+      'should exclude the bundle children from the product scope on the %s tab',
+      (type) => {
+        // When
+        const filters = buildTrialsFilters(
+          type,
+          productScope(PlatformIdentifier.Opencti)
+        );
+
+        // Then
+        expect(filters).toContainEqual({
+          key: DeploymentRequestFilterKey.ParentId,
+          value: [STANDALONE_PARENT_ID_FILTER_VALUE],
         });
       }
     );

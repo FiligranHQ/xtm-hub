@@ -206,6 +206,7 @@ enum DeploymentRequestFilterKey {
   target_state
   actual_state
   platform_identifier
+  parent_id
 }
 
 input DeploymentRequestFilter {

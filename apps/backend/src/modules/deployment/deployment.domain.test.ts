@@ -94,6 +94,46 @@ describe('deploymentRequestDomain', () => {
       expect(childNode?.parent_id).toBe(bundle?.id);
       expect(childNode?.url).toBe('https://xtmone.example.com');
     });
+    it('should exclude bundle children when filtering on a null parent_id', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          parent_id: bundle.id,
+        }
+      );
+      const standalone =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
+
+      const deploymentRequests =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            filters: [
+              {
+                key: DeploymentRequestFilterKey.Type,
+                value: [DeploymentRequestDeploymentType.Trial],
+              },
+              {
+                key: DeploymentRequestFilterKey.ParentId,
+                value: ['null'],
+              },
+            ],
+          }
+        );
+
+      expect(deploymentRequests.totalCount).toBe('1');
+      expect(deploymentRequests.edges[0]?.node?.id).toBe(standalone.id);
+    });
     it('should filter deployment requests when searchTerm is specified ', async () => {
       const deployment =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(

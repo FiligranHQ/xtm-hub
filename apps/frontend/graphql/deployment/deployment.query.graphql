@@ -21,7 +21,6 @@ fragment TrialsRow on DeploymentRequest {
   cancellation_date
   cancellation_user_email
   cancellation_reason
-  parent_id
   platform_identifier
   platform_id
   platform_url

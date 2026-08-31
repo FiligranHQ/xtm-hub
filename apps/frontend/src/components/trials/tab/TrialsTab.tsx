@@ -232,13 +232,10 @@ const TrialsRowActions = ({ request, type, scope }: TrialsRowActionsProps) => {
       onError,
     });
 
-  const isBundleProduct = request.parent_id !== null;
   const isCancellable =
     canModifyTrial &&
-    !isBundleProduct &&
     (type === TrialsTabType.Running || type === TrialsTabType.Waiting);
-  const isReorderable =
-    canModifyTrial && !isBundleProduct && type === TrialsTabType.Waiting;
+  const isReorderable = canModifyTrial && type === TrialsTabType.Waiting;
   const canManageUsers =
     type === TrialsTabType.Running &&
     isAdminByPass &&

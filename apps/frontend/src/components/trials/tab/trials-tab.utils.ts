@@ -1,4 +1,5 @@
 import {
+  STANDALONE_PARENT_ID_FILTER_VALUE,
   TRIALS_PRODUCT_ORDER,
   TRIALS_TAB_CONFIG,
   TrialsScope,
@@ -58,6 +59,10 @@ export const buildTrialsFilters = (
         {
           key: DeploymentRequestFilterKey.PlatformIdentifier,
           value: [scope.platformIdentifier],
+        },
+        {
+          key: DeploymentRequestFilterKey.ParentId,
+          value: [STANDALONE_PARENT_ID_FILTER_VALUE],
         },
       ]
     : []),
