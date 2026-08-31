@@ -95,6 +95,7 @@ export enum UnknownErrorCode {
   DeleteSubscriptionError = 'DELETE_SUBSCRIPTION_ERROR',
   EditCapabilitiesError = 'EDIT_CAPABILITIES_ERROR',
   AddCapabilitiesError = 'ADD_CAPABILITIES_ERROR',
+  LoadCapabilitiesError = 'LOAD_CAPABILITIES_ERROR',
   AddUserServiceError = 'ADD_USER_SERVICE_ERROR',
   AddingUserError = 'ADDING_USER_ERROR',
   EditUserError = 'EDIT_USER_ERROR',

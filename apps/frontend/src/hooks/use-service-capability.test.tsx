@@ -1,5 +1,7 @@
 import { useAdminByPass } from '@/hooks/use-portal-capability';
-import useServiceCapability from '@/hooks/use-service-capability';
+import useServiceCapability, {
+  useServiceCapabilityWithSubscriptionId,
+} from '@/hooks/use-service-capability';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   ServiceRestriction,
@@ -84,7 +86,7 @@ describe('useServiceCapability', () => {
     expect(result.current).toBe(true);
   });
 
-  it('should return subscriptionId and capability flag when withSubscriptionId option is enabled', () => {
+  it('should return subscriptionId and capability flag from dedicated hook', () => {
     // Given
     mockCapabilitiesQueryResult({
       __typename: 'Query',
@@ -110,9 +112,10 @@ describe('useServiceCapability', () => {
 
     // When
     const { result } = renderHook(() =>
-      useServiceCapability(ServiceRestriction.ManageAccess, ServiceInstance, {
-        withSubscriptionId: true,
-      })
+      useServiceCapabilityWithSubscriptionId(
+        ServiceRestriction.ManageAccess,
+        ServiceInstance
+      )
     );
 
     // Then

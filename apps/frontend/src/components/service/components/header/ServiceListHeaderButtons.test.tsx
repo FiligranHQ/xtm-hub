@@ -16,12 +16,17 @@ const { mockUseServiceContext, mockSetIntegrationType } = vi.hoisted(() => ({
 const { mockUseServiceCapability } = vi.hoisted(() => ({
   mockUseServiceCapability: vi.fn(),
 }));
+const { mockUseServiceCapabilityWithSubscriptionId } = vi.hoisted(() => ({
+  mockUseServiceCapabilityWithSubscriptionId: vi.fn(),
+}));
 
 vi.mock('@/components/service/components/ServiceContext', () => ({
   useServiceContext: mockUseServiceContext,
 }));
 vi.mock('@/hooks/use-service-capability', () => ({
   default: mockUseServiceCapability,
+  useServiceCapabilityWithSubscriptionId:
+    mockUseServiceCapabilityWithSubscriptionId,
 }));
 
 const buildServiceContext = (overrides = {}) => ({
@@ -41,21 +46,20 @@ describe('ServiceListHeaderButtons', () => {
     mockUseServiceCapability.mockImplementation(
       (
         capability: ServiceRestriction,
-        serviceInstance?: { capabilities?: ServiceRestriction[] },
-        options?: { withSubscriptionId?: boolean }
+        serviceInstance?: { capabilities?: ServiceRestriction[] }
       ) => {
-        const hasCapability =
-          serviceInstance?.capabilities?.includes(capability) ?? false;
-
-        if (options?.withSubscriptionId) {
-          return {
-            hasCapability,
-            subscriptionId: 'subscription-1',
-          };
-        }
-
-        return hasCapability;
+        return serviceInstance?.capabilities?.includes(capability) ?? false;
       }
+    );
+    mockUseServiceCapabilityWithSubscriptionId.mockImplementation(
+      (
+        capability: ServiceRestriction,
+        serviceInstance?: { capabilities?: ServiceRestriction[] }
+      ) => ({
+        hasCapability:
+          serviceInstance?.capabilities?.includes(capability) ?? false,
+        subscriptionId: 'subscription-1',
+      })
     );
   });
 

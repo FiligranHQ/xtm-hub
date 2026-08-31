@@ -14,6 +14,7 @@ import {
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import { requestContext } from '../../../context/request.context';
+import { GenericServiceCapabilityId } from '../../../model/kanel/public/GenericServiceCapability';
 import { ServiceCapabilityId } from '../../../model/kanel/public/ServiceCapability';
 import ServiceDefinition, {
   ServiceDefinitionId,
@@ -25,6 +26,7 @@ import UserService, {
   UserServiceId,
 } from '../../../model/kanel/public/UserService';
 import { UserServiceCapabilityId } from '../../../model/kanel/public/UserServiceCapability';
+import { UserLoadUserBy } from '../../../model/user';
 import { GenericServiceCapabilityIds } from './generic-service-capability.const';
 import { ServiceCapabilityDomain } from './service-capability.domain';
 
@@ -214,7 +216,7 @@ describe('service Capability domain', () => {
           id: uuidv4() as UserServiceCapabilityId,
           user_service_id: userService.id,
           generic_service_capability_id:
-            GenericServiceCapabilityIds.ManageAccessId,
+            GenericServiceCapabilityIds.ManageAccessId as GenericServiceCapabilityId,
           subscription_capability_id: null,
         });
       const subscriptionUserServiceCapability =
@@ -265,13 +267,19 @@ describe('service Capability domain', () => {
     it('should map joined data to user service capabilities when query matches service and user', async () => {
       // Given
       const serviceInstanceId = serviceInstance.id;
-      const userId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID;
+      const user = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE;
+      const userCorrectFormat = {
+        id: user.ID,
+        first_name: user.FIRST_NAME,
+        last_name: user.LAST_NAME,
+        selected_organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+      } as unknown as UserLoadUserBy;
 
       // When
       const capabilities =
         await ServiceCapabilityDomain.loadServiceCapabilitiesByServiceId(
           serviceInstanceId,
-          userId
+          userCorrectFormat
         );
 
       // Then
@@ -372,7 +380,7 @@ describe('service Capability domain', () => {
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: userService.id,
         generic_service_capability_id:
-          GenericServiceCapabilityIds.ManageAccessId,
+          GenericServiceCapabilityIds.ManageAccessId as GenericServiceCapabilityId,
         subscription_capability_id: null,
       });
       createdUserServiceCapabilityIds.push(createdCapability!.id);
@@ -393,14 +401,14 @@ describe('service Capability domain', () => {
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: userService.id,
         generic_service_capability_id:
-          GenericServiceCapabilityIds.ManageAccessId,
+          GenericServiceCapabilityIds.ManageAccessId as GenericServiceCapabilityId,
         subscription_capability_id: null,
       });
       const secondCapability = await TestHelper.user_ServiceCapability.create({
         id: uuidv4() as UserServiceCapabilityId,
         user_service_id: secondUserService.id,
         generic_service_capability_id:
-          GenericServiceCapabilityIds.ManageAccessId,
+          GenericServiceCapabilityIds.ManageAccessId as GenericServiceCapabilityId,
         subscription_capability_id: null,
       });
       createdUserServiceCapabilityIds.push(

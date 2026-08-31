@@ -7,11 +7,10 @@ import ServiceCapability, {
   ServiceCapabilityMutator,
 } from '../../../model/kanel/public/ServiceCapability';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
-import { SubscriptionId } from '../../../model/kanel/public/Subscription';
-import { UserId } from '../../../model/kanel/public/User';
 import UserService, {
   UserServiceId,
 } from '../../../model/kanel/public/UserService';
+import { UserLoadUserBy } from '../../../model/user';
 import { restrictSubscriptionToUserOrganization } from '../../../security/restriction/user-service';
 import { addPrefixToObject } from '../../../utils/typescript';
 
@@ -28,7 +27,7 @@ export const ServiceCapabilityDomain = {
 
   loadServiceCapabilitiesByServiceId: async (
     serviceInstanceId: ServiceInstanceId,
-    userId: UserId
+    user: UserLoadUserBy
   ): Promise<UserServiceCapability[]> => {
     const capabilitiesRows: {
       user_service_capability_id: string;
@@ -38,19 +37,12 @@ export const ServiceCapabilityDomain = {
       subscription_capability_id: string | null;
       service_capability_id: string | null;
       service_capability_name: string | null;
-      subscription_id: SubscriptionId;
     }[] = await db('UserService_Capability')
       .innerJoin(
         'User_Service',
         'UserService_Capability.user_service_id',
         '=',
         'User_Service.id'
-      )
-      .innerJoin(
-        'Subscription',
-        'User_Service.subscription_id',
-        '=',
-        'Subscription.id'
       )
       .leftJoin(
         'Generic_Service_Capability',
@@ -70,9 +62,15 @@ export const ServiceCapabilityDomain = {
         '=',
         'Service_Capability.id'
       )
-      .tap(restrictSubscriptionToUserOrganization)
+      .innerJoin(
+        'Subscription',
+        'User_Service.subscription_id',
+        '=',
+        'Subscription.id'
+      )
+      .andWhere('Subscription.organization_id', user.selected_organization_id)
       .where('Subscription.service_instance_id', serviceInstanceId)
-      .andWhere('User_Service.user_id', userId)
+      .andWhere('User_Service.user_id', user.id)
       .select([
         'UserService_Capability.id as user_service_capability_id',
         'UserService_Capability.user_service_id',
@@ -81,13 +79,11 @@ export const ServiceCapabilityDomain = {
         'Subscription_Capability.id as subscription_capability_id',
         'Service_Capability.id as service_capability_id',
         'Service_Capability.name as service_capability_name',
-        'Subscription.id as subscription_id',
       ]);
 
     return capabilitiesRows.map((capabilityRow) => ({
       id: capabilityRow.user_service_capability_id,
       user_service_id: capabilityRow.user_service_id,
-      subscription_id: capabilityRow.subscription_id,
       generic_service_capability:
         capabilityRow.generic_service_capability_id &&
         capabilityRow.generic_service_capability_name

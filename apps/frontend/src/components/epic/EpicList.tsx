@@ -11,7 +11,9 @@ import { FeatureVotingCallout } from '@/components/feature-voting/FeatureVotingC
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { CountBadge } from '@/components/ui/CountBadge';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
-import useServiceCapability from '@/hooks/use-service-capability';
+import useServiceCapability, {
+  useServiceCapabilityWithSubscriptionId,
+} from '@/hooks/use-service-capability';
 import { cn } from '@/lib/utils';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
@@ -75,12 +77,9 @@ export const EpicList = ({
   );
   const { hasOrganizationCapability } = useContext(PortalContext);
   const { hasCapability: canManageServiceCapability, subscriptionId } =
-    useServiceCapability(
+    useServiceCapabilityWithSubscriptionId(
       ServiceRestriction.ManageAccess,
-      detailedServiceInstance,
-      {
-        withSubscriptionId: true,
-      }
+      detailedServiceInstance
     );
 
   const canManageService =

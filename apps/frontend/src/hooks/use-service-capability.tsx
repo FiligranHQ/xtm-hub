@@ -7,10 +7,6 @@ import {
 } from '@graphql/generated';
 import { useMemo } from 'react';
 
-type UseServiceCapabilityOptions = {
-  withSubscriptionId?: boolean;
-};
-
 const ServiceUserCapabilitiesStaleTime = 10 * 60 * 1000; // Cache: 10mns
 
 export type UseServiceCapabilityWithSubscriptionId = {
@@ -18,20 +14,10 @@ export type UseServiceCapabilityWithSubscriptionId = {
   subscriptionId: string | null;
 };
 
-function useServiceCapability(
+const useServiceCapabilityData = (
   capability: ServiceRestriction,
   serviceInstance?: serviceInstance_fragment$data
-): boolean;
-function useServiceCapability(
-  capability: ServiceRestriction,
-  serviceInstance: serviceInstance_fragment$data | undefined,
-  options: { withSubscriptionId: true }
-): UseServiceCapabilityWithSubscriptionId;
-function useServiceCapability(
-  capability: ServiceRestriction,
-  serviceInstance?: serviceInstance_fragment$data,
-  options?: UseServiceCapabilityOptions
-) {
+): UseServiceCapabilityWithSubscriptionId => {
   const canBypass = useAdminByPass();
   const { data } = useServiceUserCapabilitiesQuery(
     portalGraphqlClient,
@@ -65,14 +51,28 @@ function useServiceCapability(
     );
   }, [canBypass, serviceInstance, capability, userServiceCapabilities]);
 
-  if (options?.withSubscriptionId) {
-    return {
-      hasCapability,
-      subscriptionId,
-    };
-  }
+  return {
+    hasCapability,
+    subscriptionId,
+  };
+};
 
+function useServiceCapability(
+  capability: ServiceRestriction,
+  serviceInstance?: serviceInstance_fragment$data
+): boolean {
+  const { hasCapability } = useServiceCapabilityData(
+    capability,
+    serviceInstance
+  );
   return hasCapability;
+}
+
+export function useServiceCapabilityWithSubscriptionId(
+  capability: ServiceRestriction,
+  serviceInstance?: serviceInstance_fragment$data
+): UseServiceCapabilityWithSubscriptionId {
+  return useServiceCapabilityData(capability, serviceInstance);
 }
 
 export default useServiceCapability;
