@@ -1,4 +1,5 @@
 import testRender from '@/utils/test/test-render';
+import { XtmPlatformBundleProductFragment } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { BundleProductCard } from './BundleProductCard';
@@ -6,17 +7,16 @@ import {
   XtmoneIntegrationStatus,
   XtmoneStatusState,
 } from './useXtmoneIntegrationStatus';
-import { XtmPlatformBundleProduct } from './xtm-platform-bundle.types';
 
 const buildProduct = (
-  overrides: Partial<XtmPlatformBundleProduct> = {}
-): XtmPlatformBundleProduct => ({
+  overrides: Partial<XtmPlatformBundleProductFragment> = {}
+): XtmPlatformBundleProductFragment => ({
   platform_identifier:
-    'opencti' as XtmPlatformBundleProduct['platform_identifier'],
+    'opencti' as XtmPlatformBundleProductFragment['platform_identifier'],
   service_instance_id: 'service-instance-1',
   name: 'OpenCTI Instance',
   connectivity_status:
-    'active' as XtmPlatformBundleProduct['connectivity_status'],
+    'active' as XtmPlatformBundleProductFragment['connectivity_status'],
   last_connectivity_check: '2026-07-30T12:31:53+00:00',
   url: 'https://opencti.example.io',
   roles: [{ id: 'group-1', name: 'Admin' }],
@@ -69,9 +69,9 @@ describe('BundleProductCard', () => {
 
   it.each`
     status        | expected
-    ${'active'}   | ${'StatusActive'}
-    ${'inactive'} | ${'ConnectionLost'}
-    ${null}       | ${'StatusUnavailable'}
+    ${'active'}   | ${'XtmPlatformTrial.Products.StatusActive'}
+    ${'inactive'} | ${'XtmPlatformTrial.Products.ConnectionLost'}
+    ${null}       | ${'XtmPlatformTrial.Products.StatusUnavailable'}
   `(
     'renders "$expected" for connectivity_status "$status" from the platform configuration',
     ({ status, expected }) => {
@@ -96,8 +96,16 @@ describe('BundleProductCard', () => {
       />
     );
 
-    expect(screen.getByText('NoRole NoRoleHint')).toBeInTheDocument();
-    expect(screen.getByText('AccessProduct').closest('button')).toBeDisabled();
+    expect(
+      screen.getByText(
+        'XtmPlatformTrial.Products.NoRole XtmPlatformTrial.Products.NoRoleHint'
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen
+        .getByText('XtmPlatformTrial.Products.AccessProduct')
+        .closest('button')
+    ).toBeDisabled();
   });
 
   it('renders the XTM One connection rows from the integration status', () => {
@@ -105,7 +113,7 @@ describe('BundleProductCard', () => {
       <BundleProductCard
         product={buildProduct({
           platform_identifier:
-            'xtmone' as XtmPlatformBundleProduct['platform_identifier'],
+            'xtmone' as XtmPlatformBundleProductFragment['platform_identifier'],
           name: 'XTM One Instance',
           url: 'https://xtmone.example.io',
         })}
@@ -114,9 +122,12 @@ describe('BundleProductCard', () => {
       />
     );
 
-    expect(screen.getByText('ConnectionOpencti:')).toBeInTheDocument();
-    expect(screen.getByText('ConnectionOpenaev:')).toBeInTheDocument();
-    expect(screen.getByText('ProductName:')).toBeInTheDocument();
+    expect(
+      screen.getAllByText('XtmPlatformTrial.Products.Connection:')
+    ).toHaveLength(2);
+    expect(
+      screen.getByText('XtmPlatformTrial.Products.ProductName:')
+    ).toBeInTheDocument();
     expect(screen.getByText('XTM One Instance')).toBeInTheDocument();
   });
 
@@ -125,7 +136,7 @@ describe('BundleProductCard', () => {
       <BundleProductCard
         product={buildProduct({
           platform_identifier:
-            'xtmone' as XtmPlatformBundleProduct['platform_identifier'],
+            'xtmone' as XtmPlatformBundleProductFragment['platform_identifier'],
           name: 'XTM One Instance',
           url: 'https://xtmone.example.io',
           roles: [],
@@ -135,7 +146,9 @@ describe('BundleProductCard', () => {
       />
     );
 
-    const accessLink = screen.getByText('AccessProduct').closest('a');
+    const accessLink = screen
+      .getByText('XtmPlatformTrial.Products.AccessProduct')
+      .closest('a');
     expect(accessLink).not.toBeNull();
     expect(accessLink).toHaveAttribute('href', 'https://xtmone.example.io');
   });
@@ -149,7 +162,9 @@ describe('BundleProductCard', () => {
       />
     );
 
-    expect(screen.queryByLabelText('EditName')).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText('XtmPlatformTrial.Products.EditName')
+    ).not.toBeInTheDocument();
   });
 
   it('shows the edit-name button when the user can manage', () => {
@@ -161,7 +176,9 @@ describe('BundleProductCard', () => {
       />
     );
 
-    expect(screen.getByLabelText('EditName')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('XtmPlatformTrial.Products.EditName')
+    ).toBeInTheDocument();
   });
 
   it('shows the edit-name button on the XTM One card when the user can manage', () => {
@@ -169,7 +186,7 @@ describe('BundleProductCard', () => {
       <BundleProductCard
         product={buildProduct({
           platform_identifier:
-            'xtmone' as XtmPlatformBundleProduct['platform_identifier'],
+            'xtmone' as XtmPlatformBundleProductFragment['platform_identifier'],
           name: 'XTM One Instance',
         })}
         xtmoneStatus={emptyXtmoneStatus}
@@ -177,6 +194,8 @@ describe('BundleProductCard', () => {
       />
     );
 
-    expect(screen.getByLabelText('EditName')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('XtmPlatformTrial.Products.EditName')
+    ).toBeInTheDocument();
   });
 });

@@ -6,7 +6,6 @@ import {
 } from '@/components/registration/PlatformIdentifierMapping';
 import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
 import { XtmoneStatusState } from '@/components/xtm-platform-trial/useXtmoneIntegrationStatus';
-import { XtmPlatformBundleProduct } from '@/components/xtm-platform-trial/xtm-platform-bundle.types';
 import { XtmoneConnectionStatus } from '@/components/xtm-platform-trial/XtmoneConnectionStatus';
 import { useDateFormatter } from '@/utils/date';
 import { EditIcon } from '@filigran/icon';
@@ -15,46 +14,41 @@ import { GradientButton } from '@filigran/ui/servers';
 import {
   PlatformConfigurationStatus,
   PlatformIdentifier,
+  XtmPlatformBundleProductFragment,
 } from '@graphql/generated';
 import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
-import openaevTextLogo from '@public/logo_openaev_text.png';
-import openctiTextLogo from '@public/logo_opencti_text.png';
-import xtmoneTextLogo from '@public/logo_xtmone_text.png';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
 interface BundleProductCardProps {
-  product: XtmPlatformBundleProduct;
+  product: XtmPlatformBundleProductFragment;
   xtmoneStatus: XtmoneStatusState;
   canManage: boolean;
 }
-
-const PRODUCT_TEXT_LOGO: Record<PlatformIdentifier, StaticImageData> = {
-  [PlatformIdentifier.Opencti]: openctiTextLogo,
-  [PlatformIdentifier.Openaev]: openaevTextLogo,
-  [PlatformIdentifier.Xtmone]: xtmoneTextLogo,
-};
 
 export const BundleProductCard = ({
   product,
   xtmoneStatus,
   canManage,
 }: BundleProductCardProps) => {
-  const tProducts = useTranslations('XtmPlatformTrial.Products');
+  const t = useTranslations();
   const formatDate = useDateFormatter();
   const queryClient = useQueryClient();
   const [openEditName, setOpenEditName] = useState(false);
 
-  const { name } = PlatformMetadataMapping[product.platform_identifier];
+  const { name, textLogo } =
+    PlatformMetadataMapping[product.platform_identifier];
   const isXtmone = product.platform_identifier === PlatformIdentifier.Xtmone;
   const hasAccess = product.roles.length > 0;
   const accessUrl = product.url ?? null;
   const canAccess = isXtmone ? !!accessUrl : hasAccess && !!accessUrl;
   const roleLabel = product.roles.map((role) => role.name).join(', ');
-  const accessLabel = tProducts('AccessProduct', { productName: name });
+  const accessLabel = t('XtmPlatformTrial.Products.AccessProduct', {
+    productName: name,
+  });
 
   const hasConnectivityInfo = product.connectivity_status != null;
   const isConnected =
@@ -64,7 +58,7 @@ export const BundleProductCard = ({
   const productNameRow = (
     <div className="flex items-center justify-between gap-s py-l">
       <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
-        {tProducts('ProductName')}:
+        {t('XtmPlatformTrial.Products.ProductName')}:
       </span>
       <div className="flex items-center gap-xs min-w-0">
         <Badge className="h-6 border-none bg-feedback-info-secondary-transparency text-content-body-base text-text-default-primary truncate">
@@ -74,7 +68,7 @@ export const BundleProductCard = ({
           <Button
             variant="ghost"
             className="size-6 shrink-0 rounded-lg border border-elevation-border-strong p-0 text-text-default-primary"
-            aria-label={tProducts('EditName')}
+            aria-label={t('XtmPlatformTrial.Products.EditName')}
             onClick={() => setOpenEditName(true)}>
             <EditIcon className="size-4" />
           </Button>
@@ -88,7 +82,7 @@ export const BundleProductCard = ({
       <CardContent className="p-4 flex flex-col gap-m h-full">
         <div className="flex gap-s items-center min-w-0">
           <Image
-            src={PRODUCT_TEXT_LOGO[product.platform_identifier]}
+            src={textLogo}
             alt={name}
             className="h-9 w-auto shrink-0"
           />
@@ -104,30 +98,30 @@ export const BundleProductCard = ({
             {productNameRow}
             <div className="flex items-start justify-between gap-s py-l">
               <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
-                {tProducts('ConnectionStatus')}:
+                {t('XtmPlatformTrial.Products.ConnectionStatus')}:
               </span>
               {!hasConnectivityInfo ? (
                 <span className="text-content-body-base text-text-default-secondary text-left">
-                  {tProducts('StatusUnavailable')}
+                  {t('XtmPlatformTrial.Products.StatusUnavailable')}
                 </span>
               ) : isConnected ? (
                 <span className="text-content-body-base text-feedback-success-primary text-left">
-                  {tProducts('StatusActive')}
+                  {t('XtmPlatformTrial.Products.StatusActive')}
                 </span>
               ) : (
                 <span className="text-content-body-base text-left">
                   <span className="text-feedback-error-primary">
-                    {tProducts('ConnectionLost')}
+                    {t('XtmPlatformTrial.Products.ConnectionLost')}
                   </span>{' '}
                   <span className="text-text-default-primary">
-                    {tProducts('ReconnectHint')}
+                    {t('XtmPlatformTrial.Products.ReconnectHint')}
                   </span>
                 </span>
               )}
             </div>
             <div className="flex items-center justify-between gap-s py-l">
               <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
-                {tProducts('LastConnection')}:
+                {t('XtmPlatformTrial.Products.LastConnection')}:
               </span>
               <span className="text-content-body-compact truncate">
                 {formatDate(lastConnectionCheck ?? undefined, 'DATE_FULL') ??
@@ -136,7 +130,7 @@ export const BundleProductCard = ({
             </div>
             <div className="flex items-start justify-between gap-s py-l">
               <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
-                {tProducts('Role')}:
+                {t('XtmPlatformTrial.Products.Role')}:
               </span>
               {hasAccess ? (
                 <span className="text-content-body-compact truncate">
@@ -144,7 +138,8 @@ export const BundleProductCard = ({
                 </span>
               ) : (
                 <span className="text-content-body-compact text-left text-text-default-primary">
-                  {tProducts('NoRole')} {tProducts('NoRoleHint')}
+                  {t('XtmPlatformTrial.Products.NoRole')}{' '}
+                  {t('XtmPlatformTrial.Products.NoRoleHint')}
                 </span>
               )}
             </div>

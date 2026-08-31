@@ -67,3 +67,35 @@ query TrialsQuotas($platformIdentifier: PlatformIdentifier) {
     ...TrialsQuota
   }
 }
+
+fragment XtmPlatformBundleProduct on XtmPlatformBundleProduct {
+  platform_identifier
+  service_instance_id
+  name
+  connectivity_status
+  last_connectivity_check
+  url
+  roles {
+    id
+    name
+  }
+}
+
+fragment XtmPlatformBundle on XtmPlatformBundle {
+  id
+  service_instance_id
+  organization_name
+  start_date
+  end_date
+  license
+  requester_email
+  products {
+    ...XtmPlatformBundleProduct
+  }
+}
+
+query ActiveXtmPlatformBundle($serviceInstanceId: ServiceInstanceId) {
+  activeXtmPlatformBundle(serviceInstanceId: $serviceInstanceId) {
+    ...XtmPlatformBundle
+  }
+}

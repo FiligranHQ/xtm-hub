@@ -85,8 +85,7 @@
       "AccessProduct": "Accéder à {productName}",
       "StatusUnavailable": "Statut indisponible",
       "ProductName": "Nom du produit",
-      "ConnectionOpencti": "Connexion OpenCTI",
-      "ConnectionOpenaev": "Connexion OpenAEV",
+      "Connection": "Connexion {productName}",
       "EditName": "Modifier le nom",
       "ConnectionLost": "Connexion perdue.",
       "ReconnectHint": "Vous devriez reconnecter votre produit."

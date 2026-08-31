@@ -2,16 +2,16 @@
 
 import { CONTRACT_LABEL_BY_CONTRACT } from '@/components/registration/PlatformIdentifierMapping';
 import { BundleCancelSheet } from '@/components/xtm-platform-trial/BundleCancelSheet';
-import { XtmPlatformBundleData } from '@/components/xtm-platform-trial/xtm-platform-bundle.types';
 import { daysUntil, useDateFormatter } from '@/utils/date';
 import { xtmPlatformTrialManageUsersPath } from '@/utils/path/constant';
 import { Badge, Button, Card, CardContent } from '@filigran/ui';
+import { XtmPlatformBundleFragment } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
 
 interface BundleInfoCardProps {
-  bundle: XtmPlatformBundleData;
+  bundle: XtmPlatformBundleFragment;
   canManage: boolean;
 }
 
@@ -32,8 +32,6 @@ const InfoRow = ({
 
 export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
   const t = useTranslations();
-  const tBundle = useTranslations('XtmPlatformTrial');
-  const tBundleInfo = useTranslations('XtmPlatformTrial.BundleInfo');
   const formatDate = useDateFormatter();
   const [openCancel, setOpenCancel] = useState(false);
 
@@ -46,17 +44,17 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
       <CardContent className="p-4 flex flex-col gap-m h-full">
         <div className="flex items-center gap-xs min-w-0">
           <span className="text-content-body-large-medium truncate">
-            {tBundleInfo('Title')}
+            {t('XtmPlatformTrial.BundleInfo.Title')}
           </span>
         </div>
         <div className="flex flex-col divide-y divide-elevation-border-subtle-layer-2">
-          <InfoRow label={tBundleInfo('OrganizationName')}>
+          <InfoRow label={t('XtmPlatformTrial.BundleInfo.OrganizationName')}>
             {bundle.organization_name ?? '-'}
           </InfoRow>
-          <InfoRow label={tBundleInfo('StartedOn')}>
+          <InfoRow label={t('XtmPlatformTrial.BundleInfo.StartedOn')}>
             {formatDate(bundle.start_date ?? undefined, 'DATE_FULL') ?? '-'}
           </InfoRow>
-          <InfoRow label={tBundleInfo('License')}>
+          <InfoRow label={t('XtmPlatformTrial.BundleInfo.License')}>
             {bundle.license ? (
               <Badge className="bg-elevation-surface-highlight-layer-2 border-none">
                 {t(CONTRACT_LABEL_BY_CONTRACT[bundle.license])}
@@ -65,16 +63,18 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
               '-'
             )}
           </InfoRow>
-          <InfoRow label={tBundleInfo('Remaining')}>
+          <InfoRow label={t('XtmPlatformTrial.BundleInfo.Remaining')}>
             {remainingDays !== null ? (
               <Badge className="border-none bg-feedback-success-secondary-transparency text-content-body-base text-text-default-primary truncate">
-                {tBundleInfo('DaysRemaining', { days: remainingDays })}
+                {t('XtmPlatformTrial.BundleInfo.DaysRemaining', {
+                  days: remainingDays,
+                })}
               </Badge>
             ) : (
               '-'
             )}
           </InfoRow>
-          <InfoRow label={tBundleInfo('TrialRequester')}>
+          <InfoRow label={t('XtmPlatformTrial.BundleInfo.TrialRequester')}>
             {bundle.requester_email ?? '-'}
           </InfoRow>
         </div>
@@ -83,7 +83,7 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
             <Button
               variant="outline-destructive"
               onClick={() => setOpenCancel(true)}>
-              {tBundle('CancelTrial')}
+              {t('XtmPlatformTrial.CancelTrial')}
             </Button>
             <Button asChild>
               <Link

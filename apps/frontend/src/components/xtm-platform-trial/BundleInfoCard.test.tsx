@@ -1,18 +1,18 @@
 import testRender from '@/utils/test/test-render';
+import { XtmPlatformBundleFragment } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { BundleInfoCard } from './BundleInfoCard';
-import { XtmPlatformBundleData } from './xtm-platform-bundle.types';
 
 const buildBundle = (
-  overrides: Partial<XtmPlatformBundleData> = {}
-): XtmPlatformBundleData => ({
+  overrides: Partial<XtmPlatformBundleFragment> = {}
+): XtmPlatformBundleFragment => ({
   id: 'bundle-1',
   service_instance_id: 'service-instance-1',
   organization_name: 'ACME',
   start_date: '2025-01-01T00:00:00.000Z',
   end_date: '2025-01-31T00:00:00.000Z',
-  license: 'trial' as XtmPlatformBundleData['license'],
+  license: 'trial' as XtmPlatformBundleFragment['license'],
   requester_email: 'requester@acme.io',
   products: [],
   ...overrides,
@@ -50,7 +50,9 @@ describe('BundleInfoCard', () => {
         canManage={false}
       />
     );
-    expect(screen.queryByText('CancelTrial')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('XtmPlatformTrial.CancelTrial')
+    ).not.toBeInTheDocument();
 
     rerender(
       <BundleInfoCard
@@ -58,6 +60,8 @@ describe('BundleInfoCard', () => {
         canManage={true}
       />
     );
-    expect(screen.getByText('CancelTrial')).toBeInTheDocument();
+    expect(
+      screen.getByText('XtmPlatformTrial.CancelTrial')
+    ).toBeInTheDocument();
   });
 });

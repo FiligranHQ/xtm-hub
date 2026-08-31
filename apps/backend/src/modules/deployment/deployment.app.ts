@@ -589,31 +589,38 @@ export const DeploymentApp = {
       parent_id: bundle.id,
     });
 
+    const childWithoutPlatformIdentifier = children.find(
+      (child) => child.platform_identifier === null
+    );
+    if (childWithoutPlatformIdentifier) {
+      logApp.error('Bundle child is missing a platform identifier', {
+        bundleId: bundle.id,
+        childId: childWithoutPlatformIdentifier.id,
+      });
+      throw new Error(BadRequestErrorCode.InvalidPlatformIdentifier);
+    }
+
     const productData = await Promise.all(
-      children
-        .filter(
-          (
-            child
-          ): child is DeploymentRequestModel & {
-            platform_identifier: PlatformIdentifier;
-          } => child.platform_identifier !== null
-        )
-        .map(async (child) => {
-          const [[configuration], roles, childServiceInstance] =
-            await Promise.all([
-              RegistrationDomain.loadRegisteredPlatform(
-                child.service_instance_id
-              ),
-              ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
-                child.service_instance_id,
-                user.id
-              ),
-              ServiceInstanceDomain.loadServiceInstanceBy({
-                id: child.service_instance_id,
-              }),
-            ]);
-          return { child, configuration, roles, childServiceInstance };
-        })
+      (
+        children as (DeploymentRequestModel & {
+          platform_identifier: PlatformIdentifier;
+        })[]
+      ).map(async (child) => {
+        const [[configuration], roles, childServiceInstance] =
+          await Promise.all([
+            RegistrationDomain.loadRegisteredPlatform(
+              child.service_instance_id
+            ),
+            ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
+              child.service_instance_id,
+              user.id
+            ),
+            ServiceInstanceDomain.loadServiceInstanceBy({
+              id: child.service_instance_id,
+            }),
+          ]);
+        return { child, configuration, roles, childServiceInstance };
+      })
     );
 
     const license =

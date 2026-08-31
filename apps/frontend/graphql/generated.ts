@@ -3185,6 +3185,17 @@ export type TrialsQuotasQueryVariables = Exact<{
 
 export type TrialsQuotasQuery = { __typename?: 'Query', deploymentRequestsAvailable: Array<{ __typename?: 'DeploymentAvailability', id: string, region: DeploymentRequestPlatformRegion, availableCount: number, capacity: number, platform_identifier: PlatformIdentifier | null }> };
 
+export type XtmPlatformBundleProductFragment = { __typename?: 'XtmPlatformBundleProduct', platform_identifier: PlatformIdentifier, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> };
+
+export type XtmPlatformBundleFragment = { __typename?: 'XtmPlatformBundle', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, products: Array<{ __typename?: 'XtmPlatformBundleProduct', platform_identifier: PlatformIdentifier, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> }> };
+
+export type ActiveXtmPlatformBundleQueryVariables = Exact<{
+  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
+}>;
+
+
+export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'XtmPlatformBundle', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, products: Array<{ __typename?: 'XtmPlatformBundleProduct', platform_identifier: PlatformIdentifier, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> }> } | null };
+
 type HomepageDocument_Connector_Fragment = { __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
 
 type HomepageDocument_CsvFeed_Fragment = { __typename?: 'CsvFeed', id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
@@ -3574,13 +3585,6 @@ export type VotingRoundRankingQueryVariables = Exact<{
 
 export type VotingRoundRankingQuery = { __typename?: 'Query', votingRoundResults: { __typename?: 'VotingRoundResults', total_voters: number, round: { __typename?: 'VotingRound', id: string, name: string, status: VotingRoundStatus }, results: Array<{ __typename?: 'VotableFeatureResult', vote_count: number, feature: { __typename?: 'VotableFeature', id: string, voting_round_id: any, title: string, short_description: string, description: string, product: FiligranProduct, illustration_document_id: any | null, position: number, active: boolean, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string, color: string }> } }> } };
 
-export type ActiveXtmPlatformBundleQueryVariables = Exact<{
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
-}>;
-
-
-export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'XtmPlatformBundle', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, products: Array<{ __typename?: 'XtmPlatformBundleProduct', platform_identifier: PlatformIdentifier, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> }> } | null };
-
 export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3629,6 +3633,34 @@ export const TrialsQuotaFragmentDoc = `
   platform_identifier
 }
     `;
+export const XtmPlatformBundleProductFragmentDoc = `
+    fragment XtmPlatformBundleProduct on XtmPlatformBundleProduct {
+  platform_identifier
+  service_instance_id
+  name
+  connectivity_status
+  last_connectivity_check
+  url
+  roles {
+    id
+    name
+  }
+}
+    `;
+export const XtmPlatformBundleFragmentDoc = `
+    fragment XtmPlatformBundle on XtmPlatformBundle {
+  id
+  service_instance_id
+  organization_name
+  start_date
+  end_date
+  license
+  requester_email
+  products {
+    ...XtmPlatformBundleProduct
+  }
+}
+    ${XtmPlatformBundleProductFragmentDoc}`;
 export const HomepageDocumentFragmentDoc = `
     fragment HomepageDocument on Document {
   id
@@ -3936,6 +3968,59 @@ export const useInfiniteTrialsQuotasQuery = <
 useInfiniteTrialsQuotasQuery.getKey = (variables?: TrialsQuotasQueryVariables) => variables === undefined ? ['TrialsQuotas.infinite'] : ['TrialsQuotas.infinite', variables];
 useInfiniteTrialsQuotasQuery.getRootKey = () => ['TrialsQuotas.infinite'] as const;
 useTrialsQuotasQuery.fetcher = (client: GraphQLClient, variables?: TrialsQuotasQueryVariables, headers?: RequestInit['headers']) => fetcher<TrialsQuotasQuery, TrialsQuotasQueryVariables>(client, TrialsQuotasDocument, variables, headers);
+
+export const ActiveXtmPlatformBundleDocument = `
+    query ActiveXtmPlatformBundle($serviceInstanceId: ServiceInstanceId) {
+  activeXtmPlatformBundle(serviceInstanceId: $serviceInstanceId) {
+    ...XtmPlatformBundle
+  }
+}
+    ${XtmPlatformBundleFragmentDoc}`;
+
+export const useActiveXtmPlatformBundleQuery = <
+      TData = ActiveXtmPlatformBundleQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: ActiveXtmPlatformBundleQueryVariables,
+      options?: Omit<UseQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ActiveXtmPlatformBundleQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['ActiveXtmPlatformBundle'] : ['ActiveXtmPlatformBundle', variables],
+    queryFn: fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useActiveXtmPlatformBundleQuery.getKey = (variables?: ActiveXtmPlatformBundleQueryVariables) => variables === undefined ? ['ActiveXtmPlatformBundle'] : ['ActiveXtmPlatformBundle', variables];
+useActiveXtmPlatformBundleQuery.getRootKey = () => ['ActiveXtmPlatformBundle'] as const;
+export const useInfiniteActiveXtmPlatformBundleQuery = <
+      TData = InfiniteData<ActiveXtmPlatformBundleQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ActiveXtmPlatformBundleQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ActiveXtmPlatformBundleQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['ActiveXtmPlatformBundle.infinite'] : ['ActiveXtmPlatformBundle.infinite', variables],
+      queryFn: (metaData) => fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteActiveXtmPlatformBundleQuery.getKey = (variables?: ActiveXtmPlatformBundleQueryVariables) => variables === undefined ? ['ActiveXtmPlatformBundle.infinite'] : ['ActiveXtmPlatformBundle.infinite', variables];
+useInfiniteActiveXtmPlatformBundleQuery.getRootKey = () => ['ActiveXtmPlatformBundle.infinite'] as const;
+useActiveXtmPlatformBundleQuery.fetcher = (client: GraphQLClient, variables?: ActiveXtmPlatformBundleQueryVariables, headers?: RequestInit['headers']) => fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, variables, headers);
 
 export const MostDeployedDocumentsQueryDocument = `
     query MostDeployedDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
@@ -6057,77 +6142,6 @@ export const useInfiniteVotingRoundRankingQuery = <
 useInfiniteVotingRoundRankingQuery.getKey = (variables: VotingRoundRankingQueryVariables) => ['VotingRoundRanking.infinite', variables];
 useInfiniteVotingRoundRankingQuery.getRootKey = () => ['VotingRoundRanking.infinite'] as const;
 useVotingRoundRankingQuery.fetcher = (client: GraphQLClient, variables: VotingRoundRankingQueryVariables, headers?: RequestInit['headers']) => fetcher<VotingRoundRankingQuery, VotingRoundRankingQueryVariables>(client, VotingRoundRankingDocument, variables, headers);
-
-export const ActiveXtmPlatformBundleDocument = `
-    query ActiveXtmPlatformBundle($serviceInstanceId: ServiceInstanceId) {
-  activeXtmPlatformBundle(serviceInstanceId: $serviceInstanceId) {
-    id
-    service_instance_id
-    organization_name
-    start_date
-    end_date
-    license
-    requester_email
-    products {
-      platform_identifier
-      service_instance_id
-      name
-      connectivity_status
-      last_connectivity_check
-      url
-      roles {
-        id
-        name
-      }
-    }
-  }
-}
-    `;
-
-export const useActiveXtmPlatformBundleQuery = <
-      TData = ActiveXtmPlatformBundleQuery,
-      TError = unknown
-    >(
-      client: GraphQLClient,
-      variables?: ActiveXtmPlatformBundleQueryVariables,
-      options?: Omit<UseQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>['queryKey'] },
-      headers?: RequestInit['headers']
-    ) => {
-    
-    return useQuery<ActiveXtmPlatformBundleQuery, TError, TData>(
-      {
-    queryKey: variables === undefined ? ['ActiveXtmPlatformBundle'] : ['ActiveXtmPlatformBundle', variables],
-    queryFn: fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, variables, headers),
-    ...options
-  }
-    )};
-
-useActiveXtmPlatformBundleQuery.getKey = (variables?: ActiveXtmPlatformBundleQueryVariables) => variables === undefined ? ['ActiveXtmPlatformBundle'] : ['ActiveXtmPlatformBundle', variables];
-useActiveXtmPlatformBundleQuery.getRootKey = () => ['ActiveXtmPlatformBundle'] as const;
-export const useInfiniteActiveXtmPlatformBundleQuery = <
-      TData = InfiniteData<ActiveXtmPlatformBundleQuery>,
-      TError = unknown
-    >(
-      client: GraphQLClient,
-      variables: ActiveXtmPlatformBundleQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>['queryKey'] },
-      headers?: RequestInit['headers']
-    ) => {
-    
-    return useInfiniteQuery<ActiveXtmPlatformBundleQuery, TError, TData>(
-      (() => {
-    const { queryKey: optionsQueryKey, ...restOptions } = options;
-    return {
-      queryKey: optionsQueryKey ?? variables === undefined ? ['ActiveXtmPlatformBundle.infinite'] : ['ActiveXtmPlatformBundle.infinite', variables],
-      queryFn: (metaData) => fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
-      ...restOptions
-    }
-  })()
-    )};
-
-useInfiniteActiveXtmPlatformBundleQuery.getKey = (variables?: ActiveXtmPlatformBundleQueryVariables) => variables === undefined ? ['ActiveXtmPlatformBundle.infinite'] : ['ActiveXtmPlatformBundle.infinite', variables];
-useInfiniteActiveXtmPlatformBundleQuery.getRootKey = () => ['ActiveXtmPlatformBundle.infinite'] as const;
-useActiveXtmPlatformBundleQuery.fetcher = (client: GraphQLClient, variables?: ActiveXtmPlatformBundleQueryVariables, headers?: RequestInit['headers']) => fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, variables, headers);
 
 export const EpicCountPerTimelineQueryDocument = `
     query EpicCountPerTimelineQuery {

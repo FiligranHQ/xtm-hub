@@ -1,6 +1,5 @@
 'use client';
 
-import { PortalContext } from '@/components/me/AppPortalContext';
 import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/ReachSalesButton';
 import { SlackSupportButton } from '@/components/service/trial-instances/SlackSupport';
 import { BundleGuideCard } from '@/components/xtm-platform-trial/BundleGuideCard';
@@ -8,34 +7,36 @@ import { BundleInfoCard } from '@/components/xtm-platform-trial/BundleInfoCard';
 import { BundleProductCard } from '@/components/xtm-platform-trial/BundleProductCard';
 import { TrialLimitationsCard } from '@/components/xtm-platform-trial/TrialLimitationsCard';
 import { useXtmoneIntegrationStatus } from '@/components/xtm-platform-trial/useXtmoneIntegrationStatus';
+import useGranted from '@/hooks/use-granted';
+import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
   OrganizationCapability,
   PlatformIdentifier,
-  PortalCapability,
   useActiveXtmPlatformBundleQuery,
 } from '@graphql/generated';
 import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
 import { useTranslations } from 'next-intl';
-import { useContext } from 'react';
 
 export const XtmPlatformTrialPage = ({
   serviceInstanceId,
 }: {
   serviceInstanceId: string;
 }) => {
-  const tBundle = useTranslations('XtmPlatformTrial');
-  const { hasCapability, hasOrganizationCapability } =
-    useContext(PortalContext);
+  const t = useTranslations();
+
+  const isAdminByPass = useAdminByPass();
+  const canAdministrateOrganization = useGranted(
+    OrganizationCapability.AdministrateOrganization
+  );
+  const canManagePlatformRegistration = useGranted(
+    OrganizationCapability.ManagePlatformRegistration
+  );
 
   const canManage =
-    hasCapability?.(PortalCapability.Bypass) ||
-    hasOrganizationCapability?.(
-      OrganizationCapability.AdministrateOrganization
-    ) ||
-    hasOrganizationCapability?.(
-      OrganizationCapability.ManagePlatformRegistration
-    ) ||
+    isAdminByPass ||
+    canAdministrateOrganization ||
+    canManagePlatformRegistration ||
     false;
 
   const { data, isLoading } = useActiveXtmPlatformBundleQuery(
@@ -77,24 +78,23 @@ export const XtmPlatformTrialPage = ({
     return null;
   }
 
-  const productOrder: Record<string, number> = {
-    [PlatformIdentifier.Opencti]: 0,
-    [PlatformIdentifier.Openaev]: 1,
-    [PlatformIdentifier.Xtmone]: 2,
-  };
-  const orderedProducts = [...bundle.products].sort(
-    (a, b) =>
-      (productOrder[a.platform_identifier] ?? Number.MAX_SAFE_INTEGER) -
-      (productOrder[b.platform_identifier] ?? Number.MAX_SAFE_INTEGER)
-  );
+  const findProduct = (identifier: PlatformIdentifier) =>
+    bundle.products.find(
+      (product) => product.platform_identifier === identifier
+    );
+  const orderedProducts = [
+    findProduct(PlatformIdentifier.Opencti),
+    findProduct(PlatformIdentifier.Openaev),
+    findProduct(PlatformIdentifier.Xtmone),
+  ].filter((product) => product !== undefined);
 
   return (
     <div className="flex flex-col gap-m">
       <div className="flex flex-col gap-m sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-xs">
-          <h1 className="heading-2xl">{tBundle('Title')}</h1>
+          <h1 className="heading-2xl">{t('XtmPlatformTrial.Title')}</h1>
           <p className="text-content-body-base text-text-default-secondary">
-            {tBundle('Subtitle')}
+            {t('XtmPlatformTrial.Subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-s shrink-0">

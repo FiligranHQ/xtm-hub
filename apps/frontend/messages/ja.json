@@ -85,8 +85,7 @@
       "AccessProduct": "{productName}にアクセス",
       "StatusUnavailable": "ステータスを取得できません",
       "ProductName": "製品名",
-      "ConnectionOpencti": "OpenCTI接続",
-      "ConnectionOpenaev": "OpenAEV接続",
+      "Connection": "{productName}接続",
       "EditName": "名前を編集",
       "ConnectionLost": "接続が切断されました。",
       "ReconnectHint": "製品を再接続してください。"
