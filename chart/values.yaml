@@ -1,5 +1,16 @@
 tls_issuer: le-staging
 ingressClass: nginx
+# Gateway API migration state machine (platform#3074):
+#   off     -> nginx Ingress only (default, no gateway resources)
+#   dual    -> both paths live, DNS stays on nginx
+#   cutover -> both paths live, DNS moves to the gateway pool
+#   only    -> gateway only, the Ingress is removed
+gatewayApi:
+  mode: "off"
+  minTlsVersion: ""
+  pool:
+    name: gateway-pool
+    namespace: kgateway-system
 xtmhub:
   node_env: "production"
   api:
