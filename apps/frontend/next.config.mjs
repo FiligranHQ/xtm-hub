@@ -214,6 +214,8 @@ const nextConfig = {
         search: '',
       },
     ],
+    minimumCacheTTL: 60 * 60 * 24,
+    maximumDiskCacheSize: 100 * 1024 * 1024,
   },
   skipTrailingSlashRedirect: true,
   reactStrictMode: true,

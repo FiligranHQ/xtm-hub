@@ -13,6 +13,7 @@ const {
   mockMostDeployedResources,
   mockPrivateHomepageRoadmapSection,
   mockXtmPlatform,
+  mockThreadConferenceBanner,
   mockRegisteredPlatformsSection,
   mockLastDeployedResourcesSection,
 } = vi.hoisted(() => ({
@@ -27,6 +28,9 @@ const {
     <div data-testid="private-homepage-roadmap-section" />
   )),
   mockXtmPlatform: vi.fn(() => <div data-testid="xtm-platform" />),
+  mockThreadConferenceBanner: vi.fn(() => (
+    <div data-testid="thread-conference-banner" />
+  )),
   mockRegisteredPlatformsSection: vi.fn(() => (
     <div data-testid="registered-platforms-section" />
   )),
@@ -75,6 +79,10 @@ vi.mock('@/components/homepage/xtm-platform/XtmPlatform', () => ({
   default: mockXtmPlatform,
 }));
 
+vi.mock('@/components/homepage/ThreadConferenceBanner', () => ({
+  default: mockThreadConferenceBanner,
+}));
+
 vi.mock(
   '@/components/homepage/registered-platforms/RegisteredPlatformsSection',
   () => ({
@@ -115,6 +123,7 @@ describe('PrivateHomepage', () => {
     mockMostDeployedResources.mockClear();
     mockPrivateHomepageRoadmapSection.mockClear();
     mockXtmPlatform.mockClear();
+    mockThreadConferenceBanner.mockClear();
     mockRegisteredPlatformsSection.mockClear();
     mockLastDeployedResourcesSection.mockClear();
 
@@ -328,5 +337,16 @@ describe('PrivateHomepage', () => {
       undefined
     );
     expect(screen.getByTestId('private-homepage-roadmap-section')).toBeTruthy();
+  });
+
+  it('should render thread conference banner when rendering the private homepage', async () => {
+    // Given
+    mockRegisteredPlatformsResponses([]);
+
+    // When
+    render(await PrivateHomepage());
+
+    // Then
+    expect(screen.getByTestId('thread-conference-banner')).toBeTruthy();
   });
 });

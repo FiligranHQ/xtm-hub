@@ -1,8 +1,7 @@
 'use client';
 
-import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { XtmPlatformTrialBanner } from '@/components/service/trial-instances/banner/xtm-platform-trial/XtmPlatformTrialBanner';
-import { PlatformIdentifier } from '@graphql/generated';
+import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { useLocale } from 'next-intl';
 
 export const PublicXtmPlatformTrialBanner = () => {
@@ -11,7 +10,7 @@ export const PublicXtmPlatformTrialBanner = () => {
   return (
     <XtmPlatformTrialBanner
       state="no-trial"
-      learnMoreHref={`/${locale}${PlatformMetadataMapping[PlatformIdentifier.Opencti].learnMorePublicUrl}`}
+      learnMoreHref={`/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/xtm-platform-trial`}
     />
   );
 };

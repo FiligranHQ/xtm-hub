@@ -128,6 +128,7 @@ type Query {
   votingRounds(service_instance_id: ServiceInstanceId): [VotingRound!]!
   votingRound(id: VotingRoundId!): VotingRound
   votingRoundResults(id: VotingRoundId!): VotingRoundResults!
+  registeredProductVersions(product: PlatformIdentifier!): [RegisteredProductVersion!]!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -422,12 +423,17 @@ type PlatformDeploymentRequest {
 
 input CreateDeploymentRequestInput {
   products: [PlatformIdentifier!]!
+  use_cases_by_product: [ProductUseCaseInput!]
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
-  use_case: DeploymentRequestUseCase
   source: DeploymentRequestSource!
+}
+
+input ProductUseCaseInput {
+  platform_identifier: PlatformIdentifier!
+  use_case: DeploymentRequestUseCase!
 }
 
 input UpdateDeploymentRequestInput {
@@ -499,6 +505,7 @@ type PlatformTrialStatus {
   isBlacklisted: Boolean!
   hub_status: DeploymentRequestHubStatus
   end_date: Date
+  ongoingStandaloneTrials: [PlatformIdentifier!]!
 }
 
 enum DeploymentRequestOrdering {
@@ -832,6 +839,12 @@ input UpdateVotableFeatureInput {
   illustration_document_id: DocumentId
   position: Int
   active: Boolean
+}
+
+type RegisteredProductVersion {
+  product: PlatformIdentifier!
+  version: String!
+  created_at: Date!
 }
 
 """

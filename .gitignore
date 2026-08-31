@@ -15,3 +15,6 @@
 /node_modules/
 /.nx/
 /test-results/
+
+# MkDocs build cache (created when building docs from the repository root)
+/.cache/
