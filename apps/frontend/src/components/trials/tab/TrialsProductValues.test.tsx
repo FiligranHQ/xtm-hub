@@ -8,7 +8,7 @@ import {
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-const OPENCTI_PLATFORM_ID = 'opencti-tenant';
+const OPENCTI_PLATFORM_ID = 'opencti-platform-id';
 
 const makeProduct = (
   platformIdentifier: PlatformIdentifier,
