@@ -1,12 +1,13 @@
 'use client';
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { useTranslate } from '@/hooks/use-translate';
 import { Callout } from '@filigran/ui';
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { LearnMoreBannerButton } from './LearnMoreBannerButton';
 
 export const PublicTryFiligranProductsBanner = () => {
-  const t = useTranslations();
+  const t = useTranslate();
   const locale = useLocale();
 
   const bannerText = (

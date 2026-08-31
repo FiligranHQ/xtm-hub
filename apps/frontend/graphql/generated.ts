@@ -211,6 +211,20 @@ export type ConsumeProvisionedNewsFeedItemsResponse = {
   news_feed_items: Array<ProvisionedNewsFeedItem>;
 };
 
+export type ContentTranslationEntry = {
+  __typename?: 'ContentTranslationEntry';
+  key: Scalars['String']['output'];
+  locale: Locale;
+  updated_at: Scalars['Date']['output'];
+  updater_id: Maybe<Scalars['UserId']['output']>;
+  value: Scalars['String']['output'];
+};
+
+export type ContentTranslationValueInput = {
+  locale: Locale;
+  value: Scalars['String']['input'];
+};
+
 export type CreateCompetitorInput = {
   domain: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -888,6 +902,12 @@ export enum LicenseType {
   Free = 'Free'
 }
 
+export enum Locale {
+  En = 'en',
+  Fr = 'fr',
+  Ja = 'ja'
+}
+
 export type LogicalFilterInput = {
   children: InputMaybe<Array<LogicalFilterInput>>;
   leaf: InputMaybe<Filter>;
@@ -1016,6 +1036,7 @@ export type Mutation = {
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription: Maybe<SubscriptionModel>;
   uploadUserPicture: User;
+  upsertContentTranslation: Array<ContentTranslationEntry>;
 };
 
 
@@ -1399,6 +1420,11 @@ export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
 };
 
+
+export type MutationUpsertContentTranslationArgs = {
+  input: UpsertContentTranslationInput;
+};
+
 export type NewsFeedItem = Node & {
   __typename?: 'NewsFeedItem';
   creation_date: Scalars['Date']['output'];
@@ -1708,6 +1734,7 @@ export type Query = {
   __typename?: 'Query';
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
+  contentTranslations: Array<ContentTranslationEntry>;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
@@ -1768,6 +1795,12 @@ export type QueryCompetitorsArgs = {
   first: Scalars['Int']['input'];
   orderBy: CompetitorOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryContentTranslationsArgs = {
+  keys: InputMaybe<Array<Scalars['String']['input']>>;
+  locale: InputMaybe<Locale>;
 };
 
 
@@ -2694,6 +2727,11 @@ export type UpdateSubscriptionInput = {
   start_date: InputMaybe<Scalars['Date']['input']>;
 };
 
+export type UpsertContentTranslationInput = {
+  key: Scalars['String']['input'];
+  values: Array<ContentTranslationValueInput>;
+};
+
 export type UseCase = Node & {
   __typename?: 'UseCase';
   color: Scalars['String']['output'];
@@ -2856,6 +2894,27 @@ export type UsersWithCapabilitiesInOrganizationInput = {
   capabilities: Array<OrganizationCapability>;
   organizationId: Scalars['OrganizationId']['input'];
 };
+
+export type ContentTranslationForKeyQueryVariables = Exact<{
+  keys: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type ContentTranslationForKeyQuery = { __typename?: 'Query', contentTranslations: Array<{ __typename?: 'ContentTranslationEntry', key: string, locale: Locale, value: string }> };
+
+export type UpsertContentTranslationMutationVariables = Exact<{
+  input: UpsertContentTranslationInput;
+}>;
+
+
+export type UpsertContentTranslationMutation = { __typename?: 'Mutation', upsertContentTranslation: Array<{ __typename?: 'ContentTranslationEntry', key: string, locale: Locale, value: string, updated_at: any }> };
+
+export type ContentTranslationsByLocaleQueryVariables = Exact<{
+  locale: InputMaybe<Locale>;
+}>;
+
+
+export type ContentTranslationsByLocaleQuery = { __typename?: 'Query', contentTranslations: Array<{ __typename?: 'ContentTranslationEntry', key: string, value: string }> };
 
 type HomepageDocument_Connector_Fragment = { __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
 
@@ -3152,6 +3211,147 @@ export const UseCaseRowFragmentDoc = `
   product
 }
     `;
+export const ContentTranslationForKeyDocument = `
+    query ContentTranslationForKey($keys: [String!]) {
+  contentTranslations(keys: $keys) {
+    key
+    locale
+    value
+  }
+}
+    `;
+
+export const useContentTranslationForKeyQuery = <
+      TData = ContentTranslationForKeyQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: ContentTranslationForKeyQueryVariables,
+      options?: Omit<UseQueryOptions<ContentTranslationForKeyQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ContentTranslationForKeyQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ContentTranslationForKeyQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['ContentTranslationForKey'] : ['ContentTranslationForKey', variables],
+    queryFn: fetcher<ContentTranslationForKeyQuery, ContentTranslationForKeyQueryVariables>(client, ContentTranslationForKeyDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useContentTranslationForKeyQuery.getKey = (variables?: ContentTranslationForKeyQueryVariables) => variables === undefined ? ['ContentTranslationForKey'] : ['ContentTranslationForKey', variables];
+useContentTranslationForKeyQuery.getRootKey = () => ['ContentTranslationForKey'] as const;
+export const useInfiniteContentTranslationForKeyQuery = <
+      TData = InfiniteData<ContentTranslationForKeyQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ContentTranslationForKeyQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ContentTranslationForKeyQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ContentTranslationForKeyQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ContentTranslationForKeyQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['ContentTranslationForKey.infinite'] : ['ContentTranslationForKey.infinite', variables],
+      queryFn: (metaData) => fetcher<ContentTranslationForKeyQuery, ContentTranslationForKeyQueryVariables>(client, ContentTranslationForKeyDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteContentTranslationForKeyQuery.getKey = (variables?: ContentTranslationForKeyQueryVariables) => variables === undefined ? ['ContentTranslationForKey.infinite'] : ['ContentTranslationForKey.infinite', variables];
+useInfiniteContentTranslationForKeyQuery.getRootKey = () => ['ContentTranslationForKey.infinite'] as const;
+useContentTranslationForKeyQuery.fetcher = (client: GraphQLClient, variables?: ContentTranslationForKeyQueryVariables, headers?: RequestInit['headers']) => fetcher<ContentTranslationForKeyQuery, ContentTranslationForKeyQueryVariables>(client, ContentTranslationForKeyDocument, variables, headers);
+
+export const UpsertContentTranslationDocument = `
+    mutation UpsertContentTranslation($input: UpsertContentTranslationInput!) {
+  upsertContentTranslation(input: $input) {
+    key
+    locale
+    value
+    updated_at
+  }
+}
+    `;
+
+export const useUpsertContentTranslationMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpsertContentTranslationMutation, TError, UpsertContentTranslationMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<UpsertContentTranslationMutation, TError, UpsertContentTranslationMutationVariables, TContext>(
+      {
+    mutationKey: ['UpsertContentTranslation'],
+    mutationFn: (variables?: UpsertContentTranslationMutationVariables) => fetcher<UpsertContentTranslationMutation, UpsertContentTranslationMutationVariables>(client, UpsertContentTranslationDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useUpsertContentTranslationMutation.getKey = () => ['UpsertContentTranslation'];
+useUpsertContentTranslationMutation.getRootKey = () => ['UpsertContentTranslation'] as const;
+useUpsertContentTranslationMutation.fetcher = (client: GraphQLClient, variables: UpsertContentTranslationMutationVariables, headers?: RequestInit['headers']) => fetcher<UpsertContentTranslationMutation, UpsertContentTranslationMutationVariables>(client, UpsertContentTranslationDocument, variables, headers);
+
+export const ContentTranslationsByLocaleDocument = `
+    query ContentTranslationsByLocale($locale: Locale) {
+  contentTranslations(locale: $locale) {
+    key
+    value
+  }
+}
+    `;
+
+export const useContentTranslationsByLocaleQuery = <
+      TData = ContentTranslationsByLocaleQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: ContentTranslationsByLocaleQueryVariables,
+      options?: Omit<UseQueryOptions<ContentTranslationsByLocaleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ContentTranslationsByLocaleQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ContentTranslationsByLocaleQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['ContentTranslationsByLocale'] : ['ContentTranslationsByLocale', variables],
+    queryFn: fetcher<ContentTranslationsByLocaleQuery, ContentTranslationsByLocaleQueryVariables>(client, ContentTranslationsByLocaleDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useContentTranslationsByLocaleQuery.getKey = (variables?: ContentTranslationsByLocaleQueryVariables) => variables === undefined ? ['ContentTranslationsByLocale'] : ['ContentTranslationsByLocale', variables];
+useContentTranslationsByLocaleQuery.getRootKey = () => ['ContentTranslationsByLocale'] as const;
+export const useInfiniteContentTranslationsByLocaleQuery = <
+      TData = InfiniteData<ContentTranslationsByLocaleQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ContentTranslationsByLocaleQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ContentTranslationsByLocaleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ContentTranslationsByLocaleQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ContentTranslationsByLocaleQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['ContentTranslationsByLocale.infinite'] : ['ContentTranslationsByLocale.infinite', variables],
+      queryFn: (metaData) => fetcher<ContentTranslationsByLocaleQuery, ContentTranslationsByLocaleQueryVariables>(client, ContentTranslationsByLocaleDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteContentTranslationsByLocaleQuery.getKey = (variables?: ContentTranslationsByLocaleQueryVariables) => variables === undefined ? ['ContentTranslationsByLocale.infinite'] : ['ContentTranslationsByLocale.infinite', variables];
+useInfiniteContentTranslationsByLocaleQuery.getRootKey = () => ['ContentTranslationsByLocale.infinite'] as const;
+useContentTranslationsByLocaleQuery.fetcher = (client: GraphQLClient, variables?: ContentTranslationsByLocaleQueryVariables, headers?: RequestInit['headers']) => fetcher<ContentTranslationsByLocaleQuery, ContentTranslationsByLocaleQueryVariables>(client, ContentTranslationsByLocaleDocument, variables, headers);
+
 export const MostDeployedDocumentsQueryDocument = `
     query MostDeployedDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
   mostDeployedDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {

@@ -1,6 +1,7 @@
 'use client';
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import { SearchInput } from '@/components/ui/SearchInput';
+import { useTranslate } from '@/hooks/use-translate';
 import {
   Select,
   SelectContent,
@@ -10,7 +11,6 @@ import {
   Switch,
 } from '@filigran/ui';
 import { FiligranProduct } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import React from 'react';
 
 export type EpicFilterType = 'all' | FiligranProduct;
@@ -32,7 +32,7 @@ export const EpicFilter = ({
   onShowFinishedChange,
   debounceHandleInput,
 }: EpicFilterProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
 
   const products = Object.values(FiligranProduct);
 

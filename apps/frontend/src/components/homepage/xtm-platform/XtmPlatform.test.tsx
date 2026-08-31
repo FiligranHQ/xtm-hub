@@ -28,6 +28,10 @@ vi.mock('./XtmPlatformImage', () => ({
   default: () => <div data-testid="xtm-platform-image" />,
 }));
 
+vi.mock('./XtmPlatformHero', () => ({
+  XtmPlatformHero: () => <div data-testid="xtm-platform-hero" />,
+}));
+
 import XtmPlatform from './XtmPlatform';
 
 describe('XtmPlatform', () => {

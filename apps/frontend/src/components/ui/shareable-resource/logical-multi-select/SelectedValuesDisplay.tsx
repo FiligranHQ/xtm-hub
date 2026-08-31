@@ -1,4 +1,5 @@
 import { FilterTooltip } from '@/components/ui/shareable-resource/logical-multi-select/FilterTooltip';
+import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
 import { CancelIcon } from '@filigran/icon';
 import {
@@ -8,7 +9,6 @@ import {
   TooltipTrigger,
 } from '@filigran/ui/clients';
 import { Button } from '@filigran/ui/servers';
-import { useTranslations } from 'next-intl';
 import { Fragment, ReactNode } from 'react';
 
 export interface GroupedSelection {
@@ -29,7 +29,7 @@ interface RemoveFilterButtonProps {
 }
 
 export const AndSeparator = ({ className }: { className?: string }) => {
-  const t = useTranslations();
+  const t = useTranslate();
   return (
     <span
       className={cn(
@@ -55,7 +55,7 @@ export const FilterLabel = ({
   );
 };
 export const OrSeparator = ({ className }: { className?: string }) => {
-  const t = useTranslations();
+  const t = useTranslate();
   return (
     <span
       className={cn(

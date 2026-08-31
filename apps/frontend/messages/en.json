@@ -1890,5 +1890,18 @@
     "vulnerability_analyst": "Vulnerability Analyst",
     "consultant": "Consultant",
     "other": "Other"
+  },
+  "EditableText": {
+    "DialogTitle": "Edit content",
+    "KeyLabel": "Key: {contentKey}",
+    "ValueLabel": "{locale} value",
+    "Save": "Save",
+    "EditionBannerLabel": "You are in edit mode — every editable text is clickable.",
+    "EditionBannerExit": "Back to live site"
+  },
+  "EditableTextDemo": {
+    "Title": "Welcome to XTM Hub",
+    "Subtitle": "The unified entry point for the Filigran ecosystem.",
+    "Instructions": "Visit /edition to turn edit mode on (BYPASS-capability users only), then click the title or subtitle below. Saving calls the real upsertContentTranslation mutation."
   }
 }

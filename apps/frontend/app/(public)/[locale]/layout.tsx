@@ -1,3 +1,5 @@
+import { EditionModeBanner } from '@/components/content-translation/EditionModeBanner';
+import { EditModeContentObserver } from '@/components/content-translation/EditModeContentObserver';
 import Copilot from '@/components/external/Copilot';
 import { AppShell } from '@/components/layout/AppShell';
 import { PublicHeaderContent } from '@/components/layout/PublicHeaderContent';
@@ -5,6 +7,7 @@ import PublicMenu from '@/components/menu/PublicMenu';
 import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { PublicTryFiligranProductsBanner } from '@/components/service/trial-instances/banner/PublicTryFiligranProductsBanner';
 import { PublicXtmPlatformTrialBanner } from '@/components/service/trial-instances/banner/xtm-platform-trial/PublicXtmPlatformTrialBanner';
+import { EditModeProvider } from '@/context/edit-mode-context';
 import { type PublicLocale, publicLocales } from '@/i18n/config';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { fetchVisibleServiceSlugs } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
@@ -50,24 +53,34 @@ const RootLayout = async ({
 
   return (
     <ReactQueryProvider>
-      <AppShell
-        banners={
-          xtmPlatformTrialEnabled ? (
-            <PublicXtmPlatformTrialBanner />
-          ) : (
-            <PublicTryFiligranProductsBanner />
-          )
-        }
-        menu={<PublicMenu visibleServiceSlugs={visibleServiceSlugs} />}
-        headerContent={
-          <PublicHeaderContent
-            locale={locale}
-            visibleServiceSlugs={visibleServiceSlugs}
-          />
-        }
-        contentClassName="container pt-l">
-        {children}
-      </AppShell>
+      {/* EditModeProvider reads the edit-mode cookie client-side only
+          (never via server-side cookies()/headers()), so this stays
+          eligible for generateStaticParams / static generation regardless
+          of edit mode. EditionModeBanner self-hides when edit mode is off. */}
+      <EditModeProvider>
+        <AppShell
+          banners={
+            <>
+              <EditionModeBanner />
+              {xtmPlatformTrialEnabled ? (
+                <PublicXtmPlatformTrialBanner />
+              ) : (
+                <PublicTryFiligranProductsBanner />
+              )}
+            </>
+          }
+          menu={<PublicMenu visibleServiceSlugs={visibleServiceSlugs} />}
+          headerContent={
+            <PublicHeaderContent
+              locale={locale}
+              visibleServiceSlugs={visibleServiceSlugs}
+            />
+          }
+          contentClassName="container pt-l">
+          {children}
+        </AppShell>
+        <EditModeContentObserver />
+      </EditModeProvider>
       <Copilot />
     </ReactQueryProvider>
   );

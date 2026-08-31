@@ -1,3 +1,4 @@
+import { useTranslate } from '@/hooks/use-translate';
 import {
   FormItem,
   FormLabel,
@@ -8,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@filigran/ui';
-import { useTranslations } from 'next-intl';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 
 interface TranslatableEnumSelectFieldProps<
@@ -30,7 +30,7 @@ export const TranslatableEnumSelectField = <T extends FieldValues>({
   translationNamespace,
   className = 'text-sm text-destructive',
 }: TranslatableEnumSelectFieldProps<T>) => {
-  const t = useTranslations();
+  const t = useTranslate();
   return (
     <FormItem>
       <FormLabel>

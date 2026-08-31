@@ -5,6 +5,7 @@ import {
   CONTRACT_LABEL_BY_CONTRACT,
   PlatformMetadataMapping,
 } from '@/components/registration/PlatformIdentifierMapping';
+import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
 import {
   Badge,
@@ -16,7 +17,7 @@ import {
   TooltipTrigger,
 } from '@filigran/ui';
 import { PlatformContract } from '@graphql/generated';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useFormatter } from 'next-intl';
 import Link from 'next/link';
 import React from 'react';
 
@@ -46,10 +47,10 @@ const resolveTrialDaysBadgeClassName = (
 };
 
 const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
-  const tRegisteredPlatformsCard = useTranslations(
+  const tRegisteredPlatformsCard = useTranslate(
     'HomePage.RegisteredPlatformsCard'
   );
-  const t = useTranslations();
+  const t = useTranslate();
   const format = useFormatter();
 
   const registrationDate = platform.registrationDate

@@ -5,13 +5,13 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@/hooks/use-translate';
 
 export const IntegrationVerifiedFilter = () => {
   const { verified, setVerified, removeVerified } = useServiceListLocalStorage(
     ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
   );
-  const t = useTranslations();
+  const t = useTranslate();
   const { removeFilter } = useServiceListFilters();
   const removeVerifiedFilter = () => {
     removeVerified();

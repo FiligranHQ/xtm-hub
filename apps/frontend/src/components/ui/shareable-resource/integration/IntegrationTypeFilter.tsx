@@ -6,8 +6,8 @@ import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
 } from '@/hooks/use-service-list-local-storage';
+import { useTranslate } from '@/hooks/use-translate';
 import { IntegrationType } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 export const IntegrationTypeFilter = () => {
@@ -17,7 +17,7 @@ export const IntegrationTypeFilter = () => {
     );
 
   const { removeFilter } = useServiceListFilters();
-  const t = useTranslations();
+  const t = useTranslate();
 
   const options = useMemo(() => {
     const allOptions = Object.values(IntegrationType).map((feedType) => ({

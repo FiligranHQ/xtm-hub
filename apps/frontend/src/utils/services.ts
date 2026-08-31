@@ -1,5 +1,6 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
+import { useTranslate } from '@/hooks/use-translate';
 import { daysUntil } from '@/utils/date';
 import {
   APP_PATH,
@@ -16,7 +17,6 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 
 export const isExternalService = (
   service_definition_identifier: ServiceDefinitionIdentifier
@@ -94,7 +94,7 @@ const buildDocumentUrl = (
 
 const freeTrialStaticData = (
   platformIdentifier: PlatformIdentifier,
-  t: ReturnType<typeof useTranslations>
+  t: ReturnType<typeof useTranslate>
 ) => {
   return {
     description: t(
@@ -109,7 +109,7 @@ const freeTrialStaticData = (
 
 export const freeTrialSkeletonToServiceInstanceCardData = (
   platformIdentifier: PlatformIdentifier,
-  t: ReturnType<typeof useTranslations>
+  t: ReturnType<typeof useTranslate>
 ) => {
   const page =
     platformIdentifier === PlatformIdentifier.Openaev
@@ -126,7 +126,7 @@ export const freeTrialSkeletonToServiceInstanceCardData = (
 
 export const registeredPlatformToServiceInstanceCardData = (
   platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number],
-  t: ReturnType<typeof useTranslations>
+  t: ReturnType<typeof useTranslate>
 ): ServiceInstanceCardData => {
   const cardBackgroundByServiceMap: Partial<
     Record<ServiceDefinitionIdentifier, string>
@@ -205,7 +205,7 @@ const computeIllustrationDocumentUrl = (
 
 export const localizedCardName = (
   instance: { slug?: string | null; name: string },
-  t: ReturnType<typeof useTranslations>
+  t: ReturnType<typeof useTranslate>
 ) => {
   const key = `Service.Cards.${instance.slug}.Name`;
   return instance.slug && t.has(key) ? t(key) : instance.name;
@@ -213,7 +213,7 @@ export const localizedCardName = (
 
 export const localizedCardDescription = (
   instance: { slug?: string | null; description?: string | null },
-  t: ReturnType<typeof useTranslations>
+  t: ReturnType<typeof useTranslate>
 ) => {
   const key = `Service.Cards.${instance.slug}.Description`;
   return instance.slug && t.has(key) ? t(key) : instance.description!;
@@ -221,7 +221,7 @@ export const localizedCardDescription = (
 
 export const seoServiceInstanceToInstanceCardData = (
   instance: seoServiceInstanceFragment$data,
-  t: ReturnType<typeof useTranslations>
+  t: ReturnType<typeof useTranslate>
 ): ServiceInstanceCardData => {
   return {
     id: instance.id,

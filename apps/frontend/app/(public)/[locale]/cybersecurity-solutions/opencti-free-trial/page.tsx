@@ -1,9 +1,5 @@
-import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
-import { TrialsHeader } from '@/components/service/trial-instances/TrialsHeader';
-import { TrialsLearnMore } from '@/components/service/trial-instances/TrialsLearnMore';
-import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { PublicFreeTrialContent } from '@/components/service/trial-instances/page/PublicFreeTrialContent';
 import type { PublicLocale } from '@/i18n/config';
-import { RelayProvider } from '@/relay/relay-provider';
 import {
   buildFiligranOrganizationJsonLd,
   buildSeoPageMetadata,
@@ -11,11 +7,9 @@ import {
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { GradientButton } from '@filigran/ui/servers';
 import { PlatformIdentifier, ServiceInstanceTag } from '@graphql/generated';
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import Link from 'next/link';
 
 const PATHNAME = `/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/opencti-free-trial`;
 
@@ -46,15 +40,6 @@ const Page = async ({
 }) => {
   const { locale } = await params;
   const baseUrl = await getBaseUrl();
-  const breadcrumbs = [
-    {
-      label: 'MenuLinks.Home',
-      href: `/${locale}`,
-    },
-    {
-      label: 'Service.Trials.OpenCTIPlatformBreadcrumb',
-    },
-  ];
   const t = await getTranslations();
 
   const jsonLd = {
@@ -73,25 +58,13 @@ const Page = async ({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
-      <BreadcrumbNav value={breadcrumbs} />
-      <RelayProvider>
-        <TrialsHeader
-          platformIdentifier={PlatformIdentifier.Opencti}
-          actions={
-            <GradientButton className="bg-background dark:bg-none">
-              <Link
-                href="/redirect/create-free-trial"
-                prefetch={false}>
-                {t('Service.Trials.StartTrial')}
-              </Link>
-            </GradientButton>
-          }
-        />
-        <TrialsLearnMore platformIdentifier={PlatformIdentifier.Opencti} />
-        <RegistrationLearnMore
-          serviceInstanceTag={ServiceInstanceTag.OpenCti}
-        />
-      </RelayProvider>
+      <PublicFreeTrialContent
+        locale={locale}
+        platformIdentifier={PlatformIdentifier.Opencti}
+        serviceInstanceTag={ServiceInstanceTag.OpenCti}
+        breadcrumbLabelKey="Service.Trials.OpenCTIPlatformBreadcrumb"
+        redirectHref="/redirect/create-free-trial"
+      />
     </>
   );
 };

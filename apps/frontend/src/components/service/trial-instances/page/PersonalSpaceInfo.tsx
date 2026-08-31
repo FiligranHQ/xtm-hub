@@ -1,13 +1,13 @@
 'use client';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
+import { useTranslate } from '@/hooks/use-translate';
 import { InfoIcon } from '@filigran/icon';
-import { useTranslations } from 'next-intl';
 import { useContext } from 'react';
 
 const PersonalSpaceInfo = () => {
   const { isPersonalSpace } = useContext(PortalContext);
-  const t = useTranslations();
+  const t = useTranslate();
   if (!isPersonalSpace) return;
   return (
     <div className="border border-solid border-blue rounded text-primary flex items-center gap-xs p-s text-sm mt-4">

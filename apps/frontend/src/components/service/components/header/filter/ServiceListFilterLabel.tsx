@@ -4,7 +4,7 @@ import { ServiceListFilterKey } from '@/components/service/components/header/Ser
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@/hooks/use-translate';
 
 interface ServiceListFilterLabelProps {
   type: string;
@@ -12,7 +12,7 @@ interface ServiceListFilterLabelProps {
 export const ServiceListFilterLabel = ({
   type,
 }: ServiceListFilterLabelProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
   const { labels, setLabels, removeLabels } =
     useServiceListLocalStorage(localStorageKey);

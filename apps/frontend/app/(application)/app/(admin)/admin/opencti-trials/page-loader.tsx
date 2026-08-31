@@ -1,7 +1,7 @@
 import TrialsList from '@/components/trials/TrialsList';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { useTranslate } from '@/hooks/use-translate';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 
 const breadcrumbValue = [
   {
@@ -12,7 +12,7 @@ const breadcrumbValue = [
   },
 ];
 const PageLoader = () => {
-  const t = useTranslations();
+  const t = useTranslate();
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />

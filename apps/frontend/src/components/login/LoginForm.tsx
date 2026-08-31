@@ -2,6 +2,7 @@
 
 import { LoginFormMutation } from '@/components/login/login.graphql';
 import useDecodedQuery from '@/hooks/use-decoded-query';
+import { useTranslate } from '@/hooks/use-translate';
 import { decodeSafeRedirect } from '@/utils/redirect';
 import {
   Button,
@@ -14,7 +15,6 @@ import {
   toast,
 } from '@filigran/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-relay';
@@ -28,7 +28,7 @@ const formSchema = z.object({
 // Component
 const LoginForm = () => {
   const router = useRouter();
-  const t = useTranslations();
+  const t = useTranslate();
   const { redirect } = useDecodedQuery();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,6 +51,16 @@ const LoginForm = () => {
       onCompleted() {
         const destination = decodeSafeRedirect(redirect);
         if (destination) {
+          // /edition and /edition/exit are Route Handlers, not pages: a
+          // client-side router.push() to them is a no-op as far as the
+          // server is concerned (there's no RSC payload to fetch), so the
+          // cookie-setting logic they run would silently never fire. Force
+          // a real browser navigation for those so the request actually
+          // reaches the server.
+          if (destination.startsWith('/edition')) {
+            window.location.href = destination;
+            return;
+          }
           router.push(destination);
         }
         // If login succeed, refresh the page

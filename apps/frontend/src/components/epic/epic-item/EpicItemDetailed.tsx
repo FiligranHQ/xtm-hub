@@ -1,9 +1,9 @@
 import { EpicItemFooter } from '@/components/epic/epic-item/EpicItemFooter';
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
+import { useTranslate } from '@/hooks/use-translate';
 import { Separator } from '@filigran/ui/clients';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface EpicItemDetailedProps {
@@ -15,7 +15,7 @@ export const EpicItemDetailed = ({
   epic,
   serviceInstanceId,
 }: EpicItemDetailedProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
 
   return (
     <div className="p-l bg-elevation-background-layer-1 markdown-content flex h-full min-h-0 flex-1 flex-col">

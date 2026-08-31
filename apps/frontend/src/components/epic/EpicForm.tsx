@@ -3,6 +3,7 @@
 import { EditionTypeMapping } from '@/components/epic/epic-item/EditionTypeMapping';
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import { ServiceFormDescriptionField } from '@/components/service/form/DescriptionField';
+import { useTranslate } from '@/hooks/use-translate';
 import {
   AutoForm,
   Button,
@@ -26,7 +27,6 @@ import {
   FiligranProduct,
   Timeline,
 } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ControllerRenderProps, FieldValues } from 'react-hook-form';
 import { z } from 'zod';
@@ -64,7 +64,7 @@ const EpicForm = ({
   epic?: epic_fragment$data;
   handleSubmit: (values: z.infer<typeof epicFormSchema>) => void;
 }) => {
-  const t = useTranslations();
+  const t = useTranslate();
 
   const [isIntegration, setIsIntegration] = useState(
     epic?.epic_type === EpicType.Integration

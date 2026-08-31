@@ -4,6 +4,7 @@ import { SelectWithEditableField } from '@/components/service/registration/Selec
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
 import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
+import { useTranslate } from '@/hooks/use-translate';
 import { CheckIndeterminateIcon } from '@filigran/icon';
 import {
   AutoForm,
@@ -15,7 +16,6 @@ import {
 } from '@filigran/ui';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
 import { PlatformIdentifier } from '@graphql/generated';
-import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
@@ -47,7 +47,7 @@ export const TrialCancelSheet = ({
   setOpen,
   platformIdentifier,
 }: TrialCancelSheetProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   const cancellationReasons = REASONS.map((reason) => ({
     value: reason,
     label: t(`Service.Trials.CancellationReason.${reason}`),
