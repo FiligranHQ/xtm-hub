@@ -99,7 +99,7 @@ export const TryFiligranProductForm = ({
   return (
     <>
       <div>
-        {t('Service.Trials.Form.AssociatedEmail')}: {me?.email}
+        {t('Service.Trials.Form.AssociatedEmail')} {me?.email}
         <AutoForm
           className="mt-l"
           formSchema={tryFiligranProductFormSchema}

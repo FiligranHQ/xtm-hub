@@ -1,16 +1,7 @@
 import testRender from '@/utils/test/test-render';
-import { IntegrationSubType, IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { IntegrationFilters } from './IntegrationFilters';
-
-vi.mock('@/components/service/integrations/Integration.utils', () => ({
-  availableIntegrationTypes: [IntegrationType.Connector],
-  SubTypesPerIntegrationType: new Map([
-    [IntegrationType.Connector, [IntegrationSubType.ExternalImport]],
-  ]),
-  getIntegrationSubTypeMetadata: () => ({ label: 'External import' }),
-}));
 
 vi.mock('@/hooks/use-service-list-local-storage', () => ({
   ServiceListLocalStorageKey: { OpenCTIIntegrationFeeds: 'feeds' },
@@ -37,23 +28,5 @@ describe('IntegrationFilters', () => {
     expect(
       screen.getByText('Service.OpenctiIntegrations.Filter.Type.Placeholder')
     ).toBeInTheDocument();
-  });
-
-  it('propagates solution categories flag to hide subtype options', async () => {
-    const { user } = testRender(
-      <IntegrationFilters isSolutionCategoriesEnabled />
-    );
-
-    await user.click(
-      screen.getByText('Service.OpenctiIntegrations.Filter.Type.Placeholder')
-    );
-
-    const listbox = screen.getByRole('listbox');
-    expect(
-      screen.getByText(
-        `Service.OpenctiIntegrations.Type.${IntegrationType.Connector}`
-      )
-    ).toBeInTheDocument();
-    expect(listbox).not.toHaveTextContent('External import');
   });
 });

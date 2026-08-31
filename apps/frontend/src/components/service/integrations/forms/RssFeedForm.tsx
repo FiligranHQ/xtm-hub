@@ -27,7 +27,6 @@ const rssFeedFormSchema = z.object({
   use_cases: z.array(z.string()).min(1, 'Required'),
   solution_categories: z.array(z.string()).min(1, 'Required'),
   license_type: z.enum(['Free', 'Commercial']).optional(),
-  integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
   blogpost_url: z.url().or(z.literal('')).nullish(),
@@ -83,7 +82,6 @@ export const RssFeedForm = ({ handleSubmit, document }: RssFeedFormProps) => {
             ? me?.selected_organization_id
             : document?.uploader_organization?.id) ?? '',
         integration_type: IntegrationType.RssFeed,
-        integration_subtype: document?.integration_subtype ?? '',
         active: document?.active ?? true,
       }) as RssFeedFormValues,
     [me, document, isCreation]
@@ -108,7 +106,6 @@ export const RssFeedForm = ({ handleSubmit, document }: RssFeedFormProps) => {
     use_cases,
     solution_categories,
     license_type,
-    integration_subtype,
     uploader_organization_id,
     uploader_id,
     integration_type,
@@ -153,7 +150,6 @@ export const RssFeedForm = ({ handleSubmit, document }: RssFeedFormProps) => {
             ...license_type,
             fieldType: 'radio',
           },
-          integration_subtype,
           uploader_id,
           uploader_organization_id,
           document: isCreation

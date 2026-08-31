@@ -49,7 +49,12 @@ describe('deployment resolver', () => {
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
-            use_case: DeploymentRequestUseCase.ThreatHunting,
+            use_cases_by_product: [
+              {
+                platform_identifier: PlatformIdentifier.Opencti,
+                use_case: DeploymentRequestUseCase.ThreatHunting,
+              },
+            ],
             products: [PlatformIdentifier.Opencti],
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -81,7 +86,12 @@ describe('deployment resolver', () => {
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
+        use_cases_by_product: [
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+        ],
         products: [PlatformIdentifier.Opencti],
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,

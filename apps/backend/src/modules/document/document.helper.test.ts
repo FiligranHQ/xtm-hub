@@ -13,7 +13,6 @@ import { TestHelper } from '../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../tests/tests.const';
 import {
   DocumentMetadataKeyCode,
-  IntegrationSubType,
   IntegrationType,
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
@@ -321,10 +320,6 @@ describe('documentHelper', () => {
           {
             key: DocumentMetadataKeyCode.IntegrationType,
             value: IntegrationType.ThirdPartyIntegration,
-          },
-          {
-            key: DocumentMetadataKeyCode.IntegrationSubtype,
-            value: IntegrationSubType.Orchestration,
           },
           {
             key: DocumentMetadataKeyCode.VendorUrl,

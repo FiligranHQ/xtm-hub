@@ -92,12 +92,15 @@ export const StartTrialBannerButton = () => {
     values: z.infer<typeof tryFiligranProductFormSchema>
   ) => {
     setOpenSheet(false);
-    const { acceptTerms: _, ...valuesWithoutAcceptTerms } = values;
+    const { acceptTerms: _, use_case, ...valuesWithoutAcceptTerms } = values;
     commitCreateDeploymentRequestMutationMutation({
       variables: {
         input: {
           ...valuesWithoutAcceptTerms,
           products: [platformIdentifier],
+          use_cases_by_product: [
+            { platform_identifier: platformIdentifier, use_case },
+          ],
           type: DeploymentRequestDeploymentType.Trial,
           source: DeploymentRequestSource.Xtmhub,
         },

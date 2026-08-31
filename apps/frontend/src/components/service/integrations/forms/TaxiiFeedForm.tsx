@@ -27,7 +27,6 @@ const taxiiFeedFormSchema = z.object({
   use_cases: z.array(z.string()).min(1, 'Required'),
   solution_categories: z.array(z.string()).min(1, 'Required'),
   license_type: z.enum(['Free', 'Commercial']).optional(),
-  integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
   blogpost_url: z.url().or(z.literal('')).nullish(),
@@ -86,7 +85,6 @@ export const TaxiiFeedForm = ({
             ? me?.selected_organization_id
             : document?.uploader_organization?.id) ?? '',
         integration_type: IntegrationType.TaxiiFeed,
-        integration_subtype: document?.integration_subtype ?? '',
       }) as TaxiiFeedFormValues,
     [me, document, isCreation]
   );
@@ -113,7 +111,6 @@ export const TaxiiFeedForm = ({
     uploader_organization_id,
     uploader_id,
     integration_type,
-    integration_subtype,
     datasheet_url,
     blogpost_url,
     demo_url,
@@ -181,7 +178,6 @@ export const TaxiiFeedForm = ({
           slug,
           name,
           integration_type,
-          integration_subtype,
           datasheet_url,
           blogpost_url,
           demo_url,

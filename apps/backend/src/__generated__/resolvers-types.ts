@@ -171,7 +171,6 @@ export type Connector = Document & Integration & Node & {
   download_number?: Maybe<Scalars['Int']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   manager_supported: Scalars['Boolean']['output'];
@@ -231,7 +230,7 @@ export type CreateDeploymentRequestInput = {
   region: DeploymentRequestPlatformRegion;
   source: DeploymentRequestSource;
   type: DeploymentRequestDeploymentType;
-  use_case?: InputMaybe<DeploymentRequestUseCase>;
+  use_cases_by_product?: InputMaybe<Array<ProductUseCaseInput>>;
 };
 
 export type CreateDocumentInput = {
@@ -644,7 +643,6 @@ export enum DocumentMetadataKeyCode {
   GithubUrl = 'github_url',
   ImageName = 'image_name',
   ImageType = 'image_type',
-  IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   LastVerifiedDate = 'last_verified_date',
   LicenseType = 'license_type',
@@ -781,7 +779,6 @@ export type Filter = {
 export enum FilterKey {
   EntityType = 'entity_type',
   FeedUrl = 'feed_url',
-  IntegrationSubtype = 'integration_subtype',
   IntegrationType = 'integration_type',
   Label = 'label',
   LicenseType = 'license_type',
@@ -860,29 +857,6 @@ export type IntegrationHack = Document & Integration & Node & {
   uploader_organization?: Maybe<Organization>;
   use_cases?: Maybe<Array<UseCase>>;
 };
-
-export enum IntegrationSubType {
-  CaseManagement = 'CASE_MANAGEMENT',
-  CyberIndustry = 'CYBER_INDUSTRY',
-  Darkweb = 'DARKWEB',
-  Detection = 'DETECTION',
-  ExternalImport = 'EXTERNAL_IMPORT',
-  FederalOrganization = 'FEDERAL_ORGANIZATION',
-  InternalEnrichment = 'INTERNAL_ENRICHMENT',
-  InternalExportFile = 'INTERNAL_EXPORT_FILE',
-  InternalImportFile = 'INTERNAL_IMPORT_FILE',
-  Journalists = 'JOURNALISTS',
-  Malware = 'MALWARE',
-  Native = 'NATIVE',
-  NotForProfitOrganization = 'NOT_FOR_PROFIT_ORGANIZATION',
-  Orchestration = 'ORCHESTRATION',
-  PeriodicBriefing = 'PERIODIC_BRIEFING',
-  SecurityResearcher = 'SECURITY_RESEARCHER',
-  SocialMedia = 'SOCIAL_MEDIA',
-  Stream = 'STREAM',
-  ThreatActors = 'THREAT_ACTORS',
-  Vendors = 'VENDORS'
-}
 
 export enum IntegrationType {
   Connector = 'connector',
@@ -1716,6 +1690,7 @@ export type PlatformTrialStatus = {
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status?: Maybe<DeploymentRequestHubStatus>;
   isBlacklisted: Scalars['Boolean']['output'];
+  ongoingStandaloneTrials: Array<PlatformIdentifier>;
 };
 
 export enum PortalCapability {
@@ -1730,6 +1705,11 @@ export enum PortalCapability {
   ModifyTrialsQuota = 'MODIFY_TRIALS_QUOTA',
   ReadTrials = 'READ_TRIALS'
 }
+
+export type ProductUseCaseInput = {
+  platform_identifier: PlatformIdentifier;
+  use_case: DeploymentRequestUseCase;
+};
 
 export type ProvisionedNewsFeedItem = Node & {
   __typename?: 'ProvisionedNewsFeedItem';
@@ -1774,6 +1754,7 @@ export type Query = {
   publicDocumentsByServiceSlug: Array<Document>;
   registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
+  registeredProductVersions: Array<RegisteredProductVersion>;
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstanceMetadata: Array<SeoServiceInstanceMetadata>;
   seoServiceInstances: Array<SeoServiceInstance>;
@@ -1977,6 +1958,11 @@ export type QueryRegisteredPlatformsArgs = {
 };
 
 
+export type QueryRegisteredProductVersionsArgs = {
+  product: PlatformIdentifier;
+};
+
+
 export type QuerySeoServiceInstanceArgs = {
   slug: Scalars['String']['input'];
 };
@@ -2162,6 +2148,13 @@ export type RegisteredPlatformsInput = {
   onlyTrial?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type RegisteredProductVersion = {
+  __typename?: 'RegisteredProductVersion';
+  created_at: Scalars['Date']['output'];
+  product: PlatformIdentifier;
+  version: Scalars['String']['output'];
+};
+
 export type RegistrationResponse = {
   __typename?: 'RegistrationResponse';
   token: Scalars['String']['output'];
@@ -2196,7 +2189,6 @@ export type RssFeed = Document & Integration & Node & {
   feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2442,7 +2434,6 @@ export type Stream = Document & Integration & Node & {
   feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2562,7 +2553,6 @@ export type TaxiiFeed = Document & Integration & Node & {
   feed_url?: Maybe<Scalars['String']['output']>;
   file_name?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -2614,7 +2604,6 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   file_name?: Maybe<Scalars['String']['output']>;
   github_url?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  integration_subtype: IntegrationSubType;
   integration_type: IntegrationType;
   license_type?: Maybe<LicenseType>;
   name: Scalars['String']['output'];
@@ -3054,7 +3043,6 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Integration: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Integration']>;
   IntegrationHack: ResolverTypeWrapper<IntegrationHack>;
-  IntegrationSubType: IntegrationSubType;
   IntegrationType: IntegrationType;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: ResolverTypeWrapper<IsPlatformRegisteredOrganization>;
@@ -3107,6 +3095,7 @@ export type ResolversTypes = ResolversObject<{
   PlatformRegistrationStatus: PlatformRegistrationStatus;
   PlatformTrialStatus: ResolverTypeWrapper<PlatformTrialStatus>;
   PortalCapability: PortalCapability;
+  ProductUseCaseInput: ProductUseCaseInput;
   ProvisionedNewsFeedItem: ResolverTypeWrapper<ProvisionedNewsFeedItem>;
   Query: ResolverTypeWrapper<{}>;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
@@ -3119,6 +3108,7 @@ export type ResolversTypes = ResolversObject<{
   RegisteredPlatform: ResolverTypeWrapper<RegisteredPlatform>;
   RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
+  RegisteredProductVersion: ResolverTypeWrapper<RegisteredProductVersion>;
   RegistrationResponse: ResolverTypeWrapper<RegistrationResponse>;
   ReorderDeploymentRequestInQueueDirection: ReorderDeploymentRequestInQueueDirection;
   ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
@@ -3311,6 +3301,7 @@ export type ResolversParentTypes = ResolversObject<{
   PlatformInput: PlatformInput;
   PlatformProvider: PlatformProvider;
   PlatformTrialStatus: PlatformTrialStatus;
+  ProductUseCaseInput: ProductUseCaseInput;
   ProvisionedNewsFeedItem: ProvisionedNewsFeedItem;
   Query: {};
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
@@ -3323,6 +3314,7 @@ export type ResolversParentTypes = ResolversObject<{
   RegisteredPlatform: RegisteredPlatform;
   RegisteredPlatformInput: RegisteredPlatformInput;
   RegisteredPlatformsInput: RegisteredPlatformsInput;
+  RegisteredProductVersion: RegisteredProductVersion;
   RegistrationResponse: RegistrationResponse;
   ReorderDeploymentRequestInQueueInput: ReorderDeploymentRequestInQueueInput;
   RolePortal: RolePortal;
@@ -3477,7 +3469,6 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   download_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   manager_supported?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -4146,6 +4137,7 @@ export type PlatformTrialStatusResolvers<ContextType = PortalContext, ParentType
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<Maybe<ResolversTypes['DeploymentRequestHubStatus']>, ParentType, ContextType>;
   isBlacklisted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  ongoingStandaloneTrials?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4190,6 +4182,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicDocumentsByServiceSlug?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryPublicDocumentsByServiceSlugArgs, 'serviceInstanceSlug'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
+  registeredProductVersions?: Resolver<Array<ResolversTypes['RegisteredProductVersion']>, ParentType, ContextType, RequireFields<QueryRegisteredProductVersionsArgs, 'product'>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstanceMetadata?: Resolver<Array<ResolversTypes['SeoServiceInstanceMetadata']>, ParentType, ContextType, RequireFields<QuerySeoServiceInstanceMetadataArgs, 'service_instance_id'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
@@ -4244,6 +4237,13 @@ export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type RegisteredProductVersionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegisteredProductVersion'] = ResolversParentTypes['RegisteredProductVersion']> = ResolversObject<{
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type RegistrationResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegistrationResponse'] = ResolversParentTypes['RegistrationResponse']> = ResolversObject<{
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -4267,7 +4267,6 @@ export type RssFeedResolvers<ContextType = PortalContext, ParentType extends Res
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4457,7 +4456,6 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4549,7 +4547,6 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   feed_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4594,7 +4591,6 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
   file_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   github_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  integration_subtype?: Resolver<ResolversTypes['IntegrationSubType'], ParentType, ContextType>;
   integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
   license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4814,6 +4810,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
   RefreshUserPlatformTokenResponse?: RefreshUserPlatformTokenResponseResolvers<ContextType>;
   RegisteredPlatform?: RegisteredPlatformResolvers<ContextType>;
+  RegisteredProductVersion?: RegisteredProductVersionResolvers<ContextType>;
   RegistrationResponse?: RegistrationResponseResolvers<ContextType>;
   RolePortal?: RolePortalResolvers<ContextType>;
   RssFeed?: RssFeedResolvers<ContextType>;

@@ -24,7 +24,6 @@ enum FilterKey {
   organization_id
   personal_space
   integration_type
-  integration_subtype
   slug
   product_version
   manager_supported
@@ -97,6 +96,7 @@ type Query {
   mostDeployedDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   newestDocuments(limit: Int!, platformIdentifiers: [PlatformIdentifier!]): [Document!]!
   lastDeployedOverview(limit: Int!, serviceInstanceId: ServiceInstanceId!): LastDeployedOverview!
+  registeredProductVersions(product: PlatformIdentifier!): [RegisteredProductVersion!]!
   newsFeedItems(first: Int!, after: ID): NewsFeedItemConnection!
   organization(id: ID!): Organization
   organizations(first: Int = 50, after: ID, orderBy: OrganizationOrdering!, orderMode: OrderingMode!, searchTerm: String): OrganizationConnection!
@@ -432,12 +432,17 @@ type PlatformDeploymentRequest {
 
 input CreateDeploymentRequestInput {
   products: [PlatformIdentifier!]!
+  use_cases_by_product: [ProductUseCaseInput!]
   region: DeploymentRequestPlatformRegion!
   type: DeploymentRequestDeploymentType!
   job_title: DeploymentRequestJobTitle
   activity_sector: DeploymentRequestActivitySector
-  use_case: DeploymentRequestUseCase
   source: DeploymentRequestSource!
+}
+
+input ProductUseCaseInput {
+  platform_identifier: PlatformIdentifier!
+  use_case: DeploymentRequestUseCase!
 }
 
 input UpdateDeploymentRequestInput {
@@ -509,6 +514,7 @@ type PlatformTrialStatus {
   isBlacklisted: Boolean!
   hub_status: DeploymentRequestHubStatus
   end_date: Date
+  ongoingStandaloneTrials: [PlatformIdentifier!]!
 }
 
 enum DeploymentRequestOrdering {
@@ -589,7 +595,6 @@ enum LicenseType {
 enum DocumentMetadataKeyCode {
   feed_url
   integration_type
-  integration_subtype
   last_verified_date
   datasheet_url
   blogpost_url
@@ -738,6 +743,12 @@ type DeployedResource {
 
 type LastDeployedOverview {
   resources: [DeployedResource!]!
+}
+
+type RegisteredProductVersion {
+  product: PlatformIdentifier!
+  version: String!
+  created_at: Date!
 }
 
 """
@@ -1471,29 +1482,6 @@ enum IntegrationType {
   third_party_integration
 }
 
-enum IntegrationSubType {
-  EXTERNAL_IMPORT
-  INTERNAL_ENRICHMENT
-  INTERNAL_EXPORT_FILE
-  INTERNAL_IMPORT_FILE
-  STREAM
-  NATIVE
-  ORCHESTRATION
-  DETECTION
-  CASE_MANAGEMENT
-  THREAT_ACTORS
-  MALWARE
-  CYBER_INDUSTRY
-  PERIODIC_BRIEFING
-  SECURITY_RESEARCHER
-  VENDORS
-  FEDERAL_ORGANIZATION
-  JOURNALISTS
-  NOT_FOR_PROFIT_ORGANIZATION
-  SOCIAL_MEDIA
-  DARKWEB
-}
-
 interface Integration implements Node & Document {
   id: ID!
   type: String!
@@ -1614,7 +1602,6 @@ type Connector implements Node & Document & Integration {
   verified: Boolean!
   source_code: String
   subscription_link: String
-  integration_subtype: IntegrationSubType!
   manager_supported: Boolean!
   playbook_supported: Boolean!
   datasheet_url: String
@@ -1650,7 +1637,6 @@ type TaxiiFeed implements Node & Document & Integration {
   remover_id: ID
   feed_url: String
   integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
   datasheet_url: String
   blogpost_url: String
   demo_url: String
@@ -1682,7 +1668,6 @@ type RssFeed implements Node & Document & Integration {
   remover_id: ID
   feed_url: String
   integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
   datasheet_url: String
   blogpost_url: String
   demo_url: String
@@ -1714,7 +1699,6 @@ type Stream implements Node & Document & Integration {
   remover_id: ID
   feed_url: String
   integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
   datasheet_url: String
   blogpost_url: String
   demo_url: String
@@ -1745,7 +1729,6 @@ type ThirdPartyIntegration implements Node & Document & Integration {
   children_documents: [ShareableResource!]
   remover_id: ID
   integration_type: IntegrationType!
-  integration_subtype: IntegrationSubType!
   vendor_url: String!
   product_version: String
   github_url: String

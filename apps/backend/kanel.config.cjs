@@ -77,6 +77,9 @@ const COLUMN_ENUM_MAP = {
   ContentTranslation: {
     locale: 'Locale',
   },
+  ProductVersion: {
+    product: 'PlatformIdentifier',
+  },
 };
 
 /** @type {import('kanel').Config} */

@@ -7,4 +7,4 @@ export const PLATFORM_ORGANIZATION_UUID =
  * Fallback revalidation window (seconds) shared by public SEO and document
  * queries, so neither goes stale longer than the other.
  */
-export const PUBLIC_PAGE_REVALIDATE_SECONDS = 60 * 60 * 6; // 6 hours
+export const PUBLIC_PAGE_REVALIDATE_SECONDS = 60 * 60; // 1 hour

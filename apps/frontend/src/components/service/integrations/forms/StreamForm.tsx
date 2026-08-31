@@ -27,7 +27,6 @@ const streamFormSchema = z.object({
   use_cases: z.array(z.string()).min(1, 'Required'),
   solution_categories: z.array(z.string()).min(1, 'Required'),
   license_type: z.enum(['Free', 'Commercial']).optional(),
-  integration_subtype: z.string().min(1, 'Required'),
   active: z.boolean().optional(),
   datasheet_url: z.url().or(z.literal('')).nullish(),
   blogpost_url: z.url().or(z.literal('')).nullish(),
@@ -83,7 +82,6 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
             ? me?.selected_organization_id
             : document?.uploader_organization?.id) ?? '',
         integration_type: IntegrationType.Stream,
-        integration_subtype: document?.integration_subtype ?? '',
       }) as StreamFormValues,
     [me, document, isCreation]
   );
@@ -109,7 +107,6 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
     use_cases,
     solution_categories,
     license_type,
-    integration_subtype,
     integration_type,
     datasheet_url,
     blogpost_url,
@@ -178,7 +175,6 @@ export const StreamForm = ({ handleSubmit, document }: StreamFormProps) => {
           slug,
           name,
           integration_type,
-          integration_subtype,
           datasheet_url,
           blogpost_url,
           demo_url,

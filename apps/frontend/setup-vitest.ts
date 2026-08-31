@@ -46,6 +46,8 @@ vi.mock('next/navigation', async (importOriginal) => ({
   useRouter: vi.fn(),
   useParams: vi.fn(),
   useSearchParams: vi.fn(),
+  redirect: vi.fn(),
+  notFound: vi.fn(),
 }));
 
 // cookies() throws when called outside a real Next.js request scope, which

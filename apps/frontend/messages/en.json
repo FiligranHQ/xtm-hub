@@ -246,7 +246,6 @@
       "EDIT_ME_USER_ERROR": "Error while editing your profile",
       "EDIT_ORGANIZATION_ERROR": "Error while editing organization",
       "EDIT_USER_ERROR": "Error while editing user",
-      "EDIT_USER_SESSION_ERROR": "An unknown error occurred",
       "EMAIL_OUTSIDE_ORGANIZATION_ERROR": "You cannot add a user whose email domain is outside your organization",
       "EPIC_CREATE_ERROR": "An error occurred while creating the epic.",
       "EPIC_UPDATE_ERROR": "An error occurred while updating the epic.",
@@ -271,6 +270,7 @@
       "MISSING_CAPABILITY_ON_SERVICE": "Missing permissions",
       "MISSING_METADATA_MAPPING": "Missing metadata mapping",
       "MISSING_START_OR_END_DATE": "An unknown error occurred",
+      "INVALID_USE_CASES_FOR_PRODUCTS": "Use cases do not match the requested products",
       "MIXED_LTS_MANIFEST_FRAGMENTS": "A batch cannot mix LTS and non-LTS fragments",
       "NEWS_FEED_ITEM_MISSING_TITLE": "News feed item is missing title",
       "NEWS_FEED_ITEM_NOT_FOUND": "News feed item not found",
@@ -715,7 +715,8 @@
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",
-    "xtmhub": "XTM Hub"
+    "xtmhub": "XTM Hub",
+    "xtmone": "XTM One"
   },
   "ProfilePage": {
     "Picture": "Picture",
@@ -1027,7 +1028,6 @@
       "LicenseTypeLabel": "License type",
       "Restore": "Restore",
       "SelectImage": "Select image(s)",
-      "SelectIntegrationSubType": "Subtype",
       "SelectJSONFile": "Select JSON file",
       "ShortDescriptionLabel": "Short Description",
       "ShortDescriptionPlaceholder": "This is some catchphrases to describe the document.",
@@ -1055,10 +1055,6 @@
       "AddService": "Add new Integration",
       "IntegrationType": "Integration type",
       "Filter": {
-        "IntegrationSubType": {
-          "Label": "Subtype",
-          "Placeholder": "Subtype..."
-        },
         "Type": {
           "Label": "Integration type",
           "Placeholder": "Integration type..."
@@ -1358,7 +1354,6 @@
         "IntegrationType": "Type",
         "IntegrationSolutionCategory": "Solution category",
         "IntegrationLicenseType": "License type",
-        "IntegrationSubType": "Subtype",
         "GithubURL": "Github URL",
         "VendorURL": "Vendor URL",
         "FeedURL": "Feed URL",
@@ -1379,7 +1374,7 @@
     "Trials": {
       "ExploreBold": "Free Trial!",
       "ExplorePlatform": "Explore {platformName} platform with 30 days",
-      "ExploreProducts": "Explore OpenCTI or OpenAEV platform with 30 days",
+      "ExploreProducts": "Explore OpenCTI or OpenAEV product with 30 days",
       "Active": "Your OpenCTI free trial is active",
       "Provisioning": "Your OpenCTI free trial is currently being provisioned.",
       "Requested": "Your OpenCTI free trial has been requested.",
@@ -1481,7 +1476,56 @@
         "Ending": {
           "Text": "Keep exploring the full XTM Platform experience before your trial ends."
         },
-        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}"
+        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}",
+        "Page": {
+          "Breadcrumb": "XTM Platform Trial",
+          "Overline": "XTM Platform free trial",
+          "Title": "Start your 30-day free trial",
+          "PitchTitle": "Explore the full XTM Platform experience",
+          "PitchDescription": "Get 30 days to explore the SaaS-based, enterprise editions of OpenCTI and OpenAEV, including XTM One's agentic orchestration capabilities. Unify your threat intelligence and validate your defenses with agentic, continuous exposure management and cyber risk reduction.",
+          "Products": {
+            "opencti": {
+              "Tagline": "Unify and prioritize your threat signals",
+              "Description": "Break data silos and operationalize threat intelligence with OpenCTI, an agentic platform built by practitioners, for practitioners, featuring automated playbooks, PIRs, FINTEL, and AI-powered import, reporting, and search. Enterprise-grade governance and sovereignty included."
+            },
+            "openaev": {
+              "Tagline": "Validate your defenses",
+              "Description": "Simulate real attacks against your existing defenses, EDR agents included, with automated scenario generation and AI-powered remediation guidance to see what's actually exploitable. From tabletop exercises to full posture validation and resilience reporting for leadership."
+            },
+            "xtmone": {
+              "Tagline": "Your agentic threat management cockpit",
+              "Description": "XTM One is the agentic AI layer orchestrating assistive and agentic AI across OpenCTI and OpenAEV, moving you from threat signal to validated action at machine speed, human-in-the-loop, closing the loop on CTEM."
+            }
+          },
+          "Limitations": {
+            "Title": "Trial limitations",
+            "Intro": "The XTM Platform free trial includes all Enterprise Edition SaaS features, but with limited computing power and storage:",
+            "OpenCTI": "For OpenCTI: up to 40GB in intelligence data storage and 3GB in file storage.",
+            "OpenAEV": "For OpenAEV: 16GB",
+            "Ingestion": "Ingesting large, premium feed with rich data sets during this trial could impact your storage quickly.",
+            "NoSLA": "Note that this trial does not include SLAs. In the event of a cloud provider outage, recovery time is not guaranteed. We recommend not storing critical or irreplaceable data in your trial environment."
+          },
+          "Form": {
+            "ProductsTitle": "Products included in this trial",
+            "ProductsWarning": "Choose your trial bundle carefully.",
+            "ProductsWarningDescription": "Once your trial starts, products cannot be added or changed, and no additional trials can be requested for the same organization.",
+            "OngoingTrialWarning": "You have {count, plural, one {an ongoing {products} trial} other {ongoing {products} trials}}. Requesting a XTM platform trial will cancel {count, plural, one {your current trial} other {all your current trials}} and data will not be transferred.",
+            "OngoingTrialDescription": "When you chose a new trial bundle, products cannot be changed, and no additional trials can be requested for the same organization.",
+            "UseCaseFor": "{product} use case",
+            "Submit": "Request XTM Platform trial"
+          },
+          "NotLoggedIn": {
+            "Title": "To be elligible to request trial you need to be login",
+            "Description": "Please create a XTM account or connect you to an existent one."
+          },
+          "NotAdmin": {
+            "Title": "To request a trial you need to be Organization admin",
+            "Description": "Please contact the organization admin in your company"
+          },
+          "PersonalSpace": {
+            "Title": "Trials are not available in a personal space"
+          }
+        }
       },
       "QuickStart": {
         "Title": "Quick start guide",
@@ -1517,14 +1561,14 @@
       },
       "Form": {
         "Region": "Region",
-        "RegionPlaceholder": "Please select your preferred region for hosting",
-        "AssociatedEmail": "Associated Email",
+        "RegionPlaceholder": "Select your preferred region for hosting",
+        "AssociatedEmail": "Associated Email：",
         "JobTitle": "Job title",
-        "JobTitlePlaceholder": "Please select your job title",
+        "JobTitlePlaceholder": "Select your job title",
         "ActivitySector": "Activity sector",
-        "ActivitySectorPlaceholder": "Please select your activity sector",
+        "ActivitySectorPlaceholder": "Select your activity sector",
         "UseCase": "Use case",
-        "UseCasePlaceholder": "Please select your use case",
+        "UseCasePlaceholder": "Select your use case",
         "MSSA": "MSSA",
         "MSSAAgreement": "I acknowledge that I have read, understand and agree to the trial terms of",
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
@@ -1635,6 +1679,12 @@
     "Dark": "Dark",
     "Light": "Light",
     "SetTheme": "Set theme"
+  },
+  "ThreadConference": {
+    "Description": "The annual gathering of the global threat intelligence and cyber defense community - where intelligence, exposure management and action come together.",
+    "Date": "October 15, 2026 | Paris",
+    "ImageAlt": "Thread Conference Banner",
+    "Cta": "Learn more"
   },
   "UnexpectedErrorDialog": {
     "Description": "Please try logging in again. If the issue persists, contact us for assistance.",
