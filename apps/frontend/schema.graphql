@@ -1451,6 +1451,7 @@ type ServiceInstanceSubscription {
 enum FeatureFlag {
   DUMMY
   XTM_PLATFORM_TRIAL
+  DECOUPLING_CONNECTORS
 }
 
 type PlatformProvider {
