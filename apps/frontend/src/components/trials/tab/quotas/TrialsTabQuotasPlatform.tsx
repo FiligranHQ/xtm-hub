@@ -14,8 +14,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
-type QuotaRow = TrialsQuotaFragment & { id: string };
-
 interface TrialsTabQuotasPlatformProps {
   scope: TrialsScope;
 }
@@ -27,7 +25,9 @@ export const TrialsTabQuotasPlatform = ({
   const userHasModifyTrialQuotaCapa = useUserHasPortalCapability([
     PortalCapability.ModifyTrialsQuota,
   ]);
-  const [quotaEdit, setQuotaEdit] = useState<QuotaRow | undefined>(undefined);
+  const [quotaEdit, setQuotaEdit] = useState<TrialsQuotaFragment | undefined>(
+    undefined
+  );
 
   const variables = useMemo(
     () => ({
@@ -41,14 +41,14 @@ export const TrialsTabQuotasPlatform = ({
     queryKey: trialsQuotasKeys.list(variables),
   });
 
-  const columns: ColumnDef<QuotaRow>[] = useMemo(
+  const columns: ColumnDef<TrialsQuotaFragment>[] = useMemo(
     () => [
       {
         accessorKey: 'region',
         id: 'region',
         header: t('TrialsDashboard.Columns.Region'),
         enableSorting: false,
-        cell: ({ row }: { row: { original: QuotaRow } }) => {
+        cell: ({ row }: { row: { original: TrialsQuotaFragment } }) => {
           return <span>{t(trialsRegionKey(row.original.region))}</span>;
         },
       },
@@ -77,16 +77,9 @@ export const TrialsTabQuotasPlatform = ({
 
   const dataTableData = useMemo(
     () =>
-      (data?.deploymentRequestsAvailable ?? [])
-        .map((availability) => ({
-          ...availability,
-          id: availability.region,
-        }))
-        .sort((a, b) =>
-          t(trialsRegionKey(a.region)).localeCompare(
-            t(trialsRegionKey(b.region))
-          )
-        ),
+      [...(data?.deploymentRequestsAvailable ?? [])].sort((a, b) =>
+        t(trialsRegionKey(a.region)).localeCompare(t(trialsRegionKey(b.region)))
+      ),
     [data, t]
   );
 
@@ -101,7 +94,7 @@ export const TrialsTabQuotasPlatform = ({
         <TrialsTabQuotasPlatformUpdate
           quota={quotaEdit}
           scope={scope}
-          key={`${quotaEdit.platform_identifier}${quotaEdit.region}`}
+          key={quotaEdit.id}
           defaultStateOpen={!!quotaEdit}
           onCloseSheet={() => setQuotaEdit(undefined)}
         />

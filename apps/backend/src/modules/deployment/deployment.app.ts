@@ -293,6 +293,7 @@ export const DeploymentApp = {
     );
 
     return quotas.map((quota) => ({
+      id: quota.id,
       region: quota.region,
       availableCount: quota.availability,
       capacity: quota.capacity,

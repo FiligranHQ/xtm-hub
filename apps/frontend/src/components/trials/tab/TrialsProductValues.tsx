@@ -1,5 +1,4 @@
 'use client';
-import { sortProducts } from '@/components/trials/tab/trials-tab.utils';
 import {
   Tooltip,
   TooltipContent,
@@ -17,9 +16,7 @@ export const TrialsProductValues = ({
   products,
   valueOf,
 }: TrialsProductValuesProps) => {
-  const valuedProducts = sortProducts(products).filter(
-    (product) => !!valueOf(product)
-  );
+  const valuedProducts = products.filter((product) => !!valueOf(product));
 
   if (valuedProducts.length === 0) {
     return <span>-</span>;

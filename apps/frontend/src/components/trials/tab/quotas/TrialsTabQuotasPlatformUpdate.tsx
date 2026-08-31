@@ -38,7 +38,9 @@ export const TrialsTabQuotasPlatformUpdate = ({
     <SheetWithPreventingDialog
       title={
         scope.kind === 'bundle'
-          ? t('ManageTrials.Quotas.UpdateTitle', { region: translatedRegion })
+          ? t('TrialsDashboard.UpdateQuotasForm.BundleTitle', {
+              region: translatedRegion,
+            })
           : t('TrialsDashboard.UpdateQuotasForm.Title', {
               region: translatedRegion,
               platform: t(`PlatformIdentifier.${scope.platformIdentifier}`),

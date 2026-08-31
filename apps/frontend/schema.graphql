@@ -486,6 +486,7 @@ type PlatformDeploymentRequestConnection {
 }
 
 type DeploymentAvailability {
+  id: ID!
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
   capacity: Int!

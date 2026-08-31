@@ -667,7 +667,8 @@
       "CancellationReason": "Cancellation Reason",
       "Available": "Available",
       "Taken": "Taken",
-      "Total": "Total"
+      "Total": "Total",
+      "Products": "Products"
     },
     "TabTitle": {
       "Cancelled": "Cancelled",
@@ -677,12 +678,16 @@
       "Quotas": "Quotas"
     },
     "Toast": {
-      "TrialsReordered": "Trial requests were reordered"
+      "TrialsReordered": "Trial requests were reordered",
+      "BundleCancelled": "The bundle trial was cancelled successfully.",
+      "BundleReordered": "The bundle has been reordered in the queue."
     },
     "Actions": {
       "SearchTrials": "Search by email or organization",
       "MoveToTop": "Move to top",
-      "MoveUp": "Move up"
+      "MoveUp": "Move up",
+      "CancelBundle": "Cancel the bundle trial",
+      "CancelTrial": "Cancel the trial"
     },
     "UpdateQuotasForm": {
       "Title": "Update quotas for {platform} in {region}",
@@ -692,16 +697,12 @@
         "ConfirmTitle": "Quota Update for Region {region}",
         "ConfirmDescription": "You’ve updated the quotas for Region {region} from {oldCapacity} to {newCapacity}.",
         "ConfirmSentence": "Are you sure you want to save these changes?"
-      }
+      },
+      "BundleTitle": "Update the bundle quota in {region}"
     },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
     "Registered": "Connected",
-    "NotRegistered": "Not Connected"
-  },
-  "ManageTrials": {
-    "Columns": {
-      "Products": "Products"
-    },
+    "NotRegistered": "Not Connected",
     "ProductStatus": {
       "queued": "Queued",
       "pending": "Pending",
@@ -711,19 +712,8 @@
       "cancelled": "Cancelled",
       "failed": "Failed"
     },
-    "Actions": {
-      "CancelBundle": "Cancel the bundle trial",
-      "CancelTrial": "Cancel the trial"
-    },
     "Cancellation": {
       "Confirmation": "Are you sure you want to cancel the bundle trial of {organizationName}? Every product of the bundle will be cancelled."
-    },
-    "Toast": {
-      "BundleCancelled": "The bundle trial was cancelled successfully.",
-      "BundleReordered": "The bundle has been reordered in the queue."
-    },
-    "Quotas": {
-      "UpdateTitle": "Update the bundle quota in {region}"
     }
   },
   "Parameters": {

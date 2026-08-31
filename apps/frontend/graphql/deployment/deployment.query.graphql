@@ -30,6 +30,7 @@ fragment TrialsRow on DeploymentRequest {
 }
 
 fragment TrialsQuota on DeploymentAvailability {
+  id
   region
   availableCount
   capacity

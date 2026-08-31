@@ -9,27 +9,8 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestFilter,
   DeploymentRequestFilterKey,
-  DeploymentRequestHubStatus,
   TrialsProductFragment,
 } from '@graphql/generated';
-
-const SUCCESS_CLASS_NAME = 'text-feedback-success-primary';
-const RUNNING_CLASS_NAME = 'text-feedback-alert-primary';
-const INACTIVE_CLASS_NAME = 'text-feedback-neutral-primary';
-
-const CLASS_NAME_BY_HUB_STATUS: Record<DeploymentRequestHubStatus, string> = {
-  [DeploymentRequestHubStatus.Active]: SUCCESS_CLASS_NAME,
-  [DeploymentRequestHubStatus.Pending]: RUNNING_CLASS_NAME,
-  [DeploymentRequestHubStatus.Provisioning]: RUNNING_CLASS_NAME,
-  [DeploymentRequestHubStatus.Queued]: RUNNING_CLASS_NAME,
-  [DeploymentRequestHubStatus.Cancelled]: INACTIVE_CLASS_NAME,
-  [DeploymentRequestHubStatus.Expired]: INACTIVE_CLASS_NAME,
-  [DeploymentRequestHubStatus.Failed]: INACTIVE_CLASS_NAME,
-};
-
-export const resolveProductStatusClassName = (
-  hubStatus: DeploymentRequestHubStatus
-): string => CLASS_NAME_BY_HUB_STATUS[hubStatus];
 
 const productRank = (product: TrialsProductFragment): number => {
   const rank = TRIALS_PRODUCT_ORDER.findIndex(

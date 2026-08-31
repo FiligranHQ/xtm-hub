@@ -667,7 +667,8 @@
       "CancellationReason": "取消理由",
       "Available": "利用可能",
       "Taken": "可",
-      "Total": "合計"
+      "Total": "合計",
+      "Products": "製品"
     },
     "TabTitle": {
       "Cancelled": "キャンセル",
@@ -677,12 +678,16 @@
       "Quotas": "ノルマ"
     },
     "Toast": {
-      "TrialsReordered": "トライアルリクエストの並び替え"
+      "TrialsReordered": "トライアルリクエストの並び替え",
+      "BundleCancelled": "バンドルトライアルをキャンセルしました。",
+      "BundleReordered": "バンドルの待ち行列の順序を変更しました。"
     },
     "Actions": {
       "SearchTrials": "電子メールまたは組織で検索",
       "MoveToTop": "トップへ戻る",
-      "MoveUp": "上に移動"
+      "MoveUp": "上に移動",
+      "CancelBundle": "バンドルトライアルをキャンセル",
+      "CancelTrial": "トライアルをキャンセルする"
     },
     "UpdateQuotasForm": {
       "Title": "{region}で{platform}のクォータを更新する",
@@ -692,16 +697,12 @@
         "ConfirmTitle": "リージョン {region} のクォータ更新",
         "ConfirmDescription": "リージョン {region} のクォータを {oldCapacity} から {newCapacity} に更新しました。",
         "ConfirmSentence": "この変更を保存してもよろしいですか？"
-      }
+      },
+      "BundleTitle": "{region} のバンドルクォータを変更"
     },
     "WarningCancellation": "キャンセルすると、その組織は新しいトライアルを要求できなくなります。",
     "Registered": "接続済み",
-    "NotRegistered": "未接続"
-  },
-  "ManageTrials": {
-    "Columns": {
-      "Products": "製品"
-    },
+    "NotRegistered": "未接続",
     "ProductStatus": {
       "queued": "待機中",
       "pending": "保留中",
@@ -711,19 +712,8 @@
       "cancelled": "キャンセル済み",
       "failed": "失敗"
     },
-    "Actions": {
-      "CancelBundle": "バンドルトライアルをキャンセル",
-      "CancelTrial": "トライアルをキャンセルする"
-    },
     "Cancellation": {
       "Confirmation": "{organizationName} のバンドルトライアルをキャンセルしてもよろしいですか？バンドルのすべての製品がキャンセルされます。"
-    },
-    "Toast": {
-      "BundleCancelled": "バンドルトライアルをキャンセルしました。",
-      "BundleReordered": "バンドルの待ち行列の順序を変更しました。"
-    },
-    "Quotas": {
-      "UpdateTitle": "{region} のバンドルクォータを変更"
     }
   },
   "Parameters": {

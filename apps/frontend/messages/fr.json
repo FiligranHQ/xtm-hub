@@ -667,7 +667,8 @@
       "CancellationReason": "Raison de l'annulation",
       "Available": "Disponible",
       "Taken": "Pris",
-      "Total": "Total"
+      "Total": "Total",
+      "Products": "Produits"
     },
     "TabTitle": {
       "Cancelled": "Annulé",
@@ -677,12 +678,16 @@
       "Quotas": "Quotas"
     },
     "Toast": {
-      "TrialsReordered": "Les demandes ont été réorganisées"
+      "TrialsReordered": "Les demandes ont été réorganisées",
+      "BundleCancelled": "L'essai bundle a bien été annulé.",
+      "BundleReordered": "Le bundle a été réordonné dans la file d'attente."
     },
     "Actions": {
       "SearchTrials": "Recherche par email ou par organisation",
       "MoveToTop": "Aller au début",
-      "MoveUp": "Remonter"
+      "MoveUp": "Remonter",
+      "CancelBundle": "Annuler l'essai bundle",
+      "CancelTrial": "Annuler l'essai"
     },
     "UpdateQuotasForm": {
       "Title": "Mise à jour des quotas pour {platform} dans {region}",
@@ -692,16 +697,12 @@
         "ConfirmTitle": "Mise à jour des quotas pour la région {region}",
         "ConfirmDescription": "Vous avez mis à jour les quotas pour la région {region} de {oldCapacity} à {newCapacity}.",
         "ConfirmSentence": "Êtes-vous sûr de vouloir enregistrer ces modifications ?"
-      }
+      },
+      "BundleTitle": "Modifier le quota bundle en {region}"
     },
     "WarningCancellation": "Toute annulation empêchera l'organisation de demander un nouvel essai",
     "Registered": "Connecté",
-    "NotRegistered": "Déconnecté"
-  },
-  "ManageTrials": {
-    "Columns": {
-      "Products": "Produits"
-    },
+    "NotRegistered": "Déconnecté",
     "ProductStatus": {
       "queued": "Dans la file",
       "pending": "En attente",
@@ -711,19 +712,8 @@
       "cancelled": "Annulé",
       "failed": "En échec"
     },
-    "Actions": {
-      "CancelBundle": "Annuler l'essai bundle",
-      "CancelTrial": "Annuler l'essai"
-    },
     "Cancellation": {
       "Confirmation": "Êtes-vous sûr de vouloir annuler l'essai bundle de {organizationName} ? Tous les produits du bundle seront annulés."
-    },
-    "Toast": {
-      "BundleCancelled": "L'essai bundle a bien été annulé.",
-      "BundleReordered": "Le bundle a été réordonné dans la file d'attente."
-    },
-    "Quotas": {
-      "UpdateTitle": "Modifier le quota bundle en {region}"
     }
   },
   "Parameters": {
