@@ -187,6 +187,20 @@
     },
     "JoinCommunity": "フィリグランコミュニティの輪に入る"
   },
+  "FeatureVoting": {
+    "Title": "今後の機能に投票",
+    "MetaDescription": "OpenCTI、OpenAEV、XTM One、XTM Hubで次に実現してほしい機能に投票してください。",
+    "Description": "Filigran製品の未来づくりにご協力ください。次に実現してほしい機能に投票できます。投票は製品ごとに1票で、いつでも変更できます。",
+    "OneVotePerProduct": "この製品への投票は1票です。別の機能に投票すると票が移動します。",
+    "Vote": "投票する",
+    "Voted": "投票済み",
+    "VoteRecordedTitle": "投票を受け付けました",
+    "VoteRecordedDescription": "ありがとうございます。投票が反映されました。",
+    "NoOpenRound": "現在、投票は開催されていません。またお越しください。",
+    "CalloutTitle": "ロードマップづくりに参加",
+    "CalloutSubtitle": "現在、機能への投票を受付中です。次に見たい機能をお知らせください。",
+    "CalloutButton": "次の機能に投票する"
+  },
   "Error": {
     "AnErrorOccured": "エラーが発生しました",
     "Login": {
@@ -310,7 +324,19 @@
       "USER_DISABLED": "ユーザーが無効です",
       "USER_IS_NOT_IN_ORGANIZATION": "権限がありません",
       "USER_NOT_FOUND": "ユーザーが見つかりません",
-      "YOU_CAN_NOT_LOGIN": "ログインできません"
+      "VOTABLE_FEATURE_NOT_FOUND": "この機能は現在投票の対象ではありません",
+      "VOTE_FOR_FEATURE_ERROR": "投票の登録中にエラーが発生しました",
+      "YOU_CAN_NOT_LOGIN": "ログインできません",
+      "VOTING_ROUND_NOT_OPEN": "この投票ラウンドは公開されていません",
+      "VOTING_ROUND_CLOSED": "この投票ラウンドは終了しています",
+      "VOTING_ROUND_NOT_FOUND": "投票ラウンドが見つかりません",
+      "DELETE_VOTING_ROUND_BLOCKED_BY_VOTES": "このラウンドには既に投票があるため削除できません",
+      "DELETE_VOTABLE_FEATURE_BLOCKED_BY_VOTES": "この機能には既に投票があります。無効化してください",
+      "VOTING_ROUND_MUTATION_ERROR": "投票ラウンドの保存中にエラーが発生しました",
+      "OPEN_VOTING_ROUND_WITHOUT_ACTIVE_FEATURE": "このラウンドには有効な機能がないため、開始できません",
+      "VOTABLE_FEATURE_PRODUCT_LOCKED": "この機能には既に投票があるため、製品を変更できません",
+      "COPY_FEATURES_FROM_ANOTHER_ROADMAP": "機能は同じロードマップのラウンドからのみコピーできます",
+      "VOTABLE_FEATURE_MUTATION_ERROR": "機能の保存中にエラーが発生しました"
     },
     "SomethingWentWrong": "何かが間違っている",
     "YouAreNotAuthorized": "このページを表示する権限がありません。"
@@ -491,6 +517,7 @@
     "Documentation": "ドキュメント",
     "Scenarios": "ユースケース",
     "XTMRoadmap": "XTMプラットフォームのロードマップ",
+    "FeatureVoting": "機能への投票",
     "FiligranAcademy": "Filigran Academy",
     "Blog": "ブログ",
     "Slack": "Slack",
@@ -515,7 +542,8 @@
     "OpenCTITrial": "OpenCTI トライアル",
     "OpenAEVTrial": "OpenAEVトライアル",
     "Competitor": "競技者",
-    "NewsFeed": "ニュースフィード"
+    "NewsFeed": "ニュースフィード",
+    "VotingRound": "機能への投票"
   },
   "NewsFeedAdminPage": {
     "Title": "タイトル",
@@ -1890,5 +1918,78 @@
     "vulnerability_analyst": "脆弱性アナリスト",
     "consultant": "コンサルタント",
     "other": "その他"
+  },
+  "VotingRound": {
+    "Actions": {
+      "Add": "投票ラウンドを作成",
+      "Edit": "ラウンドを編集",
+      "Open": "投票を開始",
+      "Close": "投票を終了"
+    },
+    "Form": {
+      "Name": "名称",
+      "Description": "説明",
+      "DescriptionPlaceholder": "公開投票ページに表示されます",
+      "CopyFeaturesFrom": "機能のコピー元",
+      "CopyFeaturesNone": "空のラウンドから開始",
+      "Error": {
+        "Name": "名称は必須です",
+        "ServiceInstance": "ロードマップは必須です"
+      },
+      "ServiceInstance": "ロードマップ",
+      "ServiceInstancePlaceholder": "ロードマップを選択",
+      "Theme": "バナースタイル"
+    },
+    "ListPage": {
+      "Name": "名称",
+      "Status": "ステータス",
+      "FeatureCount": "機能数",
+      "ServiceInstance": "ロードマップ"
+    },
+    "Status": {
+      "draft": "下書き",
+      "open": "公開中",
+      "closed": "終了"
+    },
+    "Dialog": {
+      "DeleteRound": "{name} を削除しますか？投票がない場合のみ可能です。",
+      "OpenRound": "{name} の投票を開始しますか？現在公開中のラウンドは終了し、結果は保持されます。",
+      "CloseRound": "{name} の投票を終了しますか？以降は投票できなくなり、結果は保持されます。",
+      "DeleteFeature": "{title} を削除しますか？"
+    },
+    "Feature": {
+      "SectionTitle": "機能",
+      "Title": "タイトル",
+      "Product": "製品",
+      "ShortDescription": "概要",
+      "Description": "説明",
+      "Illustration": "イラスト",
+      "Position": "表示順",
+      "Active": "有効",
+      "ActiveYes": "はい",
+      "ActiveNo": "いいえ",
+      "Actions": {
+        "Add": "機能を追加",
+        "Edit": "機能を編集"
+      },
+      "Error": {
+        "Title": "タイトルは必須です",
+        "ShortDescription": "概要は必須です",
+        "Description": "説明は必須です",
+        "Position": "表示順は0以上の数値で入力してください"
+      },
+      "RemoveIllustration": "イラストを削除",
+      "DescriptionPlaceholder": "ユーザーが機能を開いたときに表示される詳細説明。Markdown に対応しています。"
+    },
+    "Results": {
+      "Title": "結果",
+      "TotalVoters": "投票者数：{count}",
+      "Empty": "このラウンドにはまだ投票がありません。",
+      "InactiveFeature": "無効"
+    },
+    "Theme": {
+      "default": "デフォルト",
+      "thread": "Thread"
+    }
   }
 }

@@ -122,6 +122,10 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenuLinks('SolutionCategory'),
     },
     {
+      href: `/${APP_PATH}/admin/voting-rounds`,
+      label: tMenuLinks('VotingRound'),
+    },
+    {
       href: `/${APP_PATH}/admin/organizations`,
       label: tMenuLinks('Organization'),
     },

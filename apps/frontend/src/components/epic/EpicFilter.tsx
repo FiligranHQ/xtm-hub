@@ -42,7 +42,7 @@ export const EpicFilter = ({
   );
 
   return (
-    <div className="ml-xl pl-m grid grid-cols-1 sm:grid-cols-3 gap-l items-center">
+    <div className="mx-s grid grid-cols-1 sm:grid-cols-3 gap-l items-center">
       <div className="max-w-full sm:max-w-[100%]">
         <SearchInput
           placeholder={t('GenericActions.Search')}

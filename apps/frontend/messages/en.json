@@ -187,6 +187,20 @@
     },
     "JoinCommunity": "Stay in the loop on the Filigran Community"
   },
+  "FeatureVoting": {
+    "Title": "Vote for upcoming features",
+    "MetaDescription": "Vote for the features you want to see next in OpenCTI, OpenAEV, XTM One and XTM Hub.",
+    "Description": "Help us shape the future of Filigran products: vote for the feature you would like to see next. You have one vote per product, and you can change it at any time.",
+    "OneVotePerProduct": "You have one vote for this product. Voting for another feature moves your vote.",
+    "Vote": "Vote",
+    "Voted": "Your vote",
+    "VoteRecordedTitle": "Vote recorded",
+    "VoteRecordedDescription": "Thank you! Your vote has been taken into account.",
+    "NoOpenRound": "No feature vote is open at the moment. Come back soon!",
+    "CalloutTitle": "Help shape the roadmap",
+    "CalloutSubtitle": "A feature vote is open right now: tell us what you want to see next.",
+    "CalloutButton": "Vote for your next feature"
+  },
   "Error": {
     "AnErrorOccured": "An error occurred",
     "Login": {
@@ -310,7 +324,19 @@
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
       "USER_NOT_FOUND": "User is not found",
-      "YOU_CAN_NOT_LOGIN": "You can not login"
+      "VOTABLE_FEATURE_NOT_FOUND": "This feature is no longer open for voting",
+      "VOTE_FOR_FEATURE_ERROR": "An error occurred while recording your vote",
+      "YOU_CAN_NOT_LOGIN": "You can not login",
+      "VOTING_ROUND_NOT_OPEN": "This voting round is not open",
+      "VOTING_ROUND_CLOSED": "This voting round is closed",
+      "VOTING_ROUND_NOT_FOUND": "Voting round not found",
+      "DELETE_VOTING_ROUND_BLOCKED_BY_VOTES": "This round already collected votes and cannot be deleted",
+      "DELETE_VOTABLE_FEATURE_BLOCKED_BY_VOTES": "This feature already collected votes, deactivate it instead",
+      "VOTING_ROUND_MUTATION_ERROR": "An error occurred while saving the voting round",
+      "OPEN_VOTING_ROUND_WITHOUT_ACTIVE_FEATURE": "This round has no active feature and cannot be opened",
+      "VOTABLE_FEATURE_PRODUCT_LOCKED": "This feature already collected votes, its product can no longer be changed",
+      "COPY_FEATURES_FROM_ANOTHER_ROADMAP": "Features can only be copied from a round of the same roadmap",
+      "VOTABLE_FEATURE_MUTATION_ERROR": "An error occurred while saving the feature"
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -491,6 +517,7 @@
     "Documentation": "Documentation",
     "Scenarios": "Scenarios",
     "XTMRoadmap": "XTM Platform Roadmap",
+    "FeatureVoting": "Feature Voting",
     "FiligranAcademy": "Filigran Academy",
     "Blog": "Blog",
     "Slack": "Slack",
@@ -515,7 +542,8 @@
     "OpenCTITrial": "OpenCTI Trial",
     "OpenAEVTrial": "OpenAEV Trial",
     "Competitor": "Competitor",
-    "NewsFeed": "News Feed"
+    "NewsFeed": "News Feed",
+    "VotingRound": "Feature voting"
   },
   "NewsFeedAdminPage": {
     "Title": "Title",
@@ -1890,5 +1918,78 @@
     "vulnerability_analyst": "Vulnerability Analyst",
     "consultant": "Consultant",
     "other": "Other"
+  },
+  "VotingRound": {
+    "Actions": {
+      "Add": "Create voting round",
+      "Edit": "Edit voting round",
+      "Open": "Open for voting",
+      "Close": "Close voting"
+    },
+    "Form": {
+      "Name": "Name",
+      "Description": "Description",
+      "DescriptionPlaceholder": "Shown to users on the public voting page",
+      "CopyFeaturesFrom": "Copy features from",
+      "CopyFeaturesNone": "Start from an empty round",
+      "Error": {
+        "Name": "Name is required",
+        "ServiceInstance": "A roadmap is required"
+      },
+      "ServiceInstance": "Roadmap",
+      "ServiceInstancePlaceholder": "Select a roadmap",
+      "Theme": "Banner style"
+    },
+    "ListPage": {
+      "Name": "Name",
+      "Status": "Status",
+      "FeatureCount": "Features",
+      "ServiceInstance": "Roadmap"
+    },
+    "Status": {
+      "draft": "Draft",
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "Dialog": {
+      "DeleteRound": "Are you sure you want to delete {name}? This is only possible while it has no vote.",
+      "OpenRound": "Open {name} for voting? The round currently open will be closed and its results kept.",
+      "CloseRound": "Close voting on {name}? Users will no longer be able to vote and the results are kept.",
+      "DeleteFeature": "Are you sure you want to delete {title}?"
+    },
+    "Feature": {
+      "SectionTitle": "Features",
+      "Title": "Title",
+      "Product": "Product",
+      "ShortDescription": "Short description",
+      "Description": "Description",
+      "Illustration": "Illustration",
+      "Position": "Position",
+      "Active": "Active",
+      "ActiveYes": "Yes",
+      "ActiveNo": "No",
+      "Actions": {
+        "Add": "Add feature",
+        "Edit": "Edit feature"
+      },
+      "Error": {
+        "Title": "Title is required",
+        "ShortDescription": "Short description is required",
+        "Description": "Description is required",
+        "Position": "Position must be a positive number"
+      },
+      "RemoveIllustration": "Remove the illustration",
+      "DescriptionPlaceholder": "Full description shown when a user opens the feature. Markdown is supported."
+    },
+    "Results": {
+      "Title": "Results",
+      "TotalVoters": "{count} voters",
+      "Empty": "No vote yet for this round.",
+      "InactiveFeature": "Deactivated"
+    },
+    "Theme": {
+      "default": "Default",
+      "thread": "Thread"
+    }
   }
 }

@@ -10,7 +10,10 @@ import type { SubscriptionId } from '../model/kanel/public/Subscription.js';
 import type { UseCaseId } from '../model/kanel/public/UseCase.js';
 import type { UserId } from '../model/kanel/public/User.js';
 import type { UserServiceId } from '../model/kanel/public/UserService.js';
+import type { VotableFeatureId } from '../model/kanel/public/VotableFeature.js';
+import type { VotingRoundId } from '../model/kanel/public/VotingRound.js';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import type { VotingRoundModel, VotableFeatureModel } from '../modules/feature-voting/feature-voting.app.js';
 import type { PortalContext } from '../model/portal-context.js';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null;
@@ -44,6 +47,8 @@ export type Scalars = {
   UseCaseId: { input: UseCaseId; output: UseCaseId; }
   UserId: { input: UserId; output: UserId; }
   UserServiceId: { input: UserServiceId; output: UserServiceId; }
+  VotableFeatureId: { input: VotableFeatureId; output: VotableFeatureId; }
+  VotingRoundId: { input: VotingRoundId; output: VotingRoundId; }
 };
 
 export type AddServiceInput = {
@@ -250,6 +255,25 @@ export type CreateSubscriptionsInput = {
   organization_id: Array<Scalars['OrganizationId']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
   start_date: Scalars['Date']['input'];
+};
+
+export type CreateVotableFeatureInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description: Scalars['String']['input'];
+  position?: InputMaybe<Scalars['Int']['input']>;
+  product: FiligranProduct;
+  short_description: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+  use_case_ids?: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
+  voting_round_id: Scalars['VotingRoundId']['input'];
+};
+
+export type CreateVotingRoundInput = {
+  copy_features_from_round_id?: InputMaybe<Scalars['VotingRoundId']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
+  theme?: InputMaybe<VotingRoundTheme>;
 };
 
 export type CsvFeed = Document & Integration & Node & {
@@ -962,6 +986,8 @@ export type Mutation = {
   createDocument: Document;
   createEpic: Epic;
   createSubscriptions: Array<SubscriptionModel>;
+  createVotableFeature: VotableFeature;
+  createVotingRound: VotingRound;
   deleteCompetitor: Competitor;
   deleteDocument: Document;
   deleteEpic?: Maybe<Epic>;
@@ -972,6 +998,8 @@ export type Mutation = {
   deleteUseCase: UseCase;
   deleteUser: User;
   deleteUserServices?: Maybe<Array<Maybe<UserService>>>;
+  deleteVotableFeature: VotableFeature;
+  deleteVotingRound: VotingRound;
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
   editSeoServiceInstance: SeoServiceInstanceMetadata;
@@ -998,6 +1026,7 @@ export type Mutation = {
   requestTransferPersonalSpace: Success;
   resetPassword: Success;
   sendTelemetryEvent?: Maybe<SendTelemetryMutation>;
+  setVotingRoundStatus: Array<VotingRound>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
   updateCompetitor: Competitor;
@@ -1008,7 +1037,10 @@ export type Mutation = {
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateServiceGroups: Array<ServiceGroup>;
   updateSubscription?: Maybe<SubscriptionModel>;
+  updateVotableFeature: VotableFeature;
+  updateVotingRound: VotingRound;
   uploadUserPicture: User;
+  voteForFeature: Array<VotableFeature>;
 };
 
 
@@ -1148,6 +1180,17 @@ export type MutationCreateSubscriptionsArgs = {
 };
 
 
+export type MutationCreateVotableFeatureArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  input: CreateVotableFeatureInput;
+};
+
+
+export type MutationCreateVotingRoundArgs = {
+  input: CreateVotingRoundInput;
+};
+
+
 export type MutationDeleteCompetitorArgs = {
   id: Scalars['CompetitorId']['input'];
 };
@@ -1198,6 +1241,16 @@ export type MutationDeleteUserArgs = {
 export type MutationDeleteUserServicesArgs = {
   input: UserServicesDeleteInput;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationDeleteVotableFeatureArgs = {
+  id: Scalars['VotableFeatureId']['input'];
+};
+
+
+export type MutationDeleteVotingRoundArgs = {
+  id: Scalars['VotingRoundId']['input'];
 };
 
 
@@ -1327,6 +1380,12 @@ export type MutationRequestTransferPersonalSpaceArgs = {
 };
 
 
+export type MutationSetVotingRoundStatusArgs = {
+  id: Scalars['VotingRoundId']['input'];
+  status: VotingRoundStatus;
+};
+
+
 export type MutationTransferPersonalSpaceArgs = {
   requestId: Scalars['ID']['input'];
 };
@@ -1388,8 +1447,26 @@ export type MutationUpdateSubscriptionArgs = {
 };
 
 
+export type MutationUpdateVotableFeatureArgs = {
+  document?: InputMaybe<Array<Scalars['Upload']['input']>>;
+  id: Scalars['VotableFeatureId']['input'];
+  input: UpdateVotableFeatureInput;
+};
+
+
+export type MutationUpdateVotingRoundArgs = {
+  id: Scalars['VotingRoundId']['input'];
+  input: UpdateVotingRoundInput;
+};
+
+
 export type MutationUploadUserPictureArgs = {
   document: Scalars['Upload']['input'];
+};
+
+
+export type MutationVoteForFeatureArgs = {
+  feature_id: Scalars['VotableFeatureId']['input'];
 };
 
 export type NewsFeedItem = Node & {
@@ -1702,6 +1779,11 @@ export type Query = {
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
+  /**
+   * The round currently collecting votes on a service instance, if any.
+   * Publicly readable, like the roadmap the round belongs to.
+   */
+  currentVotingRound?: Maybe<VotingRound>;
   deploymentRequests: PlatformDeploymentRequestConnection;
   deploymentRequestsAvailable: Array<DeploymentAvailability>;
   deploymentRequestsList: DeploymentRequestConnection;
@@ -1748,6 +1830,9 @@ export type Query = {
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   users: UserConnection;
   usersWithCapabilitiesInOrganization: Array<User>;
+  votingRound?: Maybe<VotingRound>;
+  votingRoundResults: VotingRoundResults;
+  votingRounds: Array<VotingRound>;
 };
 
 
@@ -1761,6 +1846,11 @@ export type QueryCompetitorsArgs = {
   first: Scalars['Int']['input'];
   orderBy: CompetitorOrdering;
   orderMode: OrderingMode;
+};
+
+
+export type QueryCurrentVotingRoundArgs = {
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2040,6 +2130,21 @@ export type QueryUsersArgs = {
 
 export type QueryUsersWithCapabilitiesInOrganizationArgs = {
   input: UsersWithCapabilitiesInOrganizationInput;
+};
+
+
+export type QueryVotingRoundArgs = {
+  id: Scalars['VotingRoundId']['input'];
+};
+
+
+export type QueryVotingRoundResultsArgs = {
+  id: Scalars['VotingRoundId']['input'];
+};
+
+
+export type QueryVotingRoundsArgs = {
+  service_instance_id?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 export type RefreshPlatformRegistrationConnectivityStatusAllTenantsInput = {
@@ -2687,6 +2792,24 @@ export type UpdateSubscriptionInput = {
   start_date?: InputMaybe<Scalars['Date']['input']>;
 };
 
+export type UpdateVotableFeatureInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Send null to remove the current illustration. */
+  illustration_document_id?: InputMaybe<Scalars['DocumentId']['input']>;
+  position?: InputMaybe<Scalars['Int']['input']>;
+  product?: InputMaybe<FiligranProduct>;
+  short_description?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  use_case_ids?: InputMaybe<Array<Scalars['UseCaseId']['input']>>;
+};
+
+export type UpdateVotingRoundInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  theme?: InputMaybe<VotingRoundTheme>;
+};
+
 export type UseCase = Node & {
   __typename?: 'UseCase';
   color: Scalars['String']['output'];
@@ -2850,6 +2973,65 @@ export type UsersWithCapabilitiesInOrganizationInput = {
   organizationId: Scalars['OrganizationId']['input'];
 };
 
+export type VotableFeature = Node & {
+  __typename?: 'VotableFeature';
+  active: Scalars['Boolean']['output'];
+  created_at: Scalars['Date']['output'];
+  description: Scalars['String']['output'];
+  has_my_vote: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  illustration_document?: Maybe<Document>;
+  illustration_document_id?: Maybe<Scalars['DocumentId']['output']>;
+  position: Scalars['Int']['output'];
+  product: FiligranProduct;
+  short_description: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  updated_at?: Maybe<Scalars['Date']['output']>;
+  use_cases: Array<UseCase>;
+  voting_round_id: Scalars['VotingRoundId']['output'];
+};
+
+export type VotableFeatureResult = {
+  __typename?: 'VotableFeatureResult';
+  feature: VotableFeature;
+  vote_count: Scalars['Int']['output'];
+};
+
+export type VotingRound = Node & {
+  __typename?: 'VotingRound';
+  closed_at?: Maybe<Scalars['Date']['output']>;
+  created_at: Scalars['Date']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  feature_count: Scalars['Int']['output'];
+  features: Array<VotableFeature>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  opened_at?: Maybe<Scalars['Date']['output']>;
+  service_instance_id: Scalars['ServiceInstanceId']['output'];
+  status: VotingRoundStatus;
+  theme: VotingRoundTheme;
+  updated_at?: Maybe<Scalars['Date']['output']>;
+};
+
+export type VotingRoundResults = {
+  __typename?: 'VotingRoundResults';
+  results: Array<VotableFeatureResult>;
+  round: VotingRound;
+  total_voters: Scalars['Int']['output'];
+};
+
+export enum VotingRoundStatus {
+  Closed = 'closed',
+  Draft = 'draft',
+  Open = 'open'
+}
+
+/** Visual identity applied to the public banner and voting page of a round. */
+export enum VotingRoundTheme {
+  Default = 'default',
+  Thread = 'thread'
+}
+
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
@@ -2919,7 +3101,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = ResolversObject<{
   Document: ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( IntegrationHack ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
   Integration: ( Connector ) | ( CsvFeed ) | ( IntegrationHack ) | ( RssFeed ) | ( Stream ) | ( TaxiiFeed ) | ( ThirdPartyIntegration );
-  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( NewsFeedItem ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( ProvisionedNewsFeedItem ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SolutionCategory ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted );
+  Node: ( Capability ) | ( Competitor ) | ( Connector ) | ( CsvFeed ) | ( CustomDashboard ) | ( CustomView ) | ( DefaultDocument ) | ( DeploymentRequest ) | ( Omit<Epic, 'document'> & { document?: Maybe<_RefType['Document']> } ) | ( GenericServiceCapability ) | ( IntegrationHack ) | ( IsPlatformRegisteredOrganization ) | ( MergeEvent ) | ( NewsFeedItem ) | ( OpenAevScenario ) | ( OpenCtiPlaybook ) | ( Organization ) | ( OrganizationCapabilities ) | ( OrganizationRef ) | ( ProvisionedNewsFeedItem ) | ( RegisteredPlatform ) | ( RolePortal ) | ( RssFeed ) | ( SeoServiceInstance ) | ( ServiceCapability ) | ( ServiceDefinition ) | ( ServiceGroup ) | ( ServiceInstance ) | ( ServiceLink ) | ( SolutionCategory ) | ( Stream ) | ( SubscriptionCapability ) | ( SubscriptionModel ) | ( TaxiiFeed ) | ( ThirdPartyIntegration ) | ( UseCase ) | ( User ) | ( UserService ) | ( UserServiceCapability ) | ( UserServiceDeleted ) | ( VotableFeatureModel ) | ( VotingRoundModel );
 }>;
 
 /** Mapping between all available schema types and the resolvers types */
@@ -2950,6 +3132,8 @@ export type ResolversTypes = ResolversObject<{
   CreateDocumentInput: CreateDocumentInput;
   CreateEpicInput: CreateEpicInput;
   CreateSubscriptionsInput: CreateSubscriptionsInput;
+  CreateVotableFeatureInput: CreateVotableFeatureInput;
+  CreateVotingRoundInput: CreateVotingRoundInput;
   CsvFeed: ResolverTypeWrapper<CsvFeed>;
   CustomDashboard: ResolverTypeWrapper<CustomDashboard>;
   CustomView: ResolverTypeWrapper<CustomView>;
@@ -3134,6 +3318,8 @@ export type ResolversTypes = ResolversObject<{
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   UpdateSubscriptionInput: UpdateSubscriptionInput;
+  UpdateVotableFeatureInput: UpdateVotableFeatureInput;
+  UpdateVotingRoundInput: UpdateVotingRoundInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   UseCase: ResolverTypeWrapper<UseCase>;
   UseCaseConnection: ResolverTypeWrapper<UseCaseConnection>;
@@ -3160,6 +3346,14 @@ export type ResolversTypes = ResolversObject<{
   UserServicesDeleteInput: UserServicesDeleteInput;
   UserSubscription: ResolverTypeWrapper<UserSubscription>;
   UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
+  VotableFeature: ResolverTypeWrapper<VotableFeatureModel>;
+  VotableFeatureId: ResolverTypeWrapper<Scalars['VotableFeatureId']['output']>;
+  VotableFeatureResult: ResolverTypeWrapper<Omit<VotableFeatureResult, 'feature'> & { feature: ResolversTypes['VotableFeature'] }>;
+  VotingRound: ResolverTypeWrapper<VotingRoundModel>;
+  VotingRoundId: ResolverTypeWrapper<Scalars['VotingRoundId']['output']>;
+  VotingRoundResults: ResolverTypeWrapper<Omit<VotingRoundResults, 'results' | 'round'> & { results: Array<ResolversTypes['VotableFeatureResult']>, round: ResolversTypes['VotingRound'] }>;
+  VotingRoundStatus: VotingRoundStatus;
+  VotingRoundTheme: VotingRoundTheme;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -3188,6 +3382,8 @@ export type ResolversParentTypes = ResolversObject<{
   CreateDocumentInput: CreateDocumentInput;
   CreateEpicInput: CreateEpicInput;
   CreateSubscriptionsInput: CreateSubscriptionsInput;
+  CreateVotableFeatureInput: CreateVotableFeatureInput;
+  CreateVotingRoundInput: CreateVotingRoundInput;
   CsvFeed: CsvFeed;
   CustomDashboard: CustomDashboard;
   CustomView: CustomView;
@@ -3325,6 +3521,8 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateServiceGroupsInput: UpdateServiceGroupsInput;
   UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   UpdateSubscriptionInput: UpdateSubscriptionInput;
+  UpdateVotableFeatureInput: UpdateVotableFeatureInput;
+  UpdateVotingRoundInput: UpdateVotingRoundInput;
   Upload: Scalars['Upload']['output'];
   UseCase: UseCase;
   UseCaseConnection: UseCaseConnection;
@@ -3348,6 +3546,12 @@ export type ResolversParentTypes = ResolversObject<{
   UserServicesDeleteInput: UserServicesDeleteInput;
   UserSubscription: UserSubscription;
   UsersWithCapabilitiesInOrganizationInput: UsersWithCapabilitiesInOrganizationInput;
+  VotableFeature: VotableFeatureModel;
+  VotableFeatureId: Scalars['VotableFeatureId']['output'];
+  VotableFeatureResult: Omit<VotableFeatureResult, 'feature'> & { feature: ResolversParentTypes['VotableFeature'] };
+  VotingRound: VotingRoundModel;
+  VotingRoundId: Scalars['VotingRoundId']['output'];
+  VotingRoundResults: Omit<VotingRoundResults, 'results' | 'round'> & { results: Array<ResolversParentTypes['VotableFeatureResult']>, round: ResolversParentTypes['VotingRound'] };
 }>;
 
 export type AuthDirectiveArgs = {
@@ -3842,6 +4046,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   createDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationCreateDocumentArgs, 'input' | 'metadata' | 'serviceInstanceId'>>;
   createEpic?: Resolver<ResolversTypes['Epic'], ParentType, ContextType, RequireFields<MutationCreateEpicArgs, 'input'>>;
   createSubscriptions?: Resolver<Array<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationCreateSubscriptionsArgs, 'input'>>;
+  createVotableFeature?: Resolver<ResolversTypes['VotableFeature'], ParentType, ContextType, RequireFields<MutationCreateVotableFeatureArgs, 'input'>>;
+  createVotingRound?: Resolver<ResolversTypes['VotingRound'], ParentType, ContextType, RequireFields<MutationCreateVotingRoundArgs, 'input'>>;
   deleteCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationDeleteCompetitorArgs, 'id'>>;
   deleteDocument?: Resolver<ResolversTypes['Document'], ParentType, ContextType, RequireFields<MutationDeleteDocumentArgs, 'documentId' | 'service_instance_id'>>;
   deleteEpic?: Resolver<Maybe<ResolversTypes['Epic']>, ParentType, ContextType, RequireFields<MutationDeleteEpicArgs, 'id'>>;
@@ -3852,6 +4058,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   deleteUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationDeleteUseCaseArgs, 'id'>>;
   deleteUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   deleteUserServices?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserService']>>>, ParentType, ContextType, RequireFields<MutationDeleteUserServicesArgs, 'input' | 'service_instance_id'>>;
+  deleteVotableFeature?: Resolver<ResolversTypes['VotableFeature'], ParentType, ContextType, RequireFields<MutationDeleteVotableFeatureArgs, 'id'>>;
+  deleteVotingRound?: Resolver<ResolversTypes['VotingRound'], ParentType, ContextType, RequireFields<MutationDeleteVotingRoundArgs, 'id'>>;
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editSeoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstanceMetadata'], ParentType, ContextType, RequireFields<MutationEditSeoServiceInstanceArgs, 'input' | 'language' | 'service_instance_id'>>;
@@ -3878,6 +4086,7 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   requestTransferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationRequestTransferPersonalSpaceArgs, 'new_email'>>;
   resetPassword?: Resolver<ResolversTypes['Success'], ParentType, ContextType>;
   sendTelemetryEvent?: Resolver<Maybe<ResolversTypes['SendTelemetryMutation']>, ParentType, ContextType>;
+  setVotingRoundStatus?: Resolver<Array<ResolversTypes['VotingRound']>, ParentType, ContextType, RequireFields<MutationSetVotingRoundStatusArgs, 'id' | 'status'>>;
   transferPersonalSpace?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationTransferPersonalSpaceArgs, 'requestId'>>;
   unregisterPlatform?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationUnregisterPlatformArgs, 'input'>>;
   updateCompetitor?: Resolver<ResolversTypes['Competitor'], ParentType, ContextType, RequireFields<MutationUpdateCompetitorArgs, 'input'>>;
@@ -3888,7 +4097,10 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateServiceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
   updateSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationUpdateSubscriptionArgs, 'input' | 'subscription_id'>>;
+  updateVotableFeature?: Resolver<ResolversTypes['VotableFeature'], ParentType, ContextType, RequireFields<MutationUpdateVotableFeatureArgs, 'id' | 'input'>>;
+  updateVotingRound?: Resolver<ResolversTypes['VotingRound'], ParentType, ContextType, RequireFields<MutationUpdateVotingRoundArgs, 'id' | 'input'>>;
   uploadUserPicture?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUploadUserPictureArgs, 'document'>>;
+  voteForFeature?: Resolver<Array<ResolversTypes['VotableFeature']>, ParentType, ContextType, RequireFields<MutationVoteForFeatureArgs, 'feature_id'>>;
 }>;
 
 export type NewsFeedItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['NewsFeedItem'] = ResolversParentTypes['NewsFeedItem']> = ResolversObject<{
@@ -3926,7 +4138,7 @@ export type NewsFeedItemMetadataResolvers<ContextType = PortalContext, ParentTyp
 }>;
 
 export type NodeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'CustomView' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'NewsFeedItem' | 'OpenAEVScenario' | 'OpenCTIPlaybook' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationRef' | 'ProvisionedNewsFeedItem' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'SolutionCategory' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Capability' | 'Competitor' | 'Connector' | 'CsvFeed' | 'CustomDashboard' | 'CustomView' | 'DefaultDocument' | 'DeploymentRequest' | 'Epic' | 'GenericServiceCapability' | 'IntegrationHack' | 'IsPlatformRegisteredOrganization' | 'MergeEvent' | 'NewsFeedItem' | 'OpenAEVScenario' | 'OpenCTIPlaybook' | 'Organization' | 'OrganizationCapabilities' | 'OrganizationRef' | 'ProvisionedNewsFeedItem' | 'RegisteredPlatform' | 'RolePortal' | 'RssFeed' | 'SeoServiceInstance' | 'ServiceCapability' | 'ServiceDefinition' | 'ServiceGroup' | 'ServiceInstance' | 'ServiceLink' | 'SolutionCategory' | 'Stream' | 'SubscriptionCapability' | 'SubscriptionModel' | 'TaxiiFeed' | 'ThirdPartyIntegration' | 'UseCase' | 'User' | 'UserService' | 'UserServiceCapability' | 'UserServiceDeleted' | 'VotableFeature' | 'VotingRound', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 }>;
 
@@ -4102,6 +4314,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
   competitors?: Resolver<ResolversTypes['CompetitorConnection'], ParentType, ContextType, RequireFields<QueryCompetitorsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   countEpicsPerTimeline?: Resolver<Array<ResolversTypes['EpicCountPerTimeline']>, ParentType, ContextType>;
+  currentVotingRound?: Resolver<Maybe<ResolversTypes['VotingRound']>, ParentType, ContextType, RequireFields<QueryCurrentVotingRoundArgs, 'service_instance_id'>>;
   deploymentRequests?: Resolver<ResolversTypes['PlatformDeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsArgs, 'first'>>;
   deploymentRequestsAvailable?: Resolver<Array<ResolversTypes['DeploymentAvailability']>, ParentType, ContextType, RequireFields<QueryDeploymentRequestsAvailableArgs, 'platformIdentifier'>>;
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -4147,6 +4360,9 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
+  votingRound?: Resolver<Maybe<ResolversTypes['VotingRound']>, ParentType, ContextType, RequireFields<QueryVotingRoundArgs, 'id'>>;
+  votingRoundResults?: Resolver<ResolversTypes['VotingRoundResults'], ParentType, ContextType, RequireFields<QueryVotingRoundResultsArgs, 'id'>>;
+  votingRounds?: Resolver<Array<ResolversTypes['VotingRound']>, ParentType, ContextType, Partial<QueryVotingRoundsArgs>>;
 }>;
 
 export type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse'] = ResolversParentTypes['RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse']> = ResolversObject<{
@@ -4688,6 +4904,61 @@ export type UserSubscriptionResolvers<ContextType = PortalContext, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type VotableFeatureResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['VotableFeature'] = ResolversParentTypes['VotableFeature']> = ResolversObject<{
+  active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  has_my_vote?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  illustration_document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType>;
+  illustration_document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
+  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['FiligranProduct'], ParentType, ContextType>;
+  short_description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  use_cases?: Resolver<Array<ResolversTypes['UseCase']>, ParentType, ContextType>;
+  voting_round_id?: Resolver<ResolversTypes['VotingRoundId'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export interface VotableFeatureIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['VotableFeatureId'], any> {
+  name: 'VotableFeatureId';
+}
+
+export type VotableFeatureResultResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['VotableFeatureResult'] = ResolversParentTypes['VotableFeatureResult']> = ResolversObject<{
+  feature?: Resolver<ResolversTypes['VotableFeature'], ParentType, ContextType>;
+  vote_count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type VotingRoundResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['VotingRound'] = ResolversParentTypes['VotingRound']> = ResolversObject<{
+  closed_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  feature_count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  features?: Resolver<Array<ResolversTypes['VotableFeature']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  opened_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['VotingRoundStatus'], ParentType, ContextType>;
+  theme?: Resolver<ResolversTypes['VotingRoundTheme'], ParentType, ContextType>;
+  updated_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export interface VotingRoundIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['VotingRoundId'], any> {
+  name: 'VotingRoundId';
+}
+
+export type VotingRoundResultsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['VotingRoundResults'] = ResolversParentTypes['VotingRoundResults']> = ResolversObject<{
+  results?: Resolver<Array<ResolversTypes['VotableFeatureResult']>, ParentType, ContextType>;
+  round?: Resolver<ResolversTypes['VotingRound'], ParentType, ContextType>;
+  total_voters?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   CanUnregisterResponse?: CanUnregisterResponseResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
@@ -4809,6 +5080,12 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserServiceEdge?: UserServiceEdgeResolvers<ContextType>;
   UserServiceId?: GraphQLScalarType;
   UserSubscription?: UserSubscriptionResolvers<ContextType>;
+  VotableFeature?: VotableFeatureResolvers<ContextType>;
+  VotableFeatureId?: GraphQLScalarType;
+  VotableFeatureResult?: VotableFeatureResultResolvers<ContextType>;
+  VotingRound?: VotingRoundResolvers<ContextType>;
+  VotingRoundId?: GraphQLScalarType;
+  VotingRoundResults?: VotingRoundResultsResolvers<ContextType>;
 }>;
 
 export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{
