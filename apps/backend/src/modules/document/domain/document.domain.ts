@@ -59,46 +59,67 @@ import {
 type UseCaseValue = UseCaseId | string;
 type SolutionCategoryValue = SolutionCategoryId | string;
 
-// Excludes documents tagged with TAG_DECOUPLING (case-insensitive), regardless of casing.
+// Hides documents tagged TAG_DECOUPLING. Tags are lowercase, so @> is a safe indexable
+// replacement for ILIKE ANY.
 const excludeDecouplingTag = (query: Knex.QueryBuilder) =>
-  query.whereRaw(
-    `NOT (? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[])))`,
-    [TAG_DECOUPLING]
-  );
+  query.whereRaw(`NOT ("Document"."tags" @> ARRAY[?]::text[])`, [
+    TAG_DECOUPLING,
+  ]);
 
-// Matches rows whose IntegrationType metadata is "connector".
-const buildIsConnectorSubquery = (query: Knex.QueryBuilder) =>
-  query
-    .select(dbRaw('1'))
-    .from('Document_Metadata')
-    .whereRaw('"Document_Metadata"."document_id" = "Document"."id"')
-    .andWhere('Document_Metadata.key', DocumentMetadataKeyCode.IntegrationType)
-    .andWhere('Document_Metadata.value', IntegrationType.Connector);
-
-// For connector documents, only keep those tagged with both TAG_LATEST and TAG_DECOUPLING
-// (case-insensitive). Other integration subtypes keep the default excludeDecouplingTag behaviour.
-// Used behind the DECOUPLING_CONNECTORS feature flag.
+// Connectors: require TAG_LATEST + TAG_DECOUPLING. Non-connectors: fall back to
+// excludeDecouplingTag. Gated by DECOUPLING_CONNECTORS.
 const restrictConnectorsToLatestDecoupling = (query: Knex.QueryBuilder) =>
-  query.where((outer) => {
-    outer
-      .where((nonConnectorBuilder) => {
-        nonConnectorBuilder
-          .whereNotExists(buildIsConnectorSubquery)
-          .modify(excludeDecouplingTag);
-      })
-      .orWhere((connectorBuilder) => {
-        connectorBuilder
-          .whereExists(buildIsConnectorSubquery)
-          .whereRaw(
-            `? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[]))`,
-            [TAG_LATEST]
-          )
-          .whereRaw(
-            `? ILIKE ANY(COALESCE("Document"."tags", ARRAY[]::text[]))`,
-            [TAG_DECOUPLING]
-          );
-      });
-  });
+  query
+    // LEFT JOIN instead of two EXISTS subqueries (one negated, one not): computes
+    // "is connector" once per row. Safe from row duplication since (document_id, key)
+    // is Document_Metadata's primary key, so at most one row matches per document.
+    .leftJoin({ dm_integration_type: 'Document_Metadata' }, function () {
+      this.on('dm_integration_type.document_id', '=', 'Document.id').andOnVal(
+        'dm_integration_type.key',
+        DocumentMetadataKeyCode.IntegrationType
+      );
+    })
+    .where((outer) => {
+      outer
+        .where((nonConnectorBuilder) => {
+          nonConnectorBuilder
+            .whereRaw('"dm_integration_type"."value" IS DISTINCT FROM ?', [
+              IntegrationType.Connector,
+            ])
+            .modify(excludeDecouplingTag);
+        })
+        .orWhere((connectorBuilder) => {
+          connectorBuilder
+            .where('dm_integration_type.value', IntegrationType.Connector)
+            .whereRaw(`"Document"."tags" @> ARRAY[?, ?]::text[]`, [
+              TAG_LATEST,
+              TAG_DECOUPLING,
+            ]);
+        });
+    });
+
+// Applies DECOUPLING_CONNECTORS for queries scoped to a single document `type`.
+const applyDecouplingRestriction =
+  (type: string) => (query: Knex.QueryBuilder) => {
+    if (
+      type === OPENCTI_INTEGRATION_DOCUMENT_TYPE &&
+      isFeatureEnabled(FeatureFlag.DecouplingConnectors)
+    ) {
+      restrictConnectorsToLatestDecoupling(query);
+    } else {
+      excludeDecouplingTag(query);
+    }
+  };
+
+// Same as applyDecouplingRestriction, for mixed-type listings: no single `type` to
+// check, connectors self-select via their Document_Metadata IntegrationType.
+const applyDecouplingRestrictionForMixedTypes = (query: Knex.QueryBuilder) => {
+  if (isFeatureEnabled(FeatureFlag.DecouplingConnectors)) {
+    restrictConnectorsToLatestDecoupling(query);
+  } else {
+    excludeDecouplingTag(query);
+  }
+};
 
 export type DocumentData<
   T extends DocumentModel,
@@ -330,18 +351,7 @@ export const DocumentDomain = {
       .tap(restrictDocumentToUserOrganization)
       .tap(restrictDocumentToAccessibleServiceInstance)
       .where(field)
-      .modify((qb) => {
-        const isIntegrationsListing =
-          field['Document.type'] === OPENCTI_INTEGRATION_DOCUMENT_TYPE;
-        if (
-          isIntegrationsListing &&
-          isFeatureEnabled(FeatureFlag.DecouplingConnectors)
-        ) {
-          restrictConnectorsToLatestDecoupling(qb);
-        } else {
-          excludeDecouplingTag(qb);
-        }
-      });
+      .modify(applyDecouplingRestriction(field['Document.type'] as string));
 
     if (
       field['Document.service_instance_id'] &&
@@ -397,7 +407,7 @@ export const DocumentDomain = {
       .where('Document.slug', '=', slug)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
-      .modify(excludeDecouplingTag)
+      .modify(applyDecouplingRestriction(type))
       .tap(restrictDocumentToPublicServiceInstance)
       .whereNotExists(function () {
         this.select('*')
@@ -473,7 +483,7 @@ export const DocumentDomain = {
       .tap(restrictServiceInstanceToPublic)
       .where('Document.active', '=', true)
       .where('Document.type', '=', type)
-      .modify(excludeDecouplingTag)
+      .modify(applyDecouplingRestriction(type))
       .modify((qb) => {
         if (orderResults) {
           qb.orderBy([
@@ -618,7 +628,7 @@ export const DocumentDomain = {
             '"Document_Children"."child_document_id" = "Document"."id"'
           );
       })
-      .modify(excludeDecouplingTag)
+      .modify(applyDecouplingRestrictionForMixedTypes)
       .tap(restrictDocumentToAccessibleServiceInstance)
       .modify((qb) => {
         if (documentTypes?.length) {
