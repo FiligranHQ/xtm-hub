@@ -39,6 +39,8 @@ export type VotingRoundWithFeatures = VotingRound & {
   features: VotableFeatureWithVote[];
 };
 
+const VOTING_ROUND_STATUS_LOCK_NAMESPACE = 'voting_round_status';
+
 /**
  * The admin list only shows how many features a round holds. Carrying the count
  * instead of the features keeps the whole descriptions, which are markdown
@@ -346,7 +348,7 @@ export const featureVotingApp = {
     }
 
     const changedRounds = await withAdvisoryLock(
-      'voting-round-status',
+      VOTING_ROUND_STATUS_LOCK_NAMESPACE,
       round.service_instance_id,
       async () => {
         const closedRounds =
