@@ -2,12 +2,9 @@ import { TableTuneIcon } from '@filigran/icon';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuPortal,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@filigran/ui';
 import { Button } from '@filigran/ui/servers';
@@ -46,20 +43,14 @@ export const PaginationManageDropdown = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            {t('GenericActions.Paginate.RowsPerPage')}
-          </DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup
-                value={String(pageSize)}
-                onValueChange={(pageSize) => onSetPageSize(Number(pageSize))}>
-                {dropdownItems}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
+        <DropdownMenuLabel>
+          {t('GenericActions.Paginate.RowsPerPage')}
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup
+          value={String(pageSize)}
+          onValueChange={(pageSize) => onSetPageSize(Number(pageSize))}>
+          {dropdownItems}
+        </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
