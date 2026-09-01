@@ -48,7 +48,7 @@ Each lens is a reference file loaded just-in-time — read only the ones that ru
 2. **Select lenses** — all four unless the caller named specific ones.
 3. **Run each selected lens** — load its reference file from `{skill-root}` and follow it exactly; each lens sees
    only the in-scope content, not another lens's findings. When subagents are available, run all selected lenses in
-   parallel: give each subagent its lens's `instruction` file (resolved absolute) and the in-scope content, and the
+   parallel: give each subagent its lens's `reference` file (resolved absolute) and the in-scope content, and the
    constraint "Return ONLY your findings in the canonical shape below — no other output, no fixes, no further
    questions." Otherwise run them sequentially yourself.
 4. **Classify every finding**:
