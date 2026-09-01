@@ -13,7 +13,7 @@ export const TrialGuideResourceCard = ({ resourceCard }: ResourceCardProps) => {
   const { Icon, titleKey, descriptionKey, url } = resourceCard;
 
   return (
-    <Card className="bg-elevation-background-layer-2 p-m">
+    <Card className="bg-elevation-background-layer-2 p-m border-1 border-elevation-border-subtle-layer-2">
       <CardContent className="p-0 flex flex-col gap-s h-full">
         <div className="flex gap-s items-center">
           <Icon className="size-6 shrink-0" />

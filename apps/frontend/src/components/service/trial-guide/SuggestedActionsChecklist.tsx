@@ -17,7 +17,7 @@ export const SuggestedActionsChecklist = ({
         {t('Service.TrialGuide.ChecklistTitle')}
       </h2>
       <div className="text-center mb-l">
-        <p className="text-filigran-brand-primary font-bold">
+        <p className="heading-md text-filigran-brand-primary">
           {t('Service.TrialGuide.ChecklistIntroTitle')}
         </p>
         <p className="text-content-body-medium">

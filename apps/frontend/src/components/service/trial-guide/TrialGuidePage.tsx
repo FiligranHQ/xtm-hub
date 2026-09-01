@@ -50,10 +50,34 @@ export const TrialGuidePage = () => {
         </div>
         <SlackSupportButton />
       </div>
+      <svg
+        width="0"
+        height="0"
+        className="absolute"
+        aria-hidden="true"
+        focusable="false">
+        <defs>
+          <linearGradient
+            id="xtm-one-tab-icon-gradient"
+            x1="0"
+            y1="0"
+            x2="1"
+            y2="0">
+            <stop
+              offset="0%"
+              style={{ stopColor: 'var(--color-filigran-ia-secondary)' }}
+            />
+            <stop
+              offset="100%"
+              style={{ stopColor: 'var(--color-filigran-ia-main)' }}
+            />
+          </linearGradient>
+        </defs>
+      </svg>
       <Tabs
         defaultValue={PlatformIdentifier.Opencti}
         className="mt-l">
-        <TabsList className="w-full">
+        <TabsList className="w-auto">
           {TRIAL_GUIDE_TABS.map((platformIdentifier) => {
             const { name, Icon } = PlatformMetadataMapping[platformIdentifier];
             const isXtmOne = platformIdentifier === PlatformIdentifier.Xtmone;
@@ -61,18 +85,20 @@ export const TrialGuidePage = () => {
               <TabsTrigger
                 key={platformIdentifier}
                 value={platformIdentifier}
-                className={cn(
-                  'group flex-1',
-                  isXtmOne &&
-                    'data-[state=active]:border-[var(--color-filigran-ia-main)]'
-                )}>
+                className={cn('group flex-1')}>
                 <span
                   className={cn(
                     'flex items-center gap-s',
                     isXtmOne &&
                       'group-data-[state=active]:text-[var(--color-filigran-ia-main)]'
                   )}>
-                  <Icon className="w-4 h-4" />
+                  <Icon
+                    className={cn(
+                      'w-4 h-4',
+                      isXtmOne &&
+                        'group-data-[state=active]:[&>path]:fill-[url(#xtm-one-tab-icon-gradient)]'
+                    )}
+                  />
                   {name}
                 </span>
               </TabsTrigger>

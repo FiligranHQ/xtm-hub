@@ -1,8 +1,8 @@
 import {
+  DescriptionOutlinedIcon,
   GroupIcon,
   InfoIcon,
   SchoolIcon,
-  TextSnippetIcon,
 } from '@filigran/icon';
 import { PlatformIdentifier } from '@graphql/generated';
 import { ComponentType } from 'react';
@@ -36,7 +36,7 @@ export const TRIAL_GUIDE_CONTENT: Record<
     resourceCards: [
       {
         id: 'documentation',
-        Icon: TextSnippetIcon,
+        Icon: DescriptionOutlinedIcon,
         titleKey:
           'Service.TrialGuide.Opencti.ResourceCards.Documentation.Title',
         descriptionKey:
@@ -57,7 +57,7 @@ export const TRIAL_GUIDE_CONTENT: Record<
         titleKey: 'Service.TrialGuide.Opencti.ResourceCards.Community.Title',
         descriptionKey:
           'Service.TrialGuide.Opencti.ResourceCards.Community.Description',
-        url: 'https://filigran-community.slack.com/archives/CJ1PHBHF1',
+        url: 'https://filigran-community.slack.com/archives/CHZC2D38C',
       },
       {
         id: 'release-notes',
@@ -156,7 +156,7 @@ export const TRIAL_GUIDE_CONTENT: Record<
     resourceCards: [
       {
         id: 'documentation',
-        Icon: TextSnippetIcon,
+        Icon: DescriptionOutlinedIcon,
         titleKey:
           'Service.TrialGuide.Openaev.ResourceCards.Documentation.Title',
         descriptionKey:
@@ -254,7 +254,7 @@ export const TRIAL_GUIDE_CONTENT: Record<
     resourceCards: [
       {
         id: 'documentation',
-        Icon: TextSnippetIcon,
+        Icon: DescriptionOutlinedIcon,
         titleKey: 'Service.TrialGuide.Xtmone.ResourceCards.Documentation.Title',
         descriptionKey:
           'Service.TrialGuide.Xtmone.ResourceCards.Documentation.Description',
