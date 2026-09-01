@@ -14,7 +14,7 @@ const buildBundle = (
   end_date: '2025-01-31T00:00:00.000Z',
   license: 'trial' as XtmPlatformBundleFragment['license'],
   requester_email: 'requester@acme.io',
-  products: [],
+  children: [],
   ...overrides,
 });
 

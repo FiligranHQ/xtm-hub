@@ -16,7 +16,7 @@ import {
   PlatformIdentifier,
   XtmPlatformBundleProductFragment,
 } from '@graphql/generated';
-import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
+import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
@@ -39,13 +39,17 @@ export const BundleProductCard = ({
   const queryClient = useQueryClient();
   const [openEditName, setOpenEditName] = useState(false);
 
+  if (!product.platform_identifier) {
+    return null;
+  }
+
   const { name, textLogo } =
     PlatformMetadataMapping[product.platform_identifier];
   const isXtmone = product.platform_identifier === PlatformIdentifier.Xtmone;
-  const hasAccess = product.roles.length > 0;
+  const hasAccess = (product.roles?.length ?? 0) > 0;
   const accessUrl = product.url ?? null;
   const canAccess = isXtmone ? !!accessUrl : hasAccess && !!accessUrl;
-  const roleLabel = product.roles.map((role) => role.name).join(', ');
+  const roleLabel = (product.roles ?? []).map((role) => role.name).join(', ');
   const accessLabel = t('XtmPlatformTrial.Products.AccessProduct', {
     productName: name,
   });

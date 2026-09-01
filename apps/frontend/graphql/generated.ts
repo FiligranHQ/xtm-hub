@@ -439,11 +439,15 @@ export type DeploymentRequest = Node & {
   cancellation_reason: Maybe<Scalars['String']['output']>;
   cancellation_user_email: Maybe<Scalars['String']['output']>;
   children: Maybe<Array<DeploymentRequest>>;
+  connectivity_status: Maybe<PlatformConfigurationStatus>;
   counts_in_orga_quota: Scalars['Boolean']['output'];
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
   job_title: Maybe<DeploymentRequestJobTitle>;
+  last_connectivity_check: Maybe<Scalars['Date']['output']>;
+  license: Maybe<PlatformContract>;
+  name: Maybe<Scalars['String']['output']>;
   ordering: Scalars['Int']['output'];
   organization_name: Maybe<Scalars['String']['output']>;
   organization_requester_id: Scalars['OrganizationId']['output'];
@@ -454,6 +458,7 @@ export type DeploymentRequest = Node & {
   region: DeploymentRequestPlatformRegion;
   request_date: Scalars['Date']['output'];
   requester_email: Maybe<Scalars['String']['output']>;
+  roles: Maybe<Array<ServiceGroup>>;
   service_instance_id: Scalars['ServiceInstanceId']['output'];
   start_date: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
@@ -1811,7 +1816,7 @@ export type ProvisionedNewsFeedItem = Node & {
 
 export type Query = {
   __typename?: 'Query';
-  activeXtmPlatformBundle: Maybe<XtmPlatformBundle>;
+  activeXtmPlatformBundle: Maybe<DeploymentRequest>;
   bundleProducts: Array<PlatformIdentifier>;
   bundleUserServiceGroups: Array<BundleUserServiceGroup>;
   canUnregisterPlatform: CanUnregisterResponse;
@@ -3116,29 +3121,6 @@ export enum VotingRoundTheme {
   Thread = 'thread'
 }
 
-export type XtmPlatformBundle = {
-  __typename?: 'XtmPlatformBundle';
-  end_date: Maybe<Scalars['Date']['output']>;
-  id: Scalars['ID']['output'];
-  license: Maybe<PlatformContract>;
-  organization_name: Maybe<Scalars['String']['output']>;
-  products: Array<XtmPlatformBundleProduct>;
-  requester_email: Maybe<Scalars['String']['output']>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
-  start_date: Maybe<Scalars['Date']['output']>;
-};
-
-export type XtmPlatformBundleProduct = {
-  __typename?: 'XtmPlatformBundleProduct';
-  connectivity_status: Maybe<PlatformConfigurationStatus>;
-  last_connectivity_check: Maybe<Scalars['Date']['output']>;
-  name: Maybe<Scalars['String']['output']>;
-  platform_identifier: PlatformIdentifier;
-  roles: Array<ServiceGroup>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
-  url: Maybe<Scalars['String']['output']>;
-};
-
 export type TrialsAdminCancelDeploymentRequestMutationVariables = Exact<{
   deploymentRequestId: Scalars['DeploymentRequestId']['input'];
 }>;
@@ -3185,16 +3167,16 @@ export type TrialsQuotasQueryVariables = Exact<{
 
 export type TrialsQuotasQuery = { __typename?: 'Query', deploymentRequestsAvailable: Array<{ __typename?: 'DeploymentAvailability', id: string, region: DeploymentRequestPlatformRegion, availableCount: number, capacity: number, platform_identifier: PlatformIdentifier | null }> };
 
-export type XtmPlatformBundleProductFragment = { __typename?: 'XtmPlatformBundleProduct', platform_identifier: PlatformIdentifier, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> };
+export type XtmPlatformBundleProductFragment = { __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null };
 
-export type XtmPlatformBundleFragment = { __typename?: 'XtmPlatformBundle', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, products: Array<{ __typename?: 'XtmPlatformBundleProduct', platform_identifier: PlatformIdentifier, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> }> };
+export type XtmPlatformBundleFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null }> | null };
 
 export type ActiveXtmPlatformBundleQueryVariables = Exact<{
   serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 }>;
 
 
-export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'XtmPlatformBundle', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, products: Array<{ __typename?: 'XtmPlatformBundleProduct', platform_identifier: PlatformIdentifier, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> }> } | null };
+export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null }> | null } | null };
 
 type HomepageDocument_Connector_Fragment = { __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
 
@@ -3634,7 +3616,7 @@ export const TrialsQuotaFragmentDoc = `
 }
     `;
 export const XtmPlatformBundleProductFragmentDoc = `
-    fragment XtmPlatformBundleProduct on XtmPlatformBundleProduct {
+    fragment XtmPlatformBundleProduct on DeploymentRequest {
   platform_identifier
   service_instance_id
   name
@@ -3648,7 +3630,7 @@ export const XtmPlatformBundleProductFragmentDoc = `
 }
     `;
 export const XtmPlatformBundleFragmentDoc = `
-    fragment XtmPlatformBundle on XtmPlatformBundle {
+    fragment XtmPlatformBundle on DeploymentRequest {
   id
   service_instance_id
   organization_name
@@ -3656,7 +3638,7 @@ export const XtmPlatformBundleFragmentDoc = `
   end_date
   license
   requester_email
-  products {
+  children {
     ...XtmPlatformBundleProduct
   }
 }

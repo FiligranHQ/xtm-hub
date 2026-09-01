@@ -142,6 +142,11 @@ type DeploymentRequest implements Node {
   platform_url: String
   parent_id: DeploymentRequestId
   url: String
+  name: String
+  connectivity_status: PlatformConfigurationStatus
+  last_connectivity_check: Date
+  roles: [ServiceGroup!]
+  license: PlatformContract
   children: [DeploymentRequest!]
 }
 
@@ -243,27 +248,6 @@ type DeploymentAvailability {
   platform_identifier: PlatformIdentifier
 }
 
-type XtmPlatformBundleProduct {
-  platform_identifier: PlatformIdentifier!
-  service_instance_id: ServiceInstanceId!
-  name: String
-  connectivity_status: PlatformConfigurationStatus
-  last_connectivity_check: Date
-  roles: [ServiceGroup!]!
-  url: String
-}
-
-type XtmPlatformBundle {
-  id: ID!
-  service_instance_id: ServiceInstanceId!
-  organization_name: String
-  start_date: Date
-  end_date: Date
-  license: PlatformContract
-  requester_email: String
-  products: [XtmPlatformBundleProduct!]!
-}
-
 type DeployedPlatform {
   serviceInstanceId: ServiceInstanceId!
   platformIdentifier: PlatformIdentifier!
@@ -344,7 +328,7 @@ extend type Query {
     @auth
   activeXtmPlatformBundle(
     serviceInstanceId: ServiceInstanceId
-  ): XtmPlatformBundle @auth
+  ): DeploymentRequest @auth
 }
 
 extend type Mutation {

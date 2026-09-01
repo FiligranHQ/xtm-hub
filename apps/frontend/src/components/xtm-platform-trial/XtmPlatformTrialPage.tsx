@@ -15,7 +15,7 @@ import {
   PlatformIdentifier,
   useActiveXtmPlatformBundleQuery,
 } from '@graphql/generated';
-import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
+import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import { useTranslations } from 'next-intl';
 
 export const XtmPlatformTrialPage = ({
@@ -52,7 +52,7 @@ export const XtmPlatformTrialPage = ({
   const bundle = data?.activeXtmPlatformBundle;
 
   const xtmoneUrl =
-    bundle?.products.find(
+    bundle?.children?.find(
       (product) => product.platform_identifier === PlatformIdentifier.Xtmone
     )?.url ?? null;
 
@@ -79,7 +79,7 @@ export const XtmPlatformTrialPage = ({
   }
 
   const findProduct = (identifier: PlatformIdentifier) =>
-    bundle.products.find(
+    (bundle.children ?? []).find(
       (product) => product.platform_identifier === identifier
     );
   const orderedProducts = [

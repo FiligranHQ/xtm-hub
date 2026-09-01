@@ -4175,6 +4175,16 @@ describe('deployment app', () => {
           PlatformIdentifier.Opencti,
           PlatformIdentifier.Openaev,
         ],
+        use_cases_by_product: [
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+          {
+            platform_identifier: PlatformIdentifier.Openaev,
+            use_case: DeploymentRequestUseCase.OaevAttackSimulation,
+          },
+        ],
       });
       await DeploymentRequestDomain.updateDeploymentRequestById(bundle.id, {
         hub_status: DeploymentRequestHubStatus.Active,
@@ -4208,9 +4218,9 @@ describe('deployment app', () => {
         end_date: expect.any(Date),
         service_instance_id: expect.any(String),
       });
-      expect(result?.products).toHaveLength(3);
+      expect(result?.children).toHaveLength(3);
       expect(
-        result?.products.map((product) => product.platform_identifier).sort()
+        result?.children.map((product) => product.platform_identifier).sort()
       ).toEqual(
         [
           PlatformIdentifier.Openaev,
@@ -4218,7 +4228,7 @@ describe('deployment app', () => {
           PlatformIdentifier.Xtmone,
         ].sort()
       );
-      expect(result?.products).toEqual(
+      expect(result?.children).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
             name: expect.any(String),
@@ -4239,7 +4249,7 @@ describe('deployment app', () => {
       );
 
       expect(result?.service_instance_id).toBe(bundle.service_instance_id);
-      expect(result?.products).toHaveLength(3);
+      expect(result?.children).toHaveLength(3);
     });
 
     it('should return null when the provided service instance id does not match the active bundle', async () => {
@@ -4307,7 +4317,7 @@ describe('deployment app', () => {
       );
 
       expect(result?.license).toBe(PlatformContract.Ee);
-      const registeredProduct = result?.products.find(
+      const registeredProduct = result?.children.find(
         (product) => product.service_instance_id === child.service_instance_id
       );
       expect(registeredProduct).toMatchObject({
@@ -4331,7 +4341,7 @@ describe('deployment app', () => {
         contextRegistererUserSecondOrga.user
       );
 
-      const product = result?.products.find(
+      const product = result?.children.find(
         (item) => item.service_instance_id === child.service_instance_id
       );
       expect(product?.url).toBe('https://deployment-request.example.com');

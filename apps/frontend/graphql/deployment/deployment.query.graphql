@@ -68,7 +68,7 @@ query TrialsQuotas($platformIdentifier: PlatformIdentifier) {
   }
 }
 
-fragment XtmPlatformBundleProduct on XtmPlatformBundleProduct {
+fragment XtmPlatformBundleProduct on DeploymentRequest {
   platform_identifier
   service_instance_id
   name
@@ -81,7 +81,7 @@ fragment XtmPlatformBundleProduct on XtmPlatformBundleProduct {
   }
 }
 
-fragment XtmPlatformBundle on XtmPlatformBundle {
+fragment XtmPlatformBundle on DeploymentRequest {
   id
   service_instance_id
   organization_name
@@ -89,7 +89,7 @@ fragment XtmPlatformBundle on XtmPlatformBundle {
   end_date
   license
   requester_email
-  products {
+  children {
     ...XtmPlatformBundleProduct
   }
 }

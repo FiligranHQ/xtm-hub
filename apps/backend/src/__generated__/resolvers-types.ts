@@ -432,11 +432,15 @@ export type DeploymentRequest = Node & {
   cancellation_reason?: Maybe<Scalars['String']['output']>;
   cancellation_user_email?: Maybe<Scalars['String']['output']>;
   children?: Maybe<Array<DeploymentRequest>>;
+  connectivity_status?: Maybe<PlatformConfigurationStatus>;
   counts_in_orga_quota: Scalars['Boolean']['output'];
   end_date?: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
   job_title?: Maybe<DeploymentRequestJobTitle>;
+  last_connectivity_check?: Maybe<Scalars['Date']['output']>;
+  license?: Maybe<PlatformContract>;
+  name?: Maybe<Scalars['String']['output']>;
   ordering: Scalars['Int']['output'];
   organization_name?: Maybe<Scalars['String']['output']>;
   organization_requester_id: Scalars['OrganizationId']['output'];
@@ -447,6 +451,7 @@ export type DeploymentRequest = Node & {
   region: DeploymentRequestPlatformRegion;
   request_date: Scalars['Date']['output'];
   requester_email?: Maybe<Scalars['String']['output']>;
+  roles?: Maybe<Array<ServiceGroup>>;
   service_instance_id: Scalars['ServiceInstanceId']['output'];
   start_date?: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
@@ -1804,7 +1809,7 @@ export type ProvisionedNewsFeedItem = Node & {
 
 export type Query = {
   __typename?: 'Query';
-  activeXtmPlatformBundle?: Maybe<XtmPlatformBundle>;
+  activeXtmPlatformBundle?: Maybe<DeploymentRequest>;
   bundleProducts: Array<PlatformIdentifier>;
   bundleUserServiceGroups: Array<BundleUserServiceGroup>;
   canUnregisterPlatform: CanUnregisterResponse;
@@ -3109,29 +3114,6 @@ export enum VotingRoundTheme {
   Thread = 'thread'
 }
 
-export type XtmPlatformBundle = {
-  __typename?: 'XtmPlatformBundle';
-  end_date?: Maybe<Scalars['Date']['output']>;
-  id: Scalars['ID']['output'];
-  license?: Maybe<PlatformContract>;
-  organization_name?: Maybe<Scalars['String']['output']>;
-  products: Array<XtmPlatformBundleProduct>;
-  requester_email?: Maybe<Scalars['String']['output']>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
-  start_date?: Maybe<Scalars['Date']['output']>;
-};
-
-export type XtmPlatformBundleProduct = {
-  __typename?: 'XtmPlatformBundleProduct';
-  connectivity_status?: Maybe<PlatformConfigurationStatus>;
-  last_connectivity_check?: Maybe<Scalars['Date']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  platform_identifier: PlatformIdentifier;
-  roles: Array<ServiceGroup>;
-  service_instance_id: Scalars['ServiceInstanceId']['output'];
-  url?: Maybe<Scalars['String']['output']>;
-};
-
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
@@ -3461,8 +3443,6 @@ export type ResolversTypes = ResolversObject<{
   VotingRoundResults: ResolverTypeWrapper<Omit<VotingRoundResults, 'results' | 'round'> & { results: Array<ResolversTypes['VotableFeatureResult']>, round: ResolversTypes['VotingRound'] }>;
   VotingRoundStatus: VotingRoundStatus;
   VotingRoundTheme: VotingRoundTheme;
-  XtmPlatformBundle: ResolverTypeWrapper<XtmPlatformBundle>;
-  XtmPlatformBundleProduct: ResolverTypeWrapper<XtmPlatformBundleProduct>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -3667,8 +3647,6 @@ export type ResolversParentTypes = ResolversObject<{
   VotingRound: VotingRoundModel;
   VotingRoundId: Scalars['VotingRoundId']['output'];
   VotingRoundResults: Omit<VotingRoundResults, 'results' | 'round'> & { results: Array<ResolversParentTypes['VotableFeatureResult']>, round: ResolversParentTypes['VotingRound'] };
-  XtmPlatformBundle: XtmPlatformBundle;
-  XtmPlatformBundleProduct: XtmPlatformBundleProduct;
 }>;
 
 export type AuthDirectiveArgs = {
@@ -3924,11 +3902,15 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   cancellation_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancellation_user_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children?: Resolver<Maybe<Array<ResolversTypes['DeploymentRequest']>>, ParentType, ContextType>;
+  connectivity_status?: Resolver<Maybe<ResolversTypes['PlatformConfigurationStatus']>, ParentType, ContextType>;
   counts_in_orga_quota?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   hub_status?: Resolver<ResolversTypes['DeploymentRequestHubStatus'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   job_title?: Resolver<Maybe<ResolversTypes['DeploymentRequestJobTitle']>, ParentType, ContextType>;
+  last_connectivity_check?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  license?: Resolver<Maybe<ResolversTypes['PlatformContract']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ordering?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization_requester_id?: Resolver<ResolversTypes['OrganizationId'], ParentType, ContextType>;
@@ -3939,6 +3921,7 @@ export type DeploymentRequestResolvers<ContextType = PortalContext, ParentType e
   region?: Resolver<ResolversTypes['DeploymentRequestPlatformRegion'], ParentType, ContextType>;
   request_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   requester_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  roles?: Resolver<Maybe<Array<ResolversTypes['ServiceGroup']>>, ParentType, ContextType>;
   service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['DeploymentRequestDeploymentType'], ParentType, ContextType>;
@@ -4438,7 +4421,7 @@ export type ProvisionedNewsFeedItemResolvers<ContextType = PortalContext, Parent
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  activeXtmPlatformBundle?: Resolver<Maybe<ResolversTypes['XtmPlatformBundle']>, ParentType, ContextType, Partial<QueryActiveXtmPlatformBundleArgs>>;
+  activeXtmPlatformBundle?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<QueryActiveXtmPlatformBundleArgs>>;
   bundleProducts?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType, RequireFields<QueryBundleProductsArgs, 'serviceInstanceId'>>;
   bundleUserServiceGroups?: Resolver<Array<ResolversTypes['BundleUserServiceGroup']>, ParentType, ContextType, RequireFields<QueryBundleUserServiceGroupsArgs, 'serviceInstanceId'>>;
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
@@ -5101,29 +5084,6 @@ export type VotingRoundResultsResolvers<ContextType = PortalContext, ParentType 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type XtmPlatformBundleResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['XtmPlatformBundle'] = ResolversParentTypes['XtmPlatformBundle']> = ResolversObject<{
-  end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  license?: Resolver<Maybe<ResolversTypes['PlatformContract']>, ParentType, ContextType>;
-  organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  products?: Resolver<Array<ResolversTypes['XtmPlatformBundleProduct']>, ParentType, ContextType>;
-  requester_email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
-  start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type XtmPlatformBundleProductResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['XtmPlatformBundleProduct'] = ResolversParentTypes['XtmPlatformBundleProduct']> = ResolversObject<{
-  connectivity_status?: Resolver<Maybe<ResolversTypes['PlatformConfigurationStatus']>, ParentType, ContextType>;
-  last_connectivity_check?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  platform_identifier?: Resolver<ResolversTypes['PlatformIdentifier'], ParentType, ContextType>;
-  roles?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType>;
-  service_instance_id?: Resolver<ResolversTypes['ServiceInstanceId'], ParentType, ContextType>;
-  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   BundleUserServiceGroup?: BundleUserServiceGroupResolvers<ContextType>;
   CanUnregisterResponse?: CanUnregisterResponseResolvers<ContextType>;
@@ -5254,8 +5214,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   VotingRound?: VotingRoundResolvers<ContextType>;
   VotingRoundId?: GraphQLScalarType;
   VotingRoundResults?: VotingRoundResultsResolvers<ContextType>;
-  XtmPlatformBundle?: XtmPlatformBundleResolvers<ContextType>;
-  XtmPlatformBundleProduct?: XtmPlatformBundleProductResolvers<ContextType>;
 }>;
 
 export type DirectiveResolvers<ContextType = PortalContext> = ResolversObject<{

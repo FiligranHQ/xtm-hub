@@ -25,7 +25,6 @@ import {
   Success,
   TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
-  XtmPlatformBundle,
 } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
 import {
@@ -574,7 +573,7 @@ export const DeploymentApp = {
   loadActiveXtmPlatformBundle: async (
     user: UserLoadUserBy,
     serviceInstanceId?: ServiceInstanceId | null
-  ): Promise<XtmPlatformBundle | null> => {
+  ): Promise<DeploymentRequest | null> => {
     const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest({
       type: DeploymentRequestDeploymentType.Bundle,
       hub_status: DeploymentRequestHubStatus.Active,
@@ -628,17 +627,11 @@ export const DeploymentApp = {
         ?.configuration?.platform_contract ?? PlatformContract.Trial;
 
     return {
-      id: bundle.id,
-      service_instance_id: bundle.service_instance_id,
-      organization_name: bundle.organization_name,
-      start_date: bundle.start_date,
-      end_date: bundle.end_date,
+      ...bundle,
       license,
-      requester_email: bundle.requester_email,
-      products: productData.map(
+      children: productData.map(
         ({ child, configuration, roles, childServiceInstance }) => ({
-          platform_identifier: child.platform_identifier,
-          service_instance_id: child.service_instance_id,
+          ...child,
           name: childServiceInstance?.name ?? null,
           connectivity_status: configuration?.status ?? null,
           last_connectivity_check:

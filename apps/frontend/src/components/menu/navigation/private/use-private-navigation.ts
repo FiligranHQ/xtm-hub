@@ -44,7 +44,7 @@ import {
 import { registeredPlatformsKeys } from '@graphql/registered-platforms/registered-platforms.keys';
 import { serviceInstancesKeys } from '@graphql/service-instances/service-instances.keys';
 import { trialKeys } from '@graphql/trial/trial.keys';
-import { xtmPlatformBundleKeys } from '@graphql/xtm-platform-bundle/xtm-platform-bundle.keys';
+import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import { useLocale, useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 
