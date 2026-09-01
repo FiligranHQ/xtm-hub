@@ -55,7 +55,7 @@ src/i18n/                           next-intl config, locale, request scope
 src/lib/  src/utils/                Helpers, server actions, middleware helpers, query-cache
 graphql/                            *.query.graphql / *.mutation.graphql + generated.ts (react-query, new work)
 __generated__/                      Relay output — generated, never edit
-messages/                           en.json, fr.json
+messages/                           One JSON file per locale (`en` is the source — see `yarn i18n:check`)
 proxy.ts                            Next.js 16 proxy convention (was middleware.ts); i18n + auth/document/GraphQL proxying
 schema.graphql                      Written by the backend, read by Relay
 ```
@@ -126,8 +126,8 @@ a passive page/RSC route or a side-effecting endpoint before deciding on `prefet
 
 ## Internationalisation
 
-All user-facing strings go through `next-intl`. Add the key to `messages/en.json` and `messages/fr.json` — never
-hardcode copy in a component. `yarn i18n:check` verifies parity.
+All user-facing strings go through `next-intl`. Add the key to every locale file under `messages/` (`en.json` is the
+source of truth) — never hardcode copy in a component. `yarn i18n:check` verifies parity.
 
 ## Tests
 
