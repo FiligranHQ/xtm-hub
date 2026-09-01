@@ -110,7 +110,7 @@ export const XtmPlatformTrialPage = ({
           bundle={bundle}
           canManage={canManage}
         />
-        <div className="flex items-center justify-center lg:col-span-2">
+        <div className="lg:col-span-2">
           <BundleGuideCard />
         </div>
       </div>
