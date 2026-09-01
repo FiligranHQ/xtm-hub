@@ -25,6 +25,7 @@ import {
   SettingsIcon,
   SlackIcon,
 } from '@filigran/icon';
+import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
   FeatureFlag,
   OrderingMode,
@@ -44,7 +45,6 @@ import {
 import { registeredPlatformsKeys } from '@graphql/registered-platforms/registered-platforms.keys';
 import { serviceInstancesKeys } from '@graphql/service-instances/service-instances.keys';
 import { trialKeys } from '@graphql/trial/trial.keys';
-import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import { useLocale, useTranslations } from 'next-intl';
 import { useContext, useMemo } from 'react';
 

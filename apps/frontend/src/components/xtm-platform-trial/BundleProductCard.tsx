@@ -11,12 +11,12 @@ import { useDateFormatter } from '@/utils/date';
 import { EditIcon } from '@filigran/icon';
 import { Badge, Button, Card, CardContent, Separator } from '@filigran/ui';
 import { GradientButton } from '@filigran/ui/servers';
+import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
   PlatformConfigurationStatus,
   PlatformIdentifier,
   XtmPlatformBundleProductFragment,
 } from '@graphql/generated';
-import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
