@@ -2,20 +2,20 @@
 
 import { ReachSalesButton } from '@/components/service/trial-instances/reach-sales/ReachSalesButton';
 import { SlackSupportButton } from '@/components/service/trial-instances/SlackSupport';
+import { XtmPlatformTrialLimitations } from '@/components/service/trial-instances/xtm-platform-trial/XtmPlatformTrialLimitations';
 import { BundleGuideCard } from '@/components/xtm-platform-trial/BundleGuideCard';
 import { BundleInfoCard } from '@/components/xtm-platform-trial/BundleInfoCard';
 import { BundleProductCard } from '@/components/xtm-platform-trial/BundleProductCard';
-import { TrialLimitationsCard } from '@/components/xtm-platform-trial/TrialLimitationsCard';
 import { useXtmoneIntegrationStatus } from '@/components/xtm-platform-trial/useXtmoneIntegrationStatus';
 import useGranted from '@/hooks/use-granted';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { portalGraphqlClient } from '@/lib/graphql-client';
+import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
   OrganizationCapability,
   PlatformIdentifier,
   useActiveXtmPlatformBundleQuery,
 } from '@graphql/generated';
-import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import { useTranslations } from 'next-intl';
 
 export const XtmPlatformTrialPage = ({
@@ -51,17 +51,17 @@ export const XtmPlatformTrialPage = ({
 
   const bundle = data?.activeXtmPlatformBundle;
 
-  const xtmoneUrl =
+  const xtmoneServiceInstanceId =
     bundle?.children?.find(
       (product) => product.platform_identifier === PlatformIdentifier.Xtmone
-    )?.url ?? null;
+    )?.service_instance_id ?? null;
 
-  const xtmoneQuery = useXtmoneIntegrationStatus(xtmoneUrl);
+  const xtmoneQuery = useXtmoneIntegrationStatus(xtmoneServiceInstanceId);
   const xtmoneStatus = {
     data: xtmoneQuery.data,
     isLoading: xtmoneQuery.isLoading,
     isError: xtmoneQuery.isError,
-    hasUrl: !!xtmoneUrl,
+    hasUrl: !!xtmoneServiceInstanceId,
   };
 
   if (isLoading) {
@@ -124,7 +124,7 @@ export const XtmPlatformTrialPage = ({
           />
         ))}
       </div>
-      <TrialLimitationsCard />
+      <XtmPlatformTrialLimitations />
     </div>
   );
 };

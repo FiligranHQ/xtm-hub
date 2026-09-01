@@ -25,6 +25,7 @@ import {
   Success,
   TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
+  XtmoneIntegrationStatus,
 } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
 import {
@@ -92,6 +93,58 @@ import {
 export const XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME = 'XTM Platform Bundle';
 
 const DEPLOYMENT_REQUEST_LOCK_NAMESPACE = 'deployment_request';
+
+const XTMONE_STATUS_TIMEOUT_MS = 8000;
+
+interface XtmonePlatformConfigResponse {
+  integration_status?: XtmoneIntegrationStatus;
+}
+
+const fetchXtmoneIntegrationStatus = async (
+  baseUrl: string
+): Promise<XtmoneIntegrationStatus | null> => {
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(baseUrl);
+  } catch {
+    return null;
+  }
+  if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+    return null;
+  }
+
+  const url = `${baseUrl.replace(/\/$/, '')}/api/v1/platform/config`;
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    XTMONE_STATUS_TIMEOUT_MS
+  );
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      credentials: 'omit',
+      redirect: 'error',
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const body = (await response.json()) as XtmonePlatformConfigResponse;
+    const integrationStatus = body?.integration_status;
+    if (!integrationStatus?.opencti || !integrationStatus?.openaev) {
+      return null;
+    }
+    return integrationStatus;
+  } catch (error) {
+    logApp.warn('Failed to fetch XTM One integration status', {
+      xtmoneOrigin: parsedUrl.origin,
+      error,
+    });
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+};
 
 export const DeploymentApp = {
   createDeploymentRequest: async (
@@ -622,13 +675,9 @@ export const DeploymentApp = {
       })
     );
 
-    const license =
-      productData.find(({ configuration }) => configuration?.platform_contract)
-        ?.configuration?.platform_contract ?? PlatformContract.Trial;
-
     return {
       ...bundle,
-      license,
+      license: PlatformContract.Trial,
       children: productData.map(
         ({ child, configuration, roles, childServiceInstance }) => ({
           ...child,
@@ -641,6 +690,30 @@ export const DeploymentApp = {
         })
       ),
     };
+  },
+
+  loadXtmonePlatformIntegrationStatus: async (
+    user: UserLoadUserBy,
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<XtmoneIntegrationStatus | null> => {
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        service_instance_id: serviceInstanceId,
+        organization_requester_id: user.selected_organization_id,
+      });
+    if (!deploymentRequest) {
+      return null;
+    }
+
+    const [configuration] =
+      await RegistrationDomain.loadRegisteredPlatform(serviceInstanceId);
+    const baseUrl =
+      configuration?.platform_url ?? deploymentRequest.url ?? null;
+    if (!baseUrl) {
+      return null;
+    }
+
+    return fetchXtmoneIntegrationStatus(baseUrl);
   },
 };
 

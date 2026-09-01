@@ -97,13 +97,6 @@
       "Title": "Guide de l'essai XTM Platform",
       "Content": "Découvrez ce que nous construisons, ce qui arrive ensuite et où se dirige la plateforme XTM. Transparence totale. Aucune surprise.",
       "SeeMore": "Voir plus"
-    },
-    "Limitations": {
-      "Title": "Limitations de l'essai",
-      "Intro": "L'essai gratuit de la plateforme XTM inclut toutes les fonctionnalités SaaS de l'Enterprise Edition, mais avec une puissance de calcul et un stockage limités :",
-      "Opencti": "Pour OpenCTI : jusqu'à 40 Go de stockage de données de renseignement et 3 Go de stockage de fichiers.",
-      "Openaev": "Pour OpenAEV : 16 Go",
-      "Warning": "L'ingestion de flux volumineux et premium avec des jeux de données riches pendant cet essai peut rapidement impacter votre stockage. Notez que cet essai n'inclut pas de SLA. En cas de panne du fournisseur cloud, le temps de récupération n'est pas garanti. Nous vous recommandons de ne pas stocker de données critiques ou irremplaçables dans votre environnement d'essai."
     }
   },
   "Datatable": {

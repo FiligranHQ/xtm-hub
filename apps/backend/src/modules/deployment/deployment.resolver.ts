@@ -95,6 +95,23 @@ const resolvers: Resolvers = {
         );
       }
     },
+    xtmonePlatformIntegrationStatus: async (
+      _,
+      { serviceInstanceId },
+      context
+    ) => {
+      try {
+        return await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          context.user,
+          serviceInstanceId
+        );
+      } catch (error) {
+        throw mapToGraphQLError(
+          error,
+          UnknownErrorCode.DeploymentRequestUnknownError
+        );
+      }
+    },
   },
 
   Mutation: {

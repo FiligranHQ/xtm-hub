@@ -1,23 +1,16 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { portalGraphqlClient } from '@/lib/graphql-client';
+import {
+  useXtmonePlatformIntegrationStatusQuery,
+  XtmonePlatformIntegrationStatusQuery,
+} from '@graphql/generated';
 
-export interface XtmoneIntegrationStatusEntry {
-  status: string;
-  connected: boolean;
-  last_checked_at: string | null;
-}
+export type XtmoneIntegrationStatus = NonNullable<
+  XtmonePlatformIntegrationStatusQuery['xtmonePlatformIntegrationStatus']
+>;
 
-export interface XtmoneIntegrationStatus {
-  opencti: XtmoneIntegrationStatusEntry;
-  openaev: XtmoneIntegrationStatusEntry;
-  linked: boolean;
-  last_checked_at: string | null;
-}
-
-interface XtmonePlatformConfigResponse {
-  integration_status?: XtmoneIntegrationStatus;
-}
+export type XtmoneIntegrationStatusEntry = XtmoneIntegrationStatus['opencti'];
 
 export interface XtmoneStatusState {
   data?: XtmoneIntegrationStatus;
@@ -26,41 +19,22 @@ export interface XtmoneStatusState {
   hasUrl: boolean;
 }
 
-const XTMONE_STATUS_TIMEOUT_MS = 8000;
-
-const fetchXtmoneIntegrationStatus = async (
-  baseUrl: string
-): Promise<XtmoneIntegrationStatus> => {
-  const url = `${baseUrl.replace(/\/$/, '')}/api/v1/platform/config`;
-  const controller = new AbortController();
-  const timeout = setTimeout(
-    () => controller.abort(),
-    XTMONE_STATUS_TIMEOUT_MS
+export const useXtmoneIntegrationStatus = (
+  serviceInstanceId?: string | null
+) => {
+  const { data, isLoading, isError } = useXtmonePlatformIntegrationStatusQuery(
+    portalGraphqlClient,
+    { serviceInstanceId: serviceInstanceId ?? '' },
+    {
+      enabled: !!serviceInstanceId,
+      retry: false,
+      staleTime: 60_000,
+    }
   );
 
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      credentials: 'omit',
-    });
-    if (!response.ok) {
-      throw new Error(`Unexpected status ${response.status}`);
-    }
-    const body = (await response.json()) as XtmonePlatformConfigResponse;
-    if (!body?.integration_status) {
-      throw new Error('Missing integration_status in platform config');
-    }
-    return body.integration_status;
-  } finally {
-    clearTimeout(timeout);
-  }
+  return {
+    data: data?.xtmonePlatformIntegrationStatus ?? undefined,
+    isLoading,
+    isError,
+  };
 };
-
-export const useXtmoneIntegrationStatus = (baseUrl?: string | null) =>
-  useQuery({
-    queryKey: ['xtmone-integration-status', baseUrl],
-    queryFn: () => fetchXtmoneIntegrationStatus(baseUrl as string),
-    enabled: !!baseUrl,
-    retry: false,
-    staleTime: 60_000,
-  });

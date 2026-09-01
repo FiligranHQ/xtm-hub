@@ -99,3 +99,20 @@ query ActiveXtmPlatformBundle($serviceInstanceId: ServiceInstanceId) {
     ...XtmPlatformBundle
   }
 }
+
+query XtmonePlatformIntegrationStatus($serviceInstanceId: ServiceInstanceId!) {
+  xtmonePlatformIntegrationStatus(serviceInstanceId: $serviceInstanceId) {
+    opencti {
+      status
+      connected
+      last_checked_at
+    }
+    openaev {
+      status
+      connected
+      last_checked_at
+    }
+    linked
+    last_checked_at
+  }
+}

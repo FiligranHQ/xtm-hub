@@ -4316,7 +4316,7 @@ describe('deployment app', () => {
         contextRegistererUserSecondOrga.user
       );
 
-      expect(result?.license).toBe(PlatformContract.Ee);
+      expect(result?.license).toBe(PlatformContract.Trial);
       const registeredProduct = result?.children.find(
         (product) => product.service_instance_id === child.service_instance_id
       );
@@ -4345,6 +4345,112 @@ describe('deployment app', () => {
         (item) => item.service_instance_id === child.service_instance_id
       );
       expect(product?.url).toBe('https://deployment-request.example.com');
+    });
+  });
+
+  describe('loadXtmonePlatformIntegrationStatus', () => {
+    const serviceInstanceId = uuidv4() as ServiceInstanceId;
+    const user = contextRegistererUserSecondOrga.user;
+    const ownedDeploymentRequest = { url: null } as unknown as Awaited<
+      ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+    >;
+    const integrationStatus = {
+      opencti: { status: 'connected', connected: true, last_checked_at: null },
+      openaev: { status: 'connected', connected: true, last_checked_at: null },
+      linked: true,
+      last_checked_at: null,
+    };
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    });
+
+    it('returns null without fetching when the service instance is not owned by the user organization', async () => {
+      const loadDeploymentRequestBySpy = vi
+        .spyOn(DeploymentRequestDomain, 'loadDeploymentRequestBy')
+        .mockResolvedValue(undefined);
+      const fetchMock = vi.fn();
+      vi.stubGlobal('fetch', fetchMock);
+
+      const result = await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+        user,
+        serviceInstanceId
+      );
+
+      expect(result).toBeNull();
+      expect(loadDeploymentRequestBySpy).toHaveBeenCalledWith({
+        service_instance_id: serviceInstanceId,
+        organization_requester_id: user.selected_organization_id,
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('returns null without fetching when no platform url can be resolved', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(ownedDeploymentRequest);
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue(
+        []
+      );
+      const fetchMock = vi.fn();
+      vi.stubGlobal('fetch', fetchMock);
+
+      const result = await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+        user,
+        serviceInstanceId
+      );
+
+      expect(result).toBeNull();
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('fetches the integration status from the registered platform url without credentials', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(ownedDeploymentRequest);
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue([
+        { platform_url: 'https://xtmone.example.io' },
+      ] as unknown as DomainRegisteredPlatform[]);
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ integration_status: integrationStatus }),
+      });
+      vi.stubGlobal('fetch', fetchMock);
+
+      const result = await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+        user,
+        serviceInstanceId
+      );
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://xtmone.example.io/api/v1/platform/config',
+        expect.objectContaining({ credentials: 'omit', redirect: 'error' })
+      );
+      expect(result).toEqual(integrationStatus);
+    });
+
+    it('returns null when the platform responds with an error status', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(ownedDeploymentRequest);
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue([
+        { platform_url: 'https://xtmone.example.io' },
+      ] as unknown as DomainRegisteredPlatform[]);
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({ ok: false, status: 502 })
+      );
+
+      const result = await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+        user,
+        serviceInstanceId
+      );
+
+      expect(result).toBeNull();
     });
   });
 });
