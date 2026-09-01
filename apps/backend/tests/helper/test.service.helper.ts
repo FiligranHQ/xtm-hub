@@ -28,6 +28,8 @@ import ServiceInstance, {
   ServiceInstanceMutator,
 } from '../../src/model/kanel/public/ServiceInstance';
 import SubscriptionCapability, {
+  SubscriptionCapabilityId,
+  SubscriptionCapabilityInitializer,
   SubscriptionCapabilityMutator,
 } from '../../src/model/kanel/public/SubscriptionCapability';
 import { SERVICES } from '../tests.const';
@@ -188,6 +190,19 @@ export const TestServiceHelper = {
     },
   },
   subscriptionCapability: {
+    create: async (
+      data?: Partial<SubscriptionCapabilityInitializer>
+    ): Promise<SubscriptionCapability> => {
+      const [subscriptionCapability] = await db<SubscriptionCapability>(
+        'Subscription_Capability'
+      )
+        .insert({
+          id: uuidv4() as SubscriptionCapabilityId,
+          ...data,
+        })
+        .returning('*');
+      return subscriptionCapability!;
+    },
     delete: async (field: SubscriptionCapabilityMutator) => {
       await db<SubscriptionCapability>('Subscription_Capability')
         .where(field)

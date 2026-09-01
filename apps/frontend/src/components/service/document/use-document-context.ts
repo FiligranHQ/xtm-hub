@@ -1,4 +1,3 @@
-import { PortalContext } from '@/components/me/AppPortalContext';
 import { ServiceContextProps } from '@/components/service/components/ServiceContext';
 import {
   ServiceForm,
@@ -41,7 +40,7 @@ import {
   LicenseType,
 } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation } from 'react-relay';
 
 type DocumentFormValues = ServiceFormValues & {
@@ -81,7 +80,6 @@ export function useDocumentContext({
   connectionId,
   type,
 }: UseDocumentContextProps): ServiceContextProps {
-  const { me } = useContext(PortalContext);
   const [integrationType, setIntegrationType] = useState<IntegrationType>(
     IntegrationType.CsvFeed
   );
@@ -296,14 +294,6 @@ export function useDocumentContext({
     return translationKeyMapping[type]();
   }, [type, integrationType]);
 
-  const currentUserSubscriptionId = me?.id
-    ? serviceInstance.subscriptions?.find((subscription) =>
-        subscription?.user_service?.some(
-          (userService) => userService?.user?.id === me.id
-        )
-      )?.id
-    : undefined;
-
   return {
     serviceInstance,
     handleAddSheet,
@@ -311,7 +301,6 @@ export function useDocumentContext({
     handleDeleteSheet,
     ServiceForm: form,
     translationKey,
-    currentUserSubscriptionId,
     type,
     setIntegrationType,
   };

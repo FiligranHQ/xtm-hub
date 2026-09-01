@@ -143,11 +143,11 @@ type Query {
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
+  userServiceCapabilities(service_instance_id: ServiceInstanceId!): UserServiceCapabilitiesResponse!
   seoServiceInstanceMetadata(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage): [SeoServiceInstanceMetadata!]!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!], includeInaccessible: Boolean): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId!): ServiceInstance
-  serviceInstanceByIdAndGrantAccess(service_instance_id: ServiceInstanceId!): ServiceInstance
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
@@ -218,7 +218,6 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusSingleTenant(input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
-  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
   addCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
   editSeoServiceInstance(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage!, input: EditSeoServiceInstanceInput!): SeoServiceInstanceMetadata!
@@ -1258,9 +1257,9 @@ type GenericServiceCapability implements Node {
   name: String
 }
 
-input EditServiceCapabilityInput {
-  user_service_id: User_ServiceId
-  capabilities: [String]!
+type UserServiceCapabilitiesResponse {
+  userServiceCapabilities: [UserServiceCapability!]!
+  subscription_id: SubscriptionId
 }
 
 input AddSubscriptionCapabilityInput {

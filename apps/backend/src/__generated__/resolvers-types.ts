@@ -699,11 +699,6 @@ export type EditSeoServiceInstanceInput = {
   meta_title: Scalars['String']['input'];
 };
 
-export type EditServiceCapabilityInput = {
-  capabilities: Array<InputMaybe<Scalars['String']['input']>>;
-  user_service_id?: InputMaybe<Scalars['UserServiceId']['input']>;
-};
-
 export type EditSolutionCategoryInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   product?: InputMaybe<Array<FiligranProduct>>;
@@ -1006,7 +1001,6 @@ export type Mutation = {
   editMeUser: User;
   editOrganization?: Maybe<Organization>;
   editSeoServiceInstance: SeoServiceInstanceMetadata;
-  editServiceCapability?: Maybe<SubscriptionModel>;
   editSolutionCategory: SolutionCategory;
   editUseCase: UseCase;
   editUserCapabilities: User;
@@ -1272,12 +1266,6 @@ export type MutationEditSeoServiceInstanceArgs = {
   input: EditSeoServiceInstanceInput;
   language: SeoServiceInstanceLanguage;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
-};
-
-
-export type MutationEditServiceCapabilityArgs = {
-  input?: InputMaybe<EditServiceCapabilityInput>;
-  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -1819,7 +1807,6 @@ export type Query = {
   seoServiceInstances: Array<SeoServiceInstance>;
   serviceGroups: Array<ServiceGroup>;
   serviceInstanceById?: Maybe<ServiceInstance>;
-  serviceInstanceByIdAndGrantAccess?: Maybe<ServiceInstance>;
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
   settings: Settings;
@@ -1830,6 +1817,7 @@ export type Query = {
   updateOpenCTIManifest: Success;
   useCases?: Maybe<UseCaseConnection>;
   userOrganizations: Array<Organization>;
+  userServiceCapabilities: UserServiceCapabilitiesResponse;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   users: UserConnection;
   usersWithCapabilitiesInOrganization: Array<User>;
@@ -2045,11 +2033,6 @@ export type QueryServiceInstanceByIdArgs = {
 };
 
 
-export type QueryServiceInstanceByIdAndGrantAccessArgs = {
-  service_instance_id: Scalars['ServiceInstanceId']['input'];
-};
-
-
 export type QueryServiceInstanceLinksByTagsArgs = {
   tags: Array<ServiceInstanceTag>;
 };
@@ -2109,6 +2092,11 @@ export type QueryUseCasesArgs = {
   orderMode: OrderingMode;
   product?: InputMaybe<FiligranProduct>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryUserServiceCapabilitiesArgs = {
+  service_instance_id: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2909,6 +2897,12 @@ export type UserServiceAddYourselfInput = {
   serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
+export type UserServiceCapabilitiesResponse = {
+  __typename?: 'UserServiceCapabilitiesResponse';
+  subscription_id?: Maybe<Scalars['SubscriptionId']['output']>;
+  userServiceCapabilities: Array<UserServiceCapability>;
+};
+
 export type UserServiceCapability = Node & {
   __typename?: 'UserServiceCapability';
   generic_service_capability?: Maybe<GenericServiceCapability>;
@@ -3171,7 +3165,6 @@ export type ResolversTypes = ResolversObject<{
   DocumentSourceType: DocumentSourceType;
   EditMeUserInput: EditMeUserInput;
   EditSeoServiceInstanceInput: EditSeoServiceInstanceInput;
-  EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSolutionCategoryInput: EditSolutionCategoryInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
@@ -3338,6 +3331,7 @@ export type ResolversTypes = ResolversObject<{
   UserService: ResolverTypeWrapper<UserService>;
   UserServiceAddInput: UserServiceAddInput;
   UserServiceAddYourselfInput: UserServiceAddYourselfInput;
+  UserServiceCapabilitiesResponse: ResolverTypeWrapper<UserServiceCapabilitiesResponse>;
   UserServiceCapability: ResolverTypeWrapper<UserServiceCapability>;
   UserServiceConnection: ResolverTypeWrapper<UserServiceConnection>;
   UserServiceDeleted: ResolverTypeWrapper<UserServiceDeleted>;
@@ -3407,7 +3401,6 @@ export type ResolversParentTypes = ResolversObject<{
   DocumentMetadata: DocumentMetadata;
   EditMeUserInput: EditMeUserInput;
   EditSeoServiceInstanceInput: EditSeoServiceInstanceInput;
-  EditServiceCapabilityInput: EditServiceCapabilityInput;
   EditSolutionCategoryInput: EditSolutionCategoryInput;
   EditUseCaseInput: EditUseCaseInput;
   EditUserCapabilitiesInput: EditUserCapabilitiesInput;
@@ -3539,6 +3532,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserService: UserService;
   UserServiceAddInput: UserServiceAddInput;
   UserServiceAddYourselfInput: UserServiceAddYourselfInput;
+  UserServiceCapabilitiesResponse: UserServiceCapabilitiesResponse;
   UserServiceCapability: UserServiceCapability;
   UserServiceConnection: UserServiceConnection;
   UserServiceDeleted: UserServiceDeleted;
@@ -4068,7 +4062,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   editMeUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditMeUserArgs, 'input'>>;
   editOrganization?: Resolver<Maybe<ResolversTypes['Organization']>, ParentType, ContextType, RequireFields<MutationEditOrganizationArgs, 'id' | 'input'>>;
   editSeoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstanceMetadata'], ParentType, ContextType, RequireFields<MutationEditSeoServiceInstanceArgs, 'input' | 'language' | 'service_instance_id'>>;
-  editServiceCapability?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, Partial<MutationEditServiceCapabilityArgs>>;
   editSolutionCategory?: Resolver<ResolversTypes['SolutionCategory'], ParentType, ContextType, RequireFields<MutationEditSolutionCategoryArgs, 'id' | 'input'>>;
   editUseCase?: Resolver<ResolversTypes['UseCase'], ParentType, ContextType, RequireFields<MutationEditUseCaseArgs, 'id' | 'input'>>;
   editUserCapabilities?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationEditUserCapabilitiesArgs, 'id' | 'input'>>;
@@ -4351,7 +4344,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
   serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceByIdArgs, 'service_instance_id'>>;
-  serviceInstanceByIdAndGrantAccess?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceByIdAndGrantAccessArgs, 'service_instance_id'>>;
   serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   settings?: Resolver<ResolversTypes['Settings'], ParentType, ContextType>;
@@ -4362,6 +4354,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   updateOpenCTIManifest?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<QueryUpdateOpenCtiManifestArgs, 'tag'>>;
   useCases?: Resolver<Maybe<ResolversTypes['UseCaseConnection']>, ParentType, ContextType, RequireFields<QueryUseCasesArgs, 'first' | 'orderBy' | 'orderMode'>>;
   userOrganizations?: Resolver<Array<ResolversTypes['Organization']>, ParentType, ContextType>;
+  userServiceCapabilities?: Resolver<ResolversTypes['UserServiceCapabilitiesResponse'], ParentType, ContextType, RequireFields<QueryUserServiceCapabilitiesArgs, 'service_instance_id'>>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
   usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
@@ -4869,6 +4862,12 @@ export type UserServiceResolvers<ContextType = PortalContext, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserServiceCapabilitiesResponseResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserServiceCapabilitiesResponse'] = ResolversParentTypes['UserServiceCapabilitiesResponse']> = ResolversObject<{
+  subscription_id?: Resolver<Maybe<ResolversTypes['SubscriptionId']>, ParentType, ContextType>;
+  userServiceCapabilities?: Resolver<Array<ResolversTypes['UserServiceCapability']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type UserServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['UserServiceCapability'] = ResolversParentTypes['UserServiceCapability']> = ResolversObject<{
   generic_service_capability?: Resolver<Maybe<ResolversTypes['GenericServiceCapability']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -5079,6 +5078,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   UserId?: GraphQLScalarType;
   UserPendingSubscription?: UserPendingSubscriptionResolvers<ContextType>;
   UserService?: UserServiceResolvers<ContextType>;
+  UserServiceCapabilitiesResponse?: UserServiceCapabilitiesResponseResolvers<ContextType>;
   UserServiceCapability?: UserServiceCapabilityResolvers<ContextType>;
   UserServiceConnection?: UserServiceConnectionResolvers<ContextType>;
   UserServiceDeleted?: UserServiceDeletedResolvers<ContextType>;
