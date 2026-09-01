@@ -1,5 +1,4 @@
 import {
-  STANDALONE_PARENT_ID_FILTER_VALUE,
   TRIALS_PRODUCT_ORDER,
   TRIALS_TAB_CONFIG,
   TrialsScope,
@@ -23,6 +22,8 @@ export const sortProducts = (
   products: readonly TrialsProductFragment[]
 ): TrialsProductFragment[] =>
   [...products].sort((left, right) => productRank(left) - productRank(right));
+
+export const STANDALONE_PARENT_ID_FILTER_VALUE = 'null';
 
 export const buildTrialsFilters = (
   type: TrialsTabType,

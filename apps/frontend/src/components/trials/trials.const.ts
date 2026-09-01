@@ -53,8 +53,6 @@ export const TRIALS_PRODUCT_ORDER: PlatformIdentifier[] = [
   PlatformIdentifier.Xtmone,
 ];
 
-export const STANDALONE_PARENT_ID_FILTER_VALUE = 'null';
-
 export const trialsRegionKey = (
   region: DeploymentRequestPlatformRegion
 ): string => `Region.${region.toUpperCase()}`;

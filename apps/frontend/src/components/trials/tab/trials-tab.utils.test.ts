@@ -1,11 +1,11 @@
 import {
+  STANDALONE_PARENT_ID_FILTER_VALUE,
   buildTrialsFilters,
   formatCancellationReason,
   sortProducts,
 } from '@/components/trials/tab/trials-tab.utils';
 import {
   BUNDLE_SCOPE,
-  STANDALONE_PARENT_ID_FILTER_VALUE,
   TrialsTabType,
   productScope,
 } from '@/components/trials/trials.const';
