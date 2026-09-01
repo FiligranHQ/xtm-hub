@@ -36,6 +36,7 @@ import userServiceResolver from '../modules/user-service/user-service.resolver';
 import xtmPlatformRoadmapResolver from '../modules/xtm-platform-roadmap/epic.resolver';
 import nodesResolver from '../nodes/nodes.resolver';
 import { authDirectiveTransformer } from '../security/directive-graphql/directive-auth';
+import facetResolver from '../modules/document/facet/facet.resolver';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
@@ -63,6 +64,7 @@ const resolvers = mergeResolvers([
   logResolver,
   useCaseResolver,
   customDashboardsResolver,
+  facetResolver,
   customViewsResolver,
   openAEVScenariosResolver,
   openCTIPlaybooksResolver,
