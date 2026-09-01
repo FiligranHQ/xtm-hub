@@ -7,6 +7,7 @@ import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
 } from '@/components/epic/epic-list-utils';
+import { FeatureVotingCallout } from '@/components/feature-voting/FeatureVotingCallout';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { CountBadge } from '@/components/ui/CountBadge';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
@@ -163,6 +164,7 @@ export const EpicList = ({
           )}
         </div>
       </div>
+      <FeatureVotingCallout serviceInstanceId={serviceInstance.id} />
       <EpicFilter
         selectedFilter={selectedProduct}
         onSelectedFilterChange={onFilterChange}
@@ -186,7 +188,7 @@ export const EpicList = ({
         return (
           <div
             key={timeline.title}
-            className="flex items-stretch gap-m">
+            className="mx-s flex items-stretch gap-m">
             <div className="flex flex-col items-center self-stretch mt-xl">
               <CountBadge
                 count={timeline.epics.length}

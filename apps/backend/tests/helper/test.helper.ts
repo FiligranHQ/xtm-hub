@@ -6,12 +6,17 @@ import {
   ManifestType,
   PlatformIdentifier,
   Timeline,
+  VotingRoundStatus,
 } from '../../src/__generated__/resolvers-types';
 import Competitor, {
   CompetitorId,
   CompetitorMutator,
 } from '../../src/model/kanel/public/Competitor';
 import Epic, { EpicId, EpicMutator } from '../../src/model/kanel/public/Epic';
+import FeatureVote, {
+  FeatureVoteInitializer,
+  FeatureVoteMutator,
+} from '../../src/model/kanel/public/FeatureVote';
 import Manifest, {
   ManifestId,
   ManifestInitializer,
@@ -46,6 +51,7 @@ import ProductVersion, {
   ProductVersionInitializer,
   ProductVersionMutator,
 } from '../../src/model/kanel/public/ProductVersion';
+import { ServiceInstanceId } from '../../src/model/kanel/public/ServiceInstance';
 import Subscription, {
   SubscriptionId,
   SubscriptionMutator,
@@ -54,6 +60,16 @@ import UseCase, {
   UseCaseInitializer,
   UseCaseMutator,
 } from '../../src/model/kanel/public/UseCase';
+import VotableFeature, {
+  VotableFeatureId,
+  VotableFeatureInitializer,
+  VotableFeatureMutator,
+} from '../../src/model/kanel/public/VotableFeature';
+import VotingRound, {
+  VotingRoundId,
+  VotingRoundInitializer,
+  VotingRoundMutator,
+} from '../../src/model/kanel/public/VotingRound';
 import { ManifestFragmentHelper } from '../../src/modules/shareable-resource/manifest-fragment/manifest-fragment.helper';
 import { ManifestRebuildQueueStatus } from '../../src/modules/shareable-resource/manifest/manifest.consts';
 import { TEST_ORGANIZATIONS } from '../tests.const';
@@ -306,6 +322,67 @@ export const TestHelper = {
     },
     delete: async (field: ManifestMutator): Promise<void> => {
       await db<Manifest>('Manifest').where(field).del();
+    },
+  },
+  votingRound: {
+    create: async (
+      data: Partial<VotingRoundInitializer> & {
+        service_instance_id: ServiceInstanceId;
+      }
+    ): Promise<VotingRound> => {
+      const [votingRound] = await db<VotingRound>('VotingRound')
+        .insert({
+          id: uuidv4() as VotingRoundId,
+          name: `test-voting-round-${uuidv4()}`,
+          status: VotingRoundStatus.Draft,
+          created_at: new Date(),
+          ...data,
+        })
+        .returning('*');
+      return votingRound!;
+    },
+    load: async (
+      field: VotingRoundMutator
+    ): Promise<VotingRound | undefined> => {
+      return db<VotingRound>('VotingRound').where(field).select('*').first();
+    },
+    delete: async (field: VotingRoundMutator): Promise<void> => {
+      await db<VotingRound>('VotingRound').where(field).del();
+    },
+  },
+  votableFeature: {
+    create: async (
+      data: Partial<VotableFeatureInitializer> & {
+        voting_round_id: VotingRoundId;
+      }
+    ): Promise<VotableFeature> => {
+      const [feature] = await db<VotableFeature>('VotableFeature')
+        .insert({
+          id: uuidv4() as VotableFeatureId,
+          title: `test-feature-${uuidv4()}`,
+          short_description: 'Short',
+          description: 'Long',
+          product: FiligranProduct.Opencti,
+          position: 0,
+          active: true,
+          created_at: new Date(),
+          ...data,
+        })
+        .returning('*');
+      return feature!;
+    },
+    loadAll: async (
+      field: VotableFeatureMutator
+    ): Promise<VotableFeature[]> => {
+      return db<VotableFeature[]>('VotableFeature').where(field).select('*');
+    },
+  },
+  featureVote: {
+    create: async (data: FeatureVoteInitializer): Promise<void> => {
+      await db<FeatureVote>('FeatureVote').insert(data);
+    },
+    loadAll: async (field: FeatureVoteMutator): Promise<FeatureVote[]> => {
+      return db<FeatureVote[]>('FeatureVote').where(field).select('*');
     },
   },
   manifestDocument: {

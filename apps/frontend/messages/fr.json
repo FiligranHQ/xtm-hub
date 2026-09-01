@@ -187,6 +187,20 @@
     },
     "JoinCommunity": "Restez dans la boucle avec la communauté Filigran"
   },
+  "FeatureVoting": {
+    "Title": "Votez pour les prochaines fonctionnalités",
+    "MetaDescription": "Votez pour les fonctionnalités que vous souhaitez voir arriver dans OpenCTI, OpenAEV, XTM One et XTM Hub.",
+    "Description": "Aidez-nous à façonner le futur des produits Filigran : votez pour la fonctionnalité que vous souhaitez voir en priorité. Vous disposez d'un vote par produit, modifiable à tout moment.",
+    "OneVotePerProduct": "Vous disposez d'un vote pour ce produit. Voter pour une autre fonctionnalité déplace votre vote.",
+    "Vote": "Voter",
+    "Voted": "Votre vote",
+    "VoteRecordedTitle": "Vote enregistré",
+    "VoteRecordedDescription": "Merci ! Votre vote a bien été pris en compte.",
+    "NoOpenRound": "Aucun vote n'est ouvert pour le moment. Revenez bientôt !",
+    "CalloutTitle": "Participez à la roadmap",
+    "CalloutSubtitle": "Un vote est ouvert en ce moment : dites-nous ce que vous voulez voir arriver.",
+    "CalloutButton": "Votez pour votre prochaine fonctionnalité"
+  },
   "Error": {
     "AnErrorOccured": "Une erreur est survenue",
     "Login": {
@@ -310,7 +324,19 @@
       "USER_DISABLED": "L'utilisateur est désactivé",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
       "USER_NOT_FOUND": "L'utilisateur n'a pas été trouvé",
-      "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter"
+      "VOTABLE_FEATURE_NOT_FOUND": "Cette fonctionnalité n'est plus ouverte au vote",
+      "VOTE_FOR_FEATURE_ERROR": "Une erreur est survenue lors de l'enregistrement de votre vote",
+      "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter",
+      "VOTING_ROUND_NOT_OPEN": "Ce round de vote n'est pas ouvert",
+      "VOTING_ROUND_CLOSED": "Ce round de vote est clôturé",
+      "VOTING_ROUND_NOT_FOUND": "Round de vote introuvable",
+      "DELETE_VOTING_ROUND_BLOCKED_BY_VOTES": "Ce round a déjà recueilli des votes et ne peut pas être supprimé",
+      "DELETE_VOTABLE_FEATURE_BLOCKED_BY_VOTES": "Cette fonctionnalité a déjà des votes, désactivez-la plutôt",
+      "VOTING_ROUND_MUTATION_ERROR": "Une erreur est survenue lors de l'enregistrement du round",
+      "OPEN_VOTING_ROUND_WITHOUT_ACTIVE_FEATURE": "Ce round n'a aucune fonctionnalité active et ne peut pas être ouvert",
+      "VOTABLE_FEATURE_PRODUCT_LOCKED": "Cette fonctionnalité a déjà des votes, son produit ne peut plus être modifié",
+      "COPY_FEATURES_FROM_ANOTHER_ROADMAP": "Les fonctionnalités ne peuvent être copiées que depuis un round de la même roadmap",
+      "VOTABLE_FEATURE_MUTATION_ERROR": "Une erreur est survenue lors de l'enregistrement de la fonctionnalité"
     },
     "SomethingWentWrong": "Quelque chose s'est mal passé",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
@@ -491,6 +517,7 @@
     "Documentation": "Documentation",
     "Scenarios": "Scénarios",
     "XTMRoadmap": "XTM Platform Roadmap",
+    "FeatureVoting": "Vote des fonctionnalités",
     "FiligranAcademy": "Filigran Academy",
     "Blog": "Blog",
     "Slack": "Slack",
@@ -515,7 +542,8 @@
     "OpenCTITrial": "Essai OpenCTI",
     "OpenAEVTrial": "Essai OpenAEV",
     "Competitor": "Concurrent",
-    "NewsFeed": "Fil d'actualité"
+    "NewsFeed": "Fil d'actualité",
+    "VotingRound": "Vote des fonctionnalités"
   },
   "NewsFeedAdminPage": {
     "Title": "Titre",
@@ -2047,5 +2075,78 @@
     "vulnerability_analyst": "Analyste en vulnérabilités",
     "consultant": "Consultant",
     "other": "Autre"
+  },
+  "VotingRound": {
+    "Actions": {
+      "Add": "Créer un round de vote",
+      "Edit": "Modifier le round",
+      "Open": "Ouvrir aux votes",
+      "Close": "Clôturer les votes"
+    },
+    "Form": {
+      "Name": "Nom",
+      "Description": "Description",
+      "DescriptionPlaceholder": "Affichée aux utilisateurs sur la page publique de vote",
+      "CopyFeaturesFrom": "Copier les fonctionnalités de",
+      "CopyFeaturesNone": "Partir d'un round vide",
+      "Error": {
+        "Name": "Le nom est obligatoire",
+        "ServiceInstance": "La roadmap est obligatoire"
+      },
+      "ServiceInstance": "Roadmap",
+      "ServiceInstancePlaceholder": "Sélectionnez une roadmap",
+      "Theme": "Style de bannière"
+    },
+    "ListPage": {
+      "Name": "Nom",
+      "Status": "Statut",
+      "FeatureCount": "Fonctionnalités",
+      "ServiceInstance": "Roadmap"
+    },
+    "Status": {
+      "draft": "Brouillon",
+      "open": "Ouvert",
+      "closed": "Clôturé"
+    },
+    "Dialog": {
+      "DeleteRound": "Voulez-vous vraiment supprimer {name} ? Ce n'est possible que s'il n'a aucun vote.",
+      "OpenRound": "Ouvrir {name} aux votes ? Le round actuellement ouvert sera clôturé et ses résultats conservés.",
+      "CloseRound": "Clôturer les votes de {name} ? Les utilisateurs ne pourront plus voter et les résultats sont conservés.",
+      "DeleteFeature": "Voulez-vous vraiment supprimer {title} ?"
+    },
+    "Feature": {
+      "SectionTitle": "Fonctionnalités",
+      "Title": "Titre",
+      "Product": "Produit",
+      "ShortDescription": "Description courte",
+      "Description": "Description",
+      "Illustration": "Illustration",
+      "Position": "Position",
+      "Active": "Active",
+      "ActiveYes": "Oui",
+      "ActiveNo": "Non",
+      "Actions": {
+        "Add": "Ajouter une fonctionnalité",
+        "Edit": "Modifier la fonctionnalité"
+      },
+      "Error": {
+        "Title": "Le titre est obligatoire",
+        "ShortDescription": "La description courte est obligatoire",
+        "Description": "La description est obligatoire",
+        "Position": "La position doit être un nombre positif"
+      },
+      "RemoveIllustration": "Retirer l'illustration",
+      "DescriptionPlaceholder": "Description complète affichée quand un utilisateur ouvre la fonctionnalité. Markdown pris en charge."
+    },
+    "Results": {
+      "Title": "Résultats",
+      "TotalVoters": "{count} votants",
+      "Empty": "Aucun vote pour ce round.",
+      "InactiveFeature": "Désactivée"
+    },
+    "Theme": {
+      "default": "Par défaut",
+      "thread": "Thread"
+    }
   }
 }

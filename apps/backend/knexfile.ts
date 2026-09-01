@@ -96,7 +96,11 @@ type BaseDatabaseType =
   | 'Manifest_Document'
   | 'ProductVersion'
   | 'PlatformMetadata'
-  | 'OneClickDeployment';
+  | 'OneClickDeployment'
+  | 'VotingRound'
+  | 'VotableFeature'
+  | 'VotableFeature_UseCase'
+  | 'FeatureVote';
 
 export type DatabaseType =
   | BaseDatabaseType
