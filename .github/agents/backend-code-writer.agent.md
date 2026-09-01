@@ -16,7 +16,7 @@ validation, change delivery, performance & security review) and the path-scoped
 [`migrations.instructions.md`](../instructions/migrations.instructions.md) for the stack, commands,
 layout, logging and GraphQL/migration workflow. Do not restate what those already cover — the rules
 below add only what is specific to this agent's posture.
-Apply `performance-security-review/SKILL.md` to self-check new code for
+Apply `.github/skills/performance-security-review/SKILL.md` to self-check new code for
 performance bottlenecks and security weaknesses before delivering it.
 
 ## Scope

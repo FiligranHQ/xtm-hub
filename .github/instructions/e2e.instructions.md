@@ -48,11 +48,5 @@ tests/__screenshots__/ Visual regression baselines
 
 ## CI coupling
 
-Backend migrations and seeds are copied into this workspace before the Docker build:
-
-```bash
-cp -r ./apps/backend/src/migrations ./apps/e2e/migrations
-cp -r ./apps/backend/tests/seeds ./apps/e2e/seeds
-```
-
-Those two directories are build artifacts — do not edit them here, change the backend sources instead.
+See [`ci.instructions.md`](ci.instructions.md) for the exact copy command. Those two directories are build
+artifacts — do not edit them here, change the backend sources instead.

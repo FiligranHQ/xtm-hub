@@ -22,11 +22,5 @@ the test seeds too, or integration tests will fail on missing fixtures.
 
 ## CI coupling
 
-Before the Docker builds, CI copies migrations and seeds into the e2e image:
-
-```bash
-cp -r ./apps/backend/src/migrations ./apps/e2e/migrations
-cp -r ./apps/backend/tests/seeds ./apps/e2e/seeds
-```
-
-A migration that only works when run from `apps/backend` will break the e2e job.
+See [`ci.instructions.md`](ci.instructions.md) for the exact copy command. A migration that only works when run
+from `apps/backend` will break the e2e job.

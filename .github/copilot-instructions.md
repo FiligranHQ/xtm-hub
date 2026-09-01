@@ -34,22 +34,14 @@ versions, UI library, GraphQL regeneration) — that file is the canonical, cros
 ## What this is, setup, and validation
 
 See [`AGENTS.md`](../AGENTS.md) for the stack overview, workspace table, `corepack`/`yarn install` setup, local
-infrastructure (`docker compose`), dev servers, and the `test:ci` validation commands — that file is the canonical
-source so it stays accurate for every tool that reads it, not just Copilot.
-
-The pre-commit hook runs `yarn lint-staged --config .lintstagedrc.cjs` once from the root; it dispatches ESLint and
-Prettier to whichever workspaces the staged files belong to.
+infrastructure (`docker compose`), dev servers, the pre-commit hook, and the `test:ci` validation commands — that
+file is the canonical source so it stays accurate for every tool that reads it, not just Copilot.
 
 ## The one data flow to understand
 
-The GraphQL schema is authored in the backend and flows to the frontend. Backend `.graphql` files feed
-`yarn generate:ts` (resolver types) and, when the API starts outside production, are written out to
-`apps/frontend/schema.graphql`, which `yarn relay` compiles into `apps/frontend/__generated__/`. Full detail in
-[`graphql.instructions.md`](instructions/graphql.instructions.md).
-
-**After any GraphQL change**, run `yarn workspace @xtm-hub/backend generate:ts` and
-`yarn workspace @xtm-hub/frontend relay`. Skipping the second step is the most common cause of confusing frontend
-type errors.
+The GraphQL schema is authored in the backend and flows to the frontend: the frontend never edits it. See
+[`graphql.instructions.md`](instructions/graphql.instructions.md) for the full flow, the regeneration commands
+(`generate:ts`, `relay`), and why skipping them is the most common cause of confusing frontend type errors.
 
 ## Pitfalls
 

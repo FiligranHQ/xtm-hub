@@ -85,16 +85,9 @@ The backend is reached through `proxy.ts` (Next.js 16's convention file, renamed
 delegates GraphQL/auth/document routes to `src/utils/middleware/graphql-request.util.ts` and rewrites them to
 `SERVER_HTTP_API` (default `http://localhost:4002`).
 
-**For new work, use `@tanstack/react-query`**, not Relay:
-
-1. Write the operation as `apps/frontend/graphql/<domain>/<name>.query.graphql` (or `.mutation.graphql`).
-2. Run `yarn codegen` (`graphql-codegen`, `typescript-react-query` plugin) to refresh
-   `apps/frontend/graphql/generated.ts`, imported through the `@graphql/*` alias. It exports a typed
-   `use<Name>Query`/`use<Name>Mutation` hook per operation, plus its query key.
-3. Call the hook with `portalGraphqlClient` from `@/lib/graphql-client` (a `graphql-request` client already wired to
-   the API endpoint and auth cookies) as the first argument.
-4. Invalidate or update the cache with `useQueryClient()` from `@tanstack/react-query`; see
-   `src/utils/query-cache.ts` for the existing connection-editing helpers.
+**For new work, use `@tanstack/react-query`**, not Relay. See
+[`graphql.instructions.md`](graphql.instructions.md#tanstackreact-query-conventions-new-frontend-work) for the
+operation-file convention, the codegen command, and the client/cache-invalidation wiring.
 
 **Never introduce new Relay usage, even for a small addition to an existing Relay page** — add it as a
 react-query call instead. The long-term goal is to remove Relay from this codebase entirely, so every
@@ -107,8 +100,9 @@ migration for that reason, say so explicitly rather than silently leaving Relay 
 a component's last Relay usage, confirm nothing else still imports its generated artifacts before
 deleting them.
 
-Existing Relay pages: add a `*.graphql.ts` file with the `graphql` tagged template, run `yarn relay` to regenerate
-`apps/frontend/__generated__/`, and consume it with `useLazyLoadQuery` or `usePreloadedQuery` from `react-relay`.
+Existing Relay pages: see
+[`graphql.instructions.md`](graphql.instructions.md#relay-conventions-existing-pages-only) for the file convention
+and regeneration command.
 
 Server-side fetches go through `src/relay/server-portal-api-fetch.ts`, which forwards Next.js cookies.
 
