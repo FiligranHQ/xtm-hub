@@ -12,7 +12,6 @@ const buildBundle = (
   organization_name: 'ACME',
   start_date: '2025-01-01T00:00:00.000Z',
   end_date: '2025-01-31T00:00:00.000Z',
-  license: 'trial' as XtmPlatformBundleFragment['license'],
   requester_email: 'requester@acme.io',
   children: [],
   ...overrides,
@@ -30,17 +29,6 @@ describe('BundleInfoCard', () => {
     expect(screen.getByText('ACME')).toBeInTheDocument();
     expect(screen.getByText('requester@acme.io')).toBeInTheDocument();
     expect(screen.getByText('Contracts.TRIAL')).toBeInTheDocument();
-  });
-
-  it('renders a dash when the license is missing', () => {
-    testRender(
-      <BundleInfoCard
-        bundle={buildBundle({ license: null })}
-        canManage={false}
-      />
-    );
-
-    expect(screen.queryByText('Contracts.TRIAL')).not.toBeInTheDocument();
   });
 
   it('shows the management actions only when the user can manage', () => {

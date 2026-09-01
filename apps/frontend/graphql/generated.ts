@@ -439,15 +439,11 @@ export type DeploymentRequest = Node & {
   cancellation_reason: Maybe<Scalars['String']['output']>;
   cancellation_user_email: Maybe<Scalars['String']['output']>;
   children: Maybe<Array<DeploymentRequest>>;
-  connectivity_status: Maybe<PlatformConfigurationStatus>;
   counts_in_orga_quota: Scalars['Boolean']['output'];
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
   id: Scalars['ID']['output'];
   job_title: Maybe<DeploymentRequestJobTitle>;
-  last_connectivity_check: Maybe<Scalars['Date']['output']>;
-  license: Maybe<PlatformContract>;
-  name: Maybe<Scalars['String']['output']>;
   ordering: Scalars['Int']['output'];
   organization_name: Maybe<Scalars['String']['output']>;
   organization_requester_id: Scalars['OrganizationId']['output'];
@@ -456,9 +452,10 @@ export type DeploymentRequest = Node & {
   platform_identifier: Maybe<PlatformIdentifier>;
   platform_url: Maybe<Scalars['String']['output']>;
   region: DeploymentRequestPlatformRegion;
+  registered_platform: Maybe<RegisteredPlatform>;
   request_date: Scalars['Date']['output'];
   requester_email: Maybe<Scalars['String']['output']>;
-  roles: Maybe<Array<ServiceGroup>>;
+  service_instance: Maybe<ServiceInstance>;
   service_instance_id: Scalars['ServiceInstanceId']['output'];
   start_date: Maybe<Scalars['Date']['output']>;
   type: DeploymentRequestDeploymentType;
@@ -2266,6 +2263,7 @@ export type RegisteredPlatform = Node & {
   last_connectivity_check: Maybe<Scalars['Date']['output']>;
   myGroups: Maybe<Array<ServiceGroup>>;
   platform_id: Scalars['String']['output'];
+  status: Maybe<PlatformConfigurationStatus>;
   subscription: Maybe<SubscriptionModel>;
   tenant_id: Maybe<Scalars['String']['output']>;
   tenant_name: Maybe<Scalars['String']['output']>;
@@ -3188,16 +3186,20 @@ export type TrialsQuotasQueryVariables = Exact<{
 
 export type TrialsQuotasQuery = { __typename?: 'Query', deploymentRequestsAvailable: Array<{ __typename?: 'DeploymentAvailability', id: string, region: DeploymentRequestPlatformRegion, availableCount: number, capacity: number, platform_identifier: PlatformIdentifier | null }> };
 
-export type XtmPlatformBundleProductFragment = { __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null };
+export type XtmPlatformBundleProductFragment = { __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null };
 
-export type XtmPlatformBundleFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null }> | null };
+export type XtmPlatformBundleFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, requester_email: string | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null };
 
 export type ActiveXtmPlatformBundleQueryVariables = Exact<{
   serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 }>;
 
 
-export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, license: PlatformContract | null, requester_email: string | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, name: string | null, connectivity_status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string | null, roles: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null }> | null } | null };
+export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, requester_email: string | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null } | null };
+
+export type XtmoneIntegrationStatusEntryFragment = { __typename?: 'XtmoneIntegrationStatusEntry', status: string, connected: boolean, last_checked_at: string | null };
+
+export type XtmoneIntegrationStatusFragment = { __typename?: 'XtmoneIntegrationStatus', linked: boolean, last_checked_at: string | null, opencti: { __typename?: 'XtmoneIntegrationStatusEntry', status: string, connected: boolean, last_checked_at: string | null }, openaev: { __typename?: 'XtmoneIntegrationStatusEntry', status: string, connected: boolean, last_checked_at: string | null } };
 
 export type XtmonePlatformIntegrationStatusQueryVariables = Exact<{
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
@@ -3647,13 +3649,18 @@ export const XtmPlatformBundleProductFragmentDoc = `
     fragment XtmPlatformBundleProduct on DeploymentRequest {
   platform_identifier
   service_instance_id
-  name
-  connectivity_status
-  last_connectivity_check
   url
-  roles {
-    id
+  service_instance {
     name
+  }
+  registered_platform {
+    status
+    last_connectivity_check
+    url
+    myGroups {
+      id
+      name
+    }
   }
 }
     `;
@@ -3664,13 +3671,31 @@ export const XtmPlatformBundleFragmentDoc = `
   organization_name
   start_date
   end_date
-  license
   requester_email
   children {
     ...XtmPlatformBundleProduct
   }
 }
     ${XtmPlatformBundleProductFragmentDoc}`;
+export const XtmoneIntegrationStatusEntryFragmentDoc = `
+    fragment XtmoneIntegrationStatusEntry on XtmoneIntegrationStatusEntry {
+  status
+  connected
+  last_checked_at
+}
+    `;
+export const XtmoneIntegrationStatusFragmentDoc = `
+    fragment XtmoneIntegrationStatus on XtmoneIntegrationStatus {
+  opencti {
+    ...XtmoneIntegrationStatusEntry
+  }
+  openaev {
+    ...XtmoneIntegrationStatusEntry
+  }
+  linked
+  last_checked_at
+}
+    ${XtmoneIntegrationStatusEntryFragmentDoc}`;
 export const HomepageDocumentFragmentDoc = `
     fragment HomepageDocument on Document {
   id
@@ -4035,21 +4060,10 @@ useActiveXtmPlatformBundleQuery.fetcher = (client: GraphQLClient, variables?: Ac
 export const XtmonePlatformIntegrationStatusDocument = `
     query XtmonePlatformIntegrationStatus($serviceInstanceId: ServiceInstanceId!) {
   xtmonePlatformIntegrationStatus(serviceInstanceId: $serviceInstanceId) {
-    opencti {
-      status
-      connected
-      last_checked_at
-    }
-    openaev {
-      status
-      connected
-      last_checked_at
-    }
-    linked
-    last_checked_at
+    ...XtmoneIntegrationStatus
   }
 }
-    `;
+    ${XtmoneIntegrationStatusFragmentDoc}`;
 
 export const useXtmonePlatformIntegrationStatusQuery = <
       TData = XtmonePlatformIntegrationStatusQuery,

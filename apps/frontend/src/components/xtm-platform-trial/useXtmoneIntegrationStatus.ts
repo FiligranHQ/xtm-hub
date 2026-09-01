@@ -3,17 +3,11 @@
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
   useXtmonePlatformIntegrationStatusQuery,
-  XtmonePlatformIntegrationStatusQuery,
+  XtmoneIntegrationStatusFragment,
 } from '@graphql/generated';
 
-export type XtmoneIntegrationStatus = NonNullable<
-  XtmonePlatformIntegrationStatusQuery['xtmonePlatformIntegrationStatus']
->;
-
-export type XtmoneIntegrationStatusEntry = XtmoneIntegrationStatus['opencti'];
-
 export interface XtmoneStatusState {
-  data?: XtmoneIntegrationStatus;
+  data?: XtmoneIntegrationStatusFragment;
   isLoading: boolean;
   isError: boolean;
   hasUrl: boolean;

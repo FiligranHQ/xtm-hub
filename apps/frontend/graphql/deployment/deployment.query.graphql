@@ -71,13 +71,18 @@ query TrialsQuotas($platformIdentifier: PlatformIdentifier) {
 fragment XtmPlatformBundleProduct on DeploymentRequest {
   platform_identifier
   service_instance_id
-  name
-  connectivity_status
-  last_connectivity_check
   url
-  roles {
-    id
+  service_instance {
     name
+  }
+  registered_platform {
+    status
+    last_connectivity_check
+    url
+    myGroups {
+      id
+      name
+    }
   }
 }
 
@@ -87,7 +92,6 @@ fragment XtmPlatformBundle on DeploymentRequest {
   organization_name
   start_date
   end_date
-  license
   requester_email
   children {
     ...XtmPlatformBundleProduct
@@ -100,19 +104,25 @@ query ActiveXtmPlatformBundle($serviceInstanceId: ServiceInstanceId) {
   }
 }
 
+fragment XtmoneIntegrationStatusEntry on XtmoneIntegrationStatusEntry {
+  status
+  connected
+  last_checked_at
+}
+
+fragment XtmoneIntegrationStatus on XtmoneIntegrationStatus {
+  opencti {
+    ...XtmoneIntegrationStatusEntry
+  }
+  openaev {
+    ...XtmoneIntegrationStatusEntry
+  }
+  linked
+  last_checked_at
+}
+
 query XtmonePlatformIntegrationStatus($serviceInstanceId: ServiceInstanceId!) {
   xtmonePlatformIntegrationStatus(serviceInstanceId: $serviceInstanceId) {
-    opencti {
-      status
-      connected
-      last_checked_at
-    }
-    openaev {
-      status
-      connected
-      last_checked_at
-    }
-    linked
-    last_checked_at
+    ...XtmoneIntegrationStatus
   }
 }

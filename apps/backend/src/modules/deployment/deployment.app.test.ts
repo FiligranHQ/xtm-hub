@@ -4202,7 +4202,7 @@ describe('deployment app', () => {
       expect(result).toBeNull();
     });
 
-    it('should return the active bundle with its products for the organization', async () => {
+    it('should return the active bundle for the organization', async () => {
       await createActiveBundle();
 
       const result = await DeploymentApp.loadActiveXtmPlatformBundle(
@@ -4210,34 +4210,15 @@ describe('deployment app', () => {
       );
 
       expect(result).toMatchObject({
+        type: DeploymentRequestDeploymentType.Bundle,
+        hub_status: DeploymentRequestHubStatus.Active,
         organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
         requester_email:
           TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.EMAIL,
-        license: PlatformContract.Trial,
         start_date: expect.any(Date),
         end_date: expect.any(Date),
         service_instance_id: expect.any(String),
       });
-      expect(result?.children).toHaveLength(3);
-      expect(
-        result?.children.map((product) => product.platform_identifier).sort()
-      ).toEqual(
-        [
-          PlatformIdentifier.Openaev,
-          PlatformIdentifier.Opencti,
-          PlatformIdentifier.Xtmone,
-        ].sort()
-      );
-      expect(result?.children).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            name: expect.any(String),
-            connectivity_status: null,
-            last_connectivity_check: null,
-            roles: [],
-          }),
-        ])
-      );
     });
 
     it('should return the active bundle when its service instance id is provided', async () => {
@@ -4249,7 +4230,6 @@ describe('deployment app', () => {
       );
 
       expect(result?.service_instance_id).toBe(bundle.service_instance_id);
-      expect(result?.children).toHaveLength(3);
     });
 
     it('should return null when the provided service instance id does not match the active bundle', async () => {
@@ -4261,90 +4241,6 @@ describe('deployment app', () => {
       );
 
       expect(result).toBeNull();
-    });
-
-    it('should expose connectivity status, last connection date and roles when a product is registered', async () => {
-      const bundle = await createActiveBundle();
-      const [child] = await DeploymentRequestDomain.loadDeploymentRequestsBy({
-        parent_id: bundle.id,
-      });
-      const lastConnectivityCheck = new Date('2025-01-10T10:00:00.000Z');
-      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockImplementation(
-        async (serviceInstanceId): Promise<DomainRegisteredPlatform[]> =>
-          serviceInstanceId === child.service_instance_id
-            ? [
-                {
-                  id: serviceInstanceId,
-                  identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-                  illustration_document_id: null,
-                  service_instance_id: serviceInstanceId,
-                  registerer_id: contextRegistererUserSecondOrga.user.id,
-                  platform_id: 'platform-id',
-                  tenant_id: null,
-                  tenant_name: null,
-                  platform_url: 'https://example.io',
-                  platform_title: 'Example platform',
-                  platform_version: null,
-                  platform_contract: PlatformContract.Ee,
-                  last_connectivity_check: lastConnectivityCheck,
-                  token: 'token',
-                  status: PlatformConfigurationStatus.Active,
-                },
-              ]
-            : []
-      );
-      vi.spyOn(
-        ServiceGroupDomain,
-        'loadServiceGroupsByServiceInstanceAndUser'
-      ).mockImplementation(async (serviceInstanceId) =>
-        serviceInstanceId === child.service_instance_id
-          ? ([
-              {
-                id: 'group-1',
-                name: ServiceGroupName.Admin,
-                service_instance_id: serviceInstanceId,
-              },
-            ] as unknown as Awaited<
-              ReturnType<
-                typeof ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser
-              >
-            >)
-          : []
-      );
-
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        contextRegistererUserSecondOrga.user
-      );
-
-      expect(result?.license).toBe(PlatformContract.Trial);
-      const registeredProduct = result?.children.find(
-        (product) => product.service_instance_id === child.service_instance_id
-      );
-      expect(registeredProduct).toMatchObject({
-        connectivity_status: PlatformConfigurationStatus.Active,
-        last_connectivity_check: lastConnectivityCheck,
-        roles: [{ id: 'group-1', name: ServiceGroupName.Admin }],
-        url: 'https://example.io',
-      });
-    });
-
-    it('should fall back to the deployment request url when the product is not registered', async () => {
-      const bundle = await createActiveBundle();
-      const [child] = await DeploymentRequestDomain.loadDeploymentRequestsBy({
-        parent_id: bundle.id,
-      });
-      await DeploymentRequestDomain.updateDeploymentRequestById(child.id, {
-        url: 'https://deployment-request.example.com',
-      });
-
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        contextRegistererUserSecondOrga.user
-      );
-
-      const product = result?.children.find(
-        (item) => item.service_instance_id === child.service_instance_id
-      );
-      expect(product?.url).toBe('https://deployment-request.example.com');
     });
   });
 

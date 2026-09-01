@@ -142,11 +142,8 @@ type DeploymentRequest implements Node {
   platform_url: String
   parent_id: DeploymentRequestId
   url: String
-  name: String
-  connectivity_status: PlatformConfigurationStatus
-  last_connectivity_check: Date
-  roles: [ServiceGroup!]
-  license: PlatformContract
+  registered_platform: RegisteredPlatform
+  service_instance: ServiceInstance
   children: [DeploymentRequest!]
 }
 

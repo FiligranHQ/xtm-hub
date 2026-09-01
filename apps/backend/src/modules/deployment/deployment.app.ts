@@ -12,7 +12,6 @@ import {
   DeploymentRequestPlatformState,
   OrderingMode,
   PlatformConfigurationStatus,
-  PlatformContract,
   PlatformDeploymentRequest,
   PlatformDeploymentRequestConnection,
   PlatformIdentifier,
@@ -81,7 +80,6 @@ import {
   shouldDeleteDeploymentRequestAudience,
 } from './deployment.domain';
 import { DeploymentHelper } from './deployment.helper';
-import { ServiceGroupDomain } from './group/service-group.domain';
 import { DeploymentQuotaApp } from './quota/deployment.quota.app';
 import {
   bundleQuotaKey,
@@ -113,7 +111,7 @@ const fetchXtmoneIntegrationStatus = async (
     return null;
   }
 
-  const url = `${baseUrl.replace(/\/$/, '')}/api/v1/platform/config`;
+  const url = new URL('/api/v1/platform/config', parsedUrl).href;
   const controller = new AbortController();
   const timeout = setTimeout(
     () => controller.abort(),
@@ -633,63 +631,8 @@ export const DeploymentApp = {
       organization_requester_id: user.selected_organization_id,
       ...(serviceInstanceId ? { service_instance_id: serviceInstanceId } : {}),
     });
-    if (!bundle) {
-      return null;
-    }
 
-    const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
-      parent_id: bundle.id,
-    });
-
-    const childWithoutPlatformIdentifier = children.find(
-      (child) => child.platform_identifier === null
-    );
-    if (childWithoutPlatformIdentifier) {
-      logApp.error('Bundle child is missing a platform identifier', {
-        bundleId: bundle.id,
-        childId: childWithoutPlatformIdentifier.id,
-      });
-      throw new Error(BadRequestErrorCode.InvalidPlatformIdentifier);
-    }
-
-    const productData = await Promise.all(
-      (
-        children as (DeploymentRequestModel & {
-          platform_identifier: PlatformIdentifier;
-        })[]
-      ).map(async (child) => {
-        const [[configuration], roles, childServiceInstance] =
-          await Promise.all([
-            RegistrationDomain.loadRegisteredPlatform(
-              child.service_instance_id
-            ),
-            ServiceGroupDomain.loadServiceGroupsByServiceInstanceAndUser(
-              child.service_instance_id,
-              user.id
-            ),
-            ServiceInstanceDomain.loadServiceInstanceBy({
-              id: child.service_instance_id,
-            }),
-          ]);
-        return { child, configuration, roles, childServiceInstance };
-      })
-    );
-
-    return {
-      ...bundle,
-      license: PlatformContract.Trial,
-      children: productData.map(
-        ({ child, configuration, roles, childServiceInstance }) => ({
-          ...child,
-          name: childServiceInstance?.name ?? null,
-          connectivity_status: configuration?.status ?? null,
-          last_connectivity_check:
-            configuration?.last_connectivity_check ?? null,
-          roles,
-          url: configuration?.platform_url ?? child.url ?? null,
-        })
-      ),
-    };
+    return bundle ?? null;
   },
 
   loadXtmonePlatformIntegrationStatus: async (

@@ -45,19 +45,23 @@ export const BundleProductCard = ({
 
   const { name, textLogo } =
     PlatformMetadataMapping[product.platform_identifier];
+  const registeredPlatform = product.registered_platform;
   const isXtmone = product.platform_identifier === PlatformIdentifier.Xtmone;
-  const hasAccess = (product.roles?.length ?? 0) > 0;
-  const accessUrl = product.url ?? null;
+  const hasAccess = (registeredPlatform?.myGroups?.length ?? 0) > 0;
+  const accessUrl = registeredPlatform?.url ?? product.url ?? null;
   const canAccess = isXtmone ? !!accessUrl : hasAccess && !!accessUrl;
-  const roleLabel = (product.roles ?? []).map((role) => role.name).join(', ');
+  const roleLabel = (registeredPlatform?.myGroups ?? [])
+    .map((role) => role.name)
+    .join(', ');
   const accessLabel = t('XtmPlatformTrial.Products.AccessProduct', {
     productName: name,
   });
 
-  const hasConnectivityInfo = product.connectivity_status != null;
+  const hasConnectivityInfo = registeredPlatform?.status != null;
   const isConnected =
-    product.connectivity_status === PlatformConfigurationStatus.Active;
-  const lastConnectionCheck = product.last_connectivity_check ?? null;
+    registeredPlatform?.status === PlatformConfigurationStatus.Active;
+  const lastConnectionCheck =
+    registeredPlatform?.last_connectivity_check ?? null;
 
   const productNameRow = (
     <div className="flex items-center justify-between gap-s py-l">
@@ -66,7 +70,7 @@ export const BundleProductCard = ({
       </span>
       <div className="flex items-center gap-xs min-w-0">
         <Badge className="h-6 border-none bg-feedback-info-secondary-transparency text-content-body-base text-text-default-primary truncate">
-          {product.name ?? '-'}
+          {product.service_instance?.name ?? '-'}
         </Badge>
         {canManage && (
           <Button
@@ -187,7 +191,7 @@ export const BundleProductCard = ({
       {canManage && (
         <PlatformUpdateSheet
           serviceInstanceId={product.service_instance_id}
-          serviceInstanceName={product.name ?? ''}
+          serviceInstanceName={product.service_instance?.name ?? ''}
           platformUrl={product.url ?? ''}
           serviceDefinitionIdentifier={getRegisteredPlatformServiceIdentifier(
             product.platform_identifier

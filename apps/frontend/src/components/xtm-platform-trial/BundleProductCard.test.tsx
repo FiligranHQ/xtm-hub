@@ -1,29 +1,44 @@
 import testRender from '@/utils/test/test-render';
-import { XtmPlatformBundleProductFragment } from '@graphql/generated';
+import {
+  XtmoneIntegrationStatusFragment,
+  XtmPlatformBundleProductFragment,
+} from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { BundleProductCard } from './BundleProductCard';
-import {
-  XtmoneIntegrationStatus,
-  XtmoneStatusState,
-} from './useXtmoneIntegrationStatus';
+import { XtmoneStatusState } from './useXtmoneIntegrationStatus';
 
-const buildProduct = (
-  overrides: Partial<XtmPlatformBundleProductFragment> = {}
-): XtmPlatformBundleProductFragment => ({
+const buildProduct = ({
+  platformIdentifier = 'opencti',
+  name = 'OpenCTI Instance',
+  status = 'active',
+  url = 'https://opencti.example.io',
+  roles = [{ id: 'group-1', name: 'Admin' }],
+}: {
+  platformIdentifier?: string;
+  name?: string;
+  status?: string | null;
+  url?: string;
+  roles?: Array<{ id: string; name: string }> | null;
+} = {}): XtmPlatformBundleProductFragment => ({
   platform_identifier:
-    'opencti' as XtmPlatformBundleProductFragment['platform_identifier'],
+    platformIdentifier as XtmPlatformBundleProductFragment['platform_identifier'],
   service_instance_id: 'service-instance-1',
-  name: 'OpenCTI Instance',
-  connectivity_status:
-    'active' as XtmPlatformBundleProductFragment['connectivity_status'],
-  last_connectivity_check: '2026-07-30T12:31:53+00:00',
-  url: 'https://opencti.example.io',
-  roles: [{ id: 'group-1', name: 'Admin' }],
-  ...overrides,
+  url,
+  service_instance: { name },
+  registered_platform: {
+    status: status as NonNullable<
+      XtmPlatformBundleProductFragment['registered_platform']
+    >['status'],
+    last_connectivity_check: '2026-07-30T12:31:53+00:00',
+    url,
+    myGroups: roles,
+  },
 });
 
-const buildXtmoneStatus = (connected: boolean): XtmoneIntegrationStatus => ({
+const buildXtmoneStatus = (
+  connected: boolean
+): XtmoneIntegrationStatusFragment => ({
   opencti: {
     status: connected ? 'connected' : 'disconnected',
     connected,
@@ -77,7 +92,7 @@ describe('BundleProductCard', () => {
     ({ status, expected }) => {
       testRender(
         <BundleProductCard
-          product={buildProduct({ connectivity_status: status })}
+          product={buildProduct({ status })}
           xtmoneStatus={emptyXtmoneStatus}
           canManage={false}
         />
@@ -112,8 +127,7 @@ describe('BundleProductCard', () => {
     testRender(
       <BundleProductCard
         product={buildProduct({
-          platform_identifier:
-            'xtmone' as XtmPlatformBundleProductFragment['platform_identifier'],
+          platformIdentifier: 'xtmone',
           name: 'XTM One Instance',
           url: 'https://xtmone.example.io',
         })}
@@ -135,8 +149,7 @@ describe('BundleProductCard', () => {
     testRender(
       <BundleProductCard
         product={buildProduct({
-          platform_identifier:
-            'xtmone' as XtmPlatformBundleProductFragment['platform_identifier'],
+          platformIdentifier: 'xtmone',
           name: 'XTM One Instance',
           url: 'https://xtmone.example.io',
           roles: [],
@@ -185,8 +198,7 @@ describe('BundleProductCard', () => {
     testRender(
       <BundleProductCard
         product={buildProduct({
-          platform_identifier:
-            'xtmone' as XtmPlatformBundleProductFragment['platform_identifier'],
+          platformIdentifier: 'xtmone',
           name: 'XTM One Instance',
         })}
         xtmoneStatus={emptyXtmoneStatus}

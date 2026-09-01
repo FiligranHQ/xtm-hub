@@ -1,13 +1,13 @@
 'use client';
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
-import {
-  XtmoneIntegrationStatusEntry,
-  XtmoneStatusState,
-} from '@/components/xtm-platform-trial/useXtmoneIntegrationStatus';
+import { XtmoneStatusState } from '@/components/xtm-platform-trial/useXtmoneIntegrationStatus';
 import { CheckCircleIcon, CircleCloseIcon } from '@filigran/icon';
 import { Skeleton } from '@filigran/ui';
-import { PlatformIdentifier } from '@graphql/generated';
+import {
+  PlatformIdentifier,
+  XtmoneIntegrationStatusEntryFragment,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
 interface XtmoneConnectionStatusProps {
@@ -19,7 +19,7 @@ const StatusIcon = ({
   isLoading,
   unavailable,
 }: {
-  entry?: XtmoneIntegrationStatusEntry;
+  entry?: XtmoneIntegrationStatusEntryFragment;
   isLoading: boolean;
   unavailable: boolean;
 }) => {
@@ -57,7 +57,7 @@ const StatusRow = ({
   unavailable,
 }: {
   label: string;
-  entry?: XtmoneIntegrationStatusEntry;
+  entry?: XtmoneIntegrationStatusEntryFragment;
   isLoading: boolean;
   unavailable: boolean;
 }) => (

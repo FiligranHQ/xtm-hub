@@ -5,7 +5,10 @@ import { BundleCancelSheet } from '@/components/xtm-platform-trial/BundleCancelS
 import { daysUntil, useDateFormatter } from '@/utils/date';
 import { xtmPlatformTrialManageUsersPath } from '@/utils/path/constant';
 import { Badge, Button, Card, CardContent } from '@filigran/ui';
-import { XtmPlatformBundleFragment } from '@graphql/generated';
+import {
+  PlatformContract,
+  XtmPlatformBundleFragment,
+} from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -55,13 +58,9 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
             {formatDate(bundle.start_date ?? undefined, 'DATE_FULL') ?? '-'}
           </InfoRow>
           <InfoRow label={t('XtmPlatformTrial.BundleInfo.License')}>
-            {bundle.license ? (
-              <Badge className="bg-elevation-surface-highlight-layer-2 border-none">
-                {t(CONTRACT_LABEL_BY_CONTRACT[bundle.license])}
-              </Badge>
-            ) : (
-              '-'
-            )}
+            <Badge className="bg-elevation-surface-highlight-layer-2 border-none">
+              {t(CONTRACT_LABEL_BY_CONTRACT[PlatformContract.Trial])}
+            </Badge>
           </InfoRow>
           <InfoRow label={t('XtmPlatformTrial.BundleInfo.Remaining')}>
             {remainingDays !== null ? (

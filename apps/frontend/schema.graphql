@@ -398,11 +398,8 @@ type DeploymentRequest implements Node {
   platform_url: String
   parent_id: DeploymentRequestId
   url: String
-  name: String
-  connectivity_status: PlatformConfigurationStatus
-  last_connectivity_check: Date
-  roles: [ServiceGroup!]
-  license: PlatformContract
+  registered_platform: RegisteredPlatform
+  service_instance: ServiceInstance
   children: [DeploymentRequest!]
 }
 
@@ -1167,6 +1164,7 @@ type RegisteredPlatform implements Node {
   illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
   last_connectivity_check: Date
+  status: PlatformConfigurationStatus
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
 }
