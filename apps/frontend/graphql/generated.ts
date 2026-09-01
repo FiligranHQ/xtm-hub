@@ -1,6 +1,6 @@
 import type { GraphQLClient, RequestOptions } from "graphql-request";
 type GraphQLClientRequestHeaders = RequestOptions["requestHeaders"];
-import { useQuery, useInfiniteQuery, useMutation, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData, UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, useQuery, useInfiniteQuery, UseMutationOptions, UseQueryOptions, UseInfiniteQueryOptions, InfiniteData } from '@tanstack/react-query';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -411,7 +411,8 @@ export type DeploymentAvailability = {
   __typename?: 'DeploymentAvailability';
   availableCount: Scalars['Int']['output'];
   capacity: Scalars['Int']['output'];
-  platform_identifier: PlatformIdentifier;
+  id: Scalars['ID']['output'];
+  platform_identifier: Maybe<PlatformIdentifier>;
   region: DeploymentRequestPlatformRegion;
 };
 
@@ -421,6 +422,7 @@ export type DeploymentRequest = Node & {
   cancellation_date: Maybe<Scalars['Date']['output']>;
   cancellation_reason: Maybe<Scalars['String']['output']>;
   cancellation_user_email: Maybe<Scalars['String']['output']>;
+  children: Maybe<Array<DeploymentRequest>>;
   counts_in_orga_quota: Scalars['Boolean']['output'];
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: DeploymentRequestHubStatus;
@@ -501,6 +503,7 @@ export type DeploymentRequestFilter = {
 export enum DeploymentRequestFilterKey {
   ActualState = 'actual_state',
   HubStatus = 'hub_status',
+  ParentId = 'parent_id',
   PlatformIdentifier = 'platform_identifier',
   Region = 'region',
   TargetState = 'target_state',
@@ -1869,7 +1872,7 @@ export type QueryDeploymentRequestsArgs = {
 
 
 export type QueryDeploymentRequestsAvailableArgs = {
-  platformIdentifier: PlatformIdentifier;
+  platformIdentifier: InputMaybe<PlatformIdentifier>;
 };
 
 
@@ -2739,7 +2742,7 @@ export type UpdateCompetitorInput = {
 
 export type UpdateDeploymentQuotaCapacityInput = {
   newCapacity: Scalars['Int']['input'];
-  platformIdentifier: PlatformIdentifier;
+  platformIdentifier: InputMaybe<PlatformIdentifier>;
   region: DeploymentRequestPlatformRegion;
 };
 
@@ -3038,6 +3041,52 @@ export enum VotingRoundTheme {
   Default = 'default',
   Thread = 'thread'
 }
+
+export type TrialsAdminCancelDeploymentRequestMutationVariables = Exact<{
+  deploymentRequestId: Scalars['DeploymentRequestId']['input'];
+}>;
+
+
+export type TrialsAdminCancelDeploymentRequestMutation = { __typename?: 'Mutation', adminCancelDeploymentRequest: { __typename?: 'DeploymentRequest', id: string } | null };
+
+export type TrialsReorderDeploymentRequestInQueueMutationVariables = Exact<{
+  input: ReorderDeploymentRequestInQueueInput;
+}>;
+
+
+export type TrialsReorderDeploymentRequestInQueueMutation = { __typename?: 'Mutation', reorderDeploymentRequestInQueue: { __typename?: 'Success', success: boolean } };
+
+export type TrialsUpdateDeploymentQuotaCapacityMutationVariables = Exact<{
+  input: UpdateDeploymentQuotaCapacityInput;
+}>;
+
+
+export type TrialsUpdateDeploymentQuotaCapacityMutation = { __typename?: 'Mutation', updateDeploymentQuotaCapacity: { __typename?: 'Success', success: boolean } };
+
+export type TrialsProductFragment = { __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null };
+
+export type TrialsRowFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, organization_requester_id: any, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, platform_identifier: PlatformIdentifier | null, platform_id: string | null, platform_url: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null }> | null };
+
+export type TrialsQuotaFragment = { __typename?: 'DeploymentAvailability', id: string, region: DeploymentRequestPlatformRegion, availableCount: number, capacity: number, platform_identifier: PlatformIdentifier | null };
+
+export type TrialsListQueryVariables = Exact<{
+  count: Scalars['Int']['input'];
+  cursor: InputMaybe<Scalars['ID']['input']>;
+  orderBy: DeploymentRequestOrdering;
+  orderMode: OrderingMode;
+  filters: InputMaybe<Array<DeploymentRequestFilter> | DeploymentRequestFilter>;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type TrialsListQuery = { __typename?: 'Query', deploymentRequestsList: { __typename?: 'DeploymentRequestConnection', totalCount: number, edges: Array<{ __typename?: 'DeploymentRequestEdge', node: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, organization_requester_id: any, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, platform_identifier: PlatformIdentifier | null, platform_id: string | null, platform_url: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null }> | null } }> } };
+
+export type TrialsQuotasQueryVariables = Exact<{
+  platformIdentifier: InputMaybe<PlatformIdentifier>;
+}>;
+
+
+export type TrialsQuotasQuery = { __typename?: 'Query', deploymentRequestsAvailable: Array<{ __typename?: 'DeploymentAvailability', id: string, region: DeploymentRequestPlatformRegion, availableCount: number, capacity: number, platform_identifier: PlatformIdentifier | null }> };
 
 type HomepageDocument_Connector_Fragment = { __typename?: 'Connector', verified: boolean, manager_supported: boolean, id: string, name: string, short_description: string | null, type: string, active: boolean, slug: string, service_instance_id: any | null, children_documents: Array<{ __typename?: 'ShareableResource', id: string, image_type: DocumentImageType | null }> | null, use_cases: Array<{ __typename?: 'UseCase', id: string, name: string }> | null };
 
@@ -3379,6 +3428,48 @@ export type EpicCountPerTimelineQueryQueryVariables = Exact<{ [key: string]: nev
 export type EpicCountPerTimelineQueryQuery = { __typename?: 'Query', countEpicsPerTimeline: Array<{ __typename?: 'EpicCountPerTimeline', timeline: Timeline, count: number }> };
 
 
+export const TrialsProductFragmentDoc = `
+    fragment TrialsProduct on DeploymentRequest {
+  id
+  platform_identifier
+  hub_status
+  platform_id
+  platform_url
+}
+    `;
+export const TrialsRowFragmentDoc = `
+    fragment TrialsRow on DeploymentRequest {
+  id
+  service_instance_id
+  ordering
+  hub_status
+  requester_email
+  organization_name
+  organization_requester_id
+  region
+  request_date
+  start_date
+  end_date
+  cancellation_date
+  cancellation_user_email
+  cancellation_reason
+  platform_identifier
+  platform_id
+  platform_url
+  children {
+    ...TrialsProduct
+  }
+}
+    ${TrialsProductFragmentDoc}`;
+export const TrialsQuotaFragmentDoc = `
+    fragment TrialsQuota on DeploymentAvailability {
+  id
+  region
+  availableCount
+  capacity
+  platform_identifier
+}
+    `;
 export const HomepageDocumentFragmentDoc = `
     fragment HomepageDocument on Document {
   id
@@ -3482,6 +3573,211 @@ export const VotingRoundRowFragmentDoc = `
   created_at
 }
     `;
+export const TrialsAdminCancelDeploymentRequestDocument = `
+    mutation TrialsAdminCancelDeploymentRequest($deploymentRequestId: DeploymentRequestId!) {
+  adminCancelDeploymentRequest(deploymentRequestId: $deploymentRequestId) {
+    id
+  }
+}
+    `;
+
+export const useTrialsAdminCancelDeploymentRequestMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<TrialsAdminCancelDeploymentRequestMutation, TError, TrialsAdminCancelDeploymentRequestMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<TrialsAdminCancelDeploymentRequestMutation, TError, TrialsAdminCancelDeploymentRequestMutationVariables, TContext>(
+      {
+    mutationKey: ['TrialsAdminCancelDeploymentRequest'],
+    mutationFn: (variables?: TrialsAdminCancelDeploymentRequestMutationVariables) => fetcher<TrialsAdminCancelDeploymentRequestMutation, TrialsAdminCancelDeploymentRequestMutationVariables>(client, TrialsAdminCancelDeploymentRequestDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useTrialsAdminCancelDeploymentRequestMutation.getKey = () => ['TrialsAdminCancelDeploymentRequest'];
+useTrialsAdminCancelDeploymentRequestMutation.getRootKey = () => ['TrialsAdminCancelDeploymentRequest'] as const;
+useTrialsAdminCancelDeploymentRequestMutation.fetcher = (client: GraphQLClient, variables: TrialsAdminCancelDeploymentRequestMutationVariables, headers?: RequestInit['headers']) => fetcher<TrialsAdminCancelDeploymentRequestMutation, TrialsAdminCancelDeploymentRequestMutationVariables>(client, TrialsAdminCancelDeploymentRequestDocument, variables, headers);
+
+export const TrialsReorderDeploymentRequestInQueueDocument = `
+    mutation TrialsReorderDeploymentRequestInQueue($input: ReorderDeploymentRequestInQueueInput!) {
+  reorderDeploymentRequestInQueue(input: $input) {
+    success
+  }
+}
+    `;
+
+export const useTrialsReorderDeploymentRequestInQueueMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<TrialsReorderDeploymentRequestInQueueMutation, TError, TrialsReorderDeploymentRequestInQueueMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<TrialsReorderDeploymentRequestInQueueMutation, TError, TrialsReorderDeploymentRequestInQueueMutationVariables, TContext>(
+      {
+    mutationKey: ['TrialsReorderDeploymentRequestInQueue'],
+    mutationFn: (variables?: TrialsReorderDeploymentRequestInQueueMutationVariables) => fetcher<TrialsReorderDeploymentRequestInQueueMutation, TrialsReorderDeploymentRequestInQueueMutationVariables>(client, TrialsReorderDeploymentRequestInQueueDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useTrialsReorderDeploymentRequestInQueueMutation.getKey = () => ['TrialsReorderDeploymentRequestInQueue'];
+useTrialsReorderDeploymentRequestInQueueMutation.getRootKey = () => ['TrialsReorderDeploymentRequestInQueue'] as const;
+useTrialsReorderDeploymentRequestInQueueMutation.fetcher = (client: GraphQLClient, variables: TrialsReorderDeploymentRequestInQueueMutationVariables, headers?: RequestInit['headers']) => fetcher<TrialsReorderDeploymentRequestInQueueMutation, TrialsReorderDeploymentRequestInQueueMutationVariables>(client, TrialsReorderDeploymentRequestInQueueDocument, variables, headers);
+
+export const TrialsUpdateDeploymentQuotaCapacityDocument = `
+    mutation TrialsUpdateDeploymentQuotaCapacity($input: UpdateDeploymentQuotaCapacityInput!) {
+  updateDeploymentQuotaCapacity(input: $input) {
+    success
+  }
+}
+    `;
+
+export const useTrialsUpdateDeploymentQuotaCapacityMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<TrialsUpdateDeploymentQuotaCapacityMutation, TError, TrialsUpdateDeploymentQuotaCapacityMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<TrialsUpdateDeploymentQuotaCapacityMutation, TError, TrialsUpdateDeploymentQuotaCapacityMutationVariables, TContext>(
+      {
+    mutationKey: ['TrialsUpdateDeploymentQuotaCapacity'],
+    mutationFn: (variables?: TrialsUpdateDeploymentQuotaCapacityMutationVariables) => fetcher<TrialsUpdateDeploymentQuotaCapacityMutation, TrialsUpdateDeploymentQuotaCapacityMutationVariables>(client, TrialsUpdateDeploymentQuotaCapacityDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useTrialsUpdateDeploymentQuotaCapacityMutation.getKey = () => ['TrialsUpdateDeploymentQuotaCapacity'];
+useTrialsUpdateDeploymentQuotaCapacityMutation.getRootKey = () => ['TrialsUpdateDeploymentQuotaCapacity'] as const;
+useTrialsUpdateDeploymentQuotaCapacityMutation.fetcher = (client: GraphQLClient, variables: TrialsUpdateDeploymentQuotaCapacityMutationVariables, headers?: RequestInit['headers']) => fetcher<TrialsUpdateDeploymentQuotaCapacityMutation, TrialsUpdateDeploymentQuotaCapacityMutationVariables>(client, TrialsUpdateDeploymentQuotaCapacityDocument, variables, headers);
+
+export const TrialsListDocument = `
+    query TrialsList($count: Int!, $cursor: ID, $orderBy: DeploymentRequestOrdering!, $orderMode: OrderingMode!, $filters: [DeploymentRequestFilter!], $searchTerm: String) {
+  deploymentRequestsList(
+    first: $count
+    after: $cursor
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+    searchTerm: $searchTerm
+  ) {
+    totalCount
+    edges {
+      node {
+        ...TrialsRow
+      }
+    }
+  }
+}
+    ${TrialsRowFragmentDoc}`;
+
+export const useTrialsListQuery = <
+      TData = TrialsListQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: TrialsListQueryVariables,
+      options?: Omit<UseQueryOptions<TrialsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<TrialsListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<TrialsListQuery, TError, TData>(
+      {
+    queryKey: ['TrialsList', variables],
+    queryFn: fetcher<TrialsListQuery, TrialsListQueryVariables>(client, TrialsListDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useTrialsListQuery.getKey = (variables: TrialsListQueryVariables) => ['TrialsList', variables];
+useTrialsListQuery.getRootKey = () => ['TrialsList'] as const;
+export const useInfiniteTrialsListQuery = <
+      TData = InfiniteData<TrialsListQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: TrialsListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<TrialsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<TrialsListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<TrialsListQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['TrialsList.infinite', variables],
+      queryFn: (metaData) => fetcher<TrialsListQuery, TrialsListQueryVariables>(client, TrialsListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteTrialsListQuery.getKey = (variables: TrialsListQueryVariables) => ['TrialsList.infinite', variables];
+useInfiniteTrialsListQuery.getRootKey = () => ['TrialsList.infinite'] as const;
+useTrialsListQuery.fetcher = (client: GraphQLClient, variables: TrialsListQueryVariables, headers?: RequestInit['headers']) => fetcher<TrialsListQuery, TrialsListQueryVariables>(client, TrialsListDocument, variables, headers);
+
+export const TrialsQuotasDocument = `
+    query TrialsQuotas($platformIdentifier: PlatformIdentifier) {
+  deploymentRequestsAvailable(platformIdentifier: $platformIdentifier) {
+    ...TrialsQuota
+  }
+}
+    ${TrialsQuotaFragmentDoc}`;
+
+export const useTrialsQuotasQuery = <
+      TData = TrialsQuotasQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: TrialsQuotasQueryVariables,
+      options?: Omit<UseQueryOptions<TrialsQuotasQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<TrialsQuotasQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<TrialsQuotasQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['TrialsQuotas'] : ['TrialsQuotas', variables],
+    queryFn: fetcher<TrialsQuotasQuery, TrialsQuotasQueryVariables>(client, TrialsQuotasDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useTrialsQuotasQuery.getKey = (variables?: TrialsQuotasQueryVariables) => variables === undefined ? ['TrialsQuotas'] : ['TrialsQuotas', variables];
+useTrialsQuotasQuery.getRootKey = () => ['TrialsQuotas'] as const;
+export const useInfiniteTrialsQuotasQuery = <
+      TData = InfiniteData<TrialsQuotasQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: TrialsQuotasQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<TrialsQuotasQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<TrialsQuotasQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<TrialsQuotasQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['TrialsQuotas.infinite'] : ['TrialsQuotas.infinite', variables],
+      queryFn: (metaData) => fetcher<TrialsQuotasQuery, TrialsQuotasQueryVariables>(client, TrialsQuotasDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteTrialsQuotasQuery.getKey = (variables?: TrialsQuotasQueryVariables) => variables === undefined ? ['TrialsQuotas.infinite'] : ['TrialsQuotas.infinite', variables];
+useInfiniteTrialsQuotasQuery.getRootKey = () => ['TrialsQuotas.infinite'] as const;
+useTrialsQuotasQuery.fetcher = (client: GraphQLClient, variables?: TrialsQuotasQueryVariables, headers?: RequestInit['headers']) => fetcher<TrialsQuotasQuery, TrialsQuotasQueryVariables>(client, TrialsQuotasDocument, variables, headers);
+
 export const MostDeployedDocumentsQueryDocument = `
     query MostDeployedDocumentsQuery($limit: Int!, $platformIdentifiers: [PlatformIdentifier!]) {
   mostDeployedDocuments(limit: $limit, platformIdentifiers: $platformIdentifiers) {

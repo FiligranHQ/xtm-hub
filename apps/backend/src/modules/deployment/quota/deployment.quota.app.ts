@@ -81,6 +81,34 @@ const takeQuotaInputOf = async (
   };
 };
 
+const demoteLastPendingRequest = async (
+  key: QuotaKey
+): Promise<DeploymentRequestModel | undefined> => {
+  const request = await DeploymentRequestDomain.loadLastPendingRequest(key);
+  if (!request) {
+    return undefined;
+  }
+
+  const family =
+    await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+      request,
+      DeploymentRequestHubStatus.Pending
+    );
+
+  const demotedRequest =
+    await DeploymentRequestDomain.setRequestAsQueued(request);
+
+  for (const familyMember of family) {
+    await DeploymentQuotaApp.releaseQuotaForRequest(
+      familyMember,
+      DeploymentRequestHubStatus.Pending,
+      { promote: false }
+    );
+  }
+
+  return demotedRequest;
+};
+
 const promoteNextQueuedRequest = async (
   keys: QuotaKey[]
 ): Promise<DeploymentRequestModel | undefined> => {
@@ -172,41 +200,38 @@ export const DeploymentQuotaApp = {
     newCapacity,
     onRequestMoved,
   }: {
-    platformIdentifier: PlatformIdentifier;
+    platformIdentifier?: PlatformIdentifier | null;
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
     onRequestMoved: (request: DeploymentRequestModel) => Promise<void>;
   }): Promise<void> => {
-    const trialKey = trialQuotaKey(platformIdentifier, region);
+    const key = platformIdentifier
+      ? trialQuotaKey(platformIdentifier, region)
+      : bundleQuotaKey(region);
+    const lockedKeys = platformIdentifier
+      ? [bundleQuotaKey(region), key]
+      : [key];
 
     await DeploymentQuotaDomain.withLockedQuotaTransaction(
-      [bundleQuotaKey(region), trialKey],
+      lockedKeys,
       async () => {
         const { newAvailability } =
           await DeploymentQuotaDomain.updateQuotaCapacity({
-            key: trialKey,
+            key,
             newCapacity,
           });
 
         for (let i = 0; i < -newAvailability; i++) {
-          const demotedRequest =
-            await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-              trialKey
-            );
+          const demotedRequest = await demoteLastPendingRequest(key);
           if (!demotedRequest) {
             break;
           }
 
-          await DeploymentQuotaApp.releaseQuotaForRequest(
-            demotedRequest,
-            DeploymentRequestHubStatus.Pending,
-            { promote: false }
-          );
           await onRequestMoved(demotedRequest);
         }
 
         for (let i = 0; i < newAvailability; i++) {
-          const promotedRequest = await promoteNextQueuedRequest([trialKey]);
+          const promotedRequest = await promoteNextQueuedRequest([key]);
           if (!promotedRequest) {
             break;
           }

@@ -105,7 +105,7 @@ input UpdateCompetitorInput {
 type Query {
   competitors(first: Int!, after: ID, orderBy: CompetitorOrdering!, orderMode: OrderingMode!): CompetitorConnection!
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
-  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier!): [DeploymentAvailability!]!
+  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments!
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
@@ -392,6 +392,7 @@ type DeploymentRequest implements Node {
   platform_url: String
   parent_id: DeploymentRequestId
   url: String
+  children: [DeploymentRequest!]
 }
 
 type PlatformDeploymentRequest {
@@ -454,6 +455,7 @@ enum DeploymentRequestFilterKey {
   target_state
   actual_state
   platform_identifier
+  parent_id
 }
 
 input DeploymentRequestFilter {
@@ -484,10 +486,11 @@ type PlatformDeploymentRequestConnection {
 }
 
 type DeploymentAvailability {
+  id: ID!
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
   capacity: Int!
-  platform_identifier: PlatformIdentifier!
+  platform_identifier: PlatformIdentifier
 }
 
 type DeployedPlatform {
@@ -533,7 +536,7 @@ input ReorderDeploymentRequestInQueueInput {
 }
 
 input UpdateDeploymentQuotaCapacityInput {
-  platformIdentifier: PlatformIdentifier!
+  platformIdentifier: PlatformIdentifier
   region: DeploymentRequestPlatformRegion!
   newCapacity: Int!
 }
