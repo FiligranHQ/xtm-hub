@@ -26,62 +26,16 @@ against the real code — it asks a question (or flags a PR comment) instead of 
 
 ## Critical rules
 
-Follow [`.github/skills/coding-conventions/SKILL.md`](skills/coding-conventions/SKILL.md) for the mandatory coding
-rules (no `console.log`, `_`-prefix unused variables, strict typing, no `as never`/unjustified casts). This file adds
-only what that skill doesn't cover:
+See [`AGENTS.md`](../AGENTS.md#critical-rules) for the repo's mandatory coding rules (console.log, generated output,
+versions, UI library, GraphQL regeneration) — that file is the canonical, cross-tool source. It defers in turn to
+[`.github/skills/coding-conventions/SKILL.md`](skills/coding-conventions/SKILL.md) for the baseline (no `console.log`,
+`_`-prefix unused variables, strict typing, no `as never`/unjustified casts).
 
-- **Never edit generated output.** `apps/frontend/__generated__/`, `apps/frontend/schema.graphql`,
-  `apps/backend/src/__generated__/` and `apps/backend/src/model/kanel/` are produced by tooling; change the source
-  and regenerate.
-- **Do not hardcode versions in documentation.** Node comes from `.nvmrc`, Yarn from the `packageManager` field, and
-  dependency versions from the `catalog` in `.yarnrc.yml`. Reference the file, never a copied literal.
+## What this is, setup, and validation
 
-## What this is
-
-XTM Hub is the unified entry point for Filigran's ecosystem — a marketplace for cybersecurity resources, a
-knowledge-sharing platform, and a community engagement hub. It is a full-stack TypeScript monorepo built on Yarn
-workspaces.
-
-| Workspace | Path | Stack | Dev port |
-| --- | --- | --- | --- |
-| `@xtm-hub/backend` | `apps/backend` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `@xtm-hub/frontend` | `apps/frontend` | Next.js 16 (App Router + Turbopack), React 19, `@tanstack/react-query` (mandatory for new data fetching) + Relay (existing pages, being phased out), TailwindCSS 4, `@filigran/ui` | 3002 |
-| `@xtm-hub/test_e2e` | `apps/e2e` | Playwright | — |
-
-Node version: see `.nvmrc`. Yarn version: see `packageManager` in the root `package.json`.
-
-## Setup
-
-```bash
-corepack enable   # REQUIRED — the global yarn 1.x will not work
-yarn install      # from the repo root; installs every workspace
-```
-
-`corepack enable` must run before **any** yarn command.
-
-`.yarnrc.yml` sets `nodeLinker: node-modules`, `enableScripts: false` (no postinstall scripts) and
-`npmMinimalAgeGate: 4320`, which rejects packages published in the last three days. Shared dependency versions are
-pinned in the `catalog` block and referenced as `"catalog:"` — add new shared dependencies there rather than pinning
-per workspace.
-
-## Development
-
-```bash
-docker compose -f xtm-hub-dev/docker-compose.yml up   # PostgreSQL, MinIO, Elasticsearch, Kibana, PgAdmin, Mailpit
-yarn dev:api                                          # backend on :4002
-yarn dev:front                                        # frontend on :3002 (start the API first)
-```
-
-## Validation
-
-Run the narrowest command that covers your change, from the workspace you touched:
-
-```bash
-yarn workspace @xtm-hub/backend  test:ci   # check-ts + lint + tests
-yarn workspace @xtm-hub/frontend test:ci   # lint + tests
-```
-
-Only run linters, builds and tests that already exist. Do not introduce new tooling unless the task requires it.
+See [`AGENTS.md`](../AGENTS.md) for the stack overview, workspace table, `corepack`/`yarn install` setup, local
+infrastructure (`docker compose`), dev servers, and the `test:ci` validation commands — that file is the canonical
+source so it stays accurate for every tool that reads it, not just Copilot.
 
 The pre-commit hook runs `yarn lint-staged --config .lintstagedrc.cjs` once from the root; it dispatches ESLint and
 Prettier to whichever workspaces the staged files belong to.

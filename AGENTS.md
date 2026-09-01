@@ -9,30 +9,35 @@ workspaces.
 | Workspace | Path | Stack | Dev port |
 | --- | --- | --- | --- |
 | `@xtm-hub/backend` | `apps/backend` | Express 5, Apollo Server, GraphQL, Knex, PostgreSQL, Elasticsearch, MinIO | 4002 |
-| `@xtm-hub/frontend` | `apps/frontend` | Next.js 16 (App Router), React 19, `@tanstack/react-query` (mandatory for new data fetching) + Relay (existing pages, being phased out), TailwindCSS 4, `@filigran/ui` | 3002 |
+| `@xtm-hub/frontend` | `apps/frontend` | Next.js 16 (App Router + Turbopack), React 19, `@tanstack/react-query` (mandatory for new data fetching) + Relay (existing pages, being phased out), TailwindCSS 4, `@filigran/ui` | 3002 |
 | `@xtm-hub/test_e2e` | `apps/e2e` | Playwright | — |
 
 ## Setup
 
 ```bash
 corepack enable   # REQUIRED — the global yarn 1.x will not work
-yarn install      # from the repo root
+yarn install      # from the repo root; installs every workspace
 ```
 
 `corepack enable` must run before **any** yarn command. Node comes from `.nvmrc`, Yarn from the `packageManager`
 field in the root `package.json`.
 
-Local infrastructure (PostgreSQL, MinIO, Elasticsearch, Kibana, PgAdmin, Mailpit):
+`.yarnrc.yml` sets `nodeLinker: node-modules`, `enableScripts: false` (no postinstall scripts) and
+`npmMinimalAgeGate: 4320`, which rejects packages published in the last three days. Shared dependency versions are
+pinned in the `catalog` block and referenced as `"catalog:"` — add new shared dependencies there rather than pinning
+per workspace.
+
+## Development
 
 ```bash
-docker compose -f xtm-hub-dev/docker-compose.yml up
+docker compose -f xtm-hub-dev/docker-compose.yml up   # PostgreSQL, MinIO, Elasticsearch, Kibana, PgAdmin, Mailpit
+yarn dev:api                                          # backend on :4002
+yarn dev:front                                        # frontend on :3002 (start the API first)
 ```
-
-Dev servers: `yarn dev:api` (:4002), then `yarn dev:front` (:3002).
 
 ## Validation
 
-Run the narrowest command that covers your change:
+Run the narrowest command that covers your change, from the workspace you touched:
 
 ```bash
 yarn workspace @xtm-hub/backend  test:ci   # check-ts + lint + tests
@@ -44,7 +49,14 @@ Backend tests need PostgreSQL and MinIO running, target `test_database` via `VIT
 
 Only run linters, builds and tests that already exist; do not add new tooling unless the task requires it.
 
+The pre-commit hook runs `yarn lint-staged --config .lintstagedrc.cjs` once from the root; it dispatches ESLint and
+Prettier to whichever workspaces the staged files belong to.
+
 ## Critical rules
+
+Follow [`.github/skills/coding-conventions/SKILL.md`](.github/skills/coding-conventions/SKILL.md) for the mandatory
+coding rules (no `console.log`, `_`-prefix unused variables, strict typing, no `as never`/unjustified casts). This
+file adds only what that skill doesn't cover:
 
 - **No `console.log`** in new application code. Backend: use `logApp` from
   `apps/backend/src/utils/app-logger.util.ts`; `console.warn`/`console.error` are allowed only in scripts and launch
@@ -52,8 +64,6 @@ Only run linters, builds and tests that already exist; do not add new tooling un
   GraphQL operation tracing, gated and lint-disabled per call site) documented in
   [`frontend.instructions.md`](.github/instructions/frontend.instructions.md#logging) — don't remove it or copy the
   pattern outside that guard without being asked.
-- **Prefix unused variables with `_`.**
-- **Comment only what needs clarifying.**
 - **Never edit generated output**: `apps/frontend/__generated__/`, `apps/frontend/schema.graphql`,
   `apps/backend/src/__generated__/`, `apps/backend/src/model/kanel/`.
 - **Never hardcode versions in documentation** — reference `.nvmrc`, `packageManager`, or the `catalog` block in
@@ -67,20 +77,14 @@ Only run linters, builds and tests that already exist; do not add new tooling un
 
 ## Commits and pull requests
 
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) with a GitHub issue reference:
-
-```
-type(scope?)!?: description (#issue)
-```
-
-Types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `revert`. The description
-starts lowercase with no trailing period. Pull request titles **must** end with the issue reference, every pull
-request must be linked to an issue, and commits must be signed. See [`.github/LABELS.md`](.github/LABELS.md) for the
-full taxonomy.
+See [`.github/copilot-instructions.md`](.github/copilot-instructions.md#commit-pr--issue-conventions) for the
+Conventional Commits format, types, and labeling taxonomy. That section is synced from an org-wide source (also
+mirrored in [`CONTRIBUTING.md`](CONTRIBUTING.md)), so it stays there rather than here to avoid drifting out of sync.
 
 ## Detailed instructions
 
-This file is the portable summary. The authoritative, path-scoped guidance lives in:
+This file is the canonical, cross-tool reference for repo-wide context (stack, setup, validation, critical rules).
+Copilot-specific and area-scoped guidance layers on top of it:
 
 - [`.github/copilot-instructions.md`](.github/copilot-instructions.md) — shared repository context
 - [`.github/instructions/`](.github/instructions/) — per-area rules applied by path
