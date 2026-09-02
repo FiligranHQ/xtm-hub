@@ -1,7 +1,9 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import useServiceCapability, {
   useServiceCapabilityWithSubscriptionId,
 } from '@/hooks/use-service-capability';
+import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   ServiceRestriction,
@@ -9,6 +11,7 @@ import {
   useServiceUserCapabilitiesQuery,
 } from '@graphql/generated';
 import { renderHook } from '@testing-library/react';
+import { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/hooks/use-portal-capability', () => ({
@@ -28,6 +31,17 @@ const UserServiceCapabilityId = 'user-service-capability-id';
 const UserServiceId = 'user-service-id';
 const GenericCapabilityId = 'generic-capability-id';
 const GenericCapabilityName = 'manage_access';
+const UserId = 'user-id';
+const OrganizationId = 'organization-id';
+
+const Me = {
+  id: UserId,
+  selected_organization_id: OrganizationId,
+} as meContext_fragment$data;
+
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <PortalContext.Provider value={{ me: Me }}>{children}</PortalContext.Provider>
+);
 
 const ServiceInstance: serviceInstance_fragment$data = {
   id: ServiceInstanceId,
@@ -78,8 +92,10 @@ describe('useServiceCapability', () => {
     });
 
     // When
-    const { result } = renderHook(() =>
-      useServiceCapability(ServiceRestriction.ManageAccess, ServiceInstance)
+    const { result } = renderHook(
+      () =>
+        useServiceCapability(ServiceRestriction.ManageAccess, ServiceInstance),
+      { wrapper }
     );
 
     // Then
@@ -111,11 +127,13 @@ describe('useServiceCapability', () => {
     });
 
     // When
-    const { result } = renderHook(() =>
-      useServiceCapabilityWithSubscriptionId(
-        ServiceRestriction.ManageAccess,
-        ServiceInstance
-      )
+    const { result } = renderHook(
+      () =>
+        useServiceCapabilityWithSubscriptionId(
+          ServiceRestriction.ManageAccess,
+          ServiceInstance
+        ),
+      { wrapper }
     );
 
     // Then
@@ -130,8 +148,10 @@ describe('useServiceCapability', () => {
     mockCapabilitiesQueryResult(undefined);
 
     // When
-    renderHook(() =>
-      useServiceCapability(ServiceRestriction.ManageAccess, ServiceInstance)
+    renderHook(
+      () =>
+        useServiceCapability(ServiceRestriction.ManageAccess, ServiceInstance),
+      { wrapper }
     );
 
     // Then
@@ -140,8 +160,44 @@ describe('useServiceCapability', () => {
       { service_instance_id: ServiceInstanceId },
       expect.objectContaining({
         enabled: true,
-        queryKey: ['service-user-capabilities', ServiceInstanceId],
+        queryKey: [
+          'service-user-capabilities',
+          ServiceInstanceId,
+          UserId,
+          OrganizationId,
+        ],
         staleTime: 10 * 60 * 1000,
+      })
+    );
+  });
+
+  it('should scope the cache key per user so switching user does not reuse a previous user cache entry', () => {
+    // Given
+    mockCapabilitiesQueryResult(undefined);
+    const otherUserWrapper = ({ children }: { children: ReactNode }) => (
+      <PortalContext.Provider value={{ me: { ...Me, id: 'other-user-id' } }}>
+        {children}
+      </PortalContext.Provider>
+    );
+
+    // When
+    renderHook(
+      () =>
+        useServiceCapability(ServiceRestriction.ManageAccess, ServiceInstance),
+      { wrapper: otherUserWrapper }
+    );
+
+    // Then
+    expect(useServiceUserCapabilitiesQuery).toHaveBeenCalledWith(
+      expect.anything(),
+      { service_instance_id: ServiceInstanceId },
+      expect.objectContaining({
+        queryKey: [
+          'service-user-capabilities',
+          ServiceInstanceId,
+          'other-user-id',
+          OrganizationId,
+        ],
       })
     );
   });

@@ -1,3 +1,4 @@
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -5,7 +6,7 @@ import {
   ServiceRestriction,
   useServiceUserCapabilitiesQuery,
 } from '@graphql/generated';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 const ServiceUserCapabilitiesStaleTime = 10 * 60 * 1000; // Cache: 10mns
 
@@ -19,6 +20,7 @@ const useServiceCapabilityData = (
   serviceInstance?: serviceInstance_fragment$data
 ): UseServiceCapabilityWithSubscriptionId => {
   const canBypass = useAdminByPass();
+  const { me } = useContext(PortalContext);
   const { data } = useServiceUserCapabilitiesQuery(
     portalGraphqlClient,
     {
@@ -26,10 +28,24 @@ const useServiceCapabilityData = (
     },
     {
       enabled: !!serviceInstance?.id,
-      queryKey: ['service-user-capabilities', serviceInstance?.id],
+      // The current user id and selected organization are part of the cache
+      // key (and not just the service instance id) because the response
+      // depends on which user/organization is making the request, not just
+      // the requested service. Logout/login happen via client-side
+      // navigation (no full page reload), so without this the query cache
+      // could otherwise serve one user's (or organization's) capabilities
+      // to a different user (or organization) that reuses the same
+      // browser tab, for up to ServiceUserCapabilitiesStaleTime.
+      queryKey: [
+        'service-user-capabilities',
+        serviceInstance?.id,
+        me?.id,
+        me?.selected_organization_id,
+      ],
       staleTime: ServiceUserCapabilitiesStaleTime,
     }
   );
+
   const userServiceCapabilities =
     data?.userServiceCapabilities?.userServiceCapabilities;
   const subscriptionId = data?.userServiceCapabilities?.subscription_id;
