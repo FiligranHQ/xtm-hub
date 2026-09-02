@@ -3,6 +3,8 @@ import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { IntegrationFilters } from './IntegrationFilters';
 
+const FACET_COUNT = 8;
+
 vi.mock('@/hooks/use-service-list-local-storage', () => ({
   ServiceListLocalStorageKey: { OpenCTIIntegrationFeeds: 'feeds' },
   useServiceListLocalStorage: () => ({
@@ -12,21 +14,35 @@ vi.mock('@/hooks/use-service-list-local-storage', () => ({
   }),
 }));
 
-vi.mock('@/hooks/use-service-list-filters', () => ({
-  useServiceListFilters: () => ({ removeFilter: vi.fn() }),
-}));
-
 describe('IntegrationFilters', () => {
-  it('renders the filter wrapper with the correct layout classes', () => {
+  it('should render the wrapper and pass facet counts to the integration type filter', () => {
+    // Given
     const { container } = testRender(<IntegrationFilters />);
 
+    // When
+
+    // Then
     expect(container.firstChild).toHaveClass(
       'flex',
       'justify-between',
       'gap-s'
     );
     expect(
-      screen.getByText('Service.OpenctiIntegrations.Filter.Type.Placeholder')
+      screen.getByText('Service.OpenctiIntegrations.Filter.Type.Label')
+    ).toBeInTheDocument();
+  });
+
+  it('should render facet counts when integration filters receive them', () => {
+    // Given
+    testRender(<IntegrationFilters facetCounts={{ connector: FACET_COUNT }} />);
+
+    // When
+
+    // Then
+    expect(
+      screen.getByRole('checkbox', {
+        name: `Service.OpenctiIntegrations.Type.connector (${FACET_COUNT})`,
+      })
     ).toBeInTheDocument();
   });
 });

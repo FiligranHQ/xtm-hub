@@ -1,6 +1,8 @@
-import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
+import {
+  ServiceListFacetCounts,
+  withFacetCount,
+} from '@/components/service/components/header/filter/service-list-facet-counts';
 import { LogicalMultiSelectFormField } from '@/components/ui/shareable-resource/logical-multi-select/LogicalMultiSelectFormField';
-import { useServiceListFilters } from '@/hooks/use-service-list-filters';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -8,38 +10,41 @@ import {
 import { LicenseType } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
-export const IntegrationLicenseTypeFilter = () => {
-  const { licenseTypes, setLicenseTypes, removeLicenseTypes } =
-    useServiceListLocalStorage(
-      ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
-    );
-  const t = useTranslations();
-  const { removeFilter } = useServiceListFilters();
+interface IntegrationLicenseTypeFilterProps {
+  facetCounts?: ServiceListFacetCounts['licenseType'];
+}
 
-  const removeLicenseTypeFilter = () => {
-    removeLicenseTypes();
-    removeFilter(ServiceListFilterKey.LicenseType);
-  };
+export const IntegrationLicenseTypeFilter = ({
+  facetCounts,
+}: IntegrationLicenseTypeFilterProps) => {
+  const { licenseTypes, setLicenseTypes } = useServiceListLocalStorage(
+    ServiceListLocalStorageKey.OpenCTIIntegrationFeeds
+  );
+  const t = useTranslations();
 
   return (
     <LogicalMultiSelectFormField
       options={[
         {
-          label: t('Service.OpenctiIntegrations.Filter.LicenseType.Free'),
+          label: withFacetCount(
+            t('Service.OpenctiIntegrations.Filter.LicenseType.Free'),
+            LicenseType.Free,
+            facetCounts
+          ),
           value: LicenseType.Free,
         },
         {
-          label: t('Service.OpenctiIntegrations.Filter.LicenseType.Commercial'),
+          label: withFacetCount(
+            t('Service.OpenctiIntegrations.Filter.LicenseType.Commercial'),
+            LicenseType.Commercial,
+            facetCounts
+          ),
           value: LicenseType.Commercial,
         },
       ]}
       initialValue={licenseTypes}
-      placeholder={t(
-        'Service.OpenctiIntegrations.Filter.LicenseType.Placeholder'
-      )}
       noResultString={t('Utils.NotFound')}
       onValueChange={setLicenseTypes}
-      onRemove={removeLicenseTypeFilter}
       optionLabel={t('Service.OpenctiIntegrations.Filter.LicenseType.Label')}
     />
   );

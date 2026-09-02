@@ -1,6 +1,9 @@
+import { ServiceListFacetCounts } from '@/components/service/components/header/filter/service-list-facet-counts';
+import { ServiceListFilterSection } from '@/components/service/components/header/filter/ServiceListFilterSection';
 import { ServiceListHeader } from '@/components/service/components/header/ServiceListHeader';
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import {
+  FacetDocumentListQuery,
   publicDocumentListItem,
   PublicDocumentListQuery,
 } from '@/components/service/document/public-document.graphql';
@@ -11,6 +14,7 @@ import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-stora
 import { useTablePagination } from '@/hooks/use-table-pagination';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
+import { documentFacets } from '@generated/documentFacets.graphql';
 import publicDocumentListGraphql, {
   publicDocumentList$key,
 } from '@generated/publicDocumentList.graphql';
@@ -28,11 +32,13 @@ import {
 interface PublicDocumentsListProps {
   serviceInstance: seoServiceInstanceFragment$data;
   queryRef: PreloadedQuery<publicDocumentsQuery>;
+  queryRefFacet: PreloadedQuery<documentFacets>;
   baseUrl: string;
 }
 
 const PublicDocumentsList = ({
   queryRef,
+  queryRefFacet,
   serviceInstance,
   baseUrl,
 }: PublicDocumentsListProps) => {
@@ -40,11 +46,35 @@ const PublicDocumentsList = ({
     PublicDocumentListQuery,
     queryRef
   );
+  const queryDataFacet = usePreloadedQuery<documentFacets>(
+    FacetDocumentListQuery,
+    queryRefFacet
+  );
 
   const [data, refetch] = useRefetchableFragment<
     publicDocumentsQuery,
     publicDocumentList$key
   >(publicDocumentListGraphql, queryData);
+
+  const facetCounts = useMemo<ServiceListFacetCounts>(() => {
+    const facets = queryDataFacet.documentFacets;
+    const toMap = (values: ReadonlyArray<{ value: string; count: number }>) => {
+      return Object.fromEntries(
+        values.map((item) => [item.value, item.count] as const)
+      );
+    };
+
+    return {
+      integrationType: toMap(facets?.integration_type ?? []),
+      licenseType: toMap(facets?.license_type ?? []),
+      managerSupported: toMap(facets?.manager_supported ?? []),
+      verified: toMap(facets?.verified ?? []),
+      productVersion: toMap(facets?.product_version ?? []),
+      solutionCategory: toMap(facets?.solution_category ?? []),
+      useCase: toMap(facets?.use_case ?? []),
+      entityType: toMap(facets?.entity_type ?? []),
+    };
+  }, [queryDataFacet.documentFacets]);
 
   const documents = useMemo(() => {
     return (data.publicDocuments?.edges ?? [])
@@ -58,7 +88,8 @@ const PublicDocumentsList = ({
   }, [data.publicDocuments]);
 
   const { filters, localStorageKey } = useShareableResourceMapping(
-    serviceInstance.slug as ServiceSlug
+    serviceInstance.slug as ServiceSlug,
+    facetCounts
   );
 
   const {
@@ -90,7 +121,6 @@ const PublicDocumentsList = ({
         <ServiceListHeader
           search={search}
           onSearchChange={setSearch}
-          filters={filters}
           className="mb-3"
           onDisplayModeChange={setDisplayMode}
           paginationControls={
@@ -104,12 +134,19 @@ const PublicDocumentsList = ({
           }
         />
       </div>
-      <PublicShareableResourceList
-        displayMode={selectedDisplayMode}
-        documents={documents}
-        serviceInstance={serviceInstance}
-        baseUrl={baseUrl}
-      />
+      <div className="flex flex-row">
+        <div className="w-1/6 bg-elevation-background-layer-1">
+          <ServiceListFilterSection filters={filters} />
+        </div>
+        <div className="w-5/6 p-m">
+          <PublicShareableResourceList
+            displayMode={selectedDisplayMode}
+            documents={documents}
+            serviceInstance={serviceInstance}
+            baseUrl={baseUrl}
+          />
+        </div>
+      </div>
     </AppServiceListLocalStorageKeyContext>
   );
 };

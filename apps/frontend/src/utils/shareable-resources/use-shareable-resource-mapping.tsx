@@ -1,4 +1,5 @@
 'use client';
+import { ServiceListFacetCounts } from '@/components/service/components/header/filter/service-list-facet-counts';
 import { ServiceListFilterEntityType } from '@/components/service/components/header/filter/ServiceListFilterEntityType';
 import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
@@ -10,16 +11,18 @@ import { IntegrationFilters } from '@/components/ui/shareable-resource/integrati
 import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationLicenseTypeFilter';
 import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-resource/integration/IntegrationSolutionCategoryFilter';
 import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
-import {
-  ServiceListLocalStorageKey,
-  useServiceListLocalStorage,
-} from '@/hooks/use-service-list-local-storage';
+import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 import {
   ServiceSlug,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { useTranslations } from 'next-intl';
 
-export const useShareableResourceMapping = (slug: ServiceSlug) => {
+export const useShareableResourceMapping = (
+  slug: ServiceSlug,
+  facetCounts?: ServiceListFacetCounts
+) => {
+  const t = useTranslations();
   const localStorageKeyMapping: Record<
     ServiceSlug,
     ServiceListLocalStorageKey
@@ -46,49 +49,56 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     [ServiceSlug.OPEN_AEV_SCENARIOS]: ShareableResourceType.OPENAEV_SCENARIO,
     [ServiceSlug.OPEN_CTI_PLAYBOOKS]: ShareableResourceType.OPENCTI_PLAYBOOK,
   };
-  const {
-    removeLabels,
-    removeIntegrationTypes,
-    removeLicenseTypes,
-    removeSolutionCategories,
-    removeDeployable,
-    removeVerified,
-    removeEntityTypes,
-  } = useServiceListLocalStorage(localStorageKey);
-
   const labelFilter = {
-    node: <ServiceListFilterLabel type={typeFeed[slug]} />,
-    reset: removeLabels,
+    title: t('GenericActions.FilterUseCasesLabel'),
+    node: (
+      <ServiceListFilterLabel
+        type={typeFeed[slug]}
+        facetCounts={facetCounts?.useCase}
+      />
+    ),
   };
 
   const entityTypeFilter = {
-    node: <ServiceListFilterEntityType />,
-    reset: removeEntityTypes,
+    title: t('GenericActions.FilterEntityTypesLabel'),
+    node: <ServiceListFilterEntityType facetCounts={facetCounts?.entityType} />,
   };
 
   const filtersMap: Record<ServiceSlug, ServiceListFilterMap> = {
     [ServiceSlug.OPEN_CTI_INTEGRATIONS]: {
       [ServiceListFilterKey.Label]: labelFilter,
       [ServiceListFilterKey.IntegrationType]: {
-        node: <IntegrationFilters />,
-        reset: removeIntegrationTypes,
+        title: t('Service.OpenctiIntegrations.Filter.Type.Label'),
+        node: <IntegrationFilters facetCounts={facetCounts?.integrationType} />,
       },
       [ServiceListFilterKey.ManagerSupported]: {
-        node: <IntegrationDeployableFilter />,
-        reset: removeDeployable,
+        title: t('Service.OpenctiIntegrations.Filter.ManagerSupported.Label'),
+        node: (
+          <IntegrationDeployableFilter
+            facetCounts={facetCounts?.managerSupported}
+          />
+        ),
       },
       [ServiceListFilterKey.Verified]: {
-        node: <IntegrationVerifiedFilter />,
-        reset: removeVerified,
+        title: t('Service.OpenctiIntegrations.Filter.Verified.Label'),
+        node: <IntegrationVerifiedFilter facetCounts={facetCounts?.verified} />,
       },
 
       [ServiceListFilterKey.SolutionCategory]: {
-        node: <IntegrationSolutionCategoryFilter />,
-        reset: removeSolutionCategories,
+        title: t('Service.OpenctiIntegrations.Filter.SolutionCategory.Label'),
+        node: (
+          <IntegrationSolutionCategoryFilter
+            facetCounts={facetCounts?.solutionCategory}
+          />
+        ),
       },
       [ServiceListFilterKey.LicenseType]: {
-        node: <IntegrationLicenseTypeFilter />,
-        reset: removeLicenseTypes,
+        title: t('Service.OpenctiIntegrations.Filter.LicenseType.Label'),
+        node: (
+          <IntegrationLicenseTypeFilter
+            facetCounts={facetCounts?.licenseType}
+          />
+        ),
       },
     },
     [ServiceSlug.OPEN_CTI_CUSTOM_DASHBOARDS]: {

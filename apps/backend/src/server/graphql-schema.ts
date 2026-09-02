@@ -6,6 +6,7 @@ import competitorResolver from '../modules/deployment/competitor/competitor.reso
 import deploymentResolver from '../modules/deployment/deployment.resolver';
 import serviceGroupResolver from '../modules/deployment/group/service-group.resolver';
 import vaultResolver from '../modules/document/document.resolver';
+import facetResolver from '../modules/document/facet/facet.resolver';
 import featureVotingResolver from '../modules/feature-voting/feature-voting.resolver';
 import logResolver from '../modules/log/log.resolver';
 import manageProductVersionResolver from '../modules/manage-product-version/manage-product-version.resolver';
@@ -36,7 +37,6 @@ import userServiceResolver from '../modules/user-service/user-service.resolver';
 import xtmPlatformRoadmapResolver from '../modules/xtm-platform-roadmap/epic.resolver';
 import nodesResolver from '../nodes/nodes.resolver';
 import { authDirectiveTransformer } from '../security/directive-graphql/directive-auth';
-import facetResolver from '../modules/document/facet/facet.resolver';
 
 const getGlobContent = async (pattern: string) => {
   const globFiles = await glob(pattern);
