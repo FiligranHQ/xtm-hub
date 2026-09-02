@@ -471,10 +471,16 @@ describe('deployment resolver — unit tests', () => {
   describe('deploymentRequest type resolvers', () => {
     it('children should load child deployment requests by parent id', async () => {
       const children = [{ id: 'child-1' }] as unknown as Awaited<
-        ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestsBy>
+        ReturnType<
+          typeof contextRegistererUserSecondOrga.dataLoaders.deploymentRequest.childrenByParentLoader.load
+        >
       >;
       const spy = vi
-        .spyOn(DeploymentRequestDomain, 'loadDeploymentRequestsBy')
+        .spyOn(
+          contextRegistererUserSecondOrga.dataLoaders.deploymentRequest
+            .childrenByParentLoader,
+          'load'
+        )
         .mockResolvedValue(children);
 
       const result = await resolver.DeploymentRequest!.children!(
@@ -484,7 +490,7 @@ describe('deployment resolver — unit tests', () => {
         GRAPHQL_RESOLVE_INFO
       );
 
-      expect(spy).toHaveBeenCalledWith({ parent_id: 'bundle-1' });
+      expect(spy).toHaveBeenCalledWith('bundle-1');
       expect(result).toEqual(children);
     });
 

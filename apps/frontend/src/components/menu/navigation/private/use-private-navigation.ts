@@ -11,7 +11,7 @@ import {
 } from '@/components/menu/navigation/shared/navigation.type';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { APP_PATH, xtmPlatformTrialBundlePath } from '@/utils/path/constant';
+import { APP_PATH, XTM_PLATFORM_TRIAL_PATH } from '@/utils/path/constant';
 import {
   DiamondOutlinedIcon,
   HomeIcon,
@@ -25,7 +25,6 @@ import {
   SettingsIcon,
   SlackIcon,
 } from '@filigran/icon';
-import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
   FeatureFlag,
   OrderingMode,
@@ -37,7 +36,6 @@ import {
   ServiceInstanceOrdering,
   ServiceInstancesListQueryVariables,
   TrialDeploymentsEligibilityQueryVariables,
-  useActiveXtmPlatformBundleQuery,
   useRegisteredPlatformsListQuery,
   useServiceInstancesListQuery,
   useTrialDeploymentsEligibilityQuery,
@@ -99,16 +97,6 @@ export const usePrivateNavigation = (): NavigationConfig => {
   const isXtmPlatformBundleEnabled = useIsFeatureEnabled(
     FeatureFlag.XtmPlatformTrial
   );
-  const { data: xtmPlatformBundleData } = useActiveXtmPlatformBundleQuery(
-    portalGraphqlClient,
-    { serviceInstanceId: null },
-    {
-      queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),
-      enabled: isXtmPlatformBundleEnabled,
-    }
-  );
-  const xtmPlatformBundleServiceInstanceId =
-    xtmPlatformBundleData?.activeXtmPlatformBundle?.service_instance_id;
   const locale = useLocale();
   const selectedOrganizationId = me?.selected_organization_id;
   const currentOrganization = me?.organizations.find(
@@ -498,13 +486,11 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenu('Slack'),
       external: true,
     },
-    ...(isXtmPlatformBundleEnabled && xtmPlatformBundleServiceInstanceId
+    ...(isXtmPlatformBundleEnabled
       ? [
           {
             key: 'xtm-platform-trial',
-            href: xtmPlatformTrialBundlePath(
-              xtmPlatformBundleServiceInstanceId
-            ),
+            href: XTM_PLATFORM_TRIAL_PATH,
             icon: DiamondOutlinedIcon,
             label: tMenu('XTMPlatformTrial'),
             highlight: true,

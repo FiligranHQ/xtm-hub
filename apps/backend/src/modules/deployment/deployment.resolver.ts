@@ -98,10 +98,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    activeXtmPlatformBundle: async (_, { serviceInstanceId }, context) => {
+    activeXtmPlatformBundle: async (_, { serviceInstanceId }) => {
       try {
         return await DeploymentApp.loadActiveXtmPlatformBundle(
-          context.user,
           serviceInstanceId
         );
       } catch (error) {
@@ -111,14 +110,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    xtmonePlatformIntegrationStatus: async (
-      _,
-      { serviceInstanceId },
-      context
-    ) => {
+    xtmonePlatformIntegrationStatus: async (_, { serviceInstanceId }) => {
       try {
         return await DeploymentApp.loadXtmonePlatformIntegrationStatus(
-          context.user,
           serviceInstanceId
         );
       } catch (error) {

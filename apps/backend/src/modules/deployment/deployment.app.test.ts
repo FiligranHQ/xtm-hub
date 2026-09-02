@@ -4195,9 +4195,7 @@ describe('deployment app', () => {
     };
 
     it('should return null when the organization has no active bundle', async () => {
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        contextRegistererUserSecondOrga.user
-      );
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle();
 
       expect(result).toBeNull();
     });
@@ -4205,9 +4203,7 @@ describe('deployment app', () => {
     it('should return the active bundle for the organization', async () => {
       await createActiveBundle();
 
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        contextRegistererUserSecondOrga.user
-      );
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle();
 
       expect(result).toMatchObject({
         type: DeploymentRequestDeploymentType.Bundle,
@@ -4225,7 +4221,6 @@ describe('deployment app', () => {
       const bundle = await createActiveBundle();
 
       const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        contextRegistererUserSecondOrga.user,
         bundle.service_instance_id
       );
 
@@ -4236,7 +4231,6 @@ describe('deployment app', () => {
       await createActiveBundle();
 
       const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        contextRegistererUserSecondOrga.user,
         uuidv4() as ServiceInstanceId
       );
 
@@ -4257,6 +4251,10 @@ describe('deployment app', () => {
       last_checked_at: null,
     };
 
+    beforeEach(() => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+    });
+
     afterEach(() => {
       vi.restoreAllMocks();
       vi.unstubAllGlobals();
@@ -4269,10 +4267,10 @@ describe('deployment app', () => {
       const fetchMock = vi.fn();
       vi.stubGlobal('fetch', fetchMock);
 
-      const result = await DeploymentApp.loadXtmonePlatformIntegrationStatus(
-        user,
-        serviceInstanceId
-      );
+      const result =
+        await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          serviceInstanceId
+        );
 
       expect(result).toBeNull();
       expect(loadDeploymentRequestBySpy).toHaveBeenCalledWith({
@@ -4293,10 +4291,10 @@ describe('deployment app', () => {
       const fetchMock = vi.fn();
       vi.stubGlobal('fetch', fetchMock);
 
-      const result = await DeploymentApp.loadXtmonePlatformIntegrationStatus(
-        user,
-        serviceInstanceId
-      );
+      const result =
+        await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          serviceInstanceId
+        );
 
       expect(result).toBeNull();
       expect(fetchMock).not.toHaveBeenCalled();
@@ -4316,10 +4314,10 @@ describe('deployment app', () => {
       });
       vi.stubGlobal('fetch', fetchMock);
 
-      const result = await DeploymentApp.loadXtmonePlatformIntegrationStatus(
-        user,
-        serviceInstanceId
-      );
+      const result =
+        await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          serviceInstanceId
+        );
 
       expect(fetchMock).toHaveBeenCalledWith(
         'https://xtmone.example.io/api/v1/platform/config',
@@ -4341,10 +4339,10 @@ describe('deployment app', () => {
         vi.fn().mockResolvedValue({ ok: false, status: 502 })
       );
 
-      const result = await DeploymentApp.loadXtmonePlatformIntegrationStatus(
-        user,
-        serviceInstanceId
-      );
+      const result =
+        await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          serviceInstanceId
+        );
 
       expect(result).toBeNull();
     });

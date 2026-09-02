@@ -50,6 +50,7 @@ import {
 } from '../../portal.const';
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
+import { fetchXtmoneIntegrationStatus } from '../../thirdparty/xtmone/xtmone';
 import { logApp } from '../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
@@ -91,58 +92,6 @@ import {
 export const XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME = 'XTM Platform Bundle';
 
 const DEPLOYMENT_REQUEST_LOCK_NAMESPACE = 'deployment_request';
-
-const XTMONE_STATUS_TIMEOUT_MS = 8000;
-
-interface XtmonePlatformConfigResponse {
-  integration_status?: XtmoneIntegrationStatus;
-}
-
-const fetchXtmoneIntegrationStatus = async (
-  baseUrl: string
-): Promise<XtmoneIntegrationStatus | null> => {
-  let parsedUrl: URL;
-  try {
-    parsedUrl = new URL(baseUrl);
-  } catch {
-    return null;
-  }
-  if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
-    return null;
-  }
-
-  const url = new URL('/api/v1/platform/config', parsedUrl).href;
-  const controller = new AbortController();
-  const timeout = setTimeout(
-    () => controller.abort(),
-    XTMONE_STATUS_TIMEOUT_MS
-  );
-
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      credentials: 'omit',
-      redirect: 'error',
-    });
-    if (!response.ok) {
-      return null;
-    }
-    const body = (await response.json()) as XtmonePlatformConfigResponse;
-    const integrationStatus = body?.integration_status;
-    if (!integrationStatus?.opencti || !integrationStatus?.openaev) {
-      return null;
-    }
-    return integrationStatus;
-  } catch (error) {
-    logApp.warn('Failed to fetch XTM One integration status', {
-      xtmoneOrigin: parsedUrl.origin,
-      error,
-    });
-    return null;
-  } finally {
-    clearTimeout(timeout);
-  }
-};
 
 export const DeploymentApp = {
   createDeploymentRequest: async (
@@ -622,9 +571,9 @@ export const DeploymentApp = {
   },
 
   loadActiveXtmPlatformBundle: async (
-    user: UserLoadUserBy,
     serviceInstanceId?: ServiceInstanceId | null
   ): Promise<DeploymentRequest | null> => {
+    const user = requestContext.requireUser();
     const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest({
       type: DeploymentRequestDeploymentType.Bundle,
       hub_status: DeploymentRequestHubStatus.Active,
@@ -636,9 +585,9 @@ export const DeploymentApp = {
   },
 
   loadXtmonePlatformIntegrationStatus: async (
-    user: UserLoadUserBy,
     serviceInstanceId: ServiceInstanceId
   ): Promise<XtmoneIntegrationStatus | null> => {
+    const user = requestContext.requireUser();
     const deploymentRequest =
       await DeploymentRequestDomain.loadDeploymentRequestBy({
         service_instance_id: serviceInstanceId,

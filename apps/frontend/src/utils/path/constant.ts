@@ -4,8 +4,10 @@ export const XTM_PLATFORM_ROADMAP_SLUG = 'xtm-platform-roadmap';
 
 export const APP_PATH = 'app';
 
+export const XTM_PLATFORM_TRIAL_PATH = `/${APP_PATH}/service/xtm-platform-trial`;
+
 export const xtmPlatformTrialBundlePath = (serviceInstanceId: string) =>
-  `/${APP_PATH}/service/xtm-platform-trial/${serviceInstanceId}`;
+  `${XTM_PLATFORM_TRIAL_PATH}/${serviceInstanceId}`;
 
 export const xtmPlatformTrialManageUsersPath = (serviceInstanceId: string) =>
   `${xtmPlatformTrialBundlePath(serviceInstanceId)}/manage-users`;
