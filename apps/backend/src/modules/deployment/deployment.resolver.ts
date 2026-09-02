@@ -15,6 +15,12 @@ import { DeploymentRequestDomain } from './deployment.domain';
 const resolvers: Resolvers = {
   DeploymentRequestId:
     createRelayIdScalar<DeploymentRequestId>('DeploymentRequest'),
+  DeploymentRequest: {
+    children: ({ id }, _, context) =>
+      context.dataLoaders.deploymentRequest.childrenByParentLoader.load(
+        id as DeploymentRequestId
+      ),
+  },
   Query: {
     deploymentRequests: async (_, args: QueryDeploymentRequestsArgs) => {
       try {
@@ -32,7 +38,7 @@ const resolvers: Resolvers = {
     ): Promise<DeploymentAvailability[]> => {
       try {
         return await DeploymentApp.loadAvailableDeploymentRequests(
-          platformIdentifier
+          platformIdentifier ?? null
         );
       } catch (error) {
         throw mapToGraphQLError(

@@ -245,32 +245,6 @@ describe('service instance links by tags GraphQL query', () => {
   });
 });
 
-describe('service instance by id GraphQL query', () => {
-  it('should pass user and service_instance_id to ServiceInstanceApp.loadServiceInstanceAndGrantAccess', async () => {
-    const id = SERVICES.INSTANCES.EPIC.ID;
-    const expected = { id } as unknown as Awaited<
-      ReturnType<typeof ServiceInstanceApp.loadServiceInstanceAndGrantAccess>
-    >;
-    vi.spyOn(
-      ServiceInstanceApp,
-      'loadServiceInstanceAndGrantAccess'
-    ).mockResolvedValue(expected);
-
-    const result = await serviceInstanceResolver.Query!
-      .serviceInstanceByIdAndGrantAccess!(
-      {},
-      { service_instance_id: id },
-      contextSimpleUserFiligran2,
-      GRAPHQL_RESOLVE_INFO
-    );
-
-    expect(
-      ServiceInstanceApp.loadServiceInstanceAndGrantAccess
-    ).toHaveBeenCalledWith(id);
-    expect(result).toEqual(expected);
-  });
-});
-
 describe('seo service instances GraphQL query', () => {
   it('should delegate to ServiceInstanceApp.loadSeoServiceInstances', async () => {
     const expected = [] as unknown as Awaited<

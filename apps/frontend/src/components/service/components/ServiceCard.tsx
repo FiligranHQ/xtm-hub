@@ -98,35 +98,37 @@ const ServiceCard = ({
       serviceInstance={serviceInstance}
       extraContent={
         <>
-          <IconActions
-            className="z-[2]"
-            icon={
-              <>
-                <MoreVertIcon className="h-4 w-4 text-primary" />
-                <span className="sr-only">{t('Utils.OpenMenu')}</span>
-              </>
-            }>
-            {userCanUpdate && (
-              <IconActionsItem onClick={() => onClickOnUpdate()}>
-                {t('MenuActions.Update')}
-              </IconActionsItem>
-            )}
-            {userCanDelete && (
-              <ServiceDelete
-                type={'menuitem'}
-                userCanDelete={userCanDelete}
-                onDelete={() =>
-                  context.handleDeleteSheet(document, onDeleteCompleted)
-                }
-                serviceName={serviceInstance.name}
-                integrationType={
-                  (document && isIntegrationItem(document)
-                    ? document.integration_type
-                    : document.type) as CardTypeEnum
-                }
-              />
-            )}
-          </IconActions>
+          {(userCanDelete || userCanUpdate) && (
+            <IconActions
+              className="z-[2]"
+              icon={
+                <>
+                  <MoreVertIcon className="h-4 w-4 text-primary" />
+                  <span className="sr-only">{t('Utils.OpenMenu')}</span>
+                </>
+              }>
+              {userCanUpdate && (
+                <IconActionsItem onClick={() => onClickOnUpdate()}>
+                  {t('MenuActions.Update')}
+                </IconActionsItem>
+              )}
+              {userCanDelete && (
+                <ServiceDelete
+                  type={'menuitem'}
+                  userCanDelete={userCanDelete}
+                  onDelete={() =>
+                    context.handleDeleteSheet(document, onDeleteCompleted)
+                  }
+                  serviceName={serviceInstance.name}
+                  integrationType={
+                    (document && isIntegrationItem(document)
+                      ? document.integration_type
+                      : document.type) as CardTypeEnum
+                  }
+                />
+              )}
+            </IconActions>
+          )}
           {userCanUpdate && (
             <ServiceManageSheet
               document={document}

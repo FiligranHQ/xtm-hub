@@ -1,87 +1,55 @@
 'use client';
 import { TrialsTabQuotasPlatformUpdate } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdate';
-import {
-  TrialsDeploymentRequestsAvailableListFragment,
-  TrialsDeploymentRequestsAvailableQuery,
-} from '@/components/trials/trials.graphql';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { TrialsScope, trialsRegionKey } from '@/components/trials/trials.const';
 import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { DataTable } from '@filigran/ui';
-import { PlatformIdentifier } from '@generated/OneClickDeployMutation.graphql';
-import trialsDeploymentAvailabilityFragmentGraphql, {
-  trialsDeploymentAvailabilityFragment$data,
-  trialsDeploymentAvailabilityFragment$key,
-} from '@generated/trialsDeploymentAvailabilityFragment.graphql';
-import { trialsDeploymentRequestsAvailableList$key } from '@generated/trialsDeploymentRequestsAvailableList.graphql';
-import { trialsDeploymentRequestsAvailableQuery } from '@generated/trialsDeploymentRequestsAvailableQuery.graphql';
-import { PortalCapability } from '@graphql/generated';
+import { trialsQuotasKeys } from '@graphql/deployment/deployment.keys';
+import {
+  PortalCapability,
+  TrialsQuotaFragment,
+  useTrialsQuotasQuery,
+} from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
-import {
-  readInlineData,
-  useLazyLoadQuery,
-  useRefetchableFragment,
-} from 'react-relay';
 
 interface TrialsTabQuotasPlatformProps {
-  platformIdentifier: PlatformIdentifier;
+  scope: TrialsScope;
 }
 
 export const TrialsTabQuotasPlatform = ({
-  platformIdentifier,
+  scope,
 }: TrialsTabQuotasPlatformProps) => {
   const t = useTranslations();
   const userHasModifyTrialQuotaCapa = useUserHasPortalCapability([
     PortalCapability.ModifyTrialsQuota,
   ]);
-
-  const queryData = useLazyLoadQuery<trialsDeploymentRequestsAvailableQuery>(
-    TrialsDeploymentRequestsAvailableQuery,
-    { platformIdentifier },
-    { fetchPolicy: 'store-and-network' }
+  const [quotaEdit, setQuotaEdit] = useState<TrialsQuotaFragment | undefined>(
+    undefined
   );
 
-  const [data, refetch] = useRefetchableFragment<
-    trialsDeploymentRequestsAvailableQuery,
-    trialsDeploymentRequestsAvailableList$key
-  >(TrialsDeploymentRequestsAvailableListFragment, queryData);
-  if (!data.deploymentRequestsAvailable.length) {
-    return null;
-  }
+  const variables = useMemo(
+    () => ({
+      platformIdentifier:
+        scope.kind === 'product' ? scope.platformIdentifier : null,
+    }),
+    [scope]
+  );
 
-  const availabilities = useMemo(() => {
-    return data.deploymentRequestsAvailable.map((availability) =>
-      readInlineData<trialsDeploymentAvailabilityFragment$key>(
-        trialsDeploymentAvailabilityFragmentGraphql,
-        availability
-      )
-    );
-  }, [data]);
+  const { data } = useTrialsQuotasQuery(portalGraphqlClient, variables, {
+    queryKey: trialsQuotasKeys.list(variables),
+  });
 
-  const [quotaEdit, setQuotaEdit] = useState<
-    trialsDeploymentAvailabilityFragment$data | undefined
-  >(undefined);
-
-  const columns: ColumnDef<
-    { id: string } & trialsDeploymentAvailabilityFragment$data
-  >[] = useMemo(
+  const columns: ColumnDef<TrialsQuotaFragment>[] = useMemo(
     () => [
       {
         accessorKey: 'region',
         id: 'region',
         header: t('TrialsDashboard.Columns.Region'),
         enableSorting: false,
-        cell: ({
-          row,
-        }: {
-          row: {
-            original: trialsDeploymentAvailabilityFragment$data;
-          };
-        }) => {
-          return (
-            <span>{t(`Region.${row.original.region.toUpperCase()}`)}</span>
-          );
+        cell: ({ row }: { row: { original: TrialsQuotaFragment } }) => {
+          return <span>{t(trialsRegionKey(row.original.region))}</span>;
         },
       },
       {
@@ -107,18 +75,13 @@ export const TrialsTabQuotasPlatform = ({
     [t]
   );
 
-  const dataTableData = useMemo(() => {
-    return availabilities
-      .map((availability) => ({
-        ...availability,
-        id: availability.region,
-      }))
-      .sort((a, b) =>
-        t(`Region.${a.region.toUpperCase()}`).localeCompare(
-          t(`Region.${b.region.toUpperCase()}`)
-        )
-      );
-  }, [availabilities, t]);
+  const dataTableData = useMemo(
+    () =>
+      [...(data?.deploymentRequestsAvailable ?? [])].sort((a, b) =>
+        t(trialsRegionKey(a.region)).localeCompare(t(trialsRegionKey(b.region)))
+      ),
+    [data, t]
+  );
 
   return (
     <>
@@ -130,15 +93,10 @@ export const TrialsTabQuotasPlatform = ({
       {quotaEdit && userHasModifyTrialQuotaCapa && (
         <TrialsTabQuotasPlatformUpdate
           quota={quotaEdit}
-          key={`${quotaEdit.platform_identifier}${quotaEdit.region}`}
+          scope={scope}
+          key={quotaEdit.id}
           defaultStateOpen={!!quotaEdit}
-          onCloseSheet={() => {
-            refetch(
-              { platformIdentifier },
-              { fetchPolicy: 'store-and-network' }
-            );
-            useExecuteAfterAnimation(() => setQuotaEdit(undefined));
-          }}
+          onCloseSheet={() => setQuotaEdit(undefined)}
         />
       )}
     </>

@@ -1,68 +1,54 @@
 'use client';
-import { PlatformIdentifier } from '@graphql/generated';
-
 import { TrialsTabQuotasPlatform } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatform';
 import TrialsTab from '@/components/trials/tab/TrialsTab';
-import { TrialsTabType } from '@/components/trials/trials.const';
+import { TrialsScope, TrialsTabType } from '@/components/trials/trials.const';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 
+const TAB_TITLES: Record<TrialsTabType, string> = {
+  [TrialsTabType.Cancelled]: 'TrialsDashboard.TabTitle.Cancelled',
+  [TrialsTabType.Expired]: 'TrialsDashboard.TabTitle.Expired',
+  [TrialsTabType.Running]: 'TrialsDashboard.TabTitle.Running',
+  [TrialsTabType.Waiting]: 'TrialsDashboard.TabTitle.Waiting',
+};
+
+const QUOTAS_TAB = 'quotas';
+
 interface TrialsListProps {
-  platformIdentifier: PlatformIdentifier;
+  scope: TrialsScope;
 }
 
-const TrialsList = ({ platformIdentifier }: TrialsListProps) => {
+const TrialsList = ({ scope }: TrialsListProps) => {
   const t = useTranslations();
 
   return (
-    <>
-      <Tabs defaultValue={'waiting'}>
-        <TabsList>
-          <TabsTrigger value="cancelled">
-            {t('TrialsDashboard.TabTitle.Cancelled')}
+    <Tabs defaultValue={TrialsTabType.Waiting}>
+      <TabsList>
+        {Object.values(TrialsTabType).map((type) => (
+          <TabsTrigger
+            key={type}
+            value={type}>
+            {t(TAB_TITLES[type])}
           </TabsTrigger>
-          <TabsTrigger value="expired">
-            {t('TrialsDashboard.TabTitle.Expired')}
-          </TabsTrigger>
-          <TabsTrigger value="running">
-            {t('TrialsDashboard.TabTitle.Running')}
-          </TabsTrigger>
-          <TabsTrigger value="waiting">
-            {t('TrialsDashboard.TabTitle.Waiting')}
-          </TabsTrigger>
-          <TabsTrigger value="quotas">
-            {t('TrialsDashboard.TabTitle.Quotas')}
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="cancelled">
+        ))}
+        <TabsTrigger value={QUOTAS_TAB}>
+          {t('TrialsDashboard.TabTitle.Quotas')}
+        </TabsTrigger>
+      </TabsList>
+      {Object.values(TrialsTabType).map((type) => (
+        <TabsContent
+          key={type}
+          value={type}>
           <TrialsTab
-            type={TrialsTabType.Cancelled}
-            platformIdentifier={platformIdentifier}
+            type={type}
+            scope={scope}
           />
         </TabsContent>
-        <TabsContent value="expired">
-          <TrialsTab
-            type={TrialsTabType.Expired}
-            platformIdentifier={platformIdentifier}
-          />
-        </TabsContent>
-        <TabsContent value="running">
-          <TrialsTab
-            type={TrialsTabType.Running}
-            platformIdentifier={platformIdentifier}
-          />
-        </TabsContent>
-        <TabsContent value="waiting">
-          <TrialsTab
-            type={TrialsTabType.Waiting}
-            platformIdentifier={platformIdentifier}
-          />
-        </TabsContent>
-        <TabsContent value="quotas">
-          <TrialsTabQuotasPlatform platformIdentifier={platformIdentifier} />
-        </TabsContent>
-      </Tabs>
-    </>
+      ))}
+      <TabsContent value={QUOTAS_TAB}>
+        <TrialsTabQuotasPlatform scope={scope} />
+      </TabsContent>
+    </Tabs>
   );
 };
 

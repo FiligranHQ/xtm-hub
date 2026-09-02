@@ -6,6 +6,7 @@ import competitorResolver from '../modules/deployment/competitor/competitor.reso
 import deploymentResolver from '../modules/deployment/deployment.resolver';
 import serviceGroupResolver from '../modules/deployment/group/service-group.resolver';
 import vaultResolver from '../modules/document/document.resolver';
+import featureVotingResolver from '../modules/feature-voting/feature-voting.resolver';
 import logResolver from '../modules/log/log.resolver';
 import manageProductVersionResolver from '../modules/manage-product-version/manage-product-version.resolver';
 import newsFeedResolver from '../modules/news-feed/news-feed.resolver';
@@ -77,6 +78,7 @@ const resolvers = mergeResolvers([
   manifestResolver,
   manifestFragmentResolver,
   manageProductVersionResolver,
+  featureVotingResolver,
 ]);
 
 const createSchema = () => {

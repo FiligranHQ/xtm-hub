@@ -32,7 +32,7 @@ const Page = async ({ params }: ServicePlaybooksPageProps) => {
       label:
         (
           response?.data
-            .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
+            .serviceInstanceById as unknown as serviceInstance_fragment$data
         )?.name ?? '',
       original: true,
     },
@@ -46,7 +46,7 @@ const Page = async ({ params }: ServicePlaybooksPageProps) => {
           <PageLoader
             serviceInstance={
               response.data
-                .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
+                .serviceInstanceById as unknown as serviceInstance_fragment$data
             }
           />
         </>
