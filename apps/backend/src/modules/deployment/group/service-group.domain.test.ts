@@ -136,6 +136,22 @@ describe('serviceGroupDomain', () => {
         ])
       );
     });
+
+    it('should ignore users already in the group instead of throwing', async () => {
+      await ServiceGroupDomain.addUsersToGroup(adminGroupId, [
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      ]);
+
+      await ServiceGroupDomain.addUsersToGroup(adminGroupId, [
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+      ]);
+
+      const serviceGroupUsers = await TestHelper.serviceGroupUser.load({
+        group_id: adminGroupId,
+      });
+
+      expect(serviceGroupUsers).toHaveLength(1);
+    });
   });
 
   describe('loadGroupsForExpiredTrials', () => {

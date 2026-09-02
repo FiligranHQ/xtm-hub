@@ -9,6 +9,7 @@ import {
   SectionConfig,
   SectionLink,
 } from '@/components/menu/navigation/shared/navigation.type';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import {
@@ -24,6 +25,7 @@ import {
   SlackIcon,
 } from '@filigran/icon';
 import {
+  FeatureFlag,
   OrderingMode,
   OrganizationCapability,
   PlatformIdentifier,
@@ -104,6 +106,9 @@ export const usePrivateNavigation = (): NavigationConfig => {
     ) ||
       hasOrganizationCapability(OrganizationCapability.ManageAccess));
   const isBypass = hasCapability?.(PortalCapability.Bypass) ?? false;
+  const isXtmPlatformTrialEnabled = useIsFeatureEnabled(
+    FeatureFlag.XtmPlatformTrial
+  );
   const settingsLinksConfig: SettingsLinkConfig[] = [
     {
       href: `/${APP_PATH}/admin/parameters`,
@@ -122,6 +127,10 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenuLinks('SolutionCategory'),
     },
     {
+      href: `/${APP_PATH}/admin/voting-rounds`,
+      label: tMenuLinks('VotingRound'),
+    },
+    {
       href: `/${APP_PATH}/admin/organizations`,
       label: tMenuLinks('Organization'),
     },
@@ -129,6 +138,15 @@ export const usePrivateNavigation = (): NavigationConfig => {
       href: `/${APP_PATH}/admin/service`,
       label: tMenuLinks('Service'),
     },
+    ...(isXtmPlatformTrialEnabled
+      ? [
+          {
+            href: `/${APP_PATH}/admin/manage-trials`,
+            label: tMenuLinks('ManageTrials'),
+            restriction: [PortalCapability.ReadTrials],
+          },
+        ]
+      : []),
     {
       href: `/${APP_PATH}/admin/opencti-trials`,
       label: tMenuLinks('OpenCTITrial'),

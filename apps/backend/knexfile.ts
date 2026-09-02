@@ -94,8 +94,13 @@ type BaseDatabaseType =
   | 'ManifestRebuildQueue'
   | 'Manifest'
   | 'Manifest_Document'
+  | 'ProductVersion'
   | 'PlatformMetadata'
-  | 'OneClickDeployment';
+  | 'OneClickDeployment'
+  | 'VotingRound'
+  | 'VotableFeature'
+  | 'VotableFeature_UseCase'
+  | 'FeatureVote';
 
 export type DatabaseType =
   | BaseDatabaseType
@@ -357,6 +362,16 @@ const createPlatformIdentifierFilterHandler = (): FilterHandler => ({
   },
 });
 
+const NULL_FILTER_VALUE = 'null';
+
+const createParentIdFilterHandler = (): FilterHandler => ({
+  key: DeploymentRequestFilterKey.ParentId,
+  addWhere: (qb, _type, values) => {
+    if (!values.includes(NULL_FILTER_VALUE)) return;
+    qb.whereNull('DeploymentRequest.parent_id');
+  },
+});
+
 const createMetadataFilterHandler = (key: string): FilterHandler => ({
   key,
   addWhere: (qb, _type, values) => {
@@ -419,6 +434,7 @@ const filterHandlers: Record<string, FilterHandler> = {
   [FilterKey.ProductVersion]: createProductVersionFilter(),
   [DeploymentRequestFilterKey.PlatformIdentifier]:
     createPlatformIdentifierFilterHandler(),
+  [DeploymentRequestFilterKey.ParentId]: createParentIdFilterHandler(),
 };
 
 const getFilterHandler = (key: string): FilterHandler => {

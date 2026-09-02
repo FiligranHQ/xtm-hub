@@ -16,9 +16,12 @@ import {
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
-import { DeploymentRequestDomain } from './deployment.domain';
+import {
+  DeploymentRequestDomain,
+  shouldDeleteDeploymentRequestAudience,
+} from './deployment.domain';
 import { ServiceGroupDomain } from './group/service-group.domain';
-import { trialQuotaKey } from './quota/deployment.quota.domain';
+import { QuotaKey, trialQuotaKey } from './quota/deployment.quota.domain';
 
 describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
@@ -90,6 +93,46 @@ describe('deploymentRequestDomain', () => {
       )?.node;
       expect(childNode?.parent_id).toBe(bundle?.id);
       expect(childNode?.url).toBe('https://xtmone.example.com');
+    });
+    it('should exclude bundle children when filtering on a null parent_id', async () => {
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          parent_id: bundle.id,
+        }
+      );
+      const standalone =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {}
+        );
+
+      const deploymentRequests =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            filters: [
+              {
+                key: DeploymentRequestFilterKey.Type,
+                value: [DeploymentRequestDeploymentType.Trial],
+              },
+              {
+                key: DeploymentRequestFilterKey.ParentId,
+                value: ['null'],
+              },
+            ],
+          }
+        );
+
+      expect(deploymentRequests.totalCount).toBe('1');
+      expect(deploymentRequests.edges[0]?.node?.id).toBe(standalone.id);
     });
     it('should filter deployment requests when searchTerm is specified ', async () => {
       const deployment =
@@ -247,6 +290,97 @@ describe('deploymentRequestDomain', () => {
       });
 
       expect(children).toEqual([]);
+    });
+  });
+
+  describe('loadChildrenByParentIds', () => {
+    afterEach(async () => {
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
+    });
+
+    const createBundle = () =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+      });
+
+    it('should return the children of the requested bundles only', async () => {
+      // Given
+      const firstBundle = await createBundle();
+      const secondBundle = await createBundle();
+      const unrequestedBundle = await createBundle();
+      const firstChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: firstBundle.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        );
+      const secondChild =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: secondBundle.id,
+            platform_identifier: PlatformIdentifier.Openaev,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          parent_id: unrequestedBundle.id,
+          platform_identifier: PlatformIdentifier.Xtmone,
+        }
+      );
+
+      // When
+      const children = await DeploymentRequestDomain.loadChildrenByParentIds([
+        firstBundle.id,
+        secondBundle.id,
+      ]);
+
+      // Then
+      expect(children).toHaveLength(2);
+      expect(
+        children.find((request) => request.id === firstChild.id)
+      ).toMatchObject({
+        parent_id: firstBundle.id,
+        platform_identifier: PlatformIdentifier.Opencti,
+      });
+      expect(
+        children.find((request) => request.id === secondChild.id)
+      ).toMatchObject({
+        parent_id: secondBundle.id,
+        platform_identifier: PlatformIdentifier.Openaev,
+      });
+    });
+
+    it('should expose the platform url of the children', async () => {
+      // Given
+      const bundle = await createBundle();
+      const child =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            parent_id: bundle.id,
+            platform_identifier: PlatformIdentifier.Opencti,
+          }
+        );
+      await TestHelper.platformConfiguration.create({
+        service_instance_id: child.service_instance_id,
+        platform_url: 'https://opencti.example.com',
+      });
+
+      // When
+      const children = await DeploymentRequestDomain.loadChildrenByParentIds([
+        bundle.id,
+      ]);
+
+      // Then
+      expect(children[0]).toMatchObject({
+        id: child.id,
+        platform_url: 'https://opencti.example.com',
+      });
+
+      await TestHelper.platformConfiguration.delete({
+        service_instance_id: child.service_instance_id,
+      });
     });
   });
 
@@ -667,6 +801,16 @@ describe('deploymentRequestDomain', () => {
   });
 
   describe('reorderDeploymentRequestUp', () => {
+    const BUNDLE_QUEUE_REGION = DeploymentRequestPlatformRegion.UsEast;
+
+    const createQueuedBundle = (ordering: number) =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        region: BUNDLE_QUEUE_REGION,
+        ordering,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
     it('should do nothing when deployment request is the top one', async () => {
       const topDeploymentRequest =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -802,9 +946,134 @@ describe('deploymentRequestDomain', () => {
       expect(resultSelectedDeploymentRequest).toBeDefined();
       expect(resultSelectedDeploymentRequest!.ordering).toBe(4);
     });
+    it('should swap a bundle with the bundle right above it in its region queue', async () => {
+      // Given
+      const firstBundle = await createQueuedBundle(1);
+      const secondBundle = await createQueuedBundle(2);
+
+      // When
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(secondBundle!);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(secondBundle!.id, {
+        ordering: 1,
+      });
+      await TestHelper.deploymentRequest.assertProperties(firstBundle!.id, {
+        ordering: 2,
+      });
+    });
+
+    it('should only reorder bundles from the same region', async () => {
+      // Given
+      const euWestBundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            region: DeploymentRequestPlatformRegion.EuWest,
+            ordering: 1,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      const usEastBundle = await createQueuedBundle(2);
+
+      // When
+      await DeploymentRequestDomain.reorderDeploymentRequestUp(usEastBundle!);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(usEastBundle!.id, {
+        ordering: 2,
+      });
+      await TestHelper.deploymentRequest.assertProperties(euWestBundle!.id, {
+        ordering: 1,
+      });
+    });
+  });
+
+  describe('getMaxOrderingInQueue', () => {
+    const queueOf = (region: DeploymentRequestPlatformRegion): QuotaKey => ({
+      type: DeploymentRequestDeploymentType.Trial,
+      platformIdentifier: PlatformIdentifier.Opencti,
+      region,
+    });
+
+    const createQueuedTrial = (
+      region: DeploymentRequestPlatformRegion,
+      ordering: number
+    ) =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        type: DeploymentRequestDeploymentType.Trial,
+        platform_identifier: PlatformIdentifier.Opencti,
+        region,
+        ordering,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
+
+    it('should number each region queue on its own, so two regions can share a rank', async () => {
+      // Given
+      await createQueuedTrial(DeploymentRequestPlatformRegion.EuWest, 1);
+      await createQueuedTrial(DeploymentRequestPlatformRegion.EuWest, 2);
+
+      // When
+      const euWest = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        queueOf(DeploymentRequestPlatformRegion.EuWest),
+        DeploymentRequestHubStatus.Queued
+      );
+      const usEast = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        queueOf(DeploymentRequestPlatformRegion.UsEast),
+        DeploymentRequestHubStatus.Queued
+      );
+
+      // Then
+      expect(euWest).toBe(2);
+      expect(usEast).toBeNull();
+    });
+
+    it('should ignore the bundle products, they follow their bundle instead of holding a rank', async () => {
+      // Given
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            region: DeploymentRequestPlatformRegion.EuWest,
+            ordering: 1,
+            hub_status: DeploymentRequestHubStatus.Queued,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_identifier: PlatformIdentifier.Opencti,
+          region: DeploymentRequestPlatformRegion.EuWest,
+          ordering: 9,
+          hub_status: DeploymentRequestHubStatus.Queued,
+          parent_id: bundle!.id,
+        }
+      );
+
+      // When
+      const maxOrdering = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        queueOf(DeploymentRequestPlatformRegion.EuWest),
+        DeploymentRequestHubStatus.Queued
+      );
+
+      // Then
+      expect(maxOrdering).toBeNull();
+    });
   });
 
   describe('reorderDeploymentRequestToTop', async () => {
+    const BUNDLE_QUEUE_REGION = DeploymentRequestPlatformRegion.UsEast;
+
+    const createQueuedBundle = (ordering: number) =>
+      TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        region: BUNDLE_QUEUE_REGION,
+        ordering,
+        hub_status: DeploymentRequestHubStatus.Queued,
+      });
     it('should do nothing when deployment request is the top one', async () => {
       const topDeploymentRequest =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -997,8 +1266,37 @@ describe('deploymentRequestDomain', () => {
       expect(resultTopDeploymentRequest).toBeDefined();
       expect(resultTopDeploymentRequest!.ordering).toBe(4);
     });
+    it('should move a bundle to the top and push down the other bundles of its region', async () => {
+      // Given
+      const firstBundle = await createQueuedBundle(1);
+      const secondBundle = await createQueuedBundle(2);
+      const thirdBundle = await createQueuedBundle(3);
+
+      // When
+      await DeploymentRequestDomain.reorderDeploymentRequestToTop(thirdBundle!);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(thirdBundle!.id, {
+        ordering: 1,
+      });
+      await TestHelper.deploymentRequest.assertProperties(firstBundle!.id, {
+        ordering: 2,
+      });
+      await TestHelper.deploymentRequest.assertProperties(secondBundle!.id, {
+        ordering: 3,
+      });
+    });
   });
-  describe('setLastPendingRequestAsQueued', () => {
+  describe('loadLastPendingRequest and setRequestAsQueued', () => {
+    const queueLastPendingRequest = async (key: QuotaKey) => {
+      const request = await DeploymentRequestDomain.loadLastPendingRequest(key);
+      if (!request) {
+        return undefined;
+      }
+
+      return DeploymentRequestDomain.setRequestAsQueued(request);
+    };
+
     let platformIdentifier: PlatformIdentifier;
     let region: DeploymentRequestPlatformRegion;
     let deploymentRequestId1: DeploymentRequestId;
@@ -1049,6 +1347,28 @@ describe('deploymentRequestDomain', () => {
       deploymentRequestId4 = deploymentRequest4!.id;
     });
 
+    it('should leave the ranks of the other regions untouched', async () => {
+      // Given
+      const euWestQueued =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            ordering: 1,
+            hub_status: DeploymentRequestHubStatus.Queued,
+            target_state: DeploymentRequestPlatformState.Unprovisioned,
+            platform_identifier: platformIdentifier,
+            region: DeploymentRequestPlatformRegion.EuWest,
+          }
+        );
+
+      // When
+      await queueLastPendingRequest(trialQuotaKey(platformIdentifier, region));
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(euWestQueued!.id, {
+        ordering: 1,
+      });
+    });
+
     it('should update the last request in platform and region', async () => {
       const openAEVDeploymentRequest =
         await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
@@ -1060,10 +1380,9 @@ describe('deploymentRequestDomain', () => {
           }
         );
 
-      const updatedRequest =
-        await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-          trialQuotaKey(platformIdentifier, region)
-        );
+      const updatedRequest = await queueLastPendingRequest(
+        trialQuotaKey(platformIdentifier, region)
+      );
 
       expect(updatedRequest).toBeDefined();
       expect(updatedRequest!.id).toBe(deploymentRequestId3);
@@ -1110,9 +1429,7 @@ describe('deploymentRequestDomain', () => {
     });
 
     it('should set pending requests in the right order with queued requests', async () => {
-      await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-        trialQuotaKey(platformIdentifier, region)
-      );
+      await queueLastPendingRequest(trialQuotaKey(platformIdentifier, region));
 
       await TestHelper.deploymentRequest.assertProperties(
         deploymentRequestId1,
@@ -1148,10 +1465,9 @@ describe('deploymentRequestDomain', () => {
         hub_status: DeploymentRequestHubStatus.Queued,
       });
 
-      const updatedRequest =
-        await DeploymentRequestDomain.setLastPendingRequestAsQueued(
-          trialQuotaKey(platformIdentifier, region)
-        );
+      const updatedRequest = await queueLastPendingRequest(
+        trialQuotaKey(platformIdentifier, region)
+      );
 
       expect(updatedRequest).toBeUndefined();
 
@@ -1437,33 +1753,29 @@ describe('deploymentRequestDomain', () => {
       return { createAudienceSpy };
     };
 
-    it('should NOT create an Auth0 audience for an OpenAEV instance', async () => {
-      const deployment = await createDeploymentRequest(
-        PlatformIdentifier.Openaev
-      );
-      const { createAudienceSpy } = spyOnAuth0AndServiceGroup();
+    it.each`
+      platformIdentifier            | shouldCreateAudience
+      ${PlatformIdentifier.Openaev} | ${false}
+      ${PlatformIdentifier.Opencti} | ${true}
+      ${PlatformIdentifier.Xtmone}  | ${false}
+    `(
+      'should create an Auth0 audience for a $platformIdentifier instance: $shouldCreateAudience',
+      async ({ platformIdentifier, shouldCreateAudience }) => {
+        const deployment = await createDeploymentRequest(platformIdentifier);
+        const { createAudienceSpy } = spyOnAuth0AndServiceGroup();
 
-      await DeploymentRequestDomain.initialiseServiceGroup(
-        deployment!.id,
-        PlatformIdentifier.Openaev
-      );
+        await DeploymentRequestDomain.initialiseServiceGroup(
+          deployment!.id,
+          platformIdentifier
+        );
 
-      expect(createAudienceSpy).not.toHaveBeenCalled();
-    });
-
-    it('should create an Auth0 audience for an OpenCTI instance', async () => {
-      const deployment = await createDeploymentRequest(
-        PlatformIdentifier.Opencti
-      );
-      const { createAudienceSpy } = spyOnAuth0AndServiceGroup();
-
-      await DeploymentRequestDomain.initialiseServiceGroup(
-        deployment!.id,
-        PlatformIdentifier.Opencti
-      );
-
-      expect(createAudienceSpy).toHaveBeenCalledOnce();
-    });
+        if (shouldCreateAudience) {
+          expect(createAudienceSpy).toHaveBeenCalledOnce();
+        } else {
+          expect(createAudienceSpy).not.toHaveBeenCalled();
+        }
+      }
+    );
   });
 
   describe('countDeploymentRequestsBy', () => {
@@ -1505,5 +1817,196 @@ describe('deploymentRequestDomain', () => {
       expect(countByRequester).toBe(2);
       expect(countByCanceller).toBe(2);
     });
+  });
+
+  describe('loadOngoingStandaloneTrialsForOrganization', () => {
+    const ORGANIZATION_ID = TEST_ORGANIZATIONS.FILIGRAN.ID;
+    const OTHER_ORGANIZATION_ID = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
+
+    afterEach(async () => {
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
+    });
+
+    it.each([
+      DeploymentRequestHubStatus.Queued,
+      DeploymentRequestHubStatus.Pending,
+      DeploymentRequestHubStatus.Provisioning,
+      DeploymentRequestHubStatus.Active,
+    ])(
+      'should return the standalone trial when its status is %s',
+      async (hubStatus) => {
+        // Given a standalone trial in an ongoing status
+        const standalone =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            { hub_status: hubStatus }
+          );
+
+        // When loading the ongoing standalone trials of the organization
+        const ongoing =
+          await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+            ORGANIZATION_ID
+          );
+
+        // Then the trial is returned
+        expect(ongoing.map(({ id }) => id)).toEqual([standalone.id]);
+      }
+    );
+
+    it.each([
+      DeploymentRequestHubStatus.Cancelled,
+      DeploymentRequestHubStatus.Expired,
+      DeploymentRequestHubStatus.Failed,
+    ])(
+      'should not return the standalone trial when its status is %s',
+      async (hubStatus) => {
+        // Given a standalone trial in a terminal status
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { hub_status: hubStatus }
+        );
+
+        // When loading the ongoing standalone trials of the organization
+        const ongoing =
+          await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+            ORGANIZATION_ID
+          );
+
+        // Then nothing is returned
+        expect(ongoing).toEqual([]);
+      }
+    );
+
+    it('should not return a bundle nor its products when the organization has an active bundle', async () => {
+      // Given an active bundle with an active child
+      const bundle =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          parent_id: bundle.id,
+          hub_status: DeploymentRequestHubStatus.Active,
+        }
+      );
+
+      // When loading the ongoing standalone trials of the organization
+      const ongoing =
+        await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+          ORGANIZATION_ID
+        );
+
+      // Then nothing is returned
+      expect(ongoing).toEqual([]);
+    });
+
+    it('should not return the trials of another organization', async () => {
+      // Given an ongoing standalone trial owned by another organization
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          organization_requester_id: OTHER_ORGANIZATION_ID,
+          hub_status: DeploymentRequestHubStatus.Active,
+        }
+      );
+
+      // When loading the ongoing standalone trials of the organization
+      const ongoing =
+        await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+          ORGANIZATION_ID
+        );
+
+      // Then nothing is returned
+      expect(ongoing).toEqual([]);
+    });
+
+    it('should return every ongoing standalone trial when the organization has several', async () => {
+      // Given two ongoing standalone trials on different products
+      const openctiTrial =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { hub_status: DeploymentRequestHubStatus.Active }
+        );
+      const openaevTrial =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            platform_identifier: PlatformIdentifier.Openaev,
+            hub_status: DeploymentRequestHubStatus.Pending,
+          }
+        );
+
+      // When loading the ongoing standalone trials of the organization
+      const ongoing =
+        await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
+          ORGANIZATION_ID
+        );
+
+      // Then both are returned
+      expect(ongoing.map(({ id }) => id).sort()).toEqual(
+        [openctiTrial.id, openaevTrial.id].sort()
+      );
+    });
+  });
+
+  describe('shouldDeleteDeploymentRequestAudience', () => {
+    it('should return false for a bundle', () => {
+      expect(
+        shouldDeleteDeploymentRequestAudience({
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          parent_id: null,
+        })
+      ).toBe(false);
+    });
+
+    it('should return false for an xtmone trial', () => {
+      expect(
+        shouldDeleteDeploymentRequestAudience({
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_identifier: PlatformIdentifier.Xtmone,
+          parent_id: null,
+        })
+      ).toBe(false);
+    });
+
+    it('should return false for an openaev bundle child', () => {
+      expect(
+        shouldDeleteDeploymentRequestAudience({
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_identifier: PlatformIdentifier.Openaev,
+          parent_id: uuidv4() as DeploymentRequestId,
+        })
+      ).toBe(false);
+    });
+
+    it('should return true for a standalone openaev trial', () => {
+      expect(
+        shouldDeleteDeploymentRequestAudience({
+          type: DeploymentRequestDeploymentType.Trial,
+          platform_identifier: PlatformIdentifier.Openaev,
+          parent_id: null,
+        })
+      ).toBe(true);
+    });
+
+    it.each`
+      description
+      ${'standalone'}
+      ${'bundle child'}
+    `(
+      'should return true for an opencti $description trial',
+      ({ description }) => {
+        expect(
+          shouldDeleteDeploymentRequestAudience({
+            type: DeploymentRequestDeploymentType.Trial,
+            platform_identifier: PlatformIdentifier.Opencti,
+            parent_id:
+              description === 'bundle child'
+                ? (uuidv4() as DeploymentRequestId)
+                : null,
+          })
+        ).toBe(true);
+      }
+    );
   });
 });

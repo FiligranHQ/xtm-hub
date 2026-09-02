@@ -1,6 +1,7 @@
-import { TrialsUpdateDeploymentQuotaCapacityMutation } from '@/components/trials/trials.graphql';
+import { trialsRegionKey } from '@/components/trials/trials.const';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { isEmpty } from '@/lib/utils';
 import {
   Button,
@@ -13,22 +14,28 @@ import {
 } from '@filigran/ui';
 import { toast } from '@filigran/ui/clients';
 import { Input } from '@filigran/ui/servers';
-import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
+import { trialsQuotasKeys } from '@graphql/deployment/deployment.keys';
+import {
+  DeploymentRequestPlatformRegion,
+  PlatformIdentifier,
+  TrialsQuotaFragment,
+  useTrialsUpdateDeploymentQuotaCapacityMutation,
+} from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
 interface TrialsTabQuotasPlatformUpdateFormProps {
-  quota: trialsDeploymentAvailabilityFragment$data;
+  quota: TrialsQuotaFragment;
   callback: () => void;
 }
 
 const formSchema = z.object({
-  region: z.string(),
-  platformIdentifier: z.string(),
+  region: z.enum(DeploymentRequestPlatformRegion),
+  platformIdentifier: z.enum(PlatformIdentifier).nullable(),
   newCapacity: z.int().min(0),
 });
 
@@ -49,38 +56,41 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
 
   setIsDirty(!isEmpty(form.formState.dirtyFields));
 
-  const [updateQuotaMutation] = useMutation(
-    TrialsUpdateDeploymentQuotaCapacityMutation
-  );
-  const [values, setValues] = useState<z.infer<typeof formSchema>>();
-  const updateQuota = () => {
-    updateQuotaMutation({
-      variables: {
-        input: {
-          ...values,
-        },
-      },
-      onCompleted: () => {
+  const queryClient = useQueryClient();
+  const { mutate: updateQuotaMutation } =
+    useTrialsUpdateDeploymentQuotaCapacityMutation(portalGraphqlClient, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: trialsQuotasKeys.all(),
+        });
         toast({
           title: t('Utils.Success'),
           description: t('TrialsDashboard.UpdateQuotasForm.QuotasUpdated'),
         });
         callback();
       },
-      onError: (error) => {
+      onError: (error: unknown) => {
+        const errorMessage =
+          error instanceof Error ? error.message : 'UnknownError';
         toast({
           variant: 'destructive',
           title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
+          description: t(`Error.Server.${errorMessage}`),
         });
       },
     });
+  const [values, setValues] = useState<z.infer<typeof formSchema>>();
+  const updateQuota = () => {
+    if (!values) {
+      return;
+    }
+    updateQuotaMutation({ input: values });
   };
 
   const onSubmit = (newValues: z.infer<typeof formSchema>) => {
     setValues(newValues);
   };
-  const translatedRegion = t(`Region.${quota.region.toUpperCase()}`);
+  const translatedRegion = t(trialsRegionKey(quota.region));
 
   return (
     <>

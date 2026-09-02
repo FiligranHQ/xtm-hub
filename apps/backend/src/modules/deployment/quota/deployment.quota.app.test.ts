@@ -432,7 +432,170 @@ describe('deploymentQuotaApp', () => {
     });
   });
 
-  describe('applyQuotaCapacityChange', () => {
+  describe('applyQuotaCapacityChange on a bundle quota', () => {
+    const applyBundleCapacity = async (newCapacity: number) => {
+      const onRequestMoved = vi.fn().mockResolvedValue(undefined);
+
+      await DeploymentQuotaApp.applyQuotaCapacityChange({
+        region,
+        newCapacity,
+        onRequestMoved,
+      });
+
+      return onRequestMoved;
+    };
+
+    it('should promote a queued bundle along with its children and take their places', async () => {
+      // Given
+      await setQuota(bundleFilter, { capacity: 5, availability: 0 });
+      const queuedBundle = await createQueuedBundle([
+        PlatformIdentifier.Opencti,
+      ]);
+
+      // When
+      const onRequestMoved = await applyBundleCapacity(6);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(
+        queuedBundle.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Pending }
+      );
+      const children = await TestHelper.deploymentRequest.loadMany({
+        parent_id: queuedBundle.id,
+      });
+      expect(children).toHaveLength(1);
+      expect(children[0]).toMatchObject({
+        hub_status: DeploymentRequestHubStatus.Pending,
+      });
+      expect(await loadAvailability(bundleFilter)).toBe(0);
+      expect(
+        await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+      ).toBe(4);
+      expect(onRequestMoved).toHaveBeenCalledTimes(1);
+      expect(onRequestMoved.mock.calls[0][0].id).toBe(queuedBundle.id);
+    });
+
+    it('should promote only as many bundles as the raised capacity allows', async () => {
+      // Given
+      await setQuota(bundleFilter, { capacity: 5, availability: 0 });
+      const firstQueuedBundle = await createRequest({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        hub_status: DeploymentRequestHubStatus.Queued,
+        ordering: 1,
+      });
+      const secondQueuedBundle = await createRequest({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        hub_status: DeploymentRequestHubStatus.Queued,
+        ordering: 2,
+      });
+
+      // When
+      const onRequestMoved = await applyBundleCapacity(6);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(
+        firstQueuedBundle.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Pending }
+      );
+      await TestHelper.deploymentRequest.assertProperties(
+        secondQueuedBundle.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Queued }
+      );
+      expect(onRequestMoved).toHaveBeenCalledTimes(1);
+    });
+
+    it('should queue the last pending bundle and give its places back when the capacity is lowered', async () => {
+      // Given
+      await setQuota(bundleFilter, { capacity: 1, availability: 0 });
+      await setQuota(productFilter(PlatformIdentifier.Opencti), {
+        capacity: 5,
+        availability: 4,
+      });
+      const pendingBundle = await createRequest({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        hub_status: DeploymentRequestHubStatus.Pending,
+      });
+      const child = await createRequest({
+        platform_identifier: PlatformIdentifier.Opencti,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        parent_id: pendingBundle.id,
+      });
+
+      // When
+      const onRequestMoved = await applyBundleCapacity(0);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(
+        pendingBundle.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Queued }
+      );
+      await TestHelper.deploymentRequest.assertProperties(
+        child.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Queued }
+      );
+      expect(await loadAvailability(bundleFilter)).toBe(0);
+      expect(
+        await loadAvailability(productFilter(PlatformIdentifier.Opencti))
+      ).toBe(5);
+      expect(onRequestMoved).toHaveBeenCalledTimes(1);
+    });
+
+    it('should queue only as many bundles as the lowered capacity requires', async () => {
+      // Given
+      await setQuota(bundleFilter, { capacity: 2, availability: 0 });
+      const firstPendingBundle = await createRequest({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        ordering: 1,
+      });
+      const secondPendingBundle = await createRequest({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        hub_status: DeploymentRequestHubStatus.Pending,
+        ordering: 2,
+      });
+
+      // When
+      const onRequestMoved = await applyBundleCapacity(1);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(
+        secondPendingBundle.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Queued }
+      );
+      await TestHelper.deploymentRequest.assertProperties(
+        firstPendingBundle.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Pending }
+      );
+      expect(onRequestMoved).toHaveBeenCalledTimes(1);
+    });
+
+    it('should stop without failing when there are less pending bundles than the capacity drop', async () => {
+      // Given
+      await setQuota(bundleFilter, { capacity: 3, availability: 0 });
+      const pendingBundle = await createRequest({
+        type: DeploymentRequestDeploymentType.Bundle,
+        platform_identifier: null,
+        hub_status: DeploymentRequestHubStatus.Pending,
+      });
+
+      // When
+      const onRequestMoved = await applyBundleCapacity(0);
+
+      // Then
+      await TestHelper.deploymentRequest.assertProperties(
+        pendingBundle.id as DeploymentRequestId,
+        { hub_status: DeploymentRequestHubStatus.Queued }
+      );
+      expect(onRequestMoved).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('applyQuotaCapacityChange on a product quota', () => {
     const applyCapacity = async (newCapacity: number) => {
       const onRequestMoved = vi.fn().mockResolvedValue(undefined);
 

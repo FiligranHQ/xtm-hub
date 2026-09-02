@@ -187,6 +187,20 @@
     },
     "JoinCommunity": "Stay in the loop on the Filigran Community"
   },
+  "FeatureVoting": {
+    "Title": "Vote for upcoming features",
+    "MetaDescription": "Vote for the features you want to see next in OpenCTI, OpenAEV, XTM One and XTM Hub.",
+    "Description": "Help us shape the future of Filigran products: vote for the feature you would like to see next. You have one vote per product, and you can change it at any time.",
+    "OneVotePerProduct": "You have one vote for this product. Voting for another feature moves your vote.",
+    "Vote": "Vote",
+    "Voted": "Your vote",
+    "VoteRecordedTitle": "Vote recorded",
+    "VoteRecordedDescription": "Thank you! Your vote has been taken into account.",
+    "NoOpenRound": "No feature vote is open at the moment. Come back soon!",
+    "CalloutTitle": "Help shape the roadmap",
+    "CalloutSubtitle": "A feature vote is open right now: tell us what you want to see next.",
+    "CalloutButton": "Vote for your next feature"
+  },
   "Error": {
     "AnErrorOccured": "An error occurred",
     "Login": {
@@ -212,6 +226,7 @@
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "A competitor with the same domain already exists",
       "COMPETITOR_NOT_FOUND": "Competitor not found",
+      "CONNECTOR_ID_ALREADY_EXISTS": "A connector with this identifier already exists",
       "CONNECTOR_VERSION_ALREADY_EXISTS": "A connector with this version already exists",
       "CONTACT_TOO_LONG": "The contact is too long",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
@@ -265,11 +280,13 @@
       "INVALID_PLATFORM_VERSION": "Invalid platform version",
       "INVALID_PRODUCTS_FOR_DEPLOYMENT_TYPE": "The selected products are not valid for this deployment type",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during product connection",
+      "LOAD_CAPABILITIES_ERROR": "An error occurred while loading capabilities",
       "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Missing auto connection product argument",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
       "MISSING_CAPABILITY_ON_SERVICE": "Missing permissions",
       "MISSING_METADATA_MAPPING": "Missing metadata mapping",
       "MISSING_START_OR_END_DATE": "An unknown error occurred",
+      "INVALID_USE_CASES_FOR_PRODUCTS": "Use cases do not match the requested products",
       "MIXED_LTS_MANIFEST_FRAGMENTS": "A batch cannot mix LTS and non-LTS fragments",
       "NEWS_FEED_ITEM_MISSING_TITLE": "News feed item is missing title",
       "NEWS_FEED_ITEM_NOT_FOUND": "News feed item not found",
@@ -289,6 +306,7 @@
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "An error occurred while removing user from a pending organization",
       "SEO_SERVICE_INSTANCE_NOT_FOUND": "SEO Service instance metadata was not found",
       "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
+      "SERVICE_GROUP_NOT_FOUND": "Service group was not found",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "You are not allowed to do this",
       "SERVICE_INSTANCE_NOT_FOUND": "Service instance was not found",
       "SERVICE_INSTANCE_NOT_PUBLIC": "You do not have access to this service",
@@ -309,7 +327,20 @@
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
       "USER_NOT_FOUND": "User is not found",
-      "YOU_CAN_NOT_LOGIN": "You can not login"
+      "XTM_ONE_ROLE_REQUIRED": "An XTM One role is required",
+      "VOTABLE_FEATURE_NOT_FOUND": "This feature is no longer open for voting",
+      "VOTE_FOR_FEATURE_ERROR": "An error occurred while recording your vote",
+      "YOU_CAN_NOT_LOGIN": "You can not login",
+      "VOTING_ROUND_NOT_OPEN": "This voting round is not open",
+      "VOTING_ROUND_CLOSED": "This voting round is closed",
+      "VOTING_ROUND_NOT_FOUND": "Voting round not found",
+      "DELETE_VOTING_ROUND_BLOCKED_BY_VOTES": "This round already collected votes and cannot be deleted",
+      "DELETE_VOTABLE_FEATURE_BLOCKED_BY_VOTES": "This feature already collected votes, deactivate it instead",
+      "VOTING_ROUND_MUTATION_ERROR": "An error occurred while saving the voting round",
+      "OPEN_VOTING_ROUND_WITHOUT_ACTIVE_FEATURE": "This round has no active feature and cannot be opened",
+      "VOTABLE_FEATURE_PRODUCT_LOCKED": "This feature already collected votes, its product can no longer be changed",
+      "COPY_FEATURES_FROM_ANOTHER_ROADMAP": "Features can only be copied from a round of the same roadmap",
+      "VOTABLE_FEATURE_MUTATION_ERROR": "An error occurred while saving the feature"
     },
     "SomethingWentWrong": "Something went wrong",
     "YouAreNotAuthorized": "You are not authorized to get this page."
@@ -337,7 +368,8 @@
       "GoToPlatform": "Go to {title}",
       "Details": "Details",
       "Documentation": "Documentation",
-      "ConnectPlatform": "Connect {platformName}"
+      "ConnectPlatform": "Connect {platformName}",
+      "Trial": "Trial"
     }
   },
   "HomePage": {
@@ -490,6 +522,7 @@
     "Documentation": "Documentation",
     "Scenarios": "Scenarios",
     "XTMRoadmap": "XTM Platform Roadmap",
+    "FeatureVoting": "Feature Voting",
     "FiligranAcademy": "Filigran Academy",
     "Blog": "Blog",
     "Slack": "Slack",
@@ -514,7 +547,9 @@
     "OpenCTITrial": "OpenCTI Trial",
     "OpenAEVTrial": "OpenAEV Trial",
     "Competitor": "Competitor",
-    "NewsFeed": "News Feed"
+    "NewsFeed": "News Feed",
+    "VotingRound": "Feature voting",
+    "ManageTrials": "Manage trials"
   },
   "NewsFeedAdminPage": {
     "Title": "Title",
@@ -637,7 +672,8 @@
       "CancellationReason": "Cancellation Reason",
       "Available": "Available",
       "Taken": "Taken",
-      "Total": "Total"
+      "Total": "Total",
+      "Products": "Products"
     },
     "TabTitle": {
       "Cancelled": "Cancelled",
@@ -647,12 +683,16 @@
       "Quotas": "Quotas"
     },
     "Toast": {
-      "TrialsReordered": "Trial requests were reordered"
+      "TrialsReordered": "Trial requests were reordered",
+      "BundleCancelled": "The bundle trial was cancelled successfully.",
+      "BundleReordered": "The bundle has been reordered in the queue."
     },
     "Actions": {
       "SearchTrials": "Search by email or organization",
       "MoveToTop": "Move to top",
-      "MoveUp": "Move up"
+      "MoveUp": "Move up",
+      "CancelBundle": "Cancel the bundle trial",
+      "CancelTrial": "Cancel the trial"
     },
     "UpdateQuotasForm": {
       "Title": "Update quotas for {platform} in {region}",
@@ -662,11 +702,24 @@
         "ConfirmTitle": "Quota Update for Region {region}",
         "ConfirmDescription": "You’ve updated the quotas for Region {region} from {oldCapacity} to {newCapacity}.",
         "ConfirmSentence": "Are you sure you want to save these changes?"
-      }
+      },
+      "BundleTitle": "Update the bundle quota in {region}"
     },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
     "Registered": "Connected",
-    "NotRegistered": "Not Connected"
+    "NotRegistered": "Not Connected",
+    "ProductStatus": {
+      "queued": "Queued",
+      "pending": "Pending",
+      "provisioning": "Provisioning",
+      "active": "Active",
+      "expired": "Expired",
+      "cancelled": "Cancelled",
+      "failed": "Failed"
+    },
+    "Cancellation": {
+      "Confirmation": "Are you sure you want to cancel the bundle trial of {organizationName}? Every product of the bundle will be cancelled."
+    }
   },
   "Parameters": {
     "Version": "Version"
@@ -714,7 +767,8 @@
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",
-    "xtmhub": "XTM Hub"
+    "xtmhub": "XTM Hub",
+    "xtmone": "XTM One"
   },
   "ProfilePage": {
     "Picture": "Picture",
@@ -1372,7 +1426,7 @@
     "Trials": {
       "ExploreBold": "Free Trial!",
       "ExplorePlatform": "Explore {platformName} platform with 30 days",
-      "ExploreProducts": "Explore OpenCTI or OpenAEV platform with 30 days",
+      "ExploreProducts": "Explore OpenCTI or OpenAEV product with 30 days",
       "Active": "Your OpenCTI free trial is active",
       "Provisioning": "Your OpenCTI free trial is currently being provisioned.",
       "Requested": "Your OpenCTI free trial has been requested.",
@@ -1474,7 +1528,56 @@
         "Ending": {
           "Text": "Keep exploring the full XTM Platform experience before your trial ends."
         },
-        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}"
+        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}",
+        "Page": {
+          "Breadcrumb": "XTM Platform Trial",
+          "Overline": "XTM Platform free trial",
+          "Title": "Start your 30-day free trial",
+          "PitchTitle": "Explore the full XTM Platform experience",
+          "PitchDescription": "Get 30 days to explore the SaaS-based, enterprise editions of OpenCTI and OpenAEV, including XTM One's agentic orchestration capabilities. Unify your threat intelligence and validate your defenses with agentic, continuous exposure management and cyber risk reduction.",
+          "Products": {
+            "opencti": {
+              "Tagline": "Unify and prioritize your threat signals",
+              "Description": "Break data silos and operationalize threat intelligence with OpenCTI, an agentic platform built by practitioners, for practitioners, featuring automated playbooks, PIRs, FINTEL, and AI-powered import, reporting, and search. Enterprise-grade governance and sovereignty included."
+            },
+            "openaev": {
+              "Tagline": "Validate your defenses",
+              "Description": "Simulate real attacks against your existing defenses, EDR agents included, with automated scenario generation and AI-powered remediation guidance to see what's actually exploitable. From tabletop exercises to full posture validation and resilience reporting for leadership."
+            },
+            "xtmone": {
+              "Tagline": "Your agentic threat management cockpit",
+              "Description": "XTM One is the agentic AI layer orchestrating assistive and agentic AI across OpenCTI and OpenAEV, moving you from threat signal to validated action at machine speed, human-in-the-loop, closing the loop on CTEM."
+            }
+          },
+          "Limitations": {
+            "Title": "Trial limitations",
+            "Intro": "The XTM Platform free trial includes all Enterprise Edition SaaS features, but with limited computing power and storage:",
+            "OpenCTI": "For OpenCTI: up to 40GB in intelligence data storage and 3GB in file storage.",
+            "OpenAEV": "For OpenAEV: 16GB",
+            "Ingestion": "Ingesting large, premium feed with rich data sets during this trial could impact your storage quickly.",
+            "NoSLA": "Note that this trial does not include SLAs. In the event of a cloud provider outage, recovery time is not guaranteed. We recommend not storing critical or irreplaceable data in your trial environment."
+          },
+          "Form": {
+            "ProductsTitle": "Products included in this trial",
+            "ProductsWarning": "Choose your trial bundle carefully.",
+            "ProductsWarningDescription": "Once your trial starts, products cannot be added or changed, and no additional trials can be requested for the same organization.",
+            "OngoingTrialWarning": "You have {count, plural, one {an ongoing {products} trial} other {ongoing {products} trials}}. Requesting a XTM platform trial will cancel {count, plural, one {your current trial} other {all your current trials}} and data will not be transferred.",
+            "OngoingTrialDescription": "When you chose a new trial bundle, products cannot be changed, and no additional trials can be requested for the same organization.",
+            "UseCaseFor": "{product} use case",
+            "Submit": "Request XTM Platform trial"
+          },
+          "NotLoggedIn": {
+            "Title": "To be elligible to request trial you need to be login",
+            "Description": "Please create a XTM account or connect you to an existent one."
+          },
+          "NotAdmin": {
+            "Title": "To request a trial you need to be Organization admin",
+            "Description": "Please contact the organization admin in your company"
+          },
+          "PersonalSpace": {
+            "Title": "Trials are not available in a personal space"
+          }
+        }
       },
       "QuickStart": {
         "Title": "Quick start guide",
@@ -1510,14 +1613,14 @@
       },
       "Form": {
         "Region": "Region",
-        "RegionPlaceholder": "Please select your preferred region for hosting",
-        "AssociatedEmail": "Associated Email",
+        "RegionPlaceholder": "Select your preferred region for hosting",
+        "AssociatedEmail": "Associated Email：",
         "JobTitle": "Job title",
-        "JobTitlePlaceholder": "Please select your job title",
+        "JobTitlePlaceholder": "Select your job title",
         "ActivitySector": "Activity sector",
-        "ActivitySectorPlaceholder": "Please select your activity sector",
+        "ActivitySectorPlaceholder": "Select your activity sector",
         "UseCase": "Use case",
-        "UseCasePlaceholder": "Please select your use case",
+        "UseCasePlaceholder": "Select your use case",
         "MSSA": "MSSA",
         "MSSAAgreement": "I acknowledge that I have read, understand and agree to the trial terms of",
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
@@ -1591,6 +1694,91 @@
       "SureDeleteService": "Are you sure you want to delete the custom view {name}?",
       "NonActive": "Draft",
       "Active": "Published"
+    },
+    "Bundle": {
+      "ManageTrial": {
+        "Breadcrumb": {
+          "BundleName": "XTM Platform Trial",
+          "ManageUsers": "Manage users"
+        },
+        "Title": "Manage your team on XTM Platform trial",
+        "Eyebrow": "XTM Platform free trial",
+        "Description": "Easily manage your team and collaborate throughout your XTM Platform trial. Invite team members, assign roles and permissions, and ensure everyone has the right level of access to the platform.",
+        "BackButton": "Back to XTM Platform Trial",
+        "GroupAction": "Group action",
+        "GroupActionDisabledTooltip": "You need to select users in the list to apply group action",
+        "BulkDeleteTooltip": "You can delete selected users",
+        "AddTrialUser": "Add trial user",
+        "BulkDeleteDialog": {
+          "Title": "Remove users from trial",
+          "Text": "Are you sure you want to remove {emails} from this trial? They will lose access to all products.",
+          "MoreEmails": "+{count} more"
+        },
+        "Table": {
+          "Email": "Email",
+          "NoUsers": "No users found.",
+          "RoleUpdated": "{email} {role} has been updated",
+          "DeleteDialog": {
+            "Title": "Remove user from trial",
+            "Text": "Are you sure you want to remove {email} from this trial? They will lose access to all products."
+          }
+        },
+        "AddUserDialog": {
+          "Title": "Add trial user",
+          "EmailPlaceholder": "Add email"
+        },
+        "EditUsersDialog": {
+          "Title": "Edit users",
+          "Users": "Manage trial users",
+          "UsersPlaceholder": "Select users",
+          "MixedRoles": "Users with different roles are selected"
+        },
+        "Roles": {
+          "DefaultSuffix": "(default)",
+          "NoAccess": "No access",
+          "opencti": {
+            "Title": "{count, plural, one {OpenCTI role} other {OpenCTI roles}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to product settings, configuration, and management. Admins can manage users, roles, and system-wide settings, in addition to having full visibility and control over the data."
+            },
+            "Analyst": {
+              "Label": "Analyst",
+              "Description": "A role with full access to all knowledge within the product. Analysts can create, edit, and manage entities, relationships, and investigations, but do not have access to product settings, administration, or configuration options."
+            },
+            "Reader": {
+              "Label": "Reader",
+              "Description": "A read-only role that allows access to view all data in the product without the ability to make any modifications. Ideal for users who only need to consume information."
+            }
+          },
+          "openaev": {
+            "Title": "{count, plural, one {OpenAEV role} other {OpenAEV roles}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to product settings, configuration, and management. Admins can manage users, roles, and system-wide settings, in addition to having full visibility and control over the elements."
+            },
+            "Manager": {
+              "Label": "Manager",
+              "Description": "A role with full capabilities to manage and run any type of scenario. Manager can modify any element in the product but do not have access to product settings, administration, or configuration options."
+            },
+            "Observer": {
+              "Label": "Observer",
+              "Description": "A read-only role that allows access to view all elements in the product without the ability to make any modifications. Ideal for users who only need to consume information."
+            }
+          },
+          "xtmone": {
+            "Title": "{count, plural, one {XTM One role} other {XTM One roles}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to platform settings, configuration, and management. Admins can manage users, groups, integrations, and system-wide settings, in addition to having full visibility and control over all elements, including company-managed resources shared across the organization. They can impersonate users for troubleshooting."
+            },
+            "User": {
+              "Label": "User",
+              "Description": "A role with full capabilities to create, configure, and run their own agents, flows, and knowledge bases. Users can modify any element they own or that has been shared with them, but do not have access to platform settings, administration, or configuration options."
+            }
+          }
+        }
+      }
     }
   },
   "ServiceActions": {
@@ -1628,6 +1816,12 @@
     "Dark": "Dark",
     "Light": "Light",
     "SetTheme": "Set theme"
+  },
+  "ThreadConference": {
+    "Description": "The annual gathering of the global threat intelligence and cyber defense community - where intelligence, exposure management and action come together.",
+    "Date": "October 15, 2026 | Paris",
+    "ImageAlt": "Thread Conference Banner",
+    "Cta": "Learn more"
   },
   "UnexpectedErrorDialog": {
     "Description": "Please try logging in again. If the issue persists, contact us for assistance.",
@@ -1833,5 +2027,78 @@
     "vulnerability_analyst": "Vulnerability Analyst",
     "consultant": "Consultant",
     "other": "Other"
+  },
+  "VotingRound": {
+    "Actions": {
+      "Add": "Create voting round",
+      "Edit": "Edit voting round",
+      "Open": "Open for voting",
+      "Close": "Close voting"
+    },
+    "Form": {
+      "Name": "Name",
+      "Description": "Description",
+      "DescriptionPlaceholder": "Shown to users on the public voting page",
+      "CopyFeaturesFrom": "Copy features from",
+      "CopyFeaturesNone": "Start from an empty round",
+      "Error": {
+        "Name": "Name is required",
+        "ServiceInstance": "A roadmap is required"
+      },
+      "ServiceInstance": "Roadmap",
+      "ServiceInstancePlaceholder": "Select a roadmap",
+      "Theme": "Banner style"
+    },
+    "ListPage": {
+      "Name": "Name",
+      "Status": "Status",
+      "FeatureCount": "Features",
+      "ServiceInstance": "Roadmap"
+    },
+    "Status": {
+      "draft": "Draft",
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "Dialog": {
+      "DeleteRound": "Are you sure you want to delete {name}? This is only possible while it has no vote.",
+      "OpenRound": "Open {name} for voting? The round currently open will be closed and its results kept.",
+      "CloseRound": "Close voting on {name}? Users will no longer be able to vote and the results are kept.",
+      "DeleteFeature": "Are you sure you want to delete {title}?"
+    },
+    "Feature": {
+      "SectionTitle": "Features",
+      "Title": "Title",
+      "Product": "Product",
+      "ShortDescription": "Short description",
+      "Description": "Description",
+      "Illustration": "Illustration",
+      "Position": "Position",
+      "Active": "Active",
+      "ActiveYes": "Yes",
+      "ActiveNo": "No",
+      "Actions": {
+        "Add": "Add feature",
+        "Edit": "Edit feature"
+      },
+      "Error": {
+        "Title": "Title is required",
+        "ShortDescription": "Short description is required",
+        "Description": "Description is required",
+        "Position": "Position must be a positive number"
+      },
+      "RemoveIllustration": "Remove the illustration",
+      "DescriptionPlaceholder": "Full description shown when a user opens the feature. Markdown is supported."
+    },
+    "Results": {
+      "Title": "Results",
+      "TotalVoters": "{count} voters",
+      "Empty": "No vote yet for this round.",
+      "InactiveFeature": "Deactivated"
+    },
+    "Theme": {
+      "default": "Default",
+      "thread": "Thread"
+    }
   }
 }

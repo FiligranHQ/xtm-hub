@@ -90,4 +90,90 @@ describe('userOrganizationDomain', () => {
       ).toBe(1);
     });
   });
+
+  describe('areAllUsersInOrganization', () => {
+    it('should return true when userIds is empty', async () => {
+      const organization = await TestHelper.organization.create({
+        personal_space: false,
+      });
+
+      expect(
+        await UserOrganizationDomain.areAllUsersInOrganization(
+          [],
+          organization.id
+        )
+      ).toBe(true);
+    });
+
+    it('should return true when all users belong to the organization', async () => {
+      const organization = await TestHelper.organization.create({
+        personal_space: false,
+      });
+      const user1 = await UserHelper.createUserWithPersonalSpace(
+        { email: `are-all-users-in-organization-${uuidv4()}@filigran.io` },
+        { sendWelcomeEmail: false }
+      );
+      const user2 = await UserHelper.createUserWithPersonalSpace(
+        { email: `are-all-users-in-organization-${uuidv4()}@filigran.io` },
+        { sendWelcomeEmail: false }
+      );
+      await UserOrganizationDomain.createUserOrganizationRelation({
+        user_id: user1.id,
+        organizations_id: [organization.id],
+      });
+      await UserOrganizationDomain.createUserOrganizationRelation({
+        user_id: user2.id,
+        organizations_id: [organization.id],
+      });
+
+      expect(
+        await UserOrganizationDomain.areAllUsersInOrganization(
+          [user1.id, user2.id],
+          organization.id
+        )
+      ).toBe(true);
+    });
+
+    it('should return false when one user does not belong to the organization', async () => {
+      const organization = await TestHelper.organization.create({
+        personal_space: false,
+      });
+      const user1 = await UserHelper.createUserWithPersonalSpace(
+        { email: `are-all-users-in-organization-${uuidv4()}@filigran.io` },
+        { sendWelcomeEmail: false }
+      );
+      const outsideUser = await UserHelper.createUserWithPersonalSpace(
+        { email: `are-all-users-in-organization-${uuidv4()}@filigran.io` },
+        { sendWelcomeEmail: false }
+      );
+      await UserOrganizationDomain.createUserOrganizationRelation({
+        user_id: user1.id,
+        organizations_id: [organization.id],
+      });
+      await UserOrganizationDomain.createUserOrganizationRelation({
+        user_id: outsideUser.id,
+        organizations_id: [TEST_ORGANIZATIONS.FILIGRAN.ID],
+      });
+
+      expect(
+        await UserOrganizationDomain.areAllUsersInOrganization(
+          [user1.id, outsideUser.id],
+          organization.id
+        )
+      ).toBe(false);
+    });
+
+    it('should return false when a userId is not linked to any organization', async () => {
+      const organization = await TestHelper.organization.create({
+        personal_space: false,
+      });
+
+      expect(
+        await UserOrganizationDomain.areAllUsersInOrganization(
+          [uuidv4()],
+          organization.id
+        )
+      ).toBe(false);
+    });
+  });
 });

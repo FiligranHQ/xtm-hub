@@ -1,0 +1,20 @@
+query Users(
+  $first: Int!
+  $orderBy: UserOrdering!
+  $orderMode: OrderingMode!
+  $filters: [Filter!]
+) {
+  users(
+    first: $first
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+  ) {
+    edges {
+      node {
+        id
+        email
+      }
+    }
+  }
+}

@@ -49,7 +49,12 @@ describe('deployment resolver', () => {
             activity_sector:
               DeploymentRequestActivitySector.ComputerNetworkSecurity,
             job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
-            use_case: DeploymentRequestUseCase.ThreatHunting,
+            use_cases_by_product: [
+              {
+                platform_identifier: PlatformIdentifier.Opencti,
+                use_case: DeploymentRequestUseCase.ThreatHunting,
+              },
+            ],
             products: [PlatformIdentifier.Opencti],
             region: DeploymentRequestPlatformRegion.UsEast,
             type: DeploymentRequestDeploymentType.Trial,
@@ -81,7 +86,12 @@ describe('deployment resolver', () => {
         activity_sector:
           DeploymentRequestActivitySector.ComputerNetworkSecurity,
         job_title: DeploymentRequestJobTitle.CybersecurityEngineer,
-        use_case: DeploymentRequestUseCase.ThreatHunting,
+        use_cases_by_product: [
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+        ],
         products: [PlatformIdentifier.Opencti],
         region: DeploymentRequestPlatformRegion.UsEast,
         type: DeploymentRequestDeploymentType.Trial,
@@ -204,24 +214,28 @@ describe('deployment resolver', () => {
 
       expect(availableDeployments).toStrictEqual([
         {
+          id: expect.any(String),
           region: DeploymentRequestPlatformRegion.ApacAu,
           availableCount: 10,
           capacity: 10,
           platform_identifier: PlatformIdentifier.Opencti,
         },
         {
+          id: expect.any(String),
           region: DeploymentRequestPlatformRegion.ApacSg,
           availableCount: 10,
           capacity: 10,
           platform_identifier: PlatformIdentifier.Opencti,
         },
         {
+          id: expect.any(String),
           region: DeploymentRequestPlatformRegion.EuWest,
           availableCount: 20,
           capacity: 20,
           platform_identifier: PlatformIdentifier.Opencti,
         },
         {
+          id: expect.any(String),
           region: DeploymentRequestPlatformRegion.UsEast,
           availableCount: 20,
           capacity: 20,

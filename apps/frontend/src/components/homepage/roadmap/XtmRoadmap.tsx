@@ -6,6 +6,7 @@ import type { HomepageRoadmapTitleProduct } from '@/components/homepage/Homepage
 import { CountBadge } from '@/components/ui/CountBadge';
 import { PublicLocale } from '@/i18n/config';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
+import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { Button } from '@filigran/ui/servers';
 import {
@@ -51,7 +52,7 @@ const XtmRoadmap = async ({
   const data = await serverGraphqlFetch<EpicCountPerTimelineQueryQuery>(
     EpicCountPerTimelineQueryDocument,
     {},
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
   );
 
   const epicCounts = data.countEpicsPerTimeline;

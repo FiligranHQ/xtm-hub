@@ -1,6 +1,7 @@
 import HomepageResourceList from '@/components/homepage/resources/HomepageResourceList';
 import { PublicLocale } from '@/i18n/config';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
+import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import {
   NewestDocumentsQueryDocument,
   NewestDocumentsQueryQuery,
@@ -33,7 +34,7 @@ const NewestResources = async ({
       limit: NEWEST_LIMIT,
       platformIdentifiers: platformIdentifiers ?? [],
     },
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
   );
 
   return (

@@ -7,10 +7,13 @@ import {
   useCountEpicsByProduct,
   useDraftAndTimelineEpics,
 } from '@/components/epic/epic-list-utils';
+import { FeatureVotingCallout } from '@/components/feature-voting/FeatureVotingCallout';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { CountBadge } from '@/components/ui/CountBadge';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
-import useServiceCapability from '@/hooks/use-service-capability';
+import useServiceCapability, {
+  useServiceCapabilityWithSubscriptionId,
+} from '@/hooks/use-service-capability';
 import { cn } from '@/lib/utils';
 import { DEBOUNCE_TIME } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
@@ -44,9 +47,9 @@ interface EpicListProps {
   onSearch: (searchTerm: string) => void;
 }
 
-const isServiceInstanceWithSubscriptions = (
+const isServiceInstanceWithCapabilities = (
   instance: serviceInstance_fragment$data | seoServiceInstanceFragment$data
-): instance is serviceInstance_fragment$data => 'subscriptions' in instance;
+): instance is serviceInstance_fragment$data => 'capabilities' in instance;
 
 export const EpicList = ({
   epics,
@@ -58,7 +61,7 @@ export const EpicList = ({
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
   const [showFinished, setShowFinished] = useState(false);
-  const detailedServiceInstance = isServiceInstanceWithSubscriptions(
+  const detailedServiceInstance = isServiceInstanceWithCapabilities(
     serviceInstance
   )
     ? serviceInstance
@@ -72,13 +75,15 @@ export const EpicList = ({
     ServiceRestriction.Delete,
     detailedServiceInstance
   );
-  const { me, hasOrganizationCapability } = useContext(PortalContext);
-
-  const canManageService =
-    useServiceCapability(
+  const { hasOrganizationCapability } = useContext(PortalContext);
+  const { hasCapability: canManageServiceCapability, subscriptionId } =
+    useServiceCapabilityWithSubscriptionId(
       ServiceRestriction.ManageAccess,
       detailedServiceInstance
-    ) ||
+    );
+
+  const canManageService =
+    canManageServiceCapability ||
     (hasOrganizationCapability &&
       (hasOrganizationCapability(
         OrganizationCapability.AdministrateOrganization
@@ -136,10 +141,6 @@ export const EpicList = ({
     DEBOUNCE_TIME
   );
 
-  const currentSubscription = detailedServiceInstance?.subscriptions?.find(
-    (sub) => sub?.organization_id === me?.selected_organization_id
-  );
-
   return (
     <>
       <div className="flex m-s">
@@ -151,18 +152,19 @@ export const EpicList = ({
               setOpen={setOpenSheet}
             />
           )}
-          {(canManageService || isBypass) && currentSubscription?.id && (
+          {(canManageService || isBypass) && subscriptionId && (
             <Button
               asChild
               variant="secondary">
               <Link
-                href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${currentSubscription.id}`}>
+                href={`/${APP_PATH}/manage/service/${serviceInstance.id}/subscription/${subscriptionId}`}>
                 {t('Service.Capabilities.ManageAccessName')}
               </Link>
             </Button>
           )}
         </div>
       </div>
+      <FeatureVotingCallout serviceInstanceId={serviceInstance.id} />
       <EpicFilter
         selectedFilter={selectedProduct}
         onSelectedFilterChange={onFilterChange}
@@ -186,7 +188,7 @@ export const EpicList = ({
         return (
           <div
             key={timeline.title}
-            className="flex items-stretch gap-m">
+            className="mx-s flex items-stretch gap-m">
             <div className="flex flex-col items-center self-stretch mt-xl">
               <CountBadge
                 count={timeline.epics.length}

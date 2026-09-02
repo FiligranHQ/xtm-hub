@@ -46,6 +46,8 @@ vi.mock('next/navigation', async (importOriginal) => ({
   useRouter: vi.fn(),
   useParams: vi.fn(),
   useSearchParams: vi.fn(),
+  redirect: vi.fn(),
+  notFound: vi.fn(),
 }));
 
 vi.mock('next-intl', async (importOriginal) => ({
@@ -116,6 +118,22 @@ Object.defineProperty(globalThis, 'ResizeObserver', {
 });
 
 Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+  writable: true,
+  value: vi.fn(),
+});
+
+// jsdom does not implement the Pointer Capture API, which Radix UI's Select
+// relies on when handling item selection. Without these, clicking a
+// SelectItem throws "target.hasPointerCapture is not a function".
+Object.defineProperty(window.HTMLElement.prototype, 'hasPointerCapture', {
+  writable: true,
+  value: vi.fn(() => false),
+});
+Object.defineProperty(window.HTMLElement.prototype, 'setPointerCapture', {
+  writable: true,
+  value: vi.fn(),
+});
+Object.defineProperty(window.HTMLElement.prototype, 'releasePointerCapture', {
   writable: true,
   value: vi.fn(),
 });

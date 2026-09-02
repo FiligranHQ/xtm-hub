@@ -30,9 +30,7 @@ export const UpdatePlatformServiceMetadata = graphql`
 
 export const ServiceById = graphql`
   query serviceByIdQuery($service_instance_id: ServiceInstanceId!) {
-    serviceInstanceByIdAndGrantAccess(
-      service_instance_id: $service_instance_id
-    ) {
+    serviceInstanceById(service_instance_id: $service_instance_id) {
       ...serviceInstance_fragment
     }
   }
@@ -44,15 +42,6 @@ export const serviceInstanceFragment = graphql`
     description
     slug
     capabilities
-    subscriptions {
-      id
-      organization_id
-      user_service {
-        user {
-          id
-        }
-      }
-    }
     service_definition {
       identifier
     }
