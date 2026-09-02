@@ -572,11 +572,14 @@ export const DeploymentApp = {
 
   loadXtmPlatformBundle: async (): Promise<DeploymentRequest | null> => {
     const user = requestContext.requireUser();
-    const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest({
-      type: DeploymentRequestDeploymentType.Bundle,
-      organization_requester_id: user.selected_organization_id,
-      counts_in_orga_quota: true,
-    });
+    const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest(
+      {
+        type: DeploymentRequestDeploymentType.Bundle,
+        organization_requester_id: user.selected_organization_id,
+        counts_in_orga_quota: true,
+      },
+      { orderBy: { column: 'request_date', order: 'desc' } }
+    );
 
     return bundle ?? null;
   },

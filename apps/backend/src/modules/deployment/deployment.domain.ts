@@ -207,11 +207,26 @@ export const DeploymentRequestDomain = {
   },
 
   loadFullDeploymentRequest: async (
-    conditions: DeploymentRequestMutator
+    conditions: DeploymentRequestMutator,
+    options?: {
+      orderBy?: {
+        column: keyof DeploymentRequest & string;
+        order: 'asc' | 'desc';
+      };
+    }
   ): Promise<FullyQualifiedDeploymentRequest | undefined> => {
-    return getDeploymentRequestWithUserDataQuery()
-      .where(prefixObjectKeys(conditions, 'DeploymentRequest.'))
-      .first();
+    const query = getDeploymentRequestWithUserDataQuery().where(
+      prefixObjectKeys(conditions, 'DeploymentRequest.')
+    );
+
+    if (options?.orderBy) {
+      query.orderBy(
+        `DeploymentRequest.${options.orderBy.column}`,
+        options.orderBy.order
+      );
+    }
+
+    return query.first();
   },
 
   loadTrialDeploymentRequestByPlatformIdentifierAndUserId: async (
