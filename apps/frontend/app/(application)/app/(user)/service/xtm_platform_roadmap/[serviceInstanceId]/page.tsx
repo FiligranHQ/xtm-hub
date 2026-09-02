@@ -4,6 +4,7 @@ import ServiceByIdQuery, {
 } from '@generated/serviceByIdQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import PageLoader from './page-loader';
+
 interface ServiceRoadmapPageProps {
   params: Promise<{ serviceInstanceId: string }>;
 }
@@ -21,7 +22,7 @@ const Page = async ({ params }: ServiceRoadmapPageProps) => {
     <PageLoader
       serviceInstance={
         response.data
-          .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
+          .serviceInstanceById as unknown as serviceInstance_fragment$data
       }
     />
   );

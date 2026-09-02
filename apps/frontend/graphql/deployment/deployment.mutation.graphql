@@ -1,0 +1,23 @@
+mutation TrialsAdminCancelDeploymentRequest(
+  $deploymentRequestId: DeploymentRequestId!
+) {
+  adminCancelDeploymentRequest(deploymentRequestId: $deploymentRequestId) {
+    id
+  }
+}
+
+mutation TrialsReorderDeploymentRequestInQueue(
+  $input: ReorderDeploymentRequestInQueueInput!
+) {
+  reorderDeploymentRequestInQueue(input: $input) {
+    success
+  }
+}
+
+mutation TrialsUpdateDeploymentQuotaCapacity(
+  $input: UpdateDeploymentQuotaCapacityInput!
+) {
+  updateDeploymentQuotaCapacity(input: $input) {
+    success
+  }
+}

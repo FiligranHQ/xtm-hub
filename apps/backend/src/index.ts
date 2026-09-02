@@ -23,6 +23,7 @@ import { requestContext } from './context/request.context';
 import { initCronJobs, stopCronJobs } from './crons';
 import { PortalContext } from './model/portal-context';
 import { UserLoadUserBy } from './model/user';
+import { DeploymentRequestDataLoader } from './modules/deployment/deployment.dataloader';
 import { documentDownloadEndpoint } from './modules/document/document-download-endpoint';
 import { DocumentDataLoader } from './modules/document/document.dataloader';
 import { documentVisualizeEndpoint } from './modules/document/visualize-document-endpoint';
@@ -351,6 +352,7 @@ const middlewareExpress = expressMiddleware(server, {
       req,
       res,
       dataLoaders: {
+        deploymentRequest: DeploymentRequestDataLoader.create(),
         document: DocumentDataLoader.create(),
         serviceInstance: ServiceInstanceDataLoader.create(),
       },

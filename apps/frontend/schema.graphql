@@ -105,7 +105,7 @@ input UpdateCompetitorInput {
 type Query {
   competitors(first: Int!, after: ID, orderBy: CompetitorOrdering!, orderMode: OrderingMode!): CompetitorConnection!
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
-  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier!): [DeploymentAvailability!]!
+  deploymentRequestsAvailable(platformIdentifier: PlatformIdentifier): [DeploymentAvailability!]!
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments!
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
@@ -143,11 +143,11 @@ type Query {
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
+  userServiceCapabilities(service_instance_id: ServiceInstanceId!): UserServiceCapabilitiesResponse!
   seoServiceInstanceMetadata(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage): [SeoServiceInstanceMetadata!]!
   serviceInstances(first: Int!, after: ID, orderBy: ServiceInstanceOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [ServiceInstanceFilter!], includeInaccessible: Boolean): ServiceConnection!
   serviceInstanceLinksByTags(tags: [ServiceInstanceTag!]!): [SeoServiceInstance!]!
   serviceInstanceById(service_instance_id: ServiceInstanceId!): ServiceInstance
-  serviceInstanceByIdAndGrantAccess(service_instance_id: ServiceInstanceId!): ServiceInstance
   seoServiceInstances: [SeoServiceInstance!]!
   seoServiceInstance(slug: String!): SeoServiceInstance!
   settings: Settings!
@@ -218,7 +218,6 @@ type Mutation {
   refreshPlatformRegistrationConnectivityStatusSingleTenant(input: RefreshPlatformRegistrationConnectivityStatusSingleTenantInput!): RefreshPlatformRegistrationConnectivityStatusResponse!
   refreshPlatformRegistrationConnectivityStatusAllTenants(input: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput!): RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse!
   autoRegisterPlatform(platform: PlatformInput @deprecated(reason: "Use input instead"), input: AutoRegisterPlatformInput): Success!
-  editServiceCapability(input: EditServiceCapabilityInput, serviceInstanceId: ServiceInstanceId): SubscriptionModel
   addSubscriptionCapability(input: AddSubscriptionCapabilityInput!): [SubscriptionModel!]!
   addCapabilitiesToUserServices(input: UserServicesAddCapabilitiesInput!, service_instance_id: ServiceInstanceId!): [UserService]
   editSeoServiceInstance(service_instance_id: ServiceInstanceId!, language: SeoServiceInstanceLanguage!, input: EditSeoServiceInstanceInput!): SeoServiceInstanceMetadata!
@@ -392,6 +391,7 @@ type DeploymentRequest implements Node {
   platform_url: String
   parent_id: DeploymentRequestId
   url: String
+  children: [DeploymentRequest!]
 }
 
 type PlatformDeploymentRequest {
@@ -454,6 +454,7 @@ enum DeploymentRequestFilterKey {
   target_state
   actual_state
   platform_identifier
+  parent_id
 }
 
 input DeploymentRequestFilter {
@@ -484,10 +485,11 @@ type PlatformDeploymentRequestConnection {
 }
 
 type DeploymentAvailability {
+  id: ID!
   region: DeploymentRequestPlatformRegion!
   availableCount: Int!
   capacity: Int!
-  platform_identifier: PlatformIdentifier!
+  platform_identifier: PlatformIdentifier
 }
 
 type DeployedPlatform {
@@ -533,7 +535,7 @@ input ReorderDeploymentRequestInQueueInput {
 }
 
 input UpdateDeploymentQuotaCapacityInput {
-  platformIdentifier: PlatformIdentifier!
+  platformIdentifier: PlatformIdentifier
   region: DeploymentRequestPlatformRegion!
   newCapacity: Int!
 }
@@ -1255,9 +1257,9 @@ type GenericServiceCapability implements Node {
   name: String
 }
 
-input EditServiceCapabilityInput {
-  user_service_id: User_ServiceId
-  capabilities: [String]!
+type UserServiceCapabilitiesResponse {
+  userServiceCapabilities: [UserServiceCapability!]!
+  subscription_id: SubscriptionId
 }
 
 input AddSubscriptionCapabilityInput {

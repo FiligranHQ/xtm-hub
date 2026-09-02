@@ -1,0 +1,69 @@
+fragment TrialsProduct on DeploymentRequest {
+  id
+  platform_identifier
+  hub_status
+  platform_id
+  platform_url
+}
+
+fragment TrialsRow on DeploymentRequest {
+  id
+  service_instance_id
+  ordering
+  hub_status
+  requester_email
+  organization_name
+  organization_requester_id
+  region
+  request_date
+  start_date
+  end_date
+  cancellation_date
+  cancellation_user_email
+  cancellation_reason
+  platform_identifier
+  platform_id
+  platform_url
+  children {
+    ...TrialsProduct
+  }
+}
+
+fragment TrialsQuota on DeploymentAvailability {
+  id
+  region
+  availableCount
+  capacity
+  platform_identifier
+}
+
+query TrialsList(
+  $count: Int!
+  $cursor: ID
+  $orderBy: DeploymentRequestOrdering!
+  $orderMode: OrderingMode!
+  $filters: [DeploymentRequestFilter!]
+  $searchTerm: String
+) {
+  deploymentRequestsList(
+    first: $count
+    after: $cursor
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+    searchTerm: $searchTerm
+  ) {
+    totalCount
+    edges {
+      node {
+        ...TrialsRow
+      }
+    }
+  }
+}
+
+query TrialsQuotas($platformIdentifier: PlatformIdentifier) {
+  deploymentRequestsAvailable(platformIdentifier: $platformIdentifier) {
+    ...TrialsQuota
+  }
+}

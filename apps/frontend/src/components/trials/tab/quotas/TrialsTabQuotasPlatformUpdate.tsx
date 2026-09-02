@@ -1,11 +1,13 @@
 import { TrialsTabQuotasPlatformUpdateForm } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatformUpdateForm';
+import { TrialsScope, trialsRegionKey } from '@/components/trials/trials.const';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { trialsDeploymentAvailabilityFragment$data } from '@generated/trialsDeploymentAvailabilityFragment.graphql';
+import { TrialsQuotaFragment } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { ReactNode, useState } from 'react';
 
 interface TrialsTabQuotasPlatformUpdateProps {
-  quota: trialsDeploymentAvailabilityFragment$data;
+  quota: TrialsQuotaFragment;
+  scope: TrialsScope;
   trigger?: ReactNode;
   onCloseSheet?: () => void;
   defaultStateOpen?: boolean;
@@ -16,6 +18,7 @@ export const TrialsTabQuotasPlatformUpdate = ({
   onCloseSheet,
   defaultStateOpen,
   quota,
+  scope,
 }: TrialsTabQuotasPlatformUpdateProps) => {
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(defaultStateOpen ?? false);
@@ -29,17 +32,20 @@ export const TrialsTabQuotasPlatformUpdate = ({
     });
   };
 
-  const translatedRegion = t(`Region.${quota.region.toUpperCase()}`);
-  const translatedPlatform = t(
-    `PlatformIdentifier.${quota.platform_identifier}`
-  );
+  const translatedRegion = t(trialsRegionKey(quota.region));
 
   return (
     <SheetWithPreventingDialog
-      title={t('TrialsDashboard.UpdateQuotasForm.Title', {
-        region: translatedRegion,
-        platform: translatedPlatform,
-      })}
+      title={
+        scope.kind === 'bundle'
+          ? t('TrialsDashboard.UpdateQuotasForm.BundleTitle', {
+              region: translatedRegion,
+            })
+          : t('TrialsDashboard.UpdateQuotasForm.Title', {
+              region: translatedRegion,
+              platform: t(`PlatformIdentifier.${scope.platformIdentifier}`),
+            })
+      }
       open={openSheet}
       setOpen={handleOpenSheet}
       trigger={trigger}>

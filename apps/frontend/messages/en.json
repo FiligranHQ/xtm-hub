@@ -279,6 +279,7 @@
       "INVALID_PLATFORM_VERSION": "Invalid platform version",
       "INVALID_PRODUCTS_FOR_DEPLOYMENT_TYPE": "The selected products are not valid for this deployment type",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during product connection",
+      "LOAD_CAPABILITIES_ERROR": "An error occurred while loading capabilities",
       "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Missing auto connection product argument",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
       "MISSING_CAPABILITY_ON_SERVICE": "Missing permissions",
@@ -364,7 +365,8 @@
       "GoToPlatform": "Go to {title}",
       "Details": "Details",
       "Documentation": "Documentation",
-      "ConnectPlatform": "Connect {platformName}"
+      "ConnectPlatform": "Connect {platformName}",
+      "Trial": "Trial"
     }
   },
   "HomePage": {
@@ -543,7 +545,8 @@
     "OpenAEVTrial": "OpenAEV Trial",
     "Competitor": "Competitor",
     "NewsFeed": "News Feed",
-    "VotingRound": "Feature voting"
+    "VotingRound": "Feature voting",
+    "ManageTrials": "Manage trials"
   },
   "NewsFeedAdminPage": {
     "Title": "Title",
@@ -666,7 +669,8 @@
       "CancellationReason": "Cancellation Reason",
       "Available": "Available",
       "Taken": "Taken",
-      "Total": "Total"
+      "Total": "Total",
+      "Products": "Products"
     },
     "TabTitle": {
       "Cancelled": "Cancelled",
@@ -676,12 +680,16 @@
       "Quotas": "Quotas"
     },
     "Toast": {
-      "TrialsReordered": "Trial requests were reordered"
+      "TrialsReordered": "Trial requests were reordered",
+      "BundleCancelled": "The bundle trial was cancelled successfully.",
+      "BundleReordered": "The bundle has been reordered in the queue."
     },
     "Actions": {
       "SearchTrials": "Search by email or organization",
       "MoveToTop": "Move to top",
-      "MoveUp": "Move up"
+      "MoveUp": "Move up",
+      "CancelBundle": "Cancel the bundle trial",
+      "CancelTrial": "Cancel the trial"
     },
     "UpdateQuotasForm": {
       "Title": "Update quotas for {platform} in {region}",
@@ -691,11 +699,24 @@
         "ConfirmTitle": "Quota Update for Region {region}",
         "ConfirmDescription": "You’ve updated the quotas for Region {region} from {oldCapacity} to {newCapacity}.",
         "ConfirmSentence": "Are you sure you want to save these changes?"
-      }
+      },
+      "BundleTitle": "Update the bundle quota in {region}"
     },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
     "Registered": "Connected",
-    "NotRegistered": "Not Connected"
+    "NotRegistered": "Not Connected",
+    "ProductStatus": {
+      "queued": "Queued",
+      "pending": "Pending",
+      "provisioning": "Provisioning",
+      "active": "Active",
+      "expired": "Expired",
+      "cancelled": "Cancelled",
+      "failed": "Failed"
+    },
+    "Cancellation": {
+      "Confirmation": "Are you sure you want to cancel the bundle trial of {organizationName}? Every product of the bundle will be cancelled."
+    }
   },
   "Parameters": {
     "Version": "Version"

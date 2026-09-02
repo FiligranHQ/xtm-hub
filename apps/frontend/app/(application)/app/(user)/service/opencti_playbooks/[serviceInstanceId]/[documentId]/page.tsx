@@ -29,7 +29,7 @@ const Page = async ({ params }: ServicePlaybookPageProps) => {
           documentId={decodedDocumentId}
           serviceInstance={
             response.data
-              .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
+              .serviceInstanceById as unknown as serviceInstance_fragment$data
           }
         />
       ) : (
