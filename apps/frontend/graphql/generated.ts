@@ -89,6 +89,11 @@ export type AddUserInput = {
   password: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AddUsersToBundleGroupsInput = {
+  roles: Array<BundleUserRoleAssignmentInput>;
+  userIds: Array<Scalars['UserId']['input']>;
+};
+
 export type AdminAddUserInput = {
   email: Scalars['String']['input'];
   first_name: InputMaybe<Scalars['String']['input']>;
@@ -115,6 +120,17 @@ export type BulkPendingUserFromOrganizationInput = {
   filters: InputMaybe<Array<Filter>>;
   ids: InputMaybe<Array<Scalars['UserId']['input']>>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BundleUserRoleAssignmentInput = {
+  product: PlatformIdentifier;
+  role: ServiceGroupName;
+};
+
+export type BundleUserServiceGroup = {
+  __typename?: 'BundleUserServiceGroup';
+  groups: Array<UserPlatformGroup>;
+  user: User;
 };
 
 export type CanUnregisterPlatformInput = {
@@ -207,6 +223,7 @@ export type Connector = Document & Integration & Node & {
   uploader_organization: Maybe<Organization>;
   use_cases: Maybe<Array<UseCase>>;
   verified: Scalars['Boolean']['output'];
+  version: Maybe<Scalars['String']['output']>;
 };
 
 export type ConsumeProvisionedNewsFeedItemsResponse = {
@@ -975,6 +992,7 @@ export type Mutation = {
   addUseCase: UseCase;
   addUser: Maybe<User>;
   addUserService: Maybe<Array<Maybe<UserService>>>;
+  addUsersToBundleGroups: Array<BundleUserServiceGroup>;
   adminAddUser: Maybe<User>;
   adminCancelDeploymentRequest: Maybe<DeploymentRequest>;
   adminEditUser: User;
@@ -1025,6 +1043,7 @@ export type Mutation = {
   registerPlatform: RegistrationResponse;
   removePendingUserFromOrganization: Maybe<User>;
   removeUserFromOrganization: Maybe<User>;
+  removeUsersFromBundleGroups: Array<Scalars['UserId']['output']>;
   reorderDeploymentRequestInQueue: Success;
   requestTransferPersonalSpace: Success;
   resetPassword: Success;
@@ -1032,6 +1051,7 @@ export type Mutation = {
   setVotingRoundStatus: Array<VotingRound>;
   transferPersonalSpace: Success;
   unregisterPlatform: Success;
+  updateBundleUserGroups: Array<BundleUserServiceGroup>;
   updateCompetitor: Competitor;
   updateDeploymentQuotaCapacity: Success;
   updateDeploymentRequest: PlatformDeploymentRequest;
@@ -1099,6 +1119,12 @@ export type MutationAddUserArgs = {
 export type MutationAddUserServiceArgs = {
   input: UserServiceAddInput;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type MutationAddUsersToBundleGroupsArgs = {
+  input: AddUsersToBundleGroupsInput;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1367,6 +1393,12 @@ export type MutationRemoveUserFromOrganizationArgs = {
 };
 
 
+export type MutationRemoveUsersFromBundleGroupsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  userIds: Array<Scalars['UserId']['input']>;
+};
+
+
 export type MutationReorderDeploymentRequestInQueueArgs = {
   input: ReorderDeploymentRequestInQueueInput;
 };
@@ -1390,6 +1422,12 @@ export type MutationTransferPersonalSpaceArgs = {
 
 export type MutationUnregisterPlatformArgs = {
   input: UnregisterPlatformInput;
+};
+
+
+export type MutationUpdateBundleUserGroupsArgs = {
+  input: UpdateBundleUserGroupsInput;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -1773,6 +1811,8 @@ export type ProvisionedNewsFeedItem = Node & {
 
 export type Query = {
   __typename?: 'Query';
+  bundleProducts: Array<PlatformIdentifier>;
+  bundleUserServiceGroups: Array<BundleUserServiceGroup>;
   canUnregisterPlatform: CanUnregisterResponse;
   competitors: CompetitorConnection;
   countEpicsPerTimeline: Array<EpicCountPerTimeline>;
@@ -1830,6 +1870,16 @@ export type Query = {
   votingRound: Maybe<VotingRound>;
   votingRoundResults: VotingRoundResults;
   votingRounds: Array<VotingRound>;
+};
+
+
+export type QueryBundleProductsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type QueryBundleUserServiceGroupsArgs = {
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2358,9 +2408,18 @@ export enum ServiceDefinitionIdentifier {
 export type ServiceGroup = Node & {
   __typename?: 'ServiceGroup';
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  name: ServiceGroupName;
   users: Maybe<Array<User>>;
 };
+
+export enum ServiceGroupName {
+  Admin = 'Admin',
+  Analyst = 'Analyst',
+  Manager = 'Manager',
+  Observer = 'Observer',
+  Reader = 'Reader',
+  User = 'User'
+}
 
 export type ServiceInstance = Node & {
   __typename?: 'ServiceInstance';
@@ -2720,6 +2779,16 @@ export type UnregisterPlatformInput = {
   tenantId: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateBundleUserGroupsInput = {
+  roles: Array<UpdateBundleUserGroupsRoleInput>;
+  userIds: Array<Scalars['UserId']['input']>;
+};
+
+export type UpdateBundleUserGroupsRoleInput = {
+  product: PlatformIdentifier;
+  role: InputMaybe<ServiceGroupName>;
+};
+
 export type UpdateCompetitorInput = {
   domain: InputMaybe<Scalars['String']['input']>;
   id: Scalars['CompetitorId']['input'];
@@ -2879,6 +2948,12 @@ export type UserPendingSubscription = {
   __typename?: 'UserPendingSubscription';
   delete: Maybe<User>;
   invalidate: Maybe<OrganizationRef>;
+};
+
+export type UserPlatformGroup = {
+  __typename?: 'UserPlatformGroup';
+  name: ServiceGroupName;
+  platformIdentifier: PlatformIdentifier;
 };
 
 export type UserService = Node & {
@@ -3213,6 +3288,44 @@ export type ConnectProductOrganizationAdminsQueryVariables = Exact<{
 
 export type ConnectProductOrganizationAdminsQuery = { __typename?: 'Query', usersWithCapabilitiesInOrganization: Array<{ __typename?: 'User', id: string, email: string, first_name: string | null, last_name: string | null }> };
 
+export type AddUsersToBundleGroupsMutationVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  input: AddUsersToBundleGroupsInput;
+}>;
+
+
+export type AddUsersToBundleGroupsMutation = { __typename?: 'Mutation', addUsersToBundleGroups: Array<{ __typename?: 'BundleUserServiceGroup', user: { __typename?: 'User', id: string, email: string }, groups: Array<{ __typename?: 'UserPlatformGroup', platformIdentifier: PlatformIdentifier, name: ServiceGroupName }> }> };
+
+export type RemoveUsersFromBundleGroupsMutationVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  userIds: Array<Scalars['UserId']['input']> | Scalars['UserId']['input'];
+}>;
+
+
+export type RemoveUsersFromBundleGroupsMutation = { __typename?: 'Mutation', removeUsersFromBundleGroups: Array<any> };
+
+export type UpdateBundleUserGroupsMutationVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+  input: UpdateBundleUserGroupsInput;
+}>;
+
+
+export type UpdateBundleUserGroupsMutation = { __typename?: 'Mutation', updateBundleUserGroups: Array<{ __typename?: 'BundleUserServiceGroup', user: { __typename?: 'User', id: string, email: string }, groups: Array<{ __typename?: 'UserPlatformGroup', platformIdentifier: PlatformIdentifier, name: ServiceGroupName }> }> };
+
+export type BundleUserServiceGroupsQueryVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+}>;
+
+
+export type BundleUserServiceGroupsQuery = { __typename?: 'Query', bundleUserServiceGroups: Array<{ __typename?: 'BundleUserServiceGroup', user: { __typename?: 'User', id: string, email: string }, groups: Array<{ __typename?: 'UserPlatformGroup', platformIdentifier: PlatformIdentifier, name: ServiceGroupName }> }> };
+
+export type BundleProductsQueryVariables = Exact<{
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+}>;
+
+
+export type BundleProductsQuery = { __typename?: 'Query', bundleProducts: Array<PlatformIdentifier> };
+
 export type ServiceInstancesListQueryVariables = Exact<{
   count: Scalars['Int']['input'];
   orderBy: ServiceInstanceOrdering;
@@ -3351,6 +3464,16 @@ export type ChangeSelectedOrganizationMutationVariables = Exact<{
 
 
 export type ChangeSelectedOrganizationMutation = { __typename?: 'Mutation', changeSelectedOrganization: { __typename?: 'User', id: string, selected_organization_id: any | null, selected_org_capabilities: Array<OrganizationCapability> | null } | null };
+
+export type UsersQueryVariables = Exact<{
+  first: Scalars['Int']['input'];
+  orderBy: UserOrdering;
+  orderMode: OrderingMode;
+  filters: InputMaybe<Array<Filter> | Filter>;
+}>;
+
+
+export type UsersQuery = { __typename?: 'Query', users: { __typename?: 'UserConnection', edges: Array<{ __typename?: 'UserEdge', node: { __typename?: 'User', id: string, email: string } }> } };
 
 export type VotingRoundCreateMutationVariables = Exact<{
   input: CreateVotingRoundInput;
@@ -4571,6 +4694,219 @@ useInfiniteConnectProductOrganizationAdminsQuery.getKey = (variables: ConnectPro
 useInfiniteConnectProductOrganizationAdminsQuery.getRootKey = () => ['ConnectProductOrganizationAdmins.infinite'] as const;
 useConnectProductOrganizationAdminsQuery.fetcher = (client: GraphQLClient, variables: ConnectProductOrganizationAdminsQueryVariables, headers?: RequestInit['headers']) => fetcher<ConnectProductOrganizationAdminsQuery, ConnectProductOrganizationAdminsQueryVariables>(client, ConnectProductOrganizationAdminsDocument, variables, headers);
 
+export const AddUsersToBundleGroupsDocument = `
+    mutation AddUsersToBundleGroups($serviceInstanceId: ServiceInstanceId!, $input: AddUsersToBundleGroupsInput!) {
+  addUsersToBundleGroups(serviceInstanceId: $serviceInstanceId, input: $input) {
+    user {
+      id
+      email
+    }
+    groups {
+      platformIdentifier
+      name
+    }
+  }
+}
+    `;
+
+export const useAddUsersToBundleGroupsMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<AddUsersToBundleGroupsMutation, TError, AddUsersToBundleGroupsMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<AddUsersToBundleGroupsMutation, TError, AddUsersToBundleGroupsMutationVariables, TContext>(
+      {
+    mutationKey: ['AddUsersToBundleGroups'],
+    mutationFn: (variables?: AddUsersToBundleGroupsMutationVariables) => fetcher<AddUsersToBundleGroupsMutation, AddUsersToBundleGroupsMutationVariables>(client, AddUsersToBundleGroupsDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useAddUsersToBundleGroupsMutation.getKey = () => ['AddUsersToBundleGroups'];
+useAddUsersToBundleGroupsMutation.getRootKey = () => ['AddUsersToBundleGroups'] as const;
+useAddUsersToBundleGroupsMutation.fetcher = (client: GraphQLClient, variables: AddUsersToBundleGroupsMutationVariables, headers?: RequestInit['headers']) => fetcher<AddUsersToBundleGroupsMutation, AddUsersToBundleGroupsMutationVariables>(client, AddUsersToBundleGroupsDocument, variables, headers);
+
+export const RemoveUsersFromBundleGroupsDocument = `
+    mutation RemoveUsersFromBundleGroups($serviceInstanceId: ServiceInstanceId!, $userIds: [UserId!]!) {
+  removeUsersFromBundleGroups(
+    serviceInstanceId: $serviceInstanceId
+    userIds: $userIds
+  )
+}
+    `;
+
+export const useRemoveUsersFromBundleGroupsMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<RemoveUsersFromBundleGroupsMutation, TError, RemoveUsersFromBundleGroupsMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<RemoveUsersFromBundleGroupsMutation, TError, RemoveUsersFromBundleGroupsMutationVariables, TContext>(
+      {
+    mutationKey: ['RemoveUsersFromBundleGroups'],
+    mutationFn: (variables?: RemoveUsersFromBundleGroupsMutationVariables) => fetcher<RemoveUsersFromBundleGroupsMutation, RemoveUsersFromBundleGroupsMutationVariables>(client, RemoveUsersFromBundleGroupsDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useRemoveUsersFromBundleGroupsMutation.getKey = () => ['RemoveUsersFromBundleGroups'];
+useRemoveUsersFromBundleGroupsMutation.getRootKey = () => ['RemoveUsersFromBundleGroups'] as const;
+useRemoveUsersFromBundleGroupsMutation.fetcher = (client: GraphQLClient, variables: RemoveUsersFromBundleGroupsMutationVariables, headers?: RequestInit['headers']) => fetcher<RemoveUsersFromBundleGroupsMutation, RemoveUsersFromBundleGroupsMutationVariables>(client, RemoveUsersFromBundleGroupsDocument, variables, headers);
+
+export const UpdateBundleUserGroupsDocument = `
+    mutation UpdateBundleUserGroups($serviceInstanceId: ServiceInstanceId!, $input: UpdateBundleUserGroupsInput!) {
+  updateBundleUserGroups(serviceInstanceId: $serviceInstanceId, input: $input) {
+    user {
+      id
+      email
+    }
+    groups {
+      platformIdentifier
+      name
+    }
+  }
+}
+    `;
+
+export const useUpdateBundleUserGroupsMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<UpdateBundleUserGroupsMutation, TError, UpdateBundleUserGroupsMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<UpdateBundleUserGroupsMutation, TError, UpdateBundleUserGroupsMutationVariables, TContext>(
+      {
+    mutationKey: ['UpdateBundleUserGroups'],
+    mutationFn: (variables?: UpdateBundleUserGroupsMutationVariables) => fetcher<UpdateBundleUserGroupsMutation, UpdateBundleUserGroupsMutationVariables>(client, UpdateBundleUserGroupsDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useUpdateBundleUserGroupsMutation.getKey = () => ['UpdateBundleUserGroups'];
+useUpdateBundleUserGroupsMutation.getRootKey = () => ['UpdateBundleUserGroups'] as const;
+useUpdateBundleUserGroupsMutation.fetcher = (client: GraphQLClient, variables: UpdateBundleUserGroupsMutationVariables, headers?: RequestInit['headers']) => fetcher<UpdateBundleUserGroupsMutation, UpdateBundleUserGroupsMutationVariables>(client, UpdateBundleUserGroupsDocument, variables, headers);
+
+export const BundleUserServiceGroupsDocument = `
+    query BundleUserServiceGroups($serviceInstanceId: ServiceInstanceId!) {
+  bundleUserServiceGroups(serviceInstanceId: $serviceInstanceId) {
+    user {
+      id
+      email
+    }
+    groups {
+      platformIdentifier
+      name
+    }
+  }
+}
+    `;
+
+export const useBundleUserServiceGroupsQuery = <
+      TData = BundleUserServiceGroupsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: BundleUserServiceGroupsQueryVariables,
+      options?: Omit<UseQueryOptions<BundleUserServiceGroupsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<BundleUserServiceGroupsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<BundleUserServiceGroupsQuery, TError, TData>(
+      {
+    queryKey: ['BundleUserServiceGroups', variables],
+    queryFn: fetcher<BundleUserServiceGroupsQuery, BundleUserServiceGroupsQueryVariables>(client, BundleUserServiceGroupsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useBundleUserServiceGroupsQuery.getKey = (variables: BundleUserServiceGroupsQueryVariables) => ['BundleUserServiceGroups', variables];
+useBundleUserServiceGroupsQuery.getRootKey = () => ['BundleUserServiceGroups'] as const;
+export const useInfiniteBundleUserServiceGroupsQuery = <
+      TData = InfiniteData<BundleUserServiceGroupsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: BundleUserServiceGroupsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<BundleUserServiceGroupsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<BundleUserServiceGroupsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<BundleUserServiceGroupsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['BundleUserServiceGroups.infinite', variables],
+      queryFn: (metaData) => fetcher<BundleUserServiceGroupsQuery, BundleUserServiceGroupsQueryVariables>(client, BundleUserServiceGroupsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteBundleUserServiceGroupsQuery.getKey = (variables: BundleUserServiceGroupsQueryVariables) => ['BundleUserServiceGroups.infinite', variables];
+useInfiniteBundleUserServiceGroupsQuery.getRootKey = () => ['BundleUserServiceGroups.infinite'] as const;
+useBundleUserServiceGroupsQuery.fetcher = (client: GraphQLClient, variables: BundleUserServiceGroupsQueryVariables, headers?: RequestInit['headers']) => fetcher<BundleUserServiceGroupsQuery, BundleUserServiceGroupsQueryVariables>(client, BundleUserServiceGroupsDocument, variables, headers);
+
+export const BundleProductsDocument = `
+    query BundleProducts($serviceInstanceId: ServiceInstanceId!) {
+  bundleProducts(serviceInstanceId: $serviceInstanceId)
+}
+    `;
+
+export const useBundleProductsQuery = <
+      TData = BundleProductsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: BundleProductsQueryVariables,
+      options?: Omit<UseQueryOptions<BundleProductsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<BundleProductsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<BundleProductsQuery, TError, TData>(
+      {
+    queryKey: ['BundleProducts', variables],
+    queryFn: fetcher<BundleProductsQuery, BundleProductsQueryVariables>(client, BundleProductsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useBundleProductsQuery.getKey = (variables: BundleProductsQueryVariables) => ['BundleProducts', variables];
+useBundleProductsQuery.getRootKey = () => ['BundleProducts'] as const;
+export const useInfiniteBundleProductsQuery = <
+      TData = InfiniteData<BundleProductsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: BundleProductsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<BundleProductsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<BundleProductsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<BundleProductsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['BundleProducts.infinite', variables],
+      queryFn: (metaData) => fetcher<BundleProductsQuery, BundleProductsQueryVariables>(client, BundleProductsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteBundleProductsQuery.getKey = (variables: BundleProductsQueryVariables) => ['BundleProducts.infinite', variables];
+useInfiniteBundleProductsQuery.getRootKey = () => ['BundleProducts.infinite'] as const;
+useBundleProductsQuery.fetcher = (client: GraphQLClient, variables: BundleProductsQueryVariables, headers?: RequestInit['headers']) => fetcher<BundleProductsQuery, BundleProductsQueryVariables>(client, BundleProductsDocument, variables, headers);
+
 export const ServiceInstancesListDocument = `
     query ServiceInstancesList($count: Int!, $orderBy: ServiceInstanceOrdering!, $orderMode: OrderingMode!, $filters: [ServiceInstanceFilter!], $searchTerm: String) {
   serviceInstances(
@@ -5304,6 +5640,69 @@ export const useChangeSelectedOrganizationMutation = <
 useChangeSelectedOrganizationMutation.getKey = () => ['ChangeSelectedOrganization'];
 useChangeSelectedOrganizationMutation.getRootKey = () => ['ChangeSelectedOrganization'] as const;
 useChangeSelectedOrganizationMutation.fetcher = (client: GraphQLClient, variables: ChangeSelectedOrganizationMutationVariables, headers?: RequestInit['headers']) => fetcher<ChangeSelectedOrganizationMutation, ChangeSelectedOrganizationMutationVariables>(client, ChangeSelectedOrganizationDocument, variables, headers);
+
+export const UsersDocument = `
+    query Users($first: Int!, $orderBy: UserOrdering!, $orderMode: OrderingMode!, $filters: [Filter!]) {
+  users(
+    first: $first
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+  ) {
+    edges {
+      node {
+        id
+        email
+      }
+    }
+  }
+}
+    `;
+
+export const useUsersQuery = <
+      TData = UsersQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: UsersQueryVariables,
+      options?: Omit<UseQueryOptions<UsersQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<UsersQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<UsersQuery, TError, TData>(
+      {
+    queryKey: ['Users', variables],
+    queryFn: fetcher<UsersQuery, UsersQueryVariables>(client, UsersDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useUsersQuery.getKey = (variables: UsersQueryVariables) => ['Users', variables];
+useUsersQuery.getRootKey = () => ['Users'] as const;
+export const useInfiniteUsersQuery = <
+      TData = InfiniteData<UsersQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: UsersQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<UsersQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<UsersQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<UsersQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['Users.infinite', variables],
+      queryFn: (metaData) => fetcher<UsersQuery, UsersQueryVariables>(client, UsersDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteUsersQuery.getKey = (variables: UsersQueryVariables) => ['Users.infinite', variables];
+useInfiniteUsersQuery.getRootKey = () => ['Users.infinite'] as const;
+useUsersQuery.fetcher = (client: GraphQLClient, variables: UsersQueryVariables, headers?: RequestInit['headers']) => fetcher<UsersQuery, UsersQueryVariables>(client, UsersDocument, variables, headers);
 
 export const VotingRoundCreateDocument = `
     mutation VotingRoundCreate($input: CreateVotingRoundInput!) {

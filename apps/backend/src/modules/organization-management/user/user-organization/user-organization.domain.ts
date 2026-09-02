@@ -192,6 +192,23 @@ export const UserOrganizationDomain = {
       .delete('*');
   },
 
+  areAllUsersInOrganization: async (
+    userIds: UserId[],
+    organizationId: OrganizationId
+  ): Promise<boolean> => {
+    if (userIds.length === 0) {
+      return true;
+    }
+    const rows: UserOrganization[] = await db<UserOrganization>(
+      'User_Organization'
+    )
+      .whereIn('user_id', userIds)
+      .andWhere('organization_id', organizationId);
+    return (
+      new Set(rows.map((row) => row.user_id)).size === new Set(userIds).size
+    );
+  },
+
   countUsersInOrganization: async (
     organization_id: OrganizationId
   ): Promise<number> => {

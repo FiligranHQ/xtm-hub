@@ -27,6 +27,14 @@ export const ShareableResourceCardFooterVersion = ({
   isIncompatibleWithSelectedVersion,
   incompatibleTooltip,
 }: ShareableResourceCardFooterVersionProps) => {
+  // Displays the connector's own version (Document.version), falling back to
+  // product_version for older connectors that don't carry a version yet.
+  const displayVersion = docHasMetadata(document, 'version')
+    ? document.version
+    : docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
+      ? document.product_version
+      : null;
+
   return (
     <>
       <div className="flex gap-l min-w-0 overflow-hidden">
@@ -39,20 +47,11 @@ export const ShareableResourceCardFooterVersion = ({
           {publicPath ||
           (docHasMetadata(document, DocumentMetadataKeyCode.ManagerSupported) &&
             !document.manager_supported) ? (
-            <span className="text-sm">
-              {docHasMetadata(
-                document,
-                DocumentMetadataKeyCode.ProductVersion
-              ) && document.product_version}
-            </span>
+            <span className="text-sm">{displayVersion}</span>
           ) : (
             <ShareableResourceCardVersion
               className="text-sm"
-              product_version={
-                docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
-                  ? document.product_version
-                  : ''
-              }
+              product_version={displayVersion}
               requiredProductVersion={
                 docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
                   ? document.product_version

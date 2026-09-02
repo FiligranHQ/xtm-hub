@@ -226,6 +226,7 @@
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "Il existe déjà un concurrent avec le même domaine",
       "COMPETITOR_NOT_FOUND": "Concurrent non trouvé",
+      "CONNECTOR_ID_ALREADY_EXISTS": "Un connecteur avec cet identifiant existe déjà",
       "CONNECTOR_VERSION_ALREADY_EXISTS": "Un connecteur avec cette version existe déjà",
       "CONTACT_TOO_LONG": "Le contact est trop long",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error lors de la creation de la requête de deploiement",
@@ -305,6 +306,7 @@
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "Une erreur s'est produite lors de la suppression d'un utilisateur d'une organisation en attente",
       "SEO_SERVICE_INSTANCE_NOT_FOUND": "Les métadonnées de l'instance du service SEO sont introuvables.",
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
+      "SERVICE_GROUP_NOT_FOUND": "Le groupe de service n'a pas été trouvé",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "Vous n'êtes pas autorisé à faire ceci",
       "SERVICE_INSTANCE_NOT_FOUND": "L'instance du service n'a pas été trouvée",
       "SERVICE_INSTANCE_NOT_PUBLIC": "Vous n'avez pas accès à ce service",
@@ -325,6 +327,7 @@
       "USER_DISABLED": "L'utilisateur est désactivé",
       "USER_IS_NOT_IN_ORGANIZATION": "Permissions manquantes",
       "USER_NOT_FOUND": "L'utilisateur n'a pas été trouvé",
+      "XTM_ONE_ROLE_REQUIRED": "Un rôle XTM One est requis",
       "VOTABLE_FEATURE_NOT_FOUND": "Cette fonctionnalité n'est plus ouverte au vote",
       "VOTE_FOR_FEATURE_ERROR": "Une erreur est survenue lors de l'enregistrement de votre vote",
       "YOU_CAN_NOT_LOGIN": "Vous ne pouvez pas vous connecter",
@@ -1693,6 +1696,91 @@
       "SureDeleteService": "Êtes-vous sûr de vouloir supprimer la vue personnalisée {name}?",
       "NonActive": "Brouillon",
       "Active": "Publié"
+    },
+    "Bundle": {
+      "ManageTrial": {
+        "Breadcrumb": {
+          "BundleName": "Plateforme d'essai XTM",
+          "ManageUsers": "Gérer les utilisateurs"
+        },
+        "Title": "Gérez votre équipe sur la plateforme d'essai XTM",
+        "Eyebrow": "Essai gratuit XTM Platform",
+        "Description": "Gérez facilement votre équipe et collaborez tout au long de votre essai XTM Platform. Invitez des membres, attribuez des rôles et des permissions, et assurez à chacun le bon niveau d'accès à la plateforme.",
+        "BackButton": "Retour à la plateforme d'essai XTM",
+        "GroupAction": "Action groupée",
+        "GroupActionDisabledTooltip": "Vous devez sélectionner des utilisateurs dans la liste pour appliquer une action groupée",
+        "BulkDeleteTooltip": "Vous pouvez supprimer les utilisateurs sélectionnés",
+        "AddTrialUser": "Ajouter un utilisateur d'essai",
+        "BulkDeleteDialog": {
+          "Title": "Retirer les utilisateurs de l'essai",
+          "Text": "Voulez-vous vraiment retirer {emails} de cet essai ? Ils perdront l'accès à tous les produits.",
+          "MoreEmails": "+{count} de plus"
+        },
+        "Table": {
+          "Email": "Email",
+          "NoUsers": "Aucun utilisateur trouvé.",
+          "RoleUpdated": "{role} de {email} a été mis à jour",
+          "DeleteDialog": {
+            "Title": "Retirer l'utilisateur de l'essai",
+            "Text": "Voulez-vous vraiment retirer {email} de cet essai ? Il/elle perdra l'accès à tous les produits."
+          }
+        },
+        "AddUserDialog": {
+          "Title": "Ajouter un utilisateur d'essai",
+          "EmailPlaceholder": "Ajouter un email"
+        },
+        "EditUsersDialog": {
+          "Title": "Modifier les utilisateurs",
+          "Users": "Gérer les utilisateurs d'essai",
+          "UsersPlaceholder": "Sélectionner des utilisateurs",
+          "MixedRoles": "Des utilisateurs avec des rôles différents sont sélectionnés"
+        },
+        "Roles": {
+          "DefaultSuffix": "(par défaut)",
+          "NoAccess": "Pas d'accès",
+          "opencti": {
+            "Title": "{count, plural, one {Rôle OpenCTI} other {Rôles OpenCTI}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion du produit. Les administrateurs peuvent gérer les utilisateurs, les rôles et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur les données."
+            },
+            "Analyst": {
+              "Label": "Analyst",
+              "Description": "Un rôle offrant un accès complet à toutes les connaissances du produit. Les analystes peuvent créer, modifier et gérer des entités, des relations et des investigations, mais n'ont pas accès aux paramètres, à l'administration ou aux options de configuration du produit."
+            },
+            "Reader": {
+              "Label": "Reader",
+              "Description": "Un rôle en lecture seule permettant de consulter toutes les données du produit sans possibilité d'y apporter de modifications. Idéal pour les utilisateurs qui n'ont besoin que de consulter des informations."
+            }
+          },
+          "openaev": {
+            "Title": "{count, plural, one {Rôle OpenAEV} other {Rôles OpenAEV}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion du produit. Les administrateurs peuvent gérer les utilisateurs, les rôles et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur les éléments."
+            },
+            "Manager": {
+              "Label": "Manager",
+              "Description": "Un rôle offrant toutes les capacités nécessaires pour gérer et exécuter tout type de scénario. Le manager peut modifier n'importe quel élément du produit, mais n'a pas accès aux paramètres, à l'administration ou aux options de configuration du produit."
+            },
+            "Observer": {
+              "Label": "Observer",
+              "Description": "Un rôle en lecture seule permettant de consulter tous les éléments du produit sans possibilité d'y apporter de modifications. Idéal pour les utilisateurs qui n'ont besoin que de consulter des informations."
+            }
+          },
+          "xtmone": {
+            "Title": "{count, plural, one {Rôle XTM One} other {Rôles XTM One}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "Le rôle d'administrateur donne un accès complet aux paramètres, à la configuration et à la gestion de la plateforme. Les administrateurs peuvent gérer les utilisateurs, les groupes, les intégrations et les paramètres système, en plus d'avoir une visibilité et un contrôle complets sur tous les éléments, y compris les ressources gérées par l'entreprise et partagées au sein de l'organisation. Ils peuvent usurper l'identité des utilisateurs à des fins de dépannage."
+            },
+            "User": {
+              "Label": "User",
+              "Description": "Un rôle offrant toutes les capacités nécessaires pour créer, configurer et exécuter ses propres agents, flux et bases de connaissances. Les utilisateurs peuvent modifier tout élément qu'ils possèdent ou qui a été partagé avec eux, mais n'ont pas accès aux paramètres, à l'administration ou aux options de configuration de la plateforme."
+            }
+          }
+        }
+      }
     }
   },
   "ServiceActions": {

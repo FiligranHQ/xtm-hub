@@ -5,12 +5,15 @@ import {
   FilterKey,
   Organization,
   OrganizationCapability,
+  PlatformIdentifier,
   QueryUsersArgs,
+  ServiceGroupName,
   UserConnection,
   User as UserGenerated,
 } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import CapabilityPortal from '../../../../model/kanel/public/CapabilityPortal';
+import { DeploymentRequestId } from '../../../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../../../model/kanel/public/Organization';
 import User, {
   UserId,
@@ -517,4 +520,39 @@ export const UserDomain = {
     }
     return reloadedUser;
   },
+
+  loadUsersWithDeploymentServiceGroups: async (
+    parentDeploymentRequestId: DeploymentRequestId
+  ): Promise<UserServiceGroupRow[]> => {
+    return db<UserServiceGroupRow>('User')
+      .innerJoin(
+        'ServiceGroup_User',
+        'ServiceGroup_User.user_id',
+        '=',
+        'User.id'
+      )
+      .innerJoin(
+        'ServiceGroup',
+        'ServiceGroup.id',
+        '=',
+        'ServiceGroup_User.group_id'
+      )
+      .innerJoin(
+        'DeploymentRequest',
+        'DeploymentRequest.service_instance_id',
+        '=',
+        'ServiceGroup.service_instance_id'
+      )
+      .where('DeploymentRequest.parent_id', '=', parentDeploymentRequestId)
+      .select(
+        'User.*',
+        'DeploymentRequest.platform_identifier as platform_identifier',
+        'ServiceGroup.name as group_name'
+      );
+  },
+};
+
+export type UserServiceGroupRow = User & {
+  platform_identifier: PlatformIdentifier | null;
+  group_name: ServiceGroupName;
 };

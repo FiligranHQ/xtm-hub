@@ -35,16 +35,11 @@ Your mission is to transform current branch changes into a clean, reviewable seq
    - Confirm only intended changes were committed.
 
 ## Commit Message Quality Rules
-- Messages must be understandable by humans without branch context.
-- Explain intent, not only file names.
+Follow [`copilot-instructions.md`](../copilot-instructions.md#commit-pr--issue-conventions) for the Conventional
+Commits format, types, and signing requirement. This adds only what that section doesn't cover:
+- Messages must be understandable by humans without branch context — explain intent, not only file names.
 - Use imperative mood and be concise.
-- Follow the repository's Conventional Commits convention:
-  - `type(scope?)!?: description (#issue)`
-  - Types: `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `revert`.
-  - Description starts lowercase, no trailing period; preserve acronyms/proper nouns.
-  - Do not use the discontinued `[backend]`/`[frontend]` bracket prefixes; use a scope instead.
-  - Append the related issue reference at the end (e.g. `(#1234)`) when known.
-- Sign commits (`git commit -s`).
+- Do not use the discontinued `[backend]`/`[frontend]` bracket prefixes; use a scope instead.
 
 ## Commit Sizing Rules
 - Prefer multiple small-to-medium commits over one large commit.

@@ -74,4 +74,23 @@ describe('ShareableResourceCardFooterVersion', () => {
     );
     expect(incompatibleLabel).toHaveTextContent(PRODUCT_VERSION);
   });
+
+  it('prefers the connector version over product_version when both are set', () => {
+    const CONNECTOR_VERSION = '1.4.2';
+    testRender(
+      <ShareableResourceCardFooterVersion
+        document={
+          {
+            ...document,
+            version: CONNECTOR_VERSION,
+          } as documentItem_fragment$data
+        }
+        publicPath
+        shareLinkUrl="https://share"
+      />
+    );
+
+    expect(screen.getByText(CONNECTOR_VERSION)).toBeInTheDocument();
+    expect(screen.queryByText(PRODUCT_VERSION)).not.toBeInTheDocument();
+  });
 });
