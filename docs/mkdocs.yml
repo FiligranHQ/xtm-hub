@@ -113,6 +113,7 @@ nav:
   - User Guide:
       - XTM Hub:
           - Manage your organization: user/manage-organization.md
+          - Transfer your personal space: user/transfer-personal-space.md
           - Access public roadmap: user/roadmap.md
       - OpenCTI:
         - Free Trials: user/opencti-freetrials.md
