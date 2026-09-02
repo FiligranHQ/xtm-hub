@@ -25,7 +25,7 @@ import {
   PlatformIdentifier,
   PlatformTrialStatusQueryVariables,
   useCreateDeploymentRequestMutation,
-  XtmPlatformBundleFragment,
+  XtmPlatformBundleDetailsFragment,
 } from '@graphql/generated';
 import { platformTrialKeys } from '@graphql/trial/trial.keys';
 import { useQueryClient } from '@tanstack/react-query';
@@ -34,7 +34,7 @@ import { useContext, useState } from 'react';
 import { z } from 'zod';
 
 interface PrivateXtmPlatformTrialPanelProps {
-  bundle: XtmPlatformBundleFragment | null;
+  bundle: XtmPlatformBundleDetailsFragment | null;
   view: XtmPlatformTrialPanelView | null;
   ongoingStandaloneTrials: PlatformIdentifier[];
 }

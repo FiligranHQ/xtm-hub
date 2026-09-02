@@ -570,7 +570,7 @@ export const DeploymentApp = {
     };
   },
 
-  loadActiveXtmPlatformBundle: async (): Promise<DeploymentRequest | null> => {
+  loadXtmPlatformBundle: async (): Promise<DeploymentRequest | null> => {
     const user = requestContext.requireUser();
     const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest({
       type: DeploymentRequestDeploymentType.Bundle,

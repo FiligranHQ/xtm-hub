@@ -80,7 +80,7 @@ export const BundleCancelSheet = ({
           ),
         });
         queryClient.invalidateQueries({
-          queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),
+          queryKey: xtmPlatformBundleKeys.all(),
         });
         setOpen(false);
       },

@@ -4,7 +4,7 @@ import {
   DeploymentRequestHubStatus,
   PlatformIdentifier,
   PlatformTrialStatusQueryVariables,
-  XtmPlatformBundleFragment,
+  XtmPlatformBundleDetailsFragment,
 } from '@graphql/generated';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -41,8 +41,8 @@ const personalSpaceMe = {
 };
 
 const buildBundle = (
-  overrides: Partial<XtmPlatformBundleFragment> = {}
-): XtmPlatformBundleFragment => ({
+  overrides: Partial<XtmPlatformBundleDetailsFragment> = {}
+): XtmPlatformBundleDetailsFragment => ({
   id: 'bundle-1',
   service_instance_id: 'service-instance-1',
   organization_name: 'ACME',

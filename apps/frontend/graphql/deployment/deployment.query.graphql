@@ -86,7 +86,7 @@ fragment XtmPlatformBundleProduct on DeploymentRequest {
   }
 }
 
-fragment XtmPlatformBundle on DeploymentRequest {
+fragment XtmPlatformBundleDetails on DeploymentRequest {
   id
   service_instance_id
   organization_name
@@ -101,9 +101,9 @@ fragment XtmPlatformBundle on DeploymentRequest {
   }
 }
 
-query ActiveXtmPlatformBundle {
-  activeXtmPlatformBundle {
-    ...XtmPlatformBundle
+query XtmPlatformBundle {
+  xtmPlatformBundle {
+    ...XtmPlatformBundleDetails
   }
 }
 

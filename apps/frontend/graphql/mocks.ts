@@ -1342,7 +1342,6 @@ export const mockQuery = (overrides?: Partial<Query>, _relationshipsToOmit: Set<
     relationshipsToOmit.add('Query');
     return {
         __typename: 'Query',
-        activeXtmPlatformBundle: overrides && overrides.hasOwnProperty('activeXtmPlatformBundle') ? overrides.activeXtmPlatformBundle! : relationshipsToOmit.has('DeploymentRequest') ? {} as DeploymentRequest : mockDeploymentRequest({}, relationshipsToOmit),
         bundleProducts: overrides && overrides.hasOwnProperty('bundleProducts') ? overrides.bundleProducts! : [PlatformIdentifier.Openaev],
         bundleUserServiceGroups: overrides && overrides.hasOwnProperty('bundleUserServiceGroups') ? overrides.bundleUserServiceGroups! : [relationshipsToOmit.has('BundleUserServiceGroup') ? {} as BundleUserServiceGroup : mockBundleUserServiceGroup({}, relationshipsToOmit)],
         canUnregisterPlatform: overrides && overrides.hasOwnProperty('canUnregisterPlatform') ? overrides.canUnregisterPlatform! : relationshipsToOmit.has('CanUnregisterResponse') ? {} as CanUnregisterResponse : mockCanUnregisterResponse({}, relationshipsToOmit),
@@ -1397,6 +1396,7 @@ export const mockQuery = (overrides?: Partial<Query>, _relationshipsToOmit: Set<
         votingRound: overrides && overrides.hasOwnProperty('votingRound') ? overrides.votingRound! : relationshipsToOmit.has('VotingRound') ? {} as VotingRound : mockVotingRound({}, relationshipsToOmit),
         votingRoundResults: overrides && overrides.hasOwnProperty('votingRoundResults') ? overrides.votingRoundResults! : relationshipsToOmit.has('VotingRoundResults') ? {} as VotingRoundResults : mockVotingRoundResults({}, relationshipsToOmit),
         votingRounds: overrides && overrides.hasOwnProperty('votingRounds') ? overrides.votingRounds! : [relationshipsToOmit.has('VotingRound') ? {} as VotingRound : mockVotingRound({}, relationshipsToOmit)],
+        xtmPlatformBundle: overrides && overrides.hasOwnProperty('xtmPlatformBundle') ? overrides.xtmPlatformBundle! : relationshipsToOmit.has('DeploymentRequest') ? {} as DeploymentRequest : mockDeploymentRequest({}, relationshipsToOmit),
         xtmonePlatformIntegrationStatus: overrides && overrides.hasOwnProperty('xtmonePlatformIntegrationStatus') ? overrides.xtmonePlatformIntegrationStatus! : relationshipsToOmit.has('XtmoneIntegrationStatus') ? {} as XtmoneIntegrationStatus : mockXtmoneIntegrationStatus({}, relationshipsToOmit),
     };
 };

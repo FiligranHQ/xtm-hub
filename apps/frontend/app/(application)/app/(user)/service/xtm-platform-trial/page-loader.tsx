@@ -10,7 +10,7 @@ import { APP_PATH } from '@/utils/path/constant';
 import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
   DeploymentRequestHubStatus,
-  useActiveXtmPlatformBundleQuery,
+  useXtmPlatformBundleQuery,
 } from '@graphql/generated';
 
 const breadcrumbs = [
@@ -24,15 +24,15 @@ const breadcrumbs = [
 ];
 
 const PageLoader = () => {
-  const { data, isLoading } = useActiveXtmPlatformBundleQuery(
+  const { data, isLoading } = useXtmPlatformBundleQuery(
     portalGraphqlClient,
     undefined,
     {
-      queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),
+      queryKey: xtmPlatformBundleKeys.all(),
     }
   );
 
-  const bundle = data?.activeXtmPlatformBundle ?? null;
+  const bundle = data?.xtmPlatformBundle ?? null;
 
   const { view, showLimitations, ongoingStandaloneTrials } =
     useXtmPlatformTrialPanelView(bundle, {

@@ -35,17 +35,17 @@ vi.mock('@/components/xtm-platform-trial/XtmPlatformTrialPage', () => ({
   XtmPlatformTrialPage: () => <div data-testid="bundle-dashboard" />,
 }));
 
-const mockUseActiveXtmPlatformBundleQuery = vi.fn();
+const mockUseXtmPlatformBundleQuery = vi.fn();
 vi.mock('@graphql/generated', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@graphql/generated')>()),
-  useActiveXtmPlatformBundleQuery: (
-    ...args: Parameters<typeof mockUseActiveXtmPlatformBundleQuery>
-  ) => mockUseActiveXtmPlatformBundleQuery(...args),
+  useXtmPlatformBundleQuery: (
+    ...args: Parameters<typeof mockUseXtmPlatformBundleQuery>
+  ) => mockUseXtmPlatformBundleQuery(...args),
 }));
 
 vi.mock('@graphql/deployment/deployment.keys', () => ({
   xtmPlatformBundleKeys: {
-    activeXtmPlatformBundle: () => ['ActiveXtmPlatformBundle'],
+    all: () => ['XtmPlatformBundle'],
   },
 }));
 
@@ -53,7 +53,7 @@ describe('private xtm-platform-trial page', () => {
   beforeEach(() => {
     vi.mocked(isFeatureEnabled).mockReset();
     vi.mocked(notFound).mockClear();
-    mockUseActiveXtmPlatformBundleQuery.mockReset();
+    mockUseXtmPlatformBundleQuery.mockReset();
     mockUseXtmPlatformTrialPanelView.mockReset();
     mockUseXtmPlatformTrialPanelView.mockReturnValue({
       view: null,
@@ -64,8 +64,8 @@ describe('private xtm-platform-trial page', () => {
 
   it('renders the breadcrumb and the private panel with limitations shown when there is no active bundle', async () => {
     vi.mocked(isFeatureEnabled).mockResolvedValue(true);
-    mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
-      data: { activeXtmPlatformBundle: null },
+    mockUseXtmPlatformBundleQuery.mockReturnValue({
+      data: { xtmPlatformBundle: null },
       isLoading: false,
     });
     mockUseXtmPlatformTrialPanelView.mockReturnValue({
@@ -90,9 +90,9 @@ describe('private xtm-platform-trial page', () => {
 
   it('renders the private panel with the bundle forwarded when the bundle is not active (e.g. queued/pending/provisioning/cancelled/expired)', async () => {
     vi.mocked(isFeatureEnabled).mockResolvedValue(true);
-    mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
+    mockUseXtmPlatformBundleQuery.mockReturnValue({
       data: {
-        activeXtmPlatformBundle: {
+        xtmPlatformBundle: {
           service_instance_id: 'bundle-instance-id',
           hub_status: 'pending',
         },
@@ -118,9 +118,9 @@ describe('private xtm-platform-trial page', () => {
 
   it('renders the bundle dashboard instead of the private panel when an active bundle exists', async () => {
     vi.mocked(isFeatureEnabled).mockResolvedValue(true);
-    mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
+    mockUseXtmPlatformBundleQuery.mockReturnValue({
       data: {
-        activeXtmPlatformBundle: {
+        xtmPlatformBundle: {
           service_instance_id: 'bundle-instance-id',
           hub_status: 'active',
         },
@@ -140,7 +140,7 @@ describe('private xtm-platform-trial page', () => {
 
   it('renders nothing while the active bundle lookup is loading', async () => {
     vi.mocked(isFeatureEnabled).mockResolvedValue(true);
-    mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
+    mockUseXtmPlatformBundleQuery.mockReturnValue({
       data: undefined,
       isLoading: true,
     });

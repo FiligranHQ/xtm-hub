@@ -98,9 +98,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    activeXtmPlatformBundle: async () => {
+    xtmPlatformBundle: async () => {
       try {
-        return await DeploymentApp.loadActiveXtmPlatformBundle();
+        return await DeploymentApp.loadXtmPlatformBundle();
       } catch (error) {
         throw mapToGraphQLError(
           error,

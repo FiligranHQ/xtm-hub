@@ -11,7 +11,7 @@ import {
   PlatformIdentifier,
   PlatformTrialStatusQueryVariables,
   usePlatformTrialStatusQuery,
-  XtmPlatformBundleFragment,
+  XtmPlatformBundleDetailsFragment,
 } from '@graphql/generated';
 import { platformTrialKeys } from '@graphql/trial/trial.keys';
 import { useContext } from 'react';
@@ -27,7 +27,7 @@ interface UseXtmPlatformTrialPanelViewResult {
 }
 
 export const useXtmPlatformTrialPanelView = (
-  bundle: XtmPlatformBundleFragment | null,
+  bundle: XtmPlatformBundleDetailsFragment | null,
   { enabled = true }: UseXtmPlatformTrialPanelViewOptions = {}
 ): UseXtmPlatformTrialPanelViewResult => {
   const { me, isPersonalSpace } = useContext(PortalContext);

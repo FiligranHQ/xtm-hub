@@ -10,7 +10,7 @@ import {
   DeploymentRequestSource,
   DeploymentRequestUseCase,
   PlatformIdentifier,
-  XtmPlatformBundleFragment,
+  XtmPlatformBundleDetailsFragment,
 } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { ReactNode } from 'react';
@@ -110,8 +110,8 @@ vi.mock(
 );
 
 const buildBundle = (
-  overrides: Partial<XtmPlatformBundleFragment> = {}
-): XtmPlatformBundleFragment => ({
+  overrides: Partial<XtmPlatformBundleDetailsFragment> = {}
+): XtmPlatformBundleDetailsFragment => ({
   id: 'bundle-1',
   service_instance_id: 'service-instance-1',
   organization_name: 'ACME',

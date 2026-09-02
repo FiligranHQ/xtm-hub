@@ -336,7 +336,7 @@ extend type Query {
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments! @auth
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
     @auth
-  activeXtmPlatformBundle: DeploymentRequest @auth
+  xtmPlatformBundle: DeploymentRequest @auth
   xtmonePlatformIntegrationStatus(
     serviceInstanceId: ServiceInstanceId!
   ): XtmoneIntegrationStatus @auth

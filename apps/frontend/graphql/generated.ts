@@ -1813,7 +1813,6 @@ export type ProvisionedNewsFeedItem = Node & {
 
 export type Query = {
   __typename?: 'Query';
-  activeXtmPlatformBundle: Maybe<DeploymentRequest>;
   bundleProducts: Array<PlatformIdentifier>;
   bundleUserServiceGroups: Array<BundleUserServiceGroup>;
   canUnregisterPlatform: CanUnregisterResponse;
@@ -1873,6 +1872,7 @@ export type Query = {
   votingRound: Maybe<VotingRound>;
   votingRoundResults: VotingRoundResults;
   votingRounds: Array<VotingRound>;
+  xtmPlatformBundle: Maybe<DeploymentRequest>;
   xtmonePlatformIntegrationStatus: Maybe<XtmoneIntegrationStatus>;
 };
 
@@ -3183,12 +3183,12 @@ export type TrialsQuotasQuery = { __typename?: 'Query', deploymentRequestsAvaila
 
 export type XtmPlatformBundleProductFragment = { __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null };
 
-export type XtmPlatformBundleFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, hub_status: DeploymentRequestHubStatus, requester_email: string | null, request_date: any, cancellation_date: any | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null };
+export type XtmPlatformBundleDetailsFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, hub_status: DeploymentRequestHubStatus, requester_email: string | null, request_date: any, cancellation_date: any | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null };
 
-export type ActiveXtmPlatformBundleQueryVariables = Exact<{ [key: string]: never; }>;
+export type XtmPlatformBundleQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, hub_status: DeploymentRequestHubStatus, requester_email: string | null, request_date: any, cancellation_date: any | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null } | null };
+export type XtmPlatformBundleQuery = { __typename?: 'Query', xtmPlatformBundle: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, hub_status: DeploymentRequestHubStatus, requester_email: string | null, request_date: any, cancellation_date: any | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null } | null };
 
 export type XtmoneIntegrationStatusEntryFragment = { __typename?: 'XtmoneIntegrationStatusEntry', status: string, connected: boolean, last_checked_at: string | null };
 
@@ -3657,8 +3657,8 @@ export const XtmPlatformBundleProductFragmentDoc = `
   }
 }
     `;
-export const XtmPlatformBundleFragmentDoc = `
-    fragment XtmPlatformBundle on DeploymentRequest {
+export const XtmPlatformBundleDetailsFragmentDoc = `
+    fragment XtmPlatformBundleDetails on DeploymentRequest {
   id
   service_instance_id
   organization_name
@@ -4000,58 +4000,58 @@ useInfiniteTrialsQuotasQuery.getKey = (variables?: TrialsQuotasQueryVariables) =
 useInfiniteTrialsQuotasQuery.getRootKey = () => ['TrialsQuotas.infinite'] as const;
 useTrialsQuotasQuery.fetcher = (client: GraphQLClient, variables?: TrialsQuotasQueryVariables, headers?: RequestInit['headers']) => fetcher<TrialsQuotasQuery, TrialsQuotasQueryVariables>(client, TrialsQuotasDocument, variables, headers);
 
-export const ActiveXtmPlatformBundleDocument = `
-    query ActiveXtmPlatformBundle {
-  activeXtmPlatformBundle {
-    ...XtmPlatformBundle
+export const XtmPlatformBundleDocument = `
+    query XtmPlatformBundle {
+  xtmPlatformBundle {
+    ...XtmPlatformBundleDetails
   }
 }
-    ${XtmPlatformBundleFragmentDoc}`;
+    ${XtmPlatformBundleDetailsFragmentDoc}`;
 
-export const useActiveXtmPlatformBundleQuery = <
-      TData = ActiveXtmPlatformBundleQuery,
+export const useXtmPlatformBundleQuery = <
+      TData = XtmPlatformBundleQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables?: ActiveXtmPlatformBundleQueryVariables,
-      options?: Omit<UseQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>['queryKey'] },
+      variables?: XtmPlatformBundleQueryVariables,
+      options?: Omit<UseQueryOptions<XtmPlatformBundleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<XtmPlatformBundleQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useQuery<ActiveXtmPlatformBundleQuery, TError, TData>(
+    return useQuery<XtmPlatformBundleQuery, TError, TData>(
       {
-    queryKey: variables === undefined ? ['ActiveXtmPlatformBundle'] : ['ActiveXtmPlatformBundle', variables],
-    queryFn: fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, variables, headers),
+    queryKey: variables === undefined ? ['XtmPlatformBundle'] : ['XtmPlatformBundle', variables],
+    queryFn: fetcher<XtmPlatformBundleQuery, XtmPlatformBundleQueryVariables>(client, XtmPlatformBundleDocument, variables, headers),
     ...options
   }
     )};
 
-useActiveXtmPlatformBundleQuery.getKey = (variables?: ActiveXtmPlatformBundleQueryVariables) => variables === undefined ? ['ActiveXtmPlatformBundle'] : ['ActiveXtmPlatformBundle', variables];
-useActiveXtmPlatformBundleQuery.getRootKey = () => ['ActiveXtmPlatformBundle'] as const;
-export const useInfiniteActiveXtmPlatformBundleQuery = <
-      TData = InfiniteData<ActiveXtmPlatformBundleQuery>,
+useXtmPlatformBundleQuery.getKey = (variables?: XtmPlatformBundleQueryVariables) => variables === undefined ? ['XtmPlatformBundle'] : ['XtmPlatformBundle', variables];
+useXtmPlatformBundleQuery.getRootKey = () => ['XtmPlatformBundle'] as const;
+export const useInfiniteXtmPlatformBundleQuery = <
+      TData = InfiniteData<XtmPlatformBundleQuery>,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: ActiveXtmPlatformBundleQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ActiveXtmPlatformBundleQuery, TError, TData>['queryKey'] },
+      variables: XtmPlatformBundleQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<XtmPlatformBundleQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<XtmPlatformBundleQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useInfiniteQuery<ActiveXtmPlatformBundleQuery, TError, TData>(
+    return useInfiniteQuery<XtmPlatformBundleQuery, TError, TData>(
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? variables === undefined ? ['ActiveXtmPlatformBundle.infinite'] : ['ActiveXtmPlatformBundle.infinite', variables],
-      queryFn: (metaData) => fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      queryKey: optionsQueryKey ?? variables === undefined ? ['XtmPlatformBundle.infinite'] : ['XtmPlatformBundle.infinite', variables],
+      queryFn: (metaData) => fetcher<XtmPlatformBundleQuery, XtmPlatformBundleQueryVariables>(client, XtmPlatformBundleDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       ...restOptions
     }
   })()
     )};
 
-useInfiniteActiveXtmPlatformBundleQuery.getKey = (variables?: ActiveXtmPlatformBundleQueryVariables) => variables === undefined ? ['ActiveXtmPlatformBundle.infinite'] : ['ActiveXtmPlatformBundle.infinite', variables];
-useInfiniteActiveXtmPlatformBundleQuery.getRootKey = () => ['ActiveXtmPlatformBundle.infinite'] as const;
-useActiveXtmPlatformBundleQuery.fetcher = (client: GraphQLClient, variables?: ActiveXtmPlatformBundleQueryVariables, headers?: RequestInit['headers']) => fetcher<ActiveXtmPlatformBundleQuery, ActiveXtmPlatformBundleQueryVariables>(client, ActiveXtmPlatformBundleDocument, variables, headers);
+useInfiniteXtmPlatformBundleQuery.getKey = (variables?: XtmPlatformBundleQueryVariables) => variables === undefined ? ['XtmPlatformBundle.infinite'] : ['XtmPlatformBundle.infinite', variables];
+useInfiniteXtmPlatformBundleQuery.getRootKey = () => ['XtmPlatformBundle.infinite'] as const;
+useXtmPlatformBundleQuery.fetcher = (client: GraphQLClient, variables?: XtmPlatformBundleQueryVariables, headers?: RequestInit['headers']) => fetcher<XtmPlatformBundleQuery, XtmPlatformBundleQueryVariables>(client, XtmPlatformBundleDocument, variables, headers);
 
 export const XtmonePlatformIntegrationStatusDocument = `
     query XtmonePlatformIntegrationStatus($serviceInstanceId: ServiceInstanceId!) {

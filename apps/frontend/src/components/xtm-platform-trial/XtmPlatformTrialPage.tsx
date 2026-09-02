@@ -14,7 +14,7 @@ import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
   OrganizationCapability,
   PlatformIdentifier,
-  useActiveXtmPlatformBundleQuery,
+  useXtmPlatformBundleQuery,
 } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
@@ -35,15 +35,15 @@ export const XtmPlatformTrialPage = () => {
     canManagePlatformRegistration ||
     false;
 
-  const { data, isLoading } = useActiveXtmPlatformBundleQuery(
+  const { data, isLoading } = useXtmPlatformBundleQuery(
     portalGraphqlClient,
     undefined,
     {
-      queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),
+      queryKey: xtmPlatformBundleKeys.all(),
     }
   );
 
-  const bundle = data?.activeXtmPlatformBundle;
+  const bundle = data?.xtmPlatformBundle;
 
   const xtmoneServiceInstanceId =
     bundle?.children?.find(

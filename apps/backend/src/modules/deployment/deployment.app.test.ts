@@ -4158,7 +4158,7 @@ describe('deployment app', () => {
     });
   });
 
-  describe('loadActiveXtmPlatformBundle', () => {
+  describe('loadXtmPlatformBundle', () => {
     beforeEach(() => {
       requestContext.set(requestContextRegistererUserSecondOrga);
       vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
@@ -4195,7 +4195,7 @@ describe('deployment app', () => {
     };
 
     it('should return null when the organization has no active bundle', async () => {
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle();
+      const result = await DeploymentApp.loadXtmPlatformBundle();
 
       expect(result).toBeNull();
     });
@@ -4203,7 +4203,7 @@ describe('deployment app', () => {
     it('should return the active bundle for the organization', async () => {
       await createActiveBundle();
 
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle();
+      const result = await DeploymentApp.loadXtmPlatformBundle();
 
       expect(result).toMatchObject({
         type: DeploymentRequestDeploymentType.Bundle,

@@ -1,9 +1,9 @@
 import {
   type TrialsListQueryVariables,
   type TrialsQuotasQueryVariables,
-  useActiveXtmPlatformBundleQuery,
   useTrialsListQuery,
   useTrialsQuotasQuery,
+  useXtmPlatformBundleQuery,
 } from '@graphql/generated';
 
 export const trialsKeys = {
@@ -19,5 +19,5 @@ export const trialsQuotasKeys = {
 };
 
 export const xtmPlatformBundleKeys = {
-  activeXtmPlatformBundle: useActiveXtmPlatformBundleQuery.getRootKey,
+  all: useXtmPlatformBundleQuery.getRootKey,
 };
