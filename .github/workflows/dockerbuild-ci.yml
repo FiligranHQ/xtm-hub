@@ -218,17 +218,18 @@ jobs:
           cp ./apps/backend/tests/test-utils.ts ./apps/e2e/test-utils.ts
 
       - name: Launch docker compose
+        env:
+          IMAGE_TAGS: ${{ needs.build-images-tests.outputs.docker-tags }}
+          TEAMS_WEBHOOK_E2E: ${{ secrets.TEAMS_WEBHOOK_E2E }}
+          GITHUB_PR_TITLE: ${{ github.event.pull_request.title }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          PLAYWRIGHT_SHARD: ${{ matrix.shard }}/8
         run: |
           mkdir -p ctrf
-          export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
-           TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
-           GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
-           GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
-           GITHUB_RUN_ID="${{ github.run_id }}" \
-           PLAYWRIGHT_SHARD="${{ matrix.shard }}/8"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml pull --include-deps e2e
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
-           -e PLAYWRIGHT_SHARD \
+           -e IMAGE_TAGS -e TEAMS_WEBHOOK_E2E -e GITHUB_PR_TITLE -e GITHUB_PR_NUMBER -e GITHUB_RUN_ID -e PLAYWRIGHT_SHARD \
            e2e sh -lc "yarn test:e2e --shard=${PLAYWRIGHT_SHARD}" || TEST_EXIT_CODE=$?
           CONTAINER_ID=$(docker ps -a --filter "name=e2e-run" --format "{{.ID}}" | head -1)
           docker cp $CONTAINER_ID:/app/apps/e2e/ctrf/. ./ctrf/
