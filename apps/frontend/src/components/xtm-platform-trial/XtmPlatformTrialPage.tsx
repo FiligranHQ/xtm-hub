@@ -18,11 +18,7 @@ import {
 } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 
-export const XtmPlatformTrialPage = ({
-  serviceInstanceId,
-}: {
-  serviceInstanceId: string;
-}) => {
+export const XtmPlatformTrialPage = () => {
   const t = useTranslations();
 
   const isAdminByPass = useAdminByPass();
@@ -41,11 +37,9 @@ export const XtmPlatformTrialPage = ({
 
   const { data, isLoading } = useActiveXtmPlatformBundleQuery(
     portalGraphqlClient,
-    { serviceInstanceId },
+    undefined,
     {
-      queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundleByServiceInstance({
-        serviceInstanceId,
-      }),
+      queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),
     }
   );
 

@@ -1877,11 +1877,6 @@ export type Query = {
 };
 
 
-export type QueryActiveXtmPlatformBundleArgs = {
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
-};
-
-
 export type QueryBundleProductsArgs = {
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
@@ -3188,14 +3183,12 @@ export type TrialsQuotasQuery = { __typename?: 'Query', deploymentRequestsAvaila
 
 export type XtmPlatformBundleProductFragment = { __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null };
 
-export type XtmPlatformBundleFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, requester_email: string | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null };
+export type XtmPlatformBundleFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, hub_status: DeploymentRequestHubStatus, requester_email: string | null, request_date: any, cancellation_date: any | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null };
 
-export type ActiveXtmPlatformBundleQueryVariables = Exact<{
-  serviceInstanceId: InputMaybe<Scalars['ServiceInstanceId']['input']>;
-}>;
+export type ActiveXtmPlatformBundleQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, requester_email: string | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null } | null };
+export type ActiveXtmPlatformBundleQuery = { __typename?: 'Query', activeXtmPlatformBundle: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, organization_name: string | null, start_date: any | null, end_date: any | null, hub_status: DeploymentRequestHubStatus, requester_email: string | null, request_date: any, cancellation_date: any | null, children: Array<{ __typename?: 'DeploymentRequest', platform_identifier: PlatformIdentifier | null, service_instance_id: any, url: string | null, service_instance: { __typename?: 'ServiceInstance', name: string } | null, registered_platform: { __typename?: 'RegisteredPlatform', status: PlatformConfigurationStatus | null, last_connectivity_check: any | null, url: string, myGroups: Array<{ __typename?: 'ServiceGroup', id: string, name: ServiceGroupName }> | null } | null }> | null } | null };
 
 export type XtmoneIntegrationStatusEntryFragment = { __typename?: 'XtmoneIntegrationStatusEntry', status: string, connected: boolean, last_checked_at: string | null };
 
@@ -3671,7 +3664,10 @@ export const XtmPlatformBundleFragmentDoc = `
   organization_name
   start_date
   end_date
+  hub_status
   requester_email
+  request_date
+  cancellation_date
   children {
     ...XtmPlatformBundleProduct
   }
@@ -4005,8 +4001,8 @@ useInfiniteTrialsQuotasQuery.getRootKey = () => ['TrialsQuotas.infinite'] as con
 useTrialsQuotasQuery.fetcher = (client: GraphQLClient, variables?: TrialsQuotasQueryVariables, headers?: RequestInit['headers']) => fetcher<TrialsQuotasQuery, TrialsQuotasQueryVariables>(client, TrialsQuotasDocument, variables, headers);
 
 export const ActiveXtmPlatformBundleDocument = `
-    query ActiveXtmPlatformBundle($serviceInstanceId: ServiceInstanceId) {
-  activeXtmPlatformBundle(serviceInstanceId: $serviceInstanceId) {
+    query ActiveXtmPlatformBundle {
+  activeXtmPlatformBundle {
     ...XtmPlatformBundle
   }
 }

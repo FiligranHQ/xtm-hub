@@ -1,5 +1,4 @@
 import {
-  type ActiveXtmPlatformBundleQueryVariables,
   type TrialsListQueryVariables,
   type TrialsQuotasQueryVariables,
   useActiveXtmPlatformBundleQuery,
@@ -21,7 +20,4 @@ export const trialsQuotasKeys = {
 
 export const xtmPlatformBundleKeys = {
   activeXtmPlatformBundle: useActiveXtmPlatformBundleQuery.getRootKey,
-  activeXtmPlatformBundleByServiceInstance: (
-    variables: ActiveXtmPlatformBundleQueryVariables
-  ) => useActiveXtmPlatformBundleQuery.getKey(variables),
 };

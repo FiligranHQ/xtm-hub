@@ -1612,6 +1612,36 @@
           },
           "PersonalSpace": {
             "Title": "Trials are not available in a personal space"
+          },
+          "Status": {
+            "RequestedOn": "Requested on",
+            "StartedOn": "Started on",
+            "CancelledOn": "Cancelled on",
+            "FinishedOn": "Finished on",
+            "ProductsIncluded": "Products included in your trial",
+            "ProductsIncludedInRequest": "Products included in your trial request",
+            "CancelTrialRequest": "Cancel trial request",
+            "request-in-progress": {
+              "Title": "Thanks! We've received your request.",
+              "Description": "Our team will be in touch shortly."
+            },
+            "cancelled": {
+              "Title": "Unfortunately, your trial has been cancelled.",
+              "Description": "You are not eligible anymore to a request trial period. \nIf you wish to use EE license again, please contact sales."
+            },
+            "expired": {
+              "Title": "Thank you for trying out the XTM platform, we hope you enjoyed the experience.",
+              "Description": "You have completed your trial period. If you wish to continue using an Enterprise Edition license, please contact our sales team."
+            },
+            "failed": {
+              "Title": "Your trial request could not be completed",
+              "Description": "Something went wrong while provisioning your trial. Please reach out to sales for assistance."
+            },
+            "Stepper": {
+              "Pending": "Pending",
+              "Provisioning": "Provisioning",
+              "Active": "Active"
+            }
           }
         }
       },

@@ -4216,26 +4216,6 @@ describe('deployment app', () => {
         service_instance_id: expect.any(String),
       });
     });
-
-    it('should return the active bundle when its service instance id is provided', async () => {
-      const bundle = await createActiveBundle();
-
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        bundle.service_instance_id
-      );
-
-      expect(result?.service_instance_id).toBe(bundle.service_instance_id);
-    });
-
-    it('should return null when the provided service instance id does not match the active bundle', async () => {
-      await createActiveBundle();
-
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        uuidv4() as ServiceInstanceId
-      );
-
-      expect(result).toBeNull();
-    });
   });
 
   describe('loadXtmonePlatformIntegrationStatus', () => {

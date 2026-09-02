@@ -92,14 +92,17 @@ fragment XtmPlatformBundle on DeploymentRequest {
   organization_name
   start_date
   end_date
+  hub_status
   requester_email
+  request_date
+  cancellation_date
   children {
     ...XtmPlatformBundleProduct
   }
 }
 
-query ActiveXtmPlatformBundle($serviceInstanceId: ServiceInstanceId) {
-  activeXtmPlatformBundle(serviceInstanceId: $serviceInstanceId) {
+query ActiveXtmPlatformBundle {
+  activeXtmPlatformBundle {
     ...XtmPlatformBundle
   }
 }

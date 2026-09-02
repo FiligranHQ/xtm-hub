@@ -570,15 +570,12 @@ export const DeploymentApp = {
     };
   },
 
-  loadActiveXtmPlatformBundle: async (
-    serviceInstanceId?: ServiceInstanceId | null
-  ): Promise<DeploymentRequest | null> => {
+  loadActiveXtmPlatformBundle: async (): Promise<DeploymentRequest | null> => {
     const user = requestContext.requireUser();
     const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest({
       type: DeploymentRequestDeploymentType.Bundle,
-      hub_status: DeploymentRequestHubStatus.Active,
       organization_requester_id: user.selected_organization_id,
-      ...(serviceInstanceId ? { service_instance_id: serviceInstanceId } : {}),
+      counts_in_orga_quota: true,
     });
 
     return bundle ?? null;

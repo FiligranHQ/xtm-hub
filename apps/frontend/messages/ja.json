@@ -1612,6 +1612,36 @@
           },
           "PersonalSpace": {
             "Title": "個人スペースではトライアルをご利用いただけません"
+          },
+          "Status": {
+            "RequestedOn": "申請日",
+            "StartedOn": "開始日",
+            "CancelledOn": "キャンセル日",
+            "FinishedOn": "終了日",
+            "ProductsIncluded": "トライアルに含まれる製品",
+            "ProductsIncludedInRequest": "トライアル申請に含まれる製品",
+            "CancelTrialRequest": "トライアル申請をキャンセル",
+            "request-in-progress": {
+              "Title": "ありがとうございます。リクエストを受け付けました。",
+              "Description": "担当チームより間もなくご連絡いたします。"
+            },
+            "cancelled": {
+              "Title": "誠に残念ながら、トライアルはキャンセルされました。",
+              "Description": "トライアル期間を再度申請する資格はなくなりました。\nEnterprise Edition ライセンスを再度ご利用になりたい場合は、営業担当までお問い合わせください。"
+            },
+            "expired": {
+              "Title": "XTM Platform をお試しいただきありがとうございました。ご満足いただけましたら幸いです。",
+              "Description": "トライアル期間が終了しました。引き続き Enterprise Edition ライセンスをご利用になりたい場合は、営業チームまでお問い合わせください。"
+            },
+            "failed": {
+              "Title": "トライアルの申請を完了できませんでした",
+              "Description": "トライアルのプロビジョニング中に問題が発生しました。サポートが必要な場合は営業担当までお問い合わせください。"
+            },
+            "Stepper": {
+              "Pending": "保留中",
+              "Provisioning": "プロビジョニング中",
+              "Active": "アクティブ"
+            }
           }
         }
       },

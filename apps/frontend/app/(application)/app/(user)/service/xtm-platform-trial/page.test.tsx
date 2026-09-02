@@ -11,16 +11,28 @@ vi.mock('@/utils/settings.service', () => ({
 vi.mock(
   '@/components/service/trial-instances/xtm-platform-trial/PrivateXtmPlatformTrialPanel',
   () => ({
-    PrivateXtmPlatformTrialPanel: () => <div data-testid="private-panel" />,
+    PrivateXtmPlatformTrialPanel: ({
+      bundle,
+    }: {
+      bundle: { hub_status?: string } | null;
+    }) => (
+      <div data-testid="private-panel">{bundle?.hub_status ?? 'no-bundle'}</div>
+    ),
+  })
+);
+
+const mockUseXtmPlatformTrialPanelView = vi.fn();
+vi.mock(
+  '@/components/service/trial-instances/xtm-platform-trial/useXtmPlatformTrialPanelView',
+  () => ({
+    useXtmPlatformTrialPanelView: (
+      ...args: Parameters<typeof mockUseXtmPlatformTrialPanelView>
+    ) => mockUseXtmPlatformTrialPanelView(...args),
   })
 );
 
 vi.mock('@/components/xtm-platform-trial/XtmPlatformTrialPage', () => ({
-  XtmPlatformTrialPage: ({
-    serviceInstanceId,
-  }: {
-    serviceInstanceId: string;
-  }) => <div data-testid="bundle-dashboard">{serviceInstanceId}</div>,
+  XtmPlatformTrialPage: () => <div data-testid="bundle-dashboard" />,
 }));
 
 const mockUseActiveXtmPlatformBundleQuery = vi.fn();
@@ -42,6 +54,12 @@ describe('private xtm-platform-trial page', () => {
     vi.mocked(isFeatureEnabled).mockReset();
     vi.mocked(notFound).mockClear();
     mockUseActiveXtmPlatformBundleQuery.mockReset();
+    mockUseXtmPlatformTrialPanelView.mockReset();
+    mockUseXtmPlatformTrialPanelView.mockReturnValue({
+      view: null,
+      showLimitations: false,
+      ongoingStandaloneTrials: [],
+    });
   });
 
   it('renders the breadcrumb and the private panel with limitations shown when there is no active bundle', async () => {
@@ -50,11 +68,17 @@ describe('private xtm-platform-trial page', () => {
       data: { activeXtmPlatformBundle: null },
       isLoading: false,
     });
+    mockUseXtmPlatformTrialPanelView.mockReturnValue({
+      view: { kind: 'form', hasOngoingStandaloneTrials: false },
+      showLimitations: true,
+      ongoingStandaloneTrials: [],
+    });
 
     const element = await Page();
     render(element);
 
     expect(screen.getByTestId('private-panel')).toBeInTheDocument();
+    expect(screen.getByTestId('private-panel')).toHaveTextContent('no-bundle');
     expect(screen.queryByTestId('bundle-dashboard')).not.toBeInTheDocument();
     expect(
       screen.getByText('Service.Trials.XtmPlatform.Page.Breadcrumb')
@@ -64,11 +88,42 @@ describe('private xtm-platform-trial page', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders the private panel with the bundle forwarded when the bundle is not active (e.g. queued/pending/provisioning/cancelled/expired)', async () => {
+    vi.mocked(isFeatureEnabled).mockResolvedValue(true);
+    mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
+      data: {
+        activeXtmPlatformBundle: {
+          service_instance_id: 'bundle-instance-id',
+          hub_status: 'pending',
+        },
+      },
+      isLoading: false,
+    });
+    mockUseXtmPlatformTrialPanelView.mockReturnValue({
+      view: {
+        kind: 'status',
+        state: 'request-in-progress',
+        stepIndex: 0,
+      },
+      showLimitations: false,
+      ongoingStandaloneTrials: [],
+    });
+
+    const element = await Page();
+    render(element);
+
+    expect(screen.getByTestId('private-panel')).toHaveTextContent('pending');
+    expect(screen.queryByTestId('bundle-dashboard')).not.toBeInTheDocument();
+  });
+
   it('renders the bundle dashboard instead of the private panel when an active bundle exists', async () => {
     vi.mocked(isFeatureEnabled).mockResolvedValue(true);
     mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
       data: {
-        activeXtmPlatformBundle: { service_instance_id: 'bundle-instance-id' },
+        activeXtmPlatformBundle: {
+          service_instance_id: 'bundle-instance-id',
+          hub_status: 'active',
+        },
       },
       isLoading: false,
     });
@@ -76,9 +131,7 @@ describe('private xtm-platform-trial page', () => {
     const element = await Page();
     render(element);
 
-    expect(screen.getByTestId('bundle-dashboard')).toHaveTextContent(
-      'bundle-instance-id'
-    );
+    expect(screen.getByTestId('bundle-dashboard')).toBeInTheDocument();
     expect(screen.queryByTestId('private-panel')).not.toBeInTheDocument();
     expect(
       screen.getByText('Service.Trials.XtmPlatform.Page.Breadcrumb')

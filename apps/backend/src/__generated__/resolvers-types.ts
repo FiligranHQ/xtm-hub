@@ -1870,11 +1870,6 @@ export type Query = {
 };
 
 
-export type QueryActiveXtmPlatformBundleArgs = {
-  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
-};
-
-
 export type QueryBundleProductsArgs = {
   serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
@@ -4441,7 +4436,7 @@ export type ProvisionedNewsFeedItemResolvers<ContextType = PortalContext, Parent
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  activeXtmPlatformBundle?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<QueryActiveXtmPlatformBundleArgs>>;
+  activeXtmPlatformBundle?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType>;
   bundleProducts?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType, RequireFields<QueryBundleProductsArgs, 'serviceInstanceId'>>;
   bundleUserServiceGroups?: Resolver<Array<ResolversTypes['BundleUserServiceGroup']>, ParentType, ContextType, RequireFields<QueryBundleUserServiceGroupsArgs, 'serviceInstanceId'>>;
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;

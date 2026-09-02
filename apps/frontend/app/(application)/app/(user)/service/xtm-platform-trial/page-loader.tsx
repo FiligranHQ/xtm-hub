@@ -2,12 +2,16 @@
 
 import { PrivateXtmPlatformTrialPanel } from '@/components/service/trial-instances/xtm-platform-trial/PrivateXtmPlatformTrialPanel';
 import { XtmPlatformTrialPage as XtmPlatformTrialPitchPage } from '@/components/service/trial-instances/xtm-platform-trial/XtmPlatformTrialPage';
+import { useXtmPlatformTrialPanelView } from '@/components/service/trial-instances/xtm-platform-trial/useXtmPlatformTrialPanelView';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { XtmPlatformTrialPage as XtmPlatformTrialBundlePage } from '@/components/xtm-platform-trial/XtmPlatformTrialPage';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
-import { useActiveXtmPlatformBundleQuery } from '@graphql/generated';
+import {
+  DeploymentRequestHubStatus,
+  useActiveXtmPlatformBundleQuery,
+} from '@graphql/generated';
 
 const breadcrumbs = [
   {
@@ -28,23 +32,32 @@ const PageLoader = () => {
     }
   );
 
+  const bundle = data?.activeXtmPlatformBundle ?? null;
+
+  const { view, showLimitations, ongoingStandaloneTrials } =
+    useXtmPlatformTrialPanelView(bundle, {
+      enabled: bundle?.hub_status !== DeploymentRequestHubStatus.Active,
+    });
+
   if (isLoading) {
     return null;
   }
 
-  const bundle = data?.activeXtmPlatformBundle;
-
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      {bundle ? (
-        <XtmPlatformTrialBundlePage
-          serviceInstanceId={bundle.service_instance_id}
-        />
+      {bundle?.hub_status === DeploymentRequestHubStatus.Active ? (
+        <XtmPlatformTrialBundlePage />
       ) : (
         <XtmPlatformTrialPitchPage
-          panel={<PrivateXtmPlatformTrialPanel />}
-          showLimitations
+          panel={
+            <PrivateXtmPlatformTrialPanel
+              bundle={bundle}
+              view={view}
+              ongoingStandaloneTrials={ongoingStandaloneTrials}
+            />
+          }
+          showLimitations={showLimitations}
         />
       )}
     </>
