@@ -1,39 +1,12 @@
-import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
-import { UnauthenticatedError } from '@/lib/graphql-fetch.utils';
-import { xtmPlatformTrialBundlePath } from '@/utils/path/constant';
 import { isFeatureEnabled } from '@/utils/settings.service';
 import Page from '@app/(application)/app/(user)/service/xtm-platform-trial/page';
 import { render, screen } from '@testing-library/react';
-import { notFound, redirect } from 'next/navigation';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-vi.mock('next-intl/server', () => ({
-  getTranslations: async () => Object.assign((key: string) => key, {}),
-}));
-
-const graphqlMocks = vi.hoisted(() => ({
-  fetchActiveXtmPlatformBundle: vi.fn(),
-  activeBundleFetcherFactory: vi.fn(),
-}));
+import { notFound } from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/utils/settings.service', () => ({
   isFeatureEnabled: vi.fn(),
 }));
-
-vi.mock('@/lib/graphql-client', () => ({
-  getAuthenticatedGraphqlClient: vi.fn(),
-}));
-
-vi.mock('@graphql/generated', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@graphql/generated')>();
-  return {
-    ...actual,
-    useActiveXtmPlatformBundleQuery: {
-      ...actual.useActiveXtmPlatformBundleQuery,
-      fetcher: graphqlMocks.activeBundleFetcherFactory,
-    },
-  };
-});
 
 vi.mock(
   '@/components/service/trial-instances/xtm-platform-trial/PrivateXtmPlatformTrialPanel',
@@ -42,39 +15,47 @@ vi.mock(
   })
 );
 
+vi.mock('@/components/xtm-platform-trial/XtmPlatformTrialPage', () => ({
+  XtmPlatformTrialPage: ({
+    serviceInstanceId,
+  }: {
+    serviceInstanceId: string;
+  }) => <div data-testid="bundle-dashboard">{serviceInstanceId}</div>,
+}));
+
+const mockUseActiveXtmPlatformBundleQuery = vi.fn();
+vi.mock('@graphql/generated', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@graphql/generated')>()),
+  useActiveXtmPlatformBundleQuery: (
+    ...args: Parameters<typeof mockUseActiveXtmPlatformBundleQuery>
+  ) => mockUseActiveXtmPlatformBundleQuery(...args),
+}));
+
+vi.mock('@graphql/deployment/deployment.keys', () => ({
+  xtmPlatformBundleKeys: {
+    activeXtmPlatformBundle: () => ['ActiveXtmPlatformBundle'],
+  },
+}));
+
 describe('private xtm-platform-trial page', () => {
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
-
   beforeEach(() => {
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(isFeatureEnabled).mockReset();
-    vi.mocked(redirect).mockReset();
     vi.mocked(notFound).mockClear();
-    vi.mocked(getAuthenticatedGraphqlClient).mockReset();
-    graphqlMocks.fetchActiveXtmPlatformBundle.mockReset();
-    graphqlMocks.activeBundleFetcherFactory.mockReset();
-    vi.mocked(getAuthenticatedGraphqlClient).mockResolvedValue(
-      {} as Awaited<ReturnType<typeof getAuthenticatedGraphqlClient>>
-    );
-    graphqlMocks.activeBundleFetcherFactory.mockReturnValue(
-      graphqlMocks.fetchActiveXtmPlatformBundle
-    );
-    graphqlMocks.fetchActiveXtmPlatformBundle.mockResolvedValue({
-      activeXtmPlatformBundle: null,
-    });
+    mockUseActiveXtmPlatformBundleQuery.mockReset();
   });
 
-  afterEach(() => {
-    consoleErrorSpy.mockRestore();
-  });
-
-  it('renders the breadcrumb and the private panel with limitations shown', async () => {
+  it('renders the breadcrumb and the private panel with limitations shown when there is no active bundle', async () => {
     vi.mocked(isFeatureEnabled).mockResolvedValue(true);
+    mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
+      data: { activeXtmPlatformBundle: null },
+      isLoading: false,
+    });
 
     const element = await Page();
     render(element);
 
     expect(screen.getByTestId('private-panel')).toBeInTheDocument();
+    expect(screen.queryByTestId('bundle-dashboard')).not.toBeInTheDocument();
     expect(
       screen.getByText('Service.Trials.XtmPlatform.Page.Breadcrumb')
     ).toBeInTheDocument();
@@ -83,41 +64,42 @@ describe('private xtm-platform-trial page', () => {
     ).toBeInTheDocument();
   });
 
-  it('redirects to the active bundle details page when one exists', async () => {
+  it('renders the bundle dashboard instead of the private panel when an active bundle exists', async () => {
     vi.mocked(isFeatureEnabled).mockResolvedValue(true);
-    graphqlMocks.fetchActiveXtmPlatformBundle.mockResolvedValue({
-      activeXtmPlatformBundle: {
-        service_instance_id: 'service-instance-1',
+    mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
+      data: {
+        activeXtmPlatformBundle: { service_instance_id: 'bundle-instance-id' },
       },
+      isLoading: false,
     });
-
-    await Page();
-
-    expect(redirect).toHaveBeenCalledWith(
-      xtmPlatformTrialBundlePath('service-instance-1')
-    );
-  });
-
-  it('renders the page when active bundle lookup fails', async () => {
-    vi.mocked(isFeatureEnabled).mockResolvedValue(true);
-    graphqlMocks.fetchActiveXtmPlatformBundle.mockRejectedValue(
-      new Error('network failure')
-    );
 
     const element = await Page();
     render(element);
 
-    expect(screen.getByTestId('private-panel')).toBeInTheDocument();
-    expect(redirect).not.toHaveBeenCalled();
+    expect(screen.getByTestId('bundle-dashboard')).toHaveTextContent(
+      'bundle-instance-id'
+    );
+    expect(screen.queryByTestId('private-panel')).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Service.Trials.XtmPlatform.Page.Breadcrumb')
+    ).toBeInTheDocument();
   });
 
-  it('rethrows unauthenticated errors from active bundle lookup', async () => {
+  it('renders nothing while the active bundle lookup is loading', async () => {
     vi.mocked(isFeatureEnabled).mockResolvedValue(true);
-    graphqlMocks.fetchActiveXtmPlatformBundle.mockRejectedValue(
-      new UnauthenticatedError()
-    );
+    mockUseActiveXtmPlatformBundleQuery.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    });
 
-    await expect(Page()).rejects.toThrow('UNAUTHENTICATED');
+    const element = await Page();
+    render(element);
+
+    expect(screen.queryByTestId('private-panel')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('bundle-dashboard')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Service.Trials.XtmPlatform.Page.Breadcrumb')
+    ).not.toBeInTheDocument();
   });
 
   it('calls notFound when the XtmPlatformTrial feature flag is disabled', async () => {
