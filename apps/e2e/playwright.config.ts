@@ -19,6 +19,10 @@ export default defineConfig({
   retries: 2,
   /* Parallel test is breaking tests */
   workers: 1,
+  /* Default is 30s. Some tests chain multiple login/logout cycles and
+   * form submissions (e.g. capabilities.spec.ts), which can get close to
+   * the default budget under CI load. Raise it suite-wide. */
+  timeout: 60_000,
   expect: {
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.05,
