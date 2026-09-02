@@ -257,25 +257,6 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         );
         expect(avgMs).toBeLessThan(large.maxAvgMs);
       });
-
-      it('should cover scenario 4 — large dataset: search + product_version filter', async () => {
-        const input = {
-          serviceInstanceId: scenarioServiceInstance.id,
-          slug: scenarioServiceInstance.slug!,
-          first: large.pageSize,
-          orderBy: DocumentOrdering.CreatedAt,
-          orderMode: OrderingMode.Desc,
-          searchTerm: 'openaev',
-          filters: [{ key: FilterKey.ProductVersion, value: ['5.2.0'] }],
-        } as unknown as QueryPublicDocumentsArgs;
-        const avgMs = await measureAvgDuration(() =>
-          DocumentApp.loadPublicDocuments(input)
-        );
-        logApp.info(
-          `[perf] Scenario S4 – search + version filter (large): avg=${avgMs.toFixed(2)}ms`
-        );
-        expect(avgMs).toBeLessThan(large.maxAvgMs);
-      });
     });
   });
 
@@ -363,25 +344,6 @@ describePerf('loadPublicDocuments — performance benchmarks', () => {
         );
         logApp.info(
           `[perf] Dashboard S3 – baseline (large): avg=${avgMs.toFixed(2)}ms`
-        );
-        expect(avgMs).toBeLessThan(large.maxAvgMs);
-      });
-
-      it('should cover scenario 4 — large dataset: search + product_version filter', async () => {
-        const input = {
-          serviceInstanceId: dashboardServiceInstance.id,
-          slug: dashboardServiceInstance.slug!,
-          first: large.pageSize,
-          orderBy: DocumentOrdering.CreatedAt,
-          orderMode: OrderingMode.Desc,
-          searchTerm: 'dashboard',
-          filters: [{ key: FilterKey.ProductVersion, value: ['5.2.0'] }],
-        } as unknown as QueryPublicDocumentsArgs;
-        const avgMs = await measureAvgDuration(() =>
-          DocumentApp.loadPublicDocuments(input)
-        );
-        logApp.info(
-          `[perf] Dashboard S4 – search + version filter (large): avg=${avgMs.toFixed(2)}ms`
         );
         expect(avgMs).toBeLessThan(large.maxAvgMs);
       });

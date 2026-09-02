@@ -1109,8 +1109,10 @@
           "Placeholder": "Integration type..."
         },
         "ProductVersion": {
-          "Label": "Connected products",
-          "Placeholder": "Connected products..."
+          "Label": "OpenCTI version",
+          "Placeholder": "OpenCTI version...",
+          "RegisteredInstanceTooltip": "Matches one of your registered instances",
+          "FilterIncompatibleTooltip": "Not compatible with the selected OpenCTI version, requires {version} or later"
         },
         "ManagerSupported": {
           "Label": "Deployment type",
@@ -1298,7 +1300,7 @@
           "integration_type": "Integration type",
           "solution_category": "Solution category",
           "license_type": "License type",
-          "product_version": "Connected products",
+          "product_version": "OpenCTI version",
           "manager_supported": "Deployment type",
           "verified": "Verification status",
           "entity_type": "Entity type"

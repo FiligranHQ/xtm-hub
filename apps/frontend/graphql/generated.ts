@@ -801,7 +801,6 @@ export enum FilterKey {
   ManagerSupported = 'manager_supported',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
-  ProductVersion = 'product_version',
   Slug = 'slug',
   SolutionCategory = 'solution_category',
   Verified = 'verified'
@@ -3155,6 +3154,13 @@ export type CurrentVotingRoundCalloutQueryVariables = Exact<{
 
 export type CurrentVotingRoundCalloutQuery = { __typename?: 'Query', currentVotingRound: { __typename?: 'VotingRound', id: string, name: string, description: string | null, theme: VotingRoundTheme } | null };
 
+export type RegisteredProductVersionsListQueryVariables = Exact<{
+  product: PlatformIdentifier;
+}>;
+
+
+export type RegisteredProductVersionsListQuery = { __typename?: 'Query', registeredProductVersions: Array<{ __typename?: 'RegisteredProductVersion', version: string }> };
+
 export type MeCheckQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4097,6 +4103,59 @@ export const useInfiniteCurrentVotingRoundCalloutQuery = <
 useInfiniteCurrentVotingRoundCalloutQuery.getKey = (variables: CurrentVotingRoundCalloutQueryVariables) => ['CurrentVotingRoundCallout.infinite', variables];
 useInfiniteCurrentVotingRoundCalloutQuery.getRootKey = () => ['CurrentVotingRoundCallout.infinite'] as const;
 useCurrentVotingRoundCalloutQuery.fetcher = (client: GraphQLClient, variables: CurrentVotingRoundCalloutQueryVariables, headers?: RequestInit['headers']) => fetcher<CurrentVotingRoundCalloutQuery, CurrentVotingRoundCalloutQueryVariables>(client, CurrentVotingRoundCalloutDocument, variables, headers);
+
+export const RegisteredProductVersionsListDocument = `
+    query RegisteredProductVersionsList($product: PlatformIdentifier!) {
+  registeredProductVersions(product: $product) {
+    version
+  }
+}
+    `;
+
+export const useRegisteredProductVersionsListQuery = <
+      TData = RegisteredProductVersionsListQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredProductVersionsListQueryVariables,
+      options?: Omit<UseQueryOptions<RegisteredProductVersionsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredProductVersionsListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<RegisteredProductVersionsListQuery, TError, TData>(
+      {
+    queryKey: ['RegisteredProductVersionsList', variables],
+    queryFn: fetcher<RegisteredProductVersionsListQuery, RegisteredProductVersionsListQueryVariables>(client, RegisteredProductVersionsListDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useRegisteredProductVersionsListQuery.getKey = (variables: RegisteredProductVersionsListQueryVariables) => ['RegisteredProductVersionsList', variables];
+useRegisteredProductVersionsListQuery.getRootKey = () => ['RegisteredProductVersionsList'] as const;
+export const useInfiniteRegisteredProductVersionsListQuery = <
+      TData = InfiniteData<RegisteredProductVersionsListQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredProductVersionsListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<RegisteredProductVersionsListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredProductVersionsListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<RegisteredProductVersionsListQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['RegisteredProductVersionsList.infinite', variables],
+      queryFn: (metaData) => fetcher<RegisteredProductVersionsListQuery, RegisteredProductVersionsListQueryVariables>(client, RegisteredProductVersionsListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteRegisteredProductVersionsListQuery.getKey = (variables: RegisteredProductVersionsListQueryVariables) => ['RegisteredProductVersionsList.infinite', variables];
+useInfiniteRegisteredProductVersionsListQuery.getRootKey = () => ['RegisteredProductVersionsList.infinite'] as const;
+useRegisteredProductVersionsListQuery.fetcher = (client: GraphQLClient, variables: RegisteredProductVersionsListQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredProductVersionsListQuery, RegisteredProductVersionsListQueryVariables>(client, RegisteredProductVersionsListDocument, variables, headers);
 
 export const MeCheckDocument = `
     query meCheck {

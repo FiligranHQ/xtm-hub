@@ -1,20 +1,44 @@
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
+import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ShareableResourceCard from './ShareableResourceCard';
 
 const saveMock = vi.fn();
+let storedProductVersions: Record<string, string[]> = {};
 
 vi.mock('@/hooks/use-scroll-position', () => ({
   __esModule: true,
   default: () => ({ save: saveMock }),
 }));
 
+vi.mock(
+  '@/components/service/components/ServiceListLocalStorageKeyContext',
+  () => ({
+    useServiceListLocalStorageKeyContext: () => ({
+      localStorageKey: ServiceListLocalStorageKey.OpenCTIIntegrationFeeds,
+    }),
+  })
+);
+
+vi.mock('@/hooks/use-service-list-local-storage', async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import('@/hooks/use-service-list-local-storage')
+  >()),
+  useServiceListLocalStorage: () => ({
+    productVersions: storedProductVersions,
+  }),
+}));
+
 describe('ShareableResourceCard', () => {
   const serviceInstance = { id: 'service-id' };
+
+  beforeEach(() => {
+    storedProductVersions = {};
+  });
 
   it('renders connector card with document name and description', () => {
     vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
@@ -68,4 +92,57 @@ describe('ShareableResourceCard', () => {
     await user.click(screen.getByRole('link'));
     expect(saveMock).toHaveBeenCalledTimes(1);
   });
+
+  it.each`
+    selectedProductVersion | product_version | expectIncompatible | description
+    ${null}                | ${'6.8.3'}      | ${false}           | ${'no filter selected'}
+    ${'6.8.3'}             | ${'6.8.3'}      | ${false}           | ${'connector matches selected version'}
+    ${'6.9.0'}             | ${'6.8.3'}      | ${false}           | ${'connector requires an older version'}
+    ${'6.8.3'}             | ${'6.9.0'}      | ${true}            | ${'connector requires a newer version'}
+    ${'6.8.3'}             | ${undefined}    | ${false}           | ${'connector has no product_version metadata'}
+  `(
+    'marks the connector card as incompatible=$expectIncompatible when $description',
+    ({ selectedProductVersion, product_version, expectIncompatible }) => {
+      vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
+      storedProductVersions = selectedProductVersion
+        ? { [selectedProductVersion]: [] }
+        : {};
+      const { container } = testRender(
+        <ShareableResourceCard
+          document={
+            {
+              id: 'doc-connector',
+              name: 'My Connector',
+              type: 'opencti_integration',
+              short_description: 'A connector description',
+              integration_type: IntegrationType.Connector,
+              product_version,
+              use_cases: [],
+            } as documentItem_fragment$data
+          }
+          detailUrl="/details"
+          shareLinkUrl="/share"
+          serviceInstance={serviceInstance}
+        />
+      );
+
+      if (expectIncompatible) {
+        const incompatibleLabel = container.querySelector(
+          '[data-incompatible]'
+        );
+        expect(incompatibleLabel).not.toBeNull();
+        expect(incompatibleLabel).toHaveAttribute('data-incompatible', 'true');
+        expect(incompatibleLabel).toHaveAttribute(
+          'title',
+          'Service.OpenctiIntegrations.Filter.ProductVersion.FilterIncompatibleTooltip'
+        );
+        // Only the version label is greyed out, not the whole card.
+        expect(container.firstChild).not.toHaveAttribute('data-incompatible');
+      } else {
+        expect(
+          container.querySelector('[data-incompatible]')
+        ).not.toBeInTheDocument();
+      }
+    }
+  );
 });

@@ -38,7 +38,6 @@ export const PublicDocumentListPageLoader = ({
     integrationTypes,
     deployable,
     verified,
-    productVersions,
     licenseTypes,
     solutionCategories,
     orderMode,
@@ -53,7 +52,6 @@ export const PublicDocumentListPageLoader = ({
           deployable,
           verified,
           integrationTypes,
-          productVersions,
           licenseTypes,
           solutionCategories,
         }

@@ -54,4 +54,24 @@ describe('ShareableResourceCardFooterVersion', () => {
     expect(screen.getByText('extra')).toBeInTheDocument();
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
+
+  it('greys out only the version label when incompatible with the selected filter', () => {
+    const { container } = testRender(
+      <ShareableResourceCardFooterVersion
+        document={document as documentItem_fragment$data}
+        publicPath
+        shareLinkUrl="https://share"
+        isIncompatibleWithSelectedVersion
+        incompatibleTooltip="Requires a newer version"
+      />
+    );
+
+    const incompatibleLabel = container.querySelector('[data-incompatible]');
+    expect(incompatibleLabel).toHaveAttribute('data-incompatible', 'true');
+    expect(incompatibleLabel).toHaveAttribute(
+      'title',
+      'Requires a newer version'
+    );
+    expect(incompatibleLabel).toHaveTextContent(PRODUCT_VERSION);
+  });
 });

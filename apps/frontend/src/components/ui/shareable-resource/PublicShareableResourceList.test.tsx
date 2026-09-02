@@ -1,9 +1,12 @@
+import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
+import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 import testRender from '@/utils/test/test-render';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
+import { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { PublicShareableResourceList } from './PublicShareableResourceList';
 
@@ -12,6 +15,16 @@ vi.mock('@/hooks/use-scroll-position', () => ({
   default: () => ({ save: vi.fn() }),
 }));
 
+// PublicShareableResourceList renders ShareableResourceCard, which reads the
+// selected product-version filter from ServiceListLocalStorageKeyContext.
+const renderWithLocalStorageKeyContext = (children: ReactNode) =>
+  testRender(
+    <AppServiceListLocalStorageKeyContext
+      localStorageKey={ServiceListLocalStorageKey.OpenCTIIntegrationFeeds}>
+      {children}
+    </AppServiceListLocalStorageKeyContext>
+  );
+
 describe('PublicShareableResourceList', () => {
   const serviceInstance = {
     id: 'service-1',
@@ -19,7 +32,7 @@ describe('PublicShareableResourceList', () => {
   };
 
   it('renders an empty state when no document is provided', () => {
-    testRender(
+    renderWithLocalStorageKeyContext(
       <PublicShareableResourceList
         documents={[]}
         serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
@@ -49,7 +62,7 @@ describe('PublicShareableResourceList', () => {
       },
     ];
 
-    testRender(
+    renderWithLocalStorageKeyContext(
       <PublicShareableResourceList
         documents={documents as publicDocumentListItemFragment$data[]}
         serviceInstance={serviceInstance as seoServiceInstanceFragment$data}

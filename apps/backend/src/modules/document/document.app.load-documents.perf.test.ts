@@ -259,33 +259,6 @@ describePerf('loadDocuments — performance benchmarks', () => {
         );
         expect(avgMs).toBeLessThan(large.maxAvgMs);
       });
-
-      it('should cover scenario 4 — large dataset: product_version logical filter', async () => {
-        const input: QueryDocumentsArgs = {
-          serviceInstanceId: scenarioServiceInstance.id,
-          first: large.pageSize,
-          orderBy: DocumentOrdering.CreatedAt,
-          orderMode: OrderingMode.Desc,
-          logicalFilters: {
-            operator: LogicalOperator.And,
-            children: [
-              {
-                leaf: {
-                  key: FilterKey.ProductVersion,
-                  value: ['5.2.0'],
-                },
-              },
-            ],
-          },
-        };
-        const avgMs = await measureAvgDuration(() =>
-          DocumentApp.loadDocuments(input)
-        );
-        logApp.info(
-          `[perf] loadDocuments Scenario S4 – version filter (large): avg=${avgMs.toFixed(2)}ms`
-        );
-        expect(avgMs).toBeLessThan(large.maxAvgMs);
-      });
     });
   });
 
@@ -370,33 +343,6 @@ describePerf('loadDocuments — performance benchmarks', () => {
         );
         logApp.info(
           `[perf] loadDocuments Dashboard S3 – baseline (large): avg=${avgMs.toFixed(2)}ms`
-        );
-        expect(avgMs).toBeLessThan(large.maxAvgMs);
-      });
-
-      it('should cover scenario 4 — large dataset: product_version logical filter', async () => {
-        const input: QueryDocumentsArgs = {
-          serviceInstanceId: dashboardServiceInstance.id,
-          first: large.pageSize,
-          orderBy: DocumentOrdering.CreatedAt,
-          orderMode: OrderingMode.Desc,
-          logicalFilters: {
-            operator: LogicalOperator.And,
-            children: [
-              {
-                leaf: {
-                  key: FilterKey.ProductVersion,
-                  value: ['5.2.0'],
-                },
-              },
-            ],
-          },
-        };
-        const avgMs = await measureAvgDuration(() =>
-          DocumentApp.loadDocuments(input)
-        );
-        logApp.info(
-          `[perf] loadDocuments Dashboard S4 – version filter (large): avg=${avgMs.toFixed(2)}ms`
         );
         expect(avgMs).toBeLessThan(large.maxAvgMs);
       });

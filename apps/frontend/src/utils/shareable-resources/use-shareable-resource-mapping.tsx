@@ -10,6 +10,7 @@ import { IntegrationFilters } from '@/components/ui/shareable-resource/integrati
 import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationLicenseTypeFilter';
 import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-resource/integration/IntegrationSolutionCategoryFilter';
 import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
+import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -18,6 +19,7 @@ import {
   ServiceSlug,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { PlatformIdentifier } from '@graphql/generated';
 
 export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const localStorageKeyMapping: Record<
@@ -54,6 +56,7 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     removeDeployable,
     removeVerified,
     removeEntityTypes,
+    removeProductVersions,
   } = useServiceListLocalStorage(localStorageKey);
 
   const labelFilter = {
@@ -72,6 +75,15 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
       [ServiceListFilterKey.IntegrationType]: {
         node: <IntegrationFilters />,
         reset: removeIntegrationTypes,
+      },
+      [ServiceListFilterKey.ProductVersion]: {
+        node: (
+          <ProductVersionFilter
+            platformIdentifier={PlatformIdentifier.Opencti}
+            publicPath
+          />
+        ),
+        reset: removeProductVersions,
       },
       [ServiceListFilterKey.ManagerSupported]: {
         node: <IntegrationDeployableFilter />,

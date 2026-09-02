@@ -95,6 +95,7 @@ describe('PublicDocumentsList', () => {
       setOrderMode: vi.fn(),
       selectedFilters: [],
       setSelectedFilters: vi.fn(),
+      productVersions: {},
     });
     testState.useScrollPosition.mockReturnValue({
       restore: testState.restore,

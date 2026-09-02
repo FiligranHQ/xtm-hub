@@ -19,7 +19,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     search,
     labels,
     integrationTypes,
-    productVersions,
     licenseTypes,
     solutionCategories,
     setSearch,
@@ -46,7 +45,6 @@ const PageLoader = ({ serviceInstance }: PageLoaderProps) => {
     deployable,
     verified,
     integrationTypes,
-    productVersions,
     licenseTypes,
     solutionCategories,
   });

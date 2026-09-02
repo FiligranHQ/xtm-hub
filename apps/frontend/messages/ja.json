@@ -1110,7 +1110,9 @@
         },
         "ProductVersion": {
           "Label": "接続済み製品",
-          "Placeholder": "接続済み製品..."
+          "Placeholder": "接続済み製品...",
+          "RegisteredInstanceTooltip": "登録済みのインスタンスのいずれかと一致します",
+          "FilterIncompatibleTooltip": "選択された OpenCTI バージョンと互換性がありません。{version} 以降が必要です"
         },
         "ManagerSupported": {
           "Label": "配備タイプ",

@@ -11,38 +11,56 @@ interface ShareableResourceCardFooterVersionProps {
   publicPath?: boolean;
   shareLinkUrl: string;
   extraContent?: ReactNode;
+  /**
+   * Whether this connector's product version is incompatible with the
+   * currently selected product-version filter. Greys out just the version
+   * label, without disabling the whole card.
+   */
+  isIncompatibleWithSelectedVersion?: boolean;
+  incompatibleTooltip?: string;
 }
 export const ShareableResourceCardFooterVersion = ({
   document,
   publicPath = false,
   shareLinkUrl,
   extraContent,
+  isIncompatibleWithSelectedVersion,
+  incompatibleTooltip,
 }: ShareableResourceCardFooterVersionProps) => {
   return (
     <>
       <div className="flex gap-l min-w-0 overflow-hidden">
-        {publicPath ||
-        (docHasMetadata(document, DocumentMetadataKeyCode.ManagerSupported) &&
-          !document.manager_supported) ? (
-          <span className="text-sm">
-            {docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion) &&
-              document.product_version}
-          </span>
-        ) : (
-          <ShareableResourceCardVersion
-            className="text-sm"
-            product_version={
-              docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
-                ? document.product_version
-                : ''
-            }
-            requiredProductVersion={
-              docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
-                ? document.product_version
-                : ''
-            }
-          />
-        )}
+        <span
+          data-incompatible={isIncompatibleWithSelectedVersion || undefined}
+          title={
+            isIncompatibleWithSelectedVersion ? incompatibleTooltip : undefined
+          }
+          className="data-[incompatible]:opacity-60">
+          {publicPath ||
+          (docHasMetadata(document, DocumentMetadataKeyCode.ManagerSupported) &&
+            !document.manager_supported) ? (
+            <span className="text-sm">
+              {docHasMetadata(
+                document,
+                DocumentMetadataKeyCode.ProductVersion
+              ) && document.product_version}
+            </span>
+          ) : (
+            <ShareableResourceCardVersion
+              className="text-sm"
+              product_version={
+                docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
+                  ? document.product_version
+                  : ''
+              }
+              requiredProductVersion={
+                docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
+                  ? document.product_version
+                  : ''
+              }
+            />
+          )}
+        </span>
       </div>
       <div className=" flex flex-row pr-m">
         <ShareLinkButton

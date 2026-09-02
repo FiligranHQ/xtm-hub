@@ -313,50 +313,6 @@ describe('document domain', () => {
     });
 
     describe('multiple filters', () => {
-      it('should handle type and version', async () => {
-        const connectors = await IngestManifestDomain.upsertConnectors(
-          sampleExtractedManifest as ManifestInformation[]
-        );
-
-        expect(connectors).toHaveLength(2);
-
-        // Fetch connectors with version
-        const connectorConnection: { edges: { node: Integration }[] } =
-          await DocumentDomain.loadParentDocumentsByServiceInstance(
-            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-            {
-              orderBy: DocumentOrdering.CreatedAt,
-              orderMode: OrderingMode.Desc,
-              first: 10,
-              serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-              logicalFilters: {
-                operator: LogicalOperator.And,
-                children: [
-                  {
-                    leaf: {
-                      key: FilterKey.IntegrationType,
-                      value: [IntegrationType.Connector],
-                    },
-                  },
-                  {
-                    leaf: {
-                      key: FilterKey.ProductVersion,
-                      value: ['1.0.0'],
-                    },
-                  },
-                ],
-              },
-            },
-            INTEGRATION_METADATA_KEYS
-          );
-
-        expect(connectorConnection.edges).toHaveLength(1);
-        expect(connectorConnection.edges[0]?.node).toMatchObject({
-          id: connectors[0]?.id,
-          integration_type: IntegrationType.Connector,
-        });
-      });
-
       it('should handle type', async () => {
         const connectors = await IngestManifestDomain.upsertConnectors(
           sampleExtractedManifest as ManifestInformation[]
@@ -471,81 +427,6 @@ describe('document domain', () => {
         expect(ids).not.toContain(legacyConnector.id);
         // Non-connector integration types are unaffected by the flag.
         expect(ids).toContain(csvFeed.id);
-      });
-    });
-
-    describe('product version filtering', () => {
-      it('should filter an integration feed with a product version', async () => {
-        // Create data
-        const connectors = await IngestManifestDomain.upsertConnectors(
-          sampleExtractedManifest as ManifestInformation[]
-        );
-
-        expect(connectors).toBeDefined();
-        expect(connectors).toHaveLength(2);
-
-        const secondContractConnection: DocumentConnection =
-          await DocumentDomain.loadParentDocumentsByServiceInstance(
-            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-            {
-              orderBy: DocumentOrdering.CreatedAt,
-              orderMode: OrderingMode.Desc,
-              first: 10,
-              serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-              logicalFilters: {
-                operator: LogicalOperator.And,
-                children: [
-                  {
-                    leaf: {
-                      key: FilterKey.ProductVersion,
-                      value: ['1.0.0'],
-                    },
-                  },
-                ],
-              },
-            },
-            INTEGRATION_METADATA_KEYS
-          );
-
-        expect(secondContractConnection.edges).toHaveLength(2);
-        expect(secondContractConnection.edges[0]?.node.id).toBe(
-          connectors[0]?.id
-        );
-      });
-
-      it('should handle multiple product version filters', async () => {
-        // Create data
-        const connectors = await IngestManifestDomain.upsertConnectors(
-          sampleExtractedManifest as ManifestInformation[]
-        );
-
-        expect(connectors).toBeDefined();
-        expect(connectors).toHaveLength(2);
-
-        const allContractsConnection: DocumentConnection =
-          await DocumentDomain.loadParentDocumentsByServiceInstance(
-            OPENCTI_INTEGRATION_DOCUMENT_TYPE,
-            {
-              orderBy: DocumentOrdering.CreatedAt,
-              orderMode: OrderingMode.Desc,
-              first: 10,
-              serviceInstanceId: INTEGRATION_SERVICE_INSTANCE_ID,
-              logicalFilters: {
-                operator: LogicalOperator.And,
-                children: [
-                  {
-                    leaf: {
-                      key: FilterKey.ProductVersion,
-                      value: ['1.0.54', '1.0.1'],
-                    },
-                  },
-                ],
-              },
-            },
-            INTEGRATION_METADATA_KEYS
-          );
-
-        expect(allContractsConnection.edges).toHaveLength(3);
       });
     });
 
