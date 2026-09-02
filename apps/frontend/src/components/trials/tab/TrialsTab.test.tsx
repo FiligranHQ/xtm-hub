@@ -1,152 +1,131 @@
 import TrialsTab from '@/components/trials/tab/TrialsTab';
-import { TrialsTabType } from '@/components/trials/trials.const';
+import {
+  BUNDLE_SCOPE,
+  TrialsScope,
+  TrialsTabType,
+  productScope,
+} from '@/components/trials/trials.const';
 import testRender from '@/utils/test/test-render';
 import { PlatformIdentifier } from '@graphql/generated';
-import { act, fireEvent, screen } from '@testing-library/react';
-import type { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { ColumnDef } from '@tanstack/react-table';
+import { ReactNode } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mocks
-vi.mock(
-  '@/components/service/trial-instances/manage-users/trials-manage-users-dialog',
-  () => ({ TrialsManageUsersDialog: () => <div>ManageUsersDialog</div> })
-);
-vi.mock('@/components/trials/trial-list-localstorage', () => ({
-  useTrialsListLocalstorage: () => ({
-    pageSize: 10,
-    setPageSize: vi.fn(),
-    orderMode: 'desc',
-    setOrderMode: vi.fn(),
-    orderBy: 'REQUEST_DATE',
-    setOrderBy: vi.fn(),
-    removeOrder: vi.fn(),
-    columnOrder: [],
-    setColumnOrder: vi.fn(),
-    columnVisibility: {},
-    setColumnVisibility: vi.fn(),
-    resetAll: vi.fn(),
-  }),
-}));
-vi.mock('@/hooks/usePortalCapability', () => ({
-  useAdminByPass: () => false,
-  useUserHasPortalCapability: () => false,
-}));
-vi.mock('react-relay', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useLazyLoadQuery: () => ({ deploymentRequestsList: { edges: [] } }),
-  useRefetchableFragment: () => [
-    { deploymentRequestsList: { edges: [] } },
-    vi.fn(),
-  ],
-  useMutation: () => [vi.fn(), {}],
-}));
+const renderedColumns: string[] = [];
+
 vi.mock('@filigran/ui', () => ({
-  toast: vi.fn(),
-  DataTable: ({ toolbar }: { toolbar: ReactNode }) => (
-    <div>
-      <div>DataTable</div>
-      {toolbar}
-    </div>
-  ),
+  DataTable: ({ columns }: { columns: ColumnDef<unknown>[] }) => {
+    renderedColumns.splice(
+      0,
+      renderedColumns.length,
+      ...columns.map((column) => column.id ?? '')
+    );
+    return <div>DataTable</div>;
+  },
   DataTableHeadBarOptions: () => <div>HeadBarOptions</div>,
   Tooltip: ({ children }: { children: ReactNode }) => <>{children}</>,
   TooltipProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
   TooltipTrigger: ({ children }: { children: ReactNode }) => <>{children}</>,
   TooltipContent: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
+const cancelSpy = vi.fn();
+const reorderSpy = vi.fn();
+vi.mock('@graphql/generated', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useTrialsListQuery: () => ({ data: undefined }),
+  useTrialsAdminCancelDeploymentRequestMutation: () => ({ mutate: cancelSpy }),
+  useTrialsReorderDeploymentRequestInQueueMutation: () => ({
+    mutate: reorderSpy,
+  }),
+}));
+vi.mock('@graphql/deployment/deployment.keys', () => ({
+  trialsKeys: {
+    all: () => ['TrialsList'],
+    list: () => ['TrialsList', {}],
+  },
+}));
 
-const defaultProps = {
-  platformIdentifier: PlatformIdentifier.Opencti,
+const columnsOf = (type: TrialsTabType, scope: TrialsScope = BUNDLE_SCOPE) => {
+  testRender(
+    <TrialsTab
+      type={type}
+      scope={scope}
+    />
+  );
+  return renderedColumns;
 };
 
+const OPENCTI_SCOPE = productScope(PlatformIdentifier.Opencti);
+
 describe('TrialsTab', () => {
-  it('should render DataTable and toolbar', () => {
-    testRender(
-      <TrialsTab
-        {...defaultProps}
-        type={TrialsTabType.Running}
-      />
-    );
-    expect(screen.getByText('DataTable')).toBeInTheDocument();
-    expect(screen.getByText('HeadBarOptions')).toBeInTheDocument();
-    expect(
-      screen.getByText('TrialsDashboard.WarningCancellation')
-    ).toBeInTheDocument();
+  beforeEach(() => {
+    renderedColumns.splice(0, renderedColumns.length);
   });
 
-  it('should render search input and trigger debounce', async () => {
-    testRender(
-      <TrialsTab
-        {...defaultProps}
-        type={TrialsTabType.Running}
-      />
-    );
-    const input = screen.getByPlaceholderText(
-      'TrialsDashboard.Actions.SearchTrials'
-    );
-    expect(input).toBeInTheDocument();
-    await act(async () => {
-      fireEvent.change(input, { target: { value: 'test' } });
+  it('should call mutation and show toast on reorder', () => {
+    columnsOf(TrialsTabType.Waiting, OPENCTI_SCOPE);
+
+    reorderSpy();
+
+    expect(reorderSpy).toHaveBeenCalled();
+  });
+
+  it('should call mutation and show toast on cancel', () => {
+    columnsOf(TrialsTabType.Running, OPENCTI_SCOPE);
+
+    cancelSpy();
+
+    expect(cancelSpy).toHaveBeenCalled();
+  });
+
+  it('should never display a bundle status column', () => {
+    Object.values(TrialsTabType).forEach((type) => {
+      expect(columnsOf(type)).not.toContain('hub_status');
     });
   });
 
-  it('should render correct columns for Waiting tab', () => {
-    testRender(
-      <TrialsTab
-        {...defaultProps}
-        type={TrialsTabType.Waiting}
-      />
-    );
-    expect(screen.getByText('DataTable')).toBeInTheDocument();
+  it('should display the status of a product trial', () => {
+    Object.values(TrialsTabType).forEach((type) => {
+      expect(columnsOf(type, OPENCTI_SCOPE)).toContain('hub_status');
+    });
   });
 
-  it('should render correct columns for Cancelled tab', () => {
-    testRender(
-      <TrialsTab
-        {...defaultProps}
-        type={TrialsTabType.Cancelled}
-      />
-    );
-    expect(screen.getByText('DataTable')).toBeInTheDocument();
+  it('should only prioritize bundles on the waiting tab', () => {
+    // Then
+    expect(columnsOf(TrialsTabType.Waiting)).toContain('ordering');
+    expect(columnsOf(TrialsTabType.Running)).not.toContain('ordering');
   });
 
-  it('should render correct columns for Expired tab', () => {
-    testRender(
-      <TrialsTab
-        {...defaultProps}
-        type={TrialsTabType.Expired}
-      />
+  it('should display the request date while waiting, and the trial dates once running', () => {
+    // Then
+    expect(columnsOf(TrialsTabType.Waiting)).toContain('request_date');
+    expect(columnsOf(TrialsTabType.Waiting)).not.toContain('end_date');
+    expect(columnsOf(TrialsTabType.Running)).toEqual(
+      expect.arrayContaining(['start_date', 'end_date', 'remainingDays'])
     );
-    expect(screen.getByText('DataTable')).toBeInTheDocument();
   });
 
-  it('should call mutation and show toast on reorder', async () => {
-    const relay = await import('react-relay');
-    const mutationMock = vi.fn();
-    relay.useMutation = () => [mutationMock, true];
-    testRender(
-      <TrialsTab
-        {...defaultProps}
-        type={TrialsTabType.Waiting}
-      />
+  it('should only detail the cancellation on the cancelled tab', () => {
+    // Then
+    expect(columnsOf(TrialsTabType.Cancelled)).toEqual(
+      expect.arrayContaining([
+        'cancellation_date',
+        'cancellation_user_email',
+        'cancellation_reason',
+      ])
     );
-    // Simulate a reorder action if possible (would require more detailed DOM structure)
-    // For now, directly call the mutation and assert
-    mutationMock();
-    expect(mutationMock).toHaveBeenCalled();
+    expect(columnsOf(TrialsTabType.Expired)).not.toContain('cancellation_date');
   });
 
-  it('should call mutation and show toast on cancel', async () => {
-    const relay = await import('react-relay');
-    const mutationMock = vi.fn();
-    relay.useMutation = () => [mutationMock, true];
-    testRender(
-      <TrialsTab
-        {...defaultProps}
-        type={TrialsTabType.Running}
-      />
-    );
-    mutationMock();
-    expect(mutationMock).toHaveBeenCalled();
+  it('should always display the products of the bundle', () => {
+    Object.values(TrialsTabType).forEach((type) => {
+      expect(columnsOf(type)).toContain('products');
+    });
+  });
+
+  it('should never display a products column on a product trial', () => {
+    Object.values(TrialsTabType).forEach((type) => {
+      expect(columnsOf(type, OPENCTI_SCOPE)).not.toContain('products');
+    });
   });
 });

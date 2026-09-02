@@ -31,6 +31,7 @@ import { DeploymentRequestDomain } from '../../src/modules/deployment/deployment
 import { serviceInstanceTagMappedByPlatformIdentifier } from '../../src/modules/registration/registration.mapping';
 import { ServiceInstanceDomain } from '../../src/modules/service/instance/service-instance.domain';
 import { SERVICES, TEST_ORGANIZATIONS } from '../tests.const';
+import { TestServiceHelper } from './test.service.helper';
 
 export const TestDeploymentHelper = {
   deploymentRequest: {
@@ -130,6 +131,59 @@ export const TestDeploymentHelper = {
         ...defaultDeploymentRequestValues,
         ...deploymentRequest,
       });
+    },
+    createBundle: async (data?: {
+      bundle?: Partial<DeploymentRequestInitializer>;
+      children?: Partial<DeploymentRequestInitializer>[];
+    }): Promise<{
+      bundle: DeploymentRequest;
+      children: DeploymentRequest[];
+    }> => {
+      const bundle =
+        await TestDeploymentHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            ...data?.bundle,
+          }
+        );
+
+      const children = await Promise.all(
+        (data?.children ?? []).map((child) =>
+          TestDeploymentHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              parent_id: bundle.id,
+              ...child,
+            }
+          )
+        )
+      );
+
+      return { bundle, children };
+    },
+    deleteBundle: async (bundleId: DeploymentRequestId): Promise<void> => {
+      const idFilter: DeploymentRequestMutator = { id: bundleId };
+      const parentIdFilter: DeploymentRequestMutator = {
+        parent_id: bundleId,
+      };
+      const deploymentRequests = await db<DeploymentRequest[]>(
+        'DeploymentRequest'
+      )
+        .where(idFilter)
+        .orWhere(parentIdFilter)
+        .select('*');
+
+      for (const { service_instance_id } of deploymentRequests) {
+        await TestDeploymentHelper.deploymentRequest.delete({
+          service_instance_id,
+        });
+        await db<Subscription>('Subscription')
+          .where({ service_instance_id })
+          .del();
+        await TestServiceHelper.serviceInstance.delete({
+          id: service_instance_id,
+        });
+      }
     },
     assertProperties: async (
       id: DeploymentRequestId,

@@ -22,7 +22,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
   );
 
   const serviceInstance = response?.data
-    .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data;
+    .serviceInstanceById as unknown as serviceInstance_fragment$data;
   const breadcrumbs = [
     {
       label: 'MenuLinks.Home',
@@ -42,7 +42,7 @@ const Page = async ({ params }: ServiceCustomDashboardsPageProps) => {
           <PageLoader
             serviceInstance={
               response.data
-                .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
+                .serviceInstanceById as unknown as serviceInstance_fragment$data
             }
           />
         </>

@@ -23,7 +23,7 @@ const Page = async ({ params }: ServiceVaultPageProps) => {
     <PageLoader
       serviceInstance={
         response.data
-          .serviceInstanceByIdAndGrantAccess as unknown as serviceInstance_fragment$data
+          .serviceInstanceById as unknown as serviceInstance_fragment$data
       }
     />
   );

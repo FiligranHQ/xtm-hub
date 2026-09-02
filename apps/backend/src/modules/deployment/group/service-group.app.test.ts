@@ -13,6 +13,7 @@ import {
   requestContextAdminSecondOrga,
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
+  requestContextSimpleUserFiligran2,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
@@ -21,9 +22,11 @@ import {
   PlatformConfigurationStatus,
   PlatformContract,
   PlatformIdentifier,
+  ServiceGroupName,
   ServiceInstanceCreationStatus,
 } from '../../../__generated__/resolvers-types';
 import { requestContext } from '../../../context/request.context';
+import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import { ServiceGroupId } from '../../../model/kanel/public/ServiceGroup';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import * as mailService from '../../../server/mail-service';
@@ -240,147 +243,6 @@ describe('serviceGroupApp', () => {
         TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
       );
     });
-
-    describe('email sending for newly added users', () => {
-      const platformId = uuidv4();
-      const platformUrl = 'https://test-platform.example.com';
-      const endDate = new Date('2026-06-01');
-
-      beforeEach(async () => {
-        await TestHelper.subscription.create({
-          service_instance_id: serviceInstanceId1,
-          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-        });
-        await TestHelper.deploymentRequest.create({
-          service_instance_id: serviceInstanceId1,
-          platform_id: platformId,
-          user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-          end_date: endDate,
-        });
-
-        await TestHelper.platformConfiguration.create({
-          service_instance_id: serviceInstanceId1,
-          status: PlatformConfigurationStatus.Active,
-          platform_id: platformId,
-          platform_url: platformUrl,
-          registerer_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          platform_title: 'Test Platform',
-          platform_version: '1.0.0',
-          platform_contract: PlatformContract.Ee,
-          token: uuidv4(),
-        });
-      });
-
-      it('should send free_trial_user_added email to each newly added user', async () => {
-        const sendMailSpy = vi
-          .spyOn(mailService, 'sendMail')
-          .mockResolvedValue(undefined);
-
-        const expectedTrialEndDate = endDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: '2-digit',
-        });
-
-        await ServiceGroupApp.updateGroups([
-          {
-            id: adminGroupId,
-            userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID],
-          },
-          {
-            id: analystGroupId,
-            userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
-          },
-        ]);
-
-        expect(sendMailSpy).toHaveBeenCalledTimes(2);
-        expect(sendMailSpy).toHaveBeenCalledWith({
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-          template: 'free_trial_user_added',
-          params: {
-            firstName: formatName(
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME
-            ),
-            platformUrl,
-            platformIdentifier: PlatformIdentifier.Opencti,
-            adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-            trialEndDate: expectedTrialEndDate,
-          },
-        });
-        expect(sendMailSpy).toHaveBeenCalledWith({
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-          template: 'free_trial_user_added',
-          params: {
-            firstName: formatName(
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME
-            ),
-            platformUrl,
-            platformIdentifier: PlatformIdentifier.Opencti,
-            adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-            trialEndDate: expectedTrialEndDate,
-          },
-        });
-      });
-
-      it('should not send email to users already in the group', async () => {
-        await TestHelper.serviceGroupUser.create({
-          group_id: adminGroupId,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        });
-
-        const sendMailSpy = vi
-          .spyOn(mailService, 'sendMail')
-          .mockResolvedValue(undefined);
-
-        await ServiceGroupApp.updateGroups([
-          {
-            id: adminGroupId,
-            userIds: [
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-              TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-            ],
-          },
-          { id: analystGroupId, userIds: [] },
-        ]);
-
-        expect(sendMailSpy).toHaveBeenCalledTimes(1);
-        expect(sendMailSpy).toHaveBeenCalledWith(
-          expect.objectContaining({
-            to: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-            template: 'free_trial_user_added',
-          })
-        );
-      });
-
-      it('should not send any email when all users were already in their groups', async () => {
-        await TestHelper.serviceGroupUser.create({
-          group_id: adminGroupId,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        });
-        await TestHelper.serviceGroupUser.create({
-          group_id: analystGroupId,
-          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-        });
-
-        const sendMailSpy = vi
-          .spyOn(mailService, 'sendMail')
-          .mockResolvedValue(undefined);
-
-        await ServiceGroupApp.updateGroups([
-          {
-            id: adminGroupId,
-            userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID],
-          },
-          {
-            id: analystGroupId,
-            userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
-          },
-        ]);
-
-        expect(sendMailSpy).not.toHaveBeenCalled();
-      });
-    });
   });
 
   describe('removeExpiredGroups', () => {
@@ -559,6 +421,934 @@ describe('serviceGroupApp', () => {
 
       // Then
       expect(auth0Spy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('loadBundleUserServiceGroups', () => {
+    const createdBundleIds: DeploymentRequestId[] = [];
+
+    afterEach(async () => {
+      for (const bundleId of createdBundleIds) {
+        await TestHelper.deploymentRequest.deleteBundle(bundleId);
+      }
+      createdBundleIds.length = 0;
+    });
+
+    it('should return groups pivoted per user across the bundle children', async () => {
+      // Given
+      const { bundle, children } =
+        await TestHelper.deploymentRequest.createBundle({
+          children: [
+            { platform_identifier: PlatformIdentifier.Opencti },
+            { platform_identifier: PlatformIdentifier.Openaev },
+          ],
+        });
+      createdBundleIds.push(bundle.id);
+      const [openctiDeploymentRequest, openaevDeploymentRequest] = children;
+
+      const openctiAdminGroupId = uuidv4() as ServiceGroupId;
+      const openaevObserverGroupId = uuidv4() as ServiceGroupId;
+      await TestHelper.serviceGroup.create({
+        id: openctiAdminGroupId,
+        name: 'Admin',
+        service_instance_id: openctiDeploymentRequest.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: openaevObserverGroupId,
+        name: 'Observer',
+        service_instance_id: openaevDeploymentRequest.service_instance_id,
+      });
+
+      await TestHelper.serviceGroupUser.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        group_id: openctiAdminGroupId,
+      });
+      await TestHelper.serviceGroupUser.create({
+        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        group_id: openaevObserverGroupId,
+      });
+
+      // When
+      const result = await ServiceGroupApp.loadBundleUserServiceGroups(
+        bundle.service_instance_id
+      );
+
+      // Then
+      expect(result).toHaveLength(1);
+      expect(result[0]?.user.id).toBe(
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID
+      );
+      expect(result[0]?.groups).toEqual(
+        expect.arrayContaining([
+          { platformIdentifier: PlatformIdentifier.Opencti, name: 'Admin' },
+          {
+            platformIdentifier: PlatformIdentifier.Openaev,
+            name: 'Observer',
+          },
+        ])
+      );
+    });
+
+    it('should throw DeploymentRequestNotFound when the bundle has no deployment request', async () => {
+      // Given
+      const bundleServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+      // When
+      const call = ServiceGroupApp.loadBundleUserServiceGroups(
+        bundleServiceInstanceId
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+    });
+  });
+
+  describe('loadBundleProducts', () => {
+    const createdBundleIds: DeploymentRequestId[] = [];
+
+    afterEach(async () => {
+      for (const bundleId of createdBundleIds) {
+        await TestHelper.deploymentRequest.deleteBundle(bundleId);
+      }
+      createdBundleIds.length = 0;
+    });
+
+    it('should return the platform identifiers of the bundle children', async () => {
+      // Given
+      const { bundle } = await TestHelper.deploymentRequest.createBundle({
+        children: [
+          { platform_identifier: PlatformIdentifier.Opencti },
+          { platform_identifier: PlatformIdentifier.Xtmone },
+        ],
+      });
+      createdBundleIds.push(bundle.id);
+
+      // When
+      const result = await ServiceGroupApp.loadBundleProducts(
+        bundle.service_instance_id
+      );
+
+      // Then
+      expect(result).toEqual(
+        expect.arrayContaining([
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Xtmone,
+        ])
+      );
+      expect(result).not.toContain(PlatformIdentifier.Openaev);
+    });
+
+    it('should throw DeploymentRequestNotFound when the bundle has no deployment request', async () => {
+      // Given
+      const bundleServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+      // When
+      const call = ServiceGroupApp.loadBundleProducts(bundleServiceInstanceId);
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+    });
+  });
+
+  describe('addUsersToBundleGroups', () => {
+    const createdBundleIds: DeploymentRequestId[] = [];
+    const createdPlatformConfigServiceInstanceIds: ServiceInstanceId[] = [];
+
+    afterEach(async () => {
+      for (const serviceInstanceId of createdPlatformConfigServiceInstanceIds) {
+        await TestHelper.platformConfiguration.delete({
+          service_instance_id: serviceInstanceId,
+        });
+      }
+      createdPlatformConfigServiceInstanceIds.length = 0;
+      for (const bundleId of createdBundleIds) {
+        await TestHelper.deploymentRequest.deleteBundle(bundleId);
+      }
+      createdBundleIds.length = 0;
+    });
+
+    const createBundleWithGroups = async (opts?: {
+      endDate?: Date;
+      platformUrl?: string;
+    }) => {
+      const openctiPlatformId = uuidv4();
+      const xtmonePlatformId = uuidv4();
+      const { bundle, children } =
+        await TestHelper.deploymentRequest.createBundle({
+          children: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              platform_id: openctiPlatformId,
+              end_date: opts?.endDate,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Xtmone,
+              platform_id: xtmonePlatformId,
+              end_date: opts?.endDate,
+            },
+          ],
+        });
+      createdBundleIds.push(bundle.id);
+      const [openctiChild, xtmoneChild] = children;
+
+      const openctiAdminGroupId = uuidv4() as ServiceGroupId;
+      const openctiReaderGroupId = uuidv4() as ServiceGroupId;
+      const xtmoneUserGroupId = uuidv4() as ServiceGroupId;
+      const xtmoneAdminGroupId = uuidv4() as ServiceGroupId;
+      await TestHelper.serviceGroup.create({
+        id: openctiAdminGroupId,
+        name: 'Admin',
+        service_instance_id: openctiChild!.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: openctiReaderGroupId,
+        name: 'Reader',
+        service_instance_id: openctiChild!.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: xtmoneUserGroupId,
+        name: 'User',
+        service_instance_id: xtmoneChild!.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: xtmoneAdminGroupId,
+        name: 'Admin',
+        service_instance_id: xtmoneChild!.service_instance_id,
+      });
+
+      if (opts?.platformUrl) {
+        await TestHelper.platformConfiguration.create({
+          service_instance_id: openctiChild!.service_instance_id,
+          status: PlatformConfigurationStatus.Active,
+          platform_id: openctiPlatformId,
+          platform_url: opts.platformUrl,
+          registerer_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          platform_title: 'Test OpenCTI',
+          platform_version: '1.0.0',
+          platform_contract: PlatformContract.Ee,
+          token: uuidv4(),
+        });
+        await TestHelper.platformConfiguration.create({
+          service_instance_id: xtmoneChild!.service_instance_id,
+          status: PlatformConfigurationStatus.Active,
+          platform_id: xtmonePlatformId,
+          platform_url: opts.platformUrl,
+          registerer_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          platform_title: 'Test XTM One',
+          platform_version: '1.0.0',
+          platform_contract: PlatformContract.Ee,
+          token: uuidv4(),
+        });
+        createdPlatformConfigServiceInstanceIds.push(
+          openctiChild!.service_instance_id,
+          xtmoneChild!.service_instance_id
+        );
+      }
+
+      return {
+        bundle,
+        openctiChild: openctiChild!,
+        xtmoneChild: xtmoneChild!,
+        groups: {
+          openctiAdminGroupId,
+          openctiReaderGroupId,
+          xtmoneUserGroupId,
+          xtmoneAdminGroupId,
+        },
+      };
+    };
+
+    it('should throw XtmOneRoleRequired when no XTM One role is provided', async () => {
+      // Given
+      const { bundle } = await createBundleWithGroups();
+
+      // When
+      const call = ServiceGroupApp.addUsersToBundleGroups(
+        bundle.service_instance_id,
+        {
+          userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+          roles: [
+            {
+              product: PlatformIdentifier.Opencti,
+              role: ServiceGroupName.Admin,
+            },
+          ],
+        }
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.XtmOneRoleRequired);
+    });
+
+    it('should throw UserIsNotInOrganization when a userId does not belong to the bundle organization', async () => {
+      // Given
+      const { bundle } = await createBundleWithGroups();
+
+      // When
+      const call = ServiceGroupApp.addUsersToBundleGroups(
+        bundle.service_instance_id,
+        {
+          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID],
+          roles: [
+            {
+              product: PlatformIdentifier.Opencti,
+              role: ServiceGroupName.Admin,
+            },
+            {
+              product: PlatformIdentifier.Xtmone,
+              role: ServiceGroupName.User,
+            },
+          ],
+        }
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+
+    it('should add users to the target group per platform and skip platforms not part of the bundle', async () => {
+      // Given
+      const { bundle, groups } = await createBundleWithGroups();
+
+      // When
+      const result = await ServiceGroupApp.addUsersToBundleGroups(
+        bundle.service_instance_id,
+        {
+          userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+          roles: [
+            {
+              product: PlatformIdentifier.Opencti,
+              role: ServiceGroupName.Admin,
+            },
+            // OpenAEV isn't part of this bundle: should be silently ignored.
+            {
+              product: PlatformIdentifier.Openaev,
+              role: ServiceGroupName.Observer,
+            },
+            { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+          ],
+        }
+      );
+
+      // Then
+      const openctiMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiAdminGroupId,
+      });
+      const xtmoneMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.xtmoneUserGroupId,
+      });
+      expect(openctiMembers?.map((member) => member.user_id)).toEqual([
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+      ]);
+      expect(xtmoneMembers?.map((member) => member.user_id)).toEqual([
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+      ]);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            user: expect.objectContaining({
+              id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+            }),
+            groups: expect.arrayContaining([
+              { platformIdentifier: PlatformIdentifier.Opencti, name: 'Admin' },
+              { platformIdentifier: PlatformIdentifier.Xtmone, name: 'User' },
+            ]),
+          }),
+        ])
+      );
+    });
+
+    it('should be idempotent when a user is added twice to the same group (relies on ON CONFLICT IGNORE)', async () => {
+      // Given
+      const { bundle, groups } = await createBundleWithGroups();
+
+      // When
+      await ServiceGroupApp.addUsersToBundleGroups(bundle.service_instance_id, {
+        userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+        roles: [
+          { product: PlatformIdentifier.Opencti, role: ServiceGroupName.Admin },
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+        ],
+      });
+      await ServiceGroupApp.addUsersToBundleGroups(bundle.service_instance_id, {
+        userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+        roles: [
+          { product: PlatformIdentifier.Opencti, role: ServiceGroupName.Admin },
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+        ],
+      });
+
+      // Then
+      const adminMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiAdminGroupId,
+      });
+      const xtmoneMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.xtmoneUserGroupId,
+      });
+      expect(adminMembers?.map((member) => member.user_id)).toEqual([
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+      ]);
+      expect(xtmoneMembers?.map((member) => member.user_id)).toEqual([
+        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+      ]);
+    });
+
+    it('should persist additions from two sequential calls for different users on the same group (no lost update)', async () => {
+      // Given
+      const { bundle, groups } = await createBundleWithGroups();
+
+      // When
+      await ServiceGroupApp.addUsersToBundleGroups(bundle.service_instance_id, {
+        userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+        roles: [
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+        ],
+      });
+      await ServiceGroupApp.addUsersToBundleGroups(bundle.service_instance_id, {
+        userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID],
+        roles: [
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+        ],
+      });
+
+      // Then
+      const members = await TestHelper.serviceGroupUser.load({
+        group_id: groups.xtmoneUserGroupId,
+      });
+      expect(members?.map((member) => member.user_id)).toEqual(
+        expect.arrayContaining([
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+        ])
+      );
+    });
+
+    it('should sync Auth0 RBAC groups for all submitted users and email each of them the free trial welcome message', async () => {
+      // Given
+      const actingUserEmail = requestContextSimpleUserFiligran2.user.email;
+      const targetUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS;
+      const platformUrl = 'https://test-platform.example.com';
+      const endDate = new Date('2026-06-01');
+      const { bundle, openctiChild, xtmoneChild } =
+        await createBundleWithGroups({ endDate, platformUrl });
+
+      const auth0Spy = vi
+        .spyOn(auth0ClientMock, 'updateUserRBACInstance')
+        .mockResolvedValue(undefined);
+      const sendMailSpy = vi
+        .spyOn(mailService, 'sendMail')
+        .mockResolvedValue(undefined);
+
+      // When
+      await ServiceGroupApp.addUsersToBundleGroups(bundle.service_instance_id, {
+        userIds: [targetUser.ID],
+        roles: [
+          { product: PlatformIdentifier.Opencti, role: ServiceGroupName.Admin },
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+        ],
+      });
+
+      // Then
+      expect(auth0Spy).toHaveBeenCalledTimes(1);
+      expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
+        [openctiChild.platform_id as string]: { groups: ['Admin'] },
+        [xtmoneChild.platform_id as string]: { groups: ['User'] },
+      });
+
+      const expectedTrialEndDate = endDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit',
+      });
+      expect(sendMailSpy).toHaveBeenCalledTimes(2);
+      expect(sendMailSpy).toHaveBeenCalledWith({
+        to: targetUser.EMAIL,
+        template: 'free_trial_user_added',
+        params: {
+          firstName: formatName(targetUser.FIRST_NAME),
+          platformUrl,
+          platformIdentifier: PlatformIdentifier.Opencti,
+          adminEmail: actingUserEmail,
+          trialEndDate: expectedTrialEndDate,
+        },
+      });
+      expect(sendMailSpy).toHaveBeenCalledWith({
+        to: targetUser.EMAIL,
+        template: 'free_trial_user_added',
+        params: {
+          firstName: formatName(targetUser.FIRST_NAME),
+          platformUrl,
+          platformIdentifier: PlatformIdentifier.Xtmone,
+          adminEmail: actingUserEmail,
+          trialEndDate: expectedTrialEndDate,
+        },
+      });
+    });
+
+    it('should throw DeploymentRequestNotFound when the bundle has no deployment request', async () => {
+      // Given
+      const bundleServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+      // When
+      const call = ServiceGroupApp.addUsersToBundleGroups(
+        bundleServiceInstanceId,
+        {
+          userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+          roles: [
+            { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+          ],
+        }
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+    });
+  });
+
+  describe('removeUsersFromBundleGroups', () => {
+    const createdBundleIds: DeploymentRequestId[] = [];
+
+    afterEach(async () => {
+      for (const bundleId of createdBundleIds) {
+        await TestHelper.deploymentRequest.deleteBundle(bundleId);
+      }
+      createdBundleIds.length = 0;
+    });
+
+    const createBundleWithMember = async (opts?: {
+      userId?: string;
+      secondUserId?: string;
+    }) => {
+      const openctiPlatformId = uuidv4();
+      const xtmonePlatformId = uuidv4();
+      const { bundle, children } =
+        await TestHelper.deploymentRequest.createBundle({
+          children: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              platform_id: openctiPlatformId,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Xtmone,
+              platform_id: xtmonePlatformId,
+            },
+          ],
+        });
+      createdBundleIds.push(bundle.id);
+      const [openctiChild, xtmoneChild] = children;
+
+      const openctiAdminGroupId = uuidv4() as ServiceGroupId;
+      const xtmoneUserGroupId = uuidv4() as ServiceGroupId;
+      await TestHelper.serviceGroup.create({
+        id: openctiAdminGroupId,
+        name: 'Admin',
+        service_instance_id: openctiChild!.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: xtmoneUserGroupId,
+        name: 'User',
+        service_instance_id: xtmoneChild!.service_instance_id,
+      });
+
+      const userId =
+        opts?.userId ?? TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID;
+      await TestHelper.serviceGroupUser.create({
+        user_id: userId,
+        group_id: openctiAdminGroupId,
+      });
+      await TestHelper.serviceGroupUser.create({
+        user_id: userId,
+        group_id: xtmoneUserGroupId,
+      });
+
+      if (opts?.secondUserId) {
+        await TestHelper.serviceGroupUser.create({
+          user_id: opts.secondUserId,
+          group_id: openctiAdminGroupId,
+        });
+      }
+
+      return {
+        bundle,
+        openctiChild: openctiChild!,
+        xtmoneChild: xtmoneChild!,
+        groups: { openctiAdminGroupId, xtmoneUserGroupId },
+      };
+    };
+
+    it('should remove the user from every service group tied to the bundle and sync Auth0 for each platform', async () => {
+      // Given
+      const targetUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS;
+      const { bundle, openctiChild, xtmoneChild, groups } =
+        await createBundleWithMember({ userId: targetUser.ID });
+
+      const auth0Spy = vi
+        .spyOn(auth0ClientMock, 'updateUserRBACInstance')
+        .mockResolvedValue(undefined);
+
+      // When
+      const result = await ServiceGroupApp.removeUsersFromBundleGroups(
+        bundle.service_instance_id,
+        [targetUser.ID]
+      );
+
+      // Then
+      expect(result).toEqual([targetUser.ID]);
+
+      const openctiMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiAdminGroupId,
+      });
+      const xtmoneMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.xtmoneUserGroupId,
+      });
+      expect(openctiMembers).toEqual([]);
+      expect(xtmoneMembers).toEqual([]);
+
+      expect(auth0Spy).toHaveBeenCalledTimes(1);
+      expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
+        [openctiChild.platform_id as string]: { groups: [] },
+        [xtmoneChild.platform_id as string]: { groups: [] },
+      });
+    });
+
+    it('should support removing several users at once and leave other members untouched', async () => {
+      // Given
+      const targetUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS;
+      const otherUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2;
+      const { bundle, groups } = await createBundleWithMember({
+        userId: targetUser.ID,
+        secondUserId: otherUser.ID,
+      });
+
+      vi.spyOn(auth0ClientMock, 'updateUserRBACInstance').mockResolvedValue(
+        undefined
+      );
+
+      // When
+      const result = await ServiceGroupApp.removeUsersFromBundleGroups(
+        bundle.service_instance_id,
+        [targetUser.ID, otherUser.ID]
+      );
+
+      // Then
+      expect(result).toEqual([targetUser.ID, otherUser.ID]);
+      const openctiMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiAdminGroupId,
+      });
+      expect(openctiMembers).toEqual([]);
+    });
+
+    it('should be a no-op when the user has no membership in the bundle groups', async () => {
+      // Given
+      const { bundle } = await createBundleWithMember();
+      vi.spyOn(auth0ClientMock, 'updateUserRBACInstance').mockResolvedValue(
+        undefined
+      );
+
+      // When
+      const result = await ServiceGroupApp.removeUsersFromBundleGroups(
+        bundle.service_instance_id,
+        [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID]
+      );
+
+      // Then
+      expect(result).toEqual([TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID]);
+    });
+
+    it('should throw DeploymentRequestNotFound when the bundle has no deployment request', async () => {
+      // Given
+      const bundleServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+      // When
+      const call = ServiceGroupApp.removeUsersFromBundleGroups(
+        bundleServiceInstanceId,
+        [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID]
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+    });
+  });
+
+  describe('updateBundleUserGroups', () => {
+    const createdBundleIds: DeploymentRequestId[] = [];
+
+    afterEach(async () => {
+      for (const bundleId of createdBundleIds) {
+        await TestHelper.deploymentRequest.deleteBundle(bundleId);
+      }
+      createdBundleIds.length = 0;
+    });
+
+    const createBundleWithMembers = async () => {
+      const openctiPlatformId = uuidv4();
+      const xtmonePlatformId = uuidv4();
+      const { bundle, children } =
+        await TestHelper.deploymentRequest.createBundle({
+          children: [
+            {
+              platform_identifier: PlatformIdentifier.Opencti,
+              platform_id: openctiPlatformId,
+            },
+            {
+              platform_identifier: PlatformIdentifier.Xtmone,
+              platform_id: xtmonePlatformId,
+            },
+          ],
+        });
+      createdBundleIds.push(bundle.id);
+      const [openctiChild, xtmoneChild] = children;
+
+      const openctiAdminGroupId = uuidv4() as ServiceGroupId;
+      const openctiReaderGroupId = uuidv4() as ServiceGroupId;
+      const xtmoneUserGroupId = uuidv4() as ServiceGroupId;
+      const xtmoneAdminGroupId = uuidv4() as ServiceGroupId;
+      await TestHelper.serviceGroup.create({
+        id: openctiAdminGroupId,
+        name: 'Admin',
+        service_instance_id: openctiChild!.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: openctiReaderGroupId,
+        name: 'Reader',
+        service_instance_id: openctiChild!.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: xtmoneUserGroupId,
+        name: 'User',
+        service_instance_id: xtmoneChild!.service_instance_id,
+      });
+      await TestHelper.serviceGroup.create({
+        id: xtmoneAdminGroupId,
+        name: 'Admin',
+        service_instance_id: xtmoneChild!.service_instance_id,
+      });
+
+      const targetUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS;
+      const otherUser = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2;
+      await TestHelper.serviceGroupUser.create({
+        user_id: targetUser.ID,
+        group_id: openctiAdminGroupId,
+      });
+      await TestHelper.serviceGroupUser.create({
+        user_id: targetUser.ID,
+        group_id: xtmoneUserGroupId,
+      });
+      await TestHelper.serviceGroupUser.create({
+        user_id: otherUser.ID,
+        group_id: openctiAdminGroupId,
+      });
+
+      return {
+        bundle,
+        openctiChild: openctiChild!,
+        xtmoneChild: xtmoneChild!,
+        targetUser,
+        otherUser,
+        groups: {
+          openctiAdminGroupId,
+          openctiReaderGroupId,
+          xtmoneUserGroupId,
+          xtmoneAdminGroupId,
+        },
+      };
+    };
+
+    it('should update only the specified platform, leaving XTM One role untouched when no XTM One entry is provided', async () => {
+      // Given
+      const { bundle, targetUser, groups } = await createBundleWithMembers();
+
+      // When
+      await ServiceGroupApp.updateBundleUserGroups(bundle.service_instance_id, {
+        userIds: [targetUser.ID],
+        roles: [
+          {
+            product: PlatformIdentifier.Opencti,
+            role: ServiceGroupName.Reader,
+          },
+        ],
+      });
+
+      // Then
+      const readerMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiReaderGroupId,
+      });
+      const xtmoneUserMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.xtmoneUserGroupId,
+      });
+      expect(readerMembers?.map((member) => member.user_id)).toEqual([
+        targetUser.ID,
+      ]);
+      expect(xtmoneUserMembers?.map((member) => member.user_id)).toEqual([
+        targetUser.ID,
+      ]);
+    });
+
+    it('should throw XtmOneRoleRequired when the XTM One role is explicitly null', async () => {
+      // Given
+      const { bundle, targetUser } = await createBundleWithMembers();
+
+      // When
+      const call = ServiceGroupApp.updateBundleUserGroups(
+        bundle.service_instance_id,
+        {
+          userIds: [targetUser.ID],
+          roles: [{ product: PlatformIdentifier.Xtmone, role: null }],
+        }
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.XtmOneRoleRequired);
+    });
+
+    it('should throw UserIsNotInOrganization when a userId does not belong to the bundle organization', async () => {
+      // Given
+      const { bundle } = await createBundleWithMembers();
+
+      // When
+      const call = ServiceGroupApp.updateBundleUserGroups(
+        bundle.service_instance_id,
+        {
+          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID],
+          roles: [
+            {
+              product: PlatformIdentifier.Opencti,
+              role: ServiceGroupName.Reader,
+            },
+          ],
+        }
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
+    });
+
+    it('should move the submitted user to the new role group and leave other members untouched', async () => {
+      // Given
+      const { bundle, targetUser, otherUser, groups } =
+        await createBundleWithMembers();
+
+      // When
+      await ServiceGroupApp.updateBundleUserGroups(bundle.service_instance_id, {
+        userIds: [targetUser.ID],
+        roles: [
+          {
+            product: PlatformIdentifier.Opencti,
+            role: ServiceGroupName.Reader,
+          },
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+        ],
+      });
+
+      // Then
+      const adminMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiAdminGroupId,
+      });
+      const readerMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiReaderGroupId,
+      });
+      expect(adminMembers?.map((member) => member.user_id)).toEqual([
+        otherUser.ID,
+      ]);
+      expect(readerMembers?.map((member) => member.user_id)).toEqual([
+        targetUser.ID,
+      ]);
+    });
+
+    it('should revoke access to an optional platform when its role is set to null, without affecting other users', async () => {
+      // Given
+      const { bundle, targetUser, otherUser, groups } =
+        await createBundleWithMembers();
+
+      // When
+      await ServiceGroupApp.updateBundleUserGroups(bundle.service_instance_id, {
+        userIds: [targetUser.ID],
+        roles: [
+          { product: PlatformIdentifier.Opencti, role: null },
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+        ],
+      });
+
+      // Then
+      const adminMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiAdminGroupId,
+      });
+      expect(adminMembers?.map((member) => member.user_id)).toEqual([
+        otherUser.ID,
+      ]);
+    });
+
+    it('should sync Auth0 RBAC groups for every affected platform, using an empty group list when revoked', async () => {
+      // Given
+      const { bundle, openctiChild, xtmoneChild, targetUser } =
+        await createBundleWithMembers();
+      const auth0Spy = vi
+        .spyOn(auth0ClientMock, 'updateUserRBACInstance')
+        .mockResolvedValue(undefined);
+
+      // When
+      await ServiceGroupApp.updateBundleUserGroups(bundle.service_instance_id, {
+        userIds: [targetUser.ID],
+        roles: [
+          { product: PlatformIdentifier.Opencti, role: null },
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.Admin },
+        ],
+      });
+
+      // Then
+      expect(auth0Spy).toHaveBeenCalledTimes(1);
+      expect(auth0Spy).toHaveBeenCalledWith(targetUser.EMAIL, {
+        [openctiChild.platform_id as string]: { groups: [] },
+        [xtmoneChild.platform_id as string]: { groups: ['Admin'] },
+      });
+    });
+
+    it('should support updating several users at once', async () => {
+      // Given
+      const { bundle, targetUser, otherUser, groups } =
+        await createBundleWithMembers();
+      vi.spyOn(auth0ClientMock, 'updateUserRBACInstance').mockResolvedValue(
+        undefined
+      );
+
+      // When
+      await ServiceGroupApp.updateBundleUserGroups(bundle.service_instance_id, {
+        userIds: [targetUser.ID, otherUser.ID],
+        roles: [
+          {
+            product: PlatformIdentifier.Opencti,
+            role: ServiceGroupName.Reader,
+          },
+          { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+        ],
+      });
+
+      // Then
+      const readerMembers = await TestHelper.serviceGroupUser.load({
+        group_id: groups.openctiReaderGroupId,
+      });
+      expect(readerMembers?.map((member) => member.user_id)).toEqual(
+        expect.arrayContaining([targetUser.ID, otherUser.ID])
+      );
+    });
+
+    it('should throw DeploymentRequestNotFound when the bundle has no deployment request', async () => {
+      // Given
+      const bundleServiceInstanceId = uuidv4() as ServiceInstanceId;
+
+      // When
+      const call = ServiceGroupApp.updateBundleUserGroups(
+        bundleServiceInstanceId,
+        {
+          userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+          roles: [
+            { product: PlatformIdentifier.Xtmone, role: ServiceGroupName.User },
+          ],
+        }
+      );
+
+      // Then
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
     });
   });
 });

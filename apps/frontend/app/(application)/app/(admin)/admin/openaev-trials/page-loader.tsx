@@ -1,4 +1,5 @@
 import TrialsList from '@/components/trials/TrialsList';
+import { productScope } from '@/components/trials/trials.const';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
@@ -17,7 +18,7 @@ const PageLoader = () => {
     <>
       <BreadcrumbNav value={breadcrumbValue} />
       <h1 className="sr-only">{t('MenuLinks.OpenAEVTrial')}</h1>
-      <TrialsList platformIdentifier={PlatformIdentifier.Openaev} />
+      <TrialsList scope={productScope(PlatformIdentifier.Openaev)} />
     </>
   );
 };

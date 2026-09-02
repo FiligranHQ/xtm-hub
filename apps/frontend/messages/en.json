@@ -226,6 +226,7 @@
       "CANT_SUBSCRIBE_YOURSELF": "You cannot add yourself",
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "A competitor with the same domain already exists",
       "COMPETITOR_NOT_FOUND": "Competitor not found",
+      "CONNECTOR_ID_ALREADY_EXISTS": "A connector with this identifier already exists",
       "CONNECTOR_VERSION_ALREADY_EXISTS": "A connector with this version already exists",
       "CONTACT_TOO_LONG": "The contact is too long",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "Error occured while creating a deployment request",
@@ -279,6 +280,7 @@
       "INVALID_PLATFORM_VERSION": "Invalid platform version",
       "INVALID_PRODUCTS_FOR_DEPLOYMENT_TYPE": "The selected products are not valid for this deployment type",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "An unknown error occurred during product connection",
+      "LOAD_CAPABILITIES_ERROR": "An error occurred while loading capabilities",
       "MISSING_AUTO_REGISTER_PLATFORM_ARGUMENT": "Missing auto connection product argument",
       "MISSING_CAPABILITY_ON_ORGANIZATION": "Missing permissions",
       "MISSING_CAPABILITY_ON_SERVICE": "Missing permissions",
@@ -304,6 +306,7 @@
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "An error occurred while removing user from a pending organization",
       "SEO_SERVICE_INSTANCE_NOT_FOUND": "SEO Service instance metadata was not found",
       "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
+      "SERVICE_GROUP_NOT_FOUND": "Service group was not found",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "You are not allowed to do this",
       "SERVICE_INSTANCE_NOT_FOUND": "Service instance was not found",
       "SERVICE_INSTANCE_NOT_PUBLIC": "You do not have access to this service",
@@ -324,6 +327,7 @@
       "USER_DISABLED": "User is disabled",
       "USER_IS_NOT_IN_ORGANIZATION": "Missing permissions",
       "USER_NOT_FOUND": "User is not found",
+      "XTM_ONE_ROLE_REQUIRED": "An XTM One role is required",
       "VOTABLE_FEATURE_NOT_FOUND": "This feature is no longer open for voting",
       "VOTE_FOR_FEATURE_ERROR": "An error occurred while recording your vote",
       "YOU_CAN_NOT_LOGIN": "You can not login",
@@ -364,7 +368,8 @@
       "GoToPlatform": "Go to {title}",
       "Details": "Details",
       "Documentation": "Documentation",
-      "ConnectPlatform": "Connect {platformName}"
+      "ConnectPlatform": "Connect {platformName}",
+      "Trial": "Trial"
     }
   },
   "HomePage": {
@@ -543,7 +548,8 @@
     "OpenAEVTrial": "OpenAEV Trial",
     "Competitor": "Competitor",
     "NewsFeed": "News Feed",
-    "VotingRound": "Feature voting"
+    "VotingRound": "Feature voting",
+    "ManageTrials": "Manage trials"
   },
   "NewsFeedAdminPage": {
     "Title": "Title",
@@ -666,7 +672,8 @@
       "CancellationReason": "Cancellation Reason",
       "Available": "Available",
       "Taken": "Taken",
-      "Total": "Total"
+      "Total": "Total",
+      "Products": "Products"
     },
     "TabTitle": {
       "Cancelled": "Cancelled",
@@ -676,12 +683,16 @@
       "Quotas": "Quotas"
     },
     "Toast": {
-      "TrialsReordered": "Trial requests were reordered"
+      "TrialsReordered": "Trial requests were reordered",
+      "BundleCancelled": "The bundle trial was cancelled successfully.",
+      "BundleReordered": "The bundle has been reordered in the queue."
     },
     "Actions": {
       "SearchTrials": "Search by email or organization",
       "MoveToTop": "Move to top",
-      "MoveUp": "Move up"
+      "MoveUp": "Move up",
+      "CancelBundle": "Cancel the bundle trial",
+      "CancelTrial": "Cancel the trial"
     },
     "UpdateQuotasForm": {
       "Title": "Update quotas for {platform} in {region}",
@@ -691,11 +702,24 @@
         "ConfirmTitle": "Quota Update for Region {region}",
         "ConfirmDescription": "You’ve updated the quotas for Region {region} from {oldCapacity} to {newCapacity}.",
         "ConfirmSentence": "Are you sure you want to save these changes?"
-      }
+      },
+      "BundleTitle": "Update the bundle quota in {region}"
     },
     "WarningCancellation": "Any cancellation will prevent that organization to ask for a new trial",
     "Registered": "Connected",
-    "NotRegistered": "Not Connected"
+    "NotRegistered": "Not Connected",
+    "ProductStatus": {
+      "queued": "Queued",
+      "pending": "Pending",
+      "provisioning": "Provisioning",
+      "active": "Active",
+      "expired": "Expired",
+      "cancelled": "Cancelled",
+      "failed": "Failed"
+    },
+    "Cancellation": {
+      "Confirmation": "Are you sure you want to cancel the bundle trial of {organizationName}? Every product of the bundle will be cancelled."
+    }
   },
   "Parameters": {
     "Version": "Version"
@@ -1838,6 +1862,91 @@
       "SureDeleteService": "Are you sure you want to delete the custom view {name}?",
       "NonActive": "Draft",
       "Active": "Published"
+    },
+    "Bundle": {
+      "ManageTrial": {
+        "Breadcrumb": {
+          "BundleName": "XTM Platform Trial",
+          "ManageUsers": "Manage users"
+        },
+        "Title": "Manage your team on XTM Platform trial",
+        "Eyebrow": "XTM Platform free trial",
+        "Description": "Easily manage your team and collaborate throughout your XTM Platform trial. Invite team members, assign roles and permissions, and ensure everyone has the right level of access to the platform.",
+        "BackButton": "Back to XTM Platform Trial",
+        "GroupAction": "Group action",
+        "GroupActionDisabledTooltip": "You need to select users in the list to apply group action",
+        "BulkDeleteTooltip": "You can delete selected users",
+        "AddTrialUser": "Add trial user",
+        "BulkDeleteDialog": {
+          "Title": "Remove users from trial",
+          "Text": "Are you sure you want to remove {emails} from this trial? They will lose access to all products.",
+          "MoreEmails": "+{count} more"
+        },
+        "Table": {
+          "Email": "Email",
+          "NoUsers": "No users found.",
+          "RoleUpdated": "{email} {role} has been updated",
+          "DeleteDialog": {
+            "Title": "Remove user from trial",
+            "Text": "Are you sure you want to remove {email} from this trial? They will lose access to all products."
+          }
+        },
+        "AddUserDialog": {
+          "Title": "Add trial user",
+          "EmailPlaceholder": "Add email"
+        },
+        "EditUsersDialog": {
+          "Title": "Edit users",
+          "Users": "Manage trial users",
+          "UsersPlaceholder": "Select users",
+          "MixedRoles": "Users with different roles are selected"
+        },
+        "Roles": {
+          "DefaultSuffix": "(default)",
+          "NoAccess": "No access",
+          "opencti": {
+            "Title": "{count, plural, one {OpenCTI role} other {OpenCTI roles}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to product settings, configuration, and management. Admins can manage users, roles, and system-wide settings, in addition to having full visibility and control over the data."
+            },
+            "Analyst": {
+              "Label": "Analyst",
+              "Description": "A role with full access to all knowledge within the product. Analysts can create, edit, and manage entities, relationships, and investigations, but do not have access to product settings, administration, or configuration options."
+            },
+            "Reader": {
+              "Label": "Reader",
+              "Description": "A read-only role that allows access to view all data in the product without the ability to make any modifications. Ideal for users who only need to consume information."
+            }
+          },
+          "openaev": {
+            "Title": "{count, plural, one {OpenAEV role} other {OpenAEV roles}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to product settings, configuration, and management. Admins can manage users, roles, and system-wide settings, in addition to having full visibility and control over the elements."
+            },
+            "Manager": {
+              "Label": "Manager",
+              "Description": "A role with full capabilities to manage and run any type of scenario. Manager can modify any element in the product but do not have access to product settings, administration, or configuration options."
+            },
+            "Observer": {
+              "Label": "Observer",
+              "Description": "A read-only role that allows access to view all elements in the product without the ability to make any modifications. Ideal for users who only need to consume information."
+            }
+          },
+          "xtmone": {
+            "Title": "{count, plural, one {XTM One role} other {XTM One roles}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "The administrator role with full access to platform settings, configuration, and management. Admins can manage users, groups, integrations, and system-wide settings, in addition to having full visibility and control over all elements, including company-managed resources shared across the organization. They can impersonate users for troubleshooting."
+            },
+            "User": {
+              "Label": "User",
+              "Description": "A role with full capabilities to create, configure, and run their own agents, flows, and knowledge bases. Users can modify any element they own or that has been shared with them, but do not have access to platform settings, administration, or configuration options."
+            }
+          }
+        }
+      }
     }
   },
   "ServiceActions": {

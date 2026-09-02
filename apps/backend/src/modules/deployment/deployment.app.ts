@@ -284,13 +284,16 @@ export const DeploymentApp = {
   },
 
   loadAvailableDeploymentRequests: async (
-    platformIdentifier: PlatformIdentifier
+    platformIdentifier: PlatformIdentifier | null
   ): Promise<DeploymentAvailability[]> => {
-    const quotas = await DeploymentQuotaDomain.loadQuotas({
-      platform_identifier: platformIdentifier,
-    });
+    const quotas = await DeploymentQuotaDomain.loadQuotas(
+      platformIdentifier
+        ? { platform_identifier: platformIdentifier }
+        : { type: DeploymentRequestDeploymentType.Bundle }
+    );
 
     return quotas.map((quota) => ({
+      id: quota.id,
       region: quota.region,
       availableCount: quota.availability,
       capacity: quota.capacity,
@@ -339,7 +342,7 @@ export const DeploymentApp = {
     region,
     newCapacity,
   }: {
-    platformIdentifier: PlatformIdentifier;
+    platformIdentifier?: PlatformIdentifier | null;
     region: DeploymentRequestPlatformRegion;
     newCapacity: number;
   }): Promise<{ success: boolean }> => {
@@ -644,10 +647,14 @@ const createSingleDeploymentRequest = async ({
         platformIdentifier,
         region: input.region,
       });
-      const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
-        hub_status: hubStatus,
-        platform_identifier: platformIdentifier,
-      });
+      const maxOrdering = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        {
+          type,
+          platformIdentifier,
+          region: input.region,
+        },
+        hubStatus
+      );
       const ordering = (maxOrdering ?? 0) + 1;
 
       const serviceInstanceId = await RegistrationDomain.registerNewPlatform({
@@ -875,10 +882,14 @@ const createBundleDeploymentRequest = async ({
         end_date: null,
       });
 
-      const maxOrdering = await DeploymentRequestDomain.getMaxOrdering({
-        hub_status: bundleHubStatus,
-        platform_identifier: null,
-      });
+      const maxOrdering = await DeploymentRequestDomain.getMaxOrderingInQueue(
+        {
+          type: DeploymentRequestDeploymentType.Bundle,
+          platformIdentifier: null,
+          region: input.region,
+        },
+        bundleHubStatus
+      );
 
       const bundleDeploymentRequest =
         await DeploymentRequestDomain.insertDeploymentRequest({
@@ -1242,9 +1253,7 @@ const applyDeploymentRequestUpdateInQuotaTransaction = async ({
         input.actual_state
       );
 
-      const isXtmone =
-        deploymentRequest.platform_identifier === PlatformIdentifier.Xtmone;
-      if (newStatus === DeploymentRequestHubStatus.Active && !isXtmone) {
+      if (newStatus === DeploymentRequestHubStatus.Active) {
         await DeploymentRequestDomain.initialiseServiceGroup(
           deploymentRequestId,
           deploymentRequest.platform_identifier

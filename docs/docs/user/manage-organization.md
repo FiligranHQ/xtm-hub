@@ -108,3 +108,5 @@ However, it is fully configurable and intended to give you flexibility for perso
 
 To go on this personal space, click on your organization top left and select the one you want to work on.
 ![Personal space illustration](../assets/images/switch-to-personal-space.png)
+
+If you need to move your personal space's subscriptions to a different account, see [Transfer Your Personal Space](transfer-personal-space.md).

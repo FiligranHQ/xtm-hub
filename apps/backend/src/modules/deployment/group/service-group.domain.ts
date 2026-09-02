@@ -3,6 +3,7 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   PlatformIdentifier,
+  ServiceGroupName,
 } from '../../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import ServiceGroup, {
@@ -19,14 +20,6 @@ import {
   UnknownErrorCode,
 } from '../../../utils/error/error.code';
 
-export enum ServiceGroupName {
-  Admin = 'Admin',
-  Analyst = 'Analyst',
-  Reader = 'Reader',
-  Manager = 'Manager',
-  Observer = 'Observer',
-}
-
 export const GROUPS_BY_PLATFORM_IDENTIFIER: Partial<
   Record<PlatformIdentifier, readonly ServiceGroupName[]>
 > = {
@@ -40,6 +33,7 @@ export const GROUPS_BY_PLATFORM_IDENTIFIER: Partial<
     ServiceGroupName.Manager,
     ServiceGroupName.Observer,
   ],
+  [PlatformIdentifier.Xtmone]: [ServiceGroupName.Admin, ServiceGroupName.User],
 };
 
 export const ServiceGroupDomain = {
@@ -66,6 +60,18 @@ export const ServiceGroupDomain = {
     field: ServiceGroupMutator
   ): Promise<ServiceGroup[]> => {
     return db<ServiceGroup[]>('ServiceGroup').select('*').where(field);
+  },
+
+  loadServiceGroupsByServiceInstanceIds: async (
+    serviceInstanceIds: ServiceInstanceId[]
+  ): Promise<ServiceGroup[]> => {
+    if (!serviceInstanceIds.length) {
+      return [];
+    }
+
+    return db<ServiceGroup[]>('ServiceGroup')
+      .select('*')
+      .whereIn('service_instance_id', serviceInstanceIds);
   },
 
   loadServiceGroupsByServiceInstanceAndUser: async (
@@ -124,7 +130,10 @@ export const ServiceGroupDomain = {
       group_id: groupId,
     }));
 
-    await db<ServiceGroupUser>('ServiceGroup_User').insert(data);
+    await db<ServiceGroupUser>('ServiceGroup_User')
+      .insert(data)
+      .onConflict(['group_id', 'user_id'])
+      .ignore();
   },
 
   removeUsersFromGroups: async (groupIds: ServiceGroupId[]) => {
@@ -133,6 +142,20 @@ export const ServiceGroupDomain = {
     }
 
     await db('ServiceGroup_User').del().whereIn('group_id', groupIds);
+  },
+
+  removeUsersFromServiceGroups: async (
+    userIds: UserId[],
+    groupIds: ServiceGroupId[]
+  ) => {
+    if (!userIds.length || !groupIds.length) {
+      return;
+    }
+
+    await db('ServiceGroup_User')
+      .del()
+      .whereIn('user_id', userIds)
+      .whereIn('group_id', groupIds);
   },
 
   deleteGroups: async (groupIds: ServiceGroupId[]) => {
