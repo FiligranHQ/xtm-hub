@@ -16,7 +16,7 @@ Before you start, make sure you have the following installed:
 XTM Hub is a Yarn 4 workspaces monorepo. The apps live under `apps/`:
 
 - **`apps/backend`** (`@xtm-hub/backend`) - Backend API (Node.js + Express 5 + GraphQL + Apollo Server + Knex)
-- **`apps/frontend`** (`@xtm-hub/frontend`) - Frontend (Next.js + React + React-Query)
+- **`apps/frontend`** (`@xtm-hub/frontend`) - Frontend (Next.js + React + React-Query + (Relay **DEPRECATED**))
 - **`apps/e2e`** (`@xtm-hub/test_e2e`) - End-to-end tests (Playwright)
 - **`xtm-hub-dev/`** - Local development Docker Compose setup
 
@@ -25,7 +25,7 @@ XTM Hub is a Yarn 4 workspaces monorepo. The apps live under `apps/`:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/XTM-hub/xtm-hub.git
+git clone https://github.com/XTM-Hub/xtm-hub.git
 cd xtm-hub
 ```
 
@@ -157,7 +157,8 @@ prefix, e.g. `cd apps/backend && yarn test`.
 - **Type check**: `yarn check-ts`
 - **Lint**: `yarn lint`
 - **Run tests**: `yarn test`
-- **Generate Relay/GraphQL artifacts**: `yarn relay` (**required** after any GraphQL schema change)
+- **[DEPRECATED] Generate Relay artifacts**: `yarn relay` (**required** after any GraphQL schema change)
+- **Generate GraphQL artifacts for react-query**: `yarn codegen` (**required** after any GraphQL schema change)
 - **Build**: `yarn build`
 
 ### E2E testing (`apps/e2e`)

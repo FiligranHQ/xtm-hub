@@ -26,7 +26,7 @@ An email is then sent to the destination account, and your request stays **pendi
 
 ## Confirming a Transfer (as the Recipient)
 
-1. Open the email titled **"Personal space transfer"** received from XTM Hub.
+1. Open the email titled **"Confirmation of Personal Space Transfer in XTM Hub"** received from XTM Hub.
 2. Click **Confirm Transfer**.
 3. Log in if you're not already authenticated — you'll be redirected back to the confirmation page automatically afterward.
 4. The transfer completes automatically once the page loads, and you're redirected to the XTM Hub app.
