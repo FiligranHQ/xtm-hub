@@ -110,6 +110,8 @@ type Query {
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments!
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
   serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
+  bundleUserServiceGroups(serviceInstanceId: ServiceInstanceId!): [BundleUserServiceGroup!]!
+  bundleProducts(serviceInstanceId: ServiceInstanceId!): [PlatformIdentifier!]!
   documentExists(documentName: String, service_instance_id: ServiceInstanceId!): Boolean
   publicDocuments(slug: String!, first: Int!, after: ID, orderBy: DocumentOrdering!, orderMode: OrderingMode!, searchTerm: String, logicalFilters: LogicalFilterInput, serviceInstanceId: ServiceInstanceId!): DocumentConnection!
   publicDocumentsByServiceSlug(serviceInstanceSlug: String!): [Document!]!
@@ -173,6 +175,9 @@ type Mutation {
   adminCancelDeploymentRequest(deploymentRequestId: DeploymentRequestId!): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
   updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
+  addUsersToBundleGroups(serviceInstanceId: ServiceInstanceId!, input: AddUsersToBundleGroupsInput!): [BundleUserServiceGroup!]!
+  removeUsersFromBundleGroups(serviceInstanceId: ServiceInstanceId!, userIds: [UserId!]!): [UserId!]!
+  updateBundleUserGroups(serviceInstanceId: ServiceInstanceId!, input: UpdateBundleUserGroupsInput!): [BundleUserServiceGroup!]!
   createDocument(input: CreateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!]): Document!
   updateDocument(documentId: DocumentId!, input: UpdateDocumentInput!, metadata: [DocumentMetadata!]!, serviceInstanceId: ServiceInstanceId!, sourceDocument: Upload, logo: Upload, images: [Upload!], existingImageIds: [DocumentId!]): Document!
   deleteDocument(documentId: DocumentId!, service_instance_id: ServiceInstanceId!, forceDelete: Boolean): Document!
@@ -550,10 +555,29 @@ A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string
 """
 scalar ServiceGroupId
 
+enum ServiceGroupName {
+  Admin
+  Analyst
+  Reader
+  Manager
+  Observer
+  User
+}
+
 type ServiceGroup implements Node {
   id: ID!
-  name: String!
+  name: ServiceGroupName!
   users: [User!]
+}
+
+type UserPlatformGroup {
+  platformIdentifier: PlatformIdentifier!
+  name: ServiceGroupName!
+}
+
+type BundleUserServiceGroup {
+  user: User!
+  groups: [UserPlatformGroup!]!
 }
 
 input UpdateServiceGroupsInputGroup {
@@ -563,6 +587,26 @@ input UpdateServiceGroupsInputGroup {
 
 input UpdateServiceGroupsInput {
   groups: [UpdateServiceGroupsInputGroup!]!
+}
+
+input BundleUserRoleAssignmentInput {
+  product: PlatformIdentifier!
+  role: ServiceGroupName!
+}
+
+input AddUsersToBundleGroupsInput {
+  userIds: [UserId!]!
+  roles: [BundleUserRoleAssignmentInput!]!
+}
+
+input UpdateBundleUserGroupsRoleInput {
+  product: PlatformIdentifier!
+  role: ServiceGroupName
+}
+
+input UpdateBundleUserGroupsInput {
+  userIds: [UserId!]!
+  roles: [UpdateBundleUserGroupsRoleInput!]!
 }
 
 """

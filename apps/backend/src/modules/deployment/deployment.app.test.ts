@@ -38,6 +38,7 @@ import {
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceDefinitionIdentifier,
+  ServiceGroupName,
   ServiceInstanceCreationStatus,
   ServiceInstanceTag,
 } from '../../__generated__/resolvers-types';
@@ -68,10 +69,7 @@ import {
   TelemetryTargetProduct,
 } from '../telemetry/telemetry.const';
 import { TelemetryEventType } from '../telemetry/telemetry.types';
-import {
-  ServiceGroupDomain,
-  ServiceGroupName,
-} from './group/service-group.domain';
+import { ServiceGroupDomain } from './group/service-group.domain';
 
 import { MockInstance } from '@vitest/spy';
 import { toGlobalId } from 'graphql-relay/node/node.js';
@@ -1601,146 +1599,85 @@ describe('deployment app', () => {
       }
     });
 
-    it('with Active status for OpenCTI, it should create OpenCTI ServiceGroups (Admin, Analyst, Reader) with admin user', async () => {
-      const deployment = await DeploymentApp.updateDeploymentRequest({
-        id: initialDeployment?.id as DeploymentRequestId,
-        actual_state: DeploymentRequestPlatformState.Active,
-        start_date: new Date(2025, 1, 3),
-        end_date: new Date(2025, 2, 3),
-        platform_id: 'fake product instance id',
-        failure_reason: 'not failed',
-      });
-      const dbDeploymentRequest =
-        await DeploymentRequestDomain.loadDeploymentRequestBy({
-          id: deployment.id as DeploymentRequestId,
+    it.each([
+      {
+        platformIdentifier: PlatformIdentifier.Opencti,
+        expectedGroups: [
+          ServiceGroupName.Admin,
+          ServiceGroupName.Analyst,
+          ServiceGroupName.Reader,
+        ],
+      },
+      {
+        platformIdentifier: PlatformIdentifier.Openaev,
+        expectedGroups: [
+          ServiceGroupName.Admin,
+          ServiceGroupName.Manager,
+          ServiceGroupName.Observer,
+        ],
+      },
+      {
+        platformIdentifier: PlatformIdentifier.Xtmone,
+        expectedGroups: [ServiceGroupName.Admin, ServiceGroupName.User],
+      },
+    ])(
+      'with Active status for $platformIdentifier, it should create the expected ServiceGroups with admin user',
+      async ({ platformIdentifier, expectedGroups }) => {
+        const platformDeployment =
+          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            {
+              platform_identifier: platformIdentifier,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              target_state: DeploymentRequestPlatformState.Active,
+              actual_state: DeploymentRequestPlatformState.Provisioning,
+            }
+          )) as DeploymentRequest;
+
+        const deployment = await DeploymentApp.updateDeploymentRequest({
+          id: platformDeployment.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          start_date: new Date(2025, 1, 3),
+          end_date: new Date(2025, 2, 3),
+          platform_id: 'fake platform instance id',
+          failure_reason: 'not failed',
         });
-      const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
-        service_instance_id: dbDeploymentRequest!.service_instance_id,
-      });
-
-      expect(serviceGroups).toHaveLength(3);
-      expect(serviceGroups.map((g) => g.name).sort()).toEqual([
-        ServiceGroupName.Admin,
-        ServiceGroupName.Analyst,
-        ServiceGroupName.Reader,
-      ]);
-
-      const userAdminGroup =
-        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest!.service_instance_id,
-          ServiceGroupName.Admin
-        );
-      expect(userAdminGroup).toHaveLength(1);
-      expect(
-        userAdminGroup.find(
-          ({ email }) =>
-            email === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
-        )
-      ).toBeTruthy();
-      const userAnalystGroup =
-        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest!.service_instance_id,
-          ServiceGroupName.Analyst
-        );
-      expect(userAnalystGroup).toHaveLength(0);
-      const userReaderGroup =
-        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest!.service_instance_id,
-          ServiceGroupName.Reader
-        );
-
-      expect(userReaderGroup).toHaveLength(0);
-    });
-
-    it('with Active status for OpenAEV, it should create OpenAEV ServiceGroups (Admin, Manager, Observer) with admin user', async () => {
-      const openaevDeployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            platform_identifier: PlatformIdentifier.Openaev,
-            hub_status: DeploymentRequestHubStatus.Pending,
-            target_state: DeploymentRequestPlatformState.Active,
-            actual_state: DeploymentRequestPlatformState.Provisioning,
-          }
-        )) as DeploymentRequest;
-
-      const deployment = await DeploymentApp.updateDeploymentRequest({
-        id: openaevDeployment.id as DeploymentRequestId,
-        actual_state: DeploymentRequestPlatformState.Active,
-        start_date: new Date(2025, 1, 3),
-        end_date: new Date(2025, 2, 3),
-        platform_id: 'fake openaev instance id',
-        failure_reason: 'not failed',
-      });
-      const dbDeploymentRequest =
-        await DeploymentRequestDomain.loadDeploymentRequestBy({
-          id: deployment.id as DeploymentRequestId,
+        const dbDeploymentRequest =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: deployment.id as DeploymentRequestId,
+          });
+        const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
+          service_instance_id: dbDeploymentRequest!.service_instance_id,
         });
-      const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
-        service_instance_id: dbDeploymentRequest!.service_instance_id,
-      });
-
-      expect(serviceGroups).toHaveLength(3);
-      expect(serviceGroups.map((g) => g.name).sort()).toEqual([
-        ServiceGroupName.Admin,
-        ServiceGroupName.Manager,
-        ServiceGroupName.Observer,
-      ]);
-
-      const userAdminGroup =
-        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest!.service_instance_id,
-          ServiceGroupName.Admin
+        expect(serviceGroups).toHaveLength(expectedGroups.length);
+        expect(serviceGroups.map((g) => g.name).sort()).toEqual(
+          [...expectedGroups].sort()
         );
-      expect(userAdminGroup).toHaveLength(1);
-      expect(
-        userAdminGroup.find(
-          ({ email }) =>
-            email === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
-        )
-      ).toBeTruthy();
-      const userManagerGroup =
-        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest!.service_instance_id,
-          ServiceGroupName.Manager
+
+        const userAdminGroup =
+          await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+            dbDeploymentRequest!.service_instance_id,
+            ServiceGroupName.Admin
+          );
+        expect(userAdminGroup).toHaveLength(1);
+        expect(
+          userAdminGroup.find(
+            ({ email }) =>
+              email === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL
+          )
+        ).toBeTruthy();
+
+        const nonAdminGroups = expectedGroups.filter(
+          (name) => name !== ServiceGroupName.Admin
         );
-      expect(userManagerGroup).toHaveLength(0);
-      const userObserverGroup =
-        await ServiceGroupDomain.loadGroupUsersByServiceAndName(
-          dbDeploymentRequest!.service_instance_id,
-          ServiceGroupName.Observer
-        );
-      expect(userObserverGroup).toHaveLength(0);
-    });
-
-    it('with Active status for XTM One, it should not create any ServiceGroup', async () => {
-      const xtmoneDeployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            platform_identifier: PlatformIdentifier.Xtmone,
-            hub_status: DeploymentRequestHubStatus.Pending,
-            target_state: DeploymentRequestPlatformState.Active,
-            actual_state: DeploymentRequestPlatformState.Provisioning,
-          }
-        )) as DeploymentRequest;
-
-      const deployment = await DeploymentApp.updateDeploymentRequest({
-        id: xtmoneDeployment.id as DeploymentRequestId,
-        actual_state: DeploymentRequestPlatformState.Active,
-        start_date: new Date(2025, 1, 3),
-        end_date: new Date(2025, 2, 3),
-        platform_id: 'fake xtmone instance id',
-        failure_reason: 'not failed',
-      });
-      const dbDeploymentRequest =
-        await DeploymentRequestDomain.loadDeploymentRequestBy({
-          id: deployment.id as DeploymentRequestId,
-        });
-      const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
-        service_instance_id: dbDeploymentRequest!.service_instance_id,
-      });
-
-      expect(serviceGroups).toHaveLength(0);
-    });
+        for (const groupName of nonAdminGroups) {
+          const users = await ServiceGroupDomain.loadGroupUsersByServiceAndName(
+            dbDeploymentRequest!.service_instance_id,
+            groupName
+          );
+          expect(users).toHaveLength(0);
+        }
+      }
+    );
 
     it('should set platform registration status to inactive when actual state is removed', async () => {
       await TestHelper.platformConfiguration.create({

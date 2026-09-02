@@ -226,6 +226,7 @@
       "CANT_SUBSCRIBE_YOURSELF": "自分を追加することはできません",
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "同じドメインの競合がすでに存在する",
       "COMPETITOR_NOT_FOUND": "競合他社が見つかりません",
+      "CONNECTOR_ID_ALREADY_EXISTS": "この識別子を持つコネクタは既に存在します",
       "CONNECTOR_VERSION_ALREADY_EXISTS": "このバージョンのコネクタは既に存在します",
       "CONTACT_TOO_LONG": "連絡先が長すぎます",
       "CREATE_DEPLOYMENT_REQUEST_ERROR": "配備要求の作成中にエラーが発生しました",
@@ -305,6 +306,7 @@
       "REMOVE_USER_FROM_PENDING_ORGA_ERROR": "保留中の組織からユーザーを削除する際にエラーが発生した",
       "SEO_SERVICE_INSTANCE_NOT_FOUND": "SEOサービスのインスタンスのメタデータが見つかりませんでした",
       "SERVICE_DEFINITION_NOT_FOUND": "サービス定義が見つかりませんでした",
+      "SERVICE_GROUP_NOT_FOUND": "サービスグループが見つかりません",
       "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "あなたはこれを行うことはできません",
       "SERVICE_INSTANCE_NOT_FOUND": "サービスインスタンスが見つかりません",
       "SERVICE_INSTANCE_NOT_PUBLIC": "このサービスへのアクセス権がありません",
@@ -325,6 +327,7 @@
       "USER_DISABLED": "ユーザーが無効です",
       "USER_IS_NOT_IN_ORGANIZATION": "権限がありません",
       "USER_NOT_FOUND": "ユーザーが見つかりません",
+      "XTM_ONE_ROLE_REQUIRED": "XTM One のロールが必要です",
       "VOTABLE_FEATURE_NOT_FOUND": "この機能は現在投票の対象ではありません",
       "VOTE_FOR_FEATURE_ERROR": "投票の登録中にエラーが発生しました",
       "YOU_CAN_NOT_LOGIN": "ログインできません",
@@ -1691,6 +1694,91 @@
       "SureDeleteService": "本当にカスタムビュー {name} を削除しますか？",
       "NonActive": "草案",
       "Active": "公開"
+    },
+    "Bundle": {
+      "ManageTrial": {
+        "Breadcrumb": {
+          "BundleName": "XTM トライアルプラットフォーム",
+          "ManageUsers": "ユーザーを管理"
+        },
+        "Title": "XTM Platform トライアルでチームを管理",
+        "Eyebrow": "XTM Platform 無料トライアル",
+        "Description": "XTM Platform のトライアル期間中、チームを簡単に管理し、共同作業を行いましょう。メンバーを招待し、役割と権限を割り当てて、全員がプラットフォームに適切なレベルでアクセスできるようにします。",
+        "BackButton": "XTM トライアルプラットフォームに戻る",
+        "GroupAction": "グループアクション",
+        "GroupActionDisabledTooltip": "グループアクションを適用するには、リストからユーザーを選択する必要があります",
+        "BulkDeleteTooltip": "選択したユーザーを削除できます",
+        "AddTrialUser": "トライアルユーザーを追加",
+        "BulkDeleteDialog": {
+          "Title": "トライアルからユーザーを削除",
+          "Text": "{emails} をこのトライアルから削除してもよろしいですか?すべての製品へのアクセス権を失います。",
+          "MoreEmails": "他{count}件"
+        },
+        "Table": {
+          "Email": "メールアドレス",
+          "NoUsers": "ユーザーが見つかりません。",
+          "RoleUpdated": "{email} の{role}が更新されました",
+          "DeleteDialog": {
+            "Title": "トライアルからユーザーを削除",
+            "Text": "{email} をこのトライアルから削除してもよろしいですか?すべての製品へのアクセス権を失います。"
+          }
+        },
+        "AddUserDialog": {
+          "Title": "トライアルユーザーを追加",
+          "EmailPlaceholder": "メールアドレスを追加"
+        },
+        "EditUsersDialog": {
+          "Title": "ユーザーを編集",
+          "Users": "トライアルユーザーを管理",
+          "UsersPlaceholder": "ユーザーを選択",
+          "MixedRoles": "異なるロールを持つユーザーが選択されています"
+        },
+        "Roles": {
+          "DefaultSuffix": "（デフォルト）",
+          "NoAccess": "アクセス禁止",
+          "opencti": {
+            "Title": "{count, plural, other {OpenCTI ロール}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "管理者ロールは、製品の設定、構成、管理に対する完全なアクセス権を持ちます。管理者はユーザー、ロール、システム全体の設定を管理できるほか、データに対する完全な可視性と制御権を持ちます。"
+            },
+            "Analyst": {
+              "Label": "Analyst",
+              "Description": "製品内のすべてのナレッジに完全にアクセスできるロールです。アナリストはエンティティ、関係、調査を作成、編集、管理できますが、製品の設定、管理、構成オプションにはアクセスできません。"
+            },
+            "Reader": {
+              "Label": "Reader",
+              "Description": "製品内のすべてのデータを閲覧できるが、変更はできない読み取り専用のロールです。情報を閲覧するだけでよいユーザーに最適です。"
+            }
+          },
+          "openaev": {
+            "Title": "{count, plural, other {OpenAEV ロール}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "管理者ロールは、製品の設定、構成、管理に対する完全なアクセス権を持ちます。管理者はユーザー、ロール、システム全体の設定を管理できるほか、要素に対する完全な可視性と制御権を持ちます。"
+            },
+            "Manager": {
+              "Label": "Manager",
+              "Description": "あらゆる種類のシナリオを管理・実行するための完全な機能を持つロールです。マネージャーは製品内の任意の要素を変更できますが、製品の設定、管理、構成オプションにはアクセスできません。"
+            },
+            "Observer": {
+              "Label": "Observer",
+              "Description": "製品内のすべての要素を閲覧できるが、変更はできない読み取り専用のロールです。情報を閲覧するだけでよいユーザーに最適です。"
+            }
+          },
+          "xtmone": {
+            "Title": "{count, plural, other {XTM One ロール}}",
+            "Admin": {
+              "Label": "Admin",
+              "Description": "管理者ロールは、プラットフォームの設定、構成、管理に対する完全なアクセス権を持ちます。管理者はユーザー、グループ、インテグレーション、システム全体の設定を管理できるほか、組織内で共有される会社管理リソースを含むすべての要素に対する完全な可視性と制御権を持ちます。また、トラブルシューティングのためにユーザーになりすますこともできます。"
+            },
+            "User": {
+              "Label": "User",
+              "Description": "自身のエージェント、フロー、ナレッジベースを作成、構成、実行するための完全な機能を持つロールです。ユーザーは自身が所有する要素や共有された要素を変更できますが、プラットフォームの設定、管理、構成オプションにはアクセスできません。"
+            }
+          }
+        }
+      }
     }
   },
   "ServiceActions": {

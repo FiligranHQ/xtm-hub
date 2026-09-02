@@ -6,6 +6,7 @@ import {
   DeploymentRequestPlatformState,
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
+  ServiceGroupName,
 } from '../../__generated__/resolvers-types';
 import { withTransaction } from '../../context/database.context';
 import DeploymentRequest, {
@@ -19,10 +20,7 @@ import { logApp } from '../../utils/app-logger.util';
 import { getErrorNumberProperty } from '../../utils/error/error-guard.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { prefixObjectKeys } from '../../utils/utils';
-import {
-  ServiceGroupDomain,
-  ServiceGroupName,
-} from './group/service-group.domain';
+import { ServiceGroupDomain } from './group/service-group.domain';
 import { QuotaKey } from './quota/deployment.quota.domain';
 
 const scopeToPlatformIdentifier =
@@ -408,7 +406,7 @@ export const DeploymentRequestDomain = {
       throw new Error(ErrorCode.InvalidPlatformId);
     }
 
-    if (platformIdentifier !== PlatformIdentifier.Openaev) {
+    if (platformIdentifier === PlatformIdentifier.Opencti) {
       try {
         await auth0Client.createAudienceAPI(organization_name, platform_id);
       } catch (error) {

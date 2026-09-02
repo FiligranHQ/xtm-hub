@@ -1,4 +1,4 @@
-import { AddServiceInput, AddSolutionCategoryInput, AddSubscriptionCapabilityInput, AddUseCaseInput, AddUserInput, AdminAddUserInput, AdminEditUserInput, AutoRegisterPlatformInput, BulkPendingUserFromOrganizationInput, CanUnregisterPlatformInput, CanUnregisterResponse, Capability, Competitor, CompetitorConnection, CompetitorEdge, Connector, ConsumeProvisionedNewsFeedItemsResponse, CreateCompetitorInput, CreateDeploymentRequestInput, CreateDocumentInput, CreateEpicInput, CreateSubscriptionsInput, CreateVotableFeatureInput, CreateVotingRoundInput, CsvFeed, CustomDashboard, CustomView, DefaultDocument, DeployedPlatform, DeployedResource, DeploymentAvailability, DeploymentRequest, DeploymentRequestConnection, DeploymentRequestEdge, DeploymentRequestFilter, Document, DocumentConnection, DocumentEdge, DocumentMetadata, EditMeUserInput, EditSeoServiceInstanceInput, EditSolutionCategoryInput, EditUseCaseInput, EditUserCapabilitiesInput, Epic, EpicConnection, EpicCountPerTimeline, EpicEdge, Filter, GenericServiceCapability, Integration, IntegrationHack, IsPlatformRegisteredInput, IsPlatformRegisteredOrganization, IsPlatformRegisteredResponse, LastDeployedOverview, LogicalFilterInput, ManifestFragmentInput, MeUserSubscription, MergeEvent, Mutation, NewsFeedItem, NewsFeedItemConnection, NewsFeedItemEdge, NewsFeedItemMetadata, Node, OneClickDeployInput, OpenAevScenario, OpenCtiPlatformRegistrationStatusInput, OpenCtiPlatformRegistrationStatusResponse, OpenCtiPlaybook, Organization, OrganizationCapabilities, OrganizationCapabilitiesInput, OrganizationConnection, OrganizationEdge, OrganizationInput, OrganizationRef, PageInfo, PlatformDeploymentRequest, PlatformDeploymentRequestConnection, PlatformDeploymentRequestEdge, PlatformInput, PlatformProvider, PlatformTrialStatus, ProductUseCaseInput, ProvisionedNewsFeedItem, Query, RefreshPlatformRegistrationConnectivityStatusAllTenantsInput, RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse, RefreshPlatformRegistrationConnectivityStatusInput, RefreshPlatformRegistrationConnectivityStatusResponse, RefreshPlatformRegistrationConnectivityStatusSingleTenantInput, RefreshUserPlatformTokenResponse, RegisterPlatformInput, RegisteredPlatform, RegisteredPlatformInput, RegisteredPlatformsInput, RegisteredProductVersion, RegistrationResponse, ReorderDeploymentRequestInQueueInput, RolePortal, RssFeed, SendTelemetryMutation, SeoServiceInstance, SeoServiceInstanceMetadata, ServiceCapability, ServiceConnection, ServiceDefinition, ServiceGroup, ServiceInstance, ServiceInstanceEdge, ServiceInstanceFilter, ServiceInstanceSubscription, ServiceLink, Settings, ShareableResource, SolutionCategory, SolutionCategoryConnection, SolutionCategoryEdge, Stream, SubscribedServiceInstanceConfiguration, Subscription, SubscriptionCapability, SubscriptionConnection, SubscriptionEdge, SubscriptionFilter, SubscriptionModel, Success, TaxiiFeed, TelemetryResponse, TenantDetails, TenantStatus, ThirdPartyIntegration, TrialDeploymentsInput, TrialsDeployments, UnregisterPlatformInput, UpdateCompetitorInput, UpdateDeploymentQuotaCapacityInput, UpdateDeploymentRequestInput, UpdateDocumentInput, UpdateEpicInput, UpdatePlatformServiceMetadataInput, UpdateServiceGroupsInput, UpdateServiceGroupsInputGroup, UpdateSubscriptionInput, UpdateVotableFeatureInput, UpdateVotingRoundInput, UseCase, UseCaseConnection, UseCaseEdge, User, UserConnection, UserEdge, UserPendingSubscription, UserService, UserServiceAddInput, UserServiceAddYourselfInput, UserServiceCapabilitiesResponse, UserServiceCapability, UserServiceConnection, UserServiceDeleted, UserServiceEdge, UserServiceEditInput, UserServicesAddCapabilitiesInput, UserServicesDeleteInput, UserSubscription, UsersWithCapabilitiesInOrganizationInput, VotableFeature, VotableFeatureResult, VotingRound, VotingRoundResults, CompetitorOrdering, CompetitorTier, DeploymentRequestActivitySector, DeploymentRequestDeploymentType, DeploymentRequestFilterKey, DeploymentRequestHubStatus, DeploymentRequestJobTitle, DeploymentRequestOrdering, DeploymentRequestPlatformRegion, DeploymentRequestPlatformState, DeploymentRequestSource, DeploymentRequestUseCase, DocumentImageType, DocumentMetadataKeyCode, DocumentOrdering, DocumentSourceType, EditionType, EpicOrdering, EpicType, FeatureFlag, FiligranProduct, FilterKey, IntegrationType, LicenseType, LogicalOperator, ManifestType, NewsFeedItemMetadataKey, NewsFeedItemType, OrderingMode, OrganizationCapability, OrganizationOrdering, PlatformConfigurationStatus, PlatformContract, PlatformIdentifier, PlatformRegistrationConnectivityStatus, PlatformRegistrationStatus, PortalCapability, ReorderDeploymentRequestInQueueDirection, SeoServiceInstanceLanguage, ServiceDefinitionIdentifier, ServiceInstanceCreationStatus, ServiceInstanceFilterKey, ServiceInstanceOrdering, ServiceInstanceTag, ServiceRestriction, SolutionCategoryOrdering, SubscriptionFilterKey, SubscriptionOrdering, Timeline, UseCaseOrdering, UserOrdering, UserServiceOrdering, VotingRoundStatus, VotingRoundTheme } from './generated';
+import { AddServiceInput, AddSolutionCategoryInput, AddSubscriptionCapabilityInput, AddUseCaseInput, AddUserInput, AddUsersToBundleGroupsInput, AdminAddUserInput, AdminEditUserInput, AutoRegisterPlatformInput, BulkPendingUserFromOrganizationInput, BundleUserRoleAssignmentInput, BundleUserServiceGroup, CanUnregisterPlatformInput, CanUnregisterResponse, Capability, Competitor, CompetitorConnection, CompetitorEdge, Connector, ConsumeProvisionedNewsFeedItemsResponse, CreateCompetitorInput, CreateDeploymentRequestInput, CreateDocumentInput, CreateEpicInput, CreateSubscriptionsInput, CreateVotableFeatureInput, CreateVotingRoundInput, CsvFeed, CustomDashboard, CustomView, DefaultDocument, DeployedPlatform, DeployedResource, DeploymentAvailability, DeploymentRequest, DeploymentRequestConnection, DeploymentRequestEdge, DeploymentRequestFilter, Document, DocumentConnection, DocumentEdge, DocumentMetadata, EditMeUserInput, EditSeoServiceInstanceInput, EditSolutionCategoryInput, EditUseCaseInput, EditUserCapabilitiesInput, Epic, EpicConnection, EpicCountPerTimeline, EpicEdge, Filter, GenericServiceCapability, Integration, IntegrationHack, IsPlatformRegisteredInput, IsPlatformRegisteredOrganization, IsPlatformRegisteredResponse, LastDeployedOverview, LogicalFilterInput, ManifestFragmentInput, MeUserSubscription, MergeEvent, Mutation, NewsFeedItem, NewsFeedItemConnection, NewsFeedItemEdge, NewsFeedItemMetadata, Node, OneClickDeployInput, OpenAevScenario, OpenCtiPlatformRegistrationStatusInput, OpenCtiPlatformRegistrationStatusResponse, OpenCtiPlaybook, Organization, OrganizationCapabilities, OrganizationCapabilitiesInput, OrganizationConnection, OrganizationEdge, OrganizationInput, OrganizationRef, PageInfo, PlatformDeploymentRequest, PlatformDeploymentRequestConnection, PlatformDeploymentRequestEdge, PlatformInput, PlatformProvider, PlatformTrialStatus, ProductUseCaseInput, ProvisionedNewsFeedItem, Query, RefreshPlatformRegistrationConnectivityStatusAllTenantsInput, RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse, RefreshPlatformRegistrationConnectivityStatusInput, RefreshPlatformRegistrationConnectivityStatusResponse, RefreshPlatformRegistrationConnectivityStatusSingleTenantInput, RefreshUserPlatformTokenResponse, RegisterPlatformInput, RegisteredPlatform, RegisteredPlatformInput, RegisteredPlatformsInput, RegisteredProductVersion, RegistrationResponse, ReorderDeploymentRequestInQueueInput, RolePortal, RssFeed, SendTelemetryMutation, SeoServiceInstance, SeoServiceInstanceMetadata, ServiceCapability, ServiceConnection, ServiceDefinition, ServiceGroup, ServiceInstance, ServiceInstanceEdge, ServiceInstanceFilter, ServiceInstanceSubscription, ServiceLink, Settings, ShareableResource, SolutionCategory, SolutionCategoryConnection, SolutionCategoryEdge, Stream, SubscribedServiceInstanceConfiguration, Subscription, SubscriptionCapability, SubscriptionConnection, SubscriptionEdge, SubscriptionFilter, SubscriptionModel, Success, TaxiiFeed, TelemetryResponse, TenantDetails, TenantStatus, ThirdPartyIntegration, TrialDeploymentsInput, TrialsDeployments, UnregisterPlatformInput, UpdateBundleUserGroupsInput, UpdateBundleUserGroupsRoleInput, UpdateCompetitorInput, UpdateDeploymentQuotaCapacityInput, UpdateDeploymentRequestInput, UpdateDocumentInput, UpdateEpicInput, UpdatePlatformServiceMetadataInput, UpdateServiceGroupsInput, UpdateServiceGroupsInputGroup, UpdateSubscriptionInput, UpdateVotableFeatureInput, UpdateVotingRoundInput, UseCase, UseCaseConnection, UseCaseEdge, User, UserConnection, UserEdge, UserPendingSubscription, UserPlatformGroup, UserService, UserServiceAddInput, UserServiceAddYourselfInput, UserServiceCapabilitiesResponse, UserServiceCapability, UserServiceConnection, UserServiceDeleted, UserServiceEdge, UserServiceEditInput, UserServicesAddCapabilitiesInput, UserServicesDeleteInput, UserSubscription, UsersWithCapabilitiesInOrganizationInput, VotableFeature, VotableFeatureResult, VotingRound, VotingRoundResults, CompetitorOrdering, CompetitorTier, DeploymentRequestActivitySector, DeploymentRequestDeploymentType, DeploymentRequestFilterKey, DeploymentRequestHubStatus, DeploymentRequestJobTitle, DeploymentRequestOrdering, DeploymentRequestPlatformRegion, DeploymentRequestPlatformState, DeploymentRequestSource, DeploymentRequestUseCase, DocumentImageType, DocumentMetadataKeyCode, DocumentOrdering, DocumentSourceType, EditionType, EpicOrdering, EpicType, FeatureFlag, FiligranProduct, FilterKey, IntegrationType, LicenseType, LogicalOperator, ManifestType, NewsFeedItemMetadataKey, NewsFeedItemType, OrderingMode, OrganizationCapability, OrganizationOrdering, PlatformConfigurationStatus, PlatformContract, PlatformIdentifier, PlatformRegistrationConnectivityStatus, PlatformRegistrationStatus, PortalCapability, ReorderDeploymentRequestInQueueDirection, SeoServiceInstanceLanguage, ServiceDefinitionIdentifier, ServiceGroupName, ServiceInstanceCreationStatus, ServiceInstanceFilterKey, ServiceInstanceOrdering, ServiceInstanceTag, ServiceRestriction, SolutionCategoryOrdering, SubscriptionFilterKey, SubscriptionOrdering, Timeline, UseCaseOrdering, UserOrdering, UserServiceOrdering, VotingRoundStatus, VotingRoundTheme } from './generated';
 
 export const mockAddServiceInput = (overrides?: Partial<AddServiceInput>, _relationshipsToOmit: Set<string> = new Set()): AddServiceInput => {
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
@@ -51,6 +51,15 @@ export const mockAddUserInput = (overrides?: Partial<AddUserInput>, _relationshi
     };
 };
 
+export const mockAddUsersToBundleGroupsInput = (overrides?: Partial<AddUsersToBundleGroupsInput>, _relationshipsToOmit: Set<string> = new Set()): AddUsersToBundleGroupsInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('AddUsersToBundleGroupsInput');
+    return {
+        roles: overrides && overrides.hasOwnProperty('roles') ? overrides.roles! : [relationshipsToOmit.has('BundleUserRoleAssignmentInput') ? {} as BundleUserRoleAssignmentInput : mockBundleUserRoleAssignmentInput({}, relationshipsToOmit)],
+        userIds: overrides && overrides.hasOwnProperty('userIds') ? overrides.userIds! : ['texo'],
+    };
+};
+
 export const mockAdminAddUserInput = (overrides?: Partial<AdminAddUserInput>, _relationshipsToOmit: Set<string> = new Set()): AdminAddUserInput => {
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('AdminAddUserInput');
@@ -92,6 +101,25 @@ export const mockBulkPendingUserFromOrganizationInput = (overrides?: Partial<Bul
         filters: overrides && overrides.hasOwnProperty('filters') ? overrides.filters! : [relationshipsToOmit.has('Filter') ? {} as Filter : mockFilter({}, relationshipsToOmit)],
         ids: overrides && overrides.hasOwnProperty('ids') ? overrides.ids! : ['natus'],
         searchTerm: overrides && overrides.hasOwnProperty('searchTerm') ? overrides.searchTerm! : 'succurro',
+    };
+};
+
+export const mockBundleUserRoleAssignmentInput = (overrides?: Partial<BundleUserRoleAssignmentInput>, _relationshipsToOmit: Set<string> = new Set()): BundleUserRoleAssignmentInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('BundleUserRoleAssignmentInput');
+    return {
+        product: overrides && overrides.hasOwnProperty('product') ? overrides.product! : PlatformIdentifier.Openaev,
+        role: overrides && overrides.hasOwnProperty('role') ? overrides.role! : ServiceGroupName.Admin,
+    };
+};
+
+export const mockBundleUserServiceGroup = (overrides?: Partial<BundleUserServiceGroup>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'BundleUserServiceGroup' } & BundleUserServiceGroup => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('BundleUserServiceGroup');
+    return {
+        __typename: 'BundleUserServiceGroup',
+        groups: overrides && overrides.hasOwnProperty('groups') ? overrides.groups! : [relationshipsToOmit.has('UserPlatformGroup') ? {} as UserPlatformGroup : mockUserPlatformGroup({}, relationshipsToOmit)],
+        user: overrides && overrides.hasOwnProperty('user') ? overrides.user! : relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit),
     };
 };
 
@@ -891,6 +919,7 @@ export const mockMutation = (overrides?: Partial<Mutation>, _relationshipsToOmit
         addUseCase: overrides && overrides.hasOwnProperty('addUseCase') ? overrides.addUseCase! : relationshipsToOmit.has('UseCase') ? {} as UseCase : mockUseCase({}, relationshipsToOmit),
         addUser: overrides && overrides.hasOwnProperty('addUser') ? overrides.addUser! : relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit),
         addUserService: overrides && overrides.hasOwnProperty('addUserService') ? overrides.addUserService! : [relationshipsToOmit.has('UserService') ? {} as UserService : mockUserService({}, relationshipsToOmit)],
+        addUsersToBundleGroups: overrides && overrides.hasOwnProperty('addUsersToBundleGroups') ? overrides.addUsersToBundleGroups! : [relationshipsToOmit.has('BundleUserServiceGroup') ? {} as BundleUserServiceGroup : mockBundleUserServiceGroup({}, relationshipsToOmit)],
         adminAddUser: overrides && overrides.hasOwnProperty('adminAddUser') ? overrides.adminAddUser! : relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit),
         adminCancelDeploymentRequest: overrides && overrides.hasOwnProperty('adminCancelDeploymentRequest') ? overrides.adminCancelDeploymentRequest! : relationshipsToOmit.has('DeploymentRequest') ? {} as DeploymentRequest : mockDeploymentRequest({}, relationshipsToOmit),
         adminEditUser: overrides && overrides.hasOwnProperty('adminEditUser') ? overrides.adminEditUser! : relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit),
@@ -941,6 +970,7 @@ export const mockMutation = (overrides?: Partial<Mutation>, _relationshipsToOmit
         registerPlatform: overrides && overrides.hasOwnProperty('registerPlatform') ? overrides.registerPlatform! : relationshipsToOmit.has('RegistrationResponse') ? {} as RegistrationResponse : mockRegistrationResponse({}, relationshipsToOmit),
         removePendingUserFromOrganization: overrides && overrides.hasOwnProperty('removePendingUserFromOrganization') ? overrides.removePendingUserFromOrganization! : relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit),
         removeUserFromOrganization: overrides && overrides.hasOwnProperty('removeUserFromOrganization') ? overrides.removeUserFromOrganization! : relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit),
+        removeUsersFromBundleGroups: overrides && overrides.hasOwnProperty('removeUsersFromBundleGroups') ? overrides.removeUsersFromBundleGroups! : ['cerno'],
         reorderDeploymentRequestInQueue: overrides && overrides.hasOwnProperty('reorderDeploymentRequestInQueue') ? overrides.reorderDeploymentRequestInQueue! : relationshipsToOmit.has('Success') ? {} as Success : mockSuccess({}, relationshipsToOmit),
         requestTransferPersonalSpace: overrides && overrides.hasOwnProperty('requestTransferPersonalSpace') ? overrides.requestTransferPersonalSpace! : relationshipsToOmit.has('Success') ? {} as Success : mockSuccess({}, relationshipsToOmit),
         resetPassword: overrides && overrides.hasOwnProperty('resetPassword') ? overrides.resetPassword! : relationshipsToOmit.has('Success') ? {} as Success : mockSuccess({}, relationshipsToOmit),
@@ -948,6 +978,7 @@ export const mockMutation = (overrides?: Partial<Mutation>, _relationshipsToOmit
         setVotingRoundStatus: overrides && overrides.hasOwnProperty('setVotingRoundStatus') ? overrides.setVotingRoundStatus! : [relationshipsToOmit.has('VotingRound') ? {} as VotingRound : mockVotingRound({}, relationshipsToOmit)],
         transferPersonalSpace: overrides && overrides.hasOwnProperty('transferPersonalSpace') ? overrides.transferPersonalSpace! : relationshipsToOmit.has('Success') ? {} as Success : mockSuccess({}, relationshipsToOmit),
         unregisterPlatform: overrides && overrides.hasOwnProperty('unregisterPlatform') ? overrides.unregisterPlatform! : relationshipsToOmit.has('Success') ? {} as Success : mockSuccess({}, relationshipsToOmit),
+        updateBundleUserGroups: overrides && overrides.hasOwnProperty('updateBundleUserGroups') ? overrides.updateBundleUserGroups! : [relationshipsToOmit.has('BundleUserServiceGroup') ? {} as BundleUserServiceGroup : mockBundleUserServiceGroup({}, relationshipsToOmit)],
         updateCompetitor: overrides && overrides.hasOwnProperty('updateCompetitor') ? overrides.updateCompetitor! : relationshipsToOmit.has('Competitor') ? {} as Competitor : mockCompetitor({}, relationshipsToOmit),
         updateDeploymentQuotaCapacity: overrides && overrides.hasOwnProperty('updateDeploymentQuotaCapacity') ? overrides.updateDeploymentQuotaCapacity! : relationshipsToOmit.has('Success') ? {} as Success : mockSuccess({}, relationshipsToOmit),
         updateDeploymentRequest: overrides && overrides.hasOwnProperty('updateDeploymentRequest') ? overrides.updateDeploymentRequest! : relationshipsToOmit.has('PlatformDeploymentRequest') ? {} as PlatformDeploymentRequest : mockPlatformDeploymentRequest({}, relationshipsToOmit),
@@ -1309,6 +1340,8 @@ export const mockQuery = (overrides?: Partial<Query>, _relationshipsToOmit: Set<
     relationshipsToOmit.add('Query');
     return {
         __typename: 'Query',
+        bundleProducts: overrides && overrides.hasOwnProperty('bundleProducts') ? overrides.bundleProducts! : [PlatformIdentifier.Openaev],
+        bundleUserServiceGroups: overrides && overrides.hasOwnProperty('bundleUserServiceGroups') ? overrides.bundleUserServiceGroups! : [relationshipsToOmit.has('BundleUserServiceGroup') ? {} as BundleUserServiceGroup : mockBundleUserServiceGroup({}, relationshipsToOmit)],
         canUnregisterPlatform: overrides && overrides.hasOwnProperty('canUnregisterPlatform') ? overrides.canUnregisterPlatform! : relationshipsToOmit.has('CanUnregisterResponse') ? {} as CanUnregisterResponse : mockCanUnregisterResponse({}, relationshipsToOmit),
         competitors: overrides && overrides.hasOwnProperty('competitors') ? overrides.competitors! : relationshipsToOmit.has('CompetitorConnection') ? {} as CompetitorConnection : mockCompetitorConnection({}, relationshipsToOmit),
         countEpicsPerTimeline: overrides && overrides.hasOwnProperty('countEpicsPerTimeline') ? overrides.countEpicsPerTimeline! : [relationshipsToOmit.has('EpicCountPerTimeline') ? {} as EpicCountPerTimeline : mockEpicCountPerTimeline({}, relationshipsToOmit)],
@@ -1634,7 +1667,7 @@ export const mockServiceGroup = (overrides?: Partial<ServiceGroup>, _relationshi
     return {
         __typename: 'ServiceGroup',
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : 'a2fdf645-ec92-4d15-844d-40aaf5ff5de0',
-        name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : 'caelestis',
+        name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : ServiceGroupName.Admin,
         users: overrides && overrides.hasOwnProperty('users') ? overrides.users! : [relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit)],
     };
 };
@@ -2031,6 +2064,24 @@ export const mockUnregisterPlatformInput = (overrides?: Partial<UnregisterPlatfo
     };
 };
 
+export const mockUpdateBundleUserGroupsInput = (overrides?: Partial<UpdateBundleUserGroupsInput>, _relationshipsToOmit: Set<string> = new Set()): UpdateBundleUserGroupsInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('UpdateBundleUserGroupsInput');
+    return {
+        roles: overrides && overrides.hasOwnProperty('roles') ? overrides.roles! : [relationshipsToOmit.has('UpdateBundleUserGroupsRoleInput') ? {} as UpdateBundleUserGroupsRoleInput : mockUpdateBundleUserGroupsRoleInput({}, relationshipsToOmit)],
+        userIds: overrides && overrides.hasOwnProperty('userIds') ? overrides.userIds! : ['textilis'],
+    };
+};
+
+export const mockUpdateBundleUserGroupsRoleInput = (overrides?: Partial<UpdateBundleUserGroupsRoleInput>, _relationshipsToOmit: Set<string> = new Set()): UpdateBundleUserGroupsRoleInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('UpdateBundleUserGroupsRoleInput');
+    return {
+        product: overrides && overrides.hasOwnProperty('product') ? overrides.product! : PlatformIdentifier.Openaev,
+        role: overrides && overrides.hasOwnProperty('role') ? overrides.role! : ServiceGroupName.Admin,
+    };
+};
+
 export const mockUpdateCompetitorInput = (overrides?: Partial<UpdateCompetitorInput>, _relationshipsToOmit: Set<string> = new Set()): UpdateCompetitorInput => {
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('UpdateCompetitorInput');
@@ -2246,6 +2297,16 @@ export const mockUserPendingSubscription = (overrides?: Partial<UserPendingSubsc
         __typename: 'UserPendingSubscription',
         delete: overrides && overrides.hasOwnProperty('delete') ? overrides.delete! : relationshipsToOmit.has('User') ? {} as User : mockUser({}, relationshipsToOmit),
         invalidate: overrides && overrides.hasOwnProperty('invalidate') ? overrides.invalidate! : relationshipsToOmit.has('OrganizationRef') ? {} as OrganizationRef : mockOrganizationRef({}, relationshipsToOmit),
+    };
+};
+
+export const mockUserPlatformGroup = (overrides?: Partial<UserPlatformGroup>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'UserPlatformGroup' } & UserPlatformGroup => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('UserPlatformGroup');
+    return {
+        __typename: 'UserPlatformGroup',
+        name: overrides && overrides.hasOwnProperty('name') ? overrides.name! : ServiceGroupName.Admin,
+        platformIdentifier: overrides && overrides.hasOwnProperty('platformIdentifier') ? overrides.platformIdentifier! : PlatformIdentifier.Openaev,
     };
 };
 

@@ -1753,33 +1753,29 @@ describe('deploymentRequestDomain', () => {
       return { createAudienceSpy };
     };
 
-    it('should NOT create an Auth0 audience for an OpenAEV instance', async () => {
-      const deployment = await createDeploymentRequest(
-        PlatformIdentifier.Openaev
-      );
-      const { createAudienceSpy } = spyOnAuth0AndServiceGroup();
+    it.each`
+      platformIdentifier            | shouldCreateAudience
+      ${PlatformIdentifier.Openaev} | ${false}
+      ${PlatformIdentifier.Opencti} | ${true}
+      ${PlatformIdentifier.Xtmone}  | ${false}
+    `(
+      'should create an Auth0 audience for a $platformIdentifier instance: $shouldCreateAudience',
+      async ({ platformIdentifier, shouldCreateAudience }) => {
+        const deployment = await createDeploymentRequest(platformIdentifier);
+        const { createAudienceSpy } = spyOnAuth0AndServiceGroup();
 
-      await DeploymentRequestDomain.initialiseServiceGroup(
-        deployment!.id,
-        PlatformIdentifier.Openaev
-      );
+        await DeploymentRequestDomain.initialiseServiceGroup(
+          deployment!.id,
+          platformIdentifier
+        );
 
-      expect(createAudienceSpy).not.toHaveBeenCalled();
-    });
-
-    it('should create an Auth0 audience for an OpenCTI instance', async () => {
-      const deployment = await createDeploymentRequest(
-        PlatformIdentifier.Opencti
-      );
-      const { createAudienceSpy } = spyOnAuth0AndServiceGroup();
-
-      await DeploymentRequestDomain.initialiseServiceGroup(
-        deployment!.id,
-        PlatformIdentifier.Opencti
-      );
-
-      expect(createAudienceSpy).toHaveBeenCalledOnce();
-    });
+        if (shouldCreateAudience) {
+          expect(createAudienceSpy).toHaveBeenCalledOnce();
+        } else {
+          expect(createAudienceSpy).not.toHaveBeenCalled();
+        }
+      }
+    );
   });
 
   describe('countDeploymentRequestsBy', () => {
