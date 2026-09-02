@@ -47,9 +47,9 @@ interface EpicListProps {
   onSearch: (searchTerm: string) => void;
 }
 
-const isServiceInstanceWithSubscriptions = (
+const isServiceInstanceWithCapabilities = (
   instance: serviceInstance_fragment$data | seoServiceInstanceFragment$data
-): instance is serviceInstance_fragment$data => 'subscriptions' in instance;
+): instance is serviceInstance_fragment$data => 'capabilities' in instance;
 
 export const EpicList = ({
   epics,
@@ -61,7 +61,7 @@ export const EpicList = ({
   const t = useTranslations();
   const [openSheet, setOpenSheet] = useState(false);
   const [showFinished, setShowFinished] = useState(false);
-  const detailedServiceInstance = isServiceInstanceWithSubscriptions(
+  const detailedServiceInstance = isServiceInstanceWithCapabilities(
     serviceInstance
   )
     ? serviceInstance
