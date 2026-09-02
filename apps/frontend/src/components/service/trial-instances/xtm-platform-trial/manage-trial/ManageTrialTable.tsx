@@ -229,34 +229,36 @@ export const ManageTrialTable = ({
         enableResizing: false,
         size: 48,
         cell: ({ row }) => (
-          <AlertDialogComponent
-            AlertTitle={t(
-              'Service.Bundle.ManageTrial.Table.DeleteDialog.Title'
-            )}
-            actionButtonText={t('Utils.Delete')}
-            variantName="destructive"
-            continueButtonDisabled={deletingUserId === row.original.id}
-            triggerElement={
-              <Button
-                type="button"
-                variant="tertiary"
-                size="icon"
-                aria-label={t('Utils.Delete')}
-                disabled={deletingUserId === row.original.id}>
-                <DeleteIcon className="h-4 w-4" />
-              </Button>
-            }
-            onClickContinue={() => {
-              setDeletingUserId(row.original.id);
-              removeUsersFromBundleGroups({
-                serviceInstanceId,
-                userIds: [row.original.id],
-              });
-            }}>
-            {t('Service.Bundle.ManageTrial.Table.DeleteDialog.Text', {
-              email: row.original.email,
-            })}
-          </AlertDialogComponent>
+          <div className="flex items-center justify-end">
+            <AlertDialogComponent
+              AlertTitle={t(
+                'Service.Bundle.ManageTrial.Table.DeleteDialog.Title'
+              )}
+              actionButtonText={t('Utils.Delete')}
+              variantName="destructive"
+              continueButtonDisabled={deletingUserId === row.original.id}
+              triggerElement={
+                <Button
+                  type="button"
+                  variant="tertiary"
+                  size="icon"
+                  aria-label={t('Utils.Delete')}
+                  disabled={deletingUserId === row.original.id}>
+                  <DeleteIcon className="h-4 w-4" />
+                </Button>
+              }
+              onClickContinue={() => {
+                setDeletingUserId(row.original.id);
+                removeUsersFromBundleGroups({
+                  serviceInstanceId,
+                  userIds: [row.original.id],
+                });
+              }}>
+              {t('Service.Bundle.ManageTrial.Table.DeleteDialog.Text', {
+                email: row.original.email,
+              })}
+            </AlertDialogComponent>
+          </div>
         ),
       },
     ],
@@ -286,6 +288,7 @@ export const ManageTrialTable = ({
         isLoading={isLoading}
         i18nKey={i18nKey(t)}
         toolbar={<></>}
+        tableState={{ columnPinning: { right: ['actions'] } }}
         selectionOptions={{
           selectionState: {
             state: selection,
