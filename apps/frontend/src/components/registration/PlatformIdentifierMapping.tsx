@@ -19,6 +19,7 @@ export interface PlatformMetadata {
   logoUrl: string;
   docUrl: string;
   Icon: ({ className }: { className: string }) => JSX.Element;
+  iconClassName: string;
 }
 
 export const PlatformMetadataMapping: Record<
@@ -32,6 +33,7 @@ export const PlatformMetadataMapping: Record<
     logoUrl: '/logo_opencti_dark.png',
     docUrl: 'https://docs.opencti.io/latest/administration/hub/',
     Icon: ({ className }) => <OpenCtiIconIcon className={className} />,
+    iconClassName: 'text-filigran-brand-primary',
   },
   [PlatformIdentifier.Openaev]: {
     name: 'OpenAEV',
@@ -40,6 +42,7 @@ export const PlatformMetadataMapping: Record<
     logoUrl: '/logo_openaev_dark.png',
     docUrl: 'https://docs.openaev.io/latest/administration/hub/',
     Icon: ({ className }) => <OpenAevIconIcon className={className} />,
+    iconClassName: 'text-filigran-brand-primary',
   },
   // Placeholder: xtmone has no trial UI yet, replace when built.
   [PlatformIdentifier.Xtmone]: {
@@ -49,6 +52,7 @@ export const PlatformMetadataMapping: Record<
     logoUrl: '',
     docUrl: '',
     Icon: ({ className }) => <LogoXtmOneIcon className={className} />,
+    iconClassName: 'text-filigran-ia-main',
   },
 };
 

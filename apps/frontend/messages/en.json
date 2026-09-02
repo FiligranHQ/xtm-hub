@@ -1633,10 +1633,8 @@
       "Description": "This short guide is here to direct you to helpful resources about how to get the best experience out of your XTM Platform trial",
       "SeeMore": "See more",
       "ReadMore": "Read more",
-      "MoreInformationHere": "More information here",
       "ChecklistTitle": "Suggested Actions Checklist",
-      "ChecklistIntroTitle": "Don't know where to start?",
-      "ChecklistIntroSubtitle": "Here are some suggested actions that could help you discover the platform",
+      "ChecklistIntro": "Don’t know where to start? Take a look at some suggested actions.",
       "Opencti": {
         "ResourceCards": {
           "Documentation": {
@@ -1666,8 +1664,8 @@
             "Description": "Go to <strong>PIR → Create PIR</strong>. Define a PIR name, rescan period, and the entity criteria/filters that matter to you (e.g., \"Malware targeting the Energy sector\" with confidence ≥ 60). OpenCTI will now continuously listen to platform activity and automatically flag any matching entities as \"of interest,\" surfacing a live news feed, scored relevance, and related reports/graphs for each."
           },
           "FollowGraph": {
-            "Title": "Open a Threat Actor or Intrusion Set and Follow the Graph",
-            "Description": "Go to <strong>Entities</strong>. Pick any imported entity and explore its relationships (malware used, TTPs, victims, related reports). From the entity's <strong>Knowledge</strong> tab, click into the interactive graph view to visually pivot from node to node. Expand out to related campaigns, infrastructure, or observables and use the timeline and relationship filters to see how the picture evolves over time."
+            "Title": "Open a Report and Explore the Interactive Graph",
+            "Description": "Go to <strong>Analyses → Reports</strong>. Click on a report and go to the <strong>Knowledge</strong> tab. In the toolbar on the right, make sure <strong>Graph View</strong> is selected. Zoom in. Now click on objects in the graph. The details of the object will be displayed in the right column. To see the relationships of a particular object, move it out to the side. Click <strong>Timeline view</strong> to see how data points evolved over time. For MITRE ATT&CK mapping click on <strong>Tactics Matrix View</strong>."
           },
           "CreateCase": {
             "Title": "Create a Case from a Detected Indicator",
@@ -1728,28 +1726,36 @@
             "Description": "Go to the Arsenal, pick a single technique, and select an endpoint to run it against. Install the OpenAEV agent first, or run agentless if supported. Launch the test and check the endpoint or wait for the report to see what executed and what got caught."
           },
           "LaunchTimeBasedScenario": {
-            "Title": "Launch a Time Based Scenario",
-            "Description": "Create a scenario and add injects in the order you want them to fire. Instead of running it immediately, set a schedule with a start time and, if wanted, a recurring frequency. Save it and let it run on its own, then compare results across runs to track trends like detection time."
+            "Title": "Launch a Time-Based Scenario, Leveraging the AI Scenario Assistant",
+            "Description": "Create a scenario and add injects in the order you want them to fire based on a set schedule with a start time and, if required a recurring frequency. Leverage AI to automate Inject creation based on your selected targets and MITRE ATT&CK techniques."
           },
           "RunAttackChainingScenario": {
             "Title": "Run an Attack Chaining Scenario",
             "Description": "Build a scenario linking several techniques into a realistic attack path (initial access, lateral movement, exfiltration). Run it operator led, manually triggering each step yourself, or agent led, where the platform executes the whole chain automatically once started. Try both to feel the difference in control versus speed."
           },
           "DriveTabletopExercise": {
-            "Title": "Drive a Tabletop Exercise",
-            "Description": "Create a tabletop scenario with communication or decision based injects instead of technical ones (e.g. \"notify legal\"). Assign participants and run it as a live, facilitated session, recording how the team responds. No endpoint involved, it's purely process and people."
+            "Title": "Drive a Tabletop Exercise with a Phishing Exercise",
+            "Description": "Create a tabletop scenario with communication or decision based injects instead of technical ones (e.g. \"notify legal\"), assign participants and run it as a live, facilitated session, recording how the team responds. Use this opportunity to include Phishing injects, which you can generate with AI directly."
           },
-          "ConnectThreatIntelSource": {
-            "Title": "Connect a Threat Intelligence Source",
-            "Description": "In integrations settings, connect OpenCTI or another supported source with its API credentials. Then pull techniques or indicators mapped to MITRE ATT&CK directly into the Arsenal or scenario builder, so tests reflect threats relevant to you instead of generic actions."
+          "EvaluateSecurityPosture": {
+            "Title": "Evaluate Your Security Posture",
+            "Description": "Start at home screen Exposure Commander Center (aggregating your key metrics at a glance) and drill down into specific security domains and dashboards. Take the time to investigate inject results, expectations, and findings."
           },
-          "ValidateExpectations": {
-            "Title": "Validate Expectations",
-            "Description": "After a simulation finishes, open its results and review the expectations it generated. Tool integrated expectations often fill in automatically; for expectations needing human judgment (e.g. \"did the analyst notice within 30 minutes\"), fill in the outcome manually based on what you observed."
+          "GenerateDetectionRemediationRules": {
+            "Title": "Automatically Generate Detection and Remediation Rules",
+            "Description": "Generate detection rules from an executed technical Inject using AI-powered remediation. These can be accessed directly in the remediation tab of an inject results."
           },
-          "ExploreResultsReport": {
-            "Title": "Explore Results and Report Out",
-            "Description": "Start on the Home dashboard to see your overall Adversarial Exposure Score, then drill into performance trackers, trend charts, control breakdowns, and the kill chain view to spot gaps. Use the report generation option to export a summary you can send to leadership without manually compiling the data."
+          "ConnectOpenctiSecurityCoverage": {
+            "Title": "Connect to OpenCTI for Security Coverage Enrichment",
+            "Description": "OpenAEV can be triggered via an XTM Suite product to execute a scenario based on a desired threat profile, and results from the scenario execution — such as Detection rate, Prevention rate — are returned to the triggering product for ingestion."
+          },
+          "EnableAgentXtmOne": {
+            "Title": "Enable an Agent in XTM One",
+            "Description": "Open <strong>XTM One → Agents</strong> and activate one of the pre-packaged agents (for example, OpenAEV Assistant) to start orchestrating a workflow across OpenCTI and OpenAEV - such as automatically enriching a new threat, summarizing it, and generating a validation scenario, all in plain English with no manual handoffs."
+          },
+          "GenerateReportStakeholders": {
+            "Title": "Generate a report automatically to share with stakeholders",
+            "Description": "Review scenarios and their simulation results in a single report, generate as PDF or HTML in a single click to rapidly share with relevant stakeholders and benchmark over time."
           }
         }
       },
@@ -1775,7 +1781,12 @@
           },
           "BuildThreatHuntingPackage": {
             "Title": "Build a Threat Hunting Package in Minutes",
-            "Description": "Ask the threat hunting agent to turn a set of high-confidence indicators into a hunting package. It searches for high-value indicators, converts them into native detection rules for your platforms, and groups everything together in OpenCTI — cutting hunting prep time significantly."
+            "Description": "Search 'Threat Hunting' to access the OpenCTI Threat Hunt Creator. Ask it to turn a set of high-confidence indicators into a hunting package. It searches for high-value indicators, converts them into native detection rules for your platforms, and groups everything together in OpenCTI - cutting hunting prep time significantly.",
+            "ExamplePrompt": "Example prompt: Create a hunt package for Lockbit ransomware IoCs, converted to Sigma rules, prioritizing the most recent indicators"
+          },
+          "IntegrateTools": {
+            "Title": "Integrate Tools for Faster Threat Detection and Response",
+            "Description": "Go to <strong>Tools & Integrations</strong> to connect to tools your agents can use on your behalf. XTM One Integration Marketplace provide hundreds of pre-built integrations including for security tools like SIEMs, XDRs, threat feeds, vulnerability management and also business operations and collaboration tools like Notion, Metabase, Concord, MS Teams and Slack. Make intel flow seamlessly and be available at a central place to take an action."
           }
         }
       }

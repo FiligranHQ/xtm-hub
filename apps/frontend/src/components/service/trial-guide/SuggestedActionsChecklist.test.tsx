@@ -1,6 +1,7 @@
 import { SuggestedActionsChecklist } from '@/components/service/trial-guide/SuggestedActionsChecklist';
 import { TrialGuideChecklistItem } from '@/components/service/trial-guide/TrialGuide.content';
 import testRender from '@/utils/test/test-render';
+import { PlatformIdentifier } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -28,11 +29,14 @@ const buildChecklistItems = (
 describe('SuggestedActionsChecklist', () => {
   it('renders the intro copy and a numbered item per checklist entry', () => {
     testRender(
-      <SuggestedActionsChecklist checklistItems={buildChecklistItems()} />
+      <SuggestedActionsChecklist
+        checklistItems={buildChecklistItems()}
+        platformIdentifier={PlatformIdentifier.Opencti}
+      />
     );
 
     expect(
-      screen.getByText('Service.TrialGuide.ChecklistIntroTitle')
+      screen.getByText('Service.TrialGuide.ChecklistIntro')
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -52,6 +56,7 @@ describe('SuggestedActionsChecklist', () => {
     testRender(
       <SuggestedActionsChecklist
         checklistItems={buildChecklistItems([{}, { readMoreUrl: '' }])}
+        platformIdentifier={PlatformIdentifier.Opencti}
       />
     );
 

@@ -12,7 +12,7 @@ const renderStrong = (chunks: ReactNode) => <strong>{chunks}</strong>;
 
 export const ChecklistItem = ({ index, item }: ChecklistItemProps) => {
   const t = useTranslations();
-  const { titleKey, descriptionKey, readMoreUrl, readMoreLabelKey } = item;
+  const { titleKey, descriptionKey, exampleKey, readMoreUrl } = item;
 
   return (
     <div className="flex gap-m py-m border-b border-elevation-border-subtle-layer-2 last:border-b-0">
@@ -31,10 +31,15 @@ export const ChecklistItem = ({ index, item }: ChecklistItemProps) => {
               href={readMoreUrl}
               target="_blank"
               rel="noopener noreferrer">
-              {t(readMoreLabelKey || 'Service.TrialGuide.ReadMore')}
+              {t('Service.TrialGuide.ReadMore')}
             </Link>
           )}
         </p>
+        {exampleKey && (
+          <div className="rounded p-s bg-elevation-background-layer-1 border border-elevation-border-subtle-layer-1">
+            <p className="content-body-compact">{t(exampleKey)}</p>
+          </div>
+        )}
       </div>
     </div>
   );

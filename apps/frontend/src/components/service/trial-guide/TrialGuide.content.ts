@@ -19,8 +19,8 @@ export interface TrialGuideChecklistItem {
   id: string;
   titleKey: string;
   descriptionKey: string;
+  exampleKey?: string;
   readMoreUrl?: string;
-  readMoreLabelKey?: string;
 }
 
 export interface TrialGuideTabContent {
@@ -197,7 +197,6 @@ export const TRIAL_GUIDE_CONTENT: Record<
           'Service.TrialGuide.Openaev.ChecklistItems.InstallStarterPack.Description',
         readMoreUrl:
           'https://docs.openaev.io/latest/usage/getting-started/?h=starter+pack#starter-pack',
-        readMoreLabelKey: 'Service.TrialGuide.MoreInformationHere',
       },
       {
         id: 'run-atomic-test',
@@ -205,6 +204,8 @@ export const TRIAL_GUIDE_CONTENT: Record<
           'Service.TrialGuide.Openaev.ChecklistItems.RunAtomicTest.Title',
         descriptionKey:
           'Service.TrialGuide.Openaev.ChecklistItems.RunAtomicTest.Description',
+        readMoreUrl:
+          'https://docs.openaev.io/latest/usage/evaluate/atomic-testing/atomic-testing/?h=atomi',
       },
       {
         id: 'launch-time-based-scenario',
@@ -212,6 +213,8 @@ export const TRIAL_GUIDE_CONTENT: Record<
           'Service.TrialGuide.Openaev.ChecklistItems.LaunchTimeBasedScenario.Title',
         descriptionKey:
           'Service.TrialGuide.Openaev.ChecklistItems.LaunchTimeBasedScenario.Description',
+        readMoreUrl:
+          'https://docs.openaev.io/latest/usage/build/scenario/scenario/',
       },
       {
         id: 'run-attack-chaining-scenario',
@@ -219,6 +222,8 @@ export const TRIAL_GUIDE_CONTENT: Record<
           'Service.TrialGuide.Openaev.ChecklistItems.RunAttackChainingScenario.Title',
         descriptionKey:
           'Service.TrialGuide.Openaev.ChecklistItems.RunAttackChainingScenario.Description',
+        readMoreUrl:
+          'https://docs.openaev.io/latest/usage/autonomous-attack-chaining/scenario-creation/?h=ai#the-three-entry-points',
       },
       {
         id: 'drive-tabletop-exercise',
@@ -226,27 +231,50 @@ export const TRIAL_GUIDE_CONTENT: Record<
           'Service.TrialGuide.Openaev.ChecklistItems.DriveTabletopExercise.Title',
         descriptionKey:
           'Service.TrialGuide.Openaev.ChecklistItems.DriveTabletopExercise.Description',
+        readMoreUrl:
+          'https://docs.openaev.io/latest/usage/build/components/phishing/overview/',
       },
       {
-        id: 'connect-threat-intel-source',
+        id: 'evaluate-security-posture',
         titleKey:
-          'Service.TrialGuide.Openaev.ChecklistItems.ConnectThreatIntelSource.Title',
+          'Service.TrialGuide.Openaev.ChecklistItems.EvaluateSecurityPosture.Title',
         descriptionKey:
-          'Service.TrialGuide.Openaev.ChecklistItems.ConnectThreatIntelSource.Description',
+          'Service.TrialGuide.Openaev.ChecklistItems.EvaluateSecurityPosture.Description',
+        readMoreUrl: 'https://docs.openaev.io/latest/usage/evaluate/overview/',
       },
       {
-        id: 'validate-expectations',
+        id: 'generate-detection-remediation-rules',
         titleKey:
-          'Service.TrialGuide.Openaev.ChecklistItems.ValidateExpectations.Title',
+          'Service.TrialGuide.Openaev.ChecklistItems.GenerateDetectionRemediationRules.Title',
         descriptionKey:
-          'Service.TrialGuide.Openaev.ChecklistItems.ValidateExpectations.Description',
+          'Service.TrialGuide.Openaev.ChecklistItems.GenerateDetectionRemediationRules.Description',
+        readMoreUrl:
+          'https://docs.openaev.io/latest/usage/evaluate/injects/inject-result/?h=remediation#remediations-enterprise-edition:~:text=patterns%2C%20and%20domains.-,Remediations%20(Enterprise%20Edition),-Enterprise%20Edition',
       },
       {
-        id: 'explore-results-report',
+        id: 'connect-opencti-security-coverage',
         titleKey:
-          'Service.TrialGuide.Openaev.ChecklistItems.ExploreResultsReport.Title',
+          'Service.TrialGuide.Openaev.ChecklistItems.ConnectOpenctiSecurityCoverage.Title',
         descriptionKey:
-          'Service.TrialGuide.Openaev.ChecklistItems.ExploreResultsReport.Description',
+          'Service.TrialGuide.Openaev.ChecklistItems.ConnectOpenctiSecurityCoverage.Description',
+        readMoreUrl:
+          'https://docs.openaev.io/latest/usage/evaluate/xtm-suite-connector/?h=',
+      },
+      {
+        id: 'enable-agent-xtm-one',
+        titleKey:
+          'Service.TrialGuide.Openaev.ChecklistItems.EnableAgentXtmOne.Title',
+        descriptionKey:
+          'Service.TrialGuide.Openaev.ChecklistItems.EnableAgentXtmOne.Description',
+      },
+      {
+        id: 'generate-report-stakeholders',
+        titleKey:
+          'Service.TrialGuide.Openaev.ChecklistItems.GenerateReportStakeholders.Title',
+        descriptionKey:
+          'Service.TrialGuide.Openaev.ChecklistItems.GenerateReportStakeholders.Description',
+        readMoreUrl:
+          'https://docs.openaev.io/latest/usage/evaluate/reporting/reporting/?h=report+gener#generate-a-report:~:text=report%20configuration%20changes.-,Generate%20a%20report,-Generate%20a',
       },
     ],
   },
@@ -290,6 +318,15 @@ export const TRIAL_GUIDE_CONTENT: Record<
           'Service.TrialGuide.Xtmone.ChecklistItems.BuildThreatHuntingPackage.Title',
         descriptionKey:
           'Service.TrialGuide.Xtmone.ChecklistItems.BuildThreatHuntingPackage.Description',
+        exampleKey:
+          'Service.TrialGuide.Xtmone.ChecklistItems.BuildThreatHuntingPackage.ExamplePrompt',
+      },
+      {
+        id: 'integrate-tools',
+        titleKey:
+          'Service.TrialGuide.Xtmone.ChecklistItems.IntegrateTools.Title',
+        descriptionKey:
+          'Service.TrialGuide.Xtmone.ChecklistItems.IntegrateTools.Description',
       },
     ],
   },

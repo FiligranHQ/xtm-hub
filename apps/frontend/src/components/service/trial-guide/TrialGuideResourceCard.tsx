@@ -24,8 +24,7 @@ export const TrialGuideResourceCard = ({ resourceCard }: ResourceCardProps) => {
           <div>
             <Button
               asChild
-              variant="secondary"
-              className="border-elevation-border-default-layer-3">
+              variant="tertiary">
               <Link
                 href={url}
                 target="_blank"

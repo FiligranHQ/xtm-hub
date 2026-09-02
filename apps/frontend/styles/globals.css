@@ -60,6 +60,11 @@ body[data-theme='Dark'] {
   ol {
     @apply list-decimal pl-8;
   }
+
+  .text-logo {
+    font-family: var(--font-geologica), system-ui, sans-serif;
+    @apply text-xl font-light tracking-tighter;
+  }
 }
 
 .wmde-markdown,

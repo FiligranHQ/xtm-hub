@@ -38,13 +38,13 @@ export const TrialGuidePage = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <p className="heading-sm bg-clip-text text-transparent bg-gradient-focus w-fit mb-m">
+      <p className="heading-sm bg-clip-text text-transparent bg-gradient-focus w-fit mb-xs mt-xl">
         {t('Service.TrialGuide.Eyebrow')}
       </p>
-      <div className="flex items-start justify-between gap-m flex-wrap">
-        <div className="flex flex-col gap-s">
+      <div className="flex items-start justify-between gap-m flex-wrap mb-xl">
+        <div className="flex flex-col gap-xs">
           <h1 className="heading-2xl">{t('Service.TrialGuide.Title')}</h1>
-          <p className="text-content-body-medium text-text-default-secondary">
+          <p className="text-content-body-medium">
             {t('Service.TrialGuide.Description')}
           </p>
         </div>
@@ -120,7 +120,10 @@ export const TrialGuidePage = () => {
                   />
                 ))}
               </div>
-              <SuggestedActionsChecklist checklistItems={checklistItems} />
+              <SuggestedActionsChecklist
+                checklistItems={checklistItems}
+                platformIdentifier={platformIdentifier}
+              />
             </TabsContent>
           );
         })}
