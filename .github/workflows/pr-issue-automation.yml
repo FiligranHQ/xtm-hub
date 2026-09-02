@@ -28,6 +28,12 @@ jobs:
     steps:
       - uses: actions/create-github-app-token@v3
         id: app-token
+        # Workflows triggered by a `pull_request` event opened by Dependabot run with
+        # read-only permissions and no access to repository secrets, so the private key
+        # would be empty and this step would fail. Skip it in that case; the app token is
+        # only needed by steps gated on other events (workflow_run, pull_request_target,
+        # pull_request_review) which retain full secrets access regardless of the actor.
+        if: ${{ !(github.event_name == 'pull_request' && github.actor == 'dependabot[bot]') }}
         with:
           app-id: ${{ vars.FILIGRANHQ_PROJECT_APP_ID }}
           private-key: ${{ secrets.FILIGRANHQ_PROJECT_APP_PRIVATE_KEY }}
