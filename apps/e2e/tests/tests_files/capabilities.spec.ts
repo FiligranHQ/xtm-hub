@@ -50,6 +50,12 @@ test.describe('Capabilities', () => {
     await loginPage.navigateToAndLogin();
   });
   test('Should add subscription with capabilities', async ({ page }) => {
+    // This test chains 5 full login/logout cycles plus several form
+    // submissions, so it regularly runs close to the default 30s test
+    // timeout in CI, causing it to intermittently time out mid-action
+    // (e.g. opening a menu or confirming a delete). Mark it slow to
+    // triple the timeout and give it enough headroom.
+    test.slow();
     await test.step("Add orga's sub + user with manage access", async () => {
       await servicePage.navigateToServiceListAdmin();
 
