@@ -1,7 +1,4 @@
-import {
-  ServiceListDisplayMode,
-  ServiceListFilterKey,
-} from '@/components/service/components/header/ServiceListHeader';
+import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -79,6 +76,21 @@ describe('useServiceListLocalStorage', () => {
     }
   );
 
+  it('uses distinct storage keys for count and pageSize', () => {
+    renderHook(() =>
+      useServiceListLocalStorage(ServiceListLocalStorageKey.OpenAEVScenarios)
+    );
+
+    expect(testState.useLocalStorage).toHaveBeenCalledWith(
+      'countPrivateOpenAEVScenariosList',
+      50
+    );
+    expect(testState.useLocalStorage).toHaveBeenCalledWith(
+      'pageSizePrivateOpenAEVScenariosList',
+      50
+    );
+  });
+
   it('exposes expected default values', () => {
     const { result } = renderHook(() =>
       useServiceListLocalStorage(ServiceListLocalStorageKey.OpenAEVScenarios)
@@ -90,7 +102,6 @@ describe('useServiceListLocalStorage', () => {
     expect(result.current.orderMode).toBe(OrderingMode.Asc);
     expect(result.current.displayMode).toBe(ServiceListDisplayMode.Tab);
     expect(result.current.labels).toEqual({});
-    expect(result.current.selectedFilters).toEqual([]);
   });
 
   it('resetAll calls every local storage remover', () => {
@@ -100,35 +111,9 @@ describe('useServiceListLocalStorage', () => {
 
     result.current.resetAll();
 
-    expect(testState.removeFns).toHaveLength(15);
+    expect(testState.removeFns).toHaveLength(14);
     for (const remove of testState.removeFns) {
       expect(remove).toHaveBeenCalledOnce();
     }
-  });
-
-  it('keeps selected filters values typed from valid enum entries', () => {
-    testState.useLocalStorage.mockImplementation(
-      (key: string, defaultValue: unknown) => {
-        const remove = vi.fn();
-        testState.removeFns.push(remove);
-        if (key.includes('selectedFilters')) {
-          return [
-            [ServiceListFilterKey.Label, ServiceListFilterKey.Verified],
-            vi.fn(),
-            remove,
-          ];
-        }
-        return [defaultValue, vi.fn(), remove];
-      }
-    );
-
-    const { result } = renderHook(() =>
-      useServiceListLocalStorage(ServiceListLocalStorageKey.OpenCTIPlaybooks)
-    );
-
-    expect(result.current.selectedFilters).toEqual([
-      ServiceListFilterKey.Label,
-      ServiceListFilterKey.Verified,
-    ]);
   });
 });

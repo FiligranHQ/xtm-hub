@@ -6,9 +6,7 @@ import {
 } from '@graphql/generated';
 
 import DocumentList from '@/components/service/components/DocumentList';
-import { ServiceListFilterLabel } from '@/components/service/components/header/filter/ServiceListFilterLabel';
 import {
-  ServiceListFilterKey,
   ServiceListFilterMap,
   ServiceListHeader,
 } from '@/components/service/components/header/ServiceListHeader';
@@ -58,19 +56,8 @@ const ServiceList = ({
   ]);
 
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
-  const {
-    removeLabels,
-    displayMode: selectedDisplayMode,
-    setDisplayMode,
-  } = useServiceListLocalStorage(localStorageKey);
-
-  const filters = {
-    ...additionalFilters,
-    [ServiceListFilterKey.Label]: {
-      node: <ServiceListFilterLabel type={type} />,
-      reset: removeLabels,
-    },
-  };
+  const { displayMode: selectedDisplayMode, setDisplayMode } =
+    useServiceListLocalStorage(localStorageKey);
 
   const { restore } = useScrollPosition();
   useLayoutEffect(() => {
@@ -103,7 +90,6 @@ const ServiceList = ({
         <ServiceListHeader
           search={search}
           onSearchChange={onSearchChange}
-          filters={filters}
           actions={<ServiceListHeaderButtons />}
           paginationControls={paginationControls}
           onDisplayModeChange={setDisplayMode}

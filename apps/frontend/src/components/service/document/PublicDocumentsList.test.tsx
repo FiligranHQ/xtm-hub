@@ -2,12 +2,34 @@ import { ServiceListDisplayMode } from '@/components/service/components/header/S
 import PublicDocumentsList from '@/components/service/document/PublicDocumentsList';
 import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 import testRender from '@/utils/test/test-render';
+import { documentFacets } from '@generated/documentFacets.graphql';
 import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { DocumentOrdering, OrderingMode } from '@graphql/generated';
 import { screen } from '@testing-library/react';
+import React from 'react';
 import { PreloadedQuery } from 'react-relay';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const BASE_URL = 'https://xtm.local';
+const DOCUMENT_NAME_ONE = 'Doc 1';
+const DOCUMENT_NAME_TWO = 'Doc 2';
+const SERVICE_INSTANCE_ID = 'service-1';
+const SERVICE_INSTANCE_SLUG = 'my-service';
+const INTEGRATION_TYPE_VALUE = 'connector';
+const FACET_COUNT = 4;
+const EMPTY_FACETS = {
+  documentFacets: {
+    integration_type: [],
+    license_type: [],
+    manager_supported: [],
+    verified: [],
+    product_version: [],
+    solution_category: [],
+    use_case: [],
+    entity_type: [],
+  },
+};
 
 const testState = vi.hoisted(() => ({
   usePreloadedQuery: vi.fn(),
@@ -38,14 +60,6 @@ vi.mock('@/hooks/use-scroll-position', () => ({
   default: testState.useScrollPosition,
 }));
 
-vi.mock('@/hooks/use-service-list-filters', () => ({
-  useServiceListFilters: () => ({
-    selectedFilters: [],
-    addFilter: vi.fn(),
-    removeFilter: vi.fn(),
-  }),
-}));
-
 vi.mock('@/utils/debounce', () => ({
   debounceHandleInput:
     (callback: (value: string) => void) =>
@@ -66,10 +80,11 @@ vi.mock('react-relay', async (importOriginal) => {
 
 describe('PublicDocumentsList', () => {
   const serviceInstance = {
-    id: 'service-1',
-    slug: 'my-service',
+    id: SERVICE_INSTANCE_ID,
+    slug: SERVICE_INSTANCE_SLUG,
   } as Partial<seoServiceInstanceFragment$data>;
   const queryRef = {} as PreloadedQuery<publicDocumentsQuery>;
+  const queryRefFacet = {} as PreloadedQuery<documentFacets>;
 
   beforeEach(() => {
     testState.refetch.mockReset();
@@ -93,14 +108,12 @@ describe('PublicDocumentsList', () => {
       orderMode: OrderingMode.Asc,
       setOrderBy: vi.fn(),
       setOrderMode: vi.fn(),
-      selectedFilters: [],
-      setSelectedFilters: vi.fn(),
     });
     testState.useScrollPosition.mockReturnValue({
       restore: testState.restore,
     });
 
-    testState.usePreloadedQuery.mockReturnValue({});
+    testState.usePreloadedQuery.mockReset();
     testState.useRefetchableFragment.mockReturnValue([
       {
         publicDocuments: {
@@ -110,7 +123,7 @@ describe('PublicDocumentsList', () => {
               node: {
                 id: 'doc-1',
                 slug: 'doc-1',
-                name: 'Doc 1',
+                name: DOCUMENT_NAME_ONE,
                 type: 'opencti_custom_dashboard',
                 short_description: 'description 1',
                 use_cases: [],
@@ -120,7 +133,7 @@ describe('PublicDocumentsList', () => {
               node: {
                 id: 'doc-2',
                 slug: 'doc-2',
-                name: 'Doc 2',
+                name: DOCUMENT_NAME_TWO,
                 type: 'opencti_custom_dashboard',
                 short_description: 'description 2',
                 use_cases: [],
@@ -136,29 +149,84 @@ describe('PublicDocumentsList', () => {
     );
   });
 
-  it('renders public documents list from relay data', () => {
+  const mockFacetQuery = () => {
+    testState.usePreloadedQuery.mockReturnValueOnce({}).mockReturnValueOnce({
+      documentFacets: {
+        integration_type: [
+          { value: INTEGRATION_TYPE_VALUE, count: FACET_COUNT },
+        ],
+        license_type: [],
+        manager_supported: [],
+        verified: [],
+        product_version: [],
+        solution_category: [],
+        use_case: [],
+        entity_type: [],
+      },
+    });
+  };
+
+  const mockEmptyFacetQuery = () => {
+    testState.usePreloadedQuery
+      .mockReturnValueOnce({})
+      .mockReturnValue(EMPTY_FACETS);
+  };
+
+  it('should render documents and facet filters when relay data contains both', () => {
+    // Given
+    testState.useShareableResourceMapping.mockReturnValue({
+      localStorageKey: ServiceListLocalStorageKey.OpenCTIIntegrationFeeds,
+      filters: {
+        integrationType: {
+          title: 'Service.OpenctiIntegrations.Filter.Type.Label',
+          node: React.createElement(
+            'label',
+            undefined,
+            React.createElement('input', {
+              'aria-label': `Service.OpenctiIntegrations.Type.${INTEGRATION_TYPE_VALUE}`,
+              type: 'checkbox',
+            }),
+            `Service.OpenctiIntegrations.Type.${INTEGRATION_TYPE_VALUE} (${FACET_COUNT})`
+          ),
+        },
+      },
+    });
+    mockFacetQuery();
     testRender(
       <PublicDocumentsList
         queryRef={queryRef}
+        queryRefFacet={queryRefFacet}
         serviceInstance={serviceInstance}
-        baseUrl="https://xtm.local"
+        baseUrl={BASE_URL}
       />
     );
 
+    // When
+
+    // Then
     expect(testState.restore).toHaveBeenCalledOnce();
-    expect(screen.getByText('Doc 1')).toBeInTheDocument();
-    expect(screen.getByText('Doc 2')).toBeInTheDocument();
+    expect(screen.getByText(DOCUMENT_NAME_ONE)).toBeInTheDocument();
+    expect(screen.getByText(DOCUMENT_NAME_TWO)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {
+        name: 'Service.OpenctiIntegrations.Filter.Type.Label',
+      })
+    ).toBeInTheDocument();
   });
 
-  it('forwards search and display mode changes from header to local storage setters', async () => {
+  it('should forward search and display mode changes when header actions are used', async () => {
+    // Given
+    mockEmptyFacetQuery();
     const { user } = testRender(
       <PublicDocumentsList
         queryRef={queryRef}
+        queryRefFacet={queryRefFacet}
         serviceInstance={serviceInstance}
-        baseUrl="https://xtm.local"
+        baseUrl={BASE_URL}
       />
     );
 
+    // When
     const searchInput = screen.getByPlaceholderText('GenericActions.Search');
     await user.clear(searchInput);
     await user.type(searchInput, 'search-updated');
@@ -166,26 +234,33 @@ describe('PublicDocumentsList', () => {
       screen.getByRole('button', { name: 'Service.List.ViewTab' })
     );
 
+    // Then
     expect(testState.setSearch).toHaveBeenCalledWith('search-updated');
     expect(testState.setDisplayMode).toHaveBeenCalledWith(
       ServiceListDisplayMode.Tab
     );
   });
 
-  it('refetches with encoded cursor when going to next page', async () => {
+  it('should refetch with an encoded cursor when pagination moves to the next page', async () => {
+    // Given
+    mockEmptyFacetQuery();
     const { user } = testRender(
       <PublicDocumentsList
         queryRef={queryRef}
+        queryRefFacet={queryRefFacet}
         serviceInstance={serviceInstance}
-        baseUrl="https://xtm.local"
+        baseUrl={BASE_URL}
       />
     );
 
+    // When
     await user.click(
       screen.getByRole('button', { name: 'GenericActions.Paginate.NextPage' })
     );
 
-    expect(testState.refetch).toHaveBeenCalledWith({
+    // Then
+    expect(testState.refetch).toHaveBeenCalled();
+    expect(testState.refetch.mock.calls[0]?.[0]).toEqual({
       count: 10,
       cursor: btoa('10'),
     });
