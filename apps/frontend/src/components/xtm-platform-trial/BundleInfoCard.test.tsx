@@ -1,12 +1,12 @@
 import testRender from '@/utils/test/test-render';
-import { XtmPlatformBundleFragment } from '@graphql/generated';
+import { XtmPlatformBundleDetailsFragment } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { BundleInfoCard } from './BundleInfoCard';
 
 const buildBundle = (
-  overrides: Partial<XtmPlatformBundleFragment> = {}
-): XtmPlatformBundleFragment => ({
+  overrides: Partial<XtmPlatformBundleDetailsFragment> = {}
+): XtmPlatformBundleDetailsFragment => ({
   id: 'bundle-1',
   service_instance_id: 'service-instance-1',
   organization_name: 'ACME',

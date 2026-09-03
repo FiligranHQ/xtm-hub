@@ -4158,7 +4158,7 @@ describe('deployment app', () => {
     });
   });
 
-  describe('loadActiveXtmPlatformBundle', () => {
+  describe('loadXtmPlatformBundle', () => {
     beforeEach(() => {
       requestContext.set(requestContextRegistererUserSecondOrga);
       vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
@@ -4195,7 +4195,7 @@ describe('deployment app', () => {
     };
 
     it('should return null when the organization has no active bundle', async () => {
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle();
+      const result = await DeploymentApp.loadXtmPlatformBundle();
 
       expect(result).toBeNull();
     });
@@ -4203,7 +4203,7 @@ describe('deployment app', () => {
     it('should return the active bundle for the organization', async () => {
       await createActiveBundle();
 
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle();
+      const result = await DeploymentApp.loadXtmPlatformBundle();
 
       expect(result).toMatchObject({
         type: DeploymentRequestDeploymentType.Bundle,
@@ -4215,26 +4215,6 @@ describe('deployment app', () => {
         end_date: expect.any(Date),
         service_instance_id: expect.any(String),
       });
-    });
-
-    it('should return the active bundle when its service instance id is provided', async () => {
-      const bundle = await createActiveBundle();
-
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        bundle.service_instance_id
-      );
-
-      expect(result?.service_instance_id).toBe(bundle.service_instance_id);
-    });
-
-    it('should return null when the provided service instance id does not match the active bundle', async () => {
-      await createActiveBundle();
-
-      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
-        uuidv4() as ServiceInstanceId
-      );
-
-      expect(result).toBeNull();
     });
   });
 

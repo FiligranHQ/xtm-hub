@@ -200,7 +200,7 @@ export const BundleProductCard = ({
           setOpen={setOpenEditName}
           onUpdated={() =>
             queryClient.invalidateQueries({
-              queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),
+              queryKey: xtmPlatformBundleKeys.all(),
             })
           }
         />

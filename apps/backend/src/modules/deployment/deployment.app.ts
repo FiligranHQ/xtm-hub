@@ -570,16 +570,16 @@ export const DeploymentApp = {
     };
   },
 
-  loadActiveXtmPlatformBundle: async (
-    serviceInstanceId?: ServiceInstanceId | null
-  ): Promise<DeploymentRequest | null> => {
+  loadXtmPlatformBundle: async (): Promise<DeploymentRequest | null> => {
     const user = requestContext.requireUser();
-    const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest({
-      type: DeploymentRequestDeploymentType.Bundle,
-      hub_status: DeploymentRequestHubStatus.Active,
-      organization_requester_id: user.selected_organization_id,
-      ...(serviceInstanceId ? { service_instance_id: serviceInstanceId } : {}),
-    });
+    const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest(
+      {
+        type: DeploymentRequestDeploymentType.Bundle,
+        organization_requester_id: user.selected_organization_id,
+        counts_in_orga_quota: true,
+      },
+      { orderBy: { column: 'request_date', order: OrderingMode.Desc } }
+    );
 
     return bundle ?? null;
   },

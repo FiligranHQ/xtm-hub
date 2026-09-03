@@ -7,14 +7,14 @@ import { xtmPlatformTrialManageUsersPath } from '@/utils/path/constant';
 import { Badge, Button, Card, CardContent } from '@filigran/ui';
 import {
   PlatformContract,
-  XtmPlatformBundleFragment,
+  XtmPlatformBundleDetailsFragment,
 } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useState } from 'react';
 
 interface BundleInfoCardProps {
-  bundle: XtmPlatformBundleFragment;
+  bundle: XtmPlatformBundleDetailsFragment;
   canManage: boolean;
 }
 

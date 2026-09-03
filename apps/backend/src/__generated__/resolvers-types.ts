@@ -1806,7 +1806,6 @@ export type ProvisionedNewsFeedItem = Node & {
 
 export type Query = {
   __typename?: 'Query';
-  activeXtmPlatformBundle?: Maybe<DeploymentRequest>;
   bundleProducts: Array<PlatformIdentifier>;
   bundleUserServiceGroups: Array<BundleUserServiceGroup>;
   canUnregisterPlatform: CanUnregisterResponse;
@@ -1866,12 +1865,8 @@ export type Query = {
   votingRound?: Maybe<VotingRound>;
   votingRoundResults: VotingRoundResults;
   votingRounds: Array<VotingRound>;
+  xtmPlatformBundle?: Maybe<DeploymentRequest>;
   xtmonePlatformIntegrationStatus?: Maybe<XtmoneIntegrationStatus>;
-};
-
-
-export type QueryActiveXtmPlatformBundleArgs = {
-  serviceInstanceId?: InputMaybe<Scalars['ServiceInstanceId']['input']>;
 };
 
 
@@ -4441,7 +4436,6 @@ export type ProvisionedNewsFeedItemResolvers<ContextType = PortalContext, Parent
 }>;
 
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  activeXtmPlatformBundle?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType, Partial<QueryActiveXtmPlatformBundleArgs>>;
   bundleProducts?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType, RequireFields<QueryBundleProductsArgs, 'serviceInstanceId'>>;
   bundleUserServiceGroups?: Resolver<Array<ResolversTypes['BundleUserServiceGroup']>, ParentType, ContextType, RequireFields<QueryBundleUserServiceGroupsArgs, 'serviceInstanceId'>>;
   canUnregisterPlatform?: Resolver<ResolversTypes['CanUnregisterResponse'], ParentType, ContextType, RequireFields<QueryCanUnregisterPlatformArgs, 'input'>>;
@@ -4496,6 +4490,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   votingRound?: Resolver<Maybe<ResolversTypes['VotingRound']>, ParentType, ContextType, RequireFields<QueryVotingRoundArgs, 'id'>>;
   votingRoundResults?: Resolver<ResolversTypes['VotingRoundResults'], ParentType, ContextType, RequireFields<QueryVotingRoundResultsArgs, 'id'>>;
   votingRounds?: Resolver<Array<ResolversTypes['VotingRound']>, ParentType, ContextType, Partial<QueryVotingRoundsArgs>>;
+  xtmPlatformBundle?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType>;
   xtmonePlatformIntegrationStatus?: Resolver<Maybe<ResolversTypes['XtmoneIntegrationStatus']>, ParentType, ContextType, RequireFields<QueryXtmonePlatformIntegrationStatusArgs, 'serviceInstanceId'>>;
 }>;
 

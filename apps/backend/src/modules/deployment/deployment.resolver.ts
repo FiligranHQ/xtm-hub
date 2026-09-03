@@ -98,11 +98,9 @@ const resolvers: Resolvers = {
         );
       }
     },
-    activeXtmPlatformBundle: async (_, { serviceInstanceId }) => {
+    xtmPlatformBundle: async () => {
       try {
-        return await DeploymentApp.loadActiveXtmPlatformBundle(
-          serviceInstanceId
-        );
+        return await DeploymentApp.loadXtmPlatformBundle();
       } catch (error) {
         throw mapToGraphQLError(
           error,
