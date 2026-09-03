@@ -827,7 +827,7 @@ describe('deploymentRequestDomain', () => {
           type: DeploymentRequestDeploymentType.Bundle,
           organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
         },
-        { orderBy: { column: 'request_date', order: 'desc' } }
+        { orderBy: { column: 'request_date', order: OrderingMode.Desc } }
       );
 
       expect(result).toBeDefined();

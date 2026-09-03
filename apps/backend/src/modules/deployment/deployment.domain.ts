@@ -4,6 +4,7 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestPlatformState,
+  OrderingMode,
   PlatformIdentifier,
   QueryDeploymentRequestsListArgs,
   ServiceGroupName,
@@ -210,8 +211,8 @@ export const DeploymentRequestDomain = {
     conditions: DeploymentRequestMutator,
     options?: {
       orderBy?: {
-        column: keyof DeploymentRequest & string;
-        order: 'asc' | 'desc';
+        column: keyof DeploymentRequest;
+        order: OrderingMode;
       };
     }
   ): Promise<FullyQualifiedDeploymentRequest | undefined> => {

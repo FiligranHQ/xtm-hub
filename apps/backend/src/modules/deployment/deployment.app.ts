@@ -578,7 +578,7 @@ export const DeploymentApp = {
         organization_requester_id: user.selected_organization_id,
         counts_in_orga_quota: true,
       },
-      { orderBy: { column: 'request_date', order: 'desc' } }
+      { orderBy: { column: 'request_date', order: OrderingMode.Desc } }
     );
 
     return bundle ?? null;
