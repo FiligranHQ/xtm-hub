@@ -790,6 +790,24 @@ export enum EpicType {
   Other = 'other'
 }
 
+export type Facet = {
+  __typename?: 'Facet';
+  entity_type: Array<FacetBucket>;
+  integration_type: Array<FacetBucket>;
+  license_type: Array<FacetBucket>;
+  manager_supported: Array<FacetBucket>;
+  product_version: Array<FacetBucket>;
+  solution_category: Array<FacetBucket>;
+  use_case: Array<FacetBucket>;
+  verified: Array<FacetBucket>;
+};
+
+export type FacetBucket = {
+  __typename?: 'FacetBucket';
+  count: Scalars['Int']['output'];
+  value: Scalars['String']['output'];
+};
+
 export enum FeatureFlag {
   DecouplingConnectors = 'DECOUPLING_CONNECTORS',
   Dummy = 'DUMMY',
@@ -925,6 +943,13 @@ export enum LicenseType {
   Commercial = 'Commercial',
   Free = 'Free'
 }
+
+export type LoadDocumentFacetInput = {
+  documentType: InputMaybe<Scalars['String']['input']>;
+  logicalFilters: InputMaybe<LogicalFilterInput>;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
 
 export type LogicalFilterInput = {
   children: InputMaybe<Array<LogicalFilterInput>>;
@@ -1826,6 +1851,7 @@ export type Query = {
   deploymentRequestsList: DeploymentRequestConnection;
   document: Maybe<Document>;
   documentExists: Maybe<Scalars['Boolean']['output']>;
+  documentFacets: Maybe<Facet>;
   documents: DocumentConnection;
   epics: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
@@ -1932,6 +1958,11 @@ export type QueryDocumentArgs = {
 export type QueryDocumentExistsArgs = {
   documentName: InputMaybe<Scalars['String']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type QueryDocumentFacetsArgs = {
+  input: LoadDocumentFacetInput;
 };
 
 

@@ -4,10 +4,7 @@ import {
   ServiceListFilterMap,
 } from '@/components/service/components/header/ServiceListHeader';
 import ShareableResourceServiceList from '@/components/service/components/ShareableResourceServiceList';
-import {
-  ServiceListLocalStorageKey,
-  useServiceListLocalStorage,
-} from '@/hooks/use-service-list-local-storage';
+import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import { documentsQuery } from '@generated/documentsQuery.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -26,14 +23,9 @@ const CustomViewsList = ({
   search,
   onSearchChange,
 }: CustomViewsListProps) => {
-  const { removeEntityTypes } = useServiceListLocalStorage(
-    ServiceListLocalStorageKey.OpenCTICustomViews
-  );
-
   const additionalFilters: ServiceListFilterMap = {
     [ServiceListFilterKey.EntityType]: {
       node: <ServiceListFilterEntityType />,
-      reset: removeEntityTypes,
     },
   };
 

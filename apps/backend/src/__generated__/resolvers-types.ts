@@ -783,6 +783,24 @@ export enum EpicType {
   Other = 'other'
 }
 
+export type Facet = {
+  __typename?: 'Facet';
+  entity_type: Array<FacetBucket>;
+  integration_type: Array<FacetBucket>;
+  license_type: Array<FacetBucket>;
+  manager_supported: Array<FacetBucket>;
+  product_version: Array<FacetBucket>;
+  solution_category: Array<FacetBucket>;
+  use_case: Array<FacetBucket>;
+  verified: Array<FacetBucket>;
+};
+
+export type FacetBucket = {
+  __typename?: 'FacetBucket';
+  count: Scalars['Int']['output'];
+  value: Scalars['String']['output'];
+};
+
 export enum FeatureFlag {
   DecouplingConnectors = 'DECOUPLING_CONNECTORS',
   Dummy = 'DUMMY',
@@ -918,6 +936,13 @@ export enum LicenseType {
   Commercial = 'Commercial',
   Free = 'Free'
 }
+
+export type LoadDocumentFacetInput = {
+  documentType?: InputMaybe<Scalars['String']['input']>;
+  logicalFilters?: InputMaybe<LogicalFilterInput>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
+};
 
 export type LogicalFilterInput = {
   children?: InputMaybe<Array<LogicalFilterInput>>;
@@ -1819,6 +1844,7 @@ export type Query = {
   deploymentRequestsList: DeploymentRequestConnection;
   document?: Maybe<Document>;
   documentExists?: Maybe<Scalars['Boolean']['output']>;
+  documentFacets?: Maybe<Facet>;
   documents: DocumentConnection;
   epics?: Maybe<EpicConnection>;
   isPlatformRegistered: IsPlatformRegisteredResponse;
@@ -1925,6 +1951,11 @@ export type QueryDocumentArgs = {
 export type QueryDocumentExistsArgs = {
   documentName?: InputMaybe<Scalars['String']['input']>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
+};
+
+
+export type QueryDocumentFacetsArgs = {
+  input: LoadDocumentFacetInput;
 };
 
 
@@ -3252,6 +3283,8 @@ export type ResolversTypes = ResolversObject<{
   EpicEdge: ResolverTypeWrapper<Omit<EpicEdge, 'node'> & { node: ResolversTypes['Epic'] }>;
   EpicOrdering: EpicOrdering;
   EpicType: EpicType;
+  Facet: ResolverTypeWrapper<Facet>;
+  FacetBucket: ResolverTypeWrapper<FacetBucket>;
   FeatureFlag: FeatureFlag;
   FiligranProduct: FiligranProduct;
   Filter: Filter;
@@ -3268,6 +3301,7 @@ export type ResolversTypes = ResolversObject<{
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   LastDeployedOverview: ResolverTypeWrapper<Omit<LastDeployedOverview, 'resources'> & { resources: Array<ResolversTypes['DeployedResource']> }>;
   LicenseType: LicenseType;
+  LoadDocumentFacetInput: LoadDocumentFacetInput;
   LogicalFilterInput: LogicalFilterInput;
   LogicalOperator: LogicalOperator;
   ManifestFragmentInput: ManifestFragmentInput;
@@ -3492,6 +3526,8 @@ export type ResolversParentTypes = ResolversObject<{
   EpicConnection: Omit<EpicConnection, 'edges'> & { edges: Array<ResolversParentTypes['EpicEdge']> };
   EpicCountPerTimeline: EpicCountPerTimeline;
   EpicEdge: Omit<EpicEdge, 'node'> & { node: ResolversParentTypes['Epic'] };
+  Facet: Facet;
+  FacetBucket: FacetBucket;
   Filter: Filter;
   GenericServiceCapability: GenericServiceCapability;
   ID: Scalars['ID']['output'];
@@ -3503,6 +3539,7 @@ export type ResolversParentTypes = ResolversObject<{
   IsPlatformRegisteredResponse: IsPlatformRegisteredResponse;
   JSON: Scalars['JSON']['output'];
   LastDeployedOverview: Omit<LastDeployedOverview, 'resources'> & { resources: Array<ResolversParentTypes['DeployedResource']> };
+  LoadDocumentFacetInput: LoadDocumentFacetInput;
   LogicalFilterInput: LogicalFilterInput;
   ManifestFragmentInput: ManifestFragmentInput;
   MeUserSubscription: MeUserSubscription;
@@ -4010,6 +4047,24 @@ export type EpicEdgeResolvers<ContextType = PortalContext, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type FacetResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Facet'] = ResolversParentTypes['Facet']> = ResolversObject<{
+  entity_type?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  integration_type?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  license_type?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  manager_supported?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  product_version?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  solution_category?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  use_case?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  verified?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type FacetBucketResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['FacetBucket'] = ResolversParentTypes['FacetBucket']> = ResolversObject<{
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type GenericServiceCapabilityResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['GenericServiceCapability'] = ResolversParentTypes['GenericServiceCapability']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -4416,6 +4471,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   deploymentRequestsList?: Resolver<ResolversTypes['DeploymentRequestConnection'], ParentType, ContextType, RequireFields<QueryDeploymentRequestsListArgs, 'first' | 'orderBy' | 'orderMode'>>;
   document?: Resolver<Maybe<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryDocumentArgs, 'documentId' | 'serviceInstanceId'>>;
   documentExists?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<QueryDocumentExistsArgs, 'service_instance_id'>>;
+  documentFacets?: Resolver<Maybe<ResolversTypes['Facet']>, ParentType, ContextType, RequireFields<QueryDocumentFacetsArgs, 'input'>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId'>>;
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
@@ -5097,6 +5153,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   EpicConnection?: EpicConnectionResolvers<ContextType>;
   EpicCountPerTimeline?: EpicCountPerTimelineResolvers<ContextType>;
   EpicEdge?: EpicEdgeResolvers<ContextType>;
+  Facet?: FacetResolvers<ContextType>;
+  FacetBucket?: FacetBucketResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
   IntegrationHack?: IntegrationHackResolvers<ContextType>;

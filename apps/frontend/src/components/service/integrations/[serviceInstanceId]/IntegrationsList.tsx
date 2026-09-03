@@ -29,44 +29,28 @@ const IntegrationsList = ({
   search,
   onSearchChange,
 }: IntegrationsListProps) => {
-  const {
-    removeIntegrationTypes,
-    removeProductVersions,
-    removeLicenseTypes,
-    removeSolutionCategories,
-    removeDeployable,
-    removeVerified,
-    localStorageKey,
-  } = useIntegrationListStorage();
+  const { localStorageKey } = useIntegrationListStorage();
 
   const additionalFilters: ServiceListFilterMap = {
     [ServiceListFilterKey.IntegrationType]: {
       node: <IntegrationFilters />,
-      reset: () => {
-        removeIntegrationTypes();
-      },
     },
     [ServiceListFilterKey.ProductVersion]: {
       node: (
         <ProductVersionFilter platformIdentifier={PlatformIdentifier.Opencti} />
       ),
-      reset: removeProductVersions,
     },
     [ServiceListFilterKey.ManagerSupported]: {
       node: <IntegrationDeployableFilter />,
-      reset: removeDeployable,
     },
     [ServiceListFilterKey.Verified]: {
       node: <IntegrationVerifiedFilter />,
-      reset: removeVerified,
     },
     [ServiceListFilterKey.SolutionCategory]: {
       node: <IntegrationSolutionCategoryFilter />,
-      reset: removeSolutionCategories,
     },
     [ServiceListFilterKey.LicenseType]: {
       node: <IntegrationLicenseTypeFilter />,
-      reset: removeLicenseTypes,
     },
   };
 

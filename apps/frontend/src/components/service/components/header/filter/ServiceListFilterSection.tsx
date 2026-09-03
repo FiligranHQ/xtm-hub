@@ -1,8 +1,11 @@
 import { ServiceListFilterMap } from '@/components/service/components/header/ServiceListHeader';
-import { useServiceListFilters } from '@/hooks/use-service-list-filters';
-
-import { AndSeparator } from '@/components/ui/shareable-resource/logical-multi-select/SelectedValuesDisplay';
-import React, { useMemo } from 'react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@filigran/ui';
+import { useMemo } from 'react';
 
 interface ServiceListFilterSectionProps {
   filters: ServiceListFilterMap;
@@ -11,23 +14,31 @@ interface ServiceListFilterSectionProps {
 export const ServiceListFilterSection = ({
   filters,
 }: ServiceListFilterSectionProps) => {
-  const { selectedFilters } = useServiceListFilters();
-
   const filtersList = useMemo(() => {
-    return selectedFilters.map((selectedFilterKey, index) => {
-      const filter = filters[selectedFilterKey];
+    return Object.entries(filters).map(([filterKey, filter]) => {
+      if (!filter) {
+        return null;
+      }
+
       return (
-        filter && (
-          <React.Fragment key={selectedFilterKey}>
-            {index > 0 && <AndSeparator />}
-            <div>{filter.node}</div>
-          </React.Fragment>
-        )
+        <Accordion
+          key={filterKey}
+          type="multiple"
+          className="w-full border-b border-border last:border-b-0">
+          <AccordionItem
+            value={filterKey}
+            className="border-0">
+            <AccordionTrigger className="p-s hover:cursor-pointer">
+              {filter.title ?? filterKey}
+            </AccordionTrigger>
+            <AccordionContent className="pb-s pt-0">
+              <div>{filter.node}</div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       );
     });
-  }, [selectedFilters, filters]);
+  }, [filters]);
 
-  return (
-    <div className="flex justify-start gap-s flex-wrap">{filtersList}</div>
-  );
+  return <div className="flex w-full flex-col">{filtersList}</div>;
 };

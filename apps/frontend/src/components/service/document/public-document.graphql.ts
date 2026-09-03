@@ -271,6 +271,44 @@ export const PublicDocumentListQuery = graphql`
     ...publicDocumentList
   }
 `;
+export const FacetDocumentListQuery = graphql`
+  query documentFacets($input: LoadDocumentFacetInput!) {
+    documentFacets(input: $input) {
+      integration_type {
+        value
+        count
+      }
+      license_type {
+        value
+        count
+      }
+      manager_supported {
+        value
+        count
+      }
+      verified {
+        value
+        count
+      }
+      product_version {
+        value
+        count
+      }
+      solution_category {
+        value
+        count
+      }
+      use_case {
+        value
+        count
+      }
+      entity_type {
+        value
+        count
+      }
+    }
+  }
+`;
 
 export const PublicDocumentsByServiceSlugQuery = graphql`
   query publicDocumentsByServiceSlugQuery($serviceInstanceSlug: String!) {
