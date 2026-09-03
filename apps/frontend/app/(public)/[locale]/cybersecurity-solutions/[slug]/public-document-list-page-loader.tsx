@@ -1,7 +1,6 @@
 'use client';
 import { PublicDocumentListQuery } from '@/components/service/document/public-document.graphql';
 import PublicDocumentsList from '@/components/service/document/PublicDocumentsList';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import {
   LogicalFiltersParams,
   useLogicalFiltersFromStorage,
@@ -12,7 +11,6 @@ import { useShareableResourceMapping } from '@/utils/shareable-resources/use-sha
 import { Skeleton } from '@filigran/ui';
 import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { FeatureFlag } from '@graphql/generated';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 
@@ -21,25 +19,31 @@ const EMPTY_PRODUCT_VERSIONS = {};
 interface PublicDocumentListPageLoaderProps {
   serviceInstance: seoServiceInstanceFragment$data;
   baseUrl: string;
+  /**
+   * Resolved server-side (see settings.service.ts:isFeatureEnabled) since
+   * public pages never mount SettingsContext for useIsFeatureEnabled to read.
+   */
+  isDecouplingConnectorsEnabled: boolean;
 }
 
 export const PublicDocumentListPageLoader = ({
   serviceInstance,
   baseUrl,
+  isDecouplingConnectorsEnabled,
 }: PublicDocumentListPageLoaderProps) => {
   const [queryRef, loadQuery] = useQueryLoader<publicDocumentsQuery>(
     PublicDocumentListQuery
   );
 
   const serviceInstanceSlug = serviceInstance.slug as ServiceSlug;
-  const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug);
+  const { localStorageKey } = useShareableResourceMapping(
+    serviceInstanceSlug,
+    isDecouplingConnectorsEnabled
+  );
   // The OpenCTI version filter only excludes non-compatible connectors on
   // the backend when DECOUPLING_CONNECTORS is disabled. When it's enabled,
   // OpenctiVersionFilter drives the grey-out client-side instead, so no
   // product_version value must be sent to the backend query.
-  const isDecouplingConnectorsEnabled = useIsFeatureEnabled(
-    FeatureFlag.DecouplingConnectors
-  );
 
   const {
     pageSize,
@@ -119,6 +123,7 @@ export const PublicDocumentListPageLoader = ({
           serviceInstance={serviceInstance}
           queryRef={queryRef}
           baseUrl={baseUrl}
+          isDecouplingConnectorsEnabled={isDecouplingConnectorsEnabled}
         />
       ) : (
         <Skeleton className="w-full inset-1/2" />

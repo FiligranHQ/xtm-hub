@@ -109,6 +109,8 @@ type Query {
   deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
   trialDeployments(input: TrialDeploymentsInput!): TrialsDeployments!
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
+  xtmPlatformBundle: DeploymentRequest
+  xtmonePlatformIntegrationStatus(serviceInstanceId: ServiceInstanceId!): XtmoneIntegrationStatus
   serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
   bundleUserServiceGroups(serviceInstanceId: ServiceInstanceId!): [BundleUserServiceGroup!]!
   bundleProducts(serviceInstanceId: ServiceInstanceId!): [PlatformIdentifier!]!
@@ -396,6 +398,8 @@ type DeploymentRequest implements Node {
   platform_url: String
   parent_id: DeploymentRequestId
   url: String
+  registered_platform: RegisteredPlatform
+  service_instance: ServiceInstance
   children: [DeploymentRequest!]
 }
 
@@ -495,6 +499,19 @@ type DeploymentAvailability {
   availableCount: Int!
   capacity: Int!
   platform_identifier: PlatformIdentifier
+}
+
+type XtmoneIntegrationStatusEntry {
+  status: String!
+  connected: Boolean!
+  last_checked_at: String
+}
+
+type XtmoneIntegrationStatus {
+  opencti: XtmoneIntegrationStatusEntry!
+  openaev: XtmoneIntegrationStatusEntry!
+  linked: Boolean!
+  last_checked_at: String
 }
 
 type DeployedPlatform {
@@ -1147,6 +1164,7 @@ type RegisteredPlatform implements Node {
   illustration_document_id: DocumentId
   deployment_request: DeploymentRequest
   last_connectivity_check: Date
+  status: PlatformConfigurationStatus
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
 }

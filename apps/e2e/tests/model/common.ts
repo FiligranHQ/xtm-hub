@@ -1,8 +1,8 @@
 import { Locator, Page } from '@playwright/test';
 
 export async function openAndGetRowActionsDropdown(page: Page, row: Locator) {
-  await page.waitForTimeout(100);
   const button = row.locator('td:last-child').getByRole('button');
+  await button.waitFor({ state: 'visible' });
   await button.click();
   const dropdown = page.getByRole('menu');
   await dropdown.waitFor({ state: 'visible' });

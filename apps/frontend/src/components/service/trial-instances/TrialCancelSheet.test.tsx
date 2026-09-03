@@ -30,8 +30,17 @@ vi.mock('@/components/ui/SheetWithPreventingDialog', () => ({
   ),
 }));
 vi.mock('@/components/service/registration/SelectWithEditableField', () => ({
-  SelectWithEditableField: () => (
-    <div data-testid="select-with-editable-field" />
+  SelectWithEditableField: ({
+    onChange,
+  }: {
+    onChange: (value: string) => void;
+  }) => (
+    <button
+      type="button"
+      data-testid="select-reason"
+      onClick={() => onChange('value')}>
+      select-reason
+    </button>
   ),
 }));
 vi.mock('react-relay', async (importOriginal) => ({
@@ -74,6 +83,7 @@ describe('TrialCancelSheet', () => {
       />,
       { relayConfig: environment }
     );
+    fireEvent.click(screen.getByTestId('select-reason'));
     fireEvent.click(screen.getByRole('button', { name: 'Utils.Continue' }));
 
     await waitFor(() => {
@@ -81,8 +91,31 @@ describe('TrialCancelSheet', () => {
     });
     expect(testState.lastCancelDeploymentRequestVariables).toEqual({
       deploymentRequestId: 'test-id',
-      cancellationReason: undefined,
+      cancellationReason: 'value',
     });
+  });
+
+  it('should not submit when no cancellation reason is selected', async () => {
+    const setOpen = vi.fn();
+    testRender(
+      <TrialCancelSheet
+        deploymentRequestId="test-id"
+        isCancellationDefinitive={false}
+        open
+        setOpen={setOpen}
+        platformIdentifier={PlatformIdentifier.Opencti}
+      />,
+      { relayConfig: createMockEnvironment() }
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Utils.Continue' }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('select-reason')).toBeInTheDocument();
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(testState.lastCancelDeploymentRequestVariables).toBeNull();
+    expect(setOpen).not.toHaveBeenCalled();
   });
 
   it('should show warning if cancellation is definitive', () => {
@@ -131,6 +164,7 @@ describe('TrialCancelSheet', () => {
       />,
       { relayConfig: createMockEnvironment() }
     );
+    fireEvent.click(screen.getByTestId('select-reason'));
     fireEvent.click(screen.getByRole('button', { name: 'Utils.Continue' }));
 
     await waitFor(() => {

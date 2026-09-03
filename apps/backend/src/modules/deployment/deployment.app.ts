@@ -24,6 +24,7 @@ import {
   Success,
   TrialDeploymentsInput,
   UpdateDeploymentRequestInput,
+  XtmoneIntegrationStatus,
 } from '../../__generated__/resolvers-types';
 import portalConfig from '../../config';
 import {
@@ -49,6 +50,7 @@ import {
 } from '../../portal.const';
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
+import { fetchXtmoneIntegrationStatus } from '../../thirdparty/xtmone/xtmone';
 import { logApp } from '../../utils/app-logger.util';
 import {
   BadRequestErrorCode,
@@ -566,6 +568,44 @@ export const DeploymentApp = {
           (identifier): identifier is PlatformIdentifier => identifier !== null
         ),
     };
+  },
+
+  loadXtmPlatformBundle: async (): Promise<DeploymentRequest | null> => {
+    const user = requestContext.requireUser();
+    const bundle = await DeploymentRequestDomain.loadFullDeploymentRequest(
+      {
+        type: DeploymentRequestDeploymentType.Bundle,
+        organization_requester_id: user.selected_organization_id,
+        counts_in_orga_quota: true,
+      },
+      { orderBy: { column: 'request_date', order: OrderingMode.Desc } }
+    );
+
+    return bundle ?? null;
+  },
+
+  loadXtmonePlatformIntegrationStatus: async (
+    serviceInstanceId: ServiceInstanceId
+  ): Promise<XtmoneIntegrationStatus | null> => {
+    const user = requestContext.requireUser();
+    const deploymentRequest =
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        service_instance_id: serviceInstanceId,
+        organization_requester_id: user.selected_organization_id,
+      });
+    if (!deploymentRequest) {
+      return null;
+    }
+
+    const [configuration] =
+      await RegistrationDomain.loadRegisteredPlatform(serviceInstanceId);
+    const baseUrl =
+      configuration?.platform_url ?? deploymentRequest.url ?? null;
+    if (!baseUrl) {
+      return null;
+    }
+
+    return fetchXtmoneIntegrationStatus(baseUrl);
   },
 };
 

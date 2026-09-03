@@ -17,12 +17,16 @@ import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialI
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
-const trialCancelSchema = z.object({
-  cancellation_reason: z.string().optional(),
-});
+const buildTrialCancelSchema = (requiredMessage: string) =>
+  z.object({
+    cancellation_reason: z.string().min(1, requiredMessage),
+  });
+
+type TrialCancelSchema = ReturnType<typeof buildTrialCancelSchema>;
 
 interface TrialCancelSheetProps {
   deploymentRequestId: string;
@@ -48,6 +52,15 @@ export const TrialCancelSheet = ({
   platformIdentifier,
 }: TrialCancelSheetProps) => {
   const t = useTranslations();
+  const trialCancelSchema = useMemo(
+    () =>
+      buildTrialCancelSchema(
+        t(
+          'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonRequired'
+        )
+      ),
+    [t]
+  );
   const cancellationReasons = REASONS.map((reason) => ({
     value: reason,
     label: t(`Service.Trials.CancellationReason.${reason}`),
@@ -60,7 +73,7 @@ export const TrialCancelSheet = ({
       CancelDeploymentRequestMutation
     );
 
-  const onSubmit = (values: z.infer<typeof trialCancelSchema>) => {
+  const onSubmit = (values: z.infer<TrialCancelSchema>) => {
     cancelDeploymentRequestMutation({
       variables: {
         deploymentRequestId: deploymentRequestId,
@@ -110,7 +123,9 @@ export const TrialCancelSheet = ({
         }}
         fieldConfig={{
           cancellation_reason: {
-            label: 'Cancel Trial',
+            label: t(
+              'Service.Trials.Cancellation.ConfirmationForm.CancellationReason'
+            ),
             fieldType: ({ field }) => (
               <FormItem>
                 <FormLabel>

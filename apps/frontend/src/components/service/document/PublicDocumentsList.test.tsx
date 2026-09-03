@@ -144,6 +144,7 @@ describe('PublicDocumentsList', () => {
         queryRef={queryRef}
         serviceInstance={serviceInstance}
         baseUrl="https://xtm.local"
+        isDecouplingConnectorsEnabled={false}
       />
     );
 
@@ -158,6 +159,7 @@ describe('PublicDocumentsList', () => {
         queryRef={queryRef}
         serviceInstance={serviceInstance}
         baseUrl="https://xtm.local"
+        isDecouplingConnectorsEnabled={false}
       />
     );
 
@@ -180,6 +182,7 @@ describe('PublicDocumentsList', () => {
         queryRef={queryRef}
         serviceInstance={serviceInstance}
         baseUrl="https://xtm.local"
+        isDecouplingConnectorsEnabled={false}
       />
     );
 

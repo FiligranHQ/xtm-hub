@@ -798,6 +798,43 @@ describe('deploymentRequestDomain', () => {
 
       expect(result).toBeUndefined();
     });
+
+    it('should return the most recent deployment request by request_date when orderBy is provided and multiple rows match', async () => {
+      const region = DeploymentRequestPlatformRegion.UsEast;
+      const older =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Cancelled,
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            region,
+            request_date: new Date(Date.UTC(2025, 0, 1)),
+          }
+        );
+      const newer =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Active,
+            type: DeploymentRequestDeploymentType.Bundle,
+            platform_identifier: null,
+            region,
+            request_date: new Date(Date.UTC(2025, 5, 1)),
+          }
+        );
+
+      const result = await DeploymentRequestDomain.loadFullDeploymentRequest(
+        {
+          type: DeploymentRequestDeploymentType.Bundle,
+          organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+        },
+        { orderBy: { column: 'request_date', order: OrderingMode.Desc } }
+      );
+
+      expect(result).toBeDefined();
+      expect(result!.id).toBe(newer.id);
+      expect(result!.id).not.toBe(older.id);
+      expect(result!.hub_status).toBe(DeploymentRequestHubStatus.Active);
+    });
   });
 
   describe('reorderDeploymentRequestUp', () => {

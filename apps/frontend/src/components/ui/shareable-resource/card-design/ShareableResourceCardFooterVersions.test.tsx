@@ -1,8 +1,25 @@
 import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import type { ReactNode } from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import { ShareableResourceCardFooterVersion } from './ShareableResourceCardFooterVersions';
+
+vi.mock('@filigran/ui', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@filigran/ui')>()),
+  SimpleTooltip: ({
+    title,
+    children,
+  }: {
+    title: ReactNode;
+    children: ReactNode;
+  }) => (
+    <>
+      <span data-testid="tooltip-title">{title}</span>
+      {children}
+    </>
+  ),
+}));
 
 const PRODUCT_VERSION = '6.8.3';
 
@@ -68,11 +85,10 @@ describe('ShareableResourceCardFooterVersion', () => {
 
     const incompatibleLabel = container.querySelector('[data-incompatible]');
     expect(incompatibleLabel).toHaveAttribute('data-incompatible', 'true');
-    expect(incompatibleLabel).toHaveAttribute(
-      'title',
+    expect(incompatibleLabel).toHaveTextContent(PRODUCT_VERSION);
+    expect(screen.getByTestId('tooltip-title')).toHaveTextContent(
       'Requires a newer version'
     );
-    expect(incompatibleLabel).toHaveTextContent(PRODUCT_VERSION);
   });
 
   it('prefers the connector version over product_version when both are set', () => {

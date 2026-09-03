@@ -12,7 +12,6 @@ import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-res
 import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
 import { OpenctiVersionFilter } from '@/components/ui/shareable-resource/OpenctiVersionFilter';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -21,9 +20,19 @@ import {
   ServiceSlug,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { FeatureFlag, PlatformIdentifier } from '@graphql/generated';
+import { PlatformIdentifier } from '@graphql/generated';
 
-export const useShareableResourceMapping = (slug: ServiceSlug) => {
+/**
+ * Public pages never mount SettingsContext (no authenticated session), so
+ * useIsFeatureEnabled would always report the DECOUPLING_CONNECTORS flag as
+ * disabled regardless of the actual backend config. The flag value must
+ * therefore be resolved server-side (see settings.service.ts:isFeatureEnabled)
+ * and passed down as a prop.
+ */
+export const useShareableResourceMapping = (
+  slug: ServiceSlug,
+  isDecouplingConnectorsEnabled: boolean
+) => {
   const localStorageKeyMapping: Record<
     ServiceSlug,
     ServiceListLocalStorageKey
@@ -61,9 +70,6 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     removeProductVersions,
     removeOpenctiVersions,
   } = useServiceListLocalStorage(localStorageKey);
-  const isDecouplingConnectorsEnabled = useIsFeatureEnabled(
-    FeatureFlag.DecouplingConnectors
-  );
 
   const labelFilter = {
     node: <ServiceListFilterLabel type={typeFeed[slug]} />,

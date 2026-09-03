@@ -2,6 +2,7 @@ import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { ShareableResourceCardVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardVersion';
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { SimpleTooltip } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentMetadataKeyCode } from '@graphql/generated';
 import { ReactNode } from 'react';
@@ -35,31 +36,41 @@ export const ShareableResourceCardFooterVersion = ({
       ? document.product_version
       : null;
 
+  const isPlainSpanBranch =
+    publicPath ||
+    (docHasMetadata(document, DocumentMetadataKeyCode.ManagerSupported) &&
+      !document.manager_supported);
+
   return (
     <>
       <div className="flex gap-l min-w-0 overflow-hidden">
-        <span
-          data-incompatible={isIncompatibleWithSelectedVersion || undefined}
-          title={
-            isIncompatibleWithSelectedVersion ? incompatibleTooltip : undefined
-          }
-          className="data-[incompatible]:opacity-60">
-          {publicPath ||
-          (docHasMetadata(document, DocumentMetadataKeyCode.ManagerSupported) &&
-            !document.manager_supported) ? (
-            <span className="text-sm">{displayVersion}</span>
+        {isPlainSpanBranch ? (
+          isIncompatibleWithSelectedVersion ? (
+            <SimpleTooltip title={incompatibleTooltip}>
+              <span
+                data-incompatible
+                className="text-sm data-[incompatible]:opacity-60">
+                {displayVersion}
+              </span>
+            </SimpleTooltip>
           ) : (
-            <ShareableResourceCardVersion
-              className="text-sm"
-              product_version={displayVersion}
-              requiredProductVersion={
-                docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
-                  ? document.product_version
-                  : ''
-              }
-            />
-          )}
-        </span>
+            <span className="text-sm">{displayVersion}</span>
+          )
+        ) : (
+          <ShareableResourceCardVersion
+            className="text-sm"
+            product_version={displayVersion}
+            requiredProductVersion={
+              docHasMetadata(document, DocumentMetadataKeyCode.ProductVersion)
+                ? document.product_version
+                : ''
+            }
+            isIncompatibleWithSelectedVersion={
+              isIncompatibleWithSelectedVersion
+            }
+            filterIncompatibleTooltip={incompatibleTooltip}
+          />
+        )}
       </div>
       <div className=" flex flex-row pr-m">
         <ShareLinkButton

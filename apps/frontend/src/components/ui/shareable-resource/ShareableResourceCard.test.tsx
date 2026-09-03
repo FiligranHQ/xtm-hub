@@ -4,6 +4,7 @@ import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ShareableResourceCard from './ShareableResourceCard';
 
@@ -31,6 +32,15 @@ vi.mock('@/hooks/use-service-list-local-storage', async (importOriginal) => ({
   useServiceListLocalStorage: () => ({
     openctiVersions: storedOpenctiVersions,
   }),
+}));
+
+vi.mock('@filigran/ui/clients', () => ({
+  TooltipProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+  Tooltip: ({ children }: { children: ReactNode }) => <>{children}</>,
+  TooltipTrigger: ({ children }: { children: ReactNode }) => <>{children}</>,
+  TooltipContent: ({ children }: { children: ReactNode }) => (
+    <div role="tooltip">{children}</div>
+  ),
 }));
 
 describe('ShareableResourceCard', () => {
@@ -132,10 +142,15 @@ describe('ShareableResourceCard', () => {
         );
         expect(incompatibleLabel).not.toBeNull();
         expect(incompatibleLabel).toHaveAttribute('data-incompatible', 'true');
-        expect(incompatibleLabel).toHaveAttribute(
-          'title',
-          'Service.OpenctiIntegrations.Filter.ProductVersion.FilterIncompatibleTooltip'
-        );
+        expect(incompatibleLabel).toHaveTextContent(product_version);
+        const versionTooltip = screen
+          .getAllByRole('tooltip')
+          .find((tooltip) =>
+            tooltip.textContent?.includes(
+              'Service.OpenctiIntegrations.Filter.ProductVersion.FilterIncompatibleTooltip'
+            )
+          );
+        expect(versionTooltip).toBeTruthy();
         // Only the version label is greyed out, not the whole card.
         expect(container.firstChild).not.toHaveAttribute('data-incompatible');
       } else {

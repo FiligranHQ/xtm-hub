@@ -80,6 +80,9 @@ test.describe('Capabilities', () => {
         TEST_CAPABILITY.userThalesEmail,
         'UPLOAD access:'
       );
+      await expect(
+        page.getByRole('row', { name: TEST_CAPABILITY.userThalesEmail })
+      ).toContainText(new RegExp(SERVICE_CAPABILITY.nameUpload, 'i'));
       await loginPage.logout();
     });
 
@@ -102,24 +105,26 @@ test.describe('Capabilities', () => {
         TEST_CAPABILITY.userThalesEmail,
         'DELETE access:'
       );
+      await expect(
+        page.getByRole('row', { name: TEST_CAPABILITY.userThalesEmail })
+      ).toContainText(new RegExp(SERVICE_CAPABILITY.nameDelete, 'i'));
       await loginPage.logout();
     });
     await test.step('Simple user can delete integration', async () => {
       await loginPage.navigateToAndLogin(TEST_CAPABILITY.userThalesEmail);
       await integrationPage.navigateToIntegrationsService();
 
-      const openMenuButton = page.getByRole('button', {
-        name: 'Open menu',
-        exact: true,
-      });
-      await openMenuButton.evaluate((el) =>
-        el.scrollIntoView({ block: 'center' })
+      const integrationCard = integrationPage.getIntegrationCard(
+        TEST_INTEGRATION.name
       );
-      await openMenuButton.click();
+      await expect(integrationCard).toBeVisible();
+
+      await integrationCard
+        .getByRole('button', { name: 'Open menu', exact: true })
+        .click();
       await integrationPage.deleteIntegration('menuitem');
-      await expect(
-        page.getByText(TEST_INTEGRATION.name, { exact: true })
-      ).not.toBeVisible();
+
+      await expect(integrationCard).toHaveCount(0);
     });
   });
 });

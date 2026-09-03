@@ -64,6 +64,41 @@
     "EE": "Enterprise Edition",
     "TRIAL": "Free trial"
   },
+  "XtmPlatformTrial": {
+    "BundleInfo": {
+      "OrganizationName": "Organisation",
+      "StartedOn": "Started on",
+      "License": "License",
+      "Remaining": "Remaining",
+      "DaysRemaining": "{days} days",
+      "TrialRequester": "Trial requester",
+      "Title": "XTM Product Trial details:"
+    },
+    "Products": {
+      "ConnectionStatus": "Connection status",
+      "LastConnection": "Last connection check",
+      "Role": "Role",
+      "NoRole": "None.",
+      "NoRoleHint": "Please contact the trial requester.",
+      "StatusActive": "Connected",
+      "StatusNotConnected": "Not connected",
+      "AccessProduct": "Access {productName}",
+      "StatusUnavailable": "Status unavailable",
+      "ProductName": "Product name",
+      "Connection": "Connection {productName}",
+      "EditName": "Edit name",
+      "ConnectionLost": "Connection lost.",
+      "ReconnectHint": "You should connect your product again."
+    },
+    "CancelTrial": "Cancel trial",
+    "Title": "Welcome to your XTM Platform Trial",
+    "Subtitle": "Everything you need for your trial is right here: your trial details and time remaining, direct access to your products, and a direct line to the Filigran team whenever you need support or have questions.",
+    "Guide": {
+      "Title": "XTM Platform Trial Guide",
+      "Content": "Explore what we're building, what's coming next, and where the XTM Platform is headed. Full transparency. No surprises.",
+      "SeeMore": "See more"
+    }
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Columns",
@@ -216,7 +251,7 @@
       "CAN_UNREGISTER_PLATFORM_UNKNOWN_ERROR": "An unknown error occurred during platform disconnection",
       "CANT_ADD_DISABLED_USER": "You cannot add a user that is disabled in the platform",
       "CANT_ADD_USER_TO_PERSONAL_SPACE": "You cannot add a user to your personal space",
-      "CANT_CANCEL_BUNDLE_PRODUCT": "A single product of an XTM Platform Trial cannot be cancelled",
+      "CANT_CANCEL_BUNDLE_PRODUCT": "A single product of an XTM Platform Trial cannot be canceled",
       "CANT_DELETE_BUILTIN_USER": "This built-in user cannot be deleted",
       "CANT_DELETE_YOURSELF": "You cannot delete your own account",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "You cannot remove the last administrator of an organization",
@@ -237,7 +272,7 @@
       "DELETE_ORGANIZATION_PENDING_USERS": "This organization still has users waiting for approval. Accept or reject them before deleting it.",
       "DELETE_ORGANIZATION_REQUIRES_SINGLE_USER": "This organization still has several members. Remove them before deleting it.",
       "DELETE_SUBSCRIPTION_ERROR": "Error while deleting the subscription",
-      "DELETE_USER_BLOCKED_BY_CANCELLATION_RECORD": "This user cannot be deleted because they cancelled a deployment request that is still linked to their account.",
+      "DELETE_USER_BLOCKED_BY_CANCELLATION_RECORD": "This user cannot be deleted because they canceled a deployment request that is still linked to their account.",
       "DELETE_USER_BLOCKED_BY_DEPLOYMENT_REQUEST": "This user cannot be deleted because deployment requests are linked to their account.",
       "DELETE_USER_BLOCKED_BY_LAST_ORGANIZATION_MEMBER": "This user cannot be deleted because they are the last member of an organization.",
       "DELETE_USER_BLOCKED_BY_LINKED_DATA": "This user cannot be deleted because other data is still linked to their account.",
@@ -513,6 +548,7 @@
   },
   "Menu": {
     "XTMPlatform": "XTM Platform",
+    "XTMPlatformTrial": "XTM Platform Trial",
     "StartFreeTrial": "Start Free Trial",
     "CustomDashboards": "Custom Dashboards",
     "CustomViews": "Custom Views",
@@ -676,7 +712,7 @@
       "Products": "Products"
     },
     "TabTitle": {
-      "Cancelled": "Cancelled",
+      "Cancelled": "Canceled",
       "Expired": "Expired",
       "Running": "Running",
       "Waiting": "Waiting",
@@ -684,7 +720,7 @@
     },
     "Toast": {
       "TrialsReordered": "Trial requests were reordered",
-      "BundleCancelled": "The bundle trial was cancelled successfully.",
+      "BundleCancelled": "The bundle trial was canceled successfully.",
       "BundleReordered": "The bundle has been reordered in the queue."
     },
     "Actions": {
@@ -714,11 +750,11 @@
       "provisioning": "Provisioning",
       "active": "Active",
       "expired": "Expired",
-      "cancelled": "Cancelled",
+      "cancelled": "Canceled",
       "failed": "Failed"
     },
     "Cancellation": {
-      "Confirmation": "Are you sure you want to cancel the bundle trial of {organizationName}? Every product of the bundle will be cancelled."
+      "Confirmation": "Are you sure you want to cancel the bundle trial of {organizationName}? Every product of the bundle will be canceled."
     }
   },
   "Parameters": {
@@ -1434,13 +1470,13 @@
       "Provisioning": "Your OpenCTI free trial is currently being provisioned.",
       "Requested": "Your OpenCTI free trial has been requested.",
       "Expired": "Your OpenCTI free trial has expired.",
-      "Cancelled": "Your OpenCTI free trial has been cancelled.",
+      "Cancelled": "Your OpenCTI free trial has been canceled.",
       "CancellationReason": {
         "value": "Intelligence lacks actionable insight for our specific needs",
         "compatibility": "Incompatible with our existing security stack",
         "complexity": "Configuration is too complex to complete within a reasonable timeframe",
         "legal-security": "Internal security or legal team required immediate termination",
-        "expertise": "We lack the internal analysts/expertise to utilise the tool effectively"
+        "expertise": "We lack the internal analysts/expertise to utilize the tool effectively"
       },
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "Header": {
@@ -1570,15 +1606,45 @@
             "Submit": "Request XTM Platform trial"
           },
           "NotLoggedIn": {
-            "Title": "To be elligible to request trial you need to be login",
-            "Description": "Please create a XTM account or connect you to an existent one."
+            "Title": "To request a trial you need to be logged in.",
+            "Description": "Please create an XTM account or log in to an existing one."
           },
           "NotAdmin": {
-            "Title": "To request a trial you need to be Organization admin",
-            "Description": "Please contact the organization admin in your company"
+            "Title": "To request a trial you must be an organization admin.",
+            "Description": "Please contact the organization’s admin in your company"
           },
           "PersonalSpace": {
             "Title": "Trials are not available in a personal space"
+          },
+          "Status": {
+            "RequestedOn": "Requested on",
+            "StartedOn": "Started on",
+            "CancelledOn": "Canceled on",
+            "FinishedOn": "Finished on",
+            "ProductsIncluded": "Products included in your trial",
+            "ProductsIncludedInRequest": "Products included in your trial request",
+            "CancelTrialRequest": "Cancel trial request",
+            "request-in-progress": {
+              "Title": "Thanks! We've received your request.",
+              "Description": "Our team will be in touch shortly."
+            },
+            "cancelled": {
+              "Title": "Unfortunately, your trial has been canceled.",
+              "Description": "You are not eligible to request a new trial. \nIf you would like to use the Enterprise Edition, please contact sales."
+            },
+            "expired": {
+              "Title": "Thank you for trying out the XTM platform, we hope you enjoyed your experience.",
+              "Description": "Your trial period has now ended. If you would like to continue using the Enterprise Edition, please contact our sales team."
+            },
+            "failed": {
+              "Title": "Your trial request could not be completed",
+              "Description": "Something went wrong while provisioning your trial. Please reach out to sales for assistance."
+            },
+            "Stepper": {
+              "Pending": "Pending",
+              "Provisioning": "Provisioning",
+              "Active": "Active"
+            }
           }
         }
       },
@@ -1597,9 +1663,9 @@
       "ReachOutToSalesDefaultMessage": "Type your message to request help",
       "Cancellation": {
         "Toast": {
-          "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new openCTI trials can’t be requested.",
-          "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully.",
-          "Admin": "The OpenCTI free trial was cancelled successfully."
+          "NoNewTrialPossible": "Thank you, your OpenCTI free trial was canceled successfully. Please note that new openCTI trials can’t be requested.",
+          "NewTrialPossible": "Thank you, your OpenCTI free trial was canceled successfully.",
+          "Admin": "The OpenCTI free trial was canceled successfully."
         },
         "ConfirmationForm": {
           "Title": "Cancel your OpenCTI free trial",
@@ -1607,7 +1673,8 @@
           "CancellationReason": "Cancellation reason",
           "CancellationReasonPlaceholder": "Select a reason",
           "CancellationReasonOther": "Other",
-          "CancellationReasonOtherPlaceholder": "Write your reason here"
+          "CancellationReasonOtherPlaceholder": "Write your reason here",
+          "CancellationReasonRequired": "Please select a cancellation reason"
         },
         "Confirmation": {
           "Title": "Trial Cancellation",
@@ -1648,6 +1715,174 @@
       "ManageUsers": {
         "Title": "Manage users",
         "Email": "Email"
+      }
+    },
+    "TrialGuide": {
+      "Breadcrumb": {
+        "TrialPlatform": "XTM Platform Trial",
+        "TrialGuide": "XTM Platform Trial guide"
+      },
+      "Eyebrow": "XTM Platform trial guide",
+      "Title": "Key resources",
+      "Description": "This short guide is here to direct you to helpful resources about how to get the best experience out of your XTM Platform trial",
+      "SeeMore": "See more",
+      "ReadMore": "Read more",
+      "ChecklistTitle": "Suggested Actions Checklist",
+      "ChecklistIntro": "Don’t know where to start? Take a look at some suggested actions.",
+      "Opencti": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "OpenCTI Documentation",
+            "Description": "Technical docs and user guides to help you understand how the platform works"
+          },
+          "Academy": {
+            "Title": "Academy: OpenCTI 101-301",
+            "Description": "Practical courses to how to get started with OpenCTI"
+          },
+          "Community": {
+            "Title": "OpenCTI Community",
+            "Description": "The best place to ask any and all questions to the OpenCTI community"
+          },
+          "ReleaseNotes": {
+            "Title": "Release notes",
+            "Description": "List of latest updates"
+          }
+        },
+        "ChecklistItems": {
+          "ActivateFeeds": {
+            "Title": "Enable 1-2 More Feeds",
+            "Description": "Go to <strong>Integrations</strong> in the left menu. A number of connectors have already been deployed. Click on the <strong>Available</strong> tab. You'll see that there are many more connectors that can be deployed with one click. In the left menu, scroll to the bottom and select <strong>Free</strong> in License type. Deploy some that have not yet been enabled. Click <strong>Browse More</strong> to see all integrations in the OpenCTI Library (including those without the one-click deployment option)."
+          },
+          "ConfigurePir": {
+            "Title": "Configure Priority Intelligence Requirements (PIR)",
+            "Description": "Go to <strong>PIR → Create PIR</strong>. Define a PIR name, rescan period, and the entity criteria/filters that matter to you (e.g., \"Malware targeting the Energy sector\" with confidence ≥ 60). OpenCTI will now continuously listen to platform activity and automatically flag any matching entities as \"of interest,\" surfacing a live news feed, scored relevance, and related reports/graphs for each."
+          },
+          "FollowGraph": {
+            "Title": "Open a Report and Explore the Interactive Graph",
+            "Description": "Go to <strong>Analyses → Reports</strong>. Click on a report and go to the <strong>Knowledge</strong> tab. In the toolbar on the right, make sure <strong>Graph View</strong> is selected. Zoom in. Now click on objects in the graph. The details of the object will be displayed in the right column. To see the relationships of a particular object, move it out to the side. Click <strong>Timeline view</strong> to see how data points evolved over time. For MITRE ATT&CK mapping click on <strong>Tactics Matrix View</strong>."
+          },
+          "CreateCase": {
+            "Title": "Create a Case from a Detected Indicator",
+            "Description": "Go to <strong>Cases → Incident Response → Create Incident Response</strong>, spin up a case using a built-in template, and attach the indicator/report you worked with earlier. From there, assign a priority and severity, tag an assignee, and add related tasks to track remediation steps. Notice how the case stays linked to the underlying entities, so any new correlated intel will automatically surface in context."
+          },
+          "CreateFintelReport": {
+            "Title": "Create a FINTEL report",
+            "Description": "Go to <strong>Analyses → Reports → Create Report</strong>. Draft a Finished Intelligence (FINTEL) report summarizing your analysis of the threat actor, malware, or campaign you've been exploring, pulling in the entities, indicators, and relationships you've already ingested. Attach supporting observables and link related intrusion sets or TTPs directly from the graph."
+          },
+          "BuildDashboardWidget": {
+            "Title": "Build a Custom Dashboard Widget",
+            "Description": "Under <strong>Dashboards → Custom Dashboards</strong>, click <strong>Create Dashboard</strong> and add a widget (e.g., \"Indicators by type\" or \"Reports over time\"). Or select a pre-built dashboard by clicking on <strong>Import from Hub</strong>."
+          },
+          "ConnectSecurityStack": {
+            "Title": "Connect to Your Security Stack",
+            "Description": "Go to <strong>Integrations</strong>. Click <strong>Browse More</strong>. Select some of the tools you already run (SIEM, EDR, firewall, TIP, or SOAR) to connect them to OpenCTI. Once connected, monitor the connector dashboard to confirm data is flowing, then verify that newly pushed indicators appear in your downstream tool."
+          },
+          "CreateNoCodePlaybook": {
+            "Title": "Create a No-Code Playbook",
+            "Description": "Go to <strong>Data → Processing</strong>. Click <strong>Create Playbook</strong>. Use the visual, drag-and-drop builder to chain triggers, filters, and actions, such as auto-enriching new indicators, promoting high-confidence reports to a case, or pushing matching observables straight to a connector. Or select a pre-built playbook by clicking on <strong>Import from Hub</strong>."
+          },
+          "CheckSecurityCoverage": {
+            "Title": "Check your Security Coverage with OpenAEV",
+            "Description": "Link your OpenAEV instance under <strong>Settings → Integrations</strong>, then in OpenAEV go to <strong>Scenarios → Create</strong> and build a scenario from the ATT&CK techniques of the threat actor you've been investigating in OpenCTI. Add each TTP as an injection, assigning target assets, and hit <strong>Launch</strong> to execute the simulation in a controlled way."
+          },
+          "EnableAgent": {
+            "Title": "Enable an Agent in XTM One",
+            "Description": "Open <strong>XTM One → Agents</strong> and activate one of the pre-packaged agents (e.g., the <strong>CTEM Assistant</strong>) to orchestrate a workflow across OpenCTI and OpenAEV - such as automatically enriching a new threat, summarizing it, and generating a validation scenario, all in plain English with no manual handoffs."
+          }
+        }
+      },
+      "Openaev": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "OpenAEV Documentation",
+            "Description": "Technical docs and user guides to help you understand how the platform works"
+          },
+          "Academy": {
+            "Title": "Academy: OpenAEV 101",
+            "Description": "Free, practical courses to how to get started with OpenAEV"
+          },
+          "Community": {
+            "Title": "OpenAEV Community",
+            "Description": "The best place to ask any and all questions to the OpenAEV community"
+          },
+          "ReleaseNotes": {
+            "Title": "Release notes",
+            "Description": "List of latest updates"
+          }
+        },
+        "ChecklistItems": {
+          "InstallStarterPack": {
+            "Title": "Install the OpenAEV Starter Pack",
+            "Description": "Do you need some content to get started? OpenAEV ships with a starter pack that provides ready-to-use content so you can run your first Simulation immediately after installation, including Pre-built Scenarios, dashboards, injectors, collectors, and agentless endpoints. The starter pack is available from the XTM Hub. Import it from <strong>Settings > XTM Hub</strong> after registering your platform."
+          },
+          "RunAtomicTest": {
+            "Title": "Run an Atomic Test",
+            "Description": "Go to the Arsenal, pick a single technique, and select an endpoint to run it against. Install the OpenAEV agent first, or run agentless if supported. Launch the test and check the endpoint or wait for the report to see what executed and what got caught."
+          },
+          "LaunchTimeBasedScenario": {
+            "Title": "Launch a Time-Based Scenario, Leveraging the AI Scenario Assistant",
+            "Description": "Create a scenario and add injects in the order you want them to fire based on a set schedule with a start time and, if required a recurring frequency. Leverage AI to automate Inject creation based on your selected targets and MITRE ATT&CK techniques."
+          },
+          "RunAttackChainingScenario": {
+            "Title": "Run an Attack Chaining Scenario",
+            "Description": "Build a scenario linking several techniques into a realistic attack path (initial access, lateral movement, exfiltration). Run it operator led, manually triggering each step yourself, or agent led, where the platform executes the whole chain automatically once started. Try both to feel the difference in control versus speed."
+          },
+          "DriveTabletopExercise": {
+            "Title": "Drive a Tabletop Exercise with a Phishing Exercise",
+            "Description": "Create a tabletop scenario with communication or decision based injects instead of technical ones (e.g. \"notify legal\"), assign participants and run it as a live, facilitated session, recording how the team responds. Use this opportunity to include Phishing injects, which you can generate with AI directly."
+          },
+          "EvaluateSecurityPosture": {
+            "Title": "Evaluate Your Security Posture",
+            "Description": "Start at home screen Exposure Commander Center (aggregating your key metrics at a glance) and drill down into specific security domains and dashboards. Take the time to investigate inject results, expectations, and findings."
+          },
+          "GenerateDetectionRemediationRules": {
+            "Title": "Automatically Generate Detection and Remediation Rules",
+            "Description": "Generate detection rules from an executed technical Inject using AI-powered remediation. These can be accessed directly in the remediation tab of an inject results."
+          },
+          "ConnectOpenctiSecurityCoverage": {
+            "Title": "Connect to OpenCTI for Security Coverage Enrichment",
+            "Description": "OpenAEV can be triggered via an XTM Suite product to execute a scenario based on a desired threat profile, and results from the scenario execution — such as Detection rate, Prevention rate — are returned to the triggering product for ingestion."
+          },
+          "EnableAgentXtmOne": {
+            "Title": "Enable an Agent in XTM One",
+            "Description": "Open <strong>XTM One → Agents</strong> and activate one of the pre-packaged agents (for example, OpenAEV Assistant) to start orchestrating a workflow across OpenCTI and OpenAEV - such as automatically enriching a new threat, summarizing it, and generating a validation scenario, all in plain English with no manual handoffs."
+          },
+          "GenerateReportStakeholders": {
+            "Title": "Generate a report automatically to share with stakeholders",
+            "Description": "Review scenarios and their simulation results in a single report, generate as PDF or HTML in a single click to rapidly share with relevant stakeholders and benchmark over time."
+          }
+        }
+      },
+      "Xtmone": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "XTM One Documentation",
+            "Description": "Technical docs and user guides to help you understand how the platform works"
+          },
+          "Community": {
+            "Title": "XTM One Community",
+            "Description": "The best place to ask any and all questions to the Filigran community"
+          }
+        },
+        "ChecklistItems": {
+          "ActivateCtemAssistant": {
+            "Title": "Activate the CTEM Assistant",
+            "Description": "Go to XTM One → Agents and enable the CTEM Assistant, your primary entry point into the platform. It connects directly to both OpenCTI and OpenAEV, orchestrating agents across both to move threat intelligence processing straight into scenario building and execution in OpenAEV - all from a single conversation."
+          },
+          "AskQuestionPlainEnglish": {
+            "Title": "Ask a Question in Plain English",
+            "Description": "Open the XTM One chat interface and ask something like \"What are the top five threats facing financial sector in the UK?\" XTM One will pull relevant entities from OpenCTI (once you have added some feeds) and return a synthesized answer with links back to the underlying data - no query language or dashboard-hopping required."
+          },
+          "BuildThreatHuntingPackage": {
+            "Title": "Build a Threat Hunting Package in Minutes",
+            "Description": "Search 'Threat Hunting' to access the OpenCTI Threat Hunt Creator. Ask it to turn a set of high-confidence indicators into a hunting package. It searches for high-value indicators, converts them into native detection rules for your platforms, and groups everything together in OpenCTI - cutting hunting prep time significantly.",
+            "ExamplePrompt": "Example prompt: Create a hunt package for Lockbit ransomware IoCs, converted to Sigma rules, prioritizing the most recent indicators"
+          },
+          "IntegrateTools": {
+            "Title": "Integrate Tools for Faster Threat Detection and Response",
+            "Description": "Go to <strong>Tools & Integrations</strong> to connect to tools your agents can use on your behalf. XTM One Integration Marketplace provide hundreds of pre-built integrations including for security tools like SIEMs, XDRs, threat feeds, vulnerability management and also business operations and collaboration tools like Notion, Metabase, Concord, MS Teams and Slack. Make intel flow seamlessly and be available at a central place to take an action."
+          }
+        }
       }
     },
     "Vault": {
@@ -1889,7 +2124,7 @@
     }
   },
   "UpdateUserDialog": {
-    "TextUpdatedUser": "Your account has been modified by an administrator. The behaviour of the app may change.",
+    "TextUpdatedUser": "Your account has been modified by an administrator. The behavior of the app may change.",
     "TextUpdatedUserTitle": "Account modified!"
   },
   "UserActions": {
