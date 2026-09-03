@@ -25,6 +25,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 import { OrganizationCapability } from '@graphql/generated';
+import { useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useMutation } from 'react-relay';
@@ -40,6 +41,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
   const currentPath = usePathname();
   const router = useRouter();
   const t = useTranslations();
+  const queryClient = useQueryClient();
   const [commitLogoutMutation] = useMutation(LogoutMutation);
 
   // Legitimate effect: close the menu on route change.
@@ -59,11 +61,16 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
         store.invalidateStore();
       },
       onCompleted() {
+        // Logout/login navigate client-side (no full page reload), so the
+        // React Query cache would otherwise survive a user switch in the
+        // same browser tab and could serve stale, user-scoped data (e.g.
+        // service capabilities) to whoever logs in next.
+        queryClient.clear();
         router.push('/');
         router.refresh();
       },
     });
-  }, [commitLogoutMutation, router]);
+  }, [commitLogoutMutation, queryClient, router]);
 
   const headerContent = (
     <>

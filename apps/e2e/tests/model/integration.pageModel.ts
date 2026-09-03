@@ -15,7 +15,18 @@ export default class IntegrationPage {
 
   async navigateToIntegrationsService() {
     await this.page.getByRole('button', { name: 'OpenCTI' }).click();
-    await this.page.getByRole('link', { name: 'Integrations' }).click();
+    const integrationsLink = this.page.getByRole('link', {
+      name: 'Integrations',
+    });
+    await integrationsLink.waitFor({ state: 'visible' });
+    await integrationsLink.click();
+    await this.page.waitForURL(/\/app\/service\/opencti_integrations\//);
+  }
+
+  getIntegrationCard(name: string) {
+    return this.page.getByRole('listitem').filter({
+      has: this.page.getByText(name, { exact: true }),
+    });
   }
   async uploadJsonDocument(filePath: string) {
     const fileInput = this.page.locator(
