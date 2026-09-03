@@ -1,6 +1,7 @@
 'use client';
 import { PublicDocumentListQuery } from '@/components/service/document/public-document.graphql';
 import PublicDocumentsList from '@/components/service/document/PublicDocumentsList';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import {
   LogicalFiltersParams,
   useLogicalFiltersFromStorage,
@@ -11,8 +12,11 @@ import { useShareableResourceMapping } from '@/utils/shareable-resources/use-sha
 import { Skeleton } from '@filigran/ui';
 import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import { FeatureFlag } from '@graphql/generated';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
+
+const EMPTY_PRODUCT_VERSIONS = {};
 
 interface PublicDocumentListPageLoaderProps {
   serviceInstance: seoServiceInstanceFragment$data;
@@ -29,6 +33,13 @@ export const PublicDocumentListPageLoader = ({
 
   const serviceInstanceSlug = serviceInstance.slug as ServiceSlug;
   const { localStorageKey } = useShareableResourceMapping(serviceInstanceSlug);
+  // The OpenCTI version filter only excludes non-compatible connectors on
+  // the backend when DECOUPLING_CONNECTORS is disabled. When it's enabled,
+  // OpenctiVersionFilter drives the grey-out client-side instead, so no
+  // product_version value must be sent to the backend query.
+  const isDecouplingConnectorsEnabled = useIsFeatureEnabled(
+    FeatureFlag.DecouplingConnectors
+  );
 
   const {
     pageSize,
@@ -40,6 +51,7 @@ export const PublicDocumentListPageLoader = ({
     verified,
     licenseTypes,
     solutionCategories,
+    productVersions,
     orderMode,
     orderBy,
   } = useServiceListLocalStorage(localStorageKey);
@@ -54,6 +66,9 @@ export const PublicDocumentListPageLoader = ({
           integrationTypes,
           licenseTypes,
           solutionCategories,
+          productVersions: isDecouplingConnectorsEnabled
+            ? EMPTY_PRODUCT_VERSIONS
+            : productVersions,
         }
       : {
           serviceInstanceSlug: serviceInstanceSlug as

@@ -96,6 +96,7 @@ describe('PublicDocumentsList', () => {
       selectedFilters: [],
       setSelectedFilters: vi.fn(),
       productVersions: {},
+      openctiVersions: {},
     });
     testState.useScrollPosition.mockReturnValue({
       restore: testState.restore,

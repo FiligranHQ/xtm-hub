@@ -8,6 +8,7 @@ describe('useLogicalFiltersFromStorage', () => {
   const labelValue = 'label-a';
   const entityTypeValue = 'Threat-Actor';
   const integrationTypeValue = 'csv_feed';
+  const productVersionValue = 'v6.8';
   const trueValue = 'true';
   const solutionCategoryValue = 'ti_ops';
   const licenseTypeValue = 'oss';
@@ -20,6 +21,7 @@ describe('useLogicalFiltersFromStorage', () => {
       deployable: { [trueValue]: [] },
       verified: { [trueValue]: [] },
       integrationTypes: { [integrationTypeValue]: [] },
+      productVersions: { [productVersionValue]: [] },
       solutionCategories: { [solutionCategoryValue]: [] },
       licenseTypes: { [licenseTypeValue]: [] },
     };
@@ -57,6 +59,12 @@ describe('useLogicalFiltersFromStorage', () => {
         },
         {
           leaf: {
+            key: FilterKey.ProductVersion,
+            value: [productVersionValue],
+          },
+        },
+        {
+          leaf: {
             key: FilterKey.SolutionCategory,
             value: [solutionCategoryValue],
           },
@@ -79,6 +87,7 @@ describe('useLogicalFiltersFromStorage', () => {
       deployable: {},
       verified: {},
       integrationTypes: {},
+      productVersions: {},
     };
 
     // When

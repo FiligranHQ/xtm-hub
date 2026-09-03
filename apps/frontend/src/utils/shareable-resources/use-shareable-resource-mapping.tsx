@@ -10,7 +10,9 @@ import { IntegrationFilters } from '@/components/ui/shareable-resource/integrati
 import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationLicenseTypeFilter';
 import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-resource/integration/IntegrationSolutionCategoryFilter';
 import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
+import { OpenctiVersionFilter } from '@/components/ui/shareable-resource/OpenctiVersionFilter';
 import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -19,7 +21,7 @@ import {
   ServiceSlug,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { PlatformIdentifier } from '@graphql/generated';
+import { FeatureFlag, PlatformIdentifier } from '@graphql/generated';
 
 export const useShareableResourceMapping = (slug: ServiceSlug) => {
   const localStorageKeyMapping: Record<
@@ -57,7 +59,11 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
     removeVerified,
     removeEntityTypes,
     removeProductVersions,
+    removeOpenctiVersions,
   } = useServiceListLocalStorage(localStorageKey);
+  const isDecouplingConnectorsEnabled = useIsFeatureEnabled(
+    FeatureFlag.DecouplingConnectors
+  );
 
   const labelFilter = {
     node: <ServiceListFilterLabel type={typeFeed[slug]} />,
@@ -76,15 +82,29 @@ export const useShareableResourceMapping = (slug: ServiceSlug) => {
         node: <IntegrationFilters />,
         reset: removeIntegrationTypes,
       },
-      [ServiceListFilterKey.ProductVersion]: {
-        node: (
-          <ProductVersionFilter
-            platformIdentifier={PlatformIdentifier.Opencti}
-            publicPath
-          />
-        ),
-        reset: removeProductVersions,
-      },
+      ...(isDecouplingConnectorsEnabled
+        ? {
+            [ServiceListFilterKey.OpenctiVersion]: {
+              node: (
+                <OpenctiVersionFilter
+                  platformIdentifier={PlatformIdentifier.Opencti}
+                  publicPath
+                />
+              ),
+              reset: removeOpenctiVersions,
+            },
+          }
+        : {
+            [ServiceListFilterKey.ProductVersion]: {
+              node: (
+                <ProductVersionFilter
+                  platformIdentifier={PlatformIdentifier.Opencti}
+                  publicPath
+                />
+              ),
+              reset: removeProductVersions,
+            },
+          }),
       [ServiceListFilterKey.ManagerSupported]: {
         node: <IntegrationDeployableFilter />,
         reset: removeDeployable,

@@ -23,6 +23,7 @@ type IntegrationFiltersParams = {
   deployable: LogicalMultiSelectSelection;
   verified: LogicalMultiSelectSelection;
   integrationTypes: LogicalMultiSelectSelection;
+  productVersions: LogicalMultiSelectSelection;
   licenseTypes?: LogicalMultiSelectSelection;
   solutionCategories?: LogicalMultiSelectSelection;
 };
@@ -38,6 +39,8 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
     DocumentMetadataKeyCode.Verified in params ? params.verified : undefined;
   const integrationTypes =
     'integrationTypes' in params ? params.integrationTypes : undefined;
+  const productVersions =
+    'productVersions' in params ? params.productVersions : undefined;
   const licenseTypes =
     'licenseTypes' in params ? params.licenseTypes : undefined;
   const solutionCategories =
@@ -65,6 +68,12 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
             leaf: {
               key: FilterKey.IntegrationType,
               value: Object.keys(integrationTypes!),
+            },
+          },
+          {
+            leaf: {
+              key: FilterKey.ProductVersion,
+              value: Object.keys(productVersions!),
             },
           },
           {
@@ -107,6 +116,7 @@ export const useLogicalFiltersFromStorage = (params: LogicalFiltersParams) => {
     deployable,
     verified,
     integrationTypes,
+    productVersions,
     licenseTypes,
     solutionCategories,
   ]);

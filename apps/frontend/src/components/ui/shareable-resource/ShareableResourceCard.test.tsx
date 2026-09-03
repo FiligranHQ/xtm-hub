@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ShareableResourceCard from './ShareableResourceCard';
 
 const saveMock = vi.fn();
-let storedProductVersions: Record<string, string[]> = {};
+let storedOpenctiVersions: Record<string, string[]> = {};
 
 vi.mock('@/hooks/use-scroll-position', () => ({
   __esModule: true,
@@ -29,7 +29,7 @@ vi.mock('@/hooks/use-service-list-local-storage', async (importOriginal) => ({
     typeof import('@/hooks/use-service-list-local-storage')
   >()),
   useServiceListLocalStorage: () => ({
-    productVersions: storedProductVersions,
+    openctiVersions: storedOpenctiVersions,
   }),
 }));
 
@@ -37,7 +37,7 @@ describe('ShareableResourceCard', () => {
   const serviceInstance = { id: 'service-id' };
 
   beforeEach(() => {
-    storedProductVersions = {};
+    storedOpenctiVersions = {};
   });
 
   it('renders connector card with document name and description', () => {
@@ -104,7 +104,7 @@ describe('ShareableResourceCard', () => {
     'marks the connector card as incompatible=$expectIncompatible when $description',
     ({ selectedProductVersion, product_version, expectIncompatible }) => {
       vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
-      storedProductVersions = selectedProductVersion
+      storedOpenctiVersions = selectedProductVersion
         ? { [selectedProductVersion]: [] }
         : {};
       const { container } = testRender(

@@ -55,9 +55,9 @@ const ShareableResourceCard = ({
   const t = useTranslations();
   const { save } = useScrollPosition();
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
-  const { productVersions } = useServiceListLocalStorage(localStorageKey);
-  // ProductVersionFilter is single-select, so only one key can be present.
-  const [selectedProductVersion = null] = Object.keys(productVersions);
+  const { openctiVersions } = useServiceListLocalStorage(localStorageKey);
+  // OpenctiVersionFilter is single-select, so only one key can be present.
+  const [selectedProductVersion = null] = Object.keys(openctiVersions);
   const handleClick = () => {
     save();
   };

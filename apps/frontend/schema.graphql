@@ -25,6 +25,7 @@ enum FilterKey {
   personal_space
   integration_type
   slug
+  product_version
   manager_supported
   feed_url
   verified
