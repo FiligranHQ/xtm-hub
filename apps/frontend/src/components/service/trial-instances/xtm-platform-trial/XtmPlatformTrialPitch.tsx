@@ -11,12 +11,6 @@ const BUNDLE_PRODUCTS = [
   PlatformIdentifier.Xtmone,
 ];
 
-const PRODUCT_ICON_CLASSES: Record<PlatformIdentifier, string> = {
-  [PlatformIdentifier.Opencti]: 'text-filigran-brand-primary',
-  [PlatformIdentifier.Openaev]: 'text-filigran-brand-primary',
-  [PlatformIdentifier.Xtmone]: 'text-filigran-ia-main',
-};
-
 export const XtmPlatformTrialPitch = () => {
   const t = useTranslations();
 
@@ -33,19 +27,15 @@ export const XtmPlatformTrialPitch = () => {
 
       <div className="flex flex-col gap-xl pr-30">
         {BUNDLE_PRODUCTS.map((platformIdentifier) => {
-          const { name, Icon } = PlatformMetadataMapping[platformIdentifier];
+          const { name, Icon, iconClassName } =
+            PlatformMetadataMapping[platformIdentifier];
 
           return (
             <article
               key={platformIdentifier}
               className="flex flex-col gap-s">
               <div className="flex items-center gap-s">
-                <Icon
-                  className={cn(
-                    'size-6',
-                    PRODUCT_ICON_CLASSES[platformIdentifier]
-                  )}
-                />
+                <Icon className={cn('size-6', iconClassName)} />
                 <span className="heading-md">{name}</span>
               </div>
               <div className="flex flex-col">

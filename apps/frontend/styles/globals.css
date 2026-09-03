@@ -11,6 +11,11 @@
 :root {
   --color-filigran-decoration: hsl(var(--darkblue-700) / 0.3);
   --hover-background: var(--color-gray-150);
+  --color-primary: hsl(var(--primary));
+  --color-foreground: hsl(var(--foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-ds-bg: hsl(var(--ds-bg-main));
 }
 
 .dark,
@@ -59,6 +64,11 @@ body[data-theme='Dark'] {
 
   ol {
     @apply list-decimal pl-8;
+  }
+
+  .text-logo {
+    font-family: var(--font-geologica), system-ui, sans-serif;
+    @apply text-3xl font-light tracking-tighter;
   }
 }
 

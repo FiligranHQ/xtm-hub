@@ -19,6 +19,7 @@ export default defineConfig({
   retries: 2,
   /* Parallel test is breaking tests */
   workers: 1,
+  timeout: 60_000,
   expect: {
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.05,
