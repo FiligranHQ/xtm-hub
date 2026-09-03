@@ -1647,6 +1647,174 @@
         "Email": "Courriel"
       }
     },
+    "TrialGuide": {
+      "Breadcrumb": {
+        "TrialPlatform": "Essai de la plateforme XTM",
+        "TrialGuide": "Guide d'essai de la plateforme XTM"
+      },
+      "Eyebrow": "Guide d'essai de la plateforme XTM",
+      "Title": "Ressources clés",
+      "Description": "Ce petit guide a pour but de vous orienter vers des ressources utiles qui vous permettront de tirer le meilleur parti de votre essai de la plateforme XTM",
+      "SeeMore": "En savoir plus",
+      "ReadMore": "En savoir plus",
+      "ChecklistTitle": "Liste de contrôle des actions suggérées",
+      "ChecklistIntro": "Vous ne savez pas par où commencer ? Voici quelques actions suggérées qui pourraient vous aider à découvrir la plateforme.",
+      "Opencti": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "Documentation OpenCTI",
+            "Description": "Documentation technique et guides d’utilisation pour vous aider à comprendre le fonctionnement de la plateforme"
+          },
+          "Academy": {
+            "Title": "Académie : OpenCTI 101-301",
+            "Description": "Formations pratiques pour vous lancer avec OpenCTI"
+          },
+          "Community": {
+            "Title": "Communauté OpenCTI",
+            "Description": "Le meilleur endroit pour poser toutes vos questions à la communauté OpenCTI"
+          },
+          "ReleaseNotes": {
+            "Title": "Notes de mise à jour",
+            "Description": "Liste des dernières mises à jour"
+          }
+        },
+        "ChecklistItems": {
+          "ActivateFeeds": {
+            "Title": "Activez 1 à 2 flux supplémentaires",
+            "Description": "Accédez à <strong>Intégrations</strong> dans le menu de gauche. Plusieurs connecteurs ont déjà été déployés. Cliquez sur l’onglet <strong>Disponibles</strong>. Vous constaterez qu’il existe encore de nombreux autres connecteurs pouvant être déployés en un clic. Dans le menu de gauche, faites défiler jusqu’en bas et sélectionnez <strong>Gratuit</strong> dans le type de licence. Déployez-en quelques-uns qui ne sont pas encore activés. Cliquez sur <strong>Parcourir plus</strong> pour voir toutes les intégrations de la bibliothèque OpenCTI (y compris celles sans option de déploiement en un clic)."
+          },
+          "ConfigurePir": {
+            "Title": "Configurer les exigences de renseignement prioritaires (PIR)",
+            "Description": "Accédez à <strong>PIR → Créer un PIR</strong>. Définissez un nom pour le PIR, une période de réexamen, ainsi que les critères/filtres d’entités qui vous intéressent (par exemple, « Malware ciblant le secteur de l’énergie » avec un niveau de confiance ≥ 60). OpenCTI surveillera désormais en permanence l’activité de la plateforme et signalera automatiquement toute entité correspondante comme « d’intérêt », en affichant pour chacune d’elles un fil d’actualité en temps réel, un score de pertinence ainsi que des rapports et graphiques associés."
+          },
+          "FollowGraph": {
+            "Title": "Ouvrir un rapport et explorer le graphe interactif",
+            "Description": "Accédez à <strong>Analyses → Rapports</strong>. Cliquez sur un rapport puis accédez à l’onglet <strong>Connaissances</strong>. Dans la barre d’outils à droite, assurez-vous que la <strong>vue graphique</strong> est sélectionnée. Zoomez. Cliquez maintenant sur les objets du graphe. Les détails de l’objet s’afficheront dans la colonne de droite. Pour voir les relations d’un objet en particulier, déplacez-le sur le côté. Cliquez sur <strong>vue chronologique</strong> pour voir comment les données ont évolué dans le temps. Pour la correspondance MITRE ATT&CK, cliquez sur <strong>vue matrice des tactiques</strong>."
+          },
+          "CreateCase": {
+            "Title": "Créer un dossier à partir d’un indicateur détecté",
+            "Description": "Accédez à <strong>Dossiers → Réponse aux incidents → Créer une réponse aux incidents</strong>, créez un dossier à l’aide d’un modèle intégré, puis joignez l’indicateur ou le rapport sur lequel vous avez travaillé précédemment. À partir de là, attribuez une priorité et un niveau de gravité, désignez un responsable et ajoutez des tâches associées pour suivre les étapes de correction. Remarquez que le dossier reste lié aux entités sous-jacentes ; ainsi, toute nouvelle information corrélée apparaîtra automatiquement dans son contexte."
+          },
+          "CreateFintelReport": {
+            "Title": "Créer un rapport FINTEL",
+            "Description": "Accédez à <strong>Analyses → Rapports → Créer un rapport</strong>. Rédigez un rapport « Finished Intelligence » (FINTEL) résumant votre analyse de l’acteur malveillant, du logiciel malveillant ou de la campagne que vous avez étudiés, en intégrant les entités, les indicateurs et les relations que vous avez déjà importés. Joignez des éléments d’observation à l’appui et liez les ensembles d’intrusions ou les TTP associés directement à partir du graphe."
+          },
+          "BuildDashboardWidget": {
+            "Title": "Créer un widget de tableau de bord personnalisé",
+            "Description": "Sous <strong>Tableaux de bord → Tableaux de bord personnalisés</strong>, cliquez sur <strong>Créer un tableau de bord</strong> et ajoutez un widget (par exemple, « Indicateurs par type » ou « Rapports dans le temps »). Vous pouvez également sélectionner un tableau de bord prédéfini en cliquant sur <strong>Importer depuis Hub</strong>."
+          },
+          "ConnectSecurityStack": {
+            "Title": "Connectez-vous à votre pile de sécurité",
+            "Description": "Accédez à <strong>Intégrations</strong>. Cliquez sur <strong>En savoir plus</strong>. Sélectionnez certains des outils que vous utilisez déjà (SIEM, EDR, pare-feu, TIP ou SOAR) pour les connecter à OpenCTI. Une fois la connexion établie, surveillez le tableau de bord du connecteur pour vérifier que les données circulent, puis assurez-vous que les nouveaux indicateurs transmis apparaissent dans votre outil en aval."
+          },
+          "CreateNoCodePlaybook": {
+            "Title": "Créer un playbook sans code",
+            "Description": "Accédez à <strong>Données → Traitement</strong>. Cliquez sur <strong>Créer un playbook</strong>. Utilisez le générateur visuel par glisser-déposer pour enchaîner des déclencheurs, des filtres et des actions, telles que l’enrichissement automatique de nouveaux indicateurs, la promotion de rapports hautement fiables vers un dossier, ou l’envoi direct des observables correspondantes vers un connecteur. Vous pouvez également sélectionner un playbook prédéfini en cliquant sur <strong>Importer depuis le Hub</strong>."
+          },
+          "CheckSecurityCoverage": {
+            "Title": "Vérifiez votre couverture de sécurité avec OpenAEV",
+            "Description": "Associez votre instance OpenAEV sous <strong>Paramètres → Intégrations</strong>, puis dans OpenAEV, accédez à <strong>Scénarios → Créer</strong> et créez un scénario à partir des techniques ATT&CK de l’acteur malveillant que vous avez étudié dans OpenCTI. Ajoutez chaque TTP en tant qu’injection, en attribuant des ressources cibles, puis cliquez sur <strong>Lancer</strong> pour exécuter la simulation de manière contrôlée."
+          },
+          "EnableAgent": {
+            "Title": "Activer un agent dans XTM One",
+            "Description": "Ouvrez <strong>XTM One → Agents</strong> et activez l’un des agents préconfigurés (par exemple, le <strong>CTEM Assistant</strong>) pour orchestrer un workflow entre OpenCTI et OpenAEV — par exemple, enrichir automatiquement une nouvelle menace, la résumer et générer un scénario de validation, le tout en langage clair et sans intervention manuelle."
+          }
+        }
+      },
+      "Openaev": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "Documentation OpenAEV",
+            "Description": "Documentation technique et guides d’utilisation pour vous aider à comprendre le fonctionnement de la plateforme"
+          },
+          "Academy": {
+            "Title": "Académie : OpenAEV 101",
+            "Description": "Cours pratiques et gratuits pour vous aider à démarrer avec OpenAEV"
+          },
+          "Community": {
+            "Title": "Communauté OpenAEV",
+            "Description": "Le meilleur endroit pour poser toutes vos questions à la communauté OpenAEV"
+          },
+          "ReleaseNotes": {
+            "Title": "Notes de mise à jour",
+            "Description": "Liste des dernières mises à jour"
+          }
+        },
+        "ChecklistItems": {
+          "InstallStarterPack": {
+            "Title": "Installer le pack de démarrage OpenAEV",
+            "Description": "Vous avez besoin de contenu pour vous lancer ? OpenAEV est fourni avec un pack de démarrage contenant du contenu prêt à l'emploi qui vous permettra d'exécuter votre première simulation dès l'installation. Ce pack comprend notamment des scénarios prédéfinis, des tableaux de bord, des injecteurs, des collecteurs et des terminaux sans agent. Le pack de démarrage est disponible sur le XTM Hub. Importez-le depuis <strong>Paramètres > XTM Hub</strong> après avoir enregistré votre plateforme."
+          },
+          "RunAtomicTest": {
+            "Title": "Lancer un test « Atomic »",
+            "Description": "Rendez-vous dans l’Arsenal, choisissez une technique et sélectionnez un point de terminaison sur lequel l’exécuter. Installez d’abord l’agent OpenAEV, ou utilisez le mode sans agent s’il est pris en charge. Lancez le test et vérifiez le point de terminaison ou attendez le rapport pour voir ce qui a été exécuté et ce qui a été détecté."
+          },
+          "LaunchTimeBasedScenario": {
+            "Title": "Lancer un scénario chronologique en s’appuyant sur l’assistant IA de scénarios",
+            "Description": "Créez un scénario et ajoutez-y des injections dans l’ordre dans lequel vous souhaitez qu’elles se déclenchent, selon un calendrier défini avec une heure de début et, si nécessaire, une fréquence de répétition. Exploitez l’IA pour automatiser la création d’injections en fonction des cibles et des techniques MITRE ATT&CK que vous avez sélectionnées."
+          },
+          "RunAttackChainingScenario": {
+            "Title": "Exécuter un scénario de chaîne d’attaques",
+            "Description": "Construisez un scénario reliant plusieurs techniques pour former un parcours d’attaque réaliste (accès initial, mouvement latéral, exfiltration). Exécutez-le soit sous la direction d’un opérateur, en déclenchant manuellement chaque étape vous-même, soit de manière autonome, la plateforme exécutant automatiquement toute la chaîne une fois lancée. Essayez les deux méthodes pour apprécier la différence entre contrôle et rapidité."
+          },
+          "DriveTabletopExercise": {
+            "Title": "Animer un exercice sur table avec un exercice de phishing",
+            "Description": "Créez un scénario de simulation avec des interventions basées sur la communication ou la prise de décision plutôt que sur des aspects techniques (par exemple, « avertir le service juridique »), désignez les participants et menez l’exercice sous forme de session animée en direct, en enregistrant la manière dont l’équipe réagit. Profitez-en pour inclure des injections de phishing, que vous pouvez générer directement avec l’IA."
+          },
+          "EvaluateSecurityPosture": {
+            "Title": "Évaluer votre posture de sécurité",
+            "Description": "Commencez par l’écran d’accueil Exposure Commander Center (qui regroupe vos indicateurs clés en un coup d’œil), puis explorez des domaines de sécurité et des tableaux de bord spécifiques. Prenez le temps d’examiner les résultats des injections, les attentes et les constats."
+          },
+          "GenerateDetectionRemediationRules": {
+            "Title": "Générer automatiquement des règles de détection et de remédiation",
+            "Description": "Générez des règles de détection à partir d’une injection technique exécutée grâce à la remédiation assistée par IA. Elles sont directement accessibles depuis l’onglet remédiation des résultats d’une injection."
+          },
+          "ConnectOpenctiSecurityCoverage": {
+            "Title": "Se connecter à OpenCTI pour enrichir la couverture de sécurité",
+            "Description": "OpenAEV peut être déclenché via un produit de la suite XTM pour exécuter un scénario basé sur un profil de menace souhaité, et les résultats de l’exécution du scénario — comme le taux de détection ou le taux de prévention — sont renvoyés au produit déclencheur pour ingestion."
+          },
+          "EnableAgentXtmOne": {
+            "Title": "Activer un agent dans XTM One",
+            "Description": "Ouvrez <strong>XTM One → Agents</strong> et activez l’un des agents préconfigurés (par exemple, OpenAEV Assistant) pour orchestrer un workflow entre OpenCTI et OpenAEV, comme enrichir automatiquement une nouvelle menace, la résumer et générer un scénario de validation, le tout en langage naturel et sans intervention manuelle."
+          },
+          "GenerateReportStakeholders": {
+            "Title": "Générer automatiquement un rapport à partager avec les parties prenantes",
+            "Description": "Consultez les scénarios et leurs résultats de simulation dans un rapport unique, générez-le au format PDF ou HTML en un clic pour le partager rapidement avec les parties prenantes concernées et suivre son évolution dans le temps."
+          }
+        }
+      },
+      "Xtmone": {
+        "ResourceCards": {
+          "Documentation": {
+            "Title": "Documentation XTM One",
+            "Description": "Documentation technique et guides d’utilisation pour vous aider à comprendre le fonctionnement de la plateforme"
+          },
+          "Community": {
+            "Title": "Communauté XTM One",
+            "Description": "Le meilleur endroit pour poser toutes vos questions à la communauté Filigran"
+          }
+        },
+        "ChecklistItems": {
+          "ActivateCtemAssistant": {
+            "Title": "Activer l’assistant CTEM",
+            "Description": "Accédez à XTM One → Agents et activez l’assistant CTEM, votre principal point d’entrée dans la plateforme. Il se connecte directement à OpenCTI et à OpenAEV, orchestrant les agents des deux plateformes pour faire passer le traitement des renseignements sur les menaces directement à la création et à l’exécution de scénarios dans OpenAEV — le tout à partir d’une seule conversation."
+          },
+          "AskQuestionPlainEnglish": {
+            "Title": "Posez une question en langage courant",
+            "Description": "Ouvrez l’interface de chat de XTM One et posez une question du type « Quelles sont les cinq principales menaces pesant sur le secteur financier au Royaume-Uni ? ». XTM One extraira les entités pertinentes d’OpenCTI (une fois que vous aurez ajouté des flux) et renverra une réponse synthétisée accompagnée de liens vers les données sous-jacentes — sans avoir besoin d’utiliser un langage de requête ni de passer d’un tableau de bord à l’autre."
+          },
+          "BuildThreatHuntingPackage": {
+            "Title": "Créez un pack de chasse aux menaces en quelques minutes",
+            "Description": "Recherchez « Threat Hunting » pour accéder au OpenCTI Threat Hunt Creator. Demandez-lui de transformer un ensemble d’indicateurs hautement fiables en un pack de chasse. Il recherche les indicateurs à forte valeur ajoutée, les convertit en règles de détection natives pour vos plateformes et regroupe le tout dans OpenCTI - ce qui réduit considérablement le temps de préparation de la chasse aux menaces.",
+            "ExamplePrompt": "Exemple de requête : Créer un pack de chasse pour les IoC du ransomware Lockbit, convertis en règles Sigma, en priorisant les indicateurs les plus récents"
+          },
+          "IntegrateTools": {
+            "Title": "Intégrez des outils pour une détection et une réponse aux menaces plus rapides",
+            "Description": "Allez dans <strong>Tools & Integrations</strong> pour connecter les outils que vos agents peuvent utiliser en votre nom. La marketplace d’intégrations de XTM One propose des centaines d’intégrations prêtes à l’emploi, incluant des outils de sécurité comme les SIEM, EDR/XDR, flux de menaces, gestion des vulnérabilités, ainsi que des outils métiers et de collaboration comme Notion, Metabase, Concord, MS Teams et Slack. Faites circuler l’intelligence de manière fluide et disposez-en à un endroit central pour agir."
+          }
+        }
+      }
+    },
     "Vault": {
       "DeleteDocument": "Effacer le document",
       "DropFile": "Lâchez le document ici",
