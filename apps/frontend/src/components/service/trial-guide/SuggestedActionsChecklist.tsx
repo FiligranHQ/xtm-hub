@@ -22,7 +22,7 @@ export const SuggestedActionsChecklist = ({
     <section className="mt-xl">
       <div className="max-w-4xl mx-auto mb-xxl">
         <div className="flex items-center gap-s mb-s">
-          <Icon className={cn('w-6 h-6', iconClassName)} />
+          <Icon className={cn('w-8.5 h-8.5', iconClassName)} />
           <span className="text-logo">{name}</span>
         </div>
         <h2 className="heading-lg">{t('Service.TrialGuide.ChecklistTitle')}</h2>

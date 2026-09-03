@@ -63,7 +63,7 @@ body[data-theme='Dark'] {
 
   .text-logo {
     font-family: var(--font-geologica), system-ui, sans-serif;
-    @apply text-xl font-light tracking-tighter;
+    @apply text-3xl font-light tracking-tighter;
   }
 }
 

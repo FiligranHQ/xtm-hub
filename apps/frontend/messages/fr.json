@@ -1680,8 +1680,8 @@
         },
         "ChecklistItems": {
           "ActivateFeeds": {
-            "Title": "Activez 2 à 3 flux CTI gratuits",
-            "Description": "Accédez à <strong>Intégrations</strong> dans le menu de gauche. Dans « Type », sélectionnez « Importation externe ». Sélectionnez le connecteur <strong>AlienVault</strong>. Cliquez ensuite sur <strong>Déployer</strong> puis sur <strong>Démarrer</strong>. En quelques minutes, vous verrez les données réelles sur les menaces (techniques, vulnérabilités, rapports) s’afficher automatiquement. Ajoutez ensuite d’autres flux tels que CISA KEV, NIST NVD CVE ou MITRE ATT&CK."
+            "Title": "Activez 1 à 2 flux supplémentaires",
+            "Description": "Accédez à <strong>Intégrations</strong> dans le menu de gauche. Plusieurs connecteurs ont déjà été déployés. Cliquez sur l’onglet <strong>Disponibles</strong>. Vous constaterez qu’il existe encore de nombreux autres connecteurs pouvant être déployés en un clic. Dans le menu de gauche, faites défiler jusqu’en bas et sélectionnez <strong>Gratuit</strong> dans le type de licence. Déployez-en quelques-uns qui ne sont pas encore activés. Cliquez sur <strong>Parcourir plus</strong> pour voir toutes les intégrations de la bibliothèque OpenCTI (y compris celles sans option de déploiement en un clic)."
           },
           "ConfigurePir": {
             "Title": "Configurer les exigences de renseignement prioritaires (PIR)",

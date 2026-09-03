@@ -77,7 +77,7 @@ export const TrialGuidePage = () => {
       <Tabs
         defaultValue={PlatformIdentifier.Opencti}
         className="mt-l">
-        <TabsList className="w-auto">
+        <TabsList className="w-full h-auto items-stretch justify-start border-b border-elevation-border-subtle-layer-2 rounded-none p-0">
           {TRIAL_GUIDE_TABS.map((platformIdentifier) => {
             const { name, Icon } = PlatformMetadataMapping[platformIdentifier];
             const isXtmOne = platformIdentifier === PlatformIdentifier.Xtmone;
@@ -85,7 +85,7 @@ export const TrialGuidePage = () => {
               <TabsTrigger
                 key={platformIdentifier}
                 value={platformIdentifier}
-                className={cn('group flex-1')}>
+                className="rounded-none items-center -mb-px border-b-2 border-transparent data-[state=active]:border-primary group">
                 <span
                   className={cn(
                     'flex items-center gap-s',

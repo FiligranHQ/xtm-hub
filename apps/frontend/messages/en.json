@@ -1680,8 +1680,8 @@
         },
         "ChecklistItems": {
           "ActivateFeeds": {
-            "Title": "Activate 2-3 Free CTI Feeds",
-            "Description": "Go to <strong>Integrations</strong> in the left menu. In Type, select 'External import'. Select the <strong>AlienVault</strong> connector. Then click on <strong>Deploy</strong> and <strong>Start</strong>. Within minutes you'll watch real threat data (techniques, vulnerabilities, reports) flow in automatically. Then add other feeds such as CISA KEV, NIST NVD CVE, or MITRE ATT&CK."
+            "Title": "Enable 1-2 More Feeds",
+            "Description": "Go to <strong>Integrations</strong> in the left menu. A number of connectors have already been deployed. Click on the <strong>Available</strong> tab. You'll see that there are many more connectors that can be deployed with one click. In the left menu, scroll to the bottom and select <strong>Free</strong> in License type. Deploy some that have not yet been enabled. Click <strong>Browse More</strong> to see all integrations in the OpenCTI Library (including those without the one-click deployment option)."
           },
           "ConfigurePir": {
             "Title": "Configure Priority Intelligence Requirements (PIR)",
