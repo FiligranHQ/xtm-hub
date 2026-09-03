@@ -148,7 +148,7 @@ describe('usePrivateNavigation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
     vi.mocked(getPrivateNavigationServiceHrefs).mockReturnValue(new Map());
     vi.mocked(
       getPrivateNavigationRegisteredPlatformsByIdentifier
@@ -203,7 +203,26 @@ describe('usePrivateNavigation', () => {
         label: 'Slack',
         external: true,
       },
+      {
+        key: 'xtm-platform-trial',
+        href: `/${APP_PATH}/service/xtm-platform-trial`,
+        icon: expect.any(Function),
+        label: 'XTMPlatformTrial',
+        highlight: true,
+      },
     ]);
+  });
+
+  it('hides the xtm-platform-trial bottom link when the feature flag is off', () => {
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    expect(result.current.bottomLinks.map((link) => link.key)).not.toContain(
+      'xtm-platform-trial'
+    );
   });
 
   it('adds settings as a footer section when user is authorized', () => {
@@ -236,10 +255,10 @@ describe('usePrivateNavigation', () => {
 
   it.each`
     capabilities                                                         | expectedSettingsLabels
-    ${[PortalCapability.Bypass]}                                         | ${['Parameter', 'Security', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor', 'NewsFeed']}
-    ${[PortalCapability.ReadTrials]}                                     | ${['OpenCTITrial', 'OpenAEVTrial']}
+    ${[PortalCapability.Bypass]}                                         | ${['Parameter', 'Security', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor', 'NewsFeed']}
+    ${[PortalCapability.ReadTrials]}                                     | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial']}
     ${[PortalCapability.ModifyCompetitors]}                              | ${['Competitor']}
-    ${[PortalCapability.ReadTrials, PortalCapability.ModifyCompetitors]} | ${['OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
+    ${[PortalCapability.ReadTrials, PortalCapability.ModifyCompetitors]} | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
   `(
     'filters settings links according to portal capabilities $capabilities',
     ({ capabilities, expectedSettingsLabels }) => {
@@ -315,6 +334,13 @@ describe('usePrivateNavigation', () => {
         icon: expect.any(Function),
         label: 'Slack',
         external: true,
+      },
+      {
+        key: 'xtm-platform-trial',
+        href: `/${APP_PATH}/service/xtm-platform-trial`,
+        icon: expect.any(Function),
+        label: 'XTMPlatformTrial',
+        highlight: true,
       },
     ]);
   });

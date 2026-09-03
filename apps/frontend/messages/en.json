@@ -64,6 +64,41 @@
     "EE": "Enterprise Edition",
     "TRIAL": "Free trial"
   },
+  "XtmPlatformTrial": {
+    "BundleInfo": {
+      "OrganizationName": "Organisation",
+      "StartedOn": "Started on",
+      "License": "License",
+      "Remaining": "Remaining",
+      "DaysRemaining": "{days} days",
+      "TrialRequester": "Trial requester",
+      "Title": "XTM Product Trial details:"
+    },
+    "Products": {
+      "ConnectionStatus": "Connection status",
+      "LastConnection": "Last connection check",
+      "Role": "Role",
+      "NoRole": "None.",
+      "NoRoleHint": "Please contact the trial requester.",
+      "StatusActive": "Connected",
+      "StatusNotConnected": "Not connected",
+      "AccessProduct": "Access {productName}",
+      "StatusUnavailable": "Status unavailable",
+      "ProductName": "Product name",
+      "Connection": "Connection {productName}",
+      "EditName": "Edit name",
+      "ConnectionLost": "Connection lost.",
+      "ReconnectHint": "You should connect your product again."
+    },
+    "CancelTrial": "Cancel trial",
+    "Title": "Welcome to your XTM Platform Trial",
+    "Subtitle": "Everything you need for your trial is right here: your trial details and time remaining, direct access to your products, and a direct line to the Filigran team whenever you need support or have questions.",
+    "Guide": {
+      "Title": "XTM Platform Trial Guide",
+      "Content": "Explore what we're building, what's coming next, and where the XTM Platform is headed. Full transparency. No surprises.",
+      "SeeMore": "See more"
+    }
+  },
   "Datatable": {
     "Asc": "Asc",
     "Columns": "Columns",
@@ -513,6 +548,7 @@
   },
   "Menu": {
     "XTMPlatform": "XTM Platform",
+    "XTMPlatformTrial": "XTM Platform Trial",
     "StartFreeTrial": "Start Free Trial",
     "CustomDashboards": "Custom Dashboards",
     "CustomViews": "Custom Views",
@@ -1604,7 +1640,8 @@
           "CancellationReason": "Cancellation reason",
           "CancellationReasonPlaceholder": "Select a reason",
           "CancellationReasonOther": "Other",
-          "CancellationReasonOtherPlaceholder": "Write your reason here"
+          "CancellationReasonOtherPlaceholder": "Write your reason here",
+          "CancellationReasonRequired": "Please select a cancellation reason"
         },
         "Confirmation": {
           "Title": "Trial Cancellation",

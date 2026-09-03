@@ -11,8 +11,9 @@ import {
 } from '@/components/menu/navigation/shared/navigation.type';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { APP_PATH } from '@/utils/path/constant';
+import { APP_PATH, XTM_PLATFORM_TRIAL_PATH } from '@/utils/path/constant';
 import {
+  DiamondOutlinedIcon,
   HomeIcon,
   IndividualIcon,
   LogoXtmOneIcon,
@@ -93,6 +94,9 @@ export const usePrivateNavigation = (): NavigationConfig => {
     useContext(PortalContext);
   const tMenu = useTranslations('Menu');
   const tMenuLinks = useTranslations('MenuLinks');
+  const isXtmPlatformBundleEnabled = useIsFeatureEnabled(
+    FeatureFlag.XtmPlatformTrial
+  );
   const locale = useLocale();
   const selectedOrganizationId = me?.selected_organization_id;
   const currentOrganization = me?.organizations.find(
@@ -482,6 +486,17 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenu('Slack'),
       external: true,
     },
+    ...(isXtmPlatformBundleEnabled
+      ? [
+          {
+            key: 'xtm-platform-trial',
+            href: XTM_PLATFORM_TRIAL_PATH,
+            icon: DiamondOutlinedIcon,
+            label: tMenu('XTMPlatformTrial'),
+            highlight: true,
+          },
+        ]
+      : []),
   ];
   return { sections, bottomLinks, footerSections };
 };

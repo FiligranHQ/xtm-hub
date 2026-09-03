@@ -2,9 +2,7 @@
 
 import { SelectWithEditableField } from '@/components/service/registration/SelectWithEditableField';
 import { CancelDeploymentRequestMutation } from '@/components/service/trial-instances/trial-instances.graphql';
-import { useOrgaFreeTrial } from '@/components/service/trial-instances/useOrgaFreeTrials';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
-import { CheckIndeterminateIcon } from '@filigran/icon';
 import {
   AutoForm,
   Button,
@@ -14,27 +12,19 @@ import {
   toast,
 } from '@filigran/ui';
 import { trialInstancesCancelDeploymentRequestMutation } from '@generated/trialInstancesCancelDeploymentRequestMutation.graphql';
-import { PlatformIdentifier } from '@graphql/generated';
+import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
-const buildTrialCancelSchema = (requiredMessage: string) =>
+const buildBundleCancelSchema = (requiredMessage: string) =>
   z.object({
     cancellation_reason: z.string().min(1, requiredMessage),
   });
 
-type TrialCancelSchema = ReturnType<typeof buildTrialCancelSchema>;
-
-interface TrialCancelSheetProps {
-  deploymentRequestId: string;
-  isCancellationDefinitive: boolean;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  platformIdentifier: PlatformIdentifier;
-}
+type BundleCancelSchema = ReturnType<typeof buildBundleCancelSchema>;
 
 const REASONS = [
   'value',
@@ -44,55 +34,55 @@ const REASONS = [
   'expertise',
 ];
 
-export const TrialCancelSheet = ({
+interface BundleCancelSheetProps {
+  deploymentRequestId: string;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+
+export const BundleCancelSheet = ({
   deploymentRequestId,
-  isCancellationDefinitive,
   open,
   setOpen,
-  platformIdentifier,
-}: TrialCancelSheetProps) => {
+}: BundleCancelSheetProps) => {
   const t = useTranslations();
-  const trialCancelSchema = useMemo(
+  const bundleCancelSchema = useMemo(
     () =>
-      buildTrialCancelSchema(
+      buildBundleCancelSchema(
         t(
           'Service.Trials.Cancellation.ConfirmationForm.CancellationReasonRequired'
         )
       ),
     [t]
   );
+  const queryClient = useQueryClient();
   const cancellationReasons = REASONS.map((reason) => ({
     value: reason,
     label: t(`Service.Trials.CancellationReason.${reason}`),
   }));
-  const { refetch } = useOrgaFreeTrial();
-  const router = useRouter();
 
   const [cancelDeploymentRequestMutation] =
     useMutation<trialInstancesCancelDeploymentRequestMutation>(
       CancelDeploymentRequestMutation
     );
 
-  const onSubmit = (values: z.infer<TrialCancelSchema>) => {
+  const onSubmit = (values: z.infer<BundleCancelSchema>) => {
     cancelDeploymentRequestMutation({
       variables: {
-        deploymentRequestId: deploymentRequestId,
+        deploymentRequestId,
         cancellationReason: values.cancellation_reason,
       },
-
-      onCompleted: (response) => {
-        const descriptionKey = response.cancelDeploymentRequest
-          ?.counts_in_orga_quota
-          ? 'Service.Trials.Cancellation.Toast.NoNewTrialPossible'
-          : 'Service.Trials.Cancellation.Toast.NewTrialPossible';
+      onCompleted: () => {
         toast({
           title: t('Utils.Success'),
-          description: t(descriptionKey),
+          description: t(
+            'Service.Trials.Cancellation.Toast.NoNewTrialPossible'
+          ),
         });
-        refetch({}, { fetchPolicy: 'network-only' });
+        queryClient.invalidateQueries({
+          queryKey: xtmPlatformBundleKeys.activeXtmPlatformBundle(),
+        });
         setOpen(false);
-
-        router.push(`/app/service/${platformIdentifier}-free-trial`);
       },
       onError: (error) => {
         toast({
@@ -109,18 +99,10 @@ export const TrialCancelSheet = ({
       open={open}
       setOpen={setOpen}
       title={t('Service.Trials.Cancellation.ConfirmationForm.Title')}>
-      {isCancellationDefinitive && (
-        <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm mt-4">
-          <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
-          {t('Service.Trials.Cancellation.ConfirmationForm.NoNewTrialPossible')}
-        </div>
-      )}
       <AutoForm
         className="mt-l"
-        formSchema={trialCancelSchema}
-        onSubmit={(values) => {
-          onSubmit(values);
-        }}
+        formSchema={bundleCancelSchema}
+        onSubmit={onSubmit}
         fieldConfig={{
           cancellation_reason: {
             label: t(
@@ -162,7 +144,6 @@ export const TrialCancelSheet = ({
             onClick={() => setOpen(false)}>
             {t('Utils.Cancel')}
           </Button>
-
           <Button type="submit">{t('Utils.Continue')}</Button>
         </div>
       </AutoForm>

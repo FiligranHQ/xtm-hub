@@ -79,7 +79,10 @@ import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import { PortalContext } from '../../model/portal-context';
 import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
-import { RegistrationDomain } from '../registration/registration.domain';
+import {
+  DomainRegisteredPlatform,
+  RegistrationDomain,
+} from '../registration/registration.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
 import {
@@ -4152,6 +4155,196 @@ describe('deployment app', () => {
           parent_id: undefined,
         });
       });
+    });
+  });
+
+  describe('loadActiveXtmPlatformBundle', () => {
+    beforeEach(() => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+      vi.spyOn(DeploymentQuotaDomain, 'reservePlace').mockResolvedValue({
+        isPlaceAvailable: true,
+      });
+    });
+
+    const createActiveBundle = async () => {
+      const bundle = await DeploymentApp.createDeploymentRequest({
+        ...TEST_DEPLOYMENT,
+        type: DeploymentRequestDeploymentType.Bundle,
+        products: [
+          PlatformIdentifier.Xtmone,
+          PlatformIdentifier.Opencti,
+          PlatformIdentifier.Openaev,
+        ],
+        use_cases_by_product: [
+          {
+            platform_identifier: PlatformIdentifier.Opencti,
+            use_case: DeploymentRequestUseCase.ThreatHunting,
+          },
+          {
+            platform_identifier: PlatformIdentifier.Openaev,
+            use_case: DeploymentRequestUseCase.OaevAttackSimulation,
+          },
+        ],
+      });
+      await DeploymentRequestDomain.updateDeploymentRequestById(bundle.id, {
+        hub_status: DeploymentRequestHubStatus.Active,
+        start_date: new Date('2025-01-01T00:00:00.000Z'),
+        end_date: new Date('2025-01-31T00:00:00.000Z'),
+      });
+      return bundle;
+    };
+
+    it('should return null when the organization has no active bundle', async () => {
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle();
+
+      expect(result).toBeNull();
+    });
+
+    it('should return the active bundle for the organization', async () => {
+      await createActiveBundle();
+
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle();
+
+      expect(result).toMatchObject({
+        type: DeploymentRequestDeploymentType.Bundle,
+        hub_status: DeploymentRequestHubStatus.Active,
+        organization_name: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME,
+        requester_email:
+          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.EMAIL,
+        start_date: expect.any(Date),
+        end_date: expect.any(Date),
+        service_instance_id: expect.any(String),
+      });
+    });
+
+    it('should return the active bundle when its service instance id is provided', async () => {
+      const bundle = await createActiveBundle();
+
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
+        bundle.service_instance_id
+      );
+
+      expect(result?.service_instance_id).toBe(bundle.service_instance_id);
+    });
+
+    it('should return null when the provided service instance id does not match the active bundle', async () => {
+      await createActiveBundle();
+
+      const result = await DeploymentApp.loadActiveXtmPlatformBundle(
+        uuidv4() as ServiceInstanceId
+      );
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('loadXtmonePlatformIntegrationStatus', () => {
+    const serviceInstanceId = uuidv4() as ServiceInstanceId;
+    const user = contextRegistererUserSecondOrga.user;
+    const ownedDeploymentRequest = { url: null } as unknown as Awaited<
+      ReturnType<typeof DeploymentRequestDomain.loadDeploymentRequestBy>
+    >;
+    const integrationStatus = {
+      opencti: { status: 'connected', connected: true, last_checked_at: null },
+      openaev: { status: 'connected', connected: true, last_checked_at: null },
+      linked: true,
+      last_checked_at: null,
+    };
+
+    beforeEach(() => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    });
+
+    it('returns null without fetching when the service instance is not owned by the user organization', async () => {
+      const loadDeploymentRequestBySpy = vi
+        .spyOn(DeploymentRequestDomain, 'loadDeploymentRequestBy')
+        .mockResolvedValue(undefined);
+      const fetchMock = vi.fn();
+      vi.stubGlobal('fetch', fetchMock);
+
+      const result =
+        await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          serviceInstanceId
+        );
+
+      expect(result).toBeNull();
+      expect(loadDeploymentRequestBySpy).toHaveBeenCalledWith({
+        service_instance_id: serviceInstanceId,
+        organization_requester_id: user.selected_organization_id,
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('returns null without fetching when no platform url can be resolved', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(ownedDeploymentRequest);
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue(
+        []
+      );
+      const fetchMock = vi.fn();
+      vi.stubGlobal('fetch', fetchMock);
+
+      const result =
+        await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          serviceInstanceId
+        );
+
+      expect(result).toBeNull();
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('fetches the integration status from the registered platform url without credentials', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(ownedDeploymentRequest);
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue([
+        { platform_url: 'https://xtmone.example.io' },
+      ] as unknown as DomainRegisteredPlatform[]);
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ integration_status: integrationStatus }),
+      });
+      vi.stubGlobal('fetch', fetchMock);
+
+      const result =
+        await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          serviceInstanceId
+        );
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://xtmone.example.io/api/v1/platform/config',
+        expect.objectContaining({ credentials: 'omit', redirect: 'error' })
+      );
+      expect(result).toEqual(integrationStatus);
+    });
+
+    it('returns null when the platform responds with an error status', async () => {
+      vi.spyOn(
+        DeploymentRequestDomain,
+        'loadDeploymentRequestBy'
+      ).mockResolvedValue(ownedDeploymentRequest);
+      vi.spyOn(RegistrationDomain, 'loadRegisteredPlatform').mockResolvedValue([
+        { platform_url: 'https://xtmone.example.io' },
+      ] as unknown as DomainRegisteredPlatform[]);
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({ ok: false, status: 502 })
+      );
+
+      const result =
+        await DeploymentApp.loadXtmonePlatformIntegrationStatus(
+          serviceInstanceId
+        );
+
+      expect(result).toBeNull();
     });
   });
 });
