@@ -49,7 +49,11 @@ import {
   XTM_HUB_SUPPORT_EMAIL,
 } from '../../portal.const';
 import { securityGuard } from '../../security/guard';
-import { sendMail } from '../../server/mail-service';
+import { buildXtmPlatformTrialLink, sendMail } from '../../server/mail-service';
+import {
+  formatProductNames,
+  FreeTrialBundleModel,
+} from '../../server/mail-template/mail';
 import { fetchXtmoneIntegrationStatus } from '../../thirdparty/xtmone/xtmone';
 import { logApp } from '../../utils/app-logger.util';
 import {
@@ -77,7 +81,7 @@ import { CompetitorApp } from './competitor/competitor.app';
 import { DeploymentCancellationApp } from './deployment-cancellation.app';
 import {
   DeploymentRequestDomain,
-  FullyQualifiedDeploymentRequest,
+  isBundleChild,
   shouldDeleteDeploymentRequestAudience,
 } from './deployment.domain';
 import { DeploymentHelper } from './deployment.helper';
@@ -211,7 +215,7 @@ export const DeploymentApp = {
       input.actual_state
     );
 
-    await withTransaction(async () => {
+    const bundleWithNewStatus = await withTransaction(async () => {
       await applyDeploymentRequestUpdateInQuotaTransaction({
         deploymentRequest,
         deploymentRequestId,
@@ -219,9 +223,11 @@ export const DeploymentApp = {
         newStatus,
       });
 
-      if (!isBundle && deploymentRequest.parent_id) {
-        await recomputeBundleDates(deploymentRequest.parent_id);
+      if (isBundle || !isBundleChild(deploymentRequest)) {
+        return null;
       }
+
+      return recomputeBundleFromChildren(deploymentRequest.parent_id);
     });
 
     const updatedDeploymentRequest =
@@ -239,17 +245,16 @@ export const DeploymentApp = {
       deploymentRequest
     );
 
-    if (
-      newStatus === DeploymentRequestHubStatus.Provisioning &&
+    if (bundleWithNewStatus) {
+      await sendStatusPlatformEmail(
+        bundleWithNewStatus,
+        bundleWithNewStatus.hub_status
+      );
+    } else if (
+      !isBundleChild(deploymentRequest) &&
       newStatus !== deploymentRequest.hub_status
     ) {
-      await sendProvisioningPlatformEmail(updatedDeploymentRequest);
-    }
-    if (
-      newStatus === DeploymentRequestHubStatus.Active &&
-      newStatus !== deploymentRequest.hub_status
-    ) {
-      await sendActivePlatformEmail(updatedDeploymentRequest);
+      await sendStatusPlatformEmail(updatedDeploymentRequest, newStatus);
     }
 
     return updatedDeploymentRequest;
@@ -379,7 +384,7 @@ export const DeploymentApp = {
       throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
     }
 
-    if (deploymentRequest.parent_id) {
+    if (isBundleChild(deploymentRequest)) {
       throw new Error(ForbiddenErrorCode.CantCancelBundleProduct);
     }
 
@@ -760,6 +765,99 @@ const resolveHubStatus = async ({
     : DeploymentRequestHubStatus.Queued;
 };
 
+type TrialMailContext =
+  | { isBundle: false; platformIdentifier: PlatformIdentifier }
+  | ({ isBundle: true } & Omit<FreeTrialBundleModel, 'firstName'>);
+
+const buildTrialMailContext = async (
+  deploymentRequest: DeploymentRequestModel
+): Promise<TrialMailContext | null> => {
+  if (isBundleChild(deploymentRequest)) {
+    return null;
+  }
+
+  if (deploymentRequest.type !== DeploymentRequestDeploymentType.Bundle) {
+    return deploymentRequest.platform_identifier
+      ? {
+          isBundle: false,
+          platformIdentifier: deploymentRequest.platform_identifier,
+        }
+      : null;
+  }
+
+  const [, ...children] =
+    await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
+      deploymentRequest
+    );
+  const products = children.flatMap((child) => child.platform_identifier ?? []);
+
+  return {
+    isBundle: true,
+    productNames: formatProductNames(products),
+    products,
+  };
+};
+
+const sendStatusPlatformEmail = async (
+  deploymentRequest: DeploymentRequestModel,
+  hubStatus: DeploymentRequestHubStatus
+): Promise<void> => {
+  if (hubStatus === DeploymentRequestHubStatus.Provisioning) {
+    await sendProvisioningPlatformEmail(deploymentRequest);
+  }
+  if (hubStatus === DeploymentRequestHubStatus.Active) {
+    await sendActivePlatformEmail(deploymentRequest);
+  }
+};
+
+const sendDeploymentRequestCreatedMail = async ({
+  user,
+  deploymentRequest,
+}: {
+  user: UserLoadUserBy;
+  deploymentRequest: DeploymentRequestModel;
+}): Promise<void> => {
+  try {
+    const mailContext = await buildTrialMailContext(deploymentRequest);
+
+    if (!mailContext) {
+      return;
+    }
+
+    const firstName = formatName(user.first_name ?? '');
+
+    if (mailContext.isBundle) {
+      await sendMail({
+        to: user.email,
+        template: 'free_trial_bundle_requested',
+        params: {
+          firstName,
+          productNames: mailContext.productNames,
+          products: mailContext.products,
+        },
+      });
+      return;
+    }
+
+    await sendMail({
+      to: user.email,
+      template:
+        deploymentRequest.hub_status === DeploymentRequestHubStatus.Pending
+          ? 'free_trial_requested'
+          : 'free_trial_queued',
+      params: {
+        firstName,
+        platformIdentifier: mailContext.platformIdentifier,
+      },
+    });
+  } catch (error) {
+    logApp.error('Unable to send mail', {
+      error,
+      deploymentRequestId: deploymentRequest.id,
+    });
+  }
+};
+
 const sendDeploymentRequestCreatedNotifications = async ({
   user,
   chosenOrganization,
@@ -798,26 +896,7 @@ const sendDeploymentRequestCreatedNotifications = async ({
     });
   }
 
-  try {
-    const mailTemplate =
-      deploymentRequest.hub_status === DeploymentRequestHubStatus.Pending
-        ? 'free_trial_requested'
-        : 'free_trial_queued';
-
-    await sendMail({
-      to: user.email,
-      template: mailTemplate,
-      params: {
-        firstName: formatName(user.first_name ?? ''),
-        platformIdentifier,
-      },
-    });
-  } catch (error) {
-    logApp.error('Unable to send mail', {
-      error,
-      deploymentRequestId: deploymentRequest.id,
-    });
-  }
+  await sendDeploymentRequestCreatedMail({ user, deploymentRequest });
 
   const instanceRequestedEmail =
     portalConfig.environment === 'production'
@@ -1005,6 +1084,11 @@ const createBundleDeploymentRequest = async ({
         });
       }
 
+      await sendDeploymentRequestCreatedMail({
+        user,
+        deploymentRequest: bundleDeploymentRequest,
+      });
+
       return bundleDeploymentRequest;
     }
   );
@@ -1039,15 +1123,29 @@ const sendDeploymentRequestCancelledNotifications = async (
     const [requester] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
-    if (requester && deploymentRequest.platform_identifier) {
-      await sendMail({
-        to: requester.email,
-        template: 'free_trial_cancelled',
-        params: {
-          firstName: formatName(requester.first_name ?? ''),
-          platformIdentifier: deploymentRequest.platform_identifier,
-        },
-      });
+    const mailContext = await buildTrialMailContext(deploymentRequest);
+
+    if (requester && mailContext) {
+      const firstName = formatName(requester.first_name ?? '');
+
+      await (mailContext.isBundle
+        ? sendMail({
+            to: requester.email,
+            template: 'free_trial_bundle_cancelled',
+            params: {
+              firstName,
+              productNames: mailContext.productNames,
+              products: mailContext.products,
+            },
+          })
+        : sendMail({
+            to: requester.email,
+            template: 'free_trial_cancelled',
+            params: {
+              firstName,
+              platformIdentifier: mailContext.platformIdentifier,
+            },
+          }));
     } else if (!requester) {
       logApp.warn('Requester not found for trial cancellation mail', {
         deploymentRequestId: deploymentRequest.id,
@@ -1104,15 +1202,29 @@ const sendDeploymentRequestExpiredNotifications = async (
     const [requester] = await UserDomain.loadUser({
       id: deploymentRequest.user_requester_id,
     });
-    if (requester && deploymentRequest.platform_identifier) {
-      await sendMail({
-        to: requester.email,
-        template: 'free_trial_expired',
-        params: {
-          firstName: formatName(requester.first_name ?? ''),
-          platformIdentifier: deploymentRequest.platform_identifier,
-        },
-      });
+    const mailContext = await buildTrialMailContext(deploymentRequest);
+
+    if (requester && mailContext) {
+      const firstName = formatName(requester.first_name ?? '');
+
+      await (mailContext.isBundle
+        ? sendMail({
+            to: requester.email,
+            template: 'free_trial_bundle_expired',
+            params: {
+              firstName,
+              productNames: mailContext.productNames,
+              products: mailContext.products,
+            },
+          })
+        : sendMail({
+            to: requester.email,
+            template: 'free_trial_expired',
+            params: {
+              firstName,
+              platformIdentifier: mailContext.platformIdentifier,
+            },
+          }));
     } else if (!requester) {
       logApp.warn('Requester not found for trial expiration mail', {
         trialId: deploymentRequest.id,
@@ -1198,7 +1310,9 @@ const syncPlatformRegistrationStatus = async (
   );
 };
 
-const recomputeBundleDates = async (bundleId: DeploymentRequestId) => {
+const recomputeBundleFromChildren = async (
+  bundleId: DeploymentRequestId
+): Promise<DeploymentRequestModel | null> => {
   const bundle = await DeploymentRequestDomain.loadDeploymentRequestBy({
     id: bundleId,
   });
@@ -1212,16 +1326,22 @@ const recomputeBundleDates = async (bundleId: DeploymentRequestId) => {
       DeploymentRequestHubStatus.Expired,
     ].includes(bundle.hub_status)
   ) {
-    return;
+    return null;
   }
 
   const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
     parent_id: bundleId,
   });
 
+  const newHubStatus = DeploymentHelper.computeBundleHubStatus(
+    bundle.hub_status,
+    children
+  );
+
   const updatedBundle =
     await DeploymentRequestDomain.updateDeploymentRequestById(bundleId, {
       ...DeploymentHelper.computeBundleDates(children),
+      hub_status: newHubStatus,
     });
   if (!updatedBundle) {
     throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
@@ -1232,6 +1352,8 @@ const recomputeBundleDates = async (bundleId: DeploymentRequestId) => {
     updatedBundle.user_requester_id,
     bundle
   );
+
+  return newHubStatus === bundle.hub_status ? null : updatedBundle;
 };
 
 const applyDeploymentRequestUpdateInQuotaTransaction = async ({
@@ -1307,7 +1429,9 @@ const sendProvisioningPlatformEmail = async (
   deploymentRequest: DeploymentRequestModel
 ) => {
   try {
-    if (!deploymentRequest.platform_identifier) {
+    const mailContext = await buildTrialMailContext(deploymentRequest);
+
+    if (!mailContext) {
       return;
     }
 
@@ -1315,14 +1439,26 @@ const sendProvisioningPlatformEmail = async (
       id: deploymentRequest.user_requester_id,
     });
     if (user) {
-      await sendMail({
-        to: user.email,
-        template: 'free_trial_provisioning',
-        params: {
-          firstName: formatName(user.first_name ?? ''),
-          platformIdentifier: deploymentRequest.platform_identifier,
-        },
-      });
+      const firstName = formatName(user.first_name ?? '');
+
+      await (mailContext.isBundle
+        ? sendMail({
+            to: user.email,
+            template: 'free_trial_bundle_provisioning',
+            params: {
+              firstName,
+              productNames: mailContext.productNames,
+              products: mailContext.products,
+            },
+          })
+        : sendMail({
+            to: user.email,
+            template: 'free_trial_provisioning',
+            params: {
+              firstName,
+              platformIdentifier: mailContext.platformIdentifier,
+            },
+          }));
     } else {
       logApp.warn('Requester not found for provisioning platform mail', {
         deploymentRequestId: deploymentRequest.id,
@@ -1336,33 +1472,55 @@ const sendProvisioningPlatformEmail = async (
   }
 };
 
+const resolveActivePlatformUrl = async (
+  deploymentRequest: DeploymentRequestModel,
+  isBundle: boolean
+): Promise<string | null> => {
+  if (isBundle) {
+    return buildXtmPlatformTrialLink();
+  }
+
+  if (!deploymentRequest.platform_id) {
+    logApp.error('Unable to send mail after deployment request is active', {
+      error: 'platform_id not set for active platform',
+      deploymentRequestId: deploymentRequest.id,
+    });
+    return null;
+  }
+
+  const platformConfiguration =
+    await PlatformConfigurationDomain.loadConfigurationByPlatform(
+      deploymentRequest.platform_id
+    );
+
+  if (!platformConfiguration) {
+    logApp.error('Unable to send mail after deployment request is active', {
+      error: NotFoundErrorCode.PlatformConfigurationNotFound,
+      deploymentRequestId: deploymentRequest.id,
+      platformId: deploymentRequest.platform_id,
+    });
+    return null;
+  }
+
+  return platformConfiguration.platform_url;
+};
+
 const sendActivePlatformEmail = async (
-  deploymentRequest: FullyQualifiedDeploymentRequest
+  deploymentRequest: DeploymentRequestModel
 ) => {
   try {
-    if (!deploymentRequest.platform_identifier) {
+    const mailContext = await buildTrialMailContext(deploymentRequest);
+
+    if (!mailContext) {
       return;
     }
 
-    if (!deploymentRequest.platform_id) {
-      logApp.error('Unable to send mail after deployment request is active', {
-        error: 'platform_id not set for active platform',
-        deploymentRequestId: deploymentRequest.id,
-      });
-      return;
-    }
+    const platformUrl = await resolveActivePlatformUrl(
+      deploymentRequest,
+      mailContext.isBundle
+    );
 
-    const platformConfiguration =
-      await PlatformConfigurationDomain.loadConfigurationByPlatform(
-        deploymentRequest.platform_id
-      );
-
-    if (!platformConfiguration) {
-      logApp.error('Unable to send mail after deployment request is active', {
-        error: NotFoundErrorCode.PlatformConfigurationNotFound,
-        deploymentRequestId: deploymentRequest.id,
-        platformId: deploymentRequest.platform_id,
-      });
+    if (!platformUrl) {
       return;
     }
 
@@ -1378,19 +1536,32 @@ const sendActivePlatformEmail = async (
       return;
     }
 
-    await sendMail({
-      to: user.email,
-      template: 'free_trial_registered',
-      params: {
-        firstName: formatName(user.first_name ?? ''),
-        platformUrl: platformConfiguration?.platform_url,
-        platformIdentifier: deploymentRequest.platform_identifier,
-        globalServiceInstanceId: toGlobalId(
-          'ServiceInstance',
-          deploymentRequest.service_instance_id
-        ),
-      },
-    });
+    const firstName = formatName(user.first_name ?? '');
+
+    await (mailContext.isBundle
+      ? sendMail({
+          to: user.email,
+          template: 'free_trial_bundle_active',
+          params: {
+            firstName,
+            platformUrl,
+            productNames: mailContext.productNames,
+            products: mailContext.products,
+          },
+        })
+      : sendMail({
+          to: user.email,
+          template: 'free_trial_registered',
+          params: {
+            firstName,
+            platformUrl,
+            platformIdentifier: mailContext.platformIdentifier,
+            globalServiceInstanceId: toGlobalId(
+              'ServiceInstance',
+              deploymentRequest.service_instance_id
+            ),
+          },
+        }));
   } catch (error) {
     logApp.error('Unable to send mail after deployment request is active', {
       error,
