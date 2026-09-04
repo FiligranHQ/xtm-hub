@@ -586,3 +586,89 @@ describe('computeBundleDates', () => {
     expect(DeploymentHelper.computeBundleDates(children)).toEqual(expected);
   });
 });
+
+describe('computeBundleHubStatus', () => {
+  const child = (hub_status: DeploymentRequestHubStatus) =>
+    buildDeploymentRequest({ hub_status });
+
+  it('should keep the current status when the bundle has no child', () => {
+    expect(
+      DeploymentHelper.computeBundleHubStatus(
+        DeploymentRequestHubStatus.Pending,
+        []
+      )
+    ).toBe(DeploymentRequestHubStatus.Pending);
+  });
+
+  it('should be active once every child is active', () => {
+    expect(
+      DeploymentHelper.computeBundleHubStatus(
+        DeploymentRequestHubStatus.Provisioning,
+        [
+          child(DeploymentRequestHubStatus.Active),
+          child(DeploymentRequestHubStatus.Active),
+        ]
+      )
+    ).toBe(DeploymentRequestHubStatus.Active);
+  });
+
+  it('should be provisioning as soon as a child is provisioning', () => {
+    expect(
+      DeploymentHelper.computeBundleHubStatus(
+        DeploymentRequestHubStatus.Pending,
+        [
+          child(DeploymentRequestHubStatus.Provisioning),
+          child(DeploymentRequestHubStatus.Pending),
+        ]
+      )
+    ).toBe(DeploymentRequestHubStatus.Provisioning);
+  });
+
+  it('should stay provisioning while a child is not active yet', () => {
+    expect(
+      DeploymentHelper.computeBundleHubStatus(
+        DeploymentRequestHubStatus.Provisioning,
+        [
+          child(DeploymentRequestHubStatus.Active),
+          child(DeploymentRequestHubStatus.Provisioning),
+        ]
+      )
+    ).toBe(DeploymentRequestHubStatus.Provisioning);
+  });
+
+  it('should keep the current status when no child is provisioned', () => {
+    expect(
+      DeploymentHelper.computeBundleHubStatus(
+        DeploymentRequestHubStatus.Pending,
+        [
+          child(DeploymentRequestHubStatus.Pending),
+          child(DeploymentRequestHubStatus.Pending),
+        ]
+      )
+    ).toBe(DeploymentRequestHubStatus.Pending);
+  });
+
+  it.each([
+    DeploymentRequestHubStatus.Cancelled,
+    DeploymentRequestHubStatus.Expired,
+  ])('should not move a %s bundle', (hub_status) => {
+    expect(
+      DeploymentHelper.computeBundleHubStatus(hub_status, [
+        child(DeploymentRequestHubStatus.Active),
+        child(DeploymentRequestHubStatus.Active),
+      ])
+    ).toBe(hub_status);
+  });
+
+  it('should keep the current status when the transition is invalid', () => {
+    expect(
+      DeploymentHelper.computeBundleHubStatus(
+        DeploymentRequestHubStatus.Queued,
+        [
+          child(DeploymentRequestHubStatus.Provisioning),
+          child(DeploymentRequestHubStatus.Pending),
+        ]
+      )
+    ).toBe(DeploymentRequestHubStatus.Queued);
+  });
+});
