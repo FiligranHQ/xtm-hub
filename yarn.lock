@@ -4720,13 +4720,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:16.3.3":
-  version: 16.3.3
-  resolution: "@next/eslint-plugin-next@npm:16.3.3"
+"@next/eslint-plugin-next@npm:16.3.4":
+  version: 16.3.4
+  resolution: "@next/eslint-plugin-next@npm:16.3.4"
   dependencies:
     "@eslint-community/eslint-utils": "npm:4.9.1"
     fast-glob: "npm:3.3.1"
-  checksum: 10/f61daab987b4930525178c4c1b93e6def4cf0b733834d3b6b90cae9c23f5d16fb6afd9317ffefdef84ce15b415bf2b0d35825ef9853b200656b0cc86dd0ad0ac
+  checksum: 10/09f7b428f9dde0bf671480a152109ad32758bd67e0098b0821df48936114625510f30f4ea3c14bb9f25a0cb5441f51d8c396b1ae41c94cbf9a1dbb39375144d4
   languageName: node
   linkType: hard
 
@@ -8832,7 +8832,7 @@ __metadata:
     clsx: "npm:2.1.1"
     concurrently: "catalog:"
     eslint: "catalog:"
-    eslint-config-next: "npm:16.3.3"
+    eslint-config-next: "npm:16.3.4"
     eslint-config-prettier: "catalog:"
     eslint-plugin-formatjs: "npm:6.6.1"
     extract-files: "npm:13.0.0"
@@ -11650,11 +11650,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:16.3.3":
-  version: 16.3.3
-  resolution: "eslint-config-next@npm:16.3.3"
+"eslint-config-next@npm:16.3.4":
+  version: 16.3.4
+  resolution: "eslint-config-next@npm:16.3.4"
   dependencies:
-    "@next/eslint-plugin-next": "npm:16.3.3"
+    "@next/eslint-plugin-next": "npm:16.3.4"
     eslint-import-resolver-node: "npm:^0.3.6"
     eslint-import-resolver-typescript: "npm:^3.5.2"
     eslint-plugin-import: "npm:^2.32.0"
@@ -11669,7 +11669,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/10c982737b589a6851ef2feab38a34d0a0cabbe26224ef348c4d57a3e9f977c8860de9efd773a69c0269ad76febab30b72fd6e96ce70afb09ea0010781b9cd6c
+  checksum: 10/85e07235b7d39168f5e695ccc89a129fbb3c3bb9881cd60f49673e25f2210debebdcc7b02df33d0e8a414d954bdab964a7cb4a8ae17e56debee49e863691438f
   languageName: node
   linkType: hard
 
