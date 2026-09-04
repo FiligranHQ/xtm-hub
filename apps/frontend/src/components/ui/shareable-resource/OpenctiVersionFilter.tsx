@@ -7,7 +7,11 @@ import {
 } from '@/components/ui/shareable-resource/OpenctiVersionFilter.utils';
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { useRegisteredProductVersions } from '@/hooks/use-registered-product-versions';
-import { useServiceListFilters } from '@/hooks/use-service-list-filters';
+import {
+  clearJustAddedFilter,
+  useServiceListFilters,
+  wasFilterJustAdded,
+} from '@/hooks/use-service-list-filters';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { cn } from '@/lib/utils';
 import { CheckIcon, InfoIcon } from '@filigran/icon';
@@ -28,7 +32,7 @@ import {
 import { Button } from '@filigran/ui/servers';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface OpenctiVersionFilterProps {
   platformIdentifier: PlatformIdentifier;
@@ -52,7 +56,6 @@ export const OpenctiVersionFilter = ({
   publicPath = false,
 }: OpenctiVersionFilterProps) => {
   const t = useTranslations();
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { productVersions } = useRegisteredProductVersions(platformIdentifier);
@@ -81,6 +84,20 @@ export const OpenctiVersionFilter = ({
   const { openctiVersions, setOpenctiVersions, removeOpenctiVersions } =
     useServiceListLocalStorage(localStorageKey);
   const selectedVersion = Object.keys(openctiVersions)[0];
+
+  // This component mounts both when the filter is freshly picked from the
+  // add-filter dropdown and on page load when it was already selected in a
+  // previous session. Only the former should auto-open the popover, so we
+  // rely on a one-time, non-persisted flag set by `addFilter` rather than
+  // inferring it from the (unreliable, e.g. filter added but no value
+  // picked yet) presence of a selected version.
+  const [isPopoverOpen, setIsPopoverOpen] = useState(() =>
+    wasFilterJustAdded(localStorageKey, ServiceListFilterKey.OpenctiVersion)
+  );
+
+  useEffect(() => {
+    clearJustAddedFilter(localStorageKey, ServiceListFilterKey.OpenctiVersion);
+  }, [localStorageKey]);
 
   const { removeFilter } = useServiceListFilters();
   const removeOpenctiVersionsFilter = () => {
