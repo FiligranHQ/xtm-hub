@@ -20,3 +20,19 @@ export const groupInstanceNamesByVersion = (
   }
   return namesByVersion;
 };
+
+export const sortVersionsWithRegisteredFirst = (
+  versions: string[],
+  registeredInstanceNamesByVersion: Map<string, string[]>
+): string[] => {
+  const registered: string[] = [];
+  const others: string[] = [];
+  for (const version of versions) {
+    if (registeredInstanceNamesByVersion.has(version)) {
+      registered.push(version);
+    } else {
+      others.push(version);
+    }
+  }
+  return [...registered, ...others];
+};

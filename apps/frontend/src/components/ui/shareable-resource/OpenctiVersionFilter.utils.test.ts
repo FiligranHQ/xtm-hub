@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { groupInstanceNamesByVersion } from './OpenctiVersionFilter.utils';
+import {
+  groupInstanceNamesByVersion,
+  sortVersionsWithRegisteredFirst,
+} from './OpenctiVersionFilter.utils';
 
 describe('groupInstanceNamesByVersion', () => {
   it.each`
@@ -12,4 +15,29 @@ describe('groupInstanceNamesByVersion', () => {
   `('should group $description', ({ platforms, expected }) => {
     expect(groupInstanceNamesByVersion(platforms)).toEqual(new Map(expected));
   });
+});
+
+describe('sortVersionsWithRegisteredFirst', () => {
+  it.each`
+    description                                                             | versions                       | registeredVersions    | expected
+    ${'no registered versions keeps the original (newest-first) order'}     | ${['6.6.0', '6.5.0', '6.4.0']} | ${[]}                 | ${['6.6.0', '6.5.0', '6.4.0']}
+    ${'a single registered version is moved to the top'}                    | ${['6.6.0', '6.5.0', '6.4.0']} | ${['6.5.0']}          | ${['6.5.0', '6.6.0', '6.4.0']}
+    ${'several registered versions keep their relative newest-first order'} | ${['6.6.0', '6.5.0', '6.4.0']} | ${['6.4.0', '6.6.0']} | ${['6.6.0', '6.4.0', '6.5.0']}
+    ${'every version registered leaves the order unchanged'}                | ${['6.6.0', '6.5.0']}          | ${['6.6.0', '6.5.0']} | ${['6.6.0', '6.5.0']}
+    ${'no versions returns an empty list'}                                  | ${[]}                          | ${['6.6.0']}          | ${[]}
+  `(
+    'should sort so that $description',
+    ({ versions, registeredVersions, expected }) => {
+      const registeredInstanceNamesByVersion = new Map(
+        registeredVersions.map((version: string) => [version, ['Instance']])
+      );
+
+      expect(
+        sortVersionsWithRegisteredFirst(
+          versions,
+          registeredInstanceNamesByVersion
+        )
+      ).toEqual(expected);
+    }
+  );
 });

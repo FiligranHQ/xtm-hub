@@ -120,7 +120,7 @@ const ShareableResourceCard = ({
               isIncompatibleWithSelectedVersion
             }
             incompatibleTooltip={t(
-              'Service.OpenctiIntegrations.Filter.ProductVersion.FilterIncompatibleTooltip',
+              'Service.OpenctiIntegrations.Filter.OpenCTIVersion.FilterIncompatibleTooltip',
               { version: document.product_version ?? '' }
             )}
           />

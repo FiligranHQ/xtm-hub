@@ -10,21 +10,14 @@ import { useMemo } from 'react';
 
 interface ProductVersionFilterProps {
   platformIdentifier: PlatformIdentifier;
-  /**
-   * On public pages there is no authenticated user/organization, so the
-   * registered-instance lookup must be skipped entirely.
-   */
-  publicPath?: boolean;
 }
 
 export const ProductVersionFilter = ({
   platformIdentifier,
-  publicPath = false,
 }: ProductVersionFilterProps) => {
   const t = useTranslations();
   const { platforms } = useRegisteredPlatforms(platformIdentifier, {
     onlyActive: true,
-    skip: publicPath,
   });
 
   const options = useMemo(() => {

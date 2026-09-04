@@ -1149,8 +1149,12 @@
         },
         "ProductVersion": {
           "Label": "接続済み製品",
-          "Placeholder": "接続済み製品...",
-          "RegisteredInstanceTooltip": "登録済みの{count, plural, one {インスタンス} other {インスタンス}}と一致します: {names}",
+          "Placeholder": "接続済み製品..."
+        },
+        "OpenCTIVersion": {
+          "Label": "OpenCTI バージョン",
+          "Placeholder": "OpenCTI バージョン...",
+          "RegisteredInstanceTooltip": "登録済みの{count, plural, one {製品} other {製品}}と一致します: {names}",
           "FilterIncompatibleTooltip": "選択された OpenCTI バージョンと互換性がありません。{version} 以降が必要です"
         },
         "ManagerSupported": {

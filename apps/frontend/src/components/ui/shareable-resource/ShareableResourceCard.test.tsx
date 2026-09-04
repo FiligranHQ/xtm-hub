@@ -147,7 +147,7 @@ describe('ShareableResourceCard', () => {
           .getAllByRole('tooltip')
           .find((tooltip) =>
             tooltip.textContent?.includes(
-              'Service.OpenctiIntegrations.Filter.ProductVersion.FilterIncompatibleTooltip'
+              'Service.OpenctiIntegrations.Filter.OpenCTIVersion.FilterIncompatibleTooltip'
             )
           );
         expect(versionTooltip).toBeTruthy();

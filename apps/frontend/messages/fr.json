@@ -1148,9 +1148,13 @@
           "Placeholder": "Type d'intégration..."
         },
         "ProductVersion": {
+          "Label": "Produits connectés",
+          "Placeholder": "Produits connectés..."
+        },
+        "OpenCTIVersion": {
           "Label": "Version OpenCTI",
           "Placeholder": "Version OpenCTI...",
-          "RegisteredInstanceTooltip": "Correspond à {count, plural, one {votre instance enregistrée} other {vos instances enregistrées}} : {names}",
+          "RegisteredInstanceTooltip": "Correspond à {count, plural, one {votre produit enregistré} other {vos produits enregistrés}} : {names}",
           "FilterIncompatibleTooltip": "Non compatible avec la version OpenCTI sélectionnée, nécessite la version {version} ou supérieure"
         },
         "ManagerSupported": {

@@ -11,7 +11,6 @@ import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource
 import { IntegrationSolutionCategoryFilter } from '@/components/ui/shareable-resource/integration/IntegrationSolutionCategoryFilter';
 import { IntegrationVerifiedFilter } from '@/components/ui/shareable-resource/integration/IntegrationVerifiedFilter';
 import { OpenctiVersionFilter } from '@/components/ui/shareable-resource/OpenctiVersionFilter';
-import { ProductVersionFilter } from '@/components/ui/shareable-resource/ProductVersionFilter';
 import {
   ServiceListLocalStorageKey,
   useServiceListLocalStorage,
@@ -67,7 +66,6 @@ export const useShareableResourceMapping = (
     removeDeployable,
     removeVerified,
     removeEntityTypes,
-    removeProductVersions,
     removeOpenctiVersions,
   } = useServiceListLocalStorage(localStorageKey);
 
@@ -88,29 +86,17 @@ export const useShareableResourceMapping = (
         node: <IntegrationFilters />,
         reset: removeIntegrationTypes,
       },
-      ...(isDecouplingConnectorsEnabled
-        ? {
-            [ServiceListFilterKey.OpenctiVersion]: {
-              node: (
-                <OpenctiVersionFilter
-                  platformIdentifier={PlatformIdentifier.Opencti}
-                  publicPath
-                />
-              ),
-              reset: removeOpenctiVersions,
-            },
-          }
-        : {
-            [ServiceListFilterKey.ProductVersion]: {
-              node: (
-                <ProductVersionFilter
-                  platformIdentifier={PlatformIdentifier.Opencti}
-                  publicPath
-                />
-              ),
-              reset: removeProductVersions,
-            },
-          }),
+      ...(isDecouplingConnectorsEnabled && {
+        [ServiceListFilterKey.OpenctiVersion]: {
+          node: (
+            <OpenctiVersionFilter
+              platformIdentifier={PlatformIdentifier.Opencti}
+              publicPath
+            />
+          ),
+          reset: removeOpenctiVersions,
+        },
+      }),
       [ServiceListFilterKey.ManagerSupported]: {
         node: <IntegrationDeployableFilter />,
         reset: removeDeployable,

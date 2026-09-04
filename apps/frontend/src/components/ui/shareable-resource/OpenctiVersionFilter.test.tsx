@@ -8,7 +8,6 @@ import {
   RegisteredProductVersionsListQuery,
 } from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
-import { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OpenctiVersionFilter } from './OpenctiVersionFilter';
 
@@ -58,22 +57,6 @@ vi.mock('@/hooks/use-service-list-filters', () => ({
   }),
 }));
 
-vi.mock('@filigran/ui', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@filigran/ui')>()),
-  SimpleTooltip: ({
-    title,
-    children,
-  }: {
-    title: ReactNode;
-    children: ReactNode;
-  }) => (
-    <>
-      <span data-testid="tooltip-title">{title}</span>
-      {children}
-    </>
-  ),
-}));
-
 describe('OpenctiVersionFilter', () => {
   beforeEach(() => {
     storedOpenctiVersions = {};
@@ -88,7 +71,7 @@ describe('OpenctiVersionFilter', () => {
 
     expect(
       screen.getByText(
-        'Service.OpenctiIntegrations.Filter.ProductVersion.Placeholder'
+        'Service.OpenctiIntegrations.Filter.OpenCTIVersion.Placeholder'
       )
     ).toBeInTheDocument();
   });
@@ -100,7 +83,7 @@ describe('OpenctiVersionFilter', () => {
 
     await user.click(
       screen.getByText(
-        'Service.OpenctiIntegrations.Filter.ProductVersion.Placeholder'
+        'Service.OpenctiIntegrations.Filter.OpenCTIVersion.Placeholder'
       )
     );
     await user.click(
@@ -152,5 +135,41 @@ describe('OpenctiVersionFilter', () => {
       PlatformIdentifier.Opencti,
       { onlyActive: true, skip: true }
     );
+  });
+
+  it('moves the registered version to the top even though it is older than other versions', async () => {
+    vi.mocked(useRegisteredPlatforms).mockReturnValue({
+      platforms: [{ id: 'p1', version: VERSION_ALPHA, title: 'Instance' }],
+    });
+
+    const { user } = testRender(
+      <OpenctiVersionFilter platformIdentifier={PlatformIdentifier.Opencti} />
+    );
+
+    await user.click(
+      screen.getByText(
+        'Service.OpenctiIntegrations.Filter.OpenCTIVersion.Placeholder'
+      )
+    );
+
+    const options = within(screen.getByRole('listbox')).getAllByRole('option');
+    const optionTexts = options.map((option) => option.textContent);
+
+    expect(optionTexts[0]).toContain(VERSION_ALPHA);
+    expect(optionTexts[1]).toContain(VERSION_ZULU);
+  });
+
+  it('focuses the search input by default when the popover opens', async () => {
+    const { user } = testRender(
+      <OpenctiVersionFilter platformIdentifier={PlatformIdentifier.Opencti} />
+    );
+
+    await user.click(
+      screen.getByText(
+        'Service.OpenctiIntegrations.Filter.OpenCTIVersion.Placeholder'
+      )
+    );
+
+    expect(await screen.findByPlaceholderText('Search...')).toHaveFocus();
   });
 });

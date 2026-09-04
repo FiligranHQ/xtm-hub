@@ -6,20 +6,9 @@ import { documentItem_fragment$data } from '@generated/documentItem_fragment.gra
 import { IntegrationType } from '@graphql/generated';
 import { screen, waitFor, within } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
-import { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import DocumentList from './DocumentList';
 import { ServiceListDisplayMode } from './header/ServiceListHeader';
-
-// DocumentList renders ShareableResourceCard, which reads the selected
-// product-version filter from ServiceListLocalStorageKeyContext.
-const renderWithLocalStorageKeyContext = (children: ReactNode) =>
-  testRender(
-    <AppServiceListLocalStorageKeyContext
-      localStorageKey={ServiceListLocalStorageKey.OpenCTIIntegrationFeeds}>
-      {children}
-    </AppServiceListLocalStorageKeyContext>
-  );
 
 const ServiceIdentifier = 'opencti';
 const ServiceInstanceId = 'service-instance-1';
@@ -121,12 +110,16 @@ describe('DocumentList', () => {
       },
     ] as documentItem_fragment$data[];
 
-    // When
-    renderWithLocalStorageKeyContext(
-      <DocumentList
-        documents={documents}
-        displayMode={ServiceListDisplayMode.Tab}
-      />
+    // When: Tab mode renders ShareableResourceCard, which reads the
+    // selected product-version filter from ServiceListLocalStorageKeyContext.
+    testRender(
+      <AppServiceListLocalStorageKeyContext
+        localStorageKey={ServiceListLocalStorageKey.OpenCTIIntegrationFeeds}>
+        <DocumentList
+          documents={documents}
+          displayMode={ServiceListDisplayMode.Tab}
+        />
+      </AppServiceListLocalStorageKeyContext>
     );
 
     // Then
@@ -160,7 +153,7 @@ describe('DocumentList', () => {
         use_cases: [],
       },
     ] as documentItem_fragment$data[];
-    const { user } = renderWithLocalStorageKeyContext(
+    const { user } = testRender(
       <DocumentList
         documents={documents}
         displayMode={ServiceListDisplayMode.List}
@@ -192,7 +185,7 @@ describe('DocumentList', () => {
         use_cases: [],
       },
     ] as documentItem_fragment$data[];
-    const { user } = renderWithLocalStorageKeyContext(
+    const { user } = testRender(
       <DocumentList
         documents={documents}
         displayMode={ServiceListDisplayMode.List}
@@ -223,7 +216,7 @@ describe('DocumentList', () => {
         use_cases: [],
       },
     ] as documentItem_fragment$data[];
-    const { user } = renderWithLocalStorageKeyContext(
+    const { user } = testRender(
       <DocumentList
         documents={documents}
         displayMode={ServiceListDisplayMode.List}

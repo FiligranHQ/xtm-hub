@@ -6,7 +6,6 @@ import { publicDocumentListItemFragment$data } from '@generated/publicDocumentLi
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { IntegrationType } from '@graphql/generated';
 import { screen } from '@testing-library/react';
-import { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { PublicShareableResourceList } from './PublicShareableResourceList';
 
@@ -15,16 +14,6 @@ vi.mock('@/hooks/use-scroll-position', () => ({
   default: () => ({ save: vi.fn() }),
 }));
 
-// PublicShareableResourceList renders ShareableResourceCard, which reads the
-// selected product-version filter from ServiceListLocalStorageKeyContext.
-const renderWithLocalStorageKeyContext = (children: ReactNode) =>
-  testRender(
-    <AppServiceListLocalStorageKeyContext
-      localStorageKey={ServiceListLocalStorageKey.OpenCTIIntegrationFeeds}>
-      {children}
-    </AppServiceListLocalStorageKeyContext>
-  );
-
 describe('PublicShareableResourceList', () => {
   const serviceInstance = {
     id: 'service-1',
@@ -32,7 +21,9 @@ describe('PublicShareableResourceList', () => {
   };
 
   it('renders an empty state when no document is provided', () => {
-    renderWithLocalStorageKeyContext(
+    // With no documents, the component returns early and never renders
+    // ShareableResourceCard, so no ServiceListLocalStorageKeyContext is needed.
+    testRender(
       <PublicShareableResourceList
         documents={[]}
         serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
@@ -62,13 +53,18 @@ describe('PublicShareableResourceList', () => {
       },
     ];
 
-    renderWithLocalStorageKeyContext(
-      <PublicShareableResourceList
-        documents={documents as publicDocumentListItemFragment$data[]}
-        serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
-        baseUrl="https://xtm.local"
-        displayMode={ServiceListDisplayMode.Tab}
-      />
+    // Renders ShareableResourceCard for each document, which reads the
+    // selected product-version filter from ServiceListLocalStorageKeyContext.
+    testRender(
+      <AppServiceListLocalStorageKeyContext
+        localStorageKey={ServiceListLocalStorageKey.OpenCTIIntegrationFeeds}>
+        <PublicShareableResourceList
+          documents={documents as publicDocumentListItemFragment$data[]}
+          serviceInstance={serviceInstance as seoServiceInstanceFragment$data}
+          baseUrl="https://xtm.local"
+          displayMode={ServiceListDisplayMode.Tab}
+        />
+      </AppServiceListLocalStorageKeyContext>
     );
 
     expect(

@@ -1,7 +1,10 @@
 import { ServiceListFilterKey } from '@/components/service/components/header/ServiceListHeader';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
 import { SelectedValuesDisplay } from '@/components/ui/shareable-resource/logical-multi-select/SelectedValuesDisplay';
-import { groupInstanceNamesByVersion } from '@/components/ui/shareable-resource/OpenctiVersionFilter.utils';
+import {
+  groupInstanceNamesByVersion,
+  sortVersionsWithRegisteredFirst,
+} from '@/components/ui/shareable-resource/OpenctiVersionFilter.utils';
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { useRegisteredProductVersions } from '@/hooks/use-registered-product-versions';
 import { useServiceListFilters } from '@/hooks/use-service-list-filters';
@@ -25,7 +28,7 @@ import {
 import { Button } from '@filigran/ui/servers';
 import { PlatformIdentifier } from '@graphql/generated';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 interface OpenctiVersionFilterProps {
   platformIdentifier: PlatformIdentifier;
@@ -50,9 +53,9 @@ export const OpenctiVersionFilter = ({
 }: OpenctiVersionFilterProps) => {
   const t = useTranslations();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const { productVersions: versions } =
-    useRegisteredProductVersions(platformIdentifier);
+  const { productVersions } = useRegisteredProductVersions(platformIdentifier);
 
   // Versions the org already has a registered instance for, used to flag
   // matching options with a tooltip below listing the instance name(s).
@@ -63,6 +66,15 @@ export const OpenctiVersionFilter = ({
   const registeredInstanceNamesByVersion = useMemo(
     () => groupInstanceNamesByVersion(platforms),
     [platforms]
+  );
+
+  const versions = useMemo(
+    () =>
+      sortVersionsWithRegisteredFirst(
+        productVersions,
+        registeredInstanceNamesByVersion
+      ),
+    [productVersions, registeredInstanceNamesByVersion]
   );
 
   const { localStorageKey } = useServiceListLocalStorageKeyContext();
@@ -104,10 +116,10 @@ export const OpenctiVersionFilter = ({
                 : []
             }
             optionLabel={t(
-              'Service.OpenctiIntegrations.Filter.ProductVersion.Label'
+              'Service.OpenctiIntegrations.Filter.OpenCTIVersion.Label'
             )}
             placeholder={t(
-              'Service.OpenctiIntegrations.Filter.ProductVersion.Placeholder'
+              'Service.OpenctiIntegrations.Filter.OpenCTIVersion.Placeholder'
             )}
             onRemove={removeOpenctiVersionsFilter}
           />
@@ -116,9 +128,16 @@ export const OpenctiVersionFilter = ({
       <PopoverContent
         className="w-[300px] p-0 drop-shadow-sm"
         align="start"
-        onEscapeKeyDown={() => setIsPopoverOpen(false)}>
+        onEscapeKeyDown={() => setIsPopoverOpen(false)}
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          searchInputRef.current?.focus();
+        }}>
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput
+            ref={searchInputRef}
+            placeholder="Search..."
+          />
           <CommandList>
             <CommandEmpty>{t('Utils.NotFound')}</CommandEmpty>
             <CommandGroup>
@@ -139,7 +158,7 @@ export const OpenctiVersionFilter = ({
                     {registeredInstanceNamesByVersion.has(version) && (
                       <SimpleTooltip
                         title={t(
-                          'Service.OpenctiIntegrations.Filter.ProductVersion.RegisteredInstanceTooltip',
+                          'Service.OpenctiIntegrations.Filter.OpenCTIVersion.RegisteredInstanceTooltip',
                           {
                             count:
                               registeredInstanceNamesByVersion.get(version)!
