@@ -108,7 +108,7 @@ vi.mock(
     ReachSalesButton: ({
       deploymentRequestType,
     }: {
-      deploymentRequestType?: string;
+      deploymentRequestType?: DeploymentRequestDeploymentType;
     }) => (
       <div
         data-testid="reach-sales-button"
