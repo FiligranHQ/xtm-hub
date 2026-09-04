@@ -230,9 +230,9 @@ export const DeploymentRequestDomain = {
     return query.first();
   },
 
-  loadTrialDeploymentRequestByPlatformIdentifierAndUserId: async (
-    platformIdentifier: PlatformIdentifier,
-    userId: string
+  loadLatestDeploymentRequestForUser: async (
+    userId: string,
+    conditions: DeploymentRequestMutator
   ): Promise<FullyQualifiedDeploymentRequest | undefined> => {
     return getDeploymentRequestWithUserDataQuery()
       .leftJoin(
@@ -241,12 +241,7 @@ export const DeploymentRequestDomain = {
         '=',
         'Organization.id'
       )
-      .where(
-        'DeploymentRequest.type',
-        '=',
-        DeploymentRequestDeploymentType.Trial
-      )
-      .where('DeploymentRequest.platform_identifier', '=', platformIdentifier)
+      .where(prefixObjectKeys(conditions, 'DeploymentRequest.'))
       .where('User_Organization.user_id', '=', userId)
       .orderBy('DeploymentRequest.request_date', 'desc')
       .first();
