@@ -215,7 +215,7 @@ export const DeploymentApp = {
       input.actual_state
     );
 
-    const bundleWithNewStatus = await withTransaction(async () => {
+    await withTransaction(async () => {
       await applyDeploymentRequestUpdateInQuotaTransaction({
         deploymentRequest,
         deploymentRequestId,
@@ -224,10 +224,10 @@ export const DeploymentApp = {
       });
 
       if (isBundle || !isBundleChild(deploymentRequest)) {
-        return null;
+        return;
       }
 
-      return recomputeBundleFromChildren(deploymentRequest.parent_id);
+      await recomputeBundleDates(deploymentRequest.parent_id);
     });
 
     const updatedDeploymentRequest =
@@ -245,12 +245,7 @@ export const DeploymentApp = {
       deploymentRequest
     );
 
-    if (bundleWithNewStatus) {
-      await sendStatusPlatformEmail(
-        bundleWithNewStatus,
-        bundleWithNewStatus.hub_status
-      );
-    } else if (
+    if (
       !isBundleChild(deploymentRequest) &&
       newStatus !== deploymentRequest.hub_status
     ) {
@@ -1310,9 +1305,7 @@ const syncPlatformRegistrationStatus = async (
   );
 };
 
-const recomputeBundleFromChildren = async (
-  bundleId: DeploymentRequestId
-): Promise<DeploymentRequestModel | null> => {
+const recomputeBundleDates = async (bundleId: DeploymentRequestId) => {
   const bundle = await DeploymentRequestDomain.loadDeploymentRequestBy({
     id: bundleId,
   });
@@ -1326,22 +1319,16 @@ const recomputeBundleFromChildren = async (
       DeploymentRequestHubStatus.Expired,
     ].includes(bundle.hub_status)
   ) {
-    return null;
+    return;
   }
 
   const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
     parent_id: bundleId,
   });
 
-  const newHubStatus = DeploymentHelper.computeBundleHubStatus(
-    bundle.hub_status,
-    children
-  );
-
   const updatedBundle =
     await DeploymentRequestDomain.updateDeploymentRequestById(bundleId, {
       ...DeploymentHelper.computeBundleDates(children),
-      hub_status: newHubStatus,
     });
   if (!updatedBundle) {
     throw new Error(NotFoundErrorCode.DeploymentRequestNotFound);
@@ -1352,8 +1339,6 @@ const recomputeBundleFromChildren = async (
     updatedBundle.user_requester_id,
     bundle
   );
-
-  return newHubStatus === bundle.hub_status ? null : updatedBundle;
 };
 
 const applyDeploymentRequestUpdateInQuotaTransaction = async ({

@@ -2050,7 +2050,7 @@ describe('deployment app', () => {
           );
       });
 
-      it('should aggregate dates and hub_status from children', async () => {
+      it('should aggregate dates from children without changing the bundle hub_status', async () => {
         await DeploymentApp.updateDeploymentRequest({
           id: childA.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
@@ -2066,7 +2066,7 @@ describe('deployment app', () => {
           });
 
         expect(updatedBundle).toMatchObject({
-          hub_status: DeploymentRequestHubStatus.Active,
+          hub_status: DeploymentRequestHubStatus.Pending,
           start_date: new Date(2025, 1, 1),
           end_date: new Date(2025, 6, 1),
         });
@@ -2084,7 +2084,7 @@ describe('deployment app', () => {
             deployment_type: DeploymentRequestDeploymentType.Bundle,
             user_id: bundle.user_requester_id,
             parent_id: undefined,
-            status: DeploymentRequestHubStatus.Active,
+            status: DeploymentRequestHubStatus.Pending,
           })
         );
       });
@@ -2193,9 +2193,9 @@ describe('deployment app', () => {
         mockSendMail.mockClear();
       });
 
-      it('should send a single provisioning mail for the bundle when the first product starts provisioning', async () => {
+      it('should send the provisioning mail when the bundle itself starts provisioning', async () => {
         await DeploymentApp.updateDeploymentRequest({
-          id: childA.id as DeploymentRequestId,
+          id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
 
@@ -2209,48 +2209,12 @@ describe('deployment app', () => {
             products: [PlatformIdentifier.Openaev, PlatformIdentifier.Opencti],
           },
         });
-
-        const provisioningBundle =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            id: bundle.id as DeploymentRequestId,
-          });
-        expect(provisioningBundle?.hub_status).toBe(
-          DeploymentRequestHubStatus.Provisioning
-        );
-
-        mockSendMail.mockClear();
-
-        await DeploymentApp.updateDeploymentRequest({
-          id: childB.id as DeploymentRequestId,
-          actual_state: DeploymentRequestPlatformState.Provisioning,
-        });
-
-        expect(mockSendMail).not.toHaveBeenCalled();
       });
 
-      it('should send the active mail only once every product of the bundle is active', async () => {
+      it('should send the active mail when the bundle itself becomes active', async () => {
         await DeploymentApp.updateDeploymentRequest({
-          id: childA.id as DeploymentRequestId,
+          id: bundle.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Active,
-          start_date: new Date(2025, 1, 1),
-          end_date: new Date(2025, 2, 1),
-          platform_id: 'child-a-platform-id',
-        });
-
-        expect(mockSendMail).toHaveBeenCalledTimes(1);
-        expect(mockSendMail).toHaveBeenCalledWith(
-          expect.objectContaining({
-            template: 'free_trial_bundle_provisioning',
-          })
-        );
-        mockSendMail.mockClear();
-
-        await DeploymentApp.updateDeploymentRequest({
-          id: childB.id as DeploymentRequestId,
-          actual_state: DeploymentRequestPlatformState.Active,
-          start_date: new Date(2025, 1, 1),
-          end_date: new Date(2025, 2, 1),
-          platform_id: 'child-b-platform-id',
         });
 
         expect(mockSendMail).toHaveBeenCalledTimes(1);
@@ -2264,22 +2228,21 @@ describe('deployment app', () => {
             platformUrl: `${config.get('base_url_front')}/app/xtm-platform-trial`,
           },
         });
-
-        const activeBundle =
-          await DeploymentRequestDomain.loadDeploymentRequestBy({
-            id: bundle.id as DeploymentRequestId,
-          });
-        expect(activeBundle?.hub_status).toBe(
-          DeploymentRequestHubStatus.Active
-        );
       });
 
-      it('should not send any mail when the bundle status does not change', async () => {
+      it('should not send any bundle mail when its products are provisioned or active', async () => {
         await DeploymentApp.updateDeploymentRequest({
           id: childA.id as DeploymentRequestId,
           actual_state: DeploymentRequestPlatformState.Provisioning,
         });
-        mockSendMail.mockClear();
+
+        await DeploymentApp.updateDeploymentRequest({
+          id: childB.id as DeploymentRequestId,
+          actual_state: DeploymentRequestPlatformState.Active,
+          start_date: new Date(2025, 1, 1),
+          end_date: new Date(2025, 2, 1),
+          platform_id: 'child-b-platform-id',
+        });
 
         await DeploymentApp.updateDeploymentRequest({
           id: childA.id as DeploymentRequestId,
@@ -2290,19 +2253,13 @@ describe('deployment app', () => {
         });
 
         expect(mockSendMail).not.toHaveBeenCalled();
-      });
 
-      it('should send the bundle mail when the bundle status itself is updated', async () => {
-        await DeploymentApp.updateDeploymentRequest({
-          id: bundle.id as DeploymentRequestId,
-          actual_state: DeploymentRequestPlatformState.Provisioning,
-        });
-
-        expect(mockSendMail).toHaveBeenCalledTimes(1);
-        expect(mockSendMail).toHaveBeenCalledWith(
-          expect.objectContaining({
-            template: 'free_trial_bundle_provisioning',
-          })
+        const untouchedBundle =
+          await DeploymentRequestDomain.loadDeploymentRequestBy({
+            id: bundle.id as DeploymentRequestId,
+          });
+        expect(untouchedBundle?.hub_status).toBe(
+          DeploymentRequestHubStatus.Pending
         );
       });
     });

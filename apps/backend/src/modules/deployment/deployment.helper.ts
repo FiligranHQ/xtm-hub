@@ -127,50 +127,7 @@ const VALID_PLATFORM_STATE_TRANSITIONS: PlatformStateTransition[] = [
   },
 ];
 
-const BUNDLE_PROVISIONED_STATUSES: DeploymentRequestHubStatus[] = [
-  DeploymentRequestHubStatus.Provisioning,
-  DeploymentRequestHubStatus.Active,
-];
-
-const BUNDLE_FINAL_STATUSES: DeploymentRequestHubStatus[] = [
-  DeploymentRequestHubStatus.Cancelled,
-  DeploymentRequestHubStatus.Expired,
-];
-
 export const DeploymentHelper = {
-  computeBundleHubStatus: (
-    currentHubStatus: DeploymentRequestHubStatus,
-    children: DeploymentRequestModel[]
-  ): DeploymentRequestHubStatus => {
-    if (
-      children.length === 0 ||
-      BUNDLE_FINAL_STATUSES.includes(currentHubStatus)
-    ) {
-      return currentHubStatus;
-    }
-
-    const everyChildIsActive = children.every(
-      (child) => child.hub_status === DeploymentRequestHubStatus.Active
-    );
-    const someChildIsProvisioned = children.some((child) =>
-      BUNDLE_PROVISIONED_STATUSES.includes(child.hub_status)
-    );
-
-    let newHubStatus = currentHubStatus;
-    if (everyChildIsActive) {
-      newHubStatus = DeploymentRequestHubStatus.Active;
-    } else if (someChildIsProvisioned) {
-      newHubStatus = DeploymentRequestHubStatus.Provisioning;
-    }
-
-    return DeploymentHelper.isHubStatusTransitionValid(
-      currentHubStatus,
-      newHubStatus
-    )
-      ? newHubStatus
-      : currentHubStatus;
-  },
-
   isHubStatusTransitionValid: (
     from: DeploymentRequestHubStatus,
     to: DeploymentRequestHubStatus
