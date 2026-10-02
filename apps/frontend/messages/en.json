@@ -1054,12 +1054,18 @@
     },
     "Succeeded": {
       "Description": "This tab will be closed soon",
-      "Title": "{platformIdentifier} product connected successfully"
+      "Title": "{platformIdentifier} product connected successfully",
+      "CopyToken": "Copy this token into the XTM Hub registration of {platformIdentifier} (Settings > Parameters):"
     },
     "TooManyOrganizations": {
       "Description1": "Your {platformIdentifier} product {platformTitle} will be re-connected under the same organization due to capability restrictions.",
       "Description2": "If you wish to request a change, please contact your organization's administrator.",
       "Title": "Product Re-connection Notice"
+    },
+    "Destination": "The registration token will be sent to {platformUrl}.",
+    "ConfirmReregistration": {
+      "Title": "Register this product again?",
+      "Description": "{platformTitle} ({platformIdentifier}) is already connected in {organizationName}. Registering it again issues a new token, and the current one stops working."
     }
   },
   "RemoveUserOrgDialog": {

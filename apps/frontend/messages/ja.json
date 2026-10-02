@@ -1054,12 +1054,18 @@
     },
     "Succeeded": {
       "Description": "このタブはすぐに閉じられます",
-      "Title": "{platformIdentifier} 製品が正常に接続されました"
+      "Title": "{platformIdentifier} 製品が正常に接続されました",
+      "CopyToken": "このトークンを {platformIdentifier} の XTM Hub 登録（設定 > パラメーター）に貼り付けてください："
     },
     "TooManyOrganizations": {
       "Description1": "あなたの {platformIdentifier} 製品 {platformTitle} は、権限制限のため同じ組織で再接続されます。",
       "Description2": "変更を希望する場合は、組織の管理者に連絡してください。",
       "Title": "製品再接続のお知らせ"
+    },
+    "Destination": "登録トークンは {platformUrl} に送信されます。",
+    "ConfirmReregistration": {
+      "Title": "この製品を再登録しますか？",
+      "Description": "{platformTitle}（{platformIdentifier}）はすでに {organizationName} に接続されています。再登録すると新しいトークンが発行され、現在のトークンは使用できなくなります。"
     }
   },
   "RemoveUserOrgDialog": {

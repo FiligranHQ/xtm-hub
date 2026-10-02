@@ -344,4 +344,93 @@ describe('Register', () => {
     renderRegister();
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
+
+  describe('for XTM One', () => {
+    const xtmOnePlatform: PlatformInput = {
+      url: 'https://xtm.example.com/xtm-one',
+      title: 'Acme XTM One',
+    };
+    const TOKEN = '2f0b7d1e-6f7a-4a4b-9c3d-1e2f3a4b5c6d';
+
+    const renderXtmOne = () =>
+      testRender(
+        <RegistrationContext.Provider
+          value={{
+            identifier: PlatformIdentifier.Xtmone,
+            displayedIdentifier:
+              PlatformMetadataMapping[PlatformIdentifier.Xtmone].name,
+          }}>
+          <Register
+            queryRef={mockQueryRef}
+            platform={xtmOnePlatform}
+            state="s-1"
+          />
+        </RegistrationContext.Provider>
+      );
+
+    beforeEach(() => {
+      testState.token = TOKEN;
+      testState.isPlatformRegistered = {
+        status: PlatformRegistrationStatus.Registered,
+        platformTitle: 'Acme XTM One',
+        organization: { id: 'org-1' },
+      } as registerIsPlatformRegisteredFragment$data;
+    });
+
+    it('should ask before registering an already registered platform again when it is XTM One', async () => {
+      // Given a registered XTM One platform and its opener
+      const postMessage = vi.fn();
+      Object.defineProperty(window, 'opener', {
+        value: { postMessage },
+        writable: true,
+      });
+
+      // When the page opens
+      const { user } = renderXtmOne();
+
+      // Then nothing is registered until the user confirms, and the token
+      // destination is shown
+      expect(
+        screen.getByRole('heading', {
+          name: 'Register.ConfirmReregistration.Title',
+        })
+      ).toBeInTheDocument();
+      expect(screen.getByText('Register.Destination')).toBeInTheDocument();
+      expect(testState.lastRegisterVariables).toBeNull();
+
+      await user.click(screen.getByRole('button', { name: 'Utils.Confirm' }));
+
+      await waitFor(() => {
+        expect(testState.lastRegisterVariables).toEqual({
+          input: {
+            organizationId: 'org-1',
+            platform: xtmOnePlatform,
+            identifier: PlatformIdentifier.Xtmone,
+          },
+        });
+      });
+      await waitFor(() => {
+        expect(postMessage).toHaveBeenCalledExactlyOnceWith(
+          { action: 'register', token: TOKEN, state: 's-1' },
+          'https://xtm.example.com'
+        );
+      });
+    });
+
+    it('should show the token to copy when the XTM One window cannot receive it', async () => {
+      // Given no opener (the platform window was closed or severed)
+      Object.defineProperty(window, 'opener', { value: null, writable: true });
+      const { user } = renderXtmOne();
+
+      // When
+      await user.click(screen.getByRole('button', { name: 'Utils.Confirm' }));
+
+      // Then
+      await waitFor(() => {
+        expect(screen.getByTestId('registration-token')).toHaveTextContent(
+          TOKEN
+        );
+      });
+    });
+  });
 });

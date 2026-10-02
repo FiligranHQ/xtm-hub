@@ -1,11 +1,16 @@
 import Loader from '@/components/Loader';
 import { RegistrationContext } from '@/components/registration/Context';
+import { RegisterStateConfirmReregistration } from '@/components/registration/register/ConfirmReregistration';
 import { RegisterStateFailed } from '@/components/registration/register/Failed';
 import { RegisterStateMissingCapability } from '@/components/registration/register/MissingCapability';
 import { RegisterOrganizationForm } from '@/components/registration/register/OrganizationForm';
 import { RegisterPlatform } from '@/components/registration/register/register.graphql';
 import { RegisterStateSucceeded } from '@/components/registration/register/Succeeded';
 import { RegisterStateTooManyOrganizations } from '@/components/registration/register/TooManyOrganizations';
+import {
+  isTargetedRegistration,
+  postRegistrationMessage,
+} from '@/components/registration/registration-message';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
 import OrganizationListUserOrganizationsQueryGraphql, {
@@ -45,6 +50,8 @@ import {
 interface RegisterProps {
   platform: PlatformInput;
   queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
+  /** Echoed back to the platform with the token (XTM One). */
+  state?: string;
 }
 
 export type RegistrationRequestStatus =
@@ -54,13 +61,15 @@ interface State {
   registrationRequestStatus: RegistrationRequestStatus;
   chosenOrganizationId?: string;
   registerFragmentRef: registerFragment$key | null;
+  // The token, when the platform could not receive it: shown to copy.
+  undeliveredToken?: string | null;
 }
 
 type Action =
   | { type: 'SET_ORGANIZATION_ID'; payload: string }
   | { type: 'SET_FRAGMENT_REF'; payload: registerFragment$key }
   | { type: 'SET_STATUS'; payload: RegistrationRequestStatus }
-  | { type: 'SET_SUCCEEDED' };
+  | { type: 'SET_SUCCEEDED'; undeliveredToken?: string | null };
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -71,7 +80,11 @@ const reducer = (state: State, action: Action): State => {
     case 'SET_STATUS':
       return { ...state, registrationRequestStatus: action.payload };
     case 'SET_SUCCEEDED':
-      return { ...state, registrationRequestStatus: 'succeeded' };
+      return {
+        ...state,
+        registrationRequestStatus: 'succeeded',
+        undeliveredToken: action.undeliveredToken ?? null,
+      };
     default:
       return state;
   }
@@ -83,7 +96,11 @@ const initialState: State = {
   registerFragmentRef: null,
 };
 
-export const Register = ({ queryRef, platform }: RegisterProps) => {
+export const Register = ({
+  queryRef,
+  platform,
+  state: openerState,
+}: RegisterProps) => {
   const t = useTranslate();
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -116,10 +133,17 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
 
   const hasPostedMessageRef = useRef(false);
   const hasAutoRegisteredRef = useRef(false);
+  const targeted = isTargetedRegistration(identifier);
 
   const cancel = useCallback(() => {
-    window.opener?.postMessage({ action: 'cancel' }, '*');
-  }, []);
+    postRegistrationMessage(
+      window.opener,
+      identifier,
+      platform.url,
+      { action: 'cancel' },
+      openerState
+    );
+  }, [identifier, platform.url, openerState]);
 
   const register = useCallback(
     (organizationId: string, platformName: string = platform.title) => {
@@ -161,19 +185,33 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   useLayoutEffect(() => {
     if (registerDataResponse?.token && !hasPostedMessageRef.current) {
       hasPostedMessageRef.current = true;
-      window.opener?.postMessage(
-        {
-          action: 'register',
-          token: registerDataResponse.token,
-        },
-        '*'
+      const delivered = postRegistrationMessage(
+        window.opener,
+        identifier,
+        platform.url,
+        { action: 'register', token: registerDataResponse.token },
+        openerState
       );
-      dispatch({ type: 'SET_SUCCEEDED' });
+      dispatch({
+        type: 'SET_SUCCEEDED',
+        undeliveredToken:
+          !delivered && targeted ? registerDataResponse.token : null,
+      });
     }
-  }, [registerDataResponse?.token]);
+  }, [
+    registerDataResponse?.token,
+    identifier,
+    platform.url,
+    openerState,
+    targeted,
+  ]);
 
   useLayoutEffect(() => {
+    // A platform registered again issues a new token: for a targeted platform
+    // (XTM One) that takes an explicit confirmation, since anyone can open
+    // this page with a known platform id and their own platform URL.
     const shouldAutoRegister =
+      !targeted &&
       isPlatformRegistered.status === PlatformRegistrationStatus.Registered &&
       isPlatformRegistered.organization &&
       !hasAutoRegisteredRef.current;
@@ -182,7 +220,7 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
       hasAutoRegisteredRef.current = true;
       register(isPlatformRegistered.organization.id);
     }
-  }, [isPlatformRegistered, register]);
+  }, [isPlatformRegistered, register, targeted]);
 
   return useMemo(() => {
     const renderers = new Map<RegistrationRequestStatus, () => ReactNode>([
@@ -201,7 +239,10 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
       [
         'succeeded',
         () => (
-          <RegisterStateSucceeded displayedIdentifier={displayedIdentifier} />
+          <RegisterStateSucceeded
+            displayedIdentifier={displayedIdentifier}
+            token={state.undeliveredToken}
+          />
         ),
       ],
       ['failed', () => <RegisterStateFailed cancel={cancel} />],
@@ -227,6 +268,30 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
     }
 
     if (
+      targeted &&
+      isPlatformRegistered.status === PlatformRegistrationStatus.Registered &&
+      isPlatformRegistered.organization
+    ) {
+      const organization = isPlatformRegistered.organization;
+      // Named only when it is one of the user's organizations: the Hub does
+      // not tell who registered a platform to anyone else.
+      const organizationName =
+        userOrganizationsQueryData.userOrganizations.find(
+          ({ id }) => id === organization.id
+        )?.name ?? '-';
+      return (
+        <RegisterStateConfirmReregistration
+          cancel={cancel}
+          confirm={() => register(organization.id)}
+          displayedIdentifier={displayedIdentifier}
+          platformTitle={platform.title}
+          platformUrl={platform.url}
+          organizationName={organizationName}
+        />
+      );
+    }
+
+    if (
       isPlatformRegistered.status ===
         PlatformRegistrationStatus.NeverRegistered ||
       isPlatformRegistered.status === PlatformRegistrationStatus.Unregistered
@@ -235,6 +300,7 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
         <RegisterOrganizationForm
           userOrganizationsQueryData={userOrganizationsQueryData}
           defaultPlatformName={platform.title}
+          destinationUrl={targeted ? platform.url : undefined}
           cancel={cancel}
           confirm={register}
         />
@@ -247,6 +313,9 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
     state.chosenOrganizationId,
     state.registrationRequestStatus,
     platform.title,
+    platform.url,
+    targeted,
+    state.undeliveredToken,
     displayedIdentifier,
     isPlatformRegistered,
     register,

@@ -1054,12 +1054,18 @@
     },
     "Succeeded": {
       "Description": "Cet onglet sera bientôt fermé",
-      "Title": "Le produit {platformIdentifier} a été connecté avec succès"
+      "Title": "Le produit {platformIdentifier} a été connecté avec succès",
+      "CopyToken": "Copiez ce jeton dans l'enregistrement XTM Hub de {platformIdentifier} (Paramètres > Paramètres) :"
     },
     "TooManyOrganizations": {
       "Description1": "Votre produit {platformIdentifier} {platformTitle} sera reconnecté sous la même organisation en raison de restrictions de capacité.",
       "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
       "Title": "Avis de reconnexion du produit"
+    },
+    "Destination": "Le jeton d'enregistrement sera envoyé à {platformUrl}.",
+    "ConfirmReregistration": {
+      "Title": "Enregistrer à nouveau ce produit ?",
+      "Description": "{platformTitle} ({platformIdentifier}) est déjà connecté dans {organizationName}. L'enregistrer à nouveau émet un nouveau jeton, et l'actuel cesse de fonctionner."
     }
   },
   "RemoveUserOrgDialog": {

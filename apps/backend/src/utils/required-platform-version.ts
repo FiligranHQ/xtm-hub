@@ -10,12 +10,13 @@ type RequiredPlatformVersionsConfig = {
 };
 
 // A null value means the feature is disabled/not required for that identifier.
-// Xtmone is null everywhere: not registrable yet.
+// Every XTM One version handles not_found (it forgets a registration the Hub
+// no longer knows); the other features stay off for it.
 export const RequiredPlatformVersions: RequiredPlatformVersionsConfig = {
   RefreshConnectivityStatusSendsNotFound: {
     [PlatformIdentifier.Opencti]: '6.8.16',
     [PlatformIdentifier.Openaev]: '2.0.6',
-    [PlatformIdentifier.Xtmone]: null,
+    [PlatformIdentifier.Xtmone]: '0.0.0',
   },
   TenantIdRequired: {
     [PlatformIdentifier.Opencti]: null,

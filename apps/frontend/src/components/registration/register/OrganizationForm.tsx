@@ -10,6 +10,8 @@ import { z } from 'zod';
 interface RegisterOrganizationFormProps {
   userOrganizationsQueryData: organizationListUserOrganizationsQuery$data;
   defaultPlatformName: string;
+  /** Where the token goes, shown for a targeted registration (XTM One). */
+  destinationUrl?: string;
   cancel: () => void;
   confirm: (organizationId: string, platformName: string) => void;
 }
@@ -24,6 +26,7 @@ export const RegisterOrganizationForm = ({
   confirm,
   userOrganizationsQueryData,
   defaultPlatformName,
+  destinationUrl,
 }: RegisterOrganizationFormProps) => {
   const organizations = [...userOrganizationsQueryData.userOrganizations].sort(
     (a, b) => Number(a.personal_space) - Number(b.personal_space)
@@ -42,6 +45,11 @@ export const RegisterOrganizationForm = ({
               platformIdentifier: displayedIdentifier,
             })}
           </h1>
+          {destinationUrl && (
+            <p className="text-sm text-muted-foreground">
+              {t('Register.Destination', { platformUrl: destinationUrl })}
+            </p>
+          )}
         </div>
         <AutoForm
           formSchema={selectOrganizationFormSchema}

@@ -29,6 +29,7 @@ export const PageLoader = () => {
     platform_contract,
     platform_version,
     tenant_id,
+    state,
   } = useDecodedQuery();
 
   const areParametersValid =
@@ -59,6 +60,7 @@ export const PageLoader = () => {
       <Register
         queryRef={queryRef}
         platform={platform}
+        state={state ?? undefined}
       />
     </RegistrationContextProvider>
   ) : (

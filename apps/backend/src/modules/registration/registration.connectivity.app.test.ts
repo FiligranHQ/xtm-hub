@@ -84,6 +84,27 @@ describe('registration connectivity app', () => {
       );
     });
 
+    it('should return not found when an XTM One platform is not registered, whatever its version', async () => {
+      // Given an XTM One platform the Hub does not know
+      const platformId = uuidv4();
+
+      // When
+      const result =
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+          {
+            platformId,
+            token: uuidv4(),
+            platformVersion: '0.0.0',
+            platformIdentifier: PlatformIdentifier.Xtmone,
+          }
+        );
+
+      // Then
+      expect(result.status).toBe(
+        PlatformRegistrationConnectivityStatus.NotFound
+      );
+    });
+
     it('should return inactive when platform is not registered and has version above compatibility version', async () => {
       const result =
         await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
