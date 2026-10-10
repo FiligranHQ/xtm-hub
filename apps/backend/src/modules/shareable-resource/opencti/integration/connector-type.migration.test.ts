@@ -14,7 +14,7 @@ import {
   INTERNAL_HUNT_MINIMUM_VERSION_PADDED,
   toPaddedVersion,
   up,
-} from '../../../../migrations/20261003230000_apply_internal_hunt_minimum_deployable_version.js';
+} from '../../../../migrations/20261007100000_apply_internal_hunt_minimum_deployable_version.js';
 import type { DocumentId } from '../../../../model/kanel/public/Document';
 import type { ManifestId } from '../../../../model/kanel/public/Manifest';
 import { ManifestFragmentHelper } from '../../manifest-fragment/manifest-fragment.helper';

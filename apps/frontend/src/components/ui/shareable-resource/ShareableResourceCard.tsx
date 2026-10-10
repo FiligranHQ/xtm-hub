@@ -1,20 +1,17 @@
 'use client';
 import { ConnectorTypeLabel } from '@/components/service/integrations/connector-type/ConnectorTypeLabel';
-import BadgeOverflowCounter, {
-  BadgeOverflow,
-} from '@/components/ui/BadgeOverflowCounter';
 import { ShareableResourceCardDescription } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardDescription';
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
 import useScrollPosition from '@/hooks/use-scroll-position';
-import { cn } from '@/lib/utils';
 import {
   isConnectorResource,
   PublicDocumentData,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
+import { Paper } from '@filigran/design-system';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { ServiceDefinitionIdentifier } from '@generated/serviceList_fragment.graphql';
 import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
@@ -63,46 +60,30 @@ const ShareableResourceCard = ({
     : null;
 
   return (
-    <li
-      className={cn(
-        `overflow-hidden flex flex-col relative rounded bg-elevation-background-layer-1 aria-disabled:opacity-60 hover:bg-hover h-[300px] sm:h-[348px]`
-      )}>
+    <Paper
+      as="li"
+      elevation={1}
+      padding={0}
+      className="overflow-hidden flex flex-col relative aria-disabled:opacity-60 hover:bg-elevation-hover h-[310px]">
       <Link
-        className="flex flex-col flex-1 min-h-0 overflow-hidden"
+        className="flex flex-col flex-1 min-h-0 overflow-hidden gap-6 p-6"
         onClick={handleClick}
         href={detailUrl}
         prefetch={false}>
         <ShareableResourceCardHeader
           document={document}
-          shouldDisplayBothIcons={isConnector}
-          isConnector={isConnector}
           serviceInstanceId={serviceInstance.id}
         />
-        {isConnector ? (
-          <div className="p-m flex flex-col gap-s flex-1 min-h-0">
-            <ShareableResourceCardDescription
-              description={document.short_description}
-            />
-            {connectorType && (
-              <span className="shrink-0 text-sm text-muted-foreground">
-                <ConnectorTypeLabel connectorType={connectorType} />
-              </span>
-            )}
-            <BadgeOverflowCounter
-              formatLabel={false}
-              badges={document.use_cases as BadgeOverflow[]}
-              className="z-2 shrink-0"
-            />
-          </div>
-        ) : (
-          <div className="p-m">
-            <ShareableResourceCardDescription
-              description={document.short_description}
-            />
-          </div>
+        <ShareableResourceCardDescription
+          description={document.short_description}
+        />
+        {connectorType && (
+          <span className="shrink-0 text-sm text-muted-foreground">
+            <ConnectorTypeLabel connectorType={connectorType} />
+          </span>
         )}
       </Link>
-      <div className="flex items-center justify-between gap-m pl-m pb-m mt-auto">
+      <div className="flex items-center justify-between gap-1 px-6 py-4 mt-auto layer-2 bg-elevation-default border-t border-elevation-subtle-soft">
         {isConnector ? (
           <ShareableResourceCardFooterVersion
             document={document}
@@ -129,7 +110,7 @@ const ShareableResourceCard = ({
           />
         )}
       </div>
-    </li>
+    </Paper>
   );
 };
 

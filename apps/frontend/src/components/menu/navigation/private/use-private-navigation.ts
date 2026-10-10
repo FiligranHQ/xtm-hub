@@ -118,6 +118,11 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenuLinks('Security'),
     },
     {
+      href: `/${APP_PATH}/admin/roles`,
+      label: tMenuLinks('Roles'),
+      restriction: [PortalCapability.Bypass],
+    },
+    {
       href: `/${APP_PATH}/admin/use-case`,
       label: tMenuLinks('UseCase'),
     },
@@ -151,6 +156,11 @@ export const usePrivateNavigation = (): NavigationConfig => {
       href: `/${APP_PATH}/admin/openaev-trials`,
       label: tMenuLinks('OpenAEVTrial'),
       restriction: [PortalCapability.ReadTrials],
+    },
+    {
+      href: `/${APP_PATH}/admin/csm-board`,
+      label: tMenuLinks('CSMBoard'),
+      restriction: [PortalCapability.ReadSaasMetrics],
     },
     {
       href: `/${APP_PATH}/admin/competitors`,
@@ -358,6 +368,11 @@ export const usePrivateNavigation = (): NavigationConfig => {
       icon: LogoXtmOneIcon,
       pathPrefix: `/${locale}/cybersecurity-solutions/xtm-one`,
       links: [
+        {
+          href: 'https://demo.xtmone.io/login',
+          label: tMenu('LiveDemo'),
+          external: true,
+        },
         {
           href: 'https://filigran.io/platform/xtm-one/',
           label: tMenu('About'),

@@ -1,9 +1,11 @@
 import {
+  FeatureFlag,
   IntegrationType,
   Resolvers,
   ShareableResource,
 } from '../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../utils/app-logger.util';
+import { isFeatureEnabled } from '../../../../utils/feature-flag.util';
 import { ConnectorTypeHelper } from './connector-type.helper';
 
 type ConnectorTypeSource = {
@@ -12,14 +14,6 @@ type ConnectorTypeSource = {
 };
 
 const resolvers: Resolvers = {
-  Connector: {
-    connector_type: (connector) =>
-      ConnectorTypeHelper.normalize(
-        (connector as ConnectorTypeSource).image_type
-      ) ?? null,
-    hunt_platform: (connector) =>
-      ConnectorTypeHelper.resolveHuntPlatform(connector as ConnectorTypeSource),
-  },
   Integration: {
     __resolveType(feed) {
       const mapping = {
@@ -49,6 +43,21 @@ const resolvers: Resolvers = {
       (await context.dataLoaders.document.imagesByDocumentIdLoader.load(
         id
       )) as unknown as ShareableResource[],
+  },
+  Connector: {
+    connector_type: (connector) =>
+      ConnectorTypeHelper.normalize(
+        (connector as ConnectorTypeSource).image_type
+      ) ?? null,
+    hunt_platform: (connector) =>
+      ConnectorTypeHelper.resolveHuntPlatform(connector as ConnectorTypeSource),
+    // Legacy connectors carry the OpenCTI version they need in `product_version`,
+    // decoupled ones (tags) in `minimum_deployable_version`. The front only
+    // reads `product_version`, so it is resolved here according to the flag.
+    product_version: ({ product_version, minimum_deployable_version }) =>
+      isFeatureEnabled(FeatureFlag.DecouplingConnectors)
+        ? (minimum_deployable_version ?? product_version ?? null)
+        : (product_version ?? null),
   },
 };
 

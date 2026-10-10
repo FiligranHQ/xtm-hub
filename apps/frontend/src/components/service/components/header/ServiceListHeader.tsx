@@ -25,6 +25,7 @@ export enum ServiceListFilterKey {
 export interface ServiceListFilter {
   node: React.ReactNode;
   title?: React.ReactNode;
+  noAccordion?: boolean;
 }
 
 export type ServiceListFilterMap = Partial<
