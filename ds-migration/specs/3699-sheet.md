@@ -229,6 +229,9 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
   `twMerge`, which does not know the legacy `xs` to `xl` steps, so a legacy class passed next to a default stays beside
   it and the stylesheet order decides. Both mobile menu headers take `pl-4` for `pl-l`, the `EpicForm` footer `gap-4`
   and `py-3` for `gap-l` and `py-m`; the "learn more" header drops its `pl-xl`, the default `pl-6`.
+- **One `useSheetOpenState` hook** (epic-3 review) holds the close-once rule of the five `Edit*` sheets: the open state
+  in a ref, the parent notified once per open-to-closed transition, outside the state updater. Its own tests cover
+  the rule for every caller.
 
 ## To validate
 
@@ -263,6 +266,4 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
   when dirty and leave closing to Radix.
 - `TrialsTabQuotasPlatformUpdate.tsx` still calls `onCloseSheet` inside its `setOpenSheet` updater, which sets its
   parent's state: it never went through the 300ms deferral, so this item leaves it as it was.
-- The five `Edit*` sheets repeat the same open-state ref and `handleOpenSheet`, as they repeated the updater before:
-  one shared hook would hold the rule once. `EditVotingRound` and `EditUser` have no test file of their own for it, and
-  the four other lists have no reopen test like `UserList`'s.
+- The four admin lists other than `UserList` have no test that reopens a row right after its sheet closed.

@@ -4,6 +4,7 @@ import VotingRoundForm, {
 } from '@/components/admin/voting-round/VotingRoundForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
+import { useSheetOpenState } from '@/hooks/use-sheet-open-state';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
@@ -11,7 +12,6 @@ import {
   useVotingRoundUpdateMutation,
 } from '@graphql/generated';
 import { useQueryClient } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
 import { z } from 'zod';
 import { invalidateVotingRoundQueries } from './voting-round-query-invalidation';
 
@@ -26,9 +26,7 @@ const EditVotingRound = ({
 }) => {
   const t = useTranslate();
   const queryClient = useQueryClient();
-  const [openSheet, setOpenSheet] = useState<boolean>(open);
-  // Shared by every closure, so a repeated or late close notifies once.
-  const openSheetRef = useRef(openSheet);
+  const [openSheet, handleOpenSheet] = useSheetOpenState(open, onClose);
 
   const handleError = (error: unknown) => {
     const errorMessage =
@@ -38,14 +36,6 @@ const EditVotingRound = ({
       title: t('Utils.Error'),
       description: <>{t(`Error.Server.${errorMessage}`)}</>,
     });
-  };
-
-  const handleOpenSheet = (openValue: boolean) => {
-    if (openSheetRef.current && !openValue) {
-      onClose();
-    }
-    openSheetRef.current = openValue;
-    setOpenSheet(openValue);
   };
 
   const { mutate: updateVotingRound } = useVotingRoundUpdateMutation(

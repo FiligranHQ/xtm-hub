@@ -2,9 +2,10 @@ import { AdminUserUpdateForm } from '@/components/admin/user/forms/admin/AdminUs
 import { UserUpdateForm } from '@/components/admin/user/forms/UserUpdateForm';
 import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDialog';
 import useAdminPath from '@/hooks/use-admin-path';
+import { useSheetOpenState } from '@/hooks/use-sheet-open-state';
 import { useTranslate } from '@/hooks/use-translate';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
-import { ReactNode, useRef, useState } from 'react';
+import { ReactNode } from 'react';
 
 interface EditUserProps {
   user: UserList_fragment$data;
@@ -20,18 +21,11 @@ export const EditUser = ({
   defaultStateOpen = false,
 }: EditUserProps) => {
   const isAdminPath = useAdminPath();
-  const [openSheet, setOpenSheet] = useState(defaultStateOpen ?? false);
-  // Shared by every closure, so a repeated or late close notifies once.
-  const openSheetRef = useRef(openSheet);
+  const [openSheet, handleOpenSheet] = useSheetOpenState(
+    defaultStateOpen,
+    onCloseSheet
+  );
   const t = useTranslate();
-
-  const handleOpenSheet = (open: boolean) => {
-    if (openSheetRef.current && !open) {
-      onCloseSheet?.();
-    }
-    openSheetRef.current = open;
-    setOpenSheet(open);
-  };
 
   return (
     <SheetWithPreventingDialog
