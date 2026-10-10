@@ -22,7 +22,7 @@ export const SheetMeta: ComponentMeta = {
       'boolean (optional, on SheetTrigger) - renders the trigger behaviour on its single child, such as a Button.',
     side: "'left' | 'right' (optional, default 'right', on SheetContent) - the viewport edge the panel is drawn against.",
     closeLabel:
-      "string (optional, default 'Close', on SheetContent) - the accessible name of the close button; pass a translation.",
+      'string (required, on SheetContent) - the accessible name of the close button, a translation.',
     onEscapeKeyDown:
       '(event: KeyboardEvent) => void (optional, on SheetContent) - called before Escape closes the sheet, prevent it to keep the sheet open; not called for an Escape from an expanded combobox.',
     onPointerDownOutside:

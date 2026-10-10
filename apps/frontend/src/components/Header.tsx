@@ -123,6 +123,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
             </SheetTrigger>
             <SheetContent
               side="left"
+              closeLabel={t('Header.CloseMenu')}
               className="bg-gradient-background">
               <SheetHeader className="flex flex-row justify-between pl-l bg-gradient-background">
                 <div className="flex items-center gap-s">

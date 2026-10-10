@@ -141,7 +141,7 @@ describe('EditUseCase', () => {
     await waitFor(() => expect(saveReceived).toHaveBeenCalledTimes(1));
 
     // When the sheet is closed, then the save completes
-    await user.click(screen.getByRole('button', { name: 'Close' }));
+    await user.click(screen.getByRole('button', { name: 'Utils.Close' }));
     answerSave();
     await waitFor(() =>
       expect(mocks.showSnackbar).toHaveBeenCalledWith({

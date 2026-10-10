@@ -421,7 +421,9 @@ describe('UserList', () => {
         renderUserList();
         clickRow(firstUser);
         const sheet = screen.getByRole('dialog', { name: EDIT_SHEET_TITLE });
-        fireEvent.click(within(sheet).getByRole('button', { name: 'Close' }));
+        fireEvent.click(
+          within(sheet).getByRole('button', { name: 'Utils.Close' })
+        );
 
         // When a row is clicked at once, and every pending timer runs
         clickRow(nextUser);

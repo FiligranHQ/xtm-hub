@@ -16,7 +16,7 @@ export interface SheetContentProps extends Omit<
   'asChild' | 'title'
 > {
   side?: 'left' | 'right';
-  closeLabel?: string;
+  closeLabel: string;
 }
 
 const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
@@ -25,7 +25,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
       side = 'right',
       className,
       children,
-      closeLabel = 'Close',
+      closeLabel,
       onEscapeKeyDown,
       ...props
     },

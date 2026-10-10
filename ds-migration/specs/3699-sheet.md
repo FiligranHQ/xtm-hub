@@ -47,7 +47,7 @@ and Escape in an open autocomplete only closes the suggestions.
       `[role="combobox"][aria-expanded="true"]` (`event.preventDefault()`, the caller's handler is not called), so a
       combobox that is not a Radix layer closes its own list first; otherwise it calls the caller's `onEscapeKeyDown`.
     - Props: `SheetPrimitive.Content` props without `asChild` and `title` (Paper's `title` is a header slot), plus
-      `side?: 'left' | 'right'` and `closeLabel?: string` (default `'Close'`). Ref to the panel `div`,
+      `side?: 'left' | 'right'` and `closeLabel: string` (required). Ref to the panel `div`,
       `displayName = 'SheetContent'`.
   - `SheetHeader`: `div`, `absolute inset-x-0 top-0 z-1 flex h-16 flex-col justify-center pl-6 pr-14
     bg-elevation-heading` (`pr-14` keeps a long title off the close button). `displayName = 'SheetHeader'`.
@@ -71,7 +71,7 @@ and Escape in an open autocomplete only closes the suggestions.
   described by its description; the panel classes (`layer-2`, `rounded-none`, `shadow-global-shadow`, `pt-16`, the
   overlay `z`) as one constant; `right-0` by default and `left-0` with `side="left"`, as one `it.each` in array form;
   a caller's `bg-gradient-background` replaces `bg-elevation-default`; the overlay carries the scrim classes; the close
-  `button` is named `Close`, or `closeLabel`, and closes the sheet; focus on open goes to the first field, not the
+  `button` is named by `closeLabel` and closes the sheet; focus on open goes to the first field, not the
   close button; Escape closes it; Escape from a focused `role="combobox"` input with `aria-expanded="true"` keeps it
   open and skips the caller's `onEscapeKeyDown`, with `aria-expanded="false"` it closes; a caller's
   `onPointerDownOutside` that prevents keeps it open; `SheetHeader` and `SheetFooter` classes as constants, a
@@ -222,6 +222,9 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
   `AutocompleteInput` cannot stop the key; the sheet leaves an Escape from an expanded `combobox` to it instead. Radix
   comboboxes, selects and menus are layers above the sheet, which then never sees their Escape.
 - **No `SheetClose`, `top` or `bottom`**: no caller, as `Accordion` dropped its `variant`.
+- **`closeLabel` is required** (epic-3 review): every control name is translated, as Carousel, DataTable and the
+  `Snackbar` close do. Form sheets and the "learn more" panel pass `t('Utils.Close')`, both mobile menus
+  `t('Header.CloseMenu')`.
 
 ## To validate
 
@@ -242,8 +245,6 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
 
 ## Deferred findings
 
-- The close button's default `'Close'` is English: `SheetWithPreventingDialog`, the "learn more" panel and the private
-  header's mobile menu pass no `closeLabel`, as the design system `Dialog` hard-codes it.
 - The close button of a dirty form sheet closes it without the `DialogActions.PreventSheetTitle` prompt: it calls
   `onOpenChange` directly, while Escape and an outside press go through `alertDialogSheetClose`.
 - `fillSlackLink`'s Escape stays with the slack-link field only because `AutocompleteInput` reports

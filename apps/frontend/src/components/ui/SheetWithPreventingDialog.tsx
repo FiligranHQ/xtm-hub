@@ -68,6 +68,7 @@ export const SheetWithPreventingDialog = ({
         {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent
           side={'right'}
+          closeLabel={t('Utils.Close')}
           onPointerDownOutside={(e) => alertDialogSheetClose(e)}
           onEscapeKeyDown={(e) => alertDialogSheetClose(e)}
           onOpenAutoFocus={onOpenAutoFocus}>

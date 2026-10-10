@@ -94,7 +94,9 @@ const EeLearnMoreSheet = ({
     <Sheet
       open={open}
       onOpenChange={setOpen}>
-      <SheetContent side="right">
+      <SheetContent
+        side="right"
+        closeLabel={t('Utils.Close')}>
         <SheetHeader className="pl-xl">
           <div className="flex items-center gap-s">
             <SheetTitle>

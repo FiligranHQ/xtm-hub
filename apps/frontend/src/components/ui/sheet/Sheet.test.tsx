@@ -22,7 +22,6 @@ const DESCRIPTION = 'Invite someone to the organization';
 const FIELD_LABEL = 'Email';
 const SUGGESTIONS_ID = 'email-suggestions';
 const FOOTER_ACTION = 'Validate';
-const DEFAULT_CLOSE_LABEL = 'Close';
 const CLOSE_LABEL = 'Close menu';
 const HEADER_TEST_ID = 'sheet-header';
 const FOOTER_TEST_ID = 'sheet-footer';
@@ -101,7 +100,11 @@ const renderSheet = (
   testRender(
     <Sheet>
       <SheetTrigger>{TRIGGER_LABEL}</SheetTrigger>
-      <SheetContent {...contentProps}>{children}</SheetContent>
+      <SheetContent
+        closeLabel={CLOSE_LABEL}
+        {...contentProps}>
+        {children}
+      </SheetContent>
     </Sheet>
   );
 
@@ -116,7 +119,7 @@ const openSheet = async (contentProps: Partial<SheetContentProps> = {}) => {
 const renderOpenSheet = (children: ReactNode) =>
   testRender(
     <Sheet defaultOpen>
-      <SheetContent>
+      <SheetContent closeLabel={CLOSE_LABEL}>
         <SheetTitle>{TITLE}</SheetTitle>
         {children}
       </SheetContent>
@@ -192,22 +195,16 @@ describe('Sheet', () => {
     expect(overlay).toHaveClass(...OVERLAY_CLASSES);
   });
 
-  it.each<[string | undefined, string]>([
-    [undefined, DEFAULT_CLOSE_LABEL],
-    [CLOSE_LABEL, CLOSE_LABEL],
-  ])(
-    'should close when the close button is clicked and closeLabel is %s',
-    async (closeLabel, expectedName) => {
-      // Given
-      const { user } = await openSheet({ closeLabel });
+  it('should close when the close button named by closeLabel is clicked', async () => {
+    // Given
+    const { user } = await openSheet();
 
-      // When
-      await user.click(screen.getByRole('button', { name: expectedName }));
+    // When
+    await user.click(screen.getByRole('button', { name: CLOSE_LABEL }));
 
-      // Then
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    }
-  );
+    // Then
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
 
   it('should focus the first field rather than the close button when it opens', async () => {
     // Given / When
@@ -234,7 +231,9 @@ describe('Sheet', () => {
     const onEscapeKeyDown = vi.fn();
     const { user } = testRender(
       <Sheet defaultOpen>
-        <SheetContent onEscapeKeyDown={onEscapeKeyDown}>
+        <SheetContent
+          closeLabel={CLOSE_LABEL}
+          onEscapeKeyDown={onEscapeKeyDown}>
           <SheetTitle>{TITLE}</SheetTitle>
           <input
             role="combobox"
@@ -260,7 +259,9 @@ describe('Sheet', () => {
     const onEscapeKeyDown = vi.fn();
     const { user } = testRender(
       <Sheet defaultOpen>
-        <SheetContent onEscapeKeyDown={onEscapeKeyDown}>
+        <SheetContent
+          closeLabel={CLOSE_LABEL}
+          onEscapeKeyDown={onEscapeKeyDown}>
           <SheetTitle>{TITLE}</SheetTitle>
           <input
             role="combobox"
@@ -358,7 +359,9 @@ describe('Sheet', () => {
     // When
     testRender(
       <Sheet defaultOpen>
-        <SheetContent ref={panelRef}>
+        <SheetContent
+          closeLabel={CLOSE_LABEL}
+          ref={panelRef}>
           <SheetTitle ref={titleRef}>{TITLE}</SheetTitle>
           <SheetDescription ref={descriptionRef}>
             {DESCRIPTION}
