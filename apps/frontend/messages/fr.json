@@ -24,6 +24,16 @@
     "Description": "Vous pouvez ajouter des fonctionnalités spécifiques aux utilisateurs de Filigran",
     "Title": "Capacités disponibles"
   },
+  "CSMBoard": {
+    "Organization": "Organisation",
+    "Administrators": "Administrateurs",
+    "Products": "Produits",
+    "Link": "Métriques SaaS",
+    "Version": "Version",
+    "ViewMetrics": "Voir les métriques",
+    "SearchOrganization": "Rechercher une organisation",
+    "ClearSearch": "Effacer la recherche"
+  },
   "CountryComboBox": {
     "Placeholder": "Choisir un pays"
   },
@@ -70,7 +80,7 @@
       "StartedOn": "Démarré le",
       "License": "Licence",
       "Remaining": "Restant",
-      "DaysRemaining": "{days} jours",
+      "DaysRemaining": "{days, plural, =1 {# jour} other {# jours}}",
       "TrialRequester": "Demandeur de l'essai",
       "Title": "Détails de l'essai XTM Product :"
     },
@@ -106,6 +116,8 @@
   },
   "Datatable": {
     "Asc": "Asc",
+    "ClearSelection": "Effacer la sélection",
+    "ColumnOptions": "Options de colonne",
     "Columns": "Colonnes",
     "Desc": "Desc",
     "GoFirstPage": "Aller à la première page",
@@ -124,7 +136,7 @@
     "threat_profiling_faml": "Profilage des menaces (Fraude & LCB)",
     "threat_hunting": "Chasse aux menaces",
     "strategic_reporting": "Reporting stratégique (Pour les dirigeants)",
-    "technical_reporting": "Reporting stratégique (Pour les analystes)",
+    "technical_reporting": "Reporting technique (Pour les analystes)",
     "incident_response": "Coordination de la réponse aux incidents",
     "security_stack": "Intégration de la pile de sécurité",
     "detection_engineering": "Ingénierie de détection",
@@ -305,6 +317,12 @@
       "CANT_REQUEST_FREE_TRIAL": "Vous ne pouvez pas demander d'essai gratuit",
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "Vous ne pouvez pas demander d'essai gratuit dans votre espace personnel",
       "CANT_SUBSCRIBE_YOURSELF": "Vous ne pouvez pas vous donner l'accès vous-même",
+      "CAPABILITY_PORTAL_NOT_FOUND": "Capacité inconnue",
+      "SSO_GROUP_ROLE_PORTAL_NOT_FOUND": "Association de groupe SSO introuvable",
+      "SSO_GROUP_ROLE_PORTAL_ALREADY_EXISTS": "Ce groupe SSO est déjà associé à ce rôle",
+      "ROLE_PORTAL_NOT_FOUND": "Rôle introuvable",
+      "ROLE_PORTAL_ALREADY_EXISTS": "Ce rôle existe déjà",
+      "ROLE_PORTAL_PROTECTED": "Ce rôle est utilisé par la plateforme : il ne peut être ni renommé ni supprimé, et ADMIN doit garder BYPASS",
       "COMPETITOR_DOMAIN_ALREADY_EXISTS": "Il existe déjà un concurrent avec le même domaine",
       "DEPLOYMENT_FEEDBACK_ALREADY_EXISTS": "Des retours d'expérience sur le déploiement existent déjà",
       "COMPETITOR_NOT_FOUND": "Concurrent non trouvé",
@@ -363,6 +381,8 @@
       "INVALID_PLATFORM_IDENTIFIER": "L'identificateur de la platform n'est pas valide",
       "INVALID_PLATFORM_VERSION": "Version de plateforme non valide",
       "INVALID_PRODUCTS_FOR_DEPLOYMENT_TYPE": "Les produits sélectionnés ne sont pas valides pour ce type de déploiement",
+      "INVALID_SSO_GROUP_ROLE_PORTAL": "Groupe SSO ou rôle invalide",
+      "INVALID_ROLE_PORTAL": "Rôle invalide",
       "IS_PLATFORM_REGISTERED_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la connexion avec le produit",
       "LOAD_CAPABILITIES_ERROR": "Une erreur s'est produite lors du chargement des fonctionnalités",
       "LIST_FACET_ERROR": "Une erreur s'est produite lors de l'affichage des facettes.",
@@ -403,6 +423,7 @@
       "SOLUTION_CATEGORY_NOT_FOUND": "Catégorie de solution non trouvée",
       "SUBSCRIPTION_NOT_FOUND": "L'abonnement n'a pas été trouvé",
       "TENANT_ID_MANDATORY": "L'identifiant du locataire est obligatoire",
+      "TOO_MANY_EMAILS": "Vous pouvez inviter au maximum 50 emails à la fois",
       "TRANSFER_ME_ERROR": "Une erreur s'est produite lors de la requête de transfert de personal space.",
       "UNKNOWN_ERROR": "Une erreur inconnue s'est produite",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "Une erreur inconnue s'est produite lors de la désinscription de la plateforme",
@@ -424,6 +445,7 @@
       "VOTING_ROUND_MUTATION_ERROR": "Une erreur est survenue lors de l'enregistrement du round",
       "OPEN_VOTING_ROUND_WITHOUT_ACTIVE_FEATURE": "Ce round n'a aucune fonctionnalité active et ne peut pas être ouvert",
       "VOTABLE_FEATURE_PRODUCT_LOCKED": "Cette fonctionnalité a déjà des votes, son produit ne peut plus être modifié",
+      "VOTABLE_FEATURE_PRODUCT_NOT_VOTABLE": "Ce produit n'est pas ouvert au vote",
       "COPY_FEATURES_FROM_ANOTHER_ROADMAP": "Les fonctionnalités ne peuvent être copiées que depuis un round de la même roadmap",
       "VOTABLE_FEATURE_MUTATION_ERROR": "Une erreur est survenue lors de l'enregistrement de la fonctionnalité"
     },
@@ -539,6 +561,28 @@
     "Name": "Nom",
     "Product": "Produit"
   },
+  "RoleListPage": {
+    "SsoGroup": "Groupe SSO",
+    "SsoGroups": "Groupes SSO",
+    "Role": "Rôle",
+    "Capabilities": "Capacités",
+    "AddMapping": "Ajouter un groupe SSO",
+    "EditMapping": "Modifier un groupe SSO",
+    "DeleteDialog": {
+      "Title": "Supprimer un groupe SSO",
+      "Text": "Voulez-vous vraiment retirer le groupe SSO ?"
+    },
+    "AddRole": "Ajouter un rôle",
+    "EditRole": "Modifier le rôle",
+    "DeleteRoleDialog": {
+      "Title": "Supprimer le rôle",
+      "Text": "Voulez-vous vraiment supprimer le rôle {rolePortal} ? Ses associations aux groupes SSO et ses attributions aux utilisateurs seront aussi supprimées."
+    },
+    "Error": {
+      "SsoGroup": "Le groupe SSO est requis",
+      "Role": "Le rôle est requis"
+    }
+  },
   "SolutionCategory": {
     "Actions": {
       "Add": "Ajouter une catégorie de solution"
@@ -631,7 +675,9 @@
     "Competitor": "Concurrent",
     "NewsFeed": "Fil d'actualité",
     "VotingRound": "Vote des fonctionnalités",
-    "ManageTrials": "Gestion des essais"
+    "Roles": "Rôles",
+    "ManageTrials": "Gestion des essais",
+    "CSMBoard": "Tableau de bord CSM"
   },
   "NewsFeedAdminPage": {
     "Title": "Titre",
@@ -807,6 +853,8 @@
   },
   "PendingUserListPage": {
     "TabTitle": "Requêtes utilisateurs ({usersCount})",
+    "Reject": "Refuser",
+    "Approve": "Accepter",
     "ActionSuccessApprove": "La demande utilisateur pour {email} a été acceptée",
     "ActionSuccessDeny": "La demande utilisateur pour {email} a été refusée",
     "WarningUserAccept": {
@@ -1149,17 +1197,21 @@
       "Search": "Rechercher un connecteur par nom...",
       "VendorContact": "Contact vendeur",
       "VisitVendor": "Visitez la page web du vendeur pour en savoir plus et rester en contact",
+      "CompatibleWith": "Cette version du connecteur est compatible avec {compatiblePlatforms}.",
+      "PartiallyCompatible": "Cette version du connecteur est compatible avec {compatiblePlatforms}, mais {incompatiblePlatforms} {count, plural, =1 {doit être mise à jour} other {doivent être mises à jour}}.",
       "Incompatible": "{platformToBeUpdated} {count, plural, =1 {doit} other {doivent}} être mises à jour pour déployer ce connecteur.",
       "UnavailableDeployments": "Ce connecteur n'est pas disponible pour le déploiement automatique."
     },
     "CreationStatus": "Statut de la création",
     "Form": {
+      "AddImage": "Ajouter une image",
       "Author": "Auteur",
       "CapabilityAccessLabel": "Accès {name} : {description}",
       "ContainerImageLabel": "Image du conteneur",
       "CurrentLogo": "Logo actuel",
       "DatasheetUrlLabel": "Lien vers la fiche technique (url)",
       "BlogpostUrlLabel": "Lien vers l'article de blog (url)",
+      "DeleteImage": "Supprimer l'image",
       "DeleteSentence": "Après avoir cliqué sur ce bouton, cliquez sur VALIDER pour supprimer définitivement cette image.",
       "DemoUrlLabel": "Lien vers la démo (url)",
       "DescriptionLabel": "Description",
@@ -1229,6 +1281,11 @@
           "Placeholder": "Type de licence...",
           "Free": "Gratuite",
           "Commercial": "Commerciale"
+        },
+        "ProductVersion": {
+          "Label": "Version de compatibilité OpenCTI",
+          "Placeholder": "Version OpenCTI...",
+          "RegisteredTooltip": "{count, plural, one {Produit connecté} other {Produits connectés}} : {names}"
         },
         "SolutionCategory": {
           "Label": "Catégorie de solution",
@@ -1391,10 +1448,11 @@
       "Tab": {
         "Name": "Nom",
         "Description": "Description",
-        "UseCases": "Cas d'utilisation",
-        "Actions": "Actions",
-        "Author": "Auteur",
-        "MinimumDeployableVersion": "Version minimale déployable"
+        "UseCase": "Cas d'utilisation",
+        "Action": "Action",
+        "Feature": "Fonctionnalité",
+        "Type": "Type",
+        "Compatibility": "Compatibilité avec votre produit"
       },
       "Filter": {
         "Add": "Ajouter un filtre",
@@ -2001,7 +2059,14 @@
         },
         "AddUserDialog": {
           "Title": "Ajouter un utilisateur d'essai",
-          "EmailPlaceholder": "Ajouter un email"
+          "EmailPlaceholder": "Ajouter un email",
+          "ExpiredUsersReinvited": "Les utilisateurs expirés seront réinvités et recevront un nouvel email d'invitation.",
+          "InviteEmail": "Inviter {email}",
+          "NoPermissionToInvite": "Vous n'avez pas la permission d'ajouter des utilisateurs en dehors de cette liste. Si nécessaire, contactez votre administrateur",
+          "Status": {
+            "Expired": "Expiré",
+            "Invited": "Invité"
+          }
         },
         "EditUsersDialog": {
           "Title": "Modifier les utilisateurs",
@@ -2371,7 +2436,7 @@
     },
     "Results": {
       "Title": "Résultats",
-      "TotalVoters": "{count} votants",
+      "TotalVoters": "{count, plural, =1 {# votant} other {# votants}}",
       "Empty": "Aucun vote pour ce round.",
       "InactiveFeature": "Désactivée"
     },

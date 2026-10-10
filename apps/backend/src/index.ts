@@ -27,6 +27,7 @@ import { DeploymentRequestDataLoader } from './modules/deployment/deployment.dat
 import { DocumentDataLoader } from './modules/document/document.dataloader';
 import { FeatureVotingDataLoader } from './modules/feature-voting/feature-voting.dataloader';
 import { NewsFeedDataLoader } from './modules/news-feed/news-feed.dataloader';
+import { OrganizationDataLoader } from './modules/organization-management/organization/organization.dataloader';
 import { PulseConfig } from './modules/pulse/pulse.config';
 import { RegistrationDataLoader } from './modules/registration/registration.dataloader';
 import { initAuthPlatform } from './modules/security-management/authentication/auth-platform';
@@ -356,6 +357,7 @@ const middlewareExpress = expressMiddleware(server, {
         document: DocumentDataLoader.create(),
         featureVoting: FeatureVotingDataLoader.create(),
         newsFeed: NewsFeedDataLoader.create(),
+        organization: OrganizationDataLoader.create(),
         registration: RegistrationDataLoader.create(),
         serviceInstance: ServiceInstanceDataLoader.create(),
         subscription: SubscriptionDataLoader.create(),

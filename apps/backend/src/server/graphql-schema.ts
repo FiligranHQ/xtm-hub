@@ -17,6 +17,7 @@ import organizationResolver from '../modules/organization-management/organizatio
 import userResolver from '../modules/organization-management/user/user.resolver';
 import pulseResolver from '../modules/pulse/pulse.resolver';
 import registrationResolver from '../modules/registration/registration.resolver';
+import rolePortalResolver from '../modules/role-portal/role-portal.resolver';
 import serviceCapabilityResolver from '../modules/security-management/service-capability/service-capability.resolver';
 import subscriptionCapabilityResolver from '../modules/security-management/subscription-capability/subscription-capability.resolver';
 import userServiceCapabilityResolver from '../modules/security-management/user-service-capability/user-service-capability.resolver';
@@ -86,6 +87,7 @@ const resolvers = mergeResolvers([
   manifestFragmentResolver,
   manageProductVersionResolver,
   featureVotingResolver,
+  rolePortalResolver,
   pulseResolver,
 ]);
 
