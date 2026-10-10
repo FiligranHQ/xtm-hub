@@ -225,6 +225,10 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
 - **`closeLabel` is required** (epic-3 review): every control name is translated, as Carousel, DataTable and the
   `Snackbar` close do. Form sheets and the "learn more" panel pass `t('Utils.Close')`, both mobile menus
   `t('Header.CloseMenu')`.
+- **Callers override a candidate's spacing on the Tailwind scale** (epic-3 review): the app's `cn` is plain
+  `twMerge`, which does not know the legacy `xs` to `xl` steps, so a legacy class passed next to a default stays beside
+  it and the stylesheet order decides. Both mobile menu headers take `pl-4` for `pl-l`, the `EpicForm` footer `gap-4`
+  and `py-3` for `gap-l` and `py-m`; the "learn more" header drops its `pl-xl`, the default `pl-6`.
 
 ## To validate
 
@@ -250,8 +254,6 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
 - `fillSlackLink`'s Escape stays with the slack-link field only because `AutocompleteInput` reports
   `aria-expanded="true"` with no list shown (below): fixing that bug lets the Escape reach the dirty epic sheet, so the
   step has to change with it.
-- The app's `cn` is plain `twMerge`: a legacy spacing class (`pl-l`, `pl-xl`) passed to a candidate does not replace
-  its design system default (`pl-6`); both stay and the stylesheet order decides.
 - `SheetWithPreventingDialog` always renders a `SheetDescription`, empty for every caller, so each form sheet is
   described by an empty paragraph.
 - `AutocompleteInput` sets `aria-expanded="true"` while no option matches and no list shows.

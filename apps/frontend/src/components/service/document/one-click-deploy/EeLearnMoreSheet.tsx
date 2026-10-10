@@ -97,7 +97,7 @@ const EeLearnMoreSheet = ({
       <SheetContent
         side="right"
         closeLabel={t('Utils.Close')}>
-        <SheetHeader className="pl-xl">
+        <SheetHeader>
           <div className="flex items-center gap-s">
             <SheetTitle>
               {t('Service.ShareableResources.Deploy.EELearnMore.Title')}

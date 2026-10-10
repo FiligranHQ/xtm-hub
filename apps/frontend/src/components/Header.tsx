@@ -125,7 +125,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
               side="left"
               closeLabel={t('Header.CloseMenu')}
               className="bg-gradient-background">
-              <SheetHeader className="flex flex-row justify-between pl-l bg-gradient-background">
+              <SheetHeader className="flex flex-row justify-between pl-4 bg-gradient-background">
                 <div className="flex items-center gap-s">
                   <DisplayLogo className="text-primary h-8" />
                   <SheetTitle className="sr-only">
