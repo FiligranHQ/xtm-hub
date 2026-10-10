@@ -1,10 +1,7 @@
 'use client';
 
 import { DocumentActionsCell } from '@/components/service/components/DocumentActionsCell';
-import {
-  buildDocumentListColumns,
-  DOCUMENT_LIST_TABLE_CLASS_NAME,
-} from '@/components/service/components/DocumentListColumns';
+import { buildDocumentListColumns } from '@/components/service/components/DocumentListColumns';
 import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import ServiceCard from '@/components/service/components/ServiceCard';
 import { useServiceContext } from '@/components/service/components/ServiceContext';
@@ -68,20 +65,18 @@ const DocumentList = ({
           ))}
         </ul>
       ) : (
-        <div className={DOCUMENT_LIST_TABLE_CLASS_NAME}>
-          <DataTable
-            {...getDataTableLabels(t)}
-            columns={tableColumns}
-            data={documents}
-            toolbar={<></>}
-            onClickRow={(row) => {
-              save();
-              router.push(
-                `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${row.original.id}`
-              );
-            }}
-          />
-        </div>
+        <DataTable
+          {...getDataTableLabels(t)}
+          columns={tableColumns}
+          data={documents}
+          toolbar={<></>}
+          onClickRow={(row) => {
+            save();
+            router.push(
+              `/${APP_PATH}/service/${serviceInstance.service_definition?.identifier}/${serviceInstance.id}/${row.original.id}`
+            );
+          }}
+        />
       )}
     </>
   );

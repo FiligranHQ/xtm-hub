@@ -1,7 +1,4 @@
-import {
-  buildDocumentListColumns,
-  DOCUMENT_LIST_TABLE_CLASS_NAME,
-} from '@/components/service/components/DocumentListColumns';
+import { buildDocumentListColumns } from '@/components/service/components/DocumentListColumns';
 import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
 import { DataTable } from '@/components/ui/data-table';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
@@ -72,20 +69,18 @@ export const PublicShareableDocumentList = ({
           ))}
         </ul>
       ) : (
-        <div className={DOCUMENT_LIST_TABLE_CLASS_NAME}>
-          <DataTable
-            {...getDataTableLabels(t)}
-            columns={tableColumns}
-            data={documents}
-            toolbar={<></>}
-            onClickRow={(row) => {
-              save();
-              router.push(
-                `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`
-              );
-            }}
-          />
-        </div>
+        <DataTable
+          {...getDataTableLabels(t)}
+          columns={tableColumns}
+          data={documents}
+          toolbar={<></>}
+          onClickRow={(row) => {
+            save();
+            router.push(
+              `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`
+            );
+          }}
+        />
       )}
     </>
   );

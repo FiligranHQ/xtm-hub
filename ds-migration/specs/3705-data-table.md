@@ -111,8 +111,8 @@ themes.
 | `toolbar`, `tableState`, `tableOptions`, `onClickRow`, `isLoading`, `onResetTable`, `columns`, `data`, `selectionOptions={{ selectionState, selectionHeader: { actions } }}` | unchanged | all |
 | `<DataTableHeadBarOptions />` in a toolbar | unchanged | 11 toolbars (4 more tables get it from the default toolbar) |
 
-No call site passes `ref`, `sticky`, `optionsHeader` or the dropped selection options. The document lists keep their
-wrapper `DOCUMENT_LIST_TABLE_CLASS_NAME` (`[&_th]:bg-transparent [&_th]:content-compact-bold`) unchanged.
+No call site passes `ref`, `sticky`, `optionsHeader` or the dropped selection options. The document lists drop their
+wrapper `DOCUMENT_LIST_TABLE_CLASS_NAME` (`[&_th]:bg-transparent [&_th]:content-compact-bold`), epic-3 review.
 
 ## Files in scope
 
@@ -233,13 +233,14 @@ pick, the selection bar with its reject / approve actions. The service access li
   `columns` (`SubscriptionSlug`, `ManageTrialTable`, `PendingUserList`); a component proposed upstream cannot mutate
   its props.
 - **Unused options dropped**, as the Carousel and Accordion candidates did.
+- **One header surface for every table** (epic-3 review): the document lists drop the wrapper class that made their
+  header transparent, the defect the team reported on #3715 (the header blended into the page), and take
+  `bg-elevation-highlight` like the other tables; the wrapper's `content-compact-bold` was already the header's own.
 
 ## To validate
 
 - Header row on `bg-elevation-highlight` with `content-compact-bold`, cells in `content-compact`, rows separated by
   `border-elevation-subtle`. Alternative: `content-base` as the `MarkdownRenderer` table.
-- The document lists keep their transparent header through their own wrapper class. Alternative: drop the class so
-  every table header takes the surface.
 - Rows that cannot be selected stay at 50% opacity. Alternative: `bg-elevation-disabled` with `text-default-disabled`.
 - The selection bar takes `bg-elevation-hover` (the legacy hover colour at half opacity). Alternative:
   `bg-elevation-highlight`, the header surface.
