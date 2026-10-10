@@ -52,7 +52,7 @@ const REGION_CLASSES = ['overflow-hidden', 'pl-1'];
 const CONTENT_PADDING_BOTTOM_CLASS = 'pb-2';
 const CONTENT_PADDING_TOP_CLASS = 'pt-0';
 const CALLER_PADDING_BOTTOM_CLASS = 'pb-0';
-const CALLER_PADDING_Y_CLASS = 'py-s';
+const CALLER_PADDING_Y_CLASS = 'py-3';
 
 const renderSingleItem = ({
   triggerProps = {},
@@ -318,7 +318,7 @@ describe('Accordion', () => {
     expect(inner).not.toHaveClass(CONTENT_PADDING_BOTTOM_CLASS);
   });
 
-  it('should keep the content top padding at zero when the caller gives a py-s', () => {
+  it('should replace both content paddings when the caller gives a vertical padding', () => {
     // Given / When
     renderSingleItem({
       defaultValue: FIRST_VALUE,
@@ -326,9 +326,11 @@ describe('Accordion', () => {
     });
 
     // Then
-    expect(screen.getByText(FIRST_CONTENT)).toHaveClass(
-      CALLER_PADDING_Y_CLASS,
-      CONTENT_PADDING_TOP_CLASS
+    const inner = screen.getByText(FIRST_CONTENT);
+    expect(inner).toHaveClass(CALLER_PADDING_Y_CLASS);
+    expect(inner).not.toHaveClass(
+      CONTENT_PADDING_TOP_CLASS,
+      CONTENT_PADDING_BOTTOM_CLASS
     );
   });
 

@@ -42,7 +42,7 @@ export const ManageTrialRoleDescriptions = ({
             )}>
             <AccordionTrigger
               className={cn(
-                'py-s pr-0 cursor-pointer data-[state=open]:border-b-0',
+                'pr-0 cursor-pointer data-[state=open]:border-b-0',
                 !stacked && 'border-b border-elevation-border-default-layer-0'
               )}>
               <span className="flex items-center gap-xs text-header-heading-xs">
@@ -52,7 +52,7 @@ export const ManageTrialRoleDescriptions = ({
             </AccordionTrigger>
             <AccordionContent
               className={cn(
-                'py-s flex flex-col gap-s',
+                'flex flex-col gap-s',
                 !stacked && 'border-b border-elevation-border-default-layer-0'
               )}>
               {roles.map((role) => (

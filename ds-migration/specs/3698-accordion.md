@@ -39,8 +39,8 @@ values, its content, its accessible names and roles, and how it opens and closes
     chevron next to `children`, which a `Slot` cannot take. Ref forwarded to the `button`,
     `displayName = 'AccordionTrigger'`.
   - `AccordionContent`: `AccordionPrimitive.Content` (`overflow-hidden pl-1`, ref and props on it) wrapping a `div`
-    whose classes are `cn('pb-2 pt-0', className)`, as the legacy split them: the `pt-0` keeps a caller's `py-s`
-    (a spacing tailwind-merge does not read) off the top, as before. No animation (Decisions).
+    whose classes are `cn('pb-2 pt-0', className)`, as the legacy split them: a caller's `pb-*`, `pt-*` or `py-*`
+    on the Tailwind scale replaces them. No animation (Decisions).
     `displayName = 'AccordionContent'`.
 - `Accordion.meta.ts`: `AccordionMeta`, typed `ComponentMeta` from `@filigran/design-system/meta` (type import only):
   name, description (stacked disclosure sections, each a full-width trigger with a `chevron-down` that turns when open,
@@ -59,7 +59,7 @@ values, its content, its accessible names and roles, and how it opens and closes
   `aria-hidden` and carries the rotate and reduced-motion classes; a closed nested trigger inside an open item keeps
   `data-state="closed"`; the trigger classes as one constant; a caller's `pr-0` replaces `pr-2` and `h-9` is added;
   `AccordionItem`'s `className` reaches the item `div`; `AccordionContent`'s `className` reaches the inner `div` and
-  replaces `pb-2` with `pb-0`, and a caller's `py-s` keeps `pt-0`; refs reach the item `div`, the `button` and the
+  replaces `pb-2` with `pb-0`, and a caller's `py-3` replaces both `pb-2` and `pt-0`; refs reach the item `div`, the `button` and the
   content `div`.
 - `index.ts`: exports the four parts and their props types, never the meta.
 
@@ -176,6 +176,10 @@ sticky too), whose first section is open by default.
   classes as before.
 - **No animation**: the legacy height animation comes from keyframes in the legacy theme, which a candidate cannot use,
   and `NavbarSubmenu`'s accordion content opens without one; the same answer as the `Popover` candidate.
+- **Callers override the trigger and content spacing on the Tailwind scale** (epic-3 review): the app's `cn` is plain
+  `twMerge`, which does not know the legacy `xs` to `xl` steps, so a legacy class stayed next to the default and the
+  stylesheet order decided. The sidebar triggers take `py-1` for `py-xs`, the service filters `p-2`, `pb-2` and `pr-2`
+  for `p-s`, `pb-s` and `pr-s`; the trial role sections drop their `py-s`, which rendered as the defaults.
 
 ## To validate
 

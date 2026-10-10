@@ -54,7 +54,7 @@ const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
               value={`${key}-accordion`}>
               <AccordionTrigger
                 className={cn(
-                  'h-9 py-xs pl-6 content-body-compact text-text-default-secondary cursor-pointer hover:bg-hover',
+                  'h-9 py-1 pl-6 content-body-compact text-text-default-secondary cursor-pointer hover:bg-hover',
                   NAVIGATION_HOVER_CLASSES
                 )}>
                 <span className="flex flex-1 items-center justify-between gap-xs truncate pr-xs">
@@ -172,7 +172,7 @@ export const OpenedSection = ({ section }: { section: SectionConfig }) => {
     <AccordionItem
       className="border-none"
       value={section.key}>
-      <AccordionTrigger className="h-9 pl-5 py-xs cursor-pointer hover:bg-hover font-normal hover:shadow-[inset_2px_0px] hover:shadow-white">
+      <AccordionTrigger className="h-9 pl-5 py-1 cursor-pointer hover:bg-hover font-normal hover:shadow-[inset_2px_0px] hover:shadow-white">
         <MenuItemIcon icon={Icon} />
         <span className="flex-1 px-s text-left text-foreground text-sm content-body-base truncate">
           {section.label}
