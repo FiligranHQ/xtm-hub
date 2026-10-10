@@ -1,8 +1,11 @@
 export {
   DataTable,
   DataTableHeadBarOptions,
-  useRowSelection,
   type DataTableLabels,
   type DataTableProps,
-  type SelectionState,
 } from './DataTable';
+export {
+  useRowSelection,
+  type DataTableSelectionHandlers,
+  type SelectionState,
+} from './use-row-selection';

@@ -67,7 +67,8 @@ themes.
     `cursor-pointer` when `onClickRow`, on rows that can be selected; rows that cannot get `cursor-auto opacity-50` and
     ignore clicks, as in the legacy. Cells `td` `h-12 px-4 align-middle truncate content-compact text-default-primary`,
     width and max-width from `column.getSize()`, the drag transform.
-  - Selection: `useRowSelection(state, setState)` exported unchanged (same handlers, same `selectAll` / `excludedIds` /
+  - Selection: `useRowSelection(state, setState)`, in its own `use-row-selection.ts` with `SelectionState` and
+    `DataTableSelectionHandlers` (epic-3 review), exported unchanged (same handlers, same `selectAll` / `excludedIds` /
     `selectedIds` model); the internal select column (`id: 'select'`, size 40, no sort / hide / resize) renders the
     design system `Checkbox` (header tri-state `aria-label={selectAllLabel}`, cell `aria-label={selectRowLabel}` and
     `onClick` `stopPropagation`). The selection bar, rendered when `selectionOptions` is set, collapses to `h-0
@@ -93,10 +94,10 @@ themes.
   menu's Reset calls `onResetTable`, Columns lists hideable ids with `aria-current`, a rows-per-page pick sets the size;
   the column menu Asc / Desc / Hide; selection: the select column is prepended once across re-renders and the caller's
   `columns` array is untouched, header checkbox tri-state, a row checkbox click does not trigger `onClickRow`, the bar
-  shows `selectedCountLabel(1)`, the clear button empties it, `actions` gets the state; `useRowSelection` handlers in
-  `selectAll` and explicit modes (`renderHook`).
+  shows `selectedCountLabel(1)`, the clear button empties it, `actions` gets the state. `use-row-selection.test.ts`:
+  `useRowSelection` handlers in `selectAll` and explicit modes (`renderHook`).
 - `index.ts`: exports `DataTable`, `DataTableHeadBarOptions`, `useRowSelection` and the types `DataTableProps`,
-  `DataTableLabels`, `SelectionState`, never the meta.
+  `DataTableLabels`, `SelectionState`, `DataTableSelectionHandlers`, never the meta.
 - `src/utils/design-system/data-table.ts`: `getDataTableLabels(t)` returns the thirteen string labels and
   `selectedCountLabel: (count) => t('DesignSystem.DataTable.SelectedCount', { count })`, on the model of
   `getDatePickerLabels`; `data-table.test.ts` checks the keys. Replaces `src/utils/datatable.tsx` (deleted).
@@ -116,7 +117,8 @@ wrapper `DOCUMENT_LIST_TABLE_CLASS_NAME` (`[&_th]:bg-transparent [&_th]:content-
 
 ## Files in scope
 
-- `apps/frontend/src/components/ui/data-table/DataTable.tsx`, `DataTable.meta.ts`, `DataTable.test.tsx`, `index.ts` (new)
+- `apps/frontend/src/components/ui/data-table/DataTable.tsx`, `DataTable.meta.ts`, `DataTable.test.tsx`,
+  `use-row-selection.ts`, `use-row-selection.test.ts`, `index.ts` (new)
 - `apps/frontend/src/utils/design-system/data-table.ts`, `data-table.test.ts` (new); delete `apps/frontend/src/utils/datatable.tsx`
 - Call sites: `subcription/[slug]/SubscriptionSlug.tsx`, `service/[slug]/ServiceSlug.tsx`, `subcription/saas/SaasList.tsx`,
   `competitor/CompetitorList.tsx`, `ui/shareable-resource/PublicShareableDocumentList.tsx`,
@@ -236,6 +238,8 @@ pick, the selection bar with its reject / approve actions. The service access li
 - **One header surface for every table** (epic-3 review): the document lists drop the wrapper class that made their
   header transparent, the defect the team reported on #3715 (the header blended into the page), and take
   `bg-elevation-highlight` like the other tables; the wrapper's `content-compact-bold` was already the header's own.
+- **The selection model in its own file** (epic-3 review): `useRowSelection` is pure, has its own `renderHook` tests
+  and its own deferred defects, so it lives in `use-row-selection.ts` and `DataTable.tsx` keeps the rendering.
 
 ## To validate
 
@@ -273,7 +277,6 @@ pick, the selection bar with its reject / approve actions. The service access li
   about 4,000 subscribers at 500 rows per page.
 - "Reset table" does not restore the column order after a drag on tables that do not control `columnOrder` themselves:
   the order is passed as controlled state and `table.reset()` never calls `setColumnOrder` (as in the legacy).
-- `useRowSelection` is exported but its return type `DataTableSelectionHandlers` is not.
 - fr `SelectedCount` uses "(s)" where other fr keys use ICU plurals; the bar also lowercases the translated text.
 - Instruction drift for `hub-review`: `.claude/rules/frontend.md` still says "Icons: `@filigran/icon`", while the
   candidates use the design system `Icon`.
