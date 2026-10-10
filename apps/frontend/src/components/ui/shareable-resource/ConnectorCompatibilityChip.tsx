@@ -66,6 +66,7 @@ export const ConnectorCompatibilityChip = ({
           ? t('Service.Connectors.Incompatible', {
               platformToBeUpdated: incompatiblePlatforms,
               count: incompatibleCount,
+              version: productVersion ?? '',
             })
           : undefined;
 
