@@ -166,11 +166,11 @@ trigger in the header also has `aria-haspopup="dialog"`. The trial Snackbar is c
 
 ## To validate
 
-- Both panels move from the legacy `bg-elevation-background-layer-2` to `Paper` elevation 1 (`layer-1`), with Paper's
+- [x] Both panels move from the legacy `bg-elevation-background-layer-2` to `Paper` elevation 1 (`layer-1`), with Paper's
   subtle border and `shadow-global-shadow`. Alternative: elevation 2, the legacy layer.
-- The panels open and close without animation instead of zooming and sliding from the trigger. Alternative: a
+- [x] The panels open and close without animation instead of zooming and sliding from the trigger. Alternative: a
   keyframe fade, which the design system ships for no overlay.
-- `category: 'feedback'` in the meta, next to `Tooltip` and `Dialog`. Alternative: `surface`, next to `Paper`.
+- [x] `category: 'feedback'` in the meta, next to `Tooltip` and `Dialog`. Alternative: `surface`, next to `Paper`.
 
 ## Deferred findings
 

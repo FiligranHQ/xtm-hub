@@ -198,21 +198,21 @@ paragraphs only: headings, lists, code and tables are covered by the candidate's
 
 ## To validate
 
-- Markdown takes the design system typography: headings on the title scale (`h1` 24px medium, `h2` 20px medium,
+- [x] Markdown takes the design system typography: headings on the title scale (`h1` 24px medium, `h2` 20px medium,
   `h3` 16px bold, `h4`–`h6` 14px semibold) instead of the legacy semibold 24/20/18/16px with a rule under `h1` and
   `h2`; links underlined in the text colour with a medium weight instead of the primary colour; quotes upright in the
   secondary colour. Alternative: the `Text` migration table's page scale (`h1` `title-2xl` 32px), too large inside a
   section.
-- Code blocks lose their syntax colours and their copy button. Alternative: a token-based highlight theme and a design
+- [x] Code blocks lose their syntax colours and their copy button. Alternative: a token-based highlight theme and a design
   system `IconButton` copy control, which the design system ships for no component.
-- Headings lose the link icon shown on hover. Alternative: a visible anchor control.
-- 12px between blocks. Alternative: `gap-4` (16px), the GitHub stylesheet's spacing.
-- Task-list items show their checkbox inside the list indent, with no bullet. Alternative: the GitHub stylesheet's
+- [x] Headings lose the link icon shown on hover. Alternative: a visible anchor control.
+- [x] 12px between blocks. Alternative: `gap-4` (16px), the GitHub stylesheet's spacing.
+- [x] Task-list items show their checkbox inside the list indent, with no bullet. Alternative: the GitHub stylesheet's
   checkbox pulled into the gutter.
-- The feature vote dialog title gets the design system `DialogTitle` look back: the `markdown-content` rule had given
+- [x] The feature vote dialog title gets the design system `DialogTitle` look back: the `markdown-content` rule had given
   it 20px semibold, a bottom rule and extra margins.
-- `category: 'data-display'` in the meta, next to `Text`. Alternative: `surface`.
-- The feature vote illustration fills its 192px box exactly: the `markdown-content` image rule had pushed it 12px
+- [x] `category: 'data-display'` in the meta, next to `Text`. Alternative: `surface`.
+- [x] The feature vote illustration fills its 192px box exactly: the `markdown-content` image rule had pushed it 12px
   down and rounded it.
 
 ## Deferred findings

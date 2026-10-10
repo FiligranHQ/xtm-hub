@@ -243,14 +243,14 @@ pick, the selection bar with its reject / approve actions. The service access li
 
 ## To validate
 
-- Header row on `bg-elevation-highlight` with `content-compact-bold`, cells in `content-compact`, rows separated by
+- [x] Header row on `bg-elevation-highlight` with `content-compact-bold`, cells in `content-compact`, rows separated by
   `border-elevation-subtle`. Alternative: `content-base` as the `MarkdownRenderer` table.
-- Rows that cannot be selected stay at 50% opacity. Alternative: `bg-elevation-disabled` with `text-default-disabled`.
-- The selection bar takes `bg-elevation-hover` (the legacy hover colour at half opacity). Alternative:
+- [x] Rows that cannot be selected stay at 50% opacity. Alternative: `bg-elevation-disabled` with `text-default-disabled`.
+- [x] The selection bar takes `bg-elevation-hover` (the legacy hover colour at half opacity). Alternative:
   `bg-elevation-highlight`, the header surface.
-- Toolbar box border `border-elevation-default` with `rounded-sm`. Alternative: `border-elevation-subtle`.
-- Previous / next take `chevron-left` / `chevron-right` (16px) instead of the legacy 12px arrows.
-- `category: 'data-display'` in the meta.
+- [x] Toolbar box border `border-elevation-default` with `rounded-sm`. Alternative: `border-elevation-subtle`.
+- [x] Previous / next take `chevron-left` / `chevron-right` (16px) instead of the legacy 12px arrows.
+- [x] `category: 'data-display'` in the meta.
 
 ## Deferred findings
 
@@ -279,4 +279,4 @@ pick, the selection bar with its reject / approve actions. The service access li
   the order is passed as controlled state and `table.reset()` never calls `setColumnOrder` (as in the legacy).
 - fr `SelectedCount` uses "(s)" where other fr keys use ICU plurals; the bar also lowercases the translated text.
 - Instruction drift for `hub-review`: `.claude/rules/frontend.md` still says "Icons: `@filigran/icon`", while the
-  candidates use the design system `Icon`.
+  candidates use the design system `Icon` (#3708).

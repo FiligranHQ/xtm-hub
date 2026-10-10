@@ -175,12 +175,12 @@ both screens capture. The public document page is always dark.
 
 ## To validate
 
-- Previous / next become primary `IconButton`s (solid brand fill, white glyph, 36px square) instead of the legacy
+- [x] Previous / next become primary `IconButton`s (solid brand fill, white glyph, 36px square) instead of the legacy
   round 32px outline in light grey: they sit on the image, where the secondary outline (transparent fill) can be
   unreadable. Alternative: `priority="secondary"`, the legacy role.
-- Dots stay 16px circles outlined and filled in `filigran-brand-primary`. Alternative: a 24px hit area (the
+- [x] Dots stay 16px circles outlined and filled in `filigran-brand-primary`. Alternative: a 24px hit area (the
   `IconButton` `sm` size) around a smaller visual dot.
-- `category: 'data-display'` in the meta. Alternative: `navigation`.
+- [x] `category: 'data-display'` in the meta. Alternative: `navigation`.
 
 ## Deferred findings
 

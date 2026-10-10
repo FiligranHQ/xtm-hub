@@ -183,19 +183,19 @@ sticky too), whose first section is open by default.
 
 ## To validate
 
-- The trigger arrow becomes the design system 16px `chevron-down` instead of the legacy 20px filled triangle.
+- [x] The trigger arrow becomes the design system 16px `chevron-down` instead of the legacy 20px filled triangle.
   Alternative: a caret glyph, which the design system `Icon` set does not map.
-- The filter and `AutoForm` triggers lose their hover underline, and the legacy `font-medium` goes: the `AutoForm`
+- [x] The filter and `AutoForm` triggers lose their hover underline, and the legacy `font-medium` goes: the `AutoForm`
   trigger, the sidebar's nested "My products" group (its `content-body-compact` weight now applies) and the trial role
   titles drop from 500 to their own weight; the candidate leaves the label's typography and hover to the caller. Alternative: a built-in `content-compact-medium`
   label and a `bg-elevation-highlight` hover, as `NavbarItem`.
-- Sections open and close at once instead of sliding. Alternative: a height keyframe on
+- [x] Sections open and close at once instead of sliding. Alternative: a height keyframe on
   `--radix-accordion-content-height`, which the design system ships for no component.
-- `category: 'navigation'` in the meta, next to `Tabs` and `NavbarSubmenu`. Alternative: `surface`.
-- The sidebar section rows' hover background and inset accent switch at once: the legacy trigger's `transition-all`
+- [x] `category: 'navigation'` in the meta, next to `Tabs` and `NavbarSubmenu`. Alternative: `surface`.
+- [x] The sidebar section rows' hover background and inset accent switch at once: the legacy trigger's `transition-all`
   goes with its hover look. Alternative: a built-in `transition-colors`, which the plain sidebar links next to them
   get from `buttonVariants`.
-- The trigger's `gap-2` moves the sidebar section labels 8px right of their icon, now in line with the plain sidebar
+- [x] The trigger's `gap-2` moves the sidebar section labels 8px right of their icon, now in line with the plain sidebar
   links (which get the same gap from `buttonVariants`), and adds 8px before the chevron. Alternative: no gap, the
   legacy spacing, leaving the section labels 8px left of the links.
 
@@ -204,6 +204,11 @@ sticky too), whose first section is open by default.
 - The sidebar hand-rolls what the design system `Navbar`, `NavbarItem` and `NavbarSubmenu` ship (expanded accordion,
   collapsed flyout, hover delay, selected accent): an adoption item, not a swap.
 - `AccordionItem`'s `border-none` / `border-0` at four call sites target a border no version of the component had.
+- The sidebar triggers carry `hover:bg-hover` and `text-text-default-secondary`, utilities only the legacy theme
+  defines: deleting the theme makes them dead classes with no failure, so the cleanup has to find them first (#3708).
+- `Accordion.test.tsx` (365 lines for a 78-line wrapper) tests Radix's own single, collapsible, multiple and controlled
+  behaviour and class strings one by one, as do the Sheet, Carousel and Avatar suites: the library cases should go and
+  the class assertions fold into `it.each` before the upstream proposal (#3773).
 - No test reaches the nested-object branch of the legacy `AutoForm` (`auto-form/fields/Object.tsx`), the one call site
   whose swap no test checks: for the `AutoForm` item (3707).
 - The candidate's tests cover pointer opening only; the keyboard support its meta states (arrows, Home, End, Enter,

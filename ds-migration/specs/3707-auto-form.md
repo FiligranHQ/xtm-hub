@@ -198,10 +198,10 @@ product: `Enum.test.tsx` covers it.
 
 ## To validate
 
-- `Switch` and `RadioGroup` required labels take the `Label` star (12px label, `text-3` star, `aria-hidden`) instead of
+- [x] `Switch` and `RadioGroup` required labels take the `Label` star (12px label, `text-3` star, `aria-hidden`) instead of
   the legacy 14px `text-destructive` " *". Alternative: the design system fields' own `required` prop, which
   `RadioGroup` does not have.
-- `description` (helper text under a field) is dropped, no caller. Alternative: keep it as each design system field's
+- [x] `description` (helper text under a field) is dropped, no caller. Alternative: keep it as each design system field's
   helper text (`helperText` / `SelectHelperText`), for the upstream proposal.
 
 ## Deferred findings
@@ -230,4 +230,4 @@ product: `Enum.test.tsx` covers it.
   `@/hooks/use-translate` and `@/utils/design-system/*`.
 - Instruction drift (`hub-review`): `.claude/rules/design-system.md`, `.claude/rules/frontend.md` and `AGENTS.md` still
   name `@filigran/ui` as the fallback import, which now resolves to deleted files until cleanup 3708 removes the
-  aliases.
+  aliases (#3708).

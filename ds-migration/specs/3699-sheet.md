@@ -235,20 +235,21 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
 
 ## To validate
 
-- The panel becomes a `Paper` at elevation 2: square corners, its subtle border and `shadow-global-shadow`, instead of
+- [x] The panel becomes a `Paper` at elevation 2: square corners, its subtle border and `shadow-global-shadow`, instead of
   the legacy `shadow-lg`; the scrim becomes the `Dialog` one (layer-0 at 80% with a 4px blur) instead of
   `gray-900/80`. Alternative: a borderless panel.
-- Sheets appear and disappear at once instead of sliding from their edge. Alternative: a slide keyframe, which the
+- [x] Sheets appear and disappear at once instead of sliding from their edge. Alternative: a slide keyframe, which the
   design system ships for no overlay.
-- The close button becomes the `Snackbar` close (a neutral 16px `x`, tertiary hover) in a 36px button. Alternative:
+- [x] The close button becomes the `Snackbar` close (a neutral 16px `x`, tertiary hover) in a 36px button. Alternative:
   the `Dialog` corner close (a 24px `x`), first in the tab order.
-- The sheet description moves from 12px muted to the `Dialog` description, 14px primary (only the "learn more" panel
+- [x] The sheet description moves from 12px muted to the `Dialog` description, 14px primary (only the "learn more" panel
   shows one). Alternative: `content-compact text-default-secondary`.
-- The heading bar background, light theme, moves from gray-150 to gray-200 (`bg-elevation-heading`, layer 2).
-- Footers no longer stack their buttons reversed in a column under 640px: they stay one row, right-aligned.
-  Alternative: keep the legacy column below `sm`.
-- The width stays full, then 50% from 768px. Alternative: `w-overlay-md` (640px) or `w-overlay-lg` (960px).
-- `category: 'feedback'` in the meta, next to `Dialog` and `Popover`. Alternative: `surface`.
+- [x] The heading bar background, light theme, moves from gray-150 to gray-200 (`bg-elevation-heading`, layer 2).
+- [x] Footers no longer stack their buttons reversed in a column under 640px: they stay one row, right-aligned, as the
+  design system `DialogFooter` (`flex items-center justify-end gap-2`, no mobile collapse). Alternative: keep the
+  legacy column below `sm`, which the design system has for no footer.
+- [x] The width stays full, then 50% from 768px. Alternative: `w-overlay-md` (640px) or `w-overlay-lg` (960px).
+- [x] `category: 'feedback'` in the meta, next to `Dialog` and `Popover`. Alternative: `surface`.
 
 ## Deferred findings
 
@@ -267,3 +268,9 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
 - `TrialsTabQuotasPlatformUpdate.tsx` still calls `onCloseSheet` inside its `setOpenSheet` updater, which sets its
   parent's state: it never went through the 300ms deferral, so this item leaves it as it was.
 - The four admin lists other than `UserList` have no test that reopens a row right after its sheet closed.
+- Callers restyle the sheet with utilities only the legacy theme defines: `bg-gradient-background` on both mobile menus'
+  `SheetContent` and `SheetHeader`, `border-elevation-border-strong` on the public one's header,
+  `bg-elevation-background-layer-2` on the `EpicForm` footer. Deleting the theme makes them dead classes with no
+  failure, so the cleanup has to find them first (#3708).
+- `SheetTitle` and `SheetDescription` put `title-sm` and `content-base` on the Radix elements through `cn`, where the
+  other candidates render text through `Text` (#3773).

@@ -169,15 +169,15 @@ image. The profile screen clips to the 96px avatar wrapper, the resource screen 
 
 ## To validate
 
-- The header avatar gains the `bg-elevation-highlight` disc and the `text-icon-default` glyph; the legacy cleared its
+- [x] The header avatar gains the `bg-elevation-highlight` disc and the `text-icon-default` glyph; the legacy cleared its
   fill (`[&_span]:bg-transparent`) and coloured the glyph `text-primary`. The avatar's own glyph colour also wins over
   the `text-icon-highlight` tint the design system `IconButton` gives its icon there. Alternative: a transparent
   fallback variant that inherits the colour around it.
-- The fallback glyph is the design system `user` instead of the `@filigran/icon` `IndividualIcon`.
-- The 96px profile avatar shows a 24px glyph centred in its disc, where the legacy glyph scaled with the avatar (about
+- [x] The fallback glyph is the design system `user` instead of the `@filigran/icon` `IndividualIcon`.
+- [x] The 96px profile avatar shows a 24px glyph centred in its disc, where the legacy glyph scaled with the avatar (about
   60px). The design system `Icon` has no size above 24 and must not be resized by class. Alternative: a larger glyph
   size, a design system decision.
-- `category: 'data-display'` in the meta. Alternative: `surface`, next to `Thumbnail`.
+- [x] `category: 'data-display'` in the meta. Alternative: `surface`, next to `Thumbnail`.
 
 ## Deferred findings
 

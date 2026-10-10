@@ -145,13 +145,13 @@ XTM One access (an active bundle) or the callout (an open voting round): the uni
 
 ## To validate
 
-- The four buttons trade the legacy 2px gradient border, glow and reversed-gradient hover for the design system's
+- [x] The four buttons trade the legacy 2px gradient border, glow and reversed-gradient hover for the design system's
   `secondary` gradient border and its tinted hover. Alternative: none without restyling `Button`.
-- The Thread feature voting callout loses its lime to blue button and gets the brand `highlight` one. Alternative: a
+- [x] The Thread feature voting callout loses its lime to blue button and gets the brand `highlight` one. Alternative: a
   themed button outside the design system, for an event identity.
-- The callout label loses its gradient text (inherited text colour). Alternative: a `text-gradient-focus` span,
+- [x] The callout label loses its gradient text (inherited text colour). Alternative: a `text-gradient-focus` span,
   unreadable in the light theme on the Thread canvas.
-- In the light theme the `highlight` labels are solid brand colour instead of a gradient (the design system's
+- [x] In the light theme the `highlight` labels are solid brand colour instead of a gradient (the design system's
   contrast rule).
 
 ## Deferred findings

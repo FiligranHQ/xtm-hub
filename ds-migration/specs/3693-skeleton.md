@@ -136,11 +136,11 @@ for the pulse.
 
 ## To validate
 
-- Every placeholder goes from `bg-text-secondary/50` (half the secondary text colour) to
+- [x] Every placeholder goes from `bg-text-secondary/50` (half the secondary text colour) to
   `bg-feedback-neutral-secondary`, solid gray. Alternative: `bg-elevation-highlight`, which follows the `layer-N` of
   its surface like the input fill, but is barely distinct from the page in the light theme (gray-150 on gray-100).
-- The pulse stops for users who ask for reduced motion. Alternative: always pulse, as the legacy did.
-- `category: 'feedback'` in the meta, next to `Spinner` and `ProgressBar`. Alternative: `data-display`.
+- [x] The pulse stops for users who ask for reduced motion. Alternative: always pulse, as the legacy did.
+- [x] `category: 'feedback'` in the meta, next to `Spinner` and `ProgressBar`. Alternative: `data-display`.
 
 ## Deferred findings
 

@@ -142,16 +142,13 @@ No existing test or e2e locator finds these labels by class or role; the ones th
 
 ## To validate
 
-- Every label goes from the legacy 14px, inherited primary colour, `leading-none`, to the design system field label:
+- [x] Every label goes from the legacy 14px, inherited primary colour, `leading-none`, to the design system field label:
   12px, `text-input-label` (secondary). That includes the labels that name no field: the Parameters "Version" key,
   the resource details titles, the organization names of the user sheet rows and the CSV export "Filters" heading.
   Alternative: move those to `Text` with a primary content style, a semantic change for a later epic (Deferred
   findings).
-- `FormLabel` in error goes from `text-destructive` to `text-input-error`, the colour the design system fields use for
+- [x] `FormLabel` in error goes from `text-destructive` to `text-input-error`, the colour the design system fields use for
   their own label. Alternative: none without restyling.
-- The hand-rolled `*` of `EpicForm` and `DescriptionField` keeps its `text-sm` (14px) inside a label that is now
-  12px, so the star is a little larger than the text it marks. Alternative: the `required` prop of the Deferred
-  findings, which draws the design system's own star.
 
 ## Deferred findings
 
@@ -160,9 +157,6 @@ No existing test or e2e locator finds these labels by class or role; the ones th
   capability row, the CSV export "Filters" heading and the `ShareableResourceDetailItem` titles. A description list
   (`dl`/`dt`/`dd`) or a heading would carry their meaning; the capability rows' `CapabilityMultiSelect` has no name
   tied to its organization.
-- The required marker is hand-rolled three ways next to `FormLabel` (`EpicForm`, `DescriptionField`, `AutoFormLabel`,
-  all `text-destructive`), while the design system fields draw an `aria-hidden` `*` in `text-input-required`. A
-  `required` prop on `Label` would unify them, for 3706 or 3707.
 - No test renders `FormLabel` inside a form with an invalid field, before or after this change: the error colour it
   derives from `useFormField()` is uncovered. A `Form` test belongs with the rest of `Form.tsx` (3706).
 - `@radix-ui/react-label` has no import left in `apps/frontend` after this change; it stays declared in

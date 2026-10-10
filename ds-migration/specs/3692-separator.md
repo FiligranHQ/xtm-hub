@@ -161,11 +161,11 @@ design system: untouched. No e2e locator finds a separator.
 
 ## To validate
 
-- Every separator goes from `bg-elevation-border-strong` to `border-elevation-subtle`, lighter in both themes,
+- [x] Every separator goes from `bg-elevation-border-strong` to `border-elevation-subtle`, lighter in both themes,
   including the two that callers had recoloured (`LastDeployedResourcesClient`, `ServiceListHeader`). Alternative:
   `border-elevation-default`, a stronger rule the design system uses for field outlines, not for separators.
-- `category: 'surface'` in the meta. Alternative: `data-display`.
-- The `EpicList` timeline bar becomes a plain `div` rather than a `Separator` with a colour override. Alternative: a
+- [x] `category: 'surface'` in the meta. Alternative: `data-display`.
+- [x] The `EpicList` timeline bar becomes a plain `div` rather than a `Separator` with a colour override. Alternative: a
   `color` or `tone` prop on `Separator`, a new design system API for one caller.
 
 ## Deferred findings
