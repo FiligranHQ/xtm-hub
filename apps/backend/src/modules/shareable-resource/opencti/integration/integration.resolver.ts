@@ -1,9 +1,11 @@
 import {
+  FeatureFlag,
   IntegrationType,
   Resolvers,
   ShareableResource,
 } from '../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../utils/app-logger.util';
+import { isFeatureEnabled } from '../../../../utils/feature-flag.util';
 import { IntegrationCoverageHelper } from './integration-coverage/integration-coverage.helper';
 
 const resolvers: Resolvers = {
@@ -45,6 +47,15 @@ const resolvers: Resolvers = {
       IntegrationCoverageHelper.parseStoredList(covered_regions),
     coverage_inferred: ({ coverage_inferred }) =>
       IntegrationCoverageHelper.parseCoverageInferred(coverage_inferred),
+  },
+  Connector: {
+    // Legacy connectors carry the OpenCTI version they need in `product_version`,
+    // decoupled ones (tags) in `minimum_deployable_version`. The front only
+    // reads `product_version`, so it is resolved here according to the flag.
+    product_version: ({ product_version, minimum_deployable_version }) =>
+      isFeatureEnabled(FeatureFlag.DecouplingConnectors)
+        ? (minimum_deployable_version ?? product_version ?? null)
+        : (product_version ?? null),
   },
 };
 

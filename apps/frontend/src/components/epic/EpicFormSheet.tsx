@@ -8,13 +8,12 @@ import { SheetWithPreventingDialog } from '@/components/ui/SheetWithPreventingDi
 import { useEpicFilter } from '@/hooks/use-epic-filter';
 import { useEpicListContext } from '@/hooks/use-epic-list-context';
 import { useTranslate } from '@/hooks/use-translate';
-import { fileListToUploadableMap } from '@/relay/environment/fetch-form-data';
+import { Button } from '@filigran/design-system';
 import { AddIcon } from '@filigran/icon';
-import { Button, useToast } from '@filigran/ui';
+import { useToast } from '@filigran/ui';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { useState } from 'react';
 import { useMutation } from 'react-relay';
-import { UploadableMap } from 'relay-runtime';
 import { z } from 'zod';
 
 interface EpicFormSheetProps {
@@ -43,18 +42,12 @@ export const EpicFormSheet = ({
   const setOpenSheet =
     externalSetOpen !== undefined ? externalSetOpen : setInternalOpenSheet;
 
-  const createEpic = (
-    inputValues: z.infer<typeof epicFormSchema>,
-    uploadables: UploadableMap | undefined,
-    document: File[] | undefined
-  ) => {
+  const createEpic = (inputValues: z.infer<typeof epicFormSchema>) => {
     commitEpicMutation({
       variables: {
         input: { ...inputValues },
         connections: [connectionID],
-        document,
       },
-      uploadables,
       onCompleted: () => {
         setOpenSheet(false);
         setSelectedProducts(inputValues.products);
@@ -72,18 +65,12 @@ export const EpicFormSheet = ({
       },
     });
   };
-  const updateEpic = (
-    inputValues: z.infer<typeof epicFormSchema>,
-    uploadables: UploadableMap | undefined,
-    document: File[] | undefined
-  ) => {
+  const updateEpic = (inputValues: z.infer<typeof epicFormSchema>) => {
     updateEpicMutation({
       variables: {
         id: epic!.id,
         input: { ...inputValues },
-        document,
       },
-      uploadables,
       onCompleted: () => {
         setOpenSheet(false);
         toast({
@@ -101,19 +88,10 @@ export const EpicFormSheet = ({
     });
   };
   const handleSubmit = (values: z.infer<typeof epicFormSchema>) => {
-    const document = !values.illustration_document
-      ? undefined
-      : Array.from(values.illustration_document);
-    const uploadables = !document
-      ? undefined
-      : fileListToUploadableMap(document);
-
-    const { illustration_document: _illustration, ...inputValues } = values;
-
     if (!epic) {
-      createEpic(inputValues, uploadables, document);
+      createEpic(values);
     } else {
-      updateEpic(inputValues, uploadables, document);
+      updateEpic(values);
     }
   };
   return (
@@ -125,8 +103,9 @@ export const EpicFormSheet = ({
           <></>
         ) : (
           triggerElement || (
-            <Button variant="tertiary">
-              <AddIcon className="size-4 mr-s" />
+            <Button
+              priority="tertiary"
+              startIcon={<AddIcon className="size-4" />}>
               {t('Utils.Create')}
             </Button>
           )

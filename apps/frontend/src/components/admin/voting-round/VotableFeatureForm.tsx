@@ -1,10 +1,11 @@
+import { VOTING_PRODUCTS } from '@/components/feature-voting/feature-voting.const';
 import { ServiceFormUseCasesField } from '@/components/service/form/UseCasesField';
 import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import MarkdownInput from '@/components/ui/MarkdownInput';
 import { useTranslate } from '@/hooks/use-translate';
+import { Button, IconButton } from '@filigran/design-system';
 import { DeleteIcon } from '@filigran/icon';
 import {
-  Button,
   FileInput,
   Form,
   FormControl,
@@ -26,11 +27,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-
-const productValues = Object.values(FiligranProduct) as [
-  FiligranProduct,
-  ...FiligranProduct[],
-];
 
 export interface VotableFeatureFormModel {
   id: string;
@@ -54,7 +50,7 @@ const buildVotableFeatureFormSchema = (t: (key: string) => string) =>
     description: z
       .string()
       .min(2, { error: t('VotingRound.Feature.Error.Description') }),
-    product: z.enum(productValues),
+    product: z.enum(VOTING_PRODUCTS),
     use_case_ids: z.array(z.string()),
     illustration_document: z.custom<FileList>().optional(),
     remove_illustration: z.boolean(),
@@ -151,7 +147,7 @@ const VotableFeatureForm = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {productValues.map((product) => (
+                    {VOTING_PRODUCTS.map((product) => (
                       <SelectItem
                         key={product}
                         value={product}>
@@ -222,19 +218,19 @@ const VotableFeatureForm = ({
                   }}
                   className="relative min-h-[10rem] rounded border">
                   <div className="flex h-12 flex-row items-center justify-end bg-elevation-background-layer-1 opacity-90">
-                    <Button
-                      variant="secondary-destructive"
-                      size="icon"
+                    <IconButton
+                      variant="destructive"
+                      priority="secondary"
                       type="button"
                       aria-label={t('VotingRound.Feature.RemoveIllustration')}
                       className="m-s"
+                      icon={<DeleteIcon className="size-4" />}
                       onClick={() =>
                         form.setValue('remove_illustration', true, {
                           shouldDirty: true,
                         })
-                      }>
-                      <DeleteIcon className="size-4" />
-                    </Button>
+                      }
+                    />
                   </div>
                 </div>
               )}
@@ -294,7 +290,9 @@ const VotableFeatureForm = ({
               actionButtonText={t('MenuActions.Delete')}
               variantName="destructive"
               triggerElement={
-                <Button variant="secondary-destructive">
+                <Button
+                  variant="destructive"
+                  priority="secondary">
                   {t('MenuActions.Delete')}
                 </Button>
               }
@@ -304,7 +302,7 @@ const VotableFeatureForm = ({
           )}
           <div className="flex gap-s">
             <Button
-              variant="secondary"
+              priority="secondary"
               type="button"
               onClick={onClose}>
               {t('Utils.Cancel')}
