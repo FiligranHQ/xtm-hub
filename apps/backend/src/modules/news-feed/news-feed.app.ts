@@ -92,7 +92,8 @@ export const NewsFeedApp = {
               ? NewsFeedHelper.addUtmToUrlPath({
                   urlPath: m.value,
                   type: item.type,
-                  platformIdentifier: item.platform_identifier,
+                  // The consuming platform is where the link is clicked, resolved from its id and token
+                  platformIdentifier: resolvedConfiguration.platformIdentifier,
                 })
               : m.value,
         })),
