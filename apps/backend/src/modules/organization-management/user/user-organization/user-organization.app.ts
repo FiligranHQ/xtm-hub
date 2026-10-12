@@ -1,6 +1,7 @@
 import {
   AddUserInput,
   OrganizationCapability,
+  OrganizationMemberContact,
 } from '../../../../__generated__/resolvers-types';
 import portalConfig from '../../../../config';
 import { withTransaction } from '../../../../context/database.context';
@@ -141,6 +142,22 @@ export const UserOrganizationApp = {
     }
     return [...memberIds, ...provisionedUserIds];
   },
+  loadOrganizationMemberContactsByCapabilities: async ({
+    organizationId,
+    capabilities,
+  }: {
+    organizationId: OrganizationId;
+    capabilities: OrganizationCapability[];
+  }): Promise<OrganizationMemberContact[]> => {
+    const user = requestContext.requireUser();
+    await securityGuard.assertUserIsInOrganization(user, organizationId);
+
+    return UserDomain.loadUsersByCapabilitiesInOrganization(
+      organizationId,
+      capabilities
+    );
+  },
+
   changeSelectedOrganization: async (
     organization_id: OrganizationId
   ): Promise<UserLoadUserBy> => {

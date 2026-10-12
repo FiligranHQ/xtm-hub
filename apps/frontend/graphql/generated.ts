@@ -1799,6 +1799,14 @@ export type OrganizationInput = {
   name: Scalars['String']['input'];
 };
 
+export type OrganizationMemberContact = {
+  __typename?: 'OrganizationMemberContact';
+  email: Scalars['String']['output'];
+  first_name: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  last_name: Maybe<Scalars['String']['output']>;
+};
+
 export enum OrganizationOrdering {
   Name = 'name'
 }
@@ -2016,7 +2024,7 @@ export type Query = {
   userServiceCapabilities: UserServiceCapabilitiesResponse;
   userServiceFromSubscription: Maybe<UserServiceConnection>;
   users: UserConnection;
-  usersWithCapabilitiesInOrganization: Array<User>;
+  usersWithCapabilitiesInOrganization: Array<OrganizationMemberContact>;
   votingRound: Maybe<VotingRound>;
   votingRoundResults: VotingRoundResults;
   votingRounds: Array<VotingRound>;
@@ -3881,7 +3889,7 @@ export type UsersWithCapabilitiesInOrganizationQueryVariables = Exact<{
 }>;
 
 
-export type UsersWithCapabilitiesInOrganizationQuery = { __typename?: 'Query', usersWithCapabilitiesInOrganization: Array<{ __typename?: 'User', id: string, email: string, first_name: string | null, last_name: string | null }> };
+export type UsersWithCapabilitiesInOrganizationQuery = { __typename?: 'Query', usersWithCapabilitiesInOrganization: Array<{ __typename?: 'OrganizationMemberContact', id: string, email: string, first_name: string | null, last_name: string | null }> };
 
 export type UsersQueryVariables = Exact<{
   first: Scalars['Int']['input'];

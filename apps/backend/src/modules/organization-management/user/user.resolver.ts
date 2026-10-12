@@ -41,12 +41,11 @@ const resolvers: Resolvers = {
       return UserHelper.mapUserToGraphqlUser(context.user);
     },
 
-    usersWithCapabilitiesInOrganization: async (_, { input }) => {
-      return UserDomain.loadUsersByCapabilitiesInOrganization(
-        input.organizationId,
-        input.capabilities
-      );
-    },
+    usersWithCapabilitiesInOrganization: async (_, { input }) =>
+      UserOrganizationApp.loadOrganizationMemberContactsByCapabilities({
+        organizationId: input.organizationId,
+        capabilities: input.capabilities,
+      }),
     users: async (
       _,
       { first, after, orderMode, orderBy, searchTerm, filters }
