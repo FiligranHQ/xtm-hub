@@ -42,6 +42,7 @@ interface ServiceListHeaderProps {
   onSearchChange: (v: string) => void;
   paginationControls?: React.ReactNode;
   actions?: React.ReactNode;
+  exportAction?: React.ReactNode;
   className?: string;
   onDisplayModeChange?: (mode: ServiceListDisplayMode) => void;
   filters?: ServiceListFilterMap;
@@ -52,6 +53,7 @@ export const ServiceListHeader = ({
   onSearchChange,
   paginationControls,
   actions,
+  exportAction,
   className,
   onDisplayModeChange,
   filters,
@@ -109,6 +111,7 @@ export const ServiceListHeader = ({
             {searchInput}
             <div className="flex gap-s items-center min-w-0">
               {sortControls}
+              {filters && <FilterSheet filters={filters} />}
             </div>
           </div>
           <div
@@ -163,7 +166,7 @@ export const ServiceListHeader = ({
                 />
               </button>
             </div>
-            {filters && <FilterSheet filters={filters} />}
+            {exportAction}
           </div>
         </div>
 

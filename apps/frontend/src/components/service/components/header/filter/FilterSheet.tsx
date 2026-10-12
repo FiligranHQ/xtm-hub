@@ -23,7 +23,7 @@ export const FilterSheet = ({ filters }: FilterSheetProps) => {
       <SheetTrigger asChild>
         <IconButton
           priority="secondary"
-          className="sm:hidden border-elevation-default [-webkit-tap-highlight-color:transparent]"
+          className="sm:hidden [-webkit-tap-highlight-color:transparent]"
           aria-label={t('Service.List.Filters')}
           icon={<Funnel className="h-4 w-4" />}
         />
