@@ -298,7 +298,7 @@ describe('usePrivateNavigation', () => {
 
   it.each`
     capabilities                                                                                           | expectedSettingsLabels
-    ${[PortalCapability.Bypass]}                                                                           | ${['Parameter', 'Security', 'Roles', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'CSMBoard', 'Competitor', 'NewsFeed']}
+    ${[PortalCapability.Bypass]}                                                                           | ${['Parameter', 'Security', 'Roles', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'CSMBoard', 'Competitor', 'NewsFeed', 'ThreatPulse']}
     ${[PortalCapability.ReadTrials]}                                                                       | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial']}
     ${[PortalCapability.ReadSaasMetrics]}                                                                  | ${['CSMBoard']}
     ${[PortalCapability.ModifyCompetitors]}                                                                | ${['Competitor']}

@@ -8,6 +8,7 @@ import {
 } from '../security-management/token/platform-token.util';
 import { PulseApp, PulseRequest } from './pulse.app';
 import { isPulseError } from './pulse.errors';
+import { PulseNetworkApp } from './pulse.network.app';
 
 const toPulseRequest = (context: PortalContext): PulseRequest => ({
   platformId: extractPlatformId(context.req),
@@ -70,6 +71,11 @@ const pulseResolver: Resolvers = {
       resolvePulse(() =>
         PulseApp.pulseBenchmark(toPulseRequest(context), input)
       ),
+    pulseNetworkOverview: () => resolvePulse(() => PulseNetworkApp.overview()),
+    pulseNetworkTrending: (_, args) =>
+      resolvePulse(() => PulseApp.networkTrending(args)),
+    pulseNetworkPlatforms: (_, args) =>
+      resolvePulse(() => PulseNetworkApp.platforms(args)),
   },
   Mutation: {
     pushPulse: (_, { input }, context) =>

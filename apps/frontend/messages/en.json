@@ -677,7 +677,8 @@
     "VotingRound": "Feature voting",
     "Roles": "Roles",
     "ManageTrials": "Manage trials",
-    "CSMBoard": "CSM board"
+    "CSMBoard": "CSM board",
+    "ThreatPulse": "Threat Pulse"
   },
   "NewsFeedAdminPage": {
     "Title": "Title",
@@ -2475,5 +2476,183 @@
     "Title": "Welcome to XTM Hub",
     "Subtitle": "The unified entry point for the Filigran ecosystem.",
     "Instructions": "Use Edit Translations in the sidebar to turn edit mode on (BYPASS-capability users only), then click the outlined title or subtitle below. Saving creates a draft to publish from the edit mode banner."
+  },
+  "ThreatPulse": {
+    "Subtitle": "Network figures for {day} (UTC). Counts, buckets and dates only: no indicator value, hash or platform pseudonym is ever shown.",
+    "LoadError": "The Threat Pulse figures could not be loaded.",
+    "Disabled": {
+      "Title": "Threat Pulse is disabled on this hub",
+      "Description": "Reason: {reason}. The figures below come from the data already stored; the platform statuses need a valid configuration."
+    },
+    "Cards": {
+      "Contributing": "Contributing platforms",
+      "ContributingActive": "{day, number} active in the last 24 hours, {week, number} in the last 7 days",
+      "Registered": "out of {count, plural, one {# registered platform} other {# registered platforms}}",
+      "PreviewOnly": "Registered, not contributing",
+      "PreviewOnlyDetail": "Preview-only access to the digest",
+      "Unregistered": "{count, plural, one {# former platform} other {# former platforms}} still in retention",
+      "Lapsed": "Lapsed",
+      "LapsedDetail": "Last contribution {grace, number} or more days ago, past the grace period",
+      "Keys": "Distinct keys tracked",
+      "KeysDetail": "{published, number} published at k or more, {suppressed, number} hidden below k",
+      "Today": "Batches today",
+      "LastMonth": "Batches, last 30 days",
+      "Records": "{count, plural, one {# record} other {# records}}",
+      "Privacy": "Anonymity threshold",
+      "PrivacyValue": "k = {k, number}",
+      "Retention": "Retention of {days, number} days ({months, plural, one {# month} other {# months}})",
+      "DigestSize": "Digest of up to {count, plural, one {# item} other {# items}}",
+      "LastDigest": "Last digest",
+      "LastTrending": "Last trending snapshot: {age}",
+      "DigestReaders": "{count, plural, =0 {No platform} one {# platform} other {# platforms}} read the digest in the last 24 hours",
+      "Unknown": "-",
+      "Never": "Never"
+    },
+    "Activity": {
+      "Title": "Activity, last 30 days",
+      "Description": "What the network received each UTC day. A retried batch counts once.",
+      "Metric": {
+        "records": "Records",
+        "batches": "Batches",
+        "platforms": "Platforms"
+      },
+      "Chart": {
+        "records": "Records received per day",
+        "batches": "Batches accepted per day",
+        "platforms": "Contributing platforms per day"
+      }
+    },
+    "Coverage": {
+      "Sectors": "Coverage by sector",
+      "Regions": "Coverage by region",
+      "Kinds": "Coverage by type and event",
+      "Kind": "{type}, {kind}",
+      "Description": "Events reported over the last 30 days, with the number of contributing platforms.",
+      "Platforms": "({count, plural, one {# platform} other {# platforms}})",
+      "Events": "{count, plural, one {# event} other {# events}}",
+      "Empty": "No contribution over the last 30 days."
+    },
+    "Trending": {
+      "Title": "What the network publishes",
+      "Description": "The items reported by at least k platforms, as the platforms see them.",
+      "Ratio": "{published, number} of {tracked, number} distinct keys ({share, number}%) are reported by at least k = {k, number} platforms and can be published. The other {suppressed, number} stay hidden.",
+      "Type": "Type",
+      "Key": "Key",
+      "Platforms": "Platforms",
+      "Prevalence": "Prevalence",
+      "Trend": "Trend",
+      "Growth": "{trend}, x{growth}",
+      "FirstSeen": "First seen",
+      "ComputedAt": "Snapshot computed {age}",
+      "NotComputed": "No snapshot computed yet.",
+      "Empty": "Nothing reaches the anonymity threshold over this period."
+    },
+    "Platforms": {
+      "SectionTitle": "Platforms",
+      "Description": "Every registered OpenCTI platform with its organization, buckets and contribution counts.",
+      "Title": "Platform",
+      "Organization": "Organization",
+      "Buckets": "Sector and region",
+      "BucketPair": "{sector}, {region}",
+      "Status": "Status",
+      "LastContribution": "Last contribution",
+      "Records": "Last 30 days",
+      "RecordsValue": "{records, plural, one {# record} other {# records}} in {batches, plural, one {# batch} other {# batches}}",
+      "PurgeRequests": "Purge requests",
+      "PurgeValue": "{count, number}, last on {day}",
+      "Search": "Search a platform or an organization",
+      "ClearSearch": "Clear the search",
+      "StatusFilter": "Filter by status",
+      "AllStatuses": "All statuses",
+      "Empty": "No platform matches."
+    },
+    "Health": {
+      "Title": "Health, last 7 days",
+      "Description": "The requests Threat Pulse refused, by operation and reason. Counted once a minute.",
+      "Rejection": "{operation}: {code}",
+      "LastDay": "last on {day}",
+      "Requests": "{count, plural, one {# request} other {# requests}}",
+      "Empty": "No request was refused over the last 7 days."
+    },
+    "Sector": {
+      "finance": "Finance",
+      "government": "Government",
+      "defense": "Defense",
+      "healthcare": "Healthcare",
+      "energy_utilities": "Energy and utilities",
+      "telecommunications": "Telecommunications",
+      "technology": "Technology",
+      "manufacturing": "Manufacturing",
+      "transportation": "Transportation",
+      "retail_consumer": "Retail and consumer",
+      "education_research": "Education and research",
+      "non_profit": "Non-profit",
+      "other": "Other",
+      "undisclosed": "Undisclosed"
+    },
+    "Region": {
+      "africa": "Africa",
+      "asia_pacific": "Asia-Pacific",
+      "europe": "Europe",
+      "latin_america": "Latin America",
+      "middle_east": "Middle East",
+      "north_america": "North America",
+      "global": "Global",
+      "undisclosed": "Undisclosed"
+    },
+    "ObjectType": {
+      "indicator": "Indicator",
+      "attack_pattern": "Attack pattern",
+      "vulnerability": "Vulnerability",
+      "intrusion_set": "Intrusion set",
+      "malware": "Malware",
+      "tool": "Tool"
+    },
+    "EventKind": {
+      "created": "created",
+      "sighted": "sighted",
+      "detected": "detected",
+      "hunted": "hunted",
+      "referenced": "referenced"
+    },
+    "Prevalence": {
+      "rare": "Rare",
+      "uncommon": "Uncommon",
+      "common": "Common",
+      "widespread": "Widespread"
+    },
+    "Trend": {
+      "rising": "Rising",
+      "stable": "Stable",
+      "falling": "Falling"
+    },
+    "Period": {
+      "last_7_days": "Last 7 days",
+      "last_30_days": "Last 30 days",
+      "last_90_days": "Last 90 days"
+    },
+    "PlatformStatus": {
+      "contributing": "Contributing",
+      "lapsed": "Lapsed",
+      "preview_only": "Preview only"
+    },
+    "Operation": {
+      "push_pulse": "Push",
+      "pulse_lookup": "Lookup",
+      "pulse_trending": "Trending",
+      "pulse_benchmark": "Benchmark",
+      "pulse_salt": "Salt",
+      "pulse_status": "Status",
+      "pulse_digest": "Digest",
+      "pulse_purge": "Purge"
+    },
+    "RejectionCode": {
+      "UNAUTHENTICATED": "unauthenticated",
+      "FORBIDDEN": "forbidden",
+      "BAD_USER_INPUT": "invalid input",
+      "PULSE_CONTRIBUTION_REQUIRED": "contribution required",
+      "PULSE_RATE_LIMITED": "rate limited",
+      "PULSE_DISABLED": "Threat Pulse disabled"
+    }
   }
 }

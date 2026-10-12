@@ -115,7 +115,10 @@ type BaseDatabaseType =
   | 'PulseTrendingSnapshot'
   | 'PulseDigestSnapshot'
   | 'PulseDataGeneration'
-  | 'PulseBatch';
+  | 'PulseBatch'
+  | 'PulsePlatformDailyIngestion'
+  | 'PulseRejection'
+  | 'PulsePurgeRequest';
 
 export type DatabaseType =
   | BaseDatabaseType

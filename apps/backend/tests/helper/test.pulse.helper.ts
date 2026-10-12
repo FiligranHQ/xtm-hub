@@ -22,6 +22,9 @@ export const PULSE_TABLES = [
   'PulseDigestSnapshot',
   'PulseTrendingSnapshot',
   'PulseRateLimit',
+  'PulseRejection',
+  'PulsePurgeRequest',
+  'PulsePlatformDailyIngestion',
   'PulsePlatformDailyTotal',
   'PulseKeyContributor',
   'PulseKey',
@@ -74,9 +77,11 @@ export const TestPulseHelper = {
     registerPlatform: async ({
       serviceDefinitionId = SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
       status = PlatformConfigurationStatus.Active,
+      title = mockPlatformConfig.platform_title,
     }: {
       serviceDefinitionId?: ServiceDefinitionId;
       status?: PlatformConfigurationStatus;
+      title?: string;
     } = {}): Promise<TestPulsePlatform> => {
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       await db('ServiceInstance').insert({
@@ -92,6 +97,7 @@ export const TestPulseHelper = {
       )
         .insert({
           ...mockPlatformConfig,
+          platform_title: title,
           service_instance_id: serviceInstanceId,
           platform_id: uuidv4(),
           token: uuidv4(),

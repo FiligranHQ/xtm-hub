@@ -52,6 +52,24 @@ describe('pulseDay', () => {
     );
   });
 
+  describe('daysBetween', () => {
+    it.each([
+      { from: '2026-10-03', to: '2026-10-03', expected: 0 },
+      { from: '2026-02-28', to: '2026-03-01', expected: 1 },
+      { from: '2025-10-03', to: '2026-10-03', expected: 365 },
+      { from: '2026-10-03', to: '2026-10-01', expected: -2 },
+    ])(
+      'should count $expected days from $from to $to',
+      ({ from, to, expected }) => {
+        // When
+        const result = PulseDay.daysBetween(from, to);
+
+        // Then
+        expect(result).toBe(expected);
+      }
+    );
+  });
+
   describe('retentionStart', () => {
     it.each([
       { day: '2026-10-03', months: 13, expected: '2025-09-03' },

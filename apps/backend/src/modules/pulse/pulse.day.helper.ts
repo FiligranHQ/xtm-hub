@@ -27,6 +27,11 @@ export const PulseDay = {
   addDays: (day: string, days: number): string =>
     formatDay(new Date(parseDay(day).getTime() + days * MS_PER_DAY)),
 
+  daysBetween: (fromDay: string, toDay: string): number =>
+    Math.round(
+      (parseDay(toDay).getTime() - parseDay(fromDay).getTime()) / MS_PER_DAY
+    ),
+
   // Calendar months, clamped to the last day of the target month.
   addMonths: (day: string, months: number): string => {
     const date = parseDay(day);

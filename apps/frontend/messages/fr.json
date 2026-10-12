@@ -677,7 +677,8 @@
     "VotingRound": "Vote des fonctionnalités",
     "Roles": "Rôles",
     "ManageTrials": "Gestion des essais",
-    "CSMBoard": "Tableau de bord CSM"
+    "CSMBoard": "Tableau de bord CSM",
+    "ThreatPulse": "Threat Pulse"
   },
   "NewsFeedAdminPage": {
     "Title": "Titre",
@@ -2475,5 +2476,183 @@
     "Title": "Bienvenue sur XTM Hub",
     "Subtitle": "Le point d'entrée unifié de l'écosystème Filigran.",
     "Instructions": "Utilisez « Modifier les traductions » dans la barre latérale pour activer le mode édition (réservé aux utilisateurs avec la capacité BYPASS), puis cliquez sur le titre ou le sous-titre encadré ci-dessous. L’enregistrement crée un brouillon à publier depuis le bandeau du mode édition."
+  },
+  "ThreatPulse": {
+    "Subtitle": "Chiffres du réseau pour le {day} (UTC). Uniquement des décomptes, des tranches et des dates : aucune valeur d'indicateur, aucun hash ni pseudonyme de plateforme n'est affiché.",
+    "LoadError": "Les chiffres de Threat Pulse n'ont pas pu être chargés.",
+    "Disabled": {
+      "Title": "Threat Pulse est désactivé sur ce hub",
+      "Description": "Raison : {reason}. Les chiffres ci-dessous viennent des données déjà stockées ; le statut des plateformes demande une configuration valide."
+    },
+    "Cards": {
+      "Contributing": "Plateformes contributrices",
+      "ContributingActive": "{day, number} actives ces dernières 24 heures, {week, number} ces 7 derniers jours",
+      "Registered": "sur {count, plural, one {# plateforme enregistrée} other {# plateformes enregistrées}}",
+      "PreviewOnly": "Enregistrées, sans contribution",
+      "PreviewOnlyDetail": "Accès à la synthèse en aperçu seulement",
+      "Unregistered": "{count, plural, one {# ancienne plateforme encore conservée} other {# anciennes plateformes encore conservées}}",
+      "Lapsed": "Inactives",
+      "LapsedDetail": "Dernière contribution il y a {grace, number} jours ou plus, après la période de grâce",
+      "Keys": "Clés distinctes suivies",
+      "KeysDetail": "{published, number} publiées à partir de k, {suppressed, number} masquées sous k",
+      "Today": "Lots aujourd'hui",
+      "LastMonth": "Lots, 30 derniers jours",
+      "Records": "{count, plural, one {# enregistrement} other {# enregistrements}}",
+      "Privacy": "Seuil d'anonymat",
+      "PrivacyValue": "k = {k, number}",
+      "Retention": "Conservation de {days, number} jours ({months, plural, one {# mois} other {# mois}})",
+      "DigestSize": "Synthèse d'au plus {count, plural, one {# élément} other {# éléments}}",
+      "LastDigest": "Dernière synthèse",
+      "LastTrending": "Dernier instantané des tendances : {age}",
+      "DigestReaders": "{count, plural, =0 {Aucune plateforme n'a lu} one {# plateforme a lu} other {# plateformes ont lu}} la synthèse ces dernières 24 heures",
+      "Unknown": "-",
+      "Never": "Jamais"
+    },
+    "Activity": {
+      "Title": "Activité, 30 derniers jours",
+      "Description": "Ce que le réseau a reçu chaque jour UTC. Un lot renvoyé ne compte qu'une fois.",
+      "Metric": {
+        "records": "Enregistrements",
+        "batches": "Lots",
+        "platforms": "Plateformes"
+      },
+      "Chart": {
+        "records": "Enregistrements reçus par jour",
+        "batches": "Lots acceptés par jour",
+        "platforms": "Plateformes contributrices par jour"
+      }
+    },
+    "Coverage": {
+      "Sectors": "Couverture par secteur",
+      "Regions": "Couverture par région",
+      "Kinds": "Couverture par type et événement",
+      "Kind": "{type}, {kind}",
+      "Description": "Événements signalés ces 30 derniers jours, avec le nombre de plateformes contributrices.",
+      "Platforms": "({count, plural, one {# plateforme} other {# plateformes}})",
+      "Events": "{count, plural, one {# événement} other {# événements}}",
+      "Empty": "Aucune contribution ces 30 derniers jours."
+    },
+    "Trending": {
+      "Title": "Ce que publie le réseau",
+      "Description": "Les éléments signalés par au moins k plateformes, tels que les plateformes les voient.",
+      "Ratio": "{published, number} clés distinctes sur {tracked, number} ({share, number} %) sont signalées par au moins k = {k, number} plateformes et peuvent être publiées. Les {suppressed, number} autres restent masquées.",
+      "Type": "Type",
+      "Key": "Clé",
+      "Platforms": "Plateformes",
+      "Prevalence": "Prévalence",
+      "Trend": "Tendance",
+      "Growth": "{trend}, x{growth}",
+      "FirstSeen": "Vu pour la première fois",
+      "ComputedAt": "Instantané calculé {age}",
+      "NotComputed": "Aucun instantané calculé pour le moment.",
+      "Empty": "Rien n'atteint le seuil d'anonymat sur cette période."
+    },
+    "Platforms": {
+      "SectionTitle": "Plateformes",
+      "Description": "Chaque plateforme OpenCTI enregistrée, avec son organisation, ses tranches et ses décomptes de contribution.",
+      "Title": "Plateforme",
+      "Organization": "Organisation",
+      "Buckets": "Secteur et région",
+      "BucketPair": "{sector}, {region}",
+      "Status": "Statut",
+      "LastContribution": "Dernière contribution",
+      "Records": "30 derniers jours",
+      "RecordsValue": "{records, plural, one {# enregistrement} other {# enregistrements}} en {batches, plural, one {# lot} other {# lots}}",
+      "PurgeRequests": "Demandes de purge",
+      "PurgeValue": "{count, number}, la dernière le {day}",
+      "Search": "Rechercher une plateforme ou une organisation",
+      "ClearSearch": "Effacer la recherche",
+      "StatusFilter": "Filtrer par statut",
+      "AllStatuses": "Tous les statuts",
+      "Empty": "Aucune plateforme ne correspond."
+    },
+    "Health": {
+      "Title": "Santé, 7 derniers jours",
+      "Description": "Les requêtes refusées par Threat Pulse, par opération et par motif. Comptées une fois par minute.",
+      "Rejection": "{operation} : {code}",
+      "LastDay": "la dernière le {day}",
+      "Requests": "{count, plural, one {# requête} other {# requêtes}}",
+      "Empty": "Aucune requête n'a été refusée ces 7 derniers jours."
+    },
+    "Sector": {
+      "finance": "Finance",
+      "government": "Administration publique",
+      "defense": "Défense",
+      "healthcare": "Santé",
+      "energy_utilities": "Énergie et services publics",
+      "telecommunications": "Télécommunications",
+      "technology": "Technologie",
+      "manufacturing": "Industrie",
+      "transportation": "Transport",
+      "retail_consumer": "Commerce et consommation",
+      "education_research": "Enseignement et recherche",
+      "non_profit": "Associations",
+      "other": "Autre",
+      "undisclosed": "Non communiqué"
+    },
+    "Region": {
+      "africa": "Afrique",
+      "asia_pacific": "Asie-Pacifique",
+      "europe": "Europe",
+      "latin_america": "Amérique latine",
+      "middle_east": "Moyen-Orient",
+      "north_america": "Amérique du Nord",
+      "global": "Mondial",
+      "undisclosed": "Non communiquée"
+    },
+    "ObjectType": {
+      "indicator": "Indicateur",
+      "attack_pattern": "Modèle d'attaque",
+      "vulnerability": "Vulnérabilité",
+      "intrusion_set": "Groupe d'intrusion",
+      "malware": "Malware",
+      "tool": "Outil"
+    },
+    "EventKind": {
+      "created": "créé",
+      "sighted": "observé",
+      "detected": "détecté",
+      "hunted": "chassé",
+      "referenced": "référencé"
+    },
+    "Prevalence": {
+      "rare": "Rare",
+      "uncommon": "Peu courant",
+      "common": "Courant",
+      "widespread": "Répandu"
+    },
+    "Trend": {
+      "rising": "En hausse",
+      "stable": "Stable",
+      "falling": "En baisse"
+    },
+    "Period": {
+      "last_7_days": "7 derniers jours",
+      "last_30_days": "30 derniers jours",
+      "last_90_days": "90 derniers jours"
+    },
+    "PlatformStatus": {
+      "contributing": "Contributrice",
+      "lapsed": "Inactive",
+      "preview_only": "Aperçu seul"
+    },
+    "Operation": {
+      "push_pulse": "Envoi",
+      "pulse_lookup": "Recherche",
+      "pulse_trending": "Tendances",
+      "pulse_benchmark": "Comparatif",
+      "pulse_salt": "Sel",
+      "pulse_status": "Statut",
+      "pulse_digest": "Synthèse",
+      "pulse_purge": "Purge"
+    },
+    "RejectionCode": {
+      "UNAUTHENTICATED": "non authentifiée",
+      "FORBIDDEN": "interdite",
+      "BAD_USER_INPUT": "saisie invalide",
+      "PULSE_CONTRIBUTION_REQUIRED": "contribution requise",
+      "PULSE_RATE_LIMITED": "débit limité",
+      "PULSE_DISABLED": "Threat Pulse désactivé"
+    }
   }
 }

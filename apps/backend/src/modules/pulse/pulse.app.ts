@@ -7,6 +7,7 @@ import {
   PulseDigestInput,
   PulseLookupInput,
   PulseLookupResult,
+  PulseNetworkTrending,
   PulsePurgeResult,
   PulseSalt,
   PulseStatus,
@@ -14,6 +15,7 @@ import {
   PulseTrendingResult,
   PushPulseInput,
   PushPulseResult,
+  QueryPulseNetworkTrendingArgs,
 } from '../../__generated__/resolvers-types';
 import {
   withAdvisoryLock,
@@ -58,6 +60,9 @@ import {
   pulseRequestsRejectedCounter,
   pulseRetentionDeletedRowsCounter,
 } from './pulse.metrics';
+import { PulseNetworkApp } from './pulse.network.app';
+import { PulseNetworkDomain } from './pulse.network.domain';
+import { PULSE_NETWORK_KEY_ID_LENGTH } from './pulse.network.helper';
 import { PulseStats } from './pulse.stats.helper';
 import {
   PulseDigestSnapshotItem,
@@ -317,10 +322,9 @@ const runOperation = async <T>(
     return await callback();
   } catch (error) {
     if (isPulseError(error)) {
-      pulseRequestsRejectedCounter.inc({
-        operation,
-        code: String(error.extensions.code),
-      });
+      const code = String(error.extensions.code);
+      pulseRequestsRejectedCounter.inc({ operation, code });
+      PulseNetworkApp.countRejection(operation, code);
     }
     throw error;
   }
@@ -330,10 +334,12 @@ const recordContributions = async ({
   pseudonym,
   input,
   records,
+  receivedAt,
 }: {
   pseudonym: string;
   input: PushPulseInput;
   records: readonly PulseLedgerRecord[];
+  receivedAt: Date;
 }): Promise<{ accepted: number; day: string; duplicate: boolean }> => {
   const {
     day,
@@ -384,6 +390,12 @@ const recordContributions = async ({
     sectorBucket,
     regionBucket,
     totals: aggregation.totals,
+  });
+  await PulseNetworkDomain.recordIngestion({
+    platformId,
+    day,
+    records: records.length,
+    receivedAt,
   });
   return { accepted: records.length, day, duplicate: false };
 };
@@ -843,6 +855,25 @@ const deleteInBatches = async (
   return total;
 };
 
+// The monitoring rows hold no contribution: deleting them publishes nothing
+// new, so the data generation stays.
+const deleteMonitoringRows = async (
+  table: 'PulsePlatformDailyIngestion' | 'PulsePurgeRequest' | 'PulseRejection',
+  day: string
+): Promise<number> => {
+  let total = 0;
+  let removed: number;
+  do {
+    removed = await PulseDomain.deleteRowsBeforeDay({
+      table,
+      day,
+      batchSize: PULSE_MAINTENANCE_BATCH_SIZE,
+    });
+    total += removed;
+  } while (removed > 0);
+  return total;
+};
+
 export const PulseApp = {
   pulseSalt: (request: PulseRequest, day: string): Promise<PulseSalt> =>
     runOperation(PulseOperation.PulseSalt, async () => {
@@ -966,6 +997,7 @@ export const PulseApp = {
           pseudonym: caller.pseudonym,
           input: validated,
           records,
+          receivedAt: caller.now,
         })
       );
       if (!result.duplicate) {
@@ -1146,6 +1178,17 @@ export const PulseApp = {
       logApp.info('[Pulse] Platform contributions purged', {
         deletedRecords: deleted,
       });
+      // The purge is done: failing to count it never changes the answer.
+      try {
+        await PulseNetworkDomain.recordPurgeRequest({
+          pseudonym: caller.pseudonym,
+          day: caller.today,
+        });
+      } catch (error) {
+        logApp.warn('[Pulse] Purge request not counted', {
+          code: getErrorStringProperty(error, 'code'),
+        });
+      }
       return {
         success: true,
         deleted_records: PulseStats.clampToGraphQLInt(deleted),
@@ -1222,6 +1265,18 @@ export const PulseApp = {
       () => PulseDomain.refreshFirstContributionDays(cutoff),
       () => true
     );
+    deleted.PulsePlatformDailyIngestion = await deleteMonitoringRows(
+      'PulsePlatformDailyIngestion',
+      cutoff
+    );
+    deleted.PulsePurgeRequest = await deleteMonitoringRows(
+      'PulsePurgeRequest',
+      cutoff
+    );
+    deleted.PulseRejection = await deleteMonitoringRows(
+      'PulseRejection',
+      activityWindowStart(PulseDay.today(now))
+    );
     await invalidateSnapshots();
     for (const [table, count] of Object.entries(deleted)) {
       pulseRetentionDeletedRowsCounter.inc({ table }, count);
@@ -1238,5 +1293,51 @@ export const PulseApp = {
         PULSE_RATE_LIMIT_MAX_WINDOW_SECONDS -
         PULSE_RATE_LIMIT_BUCKET_SECONDS
     );
+  },
+
+  flushRejectionCounts: (): Promise<number> =>
+    PulseNetworkApp.flushRejections(),
+
+  // The network trending as the platforms read it, for the Hub administrators:
+  // the same cached list, with a key identifier in place of the hash.
+  networkTrending: async ({
+    period,
+    first,
+  }: QueryPulseNetworkTrendingArgs): Promise<PulseNetworkTrending> => {
+    const config = PulseConfig.get();
+    const now = PulseClock.now();
+    const day = PulseDay.today(now);
+    if (!config.enabled) {
+      return { day, period, computed_at: null, items: [] };
+    }
+    const validated = PulseValidation.trendingInput(
+      { day, period, first },
+      now
+    );
+    const items = await loadTrendingItems({
+      settings: config.settings,
+      input: validated,
+      now,
+    });
+    const snapshot = await PulseDomain.loadTrendingSnapshot({
+      day,
+      period: validated.period,
+      sectorScope: PULSE_SCOPE_ALL,
+      regionScope: PULSE_SCOPE_ALL,
+    });
+    return {
+      day,
+      period: validated.period,
+      computed_at: snapshot?.computedAt ?? null,
+      items: items.slice(0, validated.first).map((item) => ({
+        key_id: item.k.slice(0, PULSE_NETWORK_KEY_ID_LENGTH),
+        object_type: item.t,
+        platforms_bucket: PulseStats.platformsBucket(item.recent),
+        prevalence_bucket: item.prevalence,
+        trend: PulseStats.trendDirection(item.recent, item.baseline),
+        growth: PulseStats.round(item.growth),
+        first_seen_network: item.firstSeen,
+      })),
+    };
   },
 };

@@ -20,10 +20,20 @@ import {
   PulseTrendingResult,
   PushPulseResult,
 } from '../../../__generated__/resolvers-types';
+import { CAPABILITY_BYPASS } from '../../../portal.const';
 import createSchema from '../../../server/graphql-schema';
 import { PulseClock, PulseDay } from '../pulse.day.helper';
 
 type TestPortalContext = typeof contextSimpleUserFiligran2;
+
+// A Hub administrator: an ordinary user holding the bypass capability, the only one the monitoring fields require.
+export const pulseAdminContext: TestPortalContext = {
+  ...contextSimpleUserFiligran2,
+  user: {
+    ...contextSimpleUserFiligran2.user,
+    capabilities: [CAPABILITY_BYPASS],
+  },
+} as TestPortalContext;
 
 export type TestPulsePlatform = Awaited<
   ReturnType<typeof TestHelper.pulse.registerPlatform>
@@ -127,10 +137,12 @@ export const executePulse = async <T>({
   query,
   variables = {},
   platform,
+  context = contextSimpleUserFiligran2,
 }: {
   query: string;
   variables?: Record<string, unknown>;
   platform?: TestPulsePlatform;
+  context?: TestPortalContext;
 }): Promise<PulseOperationResult<T>> => {
   const headers: Record<string, string> = platform
     ? {
@@ -142,7 +154,7 @@ export const executePulse = async <T>({
     { query, variables },
     {
       contextValue: {
-        ...contextSimpleUserFiligran2,
+        ...context,
         req: { headers, body: { variables } } as unknown as express.Request,
         res: {} as express.Response,
       },

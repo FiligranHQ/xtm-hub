@@ -677,7 +677,8 @@
     "VotingRound": "機能への投票",
     "Roles": "ロール",
     "ManageTrials": "トライアル管理",
-    "CSMBoard": "CSMボード"
+    "CSMBoard": "CSMボード",
+    "ThreatPulse": "Threat Pulse"
   },
   "NewsFeedAdminPage": {
     "Title": "タイトル",
@@ -2475,5 +2476,183 @@
     "Title": "XTM Hub へようこそ",
     "Subtitle": "Filigran エコシステムの統合エントリーポイント。",
     "Instructions": "サイドバーの「翻訳を編集」で編集モードを有効にしてください(BYPASS 権限を持つユーザーのみ)。その後、下の枠で囲まれたタイトルまたはサブタイトルをクリックしてください。保存すると下書きが作成され、編集モードのバナーから公開できます。"
+  },
+  "ThreatPulse": {
+    "Subtitle": "{day}（UTC）のネットワーク集計です。表示されるのは件数・区分・日付のみで、インジケーターの値、ハッシュ、プラットフォームの仮名は一切表示されません。",
+    "LoadError": "Threat Pulse の集計を読み込めませんでした。",
+    "Disabled": {
+      "Title": "このハブでは Threat Pulse が無効です",
+      "Description": "理由: {reason}。以下の数値は保存済みのデータに基づきます。プラットフォームのステータスには有効な設定が必要です。"
+    },
+    "Cards": {
+      "Contributing": "提供中のプラットフォーム",
+      "ContributingActive": "過去24時間で{day, number}件、過去7日間で{week, number}件が稼働",
+      "Registered": "登録済み {count, number} 件中",
+      "PreviewOnly": "登録済み・未提供",
+      "PreviewOnlyDetail": "ダイジェストのプレビューのみ利用可能",
+      "Unregistered": "保持期間中の旧プラットフォーム {count, number} 件",
+      "Lapsed": "失効",
+      "LapsedDetail": "最後の提供から{grace, number}日以上経過（猶予期間外）",
+      "Keys": "追跡中の個別キー",
+      "KeysDetail": "k以上で公開 {published, number} 件、k未満で非表示 {suppressed, number} 件",
+      "Today": "本日のバッチ",
+      "LastMonth": "バッチ（過去30日間）",
+      "Records": "{count, number} レコード",
+      "Privacy": "匿名性のしきい値",
+      "PrivacyValue": "k = {k, number}",
+      "Retention": "保持期間 {days, number} 日（{months, number} か月）",
+      "DigestSize": "ダイジェストは最大 {count, number} 件",
+      "LastDigest": "最新のダイジェスト",
+      "LastTrending": "最新のトレンドスナップショット: {age}",
+      "DigestReaders": "過去24時間にダイジェストを読んだプラットフォーム: {count, number} 件",
+      "Unknown": "-",
+      "Never": "なし"
+    },
+    "Activity": {
+      "Title": "アクティビティ（過去30日間）",
+      "Description": "ネットワークが UTC の日ごとに受信した内容です。再送されたバッチは1回として数えます。",
+      "Metric": {
+        "records": "レコード",
+        "batches": "バッチ",
+        "platforms": "プラットフォーム"
+      },
+      "Chart": {
+        "records": "1日あたりの受信レコード数",
+        "batches": "1日あたりの受理バッチ数",
+        "platforms": "1日あたりの提供プラットフォーム数"
+      }
+    },
+    "Coverage": {
+      "Sectors": "セクター別カバレッジ",
+      "Regions": "地域別カバレッジ",
+      "Kinds": "種類・イベント別カバレッジ",
+      "Kind": "{type}・{kind}",
+      "Description": "過去30日間に報告されたイベント数と、提供したプラットフォーム数です。",
+      "Platforms": "（{count, number} プラットフォーム）",
+      "Events": "{count, number} イベント",
+      "Empty": "過去30日間に提供はありません。"
+    },
+    "Trending": {
+      "Title": "ネットワークが公開する内容",
+      "Description": "少なくとも k 件のプラットフォームが報告した項目を、プラットフォームから見える形で表示します。",
+      "Ratio": "個別キー {tracked, number} 件のうち {published, number} 件（{share, number}%）が k = {k, number} 件以上のプラットフォームから報告され、公開可能です。残りの {suppressed, number} 件は非表示のままです。",
+      "Type": "種類",
+      "Key": "キー",
+      "Platforms": "プラットフォーム",
+      "Prevalence": "普及度",
+      "Trend": "トレンド",
+      "Growth": "{trend}、x{growth}",
+      "FirstSeen": "初回確認",
+      "ComputedAt": "スナップショットの計算: {age}",
+      "NotComputed": "スナップショットはまだ計算されていません。",
+      "Empty": "この期間に匿名性のしきい値に達した項目はありません。"
+    },
+    "Platforms": {
+      "SectionTitle": "プラットフォーム",
+      "Description": "登録済みの各 OpenCTI プラットフォームと、その組織、区分、提供件数です。",
+      "Title": "プラットフォーム",
+      "Organization": "組織",
+      "Buckets": "セクターと地域",
+      "BucketPair": "{sector}・{region}",
+      "Status": "ステータス",
+      "LastContribution": "最終提供日",
+      "Records": "過去30日間",
+      "RecordsValue": "{records, number} レコード / {batches, number} バッチ",
+      "PurgeRequests": "削除リクエスト",
+      "PurgeValue": "{count, number} 件（最終 {day}）",
+      "Search": "プラットフォームまたは組織を検索",
+      "ClearSearch": "検索をクリア",
+      "StatusFilter": "ステータスで絞り込み",
+      "AllStatuses": "すべてのステータス",
+      "Empty": "該当するプラットフォームはありません。"
+    },
+    "Health": {
+      "Title": "ヘルス（過去7日間）",
+      "Description": "Threat Pulse が拒否したリクエストを、操作と理由ごとに表示します。1分ごとに集計されます。",
+      "Rejection": "{operation}: {code}",
+      "LastDay": "最終 {day}",
+      "Requests": "{count, number} 件のリクエスト",
+      "Empty": "過去7日間に拒否されたリクエストはありません。"
+    },
+    "Sector": {
+      "finance": "金融",
+      "government": "政府・行政",
+      "defense": "防衛",
+      "healthcare": "医療",
+      "energy_utilities": "エネルギー・公益",
+      "telecommunications": "通信",
+      "technology": "テクノロジー",
+      "manufacturing": "製造",
+      "transportation": "運輸",
+      "retail_consumer": "小売・消費財",
+      "education_research": "教育・研究",
+      "non_profit": "非営利",
+      "other": "その他",
+      "undisclosed": "非公開"
+    },
+    "Region": {
+      "africa": "アフリカ",
+      "asia_pacific": "アジア太平洋",
+      "europe": "ヨーロッパ",
+      "latin_america": "ラテンアメリカ",
+      "middle_east": "中東",
+      "north_america": "北米",
+      "global": "グローバル",
+      "undisclosed": "非公開"
+    },
+    "ObjectType": {
+      "indicator": "インジケーター",
+      "attack_pattern": "攻撃パターン",
+      "vulnerability": "脆弱性",
+      "intrusion_set": "侵入セット",
+      "malware": "マルウェア",
+      "tool": "ツール"
+    },
+    "EventKind": {
+      "created": "作成",
+      "sighted": "目撃",
+      "detected": "検知",
+      "hunted": "ハンティング",
+      "referenced": "参照"
+    },
+    "Prevalence": {
+      "rare": "まれ",
+      "uncommon": "少ない",
+      "common": "一般的",
+      "widespread": "広範"
+    },
+    "Trend": {
+      "rising": "増加",
+      "stable": "横ばい",
+      "falling": "減少"
+    },
+    "Period": {
+      "last_7_days": "過去7日間",
+      "last_30_days": "過去30日間",
+      "last_90_days": "過去90日間"
+    },
+    "PlatformStatus": {
+      "contributing": "提供中",
+      "lapsed": "失効",
+      "preview_only": "プレビューのみ"
+    },
+    "Operation": {
+      "push_pulse": "送信",
+      "pulse_lookup": "照会",
+      "pulse_trending": "トレンド",
+      "pulse_benchmark": "ベンチマーク",
+      "pulse_salt": "ソルト",
+      "pulse_status": "ステータス",
+      "pulse_digest": "ダイジェスト",
+      "pulse_purge": "削除"
+    },
+    "RejectionCode": {
+      "UNAUTHENTICATED": "未認証",
+      "FORBIDDEN": "禁止",
+      "BAD_USER_INPUT": "不正な入力",
+      "PULSE_CONTRIBUTION_REQUIRED": "提供が必要",
+      "PULSE_RATE_LIMITED": "レート制限",
+      "PULSE_DISABLED": "Threat Pulse 無効"
+    }
   }
 }

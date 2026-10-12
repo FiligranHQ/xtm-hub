@@ -3,7 +3,7 @@ import type {
   GraphQLRequestContextDidEncounterErrors,
   GraphQLRequestListener,
 } from '@apollo/server';
-import { GraphQLError } from 'graphql';
+import { GraphQLError, Kind, parse } from 'graphql';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it, vi } from 'vitest';
@@ -32,6 +32,9 @@ const PULSE_QUERIES = [
   'query { pulseStatus { day } }',
   'query { pulseDigest(input: { day: "2026-10-03", sector_bucket: finance, region_bucket: europe }) { day } }',
   'mutation { pulsePurge(platformId: "p") { success } }',
+  'query { pulseNetworkOverview { day } }',
+  'query { pulseNetworkTrending(period: last_7_days) { day } }',
+  'query { pulseNetworkPlatforms(first: 10, orderBy: title, orderMode: asc, searchTerm: "soc") { totalCount } }',
 ];
 
 // Every Query and Mutation field of the Threat Pulse schema.
@@ -42,17 +45,12 @@ const pulseSchemaFields = (): string[] => {
     ),
     'utf8'
   );
-  const fields: string[] = [];
-  for (const block of schema.matchAll(
-    /extend type (?:Query|Mutation) \{([^}]*)\}/g
-  )) {
-    for (const field of (block[1] ?? '').matchAll(/^\s*(\w+)\s*[(:]/gm)) {
-      if (field[1]) {
-        fields.push(field[1]);
-      }
-    }
-  }
-  return fields;
+  return parse(schema).definitions.flatMap((definition) =>
+    definition.kind === Kind.OBJECT_TYPE_EXTENSION &&
+    ['Query', 'Mutation'].includes(definition.name.value)
+      ? (definition.fields ?? []).map((field) => field.name.value)
+      : []
+  );
 };
 
 type Plugin = ReturnType<typeof errorLoggingPlugin>;

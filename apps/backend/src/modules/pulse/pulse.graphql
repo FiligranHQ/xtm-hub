@@ -292,3 +292,216 @@ extend type Mutation {
   # Warning ! Used by OpenCTI
   pulsePurge(platformId: String!): PulsePurgeResult! @platform_token
 }
+
+# Monitoring of the network by the Hub administrators (Settings > Threat
+# Pulse), not part of the OpenCTI wire contract: counts, types, buckets and
+# days only, never a value, a transport hash or a platform pseudonym.
+
+type PulseNetworkSettings {
+  enabled: Boolean!
+  "Why the service is disabled, null while it is enabled"
+  disabled_reason: String
+  "The settings are null when one of them is invalid"
+  k_threshold: Int
+  retention_months: Int
+  "Days from the first day the retention keeps to today, both included"
+  retention_days: Int
+  digest_size: Int
+  contribution_window_days: Int
+  contribution_grace_days: Int
+  trending_cache_ttl_minutes: Int
+}
+
+type PulseNetworkPlatformCounts {
+  "Active OpenCTI registrations"
+  registered: Int!
+  "Platforms within the contribution window or the grace period. Null while the settings are invalid"
+  contributing: Int
+  "Platforms that pushed a batch over the last 24 hours"
+  active_last_24_hours: Int!
+  "Platforms whose last contribution day is one of the last 7 UTC days"
+  active_last_7_days: Int!
+  "Registered platforms with no contribution held: the preview only. Null while the service is disabled"
+  preview_only: Int
+  "Platforms whose last contribution is older than the grace period. Null while the settings are invalid"
+  lapsed: Int
+  "Contributors no active registration matches any more. Null while the service is disabled"
+  unregistered: Int
+  "Platforms that downloaded the preview digest over the last 24 hours"
+  digest_readers_last_24_hours: Int!
+}
+
+type PulseNetworkKeyCounts {
+  "Keys held over the retention period"
+  tracked: Float!
+  "Keys reported by at least k platforms: the only ones ever published"
+  published: Float!
+  "Keys reported by fewer than k platforms: never published"
+  suppressed: Float!
+}
+
+type PulseNetworkIngestion {
+  batches_today: Int!
+  records_today: Float!
+  batches_last_30_days: Int!
+  records_last_30_days: Float!
+}
+
+type PulseNetworkActivityDay {
+  day: String!
+  batches: Int!
+  records: Float!
+  "Sum of the event counts of the day"
+  events: Float!
+  "Platforms that contributed to the day"
+  platforms: Int!
+}
+
+type PulseNetworkSectorCoverage {
+  sector_bucket: PulseSectorBucket!
+  "Platforms whose current sector bucket it is"
+  platforms: Int!
+  "Events of the last 30 days"
+  events: Float!
+}
+
+type PulseNetworkRegionCoverage {
+  region_bucket: PulseRegionBucket!
+  platforms: Int!
+  events: Float!
+}
+
+type PulseNetworkKindCoverage {
+  object_type: PulseObjectType!
+  event_kind: PulseEventKind!
+  "Platforms that reported it over the last 30 days"
+  platforms: Int!
+  events: Float!
+}
+
+enum PulseNetworkOperation {
+  push_pulse
+  pulse_lookup
+  pulse_trending
+  pulse_benchmark
+  pulse_salt
+  pulse_status
+  pulse_digest
+  pulse_purge
+}
+
+enum PulseNetworkRejectionCode {
+  UNAUTHENTICATED
+  FORBIDDEN
+  BAD_USER_INPUT
+  PULSE_CONTRIBUTION_REQUIRED
+  PULSE_RATE_LIMITED
+  PULSE_DISABLED
+}
+
+type PulseNetworkRejection {
+  operation: PulseNetworkOperation!
+  code: PulseNetworkRejectionCode!
+  requests: Int!
+  "Last UTC day with such a rejection"
+  last_day: String!
+}
+
+type PulseNetworkOverview {
+  "Current UTC day"
+  day: String!
+  settings: PulseNetworkSettings!
+  platforms: PulseNetworkPlatformCounts!
+  keys: PulseNetworkKeyCounts!
+  ingestion: PulseNetworkIngestion!
+  "The last 30 UTC days, the oldest first, every day present"
+  activity: [PulseNetworkActivityDay!]!
+  sectors: [PulseNetworkSectorCoverage!]!
+  regions: [PulseNetworkRegionCoverage!]!
+  "Object types and event kinds of the last 30 days"
+  kinds: [PulseNetworkKindCoverage!]!
+  "Requests refused over the last 7 UTC days"
+  rejections: [PulseNetworkRejection!]!
+  last_digest_at: Date
+  last_trending_at: Date
+}
+
+type PulseNetworkTrendingItem {
+  "The first characters of the at-rest key: an identifier, it reveals nothing about the object"
+  key_id: String!
+  object_type: PulseObjectType!
+  platforms_bucket: String!
+  prevalence_bucket: PulsePrevalenceBucket!
+  trend: PulseTrendDirection!
+  growth: Float!
+  first_seen_network: String
+}
+
+type PulseNetworkTrending {
+  day: String!
+  period: PulsePeriod!
+  "When the service computed the list it serves (cached for the trending TTL)"
+  computed_at: Date
+  items: [PulseNetworkTrendingItem!]!
+}
+
+enum PulseNetworkPlatformStatus {
+  "Contributed within the contribution window or the grace period"
+  contributing
+  "The last contribution is older than the grace period"
+  lapsed
+  "No contribution held (never contributed, purged or expired): the preview only"
+  preview_only
+}
+
+enum PulseNetworkPlatformOrdering {
+  title
+  organization_name
+  status
+  last_contribution_day
+  records_last_30_days
+  purge_requests
+}
+
+type PulseNetworkPlatform {
+  "The service instance of the registration"
+  id: ID!
+  title: String!
+  organization_name: String
+  sector_bucket: PulseSectorBucket
+  region_bucket: PulseRegionBucket
+  status: PulseNetworkPlatformStatus!
+  first_contribution_day: String
+  last_contribution_day: String
+  last_batch_at: Date
+  batches_last_30_days: Int!
+  records_last_30_days: Float!
+  "Purges requested over the retention period"
+  purge_requests: Int!
+  last_purge_day: String
+}
+
+type PulseNetworkPlatformEdge {
+  cursor: String!
+  node: PulseNetworkPlatform!
+}
+
+type PulseNetworkPlatformConnection {
+  totalCount: Int!
+  edges: [PulseNetworkPlatformEdge!]!
+  pageInfo: PageInfo!
+}
+
+extend type Query {
+  pulseNetworkOverview: PulseNetworkOverview! @auth(portalCapa: [BYPASS])
+  pulseNetworkTrending(period: PulsePeriod!, first: Int): PulseNetworkTrending!
+    @auth(portalCapa: [BYPASS])
+  pulseNetworkPlatforms(
+    first: Int!
+    after: ID
+    orderBy: PulseNetworkPlatformOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+    status: PulseNetworkPlatformStatus
+  ): PulseNetworkPlatformConnection! @auth(portalCapa: [BYPASS])
+}

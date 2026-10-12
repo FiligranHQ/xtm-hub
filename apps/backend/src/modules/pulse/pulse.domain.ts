@@ -36,7 +36,7 @@ import {
 
 // Raw statements join the ambient transaction (withTransaction /
 // withAdvisoryLock) when there is one.
-const query = async <T>(
+export const pulseQuery = async <T>(
   sql: string,
   bindings: readonly Knex.RawBinding[] = []
 ): Promise<T[]> => {
@@ -44,6 +44,8 @@ const query = async <T>(
   const result = await executor.raw<{ rows: T[] }>(sql, bindings);
   return result.rows;
 };
+
+const query = pulseQuery;
 
 const toJson = (value: unknown): string => JSON.stringify(value);
 
@@ -1255,13 +1257,18 @@ export const PulseDomain = {
     return { contributions: row?.deleted ?? 0, totals: emptied?.deleted ?? 0 };
   },
 
-  // The totals left before the day once its ledger rows are gone.
+  // The totals left before the day once its ledger rows are gone, and the
+  // monitoring rows of the day.
   deleteRowsBeforeDay: async ({
     table,
     day,
     batchSize,
   }: {
-    table: 'PulsePlatformDailyTotal';
+    table:
+      | 'PulsePlatformDailyTotal'
+      | 'PulsePlatformDailyIngestion'
+      | 'PulsePurgeRequest'
+      | 'PulseRejection';
     day: string;
     batchSize: number;
   }): Promise<number> => {

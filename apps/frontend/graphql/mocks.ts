@@ -1,4 +1,4 @@
-import { AddRolePortalInput, AddSsoGroupRolePortalInput, AddServiceInput, AddSolutionCategoryInput, AddSubscriptionCapabilityInput, AddUseCaseInput, AddUserInput, AddUsersToBundleGroupsInput, AdminAddUserInput, AdminEditUserInput, AutoRegisterPlatformInput, BulkPendingUserFromOrganizationInput, BundleUserRoleAssignmentInput, BundleUserServiceGroup, CanUnregisterPlatformInput, CanUnregisterResponse, Capability, Competitor, CompetitorConnection, CompetitorEdge, Connector, ConsumeProvisionedNewsFeedItemsResponse, ContentTranslationEntry, ContentTranslationValueInput, CreateCompetitorInput, CreateDeploymentRequestInput, CreateDocumentInput, CreateEpicInput, CreateSubscriptionsInput, CreateVotableFeatureInput, CreateVotingRoundInput, CsvFeed, CustomDashboard, CustomView, DefaultDocument, DeleteSsoGroupRolePortalInput, DeployedResource, DeploymentAvailability, DeploymentRequest, DeploymentRequestConnection, DeploymentRequestEdge, DeploymentRequestFilter, Document, DocumentConnection, DocumentEdge, DocumentMetadata, EditMeUserInput, EditSeoServiceInstanceInput, EditSolutionCategoryInput, EditUseCaseInput, EditUserCapabilitiesInput, Epic, EpicConnection, EpicCountPerTimeline, EpicEdge, Facet, FacetBucket, Filter, GenericServiceCapability, GiveDeploymentFeedbackInput, Integration, IntegrationHack, IsPlatformRegisteredInput, IsPlatformRegisteredOrganization, IsPlatformRegisteredResponse, LastDeployedOverview, LoadDocumentFacetInput, LogicalFilterInput, ManifestFragmentInput, MeUserSubscription, MergeEvent, Mutation, NewsFeedItem, NewsFeedItemConnection, NewsFeedItemEdge, NewsFeedItemMetadata, Node, OneClickDeployInput, OpenAevScenario, OpenCtiPlatformRegistrationStatusInput, OpenCtiPlatformRegistrationStatusResponse, OpenCtiPlaybook, Organization, OrganizationCapabilities, OrganizationCapabilitiesInput, OrganizationConnection, OrganizationEdge, OrganizationInput, OrganizationRef, PageInfo, PlatformDeploymentRequest, PlatformDeploymentRequestConnection, PlatformDeploymentRequestEdge, PlatformInput, PlatformProvider, PlatformTrialStatus, ProductUseCaseInput, ProvisionedNewsFeedItem, PublicDocumentSlugInfo, Query, RefreshPlatformRegistrationConnectivityStatusAllTenantsInput, RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse, RefreshPlatformRegistrationConnectivityStatusInput, RefreshPlatformRegistrationConnectivityStatusResponse, RefreshPlatformRegistrationConnectivityStatusSingleTenantInput, RefreshUserPlatformTokenResponse, RegisterPlatformInput, RegisteredPlatform, RegisteredPlatformConnection, RegisteredPlatformEdge, RegisteredPlatformInput, RegisteredPlatformsInput, RegisteredProductVersion, RegistrationResponse, ReorderDeploymentRequestInQueueInput, RolePortal, RssFeed, SsoGroupRolePortal, SendTelemetryMutation, SeoServiceInstance, SeoServiceInstanceMetadata, ServiceCapability, ServiceConnection, ServiceDefinition, ServiceGroup, ServiceInstance, ServiceInstanceEdge, ServiceInstanceFilter, ServiceInstanceSubscription, ServiceLink, Settings, ShareableResource, SolutionCategory, SolutionCategoryConnection, SolutionCategoryEdge, Stream, SubscribedServiceInstanceConfiguration, Subscription, SubscriptionCapability, SubscriptionConnection, SubscriptionEdge, SubscriptionFilter, SubscriptionModel, Success, TaxiiFeed, TelemetryResponse, TenantDetails, TenantStatus, ThirdPartyIntegration, UnregisterPlatformInput, UpdateBundleUserGroupsInput, UpdateBundleUserGroupsRoleInput, UpdateCompetitorInput, UpdateDeploymentQuotaCapacityInput, UpdateDeploymentRequestInput, UpdateDocumentInput, UpdateEpicInput, UpdatePlatformServiceMetadataInput, UpdateRolePortalInput, UpdateSsoGroupRolePortalInput, UpdateServiceGroupsInput, UpdateServiceGroupsInputGroup, UpdateSubscriptionInput, UpdateVotableFeatureInput, UpdateVotingRoundInput, UpsertContentTranslationInput, UseCase, UseCaseConnection, UseCaseEdge, User, UserConnection, UserEdge, UserPendingSubscription, UserPlatformGroup, UserService, UserServiceAddInput, UserServiceAddYourselfInput, UserServiceCapabilitiesResponse, UserServiceCapability, UserServiceConnection, UserServiceDeleted, UserServiceEdge, UserServiceEditInput, UserServicesAddCapabilitiesInput, UserServicesDeleteInput, UserSubscription, UsersWithCapabilitiesInOrganizationInput, VotableFeature, VotableFeatureResult, VotingRound, VotingRoundResults, XtmoneIntegrationStatus, XtmoneIntegrationStatusEntry, CommercialModel, CompetitorOrdering, CompetitorTier, DeploymentRequestActivitySector, DeploymentRequestDeploymentType, DeploymentRequestFilterKey, DeploymentRequestHubStatus, DeploymentRequestJobTitle, DeploymentRequestOrdering, DeploymentRequestPlatformRegion, DeploymentRequestPlatformState, DeploymentRequestSource, DeploymentRequestUseCase, DocumentImageType, DocumentMetadataKeyCode, DocumentOrdering, DocumentSourceType, EditionType, EpicOrdering, EpicType, FeatureFlag, FiligranProduct, FilterKey, HasRepliedSatisfaction, IntegrationType, LicenseType, Locale, LogicalOperator, ManifestType, NewsFeedItemMetadataKey, NewsFeedItemType, OrderingMode, OrganizationCapability, OrganizationOrdering, PlatformConfigurationStatus, PlatformContract, PlatformIdentifier, PlatformRegistrationConnectivityStatus, PlatformRegistrationStatus, PortalCapability, RegisteredPlatformOrdering, ReorderDeploymentRequestInQueueDirection, ServiceDefinitionIdentifier, ServiceGroupName, ServiceInstanceCreationStatus, ServiceInstanceFilterKey, ServiceInstanceOrdering, ServiceInstanceTag, ServiceRestriction, SolutionCategoryOrdering, SubscriptionFilterKey, SubscriptionOrdering, Timeline, UseCaseOrdering, UserAccountStatus, UserOrdering, UserServiceOrdering, VotingRoundStatus, VotingRoundTheme } from './generated';
+import { AddRolePortalInput, AddSsoGroupRolePortalInput, AddServiceInput, AddSolutionCategoryInput, AddSubscriptionCapabilityInput, AddUseCaseInput, AddUserInput, AddUsersToBundleGroupsInput, AdminAddUserInput, AdminEditUserInput, AutoRegisterPlatformInput, BulkPendingUserFromOrganizationInput, BundleUserRoleAssignmentInput, BundleUserServiceGroup, CanUnregisterPlatformInput, CanUnregisterResponse, Capability, Competitor, CompetitorConnection, CompetitorEdge, Connector, ConsumeProvisionedNewsFeedItemsResponse, ContentTranslationEntry, ContentTranslationValueInput, CreateCompetitorInput, CreateDeploymentRequestInput, CreateDocumentInput, CreateEpicInput, CreateSubscriptionsInput, CreateVotableFeatureInput, CreateVotingRoundInput, CsvFeed, CustomDashboard, CustomView, DefaultDocument, DeleteSsoGroupRolePortalInput, DeployedResource, DeploymentAvailability, DeploymentRequest, DeploymentRequestConnection, DeploymentRequestEdge, DeploymentRequestFilter, Document, DocumentConnection, DocumentEdge, DocumentMetadata, EditMeUserInput, EditSeoServiceInstanceInput, EditSolutionCategoryInput, EditUseCaseInput, EditUserCapabilitiesInput, Epic, EpicConnection, EpicCountPerTimeline, EpicEdge, Facet, FacetBucket, Filter, GenericServiceCapability, GiveDeploymentFeedbackInput, Integration, IntegrationHack, IsPlatformRegisteredInput, IsPlatformRegisteredOrganization, IsPlatformRegisteredResponse, LastDeployedOverview, LoadDocumentFacetInput, LogicalFilterInput, ManifestFragmentInput, MeUserSubscription, MergeEvent, Mutation, NewsFeedItem, NewsFeedItemConnection, NewsFeedItemEdge, NewsFeedItemMetadata, Node, OneClickDeployInput, OpenAevScenario, OpenCtiPlatformRegistrationStatusInput, OpenCtiPlatformRegistrationStatusResponse, OpenCtiPlaybook, Organization, OrganizationCapabilities, OrganizationCapabilitiesInput, OrganizationConnection, OrganizationEdge, OrganizationInput, OrganizationRef, PageInfo, PlatformDeploymentRequest, PlatformDeploymentRequestConnection, PlatformDeploymentRequestEdge, PlatformInput, PlatformProvider, PlatformTrialStatus, ProductUseCaseInput, ProvisionedNewsFeedItem, PublicDocumentSlugInfo, PulseBenchmarkInput, PulseBenchmarkItem, PulseBenchmarkMetric, PulseBenchmarkResult, PulseDigest, PulseDigestInput, PulseDigestItem, PulseDigestTrending, PulseDigestTrendingItem, PulseLookupInput, PulseLookupResult, PulseNetworkActivityDay, PulseNetworkIngestion, PulseNetworkKeyCounts, PulseNetworkKindCoverage, PulseNetworkOverview, PulseNetworkPlatform, PulseNetworkPlatformConnection, PulseNetworkPlatformCounts, PulseNetworkPlatformEdge, PulseNetworkRegionCoverage, PulseNetworkRejection, PulseNetworkSectorCoverage, PulseNetworkSettings, PulseNetworkTrending, PulseNetworkTrendingItem, PulsePurgeResult, PulseRecordInput, PulseSalt, PulseStatus, PulseTrendingInput, PulseTrendingItem, PulseTrendingResult, PushPulseInput, PushPulseResult, Query, RefreshPlatformRegistrationConnectivityStatusAllTenantsInput, RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse, RefreshPlatformRegistrationConnectivityStatusInput, RefreshPlatformRegistrationConnectivityStatusResponse, RefreshPlatformRegistrationConnectivityStatusSingleTenantInput, RefreshUserPlatformTokenResponse, RegisterPlatformInput, RegisteredPlatform, RegisteredPlatformConnection, RegisteredPlatformEdge, RegisteredPlatformInput, RegisteredPlatformsInput, RegisteredProductVersion, RegistrationResponse, ReorderDeploymentRequestInQueueInput, RolePortal, RssFeed, SsoGroupRolePortal, SendTelemetryMutation, SeoServiceInstance, SeoServiceInstanceMetadata, ServiceCapability, ServiceConnection, ServiceDefinition, ServiceGroup, ServiceInstance, ServiceInstanceEdge, ServiceInstanceFilter, ServiceInstanceSubscription, ServiceLink, Settings, ShareableResource, SolutionCategory, SolutionCategoryConnection, SolutionCategoryEdge, Stream, SubscribedServiceInstanceConfiguration, Subscription, SubscriptionCapability, SubscriptionConnection, SubscriptionEdge, SubscriptionFilter, SubscriptionModel, Success, TaxiiFeed, TelemetryResponse, TenantDetails, TenantStatus, ThirdPartyIntegration, UnregisterPlatformInput, UpdateBundleUserGroupsInput, UpdateBundleUserGroupsRoleInput, UpdateCompetitorInput, UpdateDeploymentQuotaCapacityInput, UpdateDeploymentRequestInput, UpdateDocumentInput, UpdateEpicInput, UpdatePlatformServiceMetadataInput, UpdateRolePortalInput, UpdateSsoGroupRolePortalInput, UpdateServiceGroupsInput, UpdateServiceGroupsInputGroup, UpdateSubscriptionInput, UpdateVotableFeatureInput, UpdateVotingRoundInput, UpsertContentTranslationInput, UseCase, UseCaseConnection, UseCaseEdge, User, UserConnection, UserEdge, UserPendingSubscription, UserPlatformGroup, UserService, UserServiceAddInput, UserServiceAddYourselfInput, UserServiceCapabilitiesResponse, UserServiceCapability, UserServiceConnection, UserServiceDeleted, UserServiceEdge, UserServiceEditInput, UserServicesAddCapabilitiesInput, UserServicesDeleteInput, UserSubscription, UsersWithCapabilitiesInOrganizationInput, VotableFeature, VotableFeatureResult, VotingRound, VotingRoundResults, XtmoneIntegrationStatus, XtmoneIntegrationStatusEntry, CommercialModel, CompetitorOrdering, CompetitorTier, DeploymentRequestActivitySector, DeploymentRequestDeploymentType, DeploymentRequestFilterKey, DeploymentRequestHubStatus, DeploymentRequestJobTitle, DeploymentRequestOrdering, DeploymentRequestPlatformRegion, DeploymentRequestPlatformState, DeploymentRequestSource, DeploymentRequestUseCase, DocumentImageType, DocumentMetadataKeyCode, DocumentOrdering, DocumentSourceType, EditionType, EpicOrdering, EpicType, FeatureFlag, FiligranProduct, FilterKey, HasRepliedSatisfaction, IntegrationType, LicenseType, Locale, LogicalOperator, ManifestType, NewsFeedItemMetadataKey, NewsFeedItemType, OrderingMode, OrganizationCapability, OrganizationOrdering, PlatformConfigurationStatus, PlatformContract, PlatformIdentifier, PlatformRegistrationConnectivityStatus, PlatformRegistrationStatus, PortalCapability, PulseContributionStatus, PulseEventKind, PulseNetworkOperation, PulseNetworkPlatformOrdering, PulseNetworkPlatformStatus, PulseNetworkRejectionCode, PulseObjectType, PulsePeriod, PulsePrevalenceBucket, PulseRegionBucket, PulseSectorBucket, PulseTrendDirection, RegisteredPlatformOrdering, ReorderDeploymentRequestInQueueDirection, ServiceDefinitionIdentifier, ServiceGroupName, ServiceInstanceCreationStatus, ServiceInstanceFilterKey, ServiceInstanceOrdering, ServiceInstanceTag, ServiceRestriction, SolutionCategoryOrdering, SubscriptionFilterKey, SubscriptionOrdering, Timeline, UseCaseOrdering, UserAccountStatus, UserOrdering, UserServiceOrdering, VotingRoundStatus, VotingRoundTheme } from './generated';
 
 export const mockAddRolePortalInput = (overrides?: Partial<AddRolePortalInput>, _relationshipsToOmit: Set<string> = new Set()): AddRolePortalInput => {
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
@@ -1061,6 +1061,8 @@ export const mockMutation = (overrides?: Partial<Mutation>, _relationshipsToOmit
         logout: overrides && overrides.hasOwnProperty('logout') ? overrides.logout! : 'c0bb04f3-5940-42c4-b3b3-6d3927041bab',
         newProductVersion: overrides && overrides.hasOwnProperty('newProductVersion') ? overrides.newProductVersion! : relationshipsToOmit.has('Success') ? {} as Success : mockSuccess({}, relationshipsToOmit),
         publishContentTranslationDrafts: overrides && overrides.hasOwnProperty('publishContentTranslationDrafts') ? overrides.publishContentTranslationDrafts! : [relationshipsToOmit.has('ContentTranslationEntry') ? {} as ContentTranslationEntry : mockContentTranslationEntry({}, relationshipsToOmit)],
+        pulsePurge: overrides && overrides.hasOwnProperty('pulsePurge') ? overrides.pulsePurge! : relationshipsToOmit.has('PulsePurgeResult') ? {} as PulsePurgeResult : mockPulsePurgeResult({}, relationshipsToOmit),
+        pushPulse: overrides && overrides.hasOwnProperty('pushPulse') ? overrides.pushPulse! : relationshipsToOmit.has('PushPulseResult') ? {} as PushPulseResult : mockPushPulseResult({}, relationshipsToOmit),
         refreshPlatformRegistrationConnectivityStatus: overrides && overrides.hasOwnProperty('refreshPlatformRegistrationConnectivityStatus') ? overrides.refreshPlatformRegistrationConnectivityStatus! : relationshipsToOmit.has('RefreshPlatformRegistrationConnectivityStatusResponse') ? {} as RefreshPlatformRegistrationConnectivityStatusResponse : mockRefreshPlatformRegistrationConnectivityStatusResponse({}, relationshipsToOmit),
         refreshPlatformRegistrationConnectivityStatusAllTenants: overrides && overrides.hasOwnProperty('refreshPlatformRegistrationConnectivityStatusAllTenants') ? overrides.refreshPlatformRegistrationConnectivityStatusAllTenants! : relationshipsToOmit.has('RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse') ? {} as RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse : mockRefreshPlatformRegistrationConnectivityStatusAllTenantsResponse({}, relationshipsToOmit),
         refreshPlatformRegistrationConnectivityStatusSingleTenant: overrides && overrides.hasOwnProperty('refreshPlatformRegistrationConnectivityStatusSingleTenant') ? overrides.refreshPlatformRegistrationConnectivityStatusSingleTenant! : relationshipsToOmit.has('RefreshPlatformRegistrationConnectivityStatusResponse') ? {} as RefreshPlatformRegistrationConnectivityStatusResponse : mockRefreshPlatformRegistrationConnectivityStatusResponse({}, relationshipsToOmit),
@@ -1449,6 +1451,460 @@ export const mockPublicDocumentSlugInfo = (overrides?: Partial<PublicDocumentSlu
     };
 };
 
+export const mockPulseBenchmarkInput = (overrides?: Partial<PulseBenchmarkInput>, _relationshipsToOmit: Set<string> = new Set()): PulseBenchmarkInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseBenchmarkInput');
+    return {
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'delectatio',
+        period: overrides && overrides.hasOwnProperty('period') ? overrides.period! : PulsePeriod.Last_7Days,
+        platformId: overrides && overrides.hasOwnProperty('platformId') ? overrides.platformId! : 'aduro',
+    };
+};
+
+export const mockPulseBenchmarkItem = (overrides?: Partial<PulseBenchmarkItem>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseBenchmarkItem' } & PulseBenchmarkItem => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseBenchmarkItem');
+    return {
+        __typename: 'PulseBenchmarkItem',
+        hash: overrides && overrides.hasOwnProperty('hash') ? overrides.hash! : 'vulgaris',
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+        platform_count: overrides && overrides.hasOwnProperty('platform_count') ? overrides.platform_count! : 7892,
+        ratio: overrides && overrides.hasOwnProperty('ratio') ? overrides.ratio! : 3.6,
+        sector_median: overrides && overrides.hasOwnProperty('sector_median') ? overrides.sector_median! : 6.3,
+    };
+};
+
+export const mockPulseBenchmarkMetric = (overrides?: Partial<PulseBenchmarkMetric>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseBenchmarkMetric' } & PulseBenchmarkMetric => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseBenchmarkMetric');
+    return {
+        __typename: 'PulseBenchmarkMetric',
+        event_kind: overrides && overrides.hasOwnProperty('event_kind') ? overrides.event_kind! : PulseEventKind.Created,
+        network_median: overrides && overrides.hasOwnProperty('network_median') ? overrides.network_median! : 8.6,
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+        platform_count: overrides && overrides.hasOwnProperty('platform_count') ? overrides.platform_count! : 5419,
+        sector_median: overrides && overrides.hasOwnProperty('sector_median') ? overrides.sector_median! : 8.7,
+        sector_platform_count: overrides && overrides.hasOwnProperty('sector_platform_count') ? overrides.sector_platform_count! : 8011,
+    };
+};
+
+export const mockPulseBenchmarkResult = (overrides?: Partial<PulseBenchmarkResult>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseBenchmarkResult' } & PulseBenchmarkResult => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseBenchmarkResult');
+    return {
+        __typename: 'PulseBenchmarkResult',
+        metrics: overrides && overrides.hasOwnProperty('metrics') ? overrides.metrics! : [relationshipsToOmit.has('PulseBenchmarkMetric') ? {} as PulseBenchmarkMetric : mockPulseBenchmarkMetric({}, relationshipsToOmit)],
+        period: overrides && overrides.hasOwnProperty('period') ? overrides.period! : PulsePeriod.Last_7Days,
+        region_bucket: overrides && overrides.hasOwnProperty('region_bucket') ? overrides.region_bucket! : PulseRegionBucket.Africa,
+        sector_bucket: overrides && overrides.hasOwnProperty('sector_bucket') ? overrides.sector_bucket! : PulseSectorBucket.Defense,
+        sector_platforms_bucket: overrides && overrides.hasOwnProperty('sector_platforms_bucket') ? overrides.sector_platforms_bucket! : 'tremo',
+        top_items: overrides && overrides.hasOwnProperty('top_items') ? overrides.top_items! : [relationshipsToOmit.has('PulseBenchmarkItem') ? {} as PulseBenchmarkItem : mockPulseBenchmarkItem({}, relationshipsToOmit)],
+    };
+};
+
+export const mockPulseDigest = (overrides?: Partial<PulseDigest>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseDigest' } & PulseDigest => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseDigest');
+    return {
+        __typename: 'PulseDigest',
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'voro',
+        items: overrides && overrides.hasOwnProperty('items') ? overrides.items! : [relationshipsToOmit.has('PulseDigestItem') ? {} as PulseDigestItem : mockPulseDigestItem({}, relationshipsToOmit)],
+        region_bucket: overrides && overrides.hasOwnProperty('region_bucket') ? overrides.region_bucket! : PulseRegionBucket.Africa,
+        sector_bucket: overrides && overrides.hasOwnProperty('sector_bucket') ? overrides.sector_bucket! : PulseSectorBucket.Defense,
+        trending: overrides && overrides.hasOwnProperty('trending') ? overrides.trending! : relationshipsToOmit.has('PulseDigestTrending') ? {} as PulseDigestTrending : mockPulseDigestTrending({}, relationshipsToOmit),
+    };
+};
+
+export const mockPulseDigestInput = (overrides?: Partial<PulseDigestInput>, _relationshipsToOmit: Set<string> = new Set()): PulseDigestInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseDigestInput');
+    return {
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'depereo',
+        region_bucket: overrides && overrides.hasOwnProperty('region_bucket') ? overrides.region_bucket! : PulseRegionBucket.Africa,
+        sector_bucket: overrides && overrides.hasOwnProperty('sector_bucket') ? overrides.sector_bucket! : PulseSectorBucket.Defense,
+    };
+};
+
+export const mockPulseDigestItem = (overrides?: Partial<PulseDigestItem>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseDigestItem' } & PulseDigestItem => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseDigestItem');
+    return {
+        __typename: 'PulseDigestItem',
+        hash: overrides && overrides.hasOwnProperty('hash') ? overrides.hash! : 'dedico',
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+        prevalence_bucket: overrides && overrides.hasOwnProperty('prevalence_bucket') ? overrides.prevalence_bucket! : PulsePrevalenceBucket.Common,
+        trend: overrides && overrides.hasOwnProperty('trend') ? overrides.trend! : PulseTrendDirection.Falling,
+    };
+};
+
+export const mockPulseDigestTrending = (overrides?: Partial<PulseDigestTrending>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseDigestTrending' } & PulseDigestTrending => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseDigestTrending');
+    return {
+        __typename: 'PulseDigestTrending',
+        items: overrides && overrides.hasOwnProperty('items') ? overrides.items! : [relationshipsToOmit.has('PulseDigestTrendingItem') ? {} as PulseDigestTrendingItem : mockPulseDigestTrendingItem({}, relationshipsToOmit)],
+        locked_count: overrides && overrides.hasOwnProperty('locked_count') ? overrides.locked_count! : 328,
+        period: overrides && overrides.hasOwnProperty('period') ? overrides.period! : PulsePeriod.Last_7Days,
+    };
+};
+
+export const mockPulseDigestTrendingItem = (overrides?: Partial<PulseDigestTrendingItem>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseDigestTrendingItem' } & PulseDigestTrendingItem => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseDigestTrendingItem');
+    return {
+        __typename: 'PulseDigestTrendingItem',
+        hash: overrides && overrides.hasOwnProperty('hash') ? overrides.hash! : 'suadeo',
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+        prevalence_bucket: overrides && overrides.hasOwnProperty('prevalence_bucket') ? overrides.prevalence_bucket! : PulsePrevalenceBucket.Common,
+        rank: overrides && overrides.hasOwnProperty('rank') ? overrides.rank! : 4027,
+        trend: overrides && overrides.hasOwnProperty('trend') ? overrides.trend! : PulseTrendDirection.Falling,
+    };
+};
+
+export const mockPulseLookupInput = (overrides?: Partial<PulseLookupInput>, _relationshipsToOmit: Set<string> = new Set()): PulseLookupInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseLookupInput');
+    return {
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'itaque',
+        hashes: overrides && overrides.hasOwnProperty('hashes') ? overrides.hashes! : ['pectus'],
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+    };
+};
+
+export const mockPulseLookupResult = (overrides?: Partial<PulseLookupResult>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseLookupResult' } & PulseLookupResult => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseLookupResult');
+    return {
+        __typename: 'PulseLookupResult',
+        first_seen_network: overrides && overrides.hasOwnProperty('first_seen_network') ? overrides.first_seen_network! : 'speculum',
+        hash: overrides && overrides.hasOwnProperty('hash') ? overrides.hash! : 'trans',
+        last_seen_network: overrides && overrides.hasOwnProperty('last_seen_network') ? overrides.last_seen_network! : 'fugit',
+        platforms_bucket: overrides && overrides.hasOwnProperty('platforms_bucket') ? overrides.platforms_bucket! : 'alveus',
+        prevalence_bucket: overrides && overrides.hasOwnProperty('prevalence_bucket') ? overrides.prevalence_bucket! : PulsePrevalenceBucket.Common,
+        published: overrides && overrides.hasOwnProperty('published') ? overrides.published! : true,
+        sector_platforms_bucket: overrides && overrides.hasOwnProperty('sector_platforms_bucket') ? overrides.sector_platforms_bucket! : 'ustilo',
+        sector_trend: overrides && overrides.hasOwnProperty('sector_trend') ? overrides.sector_trend! : PulseTrendDirection.Falling,
+        trend: overrides && overrides.hasOwnProperty('trend') ? overrides.trend! : PulseTrendDirection.Falling,
+        trend_series: overrides && overrides.hasOwnProperty('trend_series') ? overrides.trend_series! : [7067],
+    };
+};
+
+export const mockPulseNetworkActivityDay = (overrides?: Partial<PulseNetworkActivityDay>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkActivityDay' } & PulseNetworkActivityDay => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkActivityDay');
+    return {
+        __typename: 'PulseNetworkActivityDay',
+        batches: overrides && overrides.hasOwnProperty('batches') ? overrides.batches! : 7114,
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'infit',
+        events: overrides && overrides.hasOwnProperty('events') ? overrides.events! : 1.7,
+        platforms: overrides && overrides.hasOwnProperty('platforms') ? overrides.platforms! : 1880,
+        records: overrides && overrides.hasOwnProperty('records') ? overrides.records! : 8.6,
+    };
+};
+
+export const mockPulseNetworkIngestion = (overrides?: Partial<PulseNetworkIngestion>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkIngestion' } & PulseNetworkIngestion => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkIngestion');
+    return {
+        __typename: 'PulseNetworkIngestion',
+        batches_last_30_days: overrides && overrides.hasOwnProperty('batches_last_30_days') ? overrides.batches_last_30_days! : 5365,
+        batches_today: overrides && overrides.hasOwnProperty('batches_today') ? overrides.batches_today! : 5432,
+        records_last_30_days: overrides && overrides.hasOwnProperty('records_last_30_days') ? overrides.records_last_30_days! : 8.9,
+        records_today: overrides && overrides.hasOwnProperty('records_today') ? overrides.records_today! : 0.4,
+    };
+};
+
+export const mockPulseNetworkKeyCounts = (overrides?: Partial<PulseNetworkKeyCounts>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkKeyCounts' } & PulseNetworkKeyCounts => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkKeyCounts');
+    return {
+        __typename: 'PulseNetworkKeyCounts',
+        published: overrides && overrides.hasOwnProperty('published') ? overrides.published! : 9.9,
+        suppressed: overrides && overrides.hasOwnProperty('suppressed') ? overrides.suppressed! : 8.7,
+        tracked: overrides && overrides.hasOwnProperty('tracked') ? overrides.tracked! : 2.8,
+    };
+};
+
+export const mockPulseNetworkKindCoverage = (overrides?: Partial<PulseNetworkKindCoverage>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkKindCoverage' } & PulseNetworkKindCoverage => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkKindCoverage');
+    return {
+        __typename: 'PulseNetworkKindCoverage',
+        event_kind: overrides && overrides.hasOwnProperty('event_kind') ? overrides.event_kind! : PulseEventKind.Created,
+        events: overrides && overrides.hasOwnProperty('events') ? overrides.events! : 7,
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+        platforms: overrides && overrides.hasOwnProperty('platforms') ? overrides.platforms! : 1289,
+    };
+};
+
+export const mockPulseNetworkOverview = (overrides?: Partial<PulseNetworkOverview>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkOverview' } & PulseNetworkOverview => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkOverview');
+    return {
+        __typename: 'PulseNetworkOverview',
+        activity: overrides && overrides.hasOwnProperty('activity') ? overrides.activity! : [relationshipsToOmit.has('PulseNetworkActivityDay') ? {} as PulseNetworkActivityDay : mockPulseNetworkActivityDay({}, relationshipsToOmit)],
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'reprehenderit',
+        ingestion: overrides && overrides.hasOwnProperty('ingestion') ? overrides.ingestion! : relationshipsToOmit.has('PulseNetworkIngestion') ? {} as PulseNetworkIngestion : mockPulseNetworkIngestion({}, relationshipsToOmit),
+        keys: overrides && overrides.hasOwnProperty('keys') ? overrides.keys! : relationshipsToOmit.has('PulseNetworkKeyCounts') ? {} as PulseNetworkKeyCounts : mockPulseNetworkKeyCounts({}, relationshipsToOmit),
+        kinds: overrides && overrides.hasOwnProperty('kinds') ? overrides.kinds! : [relationshipsToOmit.has('PulseNetworkKindCoverage') ? {} as PulseNetworkKindCoverage : mockPulseNetworkKindCoverage({}, relationshipsToOmit)],
+        last_digest_at: overrides && overrides.hasOwnProperty('last_digest_at') ? overrides.last_digest_at! : '2021-05-31T16:00:50.882Z',
+        last_trending_at: overrides && overrides.hasOwnProperty('last_trending_at') ? overrides.last_trending_at! : '2021-05-04T07:12:19.571Z',
+        platforms: overrides && overrides.hasOwnProperty('platforms') ? overrides.platforms! : relationshipsToOmit.has('PulseNetworkPlatformCounts') ? {} as PulseNetworkPlatformCounts : mockPulseNetworkPlatformCounts({}, relationshipsToOmit),
+        regions: overrides && overrides.hasOwnProperty('regions') ? overrides.regions! : [relationshipsToOmit.has('PulseNetworkRegionCoverage') ? {} as PulseNetworkRegionCoverage : mockPulseNetworkRegionCoverage({}, relationshipsToOmit)],
+        rejections: overrides && overrides.hasOwnProperty('rejections') ? overrides.rejections! : [relationshipsToOmit.has('PulseNetworkRejection') ? {} as PulseNetworkRejection : mockPulseNetworkRejection({}, relationshipsToOmit)],
+        sectors: overrides && overrides.hasOwnProperty('sectors') ? overrides.sectors! : [relationshipsToOmit.has('PulseNetworkSectorCoverage') ? {} as PulseNetworkSectorCoverage : mockPulseNetworkSectorCoverage({}, relationshipsToOmit)],
+        settings: overrides && overrides.hasOwnProperty('settings') ? overrides.settings! : relationshipsToOmit.has('PulseNetworkSettings') ? {} as PulseNetworkSettings : mockPulseNetworkSettings({}, relationshipsToOmit),
+    };
+};
+
+export const mockPulseNetworkPlatform = (overrides?: Partial<PulseNetworkPlatform>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkPlatform' } & PulseNetworkPlatform => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkPlatform');
+    return {
+        __typename: 'PulseNetworkPlatform',
+        batches_last_30_days: overrides && overrides.hasOwnProperty('batches_last_30_days') ? overrides.batches_last_30_days! : 4652,
+        first_contribution_day: overrides && overrides.hasOwnProperty('first_contribution_day') ? overrides.first_contribution_day! : 'sono',
+        id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : '2e2903c8-7435-49c3-8676-45baf1cd6c06',
+        last_batch_at: overrides && overrides.hasOwnProperty('last_batch_at') ? overrides.last_batch_at! : '2021-12-20T13:31:34.954Z',
+        last_contribution_day: overrides && overrides.hasOwnProperty('last_contribution_day') ? overrides.last_contribution_day! : 'odio',
+        last_purge_day: overrides && overrides.hasOwnProperty('last_purge_day') ? overrides.last_purge_day! : 'acidus',
+        organization_name: overrides && overrides.hasOwnProperty('organization_name') ? overrides.organization_name! : 'cornu',
+        purge_requests: overrides && overrides.hasOwnProperty('purge_requests') ? overrides.purge_requests! : 309,
+        records_last_30_days: overrides && overrides.hasOwnProperty('records_last_30_days') ? overrides.records_last_30_days! : 8,
+        region_bucket: overrides && overrides.hasOwnProperty('region_bucket') ? overrides.region_bucket! : PulseRegionBucket.Africa,
+        sector_bucket: overrides && overrides.hasOwnProperty('sector_bucket') ? overrides.sector_bucket! : PulseSectorBucket.Defense,
+        status: overrides && overrides.hasOwnProperty('status') ? overrides.status! : PulseNetworkPlatformStatus.Contributing,
+        title: overrides && overrides.hasOwnProperty('title') ? overrides.title! : 'tantum',
+    };
+};
+
+export const mockPulseNetworkPlatformConnection = (overrides?: Partial<PulseNetworkPlatformConnection>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkPlatformConnection' } & PulseNetworkPlatformConnection => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkPlatformConnection');
+    return {
+        __typename: 'PulseNetworkPlatformConnection',
+        edges: overrides && overrides.hasOwnProperty('edges') ? overrides.edges! : [relationshipsToOmit.has('PulseNetworkPlatformEdge') ? {} as PulseNetworkPlatformEdge : mockPulseNetworkPlatformEdge({}, relationshipsToOmit)],
+        pageInfo: overrides && overrides.hasOwnProperty('pageInfo') ? overrides.pageInfo! : relationshipsToOmit.has('PageInfo') ? {} as PageInfo : mockPageInfo({}, relationshipsToOmit),
+        totalCount: overrides && overrides.hasOwnProperty('totalCount') ? overrides.totalCount! : 5078,
+    };
+};
+
+export const mockPulseNetworkPlatformCounts = (overrides?: Partial<PulseNetworkPlatformCounts>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkPlatformCounts' } & PulseNetworkPlatformCounts => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkPlatformCounts');
+    return {
+        __typename: 'PulseNetworkPlatformCounts',
+        active_last_7_days: overrides && overrides.hasOwnProperty('active_last_7_days') ? overrides.active_last_7_days! : 8436,
+        active_last_24_hours: overrides && overrides.hasOwnProperty('active_last_24_hours') ? overrides.active_last_24_hours! : 4212,
+        contributing: overrides && overrides.hasOwnProperty('contributing') ? overrides.contributing! : 5574,
+        digest_readers_last_24_hours: overrides && overrides.hasOwnProperty('digest_readers_last_24_hours') ? overrides.digest_readers_last_24_hours! : 2533,
+        lapsed: overrides && overrides.hasOwnProperty('lapsed') ? overrides.lapsed! : 5275,
+        preview_only: overrides && overrides.hasOwnProperty('preview_only') ? overrides.preview_only! : 6275,
+        registered: overrides && overrides.hasOwnProperty('registered') ? overrides.registered! : 2178,
+        unregistered: overrides && overrides.hasOwnProperty('unregistered') ? overrides.unregistered! : 2613,
+    };
+};
+
+export const mockPulseNetworkPlatformEdge = (overrides?: Partial<PulseNetworkPlatformEdge>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkPlatformEdge' } & PulseNetworkPlatformEdge => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkPlatformEdge');
+    return {
+        __typename: 'PulseNetworkPlatformEdge',
+        cursor: overrides && overrides.hasOwnProperty('cursor') ? overrides.cursor! : 'conturbo',
+        node: overrides && overrides.hasOwnProperty('node') ? overrides.node! : relationshipsToOmit.has('PulseNetworkPlatform') ? {} as PulseNetworkPlatform : mockPulseNetworkPlatform({}, relationshipsToOmit),
+    };
+};
+
+export const mockPulseNetworkRegionCoverage = (overrides?: Partial<PulseNetworkRegionCoverage>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkRegionCoverage' } & PulseNetworkRegionCoverage => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkRegionCoverage');
+    return {
+        __typename: 'PulseNetworkRegionCoverage',
+        events: overrides && overrides.hasOwnProperty('events') ? overrides.events! : 0.8,
+        platforms: overrides && overrides.hasOwnProperty('platforms') ? overrides.platforms! : 2762,
+        region_bucket: overrides && overrides.hasOwnProperty('region_bucket') ? overrides.region_bucket! : PulseRegionBucket.Africa,
+    };
+};
+
+export const mockPulseNetworkRejection = (overrides?: Partial<PulseNetworkRejection>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkRejection' } & PulseNetworkRejection => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkRejection');
+    return {
+        __typename: 'PulseNetworkRejection',
+        code: overrides && overrides.hasOwnProperty('code') ? overrides.code! : PulseNetworkRejectionCode.BadUserInput,
+        last_day: overrides && overrides.hasOwnProperty('last_day') ? overrides.last_day! : 'adamo',
+        operation: overrides && overrides.hasOwnProperty('operation') ? overrides.operation! : PulseNetworkOperation.PulseBenchmark,
+        requests: overrides && overrides.hasOwnProperty('requests') ? overrides.requests! : 8923,
+    };
+};
+
+export const mockPulseNetworkSectorCoverage = (overrides?: Partial<PulseNetworkSectorCoverage>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkSectorCoverage' } & PulseNetworkSectorCoverage => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkSectorCoverage');
+    return {
+        __typename: 'PulseNetworkSectorCoverage',
+        events: overrides && overrides.hasOwnProperty('events') ? overrides.events! : 3.9,
+        platforms: overrides && overrides.hasOwnProperty('platforms') ? overrides.platforms! : 380,
+        sector_bucket: overrides && overrides.hasOwnProperty('sector_bucket') ? overrides.sector_bucket! : PulseSectorBucket.Defense,
+    };
+};
+
+export const mockPulseNetworkSettings = (overrides?: Partial<PulseNetworkSettings>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkSettings' } & PulseNetworkSettings => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkSettings');
+    return {
+        __typename: 'PulseNetworkSettings',
+        contribution_grace_days: overrides && overrides.hasOwnProperty('contribution_grace_days') ? overrides.contribution_grace_days! : 3993,
+        contribution_window_days: overrides && overrides.hasOwnProperty('contribution_window_days') ? overrides.contribution_window_days! : 8956,
+        digest_size: overrides && overrides.hasOwnProperty('digest_size') ? overrides.digest_size! : 6245,
+        disabled_reason: overrides && overrides.hasOwnProperty('disabled_reason') ? overrides.disabled_reason! : 'clarus',
+        enabled: overrides && overrides.hasOwnProperty('enabled') ? overrides.enabled! : true,
+        k_threshold: overrides && overrides.hasOwnProperty('k_threshold') ? overrides.k_threshold! : 9567,
+        retention_days: overrides && overrides.hasOwnProperty('retention_days') ? overrides.retention_days! : 7914,
+        retention_months: overrides && overrides.hasOwnProperty('retention_months') ? overrides.retention_months! : 5386,
+        trending_cache_ttl_minutes: overrides && overrides.hasOwnProperty('trending_cache_ttl_minutes') ? overrides.trending_cache_ttl_minutes! : 8517,
+    };
+};
+
+export const mockPulseNetworkTrending = (overrides?: Partial<PulseNetworkTrending>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkTrending' } & PulseNetworkTrending => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkTrending');
+    return {
+        __typename: 'PulseNetworkTrending',
+        computed_at: overrides && overrides.hasOwnProperty('computed_at') ? overrides.computed_at! : '2021-02-22T16:12:31.682Z',
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'statua',
+        items: overrides && overrides.hasOwnProperty('items') ? overrides.items! : [relationshipsToOmit.has('PulseNetworkTrendingItem') ? {} as PulseNetworkTrendingItem : mockPulseNetworkTrendingItem({}, relationshipsToOmit)],
+        period: overrides && overrides.hasOwnProperty('period') ? overrides.period! : PulsePeriod.Last_7Days,
+    };
+};
+
+export const mockPulseNetworkTrendingItem = (overrides?: Partial<PulseNetworkTrendingItem>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseNetworkTrendingItem' } & PulseNetworkTrendingItem => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseNetworkTrendingItem');
+    return {
+        __typename: 'PulseNetworkTrendingItem',
+        first_seen_network: overrides && overrides.hasOwnProperty('first_seen_network') ? overrides.first_seen_network! : 'in',
+        growth: overrides && overrides.hasOwnProperty('growth') ? overrides.growth! : 4.6,
+        key_id: overrides && overrides.hasOwnProperty('key_id') ? overrides.key_id! : 'clementia',
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+        platforms_bucket: overrides && overrides.hasOwnProperty('platforms_bucket') ? overrides.platforms_bucket! : 'crustulum',
+        prevalence_bucket: overrides && overrides.hasOwnProperty('prevalence_bucket') ? overrides.prevalence_bucket! : PulsePrevalenceBucket.Common,
+        trend: overrides && overrides.hasOwnProperty('trend') ? overrides.trend! : PulseTrendDirection.Falling,
+    };
+};
+
+export const mockPulsePurgeResult = (overrides?: Partial<PulsePurgeResult>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulsePurgeResult' } & PulsePurgeResult => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulsePurgeResult');
+    return {
+        __typename: 'PulsePurgeResult',
+        deleted_records: overrides && overrides.hasOwnProperty('deleted_records') ? overrides.deleted_records! : 4305,
+        success: overrides && overrides.hasOwnProperty('success') ? overrides.success! : false,
+    };
+};
+
+export const mockPulseRecordInput = (overrides?: Partial<PulseRecordInput>, _relationshipsToOmit: Set<string> = new Set()): PulseRecordInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseRecordInput');
+    return {
+        count: overrides && overrides.hasOwnProperty('count') ? overrides.count! : 7235,
+        event_kind: overrides && overrides.hasOwnProperty('event_kind') ? overrides.event_kind! : PulseEventKind.Created,
+        hash: overrides && overrides.hasOwnProperty('hash') ? overrides.hash! : 'consectetur',
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+    };
+};
+
+export const mockPulseSalt = (overrides?: Partial<PulseSalt>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseSalt' } & PulseSalt => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseSalt');
+    return {
+        __typename: 'PulseSalt',
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'coerceo',
+        salt: overrides && overrides.hasOwnProperty('salt') ? overrides.salt! : 'aequitas',
+    };
+};
+
+export const mockPulseStatus = (overrides?: Partial<PulseStatus>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseStatus' } & PulseStatus => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseStatus');
+    return {
+        __typename: 'PulseStatus',
+        contribution_grace_days: overrides && overrides.hasOwnProperty('contribution_grace_days') ? overrides.contribution_grace_days! : 959,
+        contribution_status: overrides && overrides.hasOwnProperty('contribution_status') ? overrides.contribution_status! : PulseContributionStatus.Active,
+        contribution_window_days: overrides && overrides.hasOwnProperty('contribution_window_days') ? overrides.contribution_window_days! : 4077,
+        contributors_bucket: overrides && overrides.hasOwnProperty('contributors_bucket') ? overrides.contributors_bucket! : 'fugiat',
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'delinquo',
+        k_threshold: overrides && overrides.hasOwnProperty('k_threshold') ? overrides.k_threshold! : 3397,
+        last_contribution_day: overrides && overrides.hasOwnProperty('last_contribution_day') ? overrides.last_contribution_day! : 'creta',
+        read_access: overrides && overrides.hasOwnProperty('read_access') ? overrides.read_access! : false,
+        read_access_until: overrides && overrides.hasOwnProperty('read_access_until') ? overrides.read_access_until! : 'combibo',
+        retention_months: overrides && overrides.hasOwnProperty('retention_months') ? overrides.retention_months! : 3813,
+    };
+};
+
+export const mockPulseTrendingInput = (overrides?: Partial<PulseTrendingInput>, _relationshipsToOmit: Set<string> = new Set()): PulseTrendingInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseTrendingInput');
+    return {
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'clibanus',
+        first: overrides && overrides.hasOwnProperty('first') ? overrides.first! : 5623,
+        object_types: overrides && overrides.hasOwnProperty('object_types') ? overrides.object_types! : [PulseObjectType.AttackPattern],
+        period: overrides && overrides.hasOwnProperty('period') ? overrides.period! : PulsePeriod.Last_7Days,
+        region_bucket: overrides && overrides.hasOwnProperty('region_bucket') ? overrides.region_bucket! : PulseRegionBucket.Africa,
+        sector_bucket: overrides && overrides.hasOwnProperty('sector_bucket') ? overrides.sector_bucket! : PulseSectorBucket.Defense,
+    };
+};
+
+export const mockPulseTrendingItem = (overrides?: Partial<PulseTrendingItem>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseTrendingItem' } & PulseTrendingItem => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseTrendingItem');
+    return {
+        __typename: 'PulseTrendingItem',
+        first_seen_network: overrides && overrides.hasOwnProperty('first_seen_network') ? overrides.first_seen_network! : 'peccatus',
+        growth: overrides && overrides.hasOwnProperty('growth') ? overrides.growth! : 8.6,
+        hash: overrides && overrides.hasOwnProperty('hash') ? overrides.hash! : 'tamdiu',
+        object_type: overrides && overrides.hasOwnProperty('object_type') ? overrides.object_type! : PulseObjectType.AttackPattern,
+        platforms_bucket: overrides && overrides.hasOwnProperty('platforms_bucket') ? overrides.platforms_bucket! : 'deorsum',
+        prevalence_bucket: overrides && overrides.hasOwnProperty('prevalence_bucket') ? overrides.prevalence_bucket! : PulsePrevalenceBucket.Common,
+        trend: overrides && overrides.hasOwnProperty('trend') ? overrides.trend! : PulseTrendDirection.Falling,
+    };
+};
+
+export const mockPulseTrendingResult = (overrides?: Partial<PulseTrendingResult>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PulseTrendingResult' } & PulseTrendingResult => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PulseTrendingResult');
+    return {
+        __typename: 'PulseTrendingResult',
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'tergo',
+        items: overrides && overrides.hasOwnProperty('items') ? overrides.items! : [relationshipsToOmit.has('PulseTrendingItem') ? {} as PulseTrendingItem : mockPulseTrendingItem({}, relationshipsToOmit)],
+        period: overrides && overrides.hasOwnProperty('period') ? overrides.period! : PulsePeriod.Last_7Days,
+        region_bucket: overrides && overrides.hasOwnProperty('region_bucket') ? overrides.region_bucket! : PulseRegionBucket.Africa,
+        sector_bucket: overrides && overrides.hasOwnProperty('sector_bucket') ? overrides.sector_bucket! : PulseSectorBucket.Defense,
+    };
+};
+
+export const mockPushPulseInput = (overrides?: Partial<PushPulseInput>, _relationshipsToOmit: Set<string> = new Set()): PushPulseInput => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PushPulseInput');
+    return {
+        batch_id: overrides && overrides.hasOwnProperty('batch_id') ? overrides.batch_id! : 'adfero',
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'truculenter',
+        records: overrides && overrides.hasOwnProperty('records') ? overrides.records! : [relationshipsToOmit.has('PulseRecordInput') ? {} as PulseRecordInput : mockPulseRecordInput({}, relationshipsToOmit)],
+        region_bucket: overrides && overrides.hasOwnProperty('region_bucket') ? overrides.region_bucket! : PulseRegionBucket.Africa,
+        sector_bucket: overrides && overrides.hasOwnProperty('sector_bucket') ? overrides.sector_bucket! : PulseSectorBucket.Defense,
+    };
+};
+
+export const mockPushPulseResult = (overrides?: Partial<PushPulseResult>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'PushPulseResult' } & PushPulseResult => {
+    const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
+    relationshipsToOmit.add('PushPulseResult');
+    return {
+        __typename: 'PushPulseResult',
+        accepted: overrides && overrides.hasOwnProperty('accepted') ? overrides.accepted! : 2256,
+        day: overrides && overrides.hasOwnProperty('day') ? overrides.day! : 'eum',
+    };
+};
+
 export const mockQuery = (overrides?: Partial<Query>, _relationshipsToOmit: Set<string> = new Set()): { __typename: 'Query' } & Query => {
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('Query');
@@ -1486,6 +1942,15 @@ export const mockQuery = (overrides?: Partial<Query>, _relationshipsToOmit: Set<
         publicDocumentSlugsByServiceSlug: overrides && overrides.hasOwnProperty('publicDocumentSlugsByServiceSlug') ? overrides.publicDocumentSlugsByServiceSlug! : [relationshipsToOmit.has('PublicDocumentSlugInfo') ? {} as PublicDocumentSlugInfo : mockPublicDocumentSlugInfo({}, relationshipsToOmit)],
         publicDocuments: overrides && overrides.hasOwnProperty('publicDocuments') ? overrides.publicDocuments! : relationshipsToOmit.has('DocumentConnection') ? {} as DocumentConnection : mockDocumentConnection({}, relationshipsToOmit),
         publicDocumentsByServiceSlug: overrides && overrides.hasOwnProperty('publicDocumentsByServiceSlug') ? overrides.publicDocumentsByServiceSlug! : [relationshipsToOmit.has('Document') ? {} as Document : mockDocument({}, relationshipsToOmit)],
+        pulseBenchmark: overrides && overrides.hasOwnProperty('pulseBenchmark') ? overrides.pulseBenchmark! : relationshipsToOmit.has('PulseBenchmarkResult') ? {} as PulseBenchmarkResult : mockPulseBenchmarkResult({}, relationshipsToOmit),
+        pulseDigest: overrides && overrides.hasOwnProperty('pulseDigest') ? overrides.pulseDigest! : relationshipsToOmit.has('PulseDigest') ? {} as PulseDigest : mockPulseDigest({}, relationshipsToOmit),
+        pulseLookup: overrides && overrides.hasOwnProperty('pulseLookup') ? overrides.pulseLookup! : [relationshipsToOmit.has('PulseLookupResult') ? {} as PulseLookupResult : mockPulseLookupResult({}, relationshipsToOmit)],
+        pulseNetworkOverview: overrides && overrides.hasOwnProperty('pulseNetworkOverview') ? overrides.pulseNetworkOverview! : relationshipsToOmit.has('PulseNetworkOverview') ? {} as PulseNetworkOverview : mockPulseNetworkOverview({}, relationshipsToOmit),
+        pulseNetworkPlatforms: overrides && overrides.hasOwnProperty('pulseNetworkPlatforms') ? overrides.pulseNetworkPlatforms! : relationshipsToOmit.has('PulseNetworkPlatformConnection') ? {} as PulseNetworkPlatformConnection : mockPulseNetworkPlatformConnection({}, relationshipsToOmit),
+        pulseNetworkTrending: overrides && overrides.hasOwnProperty('pulseNetworkTrending') ? overrides.pulseNetworkTrending! : relationshipsToOmit.has('PulseNetworkTrending') ? {} as PulseNetworkTrending : mockPulseNetworkTrending({}, relationshipsToOmit),
+        pulseSalt: overrides && overrides.hasOwnProperty('pulseSalt') ? overrides.pulseSalt! : relationshipsToOmit.has('PulseSalt') ? {} as PulseSalt : mockPulseSalt({}, relationshipsToOmit),
+        pulseStatus: overrides && overrides.hasOwnProperty('pulseStatus') ? overrides.pulseStatus! : relationshipsToOmit.has('PulseStatus') ? {} as PulseStatus : mockPulseStatus({}, relationshipsToOmit),
+        pulseTrending: overrides && overrides.hasOwnProperty('pulseTrending') ? overrides.pulseTrending! : relationshipsToOmit.has('PulseTrendingResult') ? {} as PulseTrendingResult : mockPulseTrendingResult({}, relationshipsToOmit),
         registeredPlatform: overrides && overrides.hasOwnProperty('registeredPlatform') ? overrides.registeredPlatform! : relationshipsToOmit.has('RegisteredPlatform') ? {} as RegisteredPlatform : mockRegisteredPlatform({}, relationshipsToOmit),
         registeredPlatforms: overrides && overrides.hasOwnProperty('registeredPlatforms') ? overrides.registeredPlatforms! : [relationshipsToOmit.has('RegisteredPlatform') ? {} as RegisteredPlatform : mockRegisteredPlatform({}, relationshipsToOmit)],
         registeredProductVersions: overrides && overrides.hasOwnProperty('registeredProductVersions') ? overrides.registeredProductVersions! : [relationshipsToOmit.has('RegisteredProductVersion') ? {} as RegisteredProductVersion : mockRegisteredProductVersion({}, relationshipsToOmit)],

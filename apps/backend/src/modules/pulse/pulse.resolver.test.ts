@@ -5,6 +5,9 @@ import {
   GRAPHQL_RESOLVE_INFO,
 } from '../../../tests/tests.const';
 import {
+  OrderingMode,
+  PulseNetworkPlatformOrdering,
+  PulseNetworkPlatformStatus,
   PulsePeriod,
   PulseRegionBucket,
   PulseSectorBucket,
@@ -15,6 +18,7 @@ import { appLogger } from '../../utils/app-logger.util';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { PulseApp } from './pulse.app';
 import { PulseErrorCode, PulseErrors } from './pulse.errors';
+import { PulseNetworkApp } from './pulse.network.app';
 import pulseResolver, { sanitizePulseFailure } from './pulse.resolver';
 
 const PLATFORM_ID = 'platform-abc';
@@ -215,5 +219,75 @@ describe('pulse resolver', () => {
         [{ platformId: PLATFORM_ID, token: PLATFORM_TOKEN }, PLATFORM_ID],
       ],
     });
+  });
+
+  it('should pass the monitoring arguments to the apps', async () => {
+    // Given
+    const trending = {
+      day: DAY,
+      period: PulsePeriod.Last_30Days,
+      computed_at: null,
+      items: [],
+    };
+    const connection = {
+      totalCount: 0,
+      edges: [],
+      pageInfo: { hasNextPage: false, hasPreviousPage: false },
+    };
+    vi.spyOn(PulseApp, 'networkTrending').mockResolvedValue(trending);
+    vi.spyOn(PulseNetworkApp, 'platforms').mockResolvedValue(connection);
+    const platformsArgs = {
+      first: 25,
+      after: btoa('25'),
+      orderBy: PulseNetworkPlatformOrdering.Status,
+      orderMode: OrderingMode.Desc,
+      searchTerm: 'soc',
+      status: PulseNetworkPlatformStatus.Lapsed,
+    };
+
+    // When
+    const results = [
+      await pulseResolver.Query!.pulseNetworkTrending!(
+        {},
+        { period: PulsePeriod.Last_30Days, first: 10 },
+        makeContext(),
+        GRAPHQL_RESOLVE_INFO
+      ),
+      await pulseResolver.Query!.pulseNetworkPlatforms!(
+        {},
+        platformsArgs,
+        makeContext(),
+        GRAPHQL_RESOLVE_INFO
+      ),
+    ];
+
+    // Then
+    expect({
+      results,
+      trendingCalls: vi.mocked(PulseApp.networkTrending).mock.calls,
+      platformsCalls: vi.mocked(PulseNetworkApp.platforms).mock.calls,
+    }).toEqual({
+      results: [trending, connection],
+      trendingCalls: [[{ period: PulsePeriod.Last_30Days, first: 10 }]],
+      platformsCalls: [[platformsArgs]],
+    });
+  });
+
+  it('should map an unexpected monitoring failure without its text', async () => {
+    // Given
+    vi.spyOn(PulseNetworkApp, 'overview').mockRejectedValue(
+      new Error(`select from "PulsePurgeRequest" where pseudonym = 'beef'`)
+    );
+
+    // When
+    const call = pulseResolver.Query!.pulseNetworkOverview!(
+      {},
+      {},
+      makeContext(),
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toThrow(UnknownErrorCode.UnknownError);
   });
 });

@@ -61,6 +61,13 @@ export interface PlatformOwnerOrganization extends Organization {
   service_instance_id: ServiceInstanceId;
 }
 
+export interface ActivePlatformOwner {
+  service_instance_id: ServiceInstanceId;
+  platform_id: string;
+  title: string;
+  organization_name: string | null;
+}
+
 const RegisteredPlatformsSelectColumns = [
   'ServiceDefinition.identifier as identifier',
   'ServiceInstance.id as id',
@@ -243,6 +250,46 @@ export const RegistrationDomain = {
         PlatformConfigurationStatus.Active
       )
       .select(RegisteredPlatformsSelectColumns);
+  },
+
+  // The active registrations with the name of their owner organization, and
+  // nothing else of their configuration (no token).
+  loadActivePlatformOwners: async (
+    platformIdentifier: PlatformIdentifier
+  ): Promise<ActivePlatformOwner[]> => {
+    return getRegisteredPlatformsBaseQuery()
+      .leftJoin(
+        getPlatformOwnerSubscriptionsQuery()
+          .select('service_instance_id', 'organization_id')
+          .as('OwnerSubscription'),
+        'OwnerSubscription.service_instance_id',
+        '=',
+        'ServiceInstance.id'
+      )
+      .leftJoin(
+        'Organization',
+        'Organization.id',
+        '=',
+        'OwnerSubscription.organization_id'
+      )
+      .where(
+        'ServiceDefinition.identifier',
+        '=',
+        serviceDefinitionIdentifierMappedByPlatformIdentifier[
+          platformIdentifier
+        ]
+      )
+      .where(
+        'PlatformConfiguration.status',
+        '=',
+        PlatformConfigurationStatus.Active
+      )
+      .select<ActivePlatformOwner[]>(
+        'ServiceInstance.id as service_instance_id',
+        'PlatformConfiguration.platform_id as platform_id',
+        'PlatformConfiguration.platform_title as title',
+        'Organization.name as organization_name'
+      );
   },
 
   loadSaasPlatforms: async ({

@@ -111,6 +111,16 @@ const cleanPulseRateLimits = async (): Promise<void> => {
   });
 };
 
+const flushPulseRejectionCounts = async (): Promise<void> => {
+  await requestContext.run(CRONS_USER_CONTEXT, async () => {
+    try {
+      await PulseApp.flushRejectionCounts();
+    } catch (error) {
+      logApp.error('flushPulseRejectionCounts job failed:', { error });
+    }
+  });
+};
+
 export const initCronJobs = () => {
   logApp.info('Initializing cron jobs');
   scheduledTasks.push(cron.schedule('0 2 * * *', expireTrials));
@@ -140,6 +150,9 @@ export const initCronJobs = () => {
     cron.schedule('30 1 * * *', applyPulseRetention, { timezone: 'Etc/UTC' })
   );
   scheduledTasks.push(cron.schedule('15 * * * *', cleanPulseRateLimits));
+  scheduledTasks.push(
+    cron.schedule('* * * * *', flushPulseRejectionCounts, { noOverlap: true })
+  );
 };
 
 export const stopCronJobs = () => {
