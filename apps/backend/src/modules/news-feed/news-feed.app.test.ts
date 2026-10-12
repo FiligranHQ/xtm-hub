@@ -297,6 +297,13 @@ describe('newsFeedApp', () => {
             expect.objectContaining({ key: NewsFeedItemMetadataKey.UrlPath }),
           ])
         );
+        expect(
+          result.news_feed_items[0]?.metadata.find(
+            (m) => m.key === NewsFeedItemMetadataKey.UrlPath
+          )?.value
+        ).toContain(
+          'utm_source=opencti&utm_medium=newsfeed&utm_campaign=hub_resources&utm_content=custom_dashboard'
+        );
         expect(result.news_feed_items[0]?.metadata).toEqual(
           expect.not.arrayContaining([
             expect.objectContaining({
@@ -304,6 +311,37 @@ describe('newsFeedApp', () => {
             }),
           ])
         );
+      } finally {
+        await TestHelper.document.delete({ id: document.id });
+      }
+    });
+
+    it('should use the consuming platform as utm_source of the url_path', async () => {
+      const document = await TestHelper.document.create({
+        name: 'Cross Platform Dashboard',
+      });
+
+      try {
+        const item = await NewsFeedDomain.createResourceNewsFeedItem({
+          document,
+          serviceDefinitionIdentifier:
+            ServiceDefinitionIdentifier.OpenctiCustomDashboards,
+          type: NewsFeedItemType.ResourceCustomDashboard,
+          platformIdentifier: PlatformIdentifier.Openaev,
+          tags: [],
+        });
+        await NewsFeedDomain.provisionNewsFeedItem(item.id, [platformId]);
+
+        const result = await NewsFeedApp.consumeProvisionedNewsFeedItems({
+          platformId,
+          token,
+        });
+
+        const urlPath = result.news_feed_items[0]?.metadata.find(
+          (m) => m.key === NewsFeedItemMetadataKey.UrlPath
+        )?.value;
+        expect(urlPath).toContain('utm_source=opencti');
+        expect(urlPath).not.toContain('utm_source=openaev');
       } finally {
         await TestHelper.document.delete({ id: document.id });
       }

@@ -38,6 +38,8 @@ const graphqlMocks = vi.hoisted(() => ({
   }),
 }));
 
+const XTM_ONE_LIVE_DEMO_URL = 'https://demo.xtmone.io/login';
+
 vi.mock('@graphql/generated', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@graphql/generated')>();
 
@@ -185,7 +187,7 @@ describe('usePrivateNavigation', () => {
       },
       {
         key: 'filigran-blog',
-        href: 'https://filigran.io/our-blog/',
+        href: 'https://filigran.io/blog?utm_source=xtm_hub&utm_medium=referral&utm_campaign=sidebar&utm_content=blog',
         icon: expect.any(Function),
         label: 'Blog',
         external: true,
@@ -218,12 +220,27 @@ describe('usePrivateNavigation', () => {
       label: 'OpenCRQ',
       links: [
         {
-          href: 'https://filigran.io/products/opencrq',
+          href: 'https://filigran.io/products/opencrq?utm_source=xtm_hub&utm_medium=referral&utm_campaign=sidebar&utm_content=opencrq_about',
           label: 'About',
           external: true,
           badge: 'ComingSoon',
         },
       ],
+    });
+  });
+
+  it('should return an external Live Demo link to the XTM One public demo as the first link when building the XTM One section', () => {
+    // Given / When
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    // Then
+    const xtmOneSection = getSection(result.current.sections, 'xtm-one');
+    expect(xtmOneSection?.links[0]).toEqual({
+      href: XTM_ONE_LIVE_DEMO_URL,
+      label: 'LiveDemo',
+      external: true,
     });
   });
 
@@ -280,11 +297,13 @@ describe('usePrivateNavigation', () => {
   });
 
   it.each`
-    capabilities                                                         | expectedSettingsLabels
-    ${[PortalCapability.Bypass]}                                         | ${['Parameter', 'Security', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor', 'NewsFeed']}
-    ${[PortalCapability.ReadTrials]}                                     | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial']}
-    ${[PortalCapability.ModifyCompetitors]}                              | ${['Competitor']}
-    ${[PortalCapability.ReadTrials, PortalCapability.ModifyCompetitors]} | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
+    capabilities                                                                                           | expectedSettingsLabels
+    ${[PortalCapability.Bypass]}                                                                           | ${['Parameter', 'Security', 'Roles', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'CSMBoard', 'Competitor', 'NewsFeed']}
+    ${[PortalCapability.ReadTrials]}                                                                       | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial']}
+    ${[PortalCapability.ReadSaasMetrics]}                                                                  | ${['CSMBoard']}
+    ${[PortalCapability.ModifyCompetitors]}                                                                | ${['Competitor']}
+    ${[PortalCapability.ReadTrials, PortalCapability.ModifyCompetitors]}                                   | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
+    ${[PortalCapability.ReadTrials, PortalCapability.ReadSaasMetrics, PortalCapability.ModifyCompetitors]} | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'CSMBoard', 'Competitor']}
   `(
     'filters settings links according to portal capabilities $capabilities',
     ({ capabilities, expectedSettingsLabels }) => {
@@ -349,7 +368,7 @@ describe('usePrivateNavigation', () => {
       },
       {
         key: 'filigran-blog',
-        href: 'https://filigran.io/our-blog/',
+        href: 'https://filigran.io/blog?utm_source=xtm_hub&utm_medium=referral&utm_campaign=sidebar&utm_content=blog',
         icon: expect.any(Function),
         label: 'Blog',
         external: true,

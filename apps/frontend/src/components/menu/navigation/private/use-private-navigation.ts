@@ -4,6 +4,11 @@ import {
   getPrivateNavigationServiceHrefs,
 } from '@/components/menu/navigation/private/private-navigation.utils';
 import {
+  FILIGRAN_BLOG_URL,
+  OPENCRQ_ABOUT_URL,
+  XTM_ONE_ABOUT_URL,
+} from '@/components/menu/navigation/shared/navigation-external-links';
+import {
   BottomLink,
   NavigationConfig,
   SectionConfig,
@@ -117,6 +122,11 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenuLinks('Security'),
     },
     {
+      href: `/${APP_PATH}/admin/roles`,
+      label: tMenuLinks('Roles'),
+      restriction: [PortalCapability.Bypass],
+    },
+    {
       href: `/${APP_PATH}/admin/use-case`,
       label: tMenuLinks('UseCase'),
     },
@@ -150,6 +160,11 @@ export const usePrivateNavigation = (): NavigationConfig => {
       href: `/${APP_PATH}/admin/openaev-trials`,
       label: tMenuLinks('OpenAEVTrial'),
       restriction: [PortalCapability.ReadTrials],
+    },
+    {
+      href: `/${APP_PATH}/admin/csm-board`,
+      label: tMenuLinks('CSMBoard'),
+      restriction: [PortalCapability.ReadSaasMetrics],
     },
     {
       href: `/${APP_PATH}/admin/competitors`,
@@ -357,7 +372,12 @@ export const usePrivateNavigation = (): NavigationConfig => {
       pathPrefix: `/${locale}/cybersecurity-solutions/xtm-one`,
       links: [
         {
-          href: 'https://filigran.io/platform/xtm-one/',
+          href: 'https://demo.xtmone.io/login',
+          label: tMenu('LiveDemo'),
+          external: true,
+        },
+        {
+          href: XTM_ONE_ABOUT_URL,
           label: tMenu('About'),
           external: true,
         },
@@ -371,7 +391,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
       pathPrefix: `/${locale}/cybersecurity-solutions/opencrq`,
       links: [
         {
-          href: 'https://filigran.io/products/opencrq',
+          href: OPENCRQ_ABOUT_URL,
           label: tMenu('About'),
           external: true,
           badge: tMenu('ComingSoon'),
@@ -424,7 +444,7 @@ export const usePrivateNavigation = (): NavigationConfig => {
     },
     {
       key: 'filigran-blog',
-      href: 'https://filigran.io/our-blog/',
+      href: FILIGRAN_BLOG_URL,
       icon: PostIcon,
       label: tMenu('Blog'),
       external: true,

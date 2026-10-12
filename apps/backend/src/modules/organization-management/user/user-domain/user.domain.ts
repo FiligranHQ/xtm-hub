@@ -306,6 +306,27 @@ export const UserDomain = {
     return users;
   },
 
+  loadUserEmailsByCapabilityInOrganizations: async (
+    organizationIds: OrganizationId[],
+    capability: OrganizationCapability
+  ): Promise<{ organization_id: OrganizationId; email: string }[]> => {
+    if (!organizationIds.length) {
+      return [];
+    }
+
+    return db<User>('User')
+      .join('User_Organization', 'User_Organization.user_id', 'User.id')
+      .join(
+        'UserOrganization_Capability',
+        'UserOrganization_Capability.user_organization_id',
+        'User_Organization.id'
+      )
+      .whereIn('User_Organization.organization_id', organizationIds)
+      .andWhere('UserOrganization_Capability.name', '=', capability)
+      .select('User_Organization.organization_id', 'User.email')
+      .distinct();
+  },
+
   loadUserConnection: (opts: QueryUsersArgs) => {
     const { filters } = opts;
     const loadUserQuery = db<UserGenerated>('User');
@@ -502,12 +523,7 @@ export const UserDomain = {
     await hubspotLoginHook(user.id);
 
     const organizations = user.organizations.filter((o) => !o.personal_space);
-    const shouldClearStatusNow =
-      user.status !== null && user.status !== UserAccountStatus.Waiting;
-    const fields: UserMutator = {
-      last_login: new Date(),
-      ...(shouldClearStatusNow && { status: null }),
-    };
+    const fields: UserMutator = { last_login: new Date() };
     if (organizations.length === 1) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       fields.selected_organization_id = organizations[0]!.id;

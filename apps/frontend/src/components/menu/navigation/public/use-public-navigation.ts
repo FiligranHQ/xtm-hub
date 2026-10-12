@@ -1,4 +1,9 @@
 import {
+  FILIGRAN_BLOG_URL,
+  OPENCRQ_ABOUT_URL,
+  XTM_ONE_ABOUT_URL,
+} from '@/components/menu/navigation/shared/navigation-external-links';
+import {
   BottomLink,
   NavigationConfig,
   SectionConfig,
@@ -116,7 +121,12 @@ export const usePublicNavigation = (
       pathPrefix: `/${locale}/cybersecurity-solutions/xtm-one`,
       links: [
         {
-          href: 'https://filigran.io/platform/xtm-one/',
+          href: 'https://demo.xtmone.io/login',
+          label: t('Menu.LiveDemo'),
+          external: true,
+        },
+        {
+          href: XTM_ONE_ABOUT_URL,
           label: t('Menu.About'),
           external: true,
         },
@@ -130,7 +140,7 @@ export const usePublicNavigation = (
       pathPrefix: `/${locale}/cybersecurity-solutions/opencrq`,
       links: [
         {
-          href: 'https://filigran.io/products/opencrq',
+          href: OPENCRQ_ABOUT_URL,
           label: t('Menu.About'),
           external: true,
           badge: t('Menu.ComingSoon'),
@@ -159,7 +169,7 @@ export const usePublicNavigation = (
     },
     {
       key: 'filigran-blog',
-      href: 'https://filigran.io/our-blog/',
+      href: FILIGRAN_BLOG_URL,
       icon: PostIcon,
       label: t('Menu.Blog'),
       external: true,

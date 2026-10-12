@@ -6,15 +6,18 @@ import {
 import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { useTranslate } from '@/hooks/use-translate';
+import { FiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { CheckIndeterminateIcon } from '@filigran/icon';
 import { PlatformIdentifier } from '@graphql/generated';
 
 interface ShareableResourceConnectorPrivateDetailsProps {
   connectorDetails: ShareableResourceConnectorDetailsProps['connectorDetails'];
+  filigranWebsiteUtm?: FiligranWebsiteUtm;
 }
 
 export const ShareableResourceConnectorPrivateDetails = ({
   connectorDetails,
+  filigranWebsiteUtm,
 }: ShareableResourceConnectorPrivateDetailsProps) => {
   const t = useTranslate();
   const { platforms } = useRegisteredPlatforms(PlatformIdentifier.Opencti, {
@@ -39,6 +42,7 @@ export const ShareableResourceConnectorPrivateDetails = ({
       <ShareableResourceConnectorDetails
         connectorDetails={connectorDetails}
         compatibilityItem={compatibilityItem}
+        filigranWebsiteUtm={filigranWebsiteUtm}
       />
       {incompatiblePlatformsCount > 0 && connectorDetails.manager_supported ? (
         <ShareableResourceIncompatibleWarning

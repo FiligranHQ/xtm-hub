@@ -6,6 +6,7 @@ enum PlatformContract {
 
 type RegisteredPlatform implements Node {
   id: ID!
+  service_instance_id: ServiceInstanceId!
   url: String!
   title: String!
   contract: PlatformContract!
@@ -20,6 +21,22 @@ type RegisteredPlatform implements Node {
   status: PlatformConfigurationStatus
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
+  organization: Organization
+}
+
+type RegisteredPlatformEdge {
+  cursor: String!
+  node: RegisteredPlatform!
+}
+
+type RegisteredPlatformConnection {
+  totalCount: Int!
+  edges: [RegisteredPlatformEdge!]!
+  pageInfo: PageInfo!
+}
+
+enum RegisteredPlatformOrdering {
+  organization_name
 }
 
 input PlatformInput {
@@ -98,6 +115,7 @@ input RefreshPlatformRegistrationConnectivityStatusInput {
   token: String!
   platformVersion: String!
   platformIdentifier: PlatformIdentifier
+  platformContract: PlatformContract
 }
 
 input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
@@ -108,6 +126,7 @@ input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
   tenantId: String!
   tenantName: String!
   platformIdentifier: PlatformIdentifier!
+  platformContract: PlatformContract
 }
 
 input TenantDetails {
@@ -121,6 +140,7 @@ input RefreshPlatformRegistrationConnectivityStatusAllTenantsInput {
   platformId: String!
   platformVersion: String!
   platformIdentifier: PlatformIdentifier!
+  platformContract: PlatformContract
   tenants: [TenantDetails!]!
 }
 
@@ -167,6 +187,14 @@ type Query {
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform @auth
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
     @auth
+  saasPlatforms(
+    first: Int!
+    after: ID
+    orderBy: RegisteredPlatformOrdering!
+    orderMode: OrderingMode!
+    searchTerm: String
+  ): RegisteredPlatformConnection!
+    @auth(portalCapa: [BYPASS, READ_SAAS_METRICS])
   platformAssociatedOrganization(
     platformId: String!
     tenantId: String

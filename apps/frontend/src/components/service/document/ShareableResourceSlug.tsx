@@ -25,6 +25,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import useDecodedParams from '@/hooks/use-decoded-params';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { EntityTypeOrFiligranLogo } from '@/utils/shareable-resources/entity-type';
 import {
@@ -62,6 +63,7 @@ const ShareableResourceSlug = ({
   );
   const incrementDownloadNumber = () =>
     setDocumentDownloadNumber((prev) => prev + 1);
+  const downloadUrl = `/document/get/${serviceInstanceId}/${documentData.id}?attach=1`;
 
   const shouldShowOneClickDeployComponent = useMemo(
     () => isResourceDeployable(documentData),
@@ -115,17 +117,18 @@ const ShareableResourceSlug = ({
                         disableHoverableContent={true}>
                         <TooltipTrigger asChild>
                           <IconButton
+                            asChild
                             priority="tertiary"
-                            onClick={() => {
-                              incrementDownloadNumber();
-                              window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                            }}
                             className="z-[2] text-primary"
                             aria-label={t(
                               'Service.ShareableResources.Download'
                             )}
-                            icon={<DownloadIcon className="h-4 w-4" />}
-                          />
+                            icon={<DownloadIcon className="h-4 w-4" />}>
+                            <a
+                              href={downloadUrl}
+                              onClick={incrementDownloadNumber}
+                            />
+                          </IconButton>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>{t('Service.ShareableResources.Download')}</p>
@@ -139,12 +142,12 @@ const ShareableResourceSlug = ({
                 <>
                   {updateActions}
                   {isResourceDownloadable(documentData) && (
-                    <Button
-                      onClick={() => {
-                        incrementDownloadNumber();
-                        window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                      }}>
-                      {t('Utils.Download')}
+                    <Button asChild>
+                      <a
+                        href={downloadUrl}
+                        onClick={incrementDownloadNumber}>
+                        {t('Utils.Download')}
+                      </a>
                     </Button>
                   )}
                 </>
@@ -171,11 +174,17 @@ const ShareableResourceSlug = ({
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
+          serviceDefinitionIdentifier={
+            serviceInstance.service_definition?.identifier
+          }
         />
         {documentData && (
           <ShareableResourceDetails
             documentData={documentData}
             downloadNumber={documentDownloadNumber}
+            filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+              serviceInstance.service_definition?.identifier
+            )}
           />
         )}
       </div>
