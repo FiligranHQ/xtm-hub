@@ -16,16 +16,23 @@
   },
   "CapabilityDescription": {
     "Capabilities": {
-      "ADMINISTRATE_ORGANIZATION": "組織内のすべての能力アクションを許可する",
+      "ADMINISTRATE_ORGANIZATION": "組織内のすべての権限を付与する",
       "MANAGE_ACCESS": "この組織に他のユーザーを招待できる",
-      "MANAGE_PLATFORM_REGISTRATION": "製品の接続と切断を行う機能",
+      "MANAGE_PLATFORM_REGISTRATION": "製品の接続と切断、およびトライアルの開始・キャンセル・管理を行う機能",
       "MANAGE_SUBSCRIPTION": "組織を管理し、サービスに登録する機能"
     },
     "Description": "フィリグランのユーザーに特定の機能を追加できる",
     "Title": "利用可能な機能"
   },
   "CSMBoard": {
-    "ComingSoon": "まもなく、何か新しいことが始まります……"
+    "Organization": "組織",
+    "Administrators": "管理者",
+    "Products": "製品",
+    "Link": "SaaS指標",
+    "Version": "バージョン",
+    "ViewMetrics": "メトリクスを見る",
+    "SearchOrganization": "組織検索",
+    "ClearSearch": "検索をクリア"
   },
   "CountryComboBox": {
     "Placeholder": "国を選択"
@@ -129,7 +136,7 @@
     "threat_profiling_faml": "脅威のプロファイリング(詐欺とAML)",
     "threat_hunting": "脅威のハンティング",
     "strategic_reporting": "戦略的レポーティング（経営幹部向け）",
-    "technical_reporting": "戦略的レポーティング（アナリスト向け）",
+    "technical_reporting": "技術的レポーティング（アナリスト向け）",
     "incident_response": "インシデント対応の調整",
     "security_stack": "セキュリティ・スタックの統合",
     "detection_engineering": "検知エンジニアリング",
@@ -416,6 +423,7 @@
       "SOLUTION_CATEGORY_NOT_FOUND": "ソリューションカテゴリが見つかりません",
       "SUBSCRIPTION_NOT_FOUND": "購読が見つからない",
       "TENANT_ID_MANDATORY": "テナントIDは必須です",
+      "TOO_MANY_EMAILS": "一度に招待できるメールアドレスは最大50件です",
       "TRANSFER_ME_ERROR": "個人スペースの転送要求中にエラーが発生しました。",
       "UNKNOWN_ERROR": "不明なエラーが発生",
       "UNREGISTER_PLATFORM_UNKNOWN_ERROR": "プラットフォーム登録解除中に不明なエラーが発生した",
@@ -437,6 +445,7 @@
       "VOTING_ROUND_MUTATION_ERROR": "投票ラウンドの保存中にエラーが発生しました",
       "OPEN_VOTING_ROUND_WITHOUT_ACTIVE_FEATURE": "このラウンドには有効な機能がないため、開始できません",
       "VOTABLE_FEATURE_PRODUCT_LOCKED": "この機能には既に投票があるため、製品を変更できません",
+      "VOTABLE_FEATURE_PRODUCT_NOT_VOTABLE": "この製品は投票の対象ではありません",
       "COPY_FEATURES_FROM_ANOTHER_ROADMAP": "機能は同じロードマップのラウンドからのみコピーできます",
       "VOTABLE_FEATURE_MUTATION_ERROR": "機能の保存中にエラーが発生しました"
     },
@@ -466,7 +475,7 @@
       "GoToPlatform": "{title} に移動",
       "Details": "詳細",
       "Documentation": "ドキュメント",
-      "ConnectPlatform": "{platformName} を接続",
+      "ConnectProduct": "製品を接続",
       "Trial": "トライアル",
       "EE": "EE"
     }
@@ -487,8 +496,7 @@
     "RegisteredPlatformsCard": {
       "RegisteredOn": "on",
       "Contract": "契約",
-      "Remaining": "残り",
-      "DaysRemaining": "{days, plural, =1 {#日} other {#日}}"
+      "DaysRemaining": "残り<badge>{days, plural, =1 {#日} other {#日}}</badge>"
     }
   },
   "PublicHomePage": {
@@ -666,9 +674,9 @@
     "Competitor": "競技者",
     "NewsFeed": "ニュースフィード",
     "VotingRound": "機能への投票",
+    "Roles": "ロール",
     "ManageTrials": "トライアル管理",
-    "CSMBoard": "CSMボード",
-    "Roles": "ロール"
+    "CSMBoard": "CSMボード"
   },
   "NewsFeedAdminPage": {
     "Title": "タイトル",
@@ -1188,7 +1196,9 @@
       "Search": "名前でコネクタを検索...",
       "VendorContact": "ベンダー連絡先",
       "VisitVendor": "ベンダーのページで詳細を確認し、連絡を取ってください。",
-      "Incompatible": "{platformToBeUpdated} {count, plural, =1 {needs} other {need}} to be updated to deploy this connector.",
+      "CompatibleWith": "このコネクタのバージョンは{compatiblePlatforms}と互換性があります。",
+      "PartiallyCompatible": "このコネクタのバージョンは{compatiblePlatforms}と互換性がありますが、{incompatiblePlatforms}{count, plural, =1 {を更新する必要があります} other {をすべて更新する必要があります}}。",
+      "Incompatible": "このコネクタをデプロイするには、{platformToBeUpdated}{count, plural, =1 {を更新する必要があります} other {をすべて更新する必要があります}}。",
       "UnavailableDeployments": "このコネクタは自動デプロイでは使用できません。"
     },
     "CreationStatus": "作成ステータス",
@@ -1438,10 +1448,11 @@
       "Tab": {
         "Name": "名前",
         "Description": "説明",
-        "UseCases": "ユースケース",
-        "Actions": "アクション",
-        "Author": "作成者",
-        "MinimumDeployableVersion": "デプロイ可能な最小バージョン"
+        "UseCase": "ユースケース",
+        "Action": "アクション",
+        "Feature": "機能",
+        "Type": "タイプ",
+        "Compatibility": "ご利用の製品との互換性"
       },
       "Filter": {
         "Add": "フィルターの追加",
@@ -1587,12 +1598,6 @@
         "expertise": "ツールを効果的に利用するためのアナリストや専門家が社内にいない"
       },
       "DaysRemaining": "{days, plural, =1 {# 日残り} other {# 日残り}}",
-      "Header": {
-        "ActiveTrial": "アクティブトライアル",
-        "ActiveTrialCount": "{count} 件のアクティブトライアル{count, plural, one {} other {s}}",
-        "DaysRemaining": "残りの日",
-        "OpenInNewTab": "{title} を新しいタブで開く"
-      },
       "LearnMore": {
         "Link": "もっと詳しく",
         "openaev": {
@@ -1723,9 +1728,9 @@
             "Description": "Filigran アカウントを作成するか、既存のアカウントでログインしてください。"
           },
           "NotAdmin": {
-            "Title": "トライアルを申請するには組織の管理者である必要があります。",
-            "Description": "所属企業の組織管理者にお問い合わせください",
-            "AdminListTitle": "{count, plural, =1 {管理者} other {管理者}}"
+            "Title": "トライアルを開始するには「Manage platform registration」権限が必要です。",
+            "Description": "組織の管理者にこの権限の付与を依頼してください。",
+            "AdminListTitle": "{count, plural, =1 {この権限を持つメンバー} other {この権限を持つメンバー}}"
           },
           "PersonalSpace": {
             "Title": "個人スペースではトライアルをご利用いただけません"
@@ -2048,7 +2053,14 @@
         },
         "AddUserDialog": {
           "Title": "トライアルユーザーを追加",
-          "EmailPlaceholder": "メールアドレスを追加"
+          "EmailPlaceholder": "メールアドレスを追加",
+          "ExpiredUsersReinvited": "期限切れのユーザーは再招待され、新しい招待メールが送信されます。",
+          "InviteEmail": "{email} を招待",
+          "NoPermissionToInvite": "このリストにないユーザーを追加する権限がありません。必要に応じて管理者にお問い合わせください",
+          "Status": {
+            "Expired": "期限切れ",
+            "Invited": "招待済み"
+          }
         },
         "EditUsersDialog": {
           "Title": "ユーザーを編集",
