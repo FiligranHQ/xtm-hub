@@ -33,7 +33,7 @@ Rules shared by every row:
 | --- | --- | --- |
 | `AdminBanner`: `<Callout variant="warning" className="rounded-none justify-center uppercase">{t('AdminBanner')}</Callout>` | `<Alert severity="warning" title={t('AdminBanner')} />` | 1 |
 | `TestEnvBanner`: `<Callout variant="destructive" className="rounded-none justify-center uppercase"><div className="">{text}<Link className="ml-xs underline">…</Link></div></Callout>` | `<Alert severity="warning" title={<>{text}<Link href="https://hub.filigran.io/" className="ml-xs underline">{t('GoToProd')}</Link></>} />`: the empty-class `div` goes (the title is a `p`), the link stays inline after the text with its classes | 1 |
-| `XtmPlatformTrialBanner`: `<Callout className="relative rounded-none justify-center from-blue to-turquoise-300 bg-linear-to-r pr-xxl">` holding the text, `LearnMoreBannerLink`, the days-left `Chip` in `<span className="light">`, and an absolutely positioned close `<button>` | `<Alert severity="info" title={text} action={<>…</>} />`: `action` holds, in the legacy order and under the same conditions, `LearnMoreBannerLink`, the `Chip` without its `span.light` wrapper, and the same `<button type="button" aria-label={t('Utils.Close')} onClick={dismiss}>` with `CloseIcon`, whose `absolute inset-y-0 right-l` go (it keeps `flex items-center`) | 1 |
+| `XtmPlatformTrialBanner`: `<Callout className="relative rounded-none justify-center from-blue to-turquoise-300 bg-linear-to-r pr-xxl">` holding the text, `LearnMoreBannerLink`, the days-left `Chip` in `<span className="light">`, and an absolutely positioned close `<button>` | `<Alert severity="info" title={text} action={<>…</>} />`: `action` holds, in the legacy order and under the same conditions, `LearnMoreBannerLink`, the `Chip` without its `span.light` wrapper, and no close button (Decisions) | 1 |
 
 The `.light` wrapper existed only because the gradient behind the chip was light in both themes; on the `Alert`
 surface it would paint a light chip on the dark banner, and the contract says nested theme panels do not work on it.
@@ -46,9 +46,9 @@ Its code comment goes with it.
 - `apps/frontend/src/components/service/trial-instances/banner/xtm-platform-trial/XtmPlatformTrialBanner.tsx`
 - `apps/frontend/src/components/filigran-ui/components/servers/index.ts` (drop `export * from './Callout'`)
 - `apps/frontend/src/components/filigran-ui/components/servers/Callout.tsx` (delete)
-- No unit test change: `XtmPlatformTrialBanner.test.tsx`, `PublicXtmPlatformTrialBanner.test.tsx` and
-  `PrivateXtmPlatformTrialBanner.test.tsx` find the copy by text and the close button by role and `Utils.Close`, all
-  kept; `toBeEmptyDOMElement` still holds for `none` and after dismissal, since the component still returns `null`.
+- `XtmPlatformTrialBanner.test.tsx` checks each state's copy in the in-page alert, the learn-more link and its
+  hiding on the trial pages, the days-left chip, and that no state has a button; `toBeEmptyDOMElement` holds for
+  `none`. `PublicXtmPlatformTrialBanner.test.tsx` and `PrivateXtmPlatformTrialBanner.test.tsx` find the copy by text.
 - No e2e locator: none in `apps/e2e/tests/` finds these banners, their copy or their close button.
 
 ## Screens
@@ -105,25 +105,19 @@ Its code comment goes with it.
 
 ## Decisions
 
-- **`Alert`, not `Snackbar`, for all three**: they stay in the page flow until a condition changes or the user
-  dismisses them for good (localStorage); `Snackbar` is transient, floats in a portal and auto-retires (Snackbar
-  RULE-09: "If it stays on the page, it is an Alert"). Its provider is also item 3690, not a dependency here.
+- **`Alert`, not `Snackbar`, for all three**: they stay in the page flow until a condition changes; `Snackbar` is
+  transient, floats in a portal and auto-retires (Snackbar RULE-09: "If it stays on the page, it is an Alert"). Its provider is also item 3690, not a dependency here.
 - **`TestEnvBanner` is `warning`, not `error`**: being on a non-production environment is a condition to heed, not a
   failure (contract RULE-03: never pick a severity for its colour). The legacy `destructive` was a colour choice.
 - **The trial banner is `info`**: an invitation, no condition to heed; `ia` is the AI mark only.
-- **The dismissible trial invitation is a persistent `Snackbar`** (epic review, settling the alternative this item
-  traced once 3690 landed): Alert RULE-05, "if it can be dismissed, it is a Snackbar". In the `no-trial` and `active`
-  states it is a `Snackbar` with `duration={Infinity}`, the design system close control (`Utils.Close`) and
-  `onOpenChange` as the single dismiss path (close, swipe, Escape, the action), kept mounted with `open={!dismissed}`.
-  It floats top-right instead of pushing the page, and its card slides in after hydration. Until it is
-  dismissed it covers the top-right of the header (connected products, user menu), of the public pages (sign-in
-  buttons), of an open sheet and of a modal overlay: accepted by the reviewer, since one click dismisses it. The e2e base fixture
-  starts every test with it dismissed (both localStorage keys), as it does for the cookie consent. The learn-more link is its
-  `action` (`Button asChild priority="secondary" size="sm"`, without the gradient restyle), so following it also
-  dismisses the invitation; the days-left chip is its `description`. `AppSnackbars` now wraps the app so the banner
-  sits under its provider.
-- **The `ending` state stays an `Alert` with no close control** (epic review): it cannot be dismissed, and Snackbar
-  RULE-09 says a message that stays on the page is an Alert. The days-left chip stays in its `action`.
+- **The trial invitation is an in-page `Alert`, with no close control, in every state** (team review on #3715,
+  2026-10-12, replacing the persistent `Snackbar` of the epic-2 review): floating top-right, the invitation lost its
+  importance and visibility. The design system `Alert` has no close control (RULE-05, "if it can be dismissed, it is a
+  Snackbar"), and a hand-made close in its `action` slot is what the epic-2 review removed, so the `no-trial` and
+  `active` invitations are no longer dismissible: they show until the trial state changes, as `ending` already did.
+  The `action` slot holds the learn-more link (`no-trial`) and the days-left chip (`active`, `ending`). The dismissal
+  hook, its localStorage keys and the e2e fixture that pre-dismissed the snackbar go. The design system `Banner`, in
+  Figma but not in 1.2.0, will replace it.
 
 ## To validate
 

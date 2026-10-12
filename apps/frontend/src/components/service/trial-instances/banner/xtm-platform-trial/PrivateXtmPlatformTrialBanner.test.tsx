@@ -1,12 +1,11 @@
 import { PrivateXtmPlatformTrialBanner } from '@/components/service/trial-instances/banner/xtm-platform-trial/PrivateXtmPlatformTrialBanner';
 import testRender from '@/utils/test/test-render';
-import { SnackbarProvider, SnackbarViewport } from '@filigran/design-system';
 import {
   DeploymentRequestHubStatus,
   HasRepliedSatisfaction,
   PlatformTrialStatusQueryVariables,
 } from '@graphql/generated';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const graphqlMocks = vi.hoisted(() => ({
   usePlatformTrialStatusQuery: Object.assign(vi.fn(), {
@@ -46,14 +45,6 @@ const JUSTIFICATION_TEXT = 'Deployment took too long';
 const USER_WITHOUT_FEEDBACK = { has_replied_satisfaction: null };
 const DEPLOYMENT_REQUEST_ID = 'deployment-request-id';
 
-// The banner renders its invitation into the app's snackbar viewport.
-const BannerUnderSnackbarViewport = () => (
-  <SnackbarProvider>
-    <PrivateXtmPlatformTrialBanner />
-    <SnackbarViewport />
-  </SnackbarProvider>
-);
-
 const mockActiveTrialWithDaysLeft = (
   daysLeft: number,
   deploymentRequestId: string | null = DEPLOYMENT_REQUEST_ID
@@ -80,10 +71,6 @@ describe('PrivateXtmPlatformTrialBanner', () => {
     graphqlMocks.giveDeploymentFeedback.mockReset();
   });
 
-  afterEach(() => {
-    window.localStorage.clear();
-  });
-
   it('should render nothing while the query is loading', () => {
     graphqlMocks.usePlatformTrialStatusQuery.mockReturnValue({
       data: undefined,
@@ -91,7 +78,7 @@ describe('PrivateXtmPlatformTrialBanner', () => {
       isPending: true,
     });
 
-    const { container } = testRender(<BannerUnderSnackbarViewport />);
+    const { container } = testRender(<PrivateXtmPlatformTrialBanner />);
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -112,7 +99,7 @@ describe('PrivateXtmPlatformTrialBanner', () => {
     });
 
     const { getByText, getByRole } = testRender(
-      <BannerUnderSnackbarViewport />,
+      <PrivateXtmPlatformTrialBanner />,
       {
         me: USER_WITHOUT_FEEDBACK,
       }
@@ -143,7 +130,7 @@ describe('PrivateXtmPlatformTrialBanner', () => {
       isPending: false,
     });
 
-    const { container } = testRender(<BannerUnderSnackbarViewport />);
+    const { container } = testRender(<PrivateXtmPlatformTrialBanner />);
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -155,7 +142,7 @@ describe('PrivateXtmPlatformTrialBanner', () => {
 
     it('should keep the submit button disabled when no answer is selected', () => {
       // Given
-      const { getByRole } = testRender(<BannerUnderSnackbarViewport />, {
+      const { getByRole } = testRender(<PrivateXtmPlatformTrialBanner />, {
         me: USER_WITHOUT_FEEDBACK,
       });
 
@@ -166,7 +153,7 @@ describe('PrivateXtmPlatformTrialBanner', () => {
     it('should not display the justification field when the answer is yes', async () => {
       // Given
       const { getByRole, queryByRole, user } = testRender(
-        <BannerUnderSnackbarViewport />,
+        <PrivateXtmPlatformTrialBanner />,
         {
           me: USER_WITHOUT_FEEDBACK,
         }
@@ -183,9 +170,12 @@ describe('PrivateXtmPlatformTrialBanner', () => {
 
     it('should display the justification field when the answer is no', async () => {
       // Given
-      const { getByRole, user } = testRender(<BannerUnderSnackbarViewport />, {
-        me: USER_WITHOUT_FEEDBACK,
-      });
+      const { getByRole, user } = testRender(
+        <PrivateXtmPlatformTrialBanner />,
+        {
+          me: USER_WITHOUT_FEEDBACK,
+        }
+      );
 
       // When
       await user.click(getByRole('radio', { name: FEEDBACK_NO }));
@@ -198,9 +188,12 @@ describe('PrivateXtmPlatformTrialBanner', () => {
 
     it('should send the answer and the justification when submitting a no answer', async () => {
       // Given
-      const { getByRole, user } = testRender(<BannerUnderSnackbarViewport />, {
-        me: USER_WITHOUT_FEEDBACK,
-      });
+      const { getByRole, user } = testRender(
+        <PrivateXtmPlatformTrialBanner />,
+        {
+          me: USER_WITHOUT_FEEDBACK,
+        }
+      );
       await user.click(getByRole('radio', { name: FEEDBACK_NO }));
       await user.type(
         getByRole('textbox', { name: FEEDBACK_JUSTIFICATION }),
@@ -222,9 +215,12 @@ describe('PrivateXtmPlatformTrialBanner', () => {
 
     it('should not send the justification when submitting a yes answer after typing one', async () => {
       // Given
-      const { getByRole, user } = testRender(<BannerUnderSnackbarViewport />, {
-        me: USER_WITHOUT_FEEDBACK,
-      });
+      const { getByRole, user } = testRender(
+        <PrivateXtmPlatformTrialBanner />,
+        {
+          me: USER_WITHOUT_FEEDBACK,
+        }
+      );
       await user.click(getByRole('radio', { name: FEEDBACK_NO }));
       await user.type(
         getByRole('textbox', { name: FEEDBACK_JUSTIFICATION }),
@@ -248,7 +244,7 @@ describe('PrivateXtmPlatformTrialBanner', () => {
     it('should close the dialog when submitting the feedback', async () => {
       // Given
       const { getByRole, queryByRole, user } = testRender(
-        <BannerUnderSnackbarViewport />,
+        <PrivateXtmPlatformTrialBanner />,
         {
           me: USER_WITHOUT_FEEDBACK,
         }
@@ -266,9 +262,12 @@ describe('PrivateXtmPlatformTrialBanner', () => {
 
     it('should send a closed answer when closing the dialog without answering', async () => {
       // Given
-      const { getByRole, user } = testRender(<BannerUnderSnackbarViewport />, {
-        me: USER_WITHOUT_FEEDBACK,
-      });
+      const { getByRole, user } = testRender(
+        <PrivateXtmPlatformTrialBanner />,
+        {
+          me: USER_WITHOUT_FEEDBACK,
+        }
+      );
 
       // When
       await user.click(getByRole('button', { name: FEEDBACK_CLOSE }));
@@ -285,9 +284,12 @@ describe('PrivateXtmPlatformTrialBanner', () => {
 
     it('should not send a closed answer when submitting the feedback', async () => {
       // Given
-      const { getByRole, user } = testRender(<BannerUnderSnackbarViewport />, {
-        me: USER_WITHOUT_FEEDBACK,
-      });
+      const { getByRole, user } = testRender(
+        <PrivateXtmPlatformTrialBanner />,
+        {
+          me: USER_WITHOUT_FEEDBACK,
+        }
+      );
       await user.click(getByRole('radio', { name: FEEDBACK_YES }));
 
       // When
@@ -300,9 +302,12 @@ describe('PrivateXtmPlatformTrialBanner', () => {
     it('should not send the feedback when the trial has no deployment request', async () => {
       // Given
       mockActiveTrialWithDaysLeft(15, null);
-      const { getByRole, user } = testRender(<BannerUnderSnackbarViewport />, {
-        me: USER_WITHOUT_FEEDBACK,
-      });
+      const { getByRole, user } = testRender(
+        <PrivateXtmPlatformTrialBanner />,
+        {
+          me: USER_WITHOUT_FEEDBACK,
+        }
+      );
       await user.click(getByRole('radio', { name: FEEDBACK_YES }));
 
       // When
@@ -320,7 +325,7 @@ describe('PrivateXtmPlatformTrialBanner', () => {
       'should not open the feedback dialog when the user already replied %s',
       (hasRepliedSatisfaction) => {
         // Given
-        const { queryByRole } = testRender(<BannerUnderSnackbarViewport />, {
+        const { queryByRole } = testRender(<PrivateXtmPlatformTrialBanner />, {
           me: { has_replied_satisfaction: hasRepliedSatisfaction },
         });
 

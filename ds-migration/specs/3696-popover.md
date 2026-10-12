@@ -83,7 +83,7 @@ only its personal space ("Personal space" in the switcher), whose panel shows it
 the workspace is stored on the user, so the first screen selects the personal space and the second one, which runs
 after it in both themes, selects "Filigran" back (waiting for the reload that drops the bell), collapses the private
 menu and hovers the OpenCTI section. Keep that order. The bell is found by its kept `w-9` class: the hidden mobile menu
-trigger in the header also has `aria-haspopup="dialog"`. The trial Snackbar is closed first: it covers the panel.
+trigger in the header also has `aria-haspopup="dialog"`.
 
 ```json
 [
@@ -95,7 +95,6 @@ trigger in the header also has `aria-haspopup="dialog"`. The trial Snackbar is c
       { "click": "role=combobox[name=\"Select an organization\"]" },
       { "click": "role=option[name=\"Personal space\"]" },
       { "waitFor": "header button.w-9[aria-haspopup=\"dialog\"]" },
-      { "click": "role=button[name=\"Close\"]" },
       { "click": "header button.w-9[aria-haspopup=\"dialog\"]" },
       { "waitFor": "role=dialog" }
     ],

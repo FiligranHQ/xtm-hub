@@ -126,7 +126,6 @@ product: `Enum.test.tsx` covers it.
     "path": "/app",
     "steps": [
       { "click": "role=button[name=\"Reject all\"]" },
-      { "click": "li:has-text(\"Start your 30-day free trial\") >> role=button[name=\"Close\"]" },
       { "click": "role=button[name=\"OpenCTI\"]" },
       { "click": "role=link[name=\"Integrations\"]" },
       { "click": "role=button[name=\"Add new Integration\"]" },
@@ -140,7 +139,6 @@ product: `Enum.test.tsx` covers it.
     "path": "/app",
     "steps": [
       { "click": "role=button[name=\"Reject all\"]" },
-      { "click": "li:has-text(\"Start your 30-day free trial\") >> role=button[name=\"Close\"]" },
       { "click": "role=button[name=\"OpenCTI\"]" },
       { "click": "role=link[name=\"Custom Dashboards\"]" },
       { "click": "role=button[name=\"Add new dashboard\"]" },

@@ -141,7 +141,7 @@ found by `body > [role="dialog"]`, which the `Paper` panel still is; no e2e test
 
 ## Screens
 
-The cookie banner is dismissed first, then the trial Snackbar, which covers the top of the sheet. The first screen opens the admin "Add user" form sheet (the
+The cookie banner is dismissed first. The first screen opens the admin "Add user" form sheet (the
 `SheetWithPreventingDialog` path: heading bar, fields, footer, close button, scrim over the page). The second opens the
 epic creation sheet on the public roadmap, a long form with `EpicForm`'s sticky footer. The mobile menus only render
 under 640px and the "learn more" panel behind a deployable resource: none is captured.
@@ -153,7 +153,6 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
     "path": "/app/admin/user",
     "steps": [
       { "click": "role=button[name=\"Reject all\"]" },
-      { "click": "li:has-text(\"Start your 30-day free trial\") >> role=button[name=\"Close\"]" },
       { "click": "main >> role=button[name=\"Add user\"]" },
       { "waitFor": "role=dialog[name=\"Add user\"]" }
     ]
@@ -163,7 +162,6 @@ under 640px and the "learn more" panel behind a deployable resource: none is cap
     "path": "/app",
     "steps": [
       { "click": "role=button[name=\"Reject all\"]" },
-      { "click": "li:has-text(\"Start your 30-day free trial\") >> role=button[name=\"Close\"]" },
       { "click": "role=link[name=\"XTM Platform Roadmap\"]" },
       { "click": "main >> role=button[name=\"Create\"]" },
       { "waitFor": "role=dialog[name=\"Create a new epic\"]" }

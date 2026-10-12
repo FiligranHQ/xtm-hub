@@ -108,7 +108,7 @@ the rendered markdown: the roadmap model opens an epic by its title, and the res
 
 ## Screens
 
-The cookie banner is dismissed first, then the trial Snackbar (it covers the bottom left of the dialogs). The epic and
+The cookie banner is dismissed first. The epic and
 feature vote dialogs follow the theme; the public document page is always dark. The development data holds plain
 paragraphs only: headings, lists, code and tables are covered by the candidate's unit test, not by a screen.
 
@@ -119,7 +119,6 @@ paragraphs only: headings, lists, code and tables are covered by the candidate's
     "path": "/app",
     "steps": [
       { "click": "role=button[name=\"Reject all\"]" },
-      { "click": "li:has-text(\"Start your 30-day free trial\") >> role=button[name=\"Close\"]" },
       { "click": "role=link[name=\"XTM Platform Roadmap\"]" },
       { "click": "main li h2 >> role=button" },
       { "waitFor": "role=dialog" }
@@ -131,7 +130,6 @@ paragraphs only: headings, lists, code and tables are covered by the candidate's
     "path": "/app",
     "steps": [
       { "click": "role=button[name=\"Reject all\"]" },
-      { "click": "li:has-text(\"Start your 30-day free trial\") >> role=button[name=\"Close\"]" },
       { "click": "role=link[name=\"XTM Platform Roadmap\"]" },
       { "click": "role=link[name=\"Vote for your next feature\"]" },
       { "click": "main h2 >> role=button" },
