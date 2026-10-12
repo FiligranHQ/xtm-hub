@@ -9,6 +9,7 @@ const STRONG_TEXT = 'important';
 const DELETED_TEXT = 'outdated';
 const LINK_TEXT = 'Filigran';
 const LINK_HREF = 'https://filigran.io/';
+const LINK_SUFFIX = '?ref=hub';
 const LOGO_ALT = 'Filigran logo';
 const PARAGRAPH_CLASS = 'text-content-base';
 const LINK_CLASS = 'text-content-base-link';
@@ -73,6 +74,25 @@ describe('MarkdownRenderer', () => {
     );
     const link = screen.getByRole('link', { name: LINK_TEXT });
     expect(link).toHaveAttribute('href', LINK_HREF);
+    expect(link).toHaveClass(LINK_CLASS);
+  });
+
+  it('should render the rewritten href with the link style when a transformLinkHref is given', () => {
+    // Given
+    const source = `[${LINK_TEXT}](${LINK_HREF})`;
+    const transformLinkHref = (href: string) => `${href}${LINK_SUFFIX}`;
+
+    // When
+    testRender(
+      <MarkdownRenderer
+        source={source}
+        transformLinkHref={transformLinkHref}
+      />
+    );
+
+    // Then
+    const link = screen.getByRole('link', { name: LINK_TEXT });
+    expect(link).toHaveAttribute('href', `${LINK_HREF}${LINK_SUFFIX}`);
     expect(link).toHaveClass(LINK_CLASS);
   });
 

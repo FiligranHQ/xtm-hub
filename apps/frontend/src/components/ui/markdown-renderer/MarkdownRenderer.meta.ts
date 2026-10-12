@@ -19,6 +19,8 @@ export const MarkdownRendererMeta: ComponentMeta = {
       'string (required) - the markdown to render; an empty string renders an empty root.',
     className:
       'string (optional) - extra classes on the root <div>, merged last with tailwind-merge (a gap-4 replaces the default gap-3).',
+    transformLinkHref:
+      '(href: string) => string (optional) - rewrites the href of every link of the sanitised markdown, for example to tag outgoing links; pass a stable function.',
   },
   accessibility: {
     wcag: '2.1 AA',

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { Text } from '@filigran/design-system';
 import MDEditor from '@uiw/react-md-editor';
 import type * as React from 'react';
+import { useMemo } from 'react';
 import rehypeSanitize, {
   defaultSchema,
   type Options as SanitizeSchema,
@@ -13,6 +14,8 @@ import rehypeSanitize, {
 export interface MarkdownRendererProps {
   source: string;
   className?: string;
+  // Rewrites the href of every link written in the markdown
+  transformLinkHref?: (href: string) => string;
 }
 
 type MarkdownPreviewProps = React.ComponentProps<typeof MDEditor.Markdown>;
@@ -83,6 +86,19 @@ const createHeading = (tag: HeadingTag) => {
   return MarkdownHeading;
 };
 
+const MarkdownLink = ({
+  node: _node,
+  children,
+  ...props
+}: ElementProps<'a'>) => (
+  <Text
+    as="a"
+    variant="content-base-link"
+    {...props}>
+    {children}
+  </Text>
+);
+
 const MARKDOWN_COMPONENTS: MarkdownComponents = {
   h1: createHeading('h1'),
   h2: createHeading('h2'),
@@ -97,14 +113,7 @@ const MARKDOWN_COMPONENTS: MarkdownComponents = {
       {children}
     </Text>
   ),
-  a: ({ node: _node, children, ...props }: ElementProps<'a'>) => (
-    <Text
-      as="a"
-      variant="content-base-link"
-      {...props}>
-      {children}
-    </Text>
-  ),
+  a: MarkdownLink,
   ul: ({ node: _node, className, ...props }: ElementProps<'ul'>) => (
     <ul
       className={cn('flex list-disc flex-col gap-1 pl-6', className)}
@@ -196,19 +205,42 @@ const MARKDOWN_COMPONENTS: MarkdownComponents = {
   ),
 };
 
-const MarkdownRenderer = ({ source, className }: MarkdownRendererProps) => (
-  <MDEditor.Markdown
-    source={source}
-    prefixCls=""
-    className={cn(
-      'flex flex-col gap-3 break-words [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-sm [&>a]:self-start [&>img]:self-start',
-      className
-    )}
-    disableCopy
-    rehypePlugins={REHYPE_PLUGINS}
-    rehypeRewrite={dropHeadingAnchor}
-    components={MARKDOWN_COMPONENTS}
-  />
-);
+const MarkdownRenderer = ({
+  source,
+  className,
+  transformLinkHref,
+}: MarkdownRendererProps) => {
+  // A new link component on every render would remount each link
+  const components = useMemo<MarkdownComponents>(
+    () =>
+      transformLinkHref
+        ? {
+            ...MARKDOWN_COMPONENTS,
+            a: ({ href, ...props }: ElementProps<'a'>) => (
+              <MarkdownLink
+                {...props}
+                href={href ? transformLinkHref(href) : href}
+              />
+            ),
+          }
+        : MARKDOWN_COMPONENTS,
+    [transformLinkHref]
+  );
+
+  return (
+    <MDEditor.Markdown
+      source={source}
+      prefixCls=""
+      className={cn(
+        'flex flex-col gap-3 break-words [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-sm [&>a]:self-start [&>img]:self-start',
+        className
+      )}
+      disableCopy
+      rehypePlugins={REHYPE_PLUGINS}
+      rehypeRewrite={dropHeadingAnchor}
+      components={components}
+    />
+  );
+};
 
 export { MarkdownRenderer };
