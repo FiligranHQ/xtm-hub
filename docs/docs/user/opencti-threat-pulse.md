@@ -66,6 +66,8 @@ Every operation authenticates with the platform token of the connected product a
 
 The XTM Hub administrators follow the network in **Settings > Threat Pulse**. The page is read only and open to the users who hold the bypass capability only. It shows counts, object types, buckets, platforms and UTC days: never a value, a hash sent by a platform or a platform pseudonym. Days are UTC calendar days, like everywhere in Threat Pulse.
 
+![Threat Pulse monitoring page illustration](../assets/images/opencti-threat-pulse-monitoring.png)
+
 ### Network cards
 
 | Card | What it shows |
@@ -86,11 +88,11 @@ Records, batches and contributing platforms per day over the last 30 days, every
 
 ### Coverage
 
-The events reported over the last 30 days (the sum of the `count` fields) by sector bucket, by region bucket and by object type and event kind, each with the number of distinct contributing platforms. These are volumes per bucket, never per object.
+The events reported over the last 30 days (the sum of the `count` fields) by sector bucket and by region bucket, then as a matrix of object types by event kind, each figure with the number of distinct contributing platforms. These are volumes per bucket, never per object.
 
 ### What the network publishes
 
-The network-wide trending list over 7 or 30 days, all sectors and regions, read from the same cache the platforms read: object type, platforms range, prevalence, trend and growth, and network first-seen day. Each item is identified by the first 12 hexadecimal characters of its key at rest. That key is derived with `PULSE_AT_REST_KEY`, a secret only XTM Hub holds, so neither a platform nor an administrator can compute it from a value: it tells two items apart on the page and reveals nothing about the object. Above the list, the page gives the share of the distinct keys that reach `k`.
+The network-wide trending list over 7 or 30 days, all sectors and regions, read from the same cache the platforms read: object type, platforms range, prevalence, trend and growth, and network first-seen day. The page shows the first 10 items and up to 50 on demand. Each item is identified by the first 12 hexadecimal characters of its key at rest. That key is derived with `PULSE_AT_REST_KEY`, a secret only XTM Hub holds, so neither a platform nor an administrator can compute it from a value: it tells two items apart on the page and reveals nothing about the object. Above the list, the page gives the share of the distinct keys that reach `k`.
 
 ### Platforms
 
