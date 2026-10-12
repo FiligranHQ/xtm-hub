@@ -20,6 +20,7 @@ import {
 } from '@filigran/design-system';
 import { PlatformContract } from '@graphql/generated';
 import Link from 'next/link';
+import { Children } from 'react';
 
 type RegisteredPlatformCardProps = {
   platform: HomepageRegisteredPlatformCardViewModel;
@@ -111,13 +112,15 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
           {platform.contract === PlatformContract.Trial &&
             platform.remainingTrialDays !== undefined && (
               <div className="flex gap-s items-center text-content-body-compact text-text-default-secondary">
-                <p>{tRegisteredPlatformsCard('Remaining')}</p>
-                <Chip
-                  label={tRegisteredPlatformsCard('DaysRemaining', {
-                    days: platform.remainingTrialDays,
-                  })}
-                  severity={remainingTrialDaysSeverity}
-                />
+                {tRegisteredPlatformsCard.rich('DaysRemaining', {
+                  days: platform.remainingTrialDays,
+                  badge: (chunks) => (
+                    <Chip
+                      label={Children.toArray(chunks).join('')}
+                      severity={remainingTrialDaysSeverity}
+                    />
+                  ),
+                })}
               </div>
             )}
         </div>

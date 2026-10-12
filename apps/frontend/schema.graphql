@@ -1350,6 +1350,7 @@ input RefreshPlatformRegistrationConnectivityStatusInput {
   token: String!
   platformVersion: String!
   platformIdentifier: PlatformIdentifier
+  platformContract: PlatformContract
 }
 
 input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
@@ -1360,6 +1361,7 @@ input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
   tenantId: String!
   tenantName: String!
   platformIdentifier: PlatformIdentifier!
+  platformContract: PlatformContract
 }
 
 input TenantDetails {
@@ -1373,6 +1375,7 @@ input RefreshPlatformRegistrationConnectivityStatusAllTenantsInput {
   platformId: String!
   platformVersion: String!
   platformIdentifier: PlatformIdentifier!
+  platformContract: PlatformContract
   tenants: [TenantDetails!]!
 }
 
