@@ -13,5 +13,7 @@
     }
   ],
   "enabled_features": ["*"],
-  "base_url_front": "http://localhost:3002"
+  "base_url_front": "http://localhost:3002",
+  "marketing_token_hash": "19561842cf112ed1064fc3271558cbf9b36bc90d7bbbcced60d8509870f07186de0ee543019792ed68d10d9e28b59994ede30349792920c096377a2d2e394dc0",
+  "marketing_token_salt": "f883a2941904b524a40a8a79aafdedd8"
 }
