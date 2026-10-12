@@ -80,3 +80,50 @@ describe('Component: ShareableResourceSlug - OneClickDeploy Logic', () => {
     }
   );
 });
+
+describe('Component: ShareableResourceSlug - Download', () => {
+  const serviceInstance = {
+    id: 'service-instance-1',
+  } as unknown as serviceInstance_fragment$data;
+
+  const renderSlug = (documentType: string, documentActive: boolean) =>
+    testRender(
+      <SettingsContext.Provider value={{ settings: mockSettings as never }}>
+        <ShareableResourceSlug
+          breadcrumbValue={[]}
+          documentData={
+            {
+              id: 'document-1',
+              active: documentActive,
+              description: 'description',
+              download_number: 1,
+              name: 'Test Document',
+              type: documentType,
+            } as unknown as documentItem_fragment$data
+          }
+          serviceInstance={serviceInstance}
+        />
+      </SettingsContext.Provider>
+    );
+
+  it.each`
+    deployable | documentType                  | documentActive | accessibleName
+    ${false}   | ${'opencti_custom_dashboard'} | ${false}       | ${'Utils.Download'}
+    ${true}    | ${'opencti_custom_dashboard'} | ${true}        | ${'Service.ShareableResources.Download'}
+  `(
+    'should render the download action as a link to the document file when the resource deployable=$deployable',
+    ({ documentType, documentActive, accessibleName }) => {
+      // Given a downloadable resource
+      // When the resource page is rendered
+      renderSlug(documentType, documentActive);
+
+      // Then the download action is a plain link to the backend file route
+      expect(
+        screen.getByRole('link', { name: accessibleName })
+      ).toHaveAttribute(
+        'href',
+        '/document/get/test-service-id/document-1?attach=1'
+      );
+    }
+  );
+});

@@ -62,6 +62,7 @@ const ShareableResourceSlug = ({
   );
   const incrementDownloadNumber = () =>
     setDocumentDownloadNumber((prev) => prev + 1);
+  const downloadUrl = `/document/get/${serviceInstanceId}/${documentData.id}?attach=1`;
 
   const shouldShowOneClickDeployComponent = useMemo(
     () => isResourceDeployable(documentData),
@@ -115,17 +116,18 @@ const ShareableResourceSlug = ({
                         disableHoverableContent={true}>
                         <TooltipTrigger asChild>
                           <IconButton
+                            asChild
                             priority="tertiary"
-                            onClick={() => {
-                              incrementDownloadNumber();
-                              window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                            }}
                             className="z-[2] text-primary"
                             aria-label={t(
                               'Service.ShareableResources.Download'
                             )}
-                            icon={<DownloadIcon className="h-4 w-4" />}
-                          />
+                            icon={<DownloadIcon className="h-4 w-4" />}>
+                            <a
+                              href={downloadUrl}
+                              onClick={incrementDownloadNumber}
+                            />
+                          </IconButton>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>{t('Service.ShareableResources.Download')}</p>
@@ -139,12 +141,12 @@ const ShareableResourceSlug = ({
                 <>
                   {updateActions}
                   {isResourceDownloadable(documentData) && (
-                    <Button
-                      onClick={() => {
-                        incrementDownloadNumber();
-                        window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                      }}>
-                      {t('Utils.Download')}
+                    <Button asChild>
+                      <a
+                        href={downloadUrl}
+                        onClick={incrementDownloadNumber}>
+                        {t('Utils.Download')}
+                      </a>
                     </Button>
                   )}
                 </>
