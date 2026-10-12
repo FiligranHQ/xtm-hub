@@ -4,9 +4,11 @@ import ShareableResourceCarousel from '@/components/service/document/ui/Shareabl
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
+import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 import { getTranslate } from '@/hooks/get-translate';
 import { cn } from '@/lib/utils';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import {
   ConnectorFields,
   PublicDocumentDetailsData,
@@ -16,7 +18,6 @@ import {
   MotionPlayIcon,
   ThreatActorGroupIcon,
 } from '@filigran/icon';
-import { MarkdownRenderer } from '@filigran/ui/clients';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
@@ -110,10 +111,13 @@ const ShareableResourceConnectorSlugPublic = async ({
           </h3>
           <section className="rounded bg-elevation-background-layer-1 overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>
-            <MarkdownRenderer
+            <MarkdownRendererWithTheme
               source={documentData?.description ?? ''}
               colorMode="dark"
               className="p-l !bg-elevation-background-layer-1 markdown-content"
+              filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+                serviceInstance.service_definition?.identifier
+              )}
             />
           </section>
         </div>

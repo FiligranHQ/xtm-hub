@@ -163,6 +163,9 @@ const ShareableResourceConnectorSlug = ({
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
+          serviceDefinitionIdentifier={
+            serviceInstance.service_definition?.identifier
+          }
         />
         <ShareableResourceConnectorPrivateDetails
           connectorDetails={{ ...documentData, name: documentData.name ?? '' }}

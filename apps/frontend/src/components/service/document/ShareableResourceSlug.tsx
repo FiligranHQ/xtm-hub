@@ -171,6 +171,9 @@ const ShareableResourceSlug = ({
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
+          serviceDefinitionIdentifier={
+            serviceInstance.service_definition?.identifier
+          }
         />
         {documentData && (
           <ShareableResourceDetails

@@ -7,12 +7,14 @@ interface MarkdownRendererProps {
   source: string;
   colorMode?: 'light' | 'dark';
   className?: string;
+  transformLinkHref?: (href: string) => string;
 }
 
 const MarkdownRenderer = ({
   source,
   colorMode = 'dark',
   className,
+  transformLinkHref,
 }: MarkdownRendererProps) => (
   <div
     data-color-mode={colorMode}
@@ -20,6 +22,18 @@ const MarkdownRenderer = ({
     <MDEditor.Markdown
       source={source}
       style={{ backgroundColor: 'transparent' }}
+      components={
+        transformLinkHref
+          ? {
+              a: ({ node: _node, href, ...props }) => (
+                <a
+                  {...props}
+                  href={href ? transformLinkHref(href) : href}
+                />
+              ),
+            }
+          : undefined
+      }
     />
   </div>
 );

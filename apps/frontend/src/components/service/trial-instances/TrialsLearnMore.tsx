@@ -4,6 +4,10 @@ import { TrialsStorageLimitation } from '@/components/service/trial-instances/Tr
 import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
 import {
+  FiligranWebsiteUtmCampaign,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
+import {
   AnalyticsIcon,
   ArrowRightAltIcon,
   ArrowsInputIcon,
@@ -62,8 +66,20 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
                 rel="noopener noreferrer"
                 href={
                   platformIdentifier === PlatformIdentifier.Opencti
-                    ? 'https://filigran.io/offerings/opencti-enterprise-edition/'
-                    : 'https://filigran.io/offerings/openaev-enterprise-edition/'
+                    ? withFiligranWebsiteUtm(
+                        'https://filigran.io/offerings/opencti-enterprise-edition/',
+                        {
+                          campaign: FiligranWebsiteUtmCampaign.OTHER,
+                          content: 'trial_opencti_enterprise_edition',
+                        }
+                      )
+                    : withFiligranWebsiteUtm(
+                        'https://filigran.io/offerings/openaev-enterprise-edition/',
+                        {
+                          campaign: FiligranWebsiteUtmCampaign.OTHER,
+                          content: 'trial_openaev_enterprise_edition',
+                        }
+                      )
                 }
                 className="underline flex gap-s items-center">
                 <ArrowRightAltIcon className="size-3" />
