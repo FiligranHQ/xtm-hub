@@ -109,19 +109,25 @@ describe('ThreatPulsePlatforms', () => {
     // Then
     expect(screen.getByText('Paris SOC')).toBeInTheDocument();
     expect(screen.getByText('Filigran')).toBeInTheDocument();
-    expect(
-      screen.getByText('ThreatPulse.Platforms.BucketPair')
-    ).toBeInTheDocument();
+    expect(screen.getByText('ThreatPulse.Sector.finance')).toBeInTheDocument();
+    expect(screen.getByText('ThreatPulse.Region.europe')).toBeInTheDocument();
     expect(
       screen.getByText('ThreatPulse.PlatformStatus.contributing')
     ).toBeInTheDocument();
+    expect(
+      screen.getAllByText('ThreatPulse.Platforms.RecordCount')
+    ).toHaveLength(2);
+    expect(
+      screen.getAllByText('ThreatPulse.Platforms.BatchCount')
+    ).toHaveLength(2);
     expect(screen.getByText('Lyon CERT')).toBeInTheDocument();
     expect(
       screen.getByText('ThreatPulse.PlatformStatus.preview_only')
     ).toBeInTheDocument();
-    expect(
-      screen.getByText('ThreatPulse.Platforms.PurgeValue')
-    ).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getAllByText('ThreatPulse.Platforms.LastPurge')).toHaveLength(
+      1
+    );
     expect(screen.queryByText('ThreatPulse.Platforms.Empty')).toBeNull();
   });
 

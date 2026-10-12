@@ -44,6 +44,31 @@ import { useDebounceCallback } from 'usehooks-ts';
 const ALL_STATUSES = 'all';
 const STATUSES = Object.values(PulseNetworkPlatformStatus);
 
+const TwoLineCell = ({
+  primary,
+  secondary,
+}: {
+  primary: string;
+  secondary?: string;
+}) => (
+  <span className="flex min-w-0 flex-col">
+    <Text
+      as="span"
+      variant="content-compact"
+      className="truncate">
+      {primary}
+    </Text>
+    {secondary && (
+      <Text
+        as="span"
+        variant="content-caption"
+        className="truncate text-text-default-secondary">
+        {secondary}
+      </Text>
+    )}
+  </span>
+);
+
 export const ThreatPulsePlatforms = () => {
   const t = useTranslate();
   const format = useFormatter();
@@ -91,23 +116,28 @@ export const ThreatPulsePlatforms = () => {
     {
       accessorKey: 'title',
       id: PulseNetworkPlatformOrdering.Title,
+      size: 230,
       sortDescFirst: false,
       header: t('ThreatPulse.Platforms.Title'),
-      cell: ({ row }) => <span className="truncate">{row.original.title}</span>,
+      cell: ({ row }) => (
+        <span title={row.original.title}>{row.original.title}</span>
+      ),
     },
     {
       accessorKey: 'organization_name',
       id: PulseNetworkPlatformOrdering.OrganizationName,
+      size: 170,
       sortDescFirst: false,
       header: t('ThreatPulse.Platforms.Organization'),
       cell: ({ row }) => (
-        <span className="truncate">
+        <span title={row.original.organization_name ?? undefined}>
           {row.original.organization_name ?? '-'}
         </span>
       ),
     },
     {
       id: 'buckets',
+      size: 170,
       header: t('ThreatPulse.Platforms.Buckets'),
       enableSorting: false,
       cell: ({ row }) => {
@@ -116,18 +146,17 @@ export const ThreatPulsePlatforms = () => {
           return '-';
         }
         return (
-          <span className="truncate">
-            {t('ThreatPulse.Platforms.BucketPair', {
-              sector: t(`ThreatPulse.Sector.${sector_bucket}`),
-              region: t(`ThreatPulse.Region.${region_bucket}`),
-            })}
-          </span>
+          <TwoLineCell
+            primary={t(`ThreatPulse.Sector.${sector_bucket}`)}
+            secondary={t(`ThreatPulse.Region.${region_bucket}`)}
+          />
         );
       },
     },
     {
       accessorKey: 'status',
       id: PulseNetworkPlatformOrdering.Status,
+      size: 130,
       header: t('ThreatPulse.Platforms.Status'),
       cell: ({ row }) => (
         <Chip
@@ -139,30 +168,43 @@ export const ThreatPulsePlatforms = () => {
     {
       accessorKey: 'last_contribution_day',
       id: PulseNetworkPlatformOrdering.LastContributionDay,
+      size: 140,
       header: t('ThreatPulse.Platforms.LastContribution'),
       cell: ({ row }) => day(row.original.last_contribution_day),
     },
     {
       accessorKey: 'records_last_30_days',
       id: PulseNetworkPlatformOrdering.RecordsLast_30Days,
+      size: 160,
       header: t('ThreatPulse.Platforms.Records'),
-      cell: ({ row }) =>
-        t('ThreatPulse.Platforms.RecordsValue', {
-          records: row.original.records_last_30_days,
-          batches: row.original.batches_last_30_days,
-        }),
+      cell: ({ row }) => (
+        <TwoLineCell
+          primary={t('ThreatPulse.Platforms.RecordCount', {
+            count: row.original.records_last_30_days,
+          })}
+          secondary={t('ThreatPulse.Platforms.BatchCount', {
+            count: row.original.batches_last_30_days,
+          })}
+        />
+      ),
     },
     {
       accessorKey: 'purge_requests',
       id: PulseNetworkPlatformOrdering.PurgeRequests,
+      size: 120,
       header: t('ThreatPulse.Platforms.PurgeRequests'),
-      cell: ({ row }) =>
-        row.original.purge_requests > 0
-          ? t('ThreatPulse.Platforms.PurgeValue', {
-              count: row.original.purge_requests,
-              day: day(row.original.last_purge_day),
-            })
-          : '0',
+      cell: ({ row }) => (
+        <TwoLineCell
+          primary={format.number(row.original.purge_requests)}
+          secondary={
+            row.original.last_purge_day
+              ? t('ThreatPulse.Platforms.LastPurge', {
+                  day: day(row.original.last_purge_day),
+                })
+              : undefined
+          }
+        />
+      ),
     },
   ];
 

@@ -1,3 +1,4 @@
+import { ThreatPulseKindMatrix } from '@/components/admin/threat-pulse/ThreatPulseKindMatrix';
 import { ThreatPulseSection } from '@/components/admin/threat-pulse/ThreatPulseSection';
 import { BarList, BarListItem } from '@/components/ui/bar-list';
 import { useTranslate } from '@/hooks/use-translate';
@@ -36,23 +37,10 @@ export const ThreatPulseCoverage = ({ overview }: ThreatPulseCoverageProps) => {
         detail: detail(region.platforms),
       })),
     },
-    {
-      id: 'kinds',
-      title: t('ThreatPulse.Coverage.Kinds'),
-      items: overview.kinds.map((kind) => ({
-        key: `${kind.object_type}-${kind.event_kind}`,
-        label: t('ThreatPulse.Coverage.Kind', {
-          type: t(`ThreatPulse.ObjectType.${kind.object_type}`),
-          kind: t(`ThreatPulse.EventKind.${kind.event_kind}`),
-        }),
-        value: kind.events,
-        detail: detail(kind.platforms),
-      })),
-    },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-l xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-l lg:grid-cols-2">
       {lists.map((list) => (
         <ThreatPulseSection
           key={list.id}
@@ -68,6 +56,16 @@ export const ThreatPulseCoverage = ({ overview }: ThreatPulseCoverageProps) => {
           />
         </ThreatPulseSection>
       ))}
+      <div className="min-w-0 lg:col-span-2">
+        <ThreatPulseSection
+          title={t('ThreatPulse.Coverage.Kinds')}
+          description={t('ThreatPulse.Coverage.Description')}>
+          <ThreatPulseKindMatrix
+            kinds={overview.kinds}
+            caption={t('ThreatPulse.Coverage.Kinds')}
+          />
+        </ThreatPulseSection>
+      </div>
     </div>
   );
 };

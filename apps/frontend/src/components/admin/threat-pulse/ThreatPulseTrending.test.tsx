@@ -103,6 +103,45 @@ describe('ThreatPulseTrending', () => {
     });
   });
 
+  it('should show the first ten items until the user asks for all of them', async () => {
+    // Given
+    const items = Array.from({ length: 12 }, (_, index) => ({
+      key_id: `${KEY_ID}${index}`,
+      object_type: PulseObjectType.Malware,
+      platforms_bucket: '5-9',
+      prevalence_bucket: PulsePrevalenceBucket.Common,
+      trend: PulseTrendDirection.Rising,
+      growth: 6,
+      first_seen_network: '2026-10-06',
+    }));
+    mocks.useThreatPulseTrendingQuery.mockReturnValue({
+      data: {
+        pulseNetworkTrending: {
+          day: '2026-10-12',
+          period: PulsePeriod.Last_7Days,
+          computed_at: '2026-10-12T07:30:00.000Z',
+          items,
+        },
+      },
+      isLoading: false,
+      isError: false,
+    });
+    const { user } = testRender(<ThreatPulseTrending overview={OVERVIEW} />);
+    expect(screen.getByText(`${KEY_ID}9`)).toBeInTheDocument();
+    expect(screen.queryByText(`${KEY_ID}10`)).not.toBeInTheDocument();
+
+    // When
+    await user.click(
+      screen.getByRole('button', { name: 'ThreatPulse.Trending.ShowAll' })
+    );
+
+    // Then
+    expect(screen.getByText(`${KEY_ID}11`)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'ThreatPulse.Trending.ShowFewer' })
+    ).toHaveAttribute('aria-expanded', 'true');
+  });
+
   it('should say so when nothing reaches the anonymity threshold', () => {
     // Given
     mocks.useThreatPulseTrendingQuery.mockReturnValue({

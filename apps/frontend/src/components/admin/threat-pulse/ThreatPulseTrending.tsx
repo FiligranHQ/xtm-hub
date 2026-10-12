@@ -11,6 +11,7 @@ import { portalGraphqlClient } from '@/lib/graphql-client';
 import { i18nKey } from '@/utils/datatable';
 import {
   Alert,
+  Button,
   Chip,
   Icon,
   Tabs,
@@ -35,6 +36,7 @@ const THREAT_PULSE_TRENDING_PERIODS = [
   PulsePeriod.Last_30Days,
 ] as const;
 const THREAT_PULSE_TRENDING_SIZE = 50;
+const THREAT_PULSE_TRENDING_PREVIEW = 10;
 
 type TrendingRow = ThreatPulseTrendingItem & { id: string };
 
@@ -42,6 +44,7 @@ const ThreatPulseTrendingPanel = ({ period }: { period: PulsePeriod }) => {
   const t = useTranslate();
   const format = useFormatter();
   const [now] = useState(() => new Date());
+  const [expanded, setExpanded] = useState(false);
   const variables = useMemo(
     () => ({ period, first: THREAT_PULSE_TRENDING_SIZE }),
     [period]
@@ -59,6 +62,10 @@ const ThreatPulseTrendingPanel = ({ period }: { period: PulsePeriod }) => {
         id: trendingItemId(item),
       })),
     [data]
+  );
+  const visibleRows = useMemo(
+    () => (expanded ? rows : rows.slice(0, THREAT_PULSE_TRENDING_PREVIEW)),
+    [expanded, rows]
   );
 
   const columns: ColumnDef<TrendingRow>[] = [
@@ -147,20 +154,22 @@ const ThreatPulseTrendingPanel = ({ period }: { period: PulsePeriod }) => {
   const computedAt = data?.pulseNetworkTrending.computed_at;
   return (
     <div className="flex min-w-0 flex-col gap-m">
-      <Text
-        variant="content-caption"
-        className="text-text-default-secondary">
-        {computedAt
-          ? t('ThreatPulse.Trending.ComputedAt', {
-              age: format.relativeTime(new Date(computedAt), now),
-            })
-          : t('ThreatPulse.Trending.NotComputed')}
-      </Text>
       <DataTable
         columns={columns}
-        data={rows}
+        data={visibleRows}
         isLoading={isLoading}
         i18nKey={i18nKey(t)}
+        toolbar={
+          <Text
+            variant="content-caption"
+            className="text-text-default-secondary">
+            {computedAt
+              ? t('ThreatPulse.Trending.ComputedAt', {
+                  age: format.relativeTime(new Date(computedAt), now),
+                })
+              : t('ThreatPulse.Trending.NotComputed')}
+          </Text>
+        }
       />
       {!isLoading && rows.length === 0 && (
         <Text
@@ -168,6 +177,20 @@ const ThreatPulseTrendingPanel = ({ period }: { period: PulsePeriod }) => {
           className="text-center text-text-default-secondary">
           {t('ThreatPulse.Trending.Empty')}
         </Text>
+      )}
+      {rows.length > THREAT_PULSE_TRENDING_PREVIEW && (
+        <div className="flex justify-center">
+          <Button
+            priority="tertiary"
+            aria-expanded={expanded}
+            onClick={() => setExpanded((value) => !value)}>
+            {expanded
+              ? t('ThreatPulse.Trending.ShowFewer', {
+                  count: THREAT_PULSE_TRENDING_PREVIEW,
+                })
+              : t('ThreatPulse.Trending.ShowAll', { count: rows.length })}
+          </Button>
+        </div>
       )}
     </div>
   );

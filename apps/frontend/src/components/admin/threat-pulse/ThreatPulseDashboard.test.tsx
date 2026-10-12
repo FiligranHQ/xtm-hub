@@ -224,7 +224,9 @@ describe('ThreatPulseDashboard', () => {
       screen.getByRole('progressbar', { name: 'ThreatPulse.Region.europe' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('progressbar', { name: 'ThreatPulse.Coverage.Kind' })
+      within(
+        screen.getByRole('table', { name: 'ThreatPulse.Coverage.Kinds' })
+      ).getByRole('rowheader', { name: 'ThreatPulse.ObjectType.indicator' })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('progressbar', { name: 'ThreatPulse.Health.Rejection' })
