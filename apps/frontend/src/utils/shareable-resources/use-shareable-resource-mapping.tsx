@@ -6,6 +6,10 @@ import {
   ServiceListFilterKey,
   ServiceListFilterMap,
 } from '@/components/service/components/header/ServiceListHeader';
+import {
+  createSeenCoverageValues,
+  IntegrationCoverageFilter,
+} from '@/components/ui/shareable-resource/integration/IntegrationCoverageFilter';
 import { IntegrationDeployableFilter } from '@/components/ui/shareable-resource/integration/IntegrationDeployableFilter';
 import { IntegrationLicenseTypeFilter } from '@/components/ui/shareable-resource/integration/IntegrationLicenseTypeFilter';
 import { IntegrationProductVersionFilter } from '@/components/ui/shareable-resource/integration/IntegrationProductVersionFilter';
@@ -20,6 +24,7 @@ import {
   ServiceSlug,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
+import { useState } from 'react';
 
 export const useShareableResourceMapping = (
   slug: ServiceSlug,
@@ -27,6 +32,8 @@ export const useShareableResourceMapping = (
 ) => {
   const t = useTranslate();
   const isPublicPath = usePublicPath();
+  // Coverage values seen while this list page is open, kept when a filter section closes
+  const [seenCoverageValues] = useState(createSeenCoverageValues);
   const localStorageKeyMapping: Record<
     ServiceSlug,
     ServiceListLocalStorageKey
@@ -112,6 +119,36 @@ export const useShareableResourceMapping = (
         node: (
           <IntegrationLicenseTypeFilter
             facetCounts={facetCounts?.licenseType}
+          />
+        ),
+      },
+      [ServiceListFilterKey.ObjectType]: {
+        title: t('Service.OpenctiIntegrations.Filter.ObjectType.Label'),
+        node: (
+          <IntegrationCoverageFilter
+            family="objectType"
+            facetCounts={facetCounts?.objectType}
+            seenValues={seenCoverageValues}
+          />
+        ),
+      },
+      [ServiceListFilterKey.Sector]: {
+        title: t('Service.OpenctiIntegrations.Filter.Sector.Label'),
+        node: (
+          <IntegrationCoverageFilter
+            family="sector"
+            facetCounts={facetCounts?.sector}
+            seenValues={seenCoverageValues}
+          />
+        ),
+      },
+      [ServiceListFilterKey.Region]: {
+        title: t('Service.OpenctiIntegrations.Filter.Region.Label'),
+        node: (
+          <IntegrationCoverageFilter
+            family="region"
+            facetCounts={facetCounts?.region}
+            seenValues={seenCoverageValues}
           />
         ),
       },

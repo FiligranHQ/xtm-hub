@@ -201,6 +201,10 @@ export type Connector = Document & Integration & Node & {
   children_documents?: Maybe<Array<ShareableResource>>;
   contact?: Maybe<Scalars['String']['output']>;
   container_image?: Maybe<Scalars['String']['output']>;
+  coverage_inferred: Scalars['Boolean']['output'];
+  covered_object_types: Array<Scalars['String']['output']>;
+  covered_regions: Array<Scalars['String']['output']>;
+  covered_sectors: Array<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
   demo_url?: Maybe<Scalars['String']['output']>;
@@ -271,6 +275,14 @@ export type CreateDeploymentRequestInput = {
 
 export type CreateDocumentInput = {
   active: Scalars['Boolean']['input'];
+  /**
+   * Saves the submitted coverage as declared even when it equals the inferred one.
+   * Without effect on creation, which has no inferred coverage yet.
+   */
+  coverage_confirmed?: InputMaybe<Scalars['Boolean']['input']>;
+  covered_object_types?: InputMaybe<Array<Scalars['String']['input']>>;
+  covered_regions?: InputMaybe<Array<Scalars['String']['input']>>;
+  covered_sectors?: InputMaybe<Array<Scalars['String']['input']>>;
   description: Scalars['String']['input'];
   entity_types?: InputMaybe<Array<Scalars['String']['input']>>;
   license_type?: InputMaybe<LicenseType>;
@@ -329,6 +341,10 @@ export type CsvFeed = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
+  coverage_inferred: Scalars['Boolean']['output'];
+  covered_object_types: Array<Scalars['String']['output']>;
+  covered_regions: Array<Scalars['String']['output']>;
+  covered_sectors: Array<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
   demo_url?: Maybe<Scalars['String']['output']>;
@@ -697,6 +713,10 @@ export enum DocumentMetadataKeyCode {
   ConfigSchema = 'config_schema',
   Contact = 'contact',
   ContainerImage = 'container_image',
+  CoverageInferred = 'coverage_inferred',
+  CoveredObjectTypes = 'covered_object_types',
+  CoveredRegions = 'covered_regions',
+  CoveredSectors = 'covered_sectors',
   DatasheetUrl = 'datasheet_url',
   DemoUrl = 'demo_url',
   EntityTypes = 'entity_types',
@@ -821,7 +841,10 @@ export type Facet = {
   integration_type: Array<FacetBucket>;
   license_type: Array<FacetBucket>;
   manager_supported: Array<FacetBucket>;
+  object_type: Array<FacetBucket>;
   product_version: Array<FacetBucket>;
+  region: Array<FacetBucket>;
+  sector: Array<FacetBucket>;
   solution_category: Array<FacetBucket>;
   use_case: Array<FacetBucket>;
   verified: Array<FacetBucket>;
@@ -859,9 +882,12 @@ export enum FilterKey {
   Label = 'label',
   LicenseType = 'license_type',
   ManagerSupported = 'manager_supported',
+  ObjectType = 'object_type',
   OrganizationId = 'organization_id',
   PersonalSpace = 'personal_space',
   ProductVersion = 'product_version',
+  Region = 'region',
+  Sector = 'sector',
   Slug = 'slug',
   SolutionCategory = 'solution_category',
   Verified = 'verified'
@@ -889,6 +915,10 @@ export type Integration = {
   active: Scalars['Boolean']['output'];
   blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
+  coverage_inferred: Scalars['Boolean']['output'];
+  covered_object_types: Array<Scalars['String']['output']>;
+  covered_regions: Array<Scalars['String']['output']>;
+  covered_sectors: Array<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
   demo_url?: Maybe<Scalars['String']['output']>;
@@ -915,11 +945,57 @@ export type Integration = {
   use_cases?: Maybe<Array<UseCase>>;
 };
 
+export type IntegrationCoverageInput = {
+  object_types?: InputMaybe<Array<Scalars['String']['input']>>;
+  regions?: InputMaybe<Array<Scalars['String']['input']>>;
+  sectors?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type IntegrationCoverageMatch = {
+  __typename?: 'IntegrationCoverageMatch';
+  coverage_inferred: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  integration_type: IntegrationType;
+  license_type?: Maybe<LicenseType>;
+  manager_supported?: Maybe<Scalars['Boolean']['output']>;
+  matched_object_types: Array<Scalars['String']['output']>;
+  matched_regions: Array<Scalars['String']['output']>;
+  matched_sectors: Array<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  object_types: Array<Scalars['String']['output']>;
+  regions: Array<Scalars['String']['output']>;
+  score: Scalars['Float']['output'];
+  sectors: Array<Scalars['String']['output']>;
+  short_description?: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  verified?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type IntegrationCoverageSearchInput = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  integrationTypes?: InputMaybe<Array<IntegrationType>>;
+  objectTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  regions?: InputMaybe<Array<Scalars['String']['input']>>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  sectors?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type IntegrationCoverageSearchResult = {
+  __typename?: 'IntegrationCoverageSearchResult';
+  facets: Facet;
+  matches: Array<IntegrationCoverageMatch>;
+  truncated: Scalars['Boolean']['output'];
+};
+
 export type IntegrationHack = Document & Integration & Node & {
   __typename?: 'IntegrationHack';
   active: Scalars['Boolean']['output'];
   blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
+  coverage_inferred: Scalars['Boolean']['output'];
+  covered_object_types: Array<Scalars['String']['output']>;
+  covered_regions: Array<Scalars['String']['output']>;
+  covered_sectors: Array<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
   demo_url?: Maybe<Scalars['String']['output']>;
@@ -1011,6 +1087,7 @@ export type ManifestFragmentInput = {
   additional_properties: Scalars['JSON']['input'];
   config_schema: Scalars['JSON']['input'];
   contact?: InputMaybe<Scalars['String']['input']>;
+  coverage?: InputMaybe<IntegrationCoverageInput>;
   description: Scalars['String']['input'];
   id: Scalars['String']['input'];
   image_name: Scalars['String']['input'];
@@ -1963,6 +2040,8 @@ export type Query = {
   documentFacets?: Maybe<Facet>;
   documents: DocumentConnection;
   epics?: Maybe<EpicConnection>;
+  integrationCoverageObjectTypes: Array<Scalars['String']['output']>;
+  integrationsByCoverage: IntegrationCoverageSearchResult;
   isPlatformRegistered: IsPlatformRegisteredResponse;
   lastDeployedOverview: LastDeployedOverview;
   me?: Maybe<User>;
@@ -2108,6 +2187,11 @@ export type QueryEpicsArgs = {
   orderBy: EpicOrdering;
   orderMode: OrderingMode;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryIntegrationsByCoverageArgs = {
+  input: IntegrationCoverageSearchInput;
 };
 
 
@@ -2487,6 +2571,10 @@ export type RssFeed = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
+  coverage_inferred: Scalars['Boolean']['output'];
+  covered_object_types: Array<Scalars['String']['output']>;
+  covered_regions: Array<Scalars['String']['output']>;
+  covered_sectors: Array<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
   demo_url?: Maybe<Scalars['String']['output']>;
@@ -2740,6 +2828,10 @@ export type Stream = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
+  coverage_inferred: Scalars['Boolean']['output'];
+  covered_object_types: Array<Scalars['String']['output']>;
+  covered_regions: Array<Scalars['String']['output']>;
+  covered_sectors: Array<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
   demo_url?: Maybe<Scalars['String']['output']>;
@@ -2859,6 +2951,10 @@ export type TaxiiFeed = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
+  coverage_inferred: Scalars['Boolean']['output'];
+  covered_object_types: Array<Scalars['String']['output']>;
+  covered_regions: Array<Scalars['String']['output']>;
+  covered_sectors: Array<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
   demo_url?: Maybe<Scalars['String']['output']>;
@@ -2910,6 +3006,10 @@ export type ThirdPartyIntegration = Document & Integration & Node & {
   active: Scalars['Boolean']['output'];
   blogpost_url?: Maybe<Scalars['String']['output']>;
   children_documents?: Maybe<Array<ShareableResource>>;
+  coverage_inferred: Scalars['Boolean']['output'];
+  covered_object_types: Array<Scalars['String']['output']>;
+  covered_regions: Array<Scalars['String']['output']>;
+  covered_sectors: Array<Scalars['String']['output']>;
   created_at: Scalars['Date']['output'];
   datasheet_url?: Maybe<Scalars['String']['output']>;
   demo_url?: Maybe<Scalars['String']['output']>;
@@ -2987,6 +3087,11 @@ export type UpdateDeploymentRequestInput = {
 
 export type UpdateDocumentInput = {
   active?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Saves the submitted coverage as declared even when it equals the inferred one. */
+  coverage_confirmed?: InputMaybe<Scalars['Boolean']['input']>;
+  covered_object_types?: InputMaybe<Array<Scalars['String']['input']>>;
+  covered_regions?: InputMaybe<Array<Scalars['String']['input']>>;
+  covered_sectors?: InputMaybe<Array<Scalars['String']['input']>>;
   description?: InputMaybe<Scalars['String']['input']>;
   entity_types?: InputMaybe<Array<Scalars['String']['input']>>;
   license_type?: InputMaybe<LicenseType>;
@@ -3485,12 +3590,17 @@ export type ResolversTypes = ResolversObject<{
   FiligranProduct: FiligranProduct;
   Filter: Filter;
   FilterKey: FilterKey;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
   GiveDeploymentFeedbackInput: GiveDeploymentFeedbackInput;
   HasRepliedSatisfaction: HasRepliedSatisfaction;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Integration: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Integration']>;
+  IntegrationCoverageInput: IntegrationCoverageInput;
+  IntegrationCoverageMatch: ResolverTypeWrapper<IntegrationCoverageMatch>;
+  IntegrationCoverageSearchInput: IntegrationCoverageSearchInput;
+  IntegrationCoverageSearchResult: ResolverTypeWrapper<IntegrationCoverageSearchResult>;
   IntegrationHack: ResolverTypeWrapper<IntegrationHack>;
   IntegrationType: IntegrationType;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
@@ -3740,11 +3850,16 @@ export type ResolversParentTypes = ResolversObject<{
   Facet: Facet;
   FacetBucket: FacetBucket;
   Filter: Filter;
+  Float: Scalars['Float']['output'];
   GenericServiceCapability: GenericServiceCapability;
   GiveDeploymentFeedbackInput: GiveDeploymentFeedbackInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Integration: ResolversInterfaceTypes<ResolversParentTypes>['Integration'];
+  IntegrationCoverageInput: IntegrationCoverageInput;
+  IntegrationCoverageMatch: IntegrationCoverageMatch;
+  IntegrationCoverageSearchInput: IntegrationCoverageSearchInput;
+  IntegrationCoverageSearchResult: IntegrationCoverageSearchResult;
   IntegrationHack: IntegrationHack;
   IsPlatformRegisteredInput: IsPlatformRegisteredInput;
   IsPlatformRegisteredOrganization: IsPlatformRegisteredOrganization;
@@ -3968,6 +4083,10 @@ export type ConnectorResolvers<ContextType = PortalContext, ParentType extends R
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
   contact?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   container_image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  covered_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -4021,6 +4140,10 @@ export type CsvFeedResolvers<ContextType = PortalContext, ParentType extends Res
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  covered_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -4275,7 +4398,10 @@ export type FacetResolvers<ContextType = PortalContext, ParentType extends Resol
   integration_type?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
   license_type?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
   manager_supported?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  object_type?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
   product_version?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  region?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
+  sector?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
   solution_category?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
   use_case?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
   verified?: Resolver<Array<ResolversTypes['FacetBucket']>, ParentType, ContextType>;
@@ -4299,6 +4425,10 @@ export type IntegrationResolvers<ContextType = PortalContext, ParentType extends
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  covered_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -4325,10 +4455,41 @@ export type IntegrationResolvers<ContextType = PortalContext, ParentType extends
   use_cases?: Resolver<Maybe<Array<ResolversTypes['UseCase']>>, ParentType, ContextType>;
 }>;
 
+export type IntegrationCoverageMatchResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationCoverageMatch'] = ResolversParentTypes['IntegrationCoverageMatch']> = ResolversObject<{
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  integration_type?: Resolver<ResolversTypes['IntegrationType'], ParentType, ContextType>;
+  license_type?: Resolver<Maybe<ResolversTypes['LicenseType']>, ParentType, ContextType>;
+  manager_supported?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  matched_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  matched_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  matched_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  score?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  short_description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verified?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type IntegrationCoverageSearchResultResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationCoverageSearchResult'] = ResolversParentTypes['IntegrationCoverageSearchResult']> = ResolversObject<{
+  facets?: Resolver<ResolversTypes['Facet'], ParentType, ContextType>;
+  matches?: Resolver<Array<ResolversTypes['IntegrationCoverageMatch']>, ParentType, ContextType>;
+  truncated?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type IntegrationHackResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['IntegrationHack'] = ResolversParentTypes['IntegrationHack']> = ResolversObject<{
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  covered_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -4718,6 +4879,8 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   documentFacets?: Resolver<Maybe<ResolversTypes['Facet']>, ParentType, ContextType, RequireFields<QueryDocumentFacetsArgs, 'input'>>;
   documents?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId'>>;
   epics?: Resolver<Maybe<ResolversTypes['EpicConnection']>, ParentType, ContextType, RequireFields<QueryEpicsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  integrationCoverageObjectTypes?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  integrationsByCoverage?: Resolver<ResolversTypes['IntegrationCoverageSearchResult'], ParentType, ContextType, RequireFields<QueryIntegrationsByCoverageArgs, 'input'>>;
   isPlatformRegistered?: Resolver<ResolversTypes['IsPlatformRegisteredResponse'], ParentType, ContextType, RequireFields<QueryIsPlatformRegisteredArgs, 'input'>>;
   lastDeployedOverview?: Resolver<ResolversTypes['LastDeployedOverview'], ParentType, ContextType, RequireFields<QueryLastDeployedOverviewArgs, 'limit' | 'serviceInstanceId'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -4837,6 +5000,10 @@ export type RssFeedResolvers<ContextType = PortalContext, ParentType extends Res
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  covered_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -5032,6 +5199,10 @@ export type StreamResolvers<ContextType = PortalContext, ParentType extends Reso
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  covered_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -5123,6 +5294,10 @@ export type TaxiiFeedResolvers<ContextType = PortalContext, ParentType extends R
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  covered_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -5167,6 +5342,10 @@ export type ThirdPartyIntegrationResolvers<ContextType = PortalContext, ParentTy
   active?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   blogpost_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   children_documents?: Resolver<Maybe<Array<ResolversTypes['ShareableResource']>>, ParentType, ContextType>;
+  coverage_inferred?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  covered_object_types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_regions?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  covered_sectors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   datasheet_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   demo_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -5439,6 +5618,8 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   FacetBucket?: FacetBucketResolvers<ContextType>;
   GenericServiceCapability?: GenericServiceCapabilityResolvers<ContextType>;
   Integration?: IntegrationResolvers<ContextType>;
+  IntegrationCoverageMatch?: IntegrationCoverageMatchResolvers<ContextType>;
+  IntegrationCoverageSearchResult?: IntegrationCoverageSearchResultResolvers<ContextType>;
   IntegrationHack?: IntegrationHackResolvers<ContextType>;
   IsPlatformRegisteredOrganization?: IsPlatformRegisteredOrganizationResolvers<ContextType>;
   IsPlatformRegisteredResponse?: IsPlatformRegisteredResponseResolvers<ContextType>;

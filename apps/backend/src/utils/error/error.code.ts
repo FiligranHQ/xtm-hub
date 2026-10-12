@@ -80,6 +80,12 @@ export enum BadRequestErrorCode {
   UserStatusChangedConcurrently = 'USER_STATUS_CHANGED_CONCURRENTLY',
   TooManyEmails = 'TOO_MANY_EMAILS',
   VotableFeatureProductNotVotable = 'VOTABLE_FEATURE_PRODUCT_NOT_VOTABLE',
+  InvalidIntegrationCoverage = 'INVALID_INTEGRATION_COVERAGE',
+  InvalidCoverageSearchInput = 'INVALID_COVERAGE_SEARCH_INPUT',
+}
+
+export enum TooManyRequestsErrorCode {
+  CoverageSearchRateLimited = 'COVERAGE_SEARCH_RATE_LIMITED',
 }
 
 export enum UnknownErrorCode {
@@ -125,6 +131,7 @@ export enum UnknownErrorCode {
   VotingRoundMutationError = 'VOTING_ROUND_MUTATION_ERROR',
   VotableFeatureMutationError = 'VOTABLE_FEATURE_MUTATION_ERROR',
   ListFacetError = 'LIST_FACET_ERROR',
+  IntegrationCoverageSearchError = 'INTEGRATION_COVERAGE_SEARCH_ERROR',
 }
 
 export enum AlreadyExistsErrorCode {
@@ -165,6 +172,7 @@ export enum NotFoundErrorCode {
 export const ErrorCode = {
   ...ForbiddenErrorCode,
   ...BadRequestErrorCode,
+  ...TooManyRequestsErrorCode,
   ...AlreadyExistsErrorCode,
   ...NotFoundErrorCode,
 };

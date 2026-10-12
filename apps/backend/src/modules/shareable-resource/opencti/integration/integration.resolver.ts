@@ -6,6 +6,7 @@ import {
 } from '../../../../__generated__/resolvers-types';
 import { logApp } from '../../../../utils/app-logger.util';
 import { isFeatureEnabled } from '../../../../utils/feature-flag.util';
+import { IntegrationCoverageHelper } from './integration-coverage/integration-coverage.helper';
 
 const resolvers: Resolvers = {
   Integration: {
@@ -37,6 +38,15 @@ const resolvers: Resolvers = {
       (await context.dataLoaders.document.imagesByDocumentIdLoader.load(
         id
       )) as unknown as ShareableResource[],
+    // Hydrated from Document_Metadata as JSON strings, see integration-coverage.helper.ts
+    covered_object_types: ({ covered_object_types }) =>
+      IntegrationCoverageHelper.parseStoredList(covered_object_types),
+    covered_sectors: ({ covered_sectors }) =>
+      IntegrationCoverageHelper.parseStoredList(covered_sectors),
+    covered_regions: ({ covered_regions }) =>
+      IntegrationCoverageHelper.parseStoredList(covered_regions),
+    coverage_inferred: ({ coverage_inferred }) =>
+      IntegrationCoverageHelper.parseCoverageInferred(coverage_inferred),
   },
   Connector: {
     // Legacy connectors carry the OpenCTI version they need in `product_version`,
