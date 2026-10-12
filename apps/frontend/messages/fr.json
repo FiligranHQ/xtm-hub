@@ -1788,7 +1788,7 @@
         },
         "ConfirmationForm": {
           "Title": "Annuler votre essai gratuit d'OpenCTI",
-          "NoNewTrialPossible": "Veuillez noter que de nouveaux essais openCTI ne peuvent pas être demandés après cette action.",
+          "NoNewTrialPossible": "Veuillez noter que de nouveaux essais OpenCTI ne peuvent pas être demandés après cette action.",
           "CancellationReason": "Raison de l'annulation",
           "CancellationReasonPlaceholder": "Sélectionnez une raison",
           "CancellationReasonOther": "Autre",
