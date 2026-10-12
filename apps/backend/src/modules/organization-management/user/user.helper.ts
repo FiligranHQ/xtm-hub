@@ -131,6 +131,9 @@ export const UserHelper = {
     status !== UserAccountStatus.Waiting &&
     status !== UserAccountStatus.Expired,
 
+  hasValidatedAccount: ({ status }: Pick<User, 'status'>): boolean =>
+    status === null,
+
   preventAdministratorRemovalOfOneOrganization: async (
     userId: UserId,
     organizationId: OrganizationId,
@@ -278,8 +281,13 @@ export const UserHelper = {
   },
 
   updateAndDispatchUser: async (userId: UserId) => {
-    const user = await UserDomain.loadUserDetails({ 'User.id': userId });
-    updateUserSession(user);
+    // Same shape as the login snapshot (loadUserDetails lacks the selected
+    // organization capabilities, which the @auth directive reads from the session)
+    const user = await UserDomain.loadUserBy({ 'User.id': userId });
+    if (!user) {
+      throw NotFoundError(NotFoundErrorCode.UserNotFound);
+    }
+    await updateUserSession(user);
     const mappedUser = UserHelper.mapUserToGraphqlUser(user);
     await dispatch('User', 'edit', mappedUser);
     return mappedUser;
