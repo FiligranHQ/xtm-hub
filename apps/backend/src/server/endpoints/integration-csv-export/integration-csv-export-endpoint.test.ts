@@ -58,6 +58,7 @@ vi.mock('../../../utils/app-logger.util', () => ({
 
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
 import { MARKETING_USER_CONTEXT } from '../../../portal.const';
+import { SYSTEM_TOKEN_HEADER } from '../../../security/directive-graphql/validator/system-token.validator';
 import { MARKETING_TOKEN_HEADER } from '../../../security/util/marketing-token';
 import { IntegrationCsvExportEndpoint } from './integration-csv-export-endpoint';
 
@@ -84,8 +85,9 @@ const buildRequest = (
     header: (name: string) => headers[name.toLowerCase()],
   }) as unknown as Request;
 
-// Dev value whose hash and salt are in config/default.json.
+// Dev values whose hash and salt are in config/default.json.
 const VALID_MARKETING_TOKEN = 'changeMeMarketing';
+const VALID_SYSTEM_TOKEN = 'changeMe';
 
 const VALID_PARAMS = { serviceInstanceId: 'U2VydmljZUluc3RhbmNlOnNlcnZpY2Ux' };
 
@@ -136,18 +138,21 @@ describe('integrationCsvExportEndpoint.exportCsv', () => {
   });
 
   it.each`
-    description                   | marketingToken
-    ${'empty'}                    | ${''}
-    ${'wrong'}                    | ${'invalid-token'}
-    ${'the system token instead'} | ${'changeMe'}
+    description                                         | headers
+    ${'an empty marketing token'}                       | ${{ [MARKETING_TOKEN_HEADER]: '' }}
+    ${'a wrong marketing token'}                        | ${{ [MARKETING_TOKEN_HEADER]: 'invalid-token' }}
+    ${'the valid marketing token with a suffix'}        | ${{ [MARKETING_TOKEN_HEADER]: `${VALID_MARKETING_TOKEN}X` }}
+    ${'the system token in the marketing header'}       | ${{ [MARKETING_TOKEN_HEADER]: VALID_SYSTEM_TOKEN }}
+    ${'the valid system token in its own header'}       | ${{ [SYSTEM_TOKEN_HEADER]: VALID_SYSTEM_TOKEN }}
+    ${'the marketing token in the system header'}       | ${{ [SYSTEM_TOKEN_HEADER]: VALID_MARKETING_TOKEN }}
+    ${'the marketing token as an authorization bearer'} | ${{ authorization: `Bearer ${VALID_MARKETING_TOKEN}` }}
+    ${'the system token with a wrong marketing token'}  | ${{ [SYSTEM_TOKEN_HEADER]: VALID_SYSTEM_TOKEN, [MARKETING_TOKEN_HEADER]: 'invalid-token' }}
   `(
-    'returns 401 without a session when the marketing token is $description',
-    async ({ marketingToken }) => {
+    'returns 401 without a session when sending $description',
+    async ({ headers }) => {
       const res = buildResponse();
       await IntegrationCsvExportEndpoint.exportCsv(
-        buildRequest(VALID_PARAMS, {}, null, {
-          [MARKETING_TOKEN_HEADER]: marketingToken,
-        }),
+        buildRequest(VALID_PARAMS, {}, null, headers),
         res as unknown as Response
       );
 
