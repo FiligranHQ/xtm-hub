@@ -71,9 +71,7 @@ export const ConnectedProductsDropdown = () => {
           <MenuItem
             startIcon={<AddIcon className="h-4 w-4" />}
             onSelect={() => setIsConnectModalOpen(true)}>
-            {t('Header.ConnectedProducts.ConnectPlatform', {
-              platformName: 'product',
-            })}
+            {t('Header.ConnectedProducts.ConnectProduct')}
           </MenuItem>
         </MenuContent>
       </Menu>
