@@ -110,7 +110,7 @@
     "Subtitle": "Tout ce dont vous avez besoin pour votre essai se trouve ici : les détails de votre essai et le temps restant, un accès direct à vos produits, et une ligne directe avec l'équipe Filigran dès que vous avez besoin d'aide ou avez des questions.",
     "Guide": {
       "Title": "Guide de l'essai XTM Platform",
-      "Content": "Découvrez ce que nous construisons, ce qui arrive ensuite et où se dirige la plateforme XTM. Transparence totale. Aucune surprise.",
+      "Content": "Découvrez ce que nous construisons, ce qui arrive ensuite et où se dirige la XTM Platform. Transparence totale. Aucune surprise.",
       "SeeMore": "Voir plus"
     }
   },
@@ -504,13 +504,13 @@
       "Label": "Bienvenue sur XTM Hub",
       "LabelWithName": "Bienvenue {name}",
       "ConnectedProducts": "{count, plural, one {Produit connecté} other {Produits connectés}}",
-      "Title": "Développez et faites évoluer votre plateforme XTM",
-      "Description": "Connectez votre OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience de la plateforme XTM."
+      "Title": "Développez et faites évoluer votre XTM Platform",
+      "Description": "Connectez votre OpenCTI ou OpenAEV pour déployer du contenu prêt à l’emploi en un clic, rester informé des actualités sur les produits, bénéficier d’essais gratuits et, tout simplement, tirer le meilleur parti de votre expérience XTM Platform."
     },
     "XtmRoadmap": {
       "Title": "Roadmap XTM Platform",
       "TitleWithProduct": "Roadmap {product}",
-      "Description": "Découvrez ce que nous développons, les prochaines étapes et l’orientation future de la plateforme XTM. Transparence totale. Pas de surprises.",
+      "Description": "Découvrez ce que nous développons, les prochaines étapes et l’orientation future de la XTM Platform. Transparence totale. Pas de surprises.",
       "SeeMore": "En savoir plus",
       "ImageAlt": "Illustration de la roadmap XTM Platform",
       "Next": "À venir",
@@ -627,7 +627,7 @@
     "LoginWithLocal": "Se connecter en local",
     "MadeBy": "Réalisé par",
     "WelcomeTitle": "Bienvenue sur XTM Hub",
-    "WelcomeSubtitle": "Développez et faites évoluer votre plateforme XTM"
+    "WelcomeSubtitle": "Développez et faites évoluer votre XTM Platform"
   },
   "MenuActions": {
     "Continue": "Continuer",
@@ -637,8 +637,8 @@
     "Update": "Modifier"
   },
   "Menu": {
-    "XTMPlatform": "Plateforme XTM",
-    "XTMPlatformTrial": "Essai Plateforme XTM",
+    "XTMPlatform": "XTM Platform",
+    "XTMPlatformTrial": "Essai XTM Platform",
     "CustomDashboards": "Tableaux de bord personnalisés",
     "CustomViews": "Vues personnalisées",
     "Integrations": "Intégrations",
@@ -1183,7 +1183,7 @@
     },
     "LibraryHero": {
       "Eyebrow": "Les ressources de Filigran",
-      "DefaultDescription": "Connectez votre produit OpenCTI ou OpenAEV pour déployer du contenu préconstruit en un clic, rester à jour avec les actualités produit, démarrer des essais gratuits et tirer simplement le meilleur de votre expérience sur la plateforme XTM."
+      "DefaultDescription": "Connectez votre produit OpenCTI ou OpenAEV pour déployer du contenu préconstruit en un clic, rester à jour avec les actualités produit, démarrer des essais gratuits et tirer simplement le meilleur de votre expérience XTM Platform."
     },
     "Connectors": {
       "DataImport": "Importation de données",
@@ -1836,12 +1836,12 @@
     },
     "TrialGuide": {
       "Breadcrumb": {
-        "TrialPlatform": "Essai de la plateforme XTM",
-        "TrialGuide": "Guide d'essai de la plateforme XTM"
+        "TrialPlatform": "Essai XTM Platform",
+        "TrialGuide": "Guide de l'essai XTM Platform"
       },
-      "Eyebrow": "Guide d'essai de la plateforme XTM",
+      "Eyebrow": "Guide de l'essai XTM Platform",
       "Title": "Ressources clés",
-      "Description": "Ce petit guide a pour but de vous orienter vers des ressources utiles qui vous permettront de tirer le meilleur parti de votre essai de la plateforme XTM",
+      "Description": "Ce petit guide a pour but de vous orienter vers des ressources utiles qui vous permettront de tirer le meilleur parti de votre essai XTM Platform",
       "SeeMore": "En savoir plus",
       "ReadMore": "En savoir plus",
       "ChecklistTitle": "Liste de contrôle des actions suggérées",
