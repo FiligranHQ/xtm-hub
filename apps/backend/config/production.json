@@ -16,7 +16,6 @@
   },
   "base_url_front": "https://hub.filigran.io",
   "saas_manager": {
-    "enabled": false,
     "url": "https://saasmanager.filigran.io"
   }
 }
