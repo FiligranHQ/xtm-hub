@@ -324,6 +324,9 @@ const Page = async ({
           <ShareableResourceDetails
             documentData={document}
             downloadNumber={document.download_number}
+            filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+              serviceInstance.service_definition.identifier
+            )}
           />
         )}
       </div>

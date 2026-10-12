@@ -123,6 +123,9 @@ const ShareableResourceConnectorSlugPublic = async ({
         </div>
         <ShareableResourceConnectorDetails
           connectorDetails={{ ...documentData, name: documentData.name ?? '' }}
+          filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+            serviceInstance.service_definition?.identifier
+          )}
         />
       </div>
     </>
