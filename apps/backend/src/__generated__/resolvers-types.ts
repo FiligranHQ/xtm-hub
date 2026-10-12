@@ -148,6 +148,7 @@ export type CanUnregisterResponse = {
   isInOrganization?: Maybe<Scalars['Boolean']['output']>;
   isPlatformRegistered: Scalars['Boolean']['output'];
   organizationId?: Maybe<Scalars['OrganizationId']['output']>;
+  organizationName?: Maybe<Scalars['String']['output']>;
 };
 
 export type Capability = Node & {
@@ -3931,6 +3932,7 @@ export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentTy
   isInOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isPlatformRegistered?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   organizationId?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
+  organizationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

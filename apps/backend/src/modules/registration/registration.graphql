@@ -96,6 +96,7 @@ type CanUnregisterResponse {
   isAllowed: Boolean
   isInOrganization: Boolean
   organizationId: OrganizationId
+  organizationName: String
 }
 
 input UnregisterPlatformInput {

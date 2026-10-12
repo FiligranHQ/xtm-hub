@@ -155,6 +155,7 @@ export type CanUnregisterResponse = {
   isInOrganization: Maybe<Scalars['Boolean']['output']>;
   isPlatformRegistered: Scalars['Boolean']['output'];
   organizationId: Maybe<Scalars['OrganizationId']['output']>;
+  organizationName: Maybe<Scalars['String']['output']>;
 };
 
 export type Capability = Node & {

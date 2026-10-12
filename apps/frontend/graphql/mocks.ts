@@ -160,6 +160,7 @@ export const mockCanUnregisterResponse = (overrides?: Partial<CanUnregisterRespo
         isInOrganization: overrides && overrides.hasOwnProperty('isInOrganization') ? overrides.isInOrganization! : true,
         isPlatformRegistered: overrides && overrides.hasOwnProperty('isPlatformRegistered') ? overrides.isPlatformRegistered! : false,
         organizationId: overrides && overrides.hasOwnProperty('organizationId') ? overrides.organizationId! : 'vinculum',
+        organizationName: overrides && overrides.hasOwnProperty('organizationName') ? overrides.organizationName! : 'demergo',
     };
 };
 
