@@ -3,8 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import {
+  CAPABILITY_READ_SAAS_METRICS,
   contextSimpleUserSecondOrga,
   requestContextRegistererUserSecondOrga,
+  requestContextSimpleUserFiligran2,
   SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../tests/tests.const';
@@ -28,6 +30,7 @@ import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { SubscriptionId } from '../../model/kanel/public/Subscription';
 import { PortalContext } from '../../model/portal-context';
 import { securityGuard } from '../../security/guard';
+import { CAPABILITY_BYPASS } from '../../portal.const';
 import { ErrorCode } from '../../utils/error/error.code';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { OrganizationDomain } from '../organization-management/organization/organization.domain';
@@ -373,6 +376,45 @@ describe('registration domain', () => {
       expect(platforms).toHaveLength(1);
       expect(platforms[0]?.platform_id).toBe(platformId);
     });
+
+    it('should not return a platform of another organization', async () => {
+      // Given
+      requestContext.set(requestContextSimpleUserFiligran2);
+
+      // When
+      const platforms = await RegistrationDomain.loadRegisteredPlatform(
+        openCTIServiceInstanceId
+      );
+
+      // Then
+      expect(platforms).toHaveLength(0);
+    });
+
+    it.each([
+      ['READ_SAAS_METRICS', CAPABILITY_READ_SAAS_METRICS],
+      ['BYPASS', CAPABILITY_BYPASS],
+    ])(
+      'should return a platform of another organization when the user has %s',
+      async (_, capability) => {
+        // Given
+        requestContext.set({
+          ...requestContextSimpleUserFiligran2,
+          user: {
+            ...requestContextSimpleUserFiligran2.user,
+            capabilities: [capability],
+          },
+        });
+
+        // When
+        const platforms = await RegistrationDomain.loadRegisteredPlatform(
+          openCTIServiceInstanceId
+        );
+
+        // Then
+        expect(platforms).toHaveLength(1);
+        expect(platforms[0]?.platform_id).toBe(platformId);
+      }
+    );
   });
 
   describe('loadRegisteredPlatformsByServiceInstanceIds', () => {
