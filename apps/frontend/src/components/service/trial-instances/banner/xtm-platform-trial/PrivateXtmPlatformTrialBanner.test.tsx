@@ -5,7 +5,7 @@ import {
   HasRepliedSatisfaction,
   PlatformTrialStatusQueryVariables,
 } from '@graphql/generated';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const graphqlMocks = vi.hoisted(() => ({
   usePlatformTrialStatusQuery: Object.assign(vi.fn(), {
@@ -69,10 +69,6 @@ describe('PrivateXtmPlatformTrialBanner', () => {
   beforeEach(() => {
     graphqlMocks.usePlatformTrialStatusQuery.mockReset();
     graphqlMocks.giveDeploymentFeedback.mockReset();
-  });
-
-  afterEach(() => {
-    window.localStorage.clear();
   });
 
   it('should render nothing while the query is loading', () => {

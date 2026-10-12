@@ -1,10 +1,10 @@
 import { ShareableResourceConnectorDetails } from '@/components/service/document/connector/ShareableResourceConnectorDetails';
 import { PublicResourceActions } from '@/components/service/document/PublicResourceActions';
+import ResourceMarkdownRenderer from '@/components/service/document/ResourceMarkdownRenderer';
 import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
-import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 import { getTranslate } from '@/hooks/get-translate';
 import { cn } from '@/lib/utils';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
@@ -111,10 +111,9 @@ const ShareableResourceConnectorSlugPublic = async ({
           </h3>
           <section className="rounded bg-elevation-background-layer-1 overflow-x-auto">
             <h2 className="p-l">{documentData?.short_description}</h2>
-            <MarkdownRendererWithTheme
+            <ResourceMarkdownRenderer
               source={documentData?.description ?? ''}
-              colorMode="dark"
-              className="p-l !bg-elevation-background-layer-1 markdown-content"
+              className="p-l"
               filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
                 serviceInstance.service_definition?.identifier
               )}
