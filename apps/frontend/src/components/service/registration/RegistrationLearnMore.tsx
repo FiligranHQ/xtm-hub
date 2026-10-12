@@ -105,7 +105,6 @@ export const RegistrationLearnMore = async ({
                   ? `/opencti_ecosystem.png`
                   : '/openaev_ecosystem.png'
               }
-              priority={false}
               loading="lazy"
               alt={t('Service.Trials.XTMPlatform.IllustrationAlt')}
               className="rounded w-full"
