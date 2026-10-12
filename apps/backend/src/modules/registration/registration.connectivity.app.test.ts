@@ -131,6 +131,48 @@ describe('registration connectivity app', () => {
       expect(currentPlatform?.version).toBe('6.7.18');
       expect(result.status).toBe(PlatformRegistrationConnectivityStatus.Active);
     });
+
+    it.each([
+      [PlatformContract.Ee, PlatformContract.Ce, PlatformContract.Ee],
+      [PlatformContract.Ce, PlatformContract.Ee, PlatformContract.Ce],
+      [PlatformContract.Ce, PlatformContract.Ce, undefined],
+      [PlatformContract.Trial, PlatformContract.Trial, PlatformContract.Ee],
+    ])(
+      'should store the %s contract when a platform registered as %s refreshes with %s',
+      async (expectedContract, registeredContract, refreshedContract) => {
+        // Given
+        const platformId = uuidv4();
+        const platformVersion = '6.7.18';
+        const token = await RegistrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com',
+            contract: registeredContract,
+            title: 'Fake title',
+            version: platformVersion,
+          },
+          identifier: PlatformIdentifier.Opencti,
+        });
+
+        // When
+        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatus(
+          {
+            platformId,
+            token,
+            platformVersion,
+            platformContract: refreshedContract,
+          }
+        );
+
+        // Then
+        const config =
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
+            platformId
+          );
+        expect(config?.platform_contract).toBe(expectedContract);
+      }
+    );
   });
 
   describe('refreshPlatformRegistrationConnectivityStatusSingleTenant', () => {
@@ -335,6 +377,72 @@ describe('registration connectivity app', () => {
       expect(updatedConfig).toMatchObject({
         tenant_id: tenantId,
         tenant_name: tenantName,
+      });
+    });
+
+    it('should update the contract of the refreshed tenant only when the platform sends a new contract', async () => {
+      // Given
+      const platformId = uuidv4();
+      const refreshedTenantId = uuidv4();
+      const otherTenantId = uuidv4();
+      const refreshedTenantName = 'Refreshed tenant';
+      const refreshedTenantUrl = 'http://example.com/refreshed';
+      const token = await RegistrationApp.registerPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        platform: {
+          id: platformId,
+          url: refreshedTenantUrl,
+          contract: PlatformContract.Ce,
+          title: 'Fake title',
+          version: '1.0.0',
+          tenantId: refreshedTenantId,
+          tenantName: refreshedTenantName,
+        },
+        identifier: PlatformIdentifier.Openaev,
+      });
+      await RegistrationApp.registerPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        platform: {
+          id: platformId,
+          url: 'http://example.com/other',
+          contract: PlatformContract.Ce,
+          title: 'Fake title',
+          version: '1.0.0',
+          tenantId: otherTenantId,
+          tenantName: 'Other tenant',
+        },
+        identifier: PlatformIdentifier.Openaev,
+      });
+
+      // When
+      await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+        {
+          platformId,
+          token,
+          platformVersion: '1.0.0',
+          url: refreshedTenantUrl,
+          tenantId: refreshedTenantId,
+          tenantName: refreshedTenantName,
+          platformIdentifier: PlatformIdentifier.Openaev,
+          platformContract: PlatformContract.Ee,
+        }
+      );
+
+      // Then
+      const [refreshedConfig, otherConfig] = await Promise.all([
+        PlatformConfigurationDomain.loadConfigurationByPlatform(platformId, {
+          tenantId: refreshedTenantId,
+        }),
+        PlatformConfigurationDomain.loadConfigurationByPlatform(platformId, {
+          tenantId: otherTenantId,
+        }),
+      ]);
+      expect({
+        refreshed: refreshedConfig?.platform_contract,
+        other: otherConfig?.platform_contract,
+      }).toEqual({
+        refreshed: PlatformContract.Ee,
+        other: PlatformContract.Ce,
       });
     });
   });
@@ -611,6 +719,64 @@ describe('registration connectivity app', () => {
           { tenantId: tenantId2 }
         );
       expect(staleConfig?.status).toBe(PlatformConfigurationStatus.Inactive);
+    });
+
+    it('should update the contract of every refreshed tenant when the platform sends a new contract', async () => {
+      // Given
+      const platformId = uuidv4();
+      const tenants = [
+        {
+          tenantId: uuidv4(),
+          tenantName: 'Tenant One',
+          url: 'http://example.com/tenantId1',
+        },
+        {
+          tenantId: uuidv4(),
+          tenantName: 'Tenant Two',
+          url: 'http://example.com/tenantId2',
+        },
+      ];
+      const tenantsWithTokens = [];
+      for (const tenant of tenants) {
+        const token = await RegistrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: tenant.url,
+            contract: PlatformContract.Ce,
+            title: 'Fake title',
+            version: '1.0.0',
+            tenantId: tenant.tenantId,
+            tenantName: tenant.tenantName,
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
+        tenantsWithTokens.push({ ...tenant, token });
+      }
+
+      // When
+      await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusAllTenants(
+        {
+          platformId,
+          platformVersion: '1.0.0',
+          platformIdentifier: PlatformIdentifier.Openaev,
+          platformContract: PlatformContract.Ee,
+          tenants: tenantsWithTokens,
+        }
+      );
+
+      // Then
+      const configs = await Promise.all(
+        tenants.map(({ tenantId }) =>
+          PlatformConfigurationDomain.loadConfigurationByPlatform(platformId, {
+            tenantId,
+          })
+        )
+      );
+      expect(configs.map((config) => config?.platform_contract)).toEqual([
+        PlatformContract.Ee,
+        PlatformContract.Ee,
+      ]);
     });
   });
 });

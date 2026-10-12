@@ -1522,6 +1522,7 @@ export const mockRefreshPlatformRegistrationConnectivityStatusAllTenantsInput = 
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('RefreshPlatformRegistrationConnectivityStatusAllTenantsInput');
     return {
+        platformContract: overrides && overrides.hasOwnProperty('platformContract') ? overrides.platformContract! : PlatformContract.Ce,
         platformId: overrides && overrides.hasOwnProperty('platformId') ? overrides.platformId! : 'cursim',
         platformIdentifier: overrides && overrides.hasOwnProperty('platformIdentifier') ? overrides.platformIdentifier! : PlatformIdentifier.Openaev,
         platformVersion: overrides && overrides.hasOwnProperty('platformVersion') ? overrides.platformVersion! : 'quidem',
@@ -1542,6 +1543,7 @@ export const mockRefreshPlatformRegistrationConnectivityStatusInput = (overrides
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('RefreshPlatformRegistrationConnectivityStatusInput');
     return {
+        platformContract: overrides && overrides.hasOwnProperty('platformContract') ? overrides.platformContract! : PlatformContract.Ce,
         platformId: overrides && overrides.hasOwnProperty('platformId') ? overrides.platformId! : 'blandior',
         platformIdentifier: overrides && overrides.hasOwnProperty('platformIdentifier') ? overrides.platformIdentifier! : PlatformIdentifier.Openaev,
         platformVersion: overrides && overrides.hasOwnProperty('platformVersion') ? overrides.platformVersion! : 'stabilis',
@@ -1562,6 +1564,7 @@ export const mockRefreshPlatformRegistrationConnectivityStatusSingleTenantInput 
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('RefreshPlatformRegistrationConnectivityStatusSingleTenantInput');
     return {
+        platformContract: overrides && overrides.hasOwnProperty('platformContract') ? overrides.platformContract! : PlatformContract.Ce,
         platformId: overrides && overrides.hasOwnProperty('platformId') ? overrides.platformId! : 'molestiae',
         platformIdentifier: overrides && overrides.hasOwnProperty('platformIdentifier') ? overrides.platformIdentifier! : PlatformIdentifier.Openaev,
         platformVersion: overrides && overrides.hasOwnProperty('platformVersion') ? overrides.platformVersion! : 'verto',
