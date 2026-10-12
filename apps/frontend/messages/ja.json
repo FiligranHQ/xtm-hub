@@ -106,11 +106,11 @@
       "Description": "このトライアルをキャンセルしてもよろしいですか？",
       "Warning": "一度キャンセルすると、新しいトライアルを再申請できなくなります"
     },
-    "Title": "XTMプラットフォームトライアルへようこそ",
+    "Title": "XTM Platform トライアルへようこそ",
     "Subtitle": "トライアルに必要なすべてがここにあります。トライアルの詳細と残り時間、製品への直接アクセス、そしてサポートが必要なときや質問があるときにFiligranチームに直接連絡できます。",
     "Guide": {
-      "Title": "XTMプラットフォームトライアルガイド",
-      "Content": "私たちが構築しているもの、次に登場するもの、そしてXTMプラットフォームが目指す方向をご覧ください。完全な透明性。驚きはありません。",
+      "Title": "XTM Platform トライアルガイド",
+      "Content": "私たちが構築しているもの、次に登場するもの、そしてXTM Platform が目指す方向をご覧ください。完全な透明性。驚きはありません。",
       "SeeMore": "詳細を見る"
     }
   },
@@ -214,7 +214,7 @@
     }
   },
   "Epic": {
-    "XTMRoadmap": "XTMスイートロードマップ",
+    "XTMRoadmap": "XTM Platform ロードマップ",
     "AllProducts": "すべての製品",
     "ShowFinished": "表示終了",
     "FilterByProduct": "製品で絞り込む",
@@ -505,12 +505,12 @@
       "LabelWithName": "ようこそ {name}",
       "ConnectedProducts": "{count, plural, one {コネクテッド製品} other {コネクテッド製品}}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
-      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM プラットフォームでの体験をさらに充実させることができます。"
+      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM Platform での体験をさらに充実させることができます。"
     },
     "XtmRoadmap": {
       "Title": "XTM Platform Roadmap",
       "TitleWithProduct": "{product} Roadmap",
-      "Description": "開発中の機能や今後のリリース予定、XTM プラットフォームの今後の方向性をご紹介します。",
+      "Description": "開発中の機能や今後のリリース予定、XTM Platform の今後の方向性をご紹介します。",
       "SeeMore": "詳細を見る",
       "ImageAlt": "XTM Platformロードマップの宇宙イラスト",
       "Next": "次のリリース予定",
@@ -627,7 +627,7 @@
     "LoginWithLocal": "ローカルでログイン",
     "MadeBy": "制作",
     "WelcomeTitle": "XTM Hubへようこそ",
-    "WelcomeSubtitle": "XTMプラットフォームを拡張・スケール"
+    "WelcomeSubtitle": "XTM Platform を拡張・スケール"
   },
   "MenuActions": {
     "Continue": "続けてください",
@@ -637,8 +637,8 @@
     "Update": "更新する"
   },
   "Menu": {
-    "XTMPlatform": "XTMプラットフォーム",
-    "XTMPlatformTrial": "XTMプラットフォームトライアル",
+    "XTMPlatform": "XTM Platform",
+    "XTMPlatformTrial": "XTM Platform トライアル",
     "CustomDashboards": "カスタムダッシュボード",
     "CustomViews": "カスタムビュー",
     "Integrations": "連携機能",
@@ -646,7 +646,7 @@
     "LiveDemo": "ライブデモ",
     "Documentation": "ドキュメント",
     "Scenarios": "ユースケース",
-    "XTMRoadmap": "XTMプラットフォームのロードマップ",
+    "XTMRoadmap": "XTM Platform ロードマップ",
     "FeatureVoting": "機能への投票",
     "FiligranAcademy": "Filigran Academy",
     "Blog": "ブログ",
@@ -1082,7 +1082,7 @@
       "opencti_integrations": "OpenCTI 統合",
       "opencti_playbooks": "OpenCTIプレイブック",
       "opencti_registration": "OpenCTI 登録",
-      "xtm_platform_bundle": "XTMプラットフォームトライアル",
+      "xtm_platform_bundle": "XTM Platform トライアル",
       "xtm_platform_roadmap": "XTM Platform ロードマップ",
       "xtmone_registration": "XTM One 登録"
     },
@@ -1183,7 +1183,7 @@
     },
     "LibraryHero": {
       "Eyebrow": "Filigran のリソース",
-      "DefaultDescription": "OpenCTI または OpenAEV 製品を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM 製品をより一層ご活用いただけます。"
+      "DefaultDescription": "OpenCTI または OpenAEV 製品を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM Platform をより一層ご活用いただけます。"
     },
     "Connectors": {
       "DataImport": "データインポート",
@@ -1836,12 +1836,12 @@
     },
     "TrialGuide": {
       "Breadcrumb": {
-        "TrialPlatform": "XTMプラットフォームのトライアル",
-        "TrialGuide": "XTMプラットフォーム トライアルガイド"
+        "TrialPlatform": "XTM Platform トライアル",
+        "TrialGuide": "XTM Platform トライアルガイド"
       },
-      "Eyebrow": "XTMプラットフォーム トライアルガイド",
+      "Eyebrow": "XTM Platform トライアルガイド",
       "Title": "主なリソース",
-      "Description": "この簡単なガイドでは、XTMプラットフォームのトライアルを最大限に活用するための役立つリソースをご紹介します。",
+      "Description": "この簡単なガイドでは、XTM Platform のトライアルを最大限に活用するための役立つリソースをご紹介します。",
       "SeeMore": "詳細を見る",
       "ReadMore": "詳細を読む",
       "ChecklistTitle": "推奨アクションチェックリスト",
@@ -2024,13 +2024,13 @@
     "Bundle": {
       "ManageTrial": {
         "Breadcrumb": {
-          "BundleName": "XTM トライアルプラットフォーム",
+          "BundleName": "XTM Platform トライアル",
           "ManageUsers": "ユーザーを管理"
         },
         "Title": "XTM Platform トライアルでチームを管理",
         "Eyebrow": "XTM Platform 無料トライアル",
         "Description": "XTM Platform のトライアル期間中、チームを簡単に管理し、共同作業を行いましょう。メンバーを招待し、役割と権限を割り当てて、全員がプラットフォームに適切なレベルでアクセスできるようにします。",
-        "BackButton": "XTM トライアルプラットフォームに戻る",
+        "BackButton": "XTM Platform トライアルに戻る",
         "BackToDashboardButton": "ダッシュボードに戻る",
         "GroupAction": "グループアクション",
         "GroupActionDisabledTooltip": "グループアクションを適用するには、リストからユーザーを選択する必要があります",
