@@ -1,17 +1,18 @@
 import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/ShareableResourceConnectorSlugPublic';
 import { PublicResourceActions } from '@/components/service/document/PublicResourceActions';
+import ResourceMarkdownRenderer from '@/components/service/document/ResourceMarkdownRenderer';
 import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
 import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
-import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { formatPersonNames } from '@/utils/format/name';
 import {
   buildFiligranOrganizationJsonLd,
@@ -309,9 +310,12 @@ const Page = async ({
           </h3>
           <section className="rounded bg-elevation-background-layer-1">
             <h2 className="p-l">{document?.short_description}</h2>
-            <MarkdownRenderer
+            <ResourceMarkdownRenderer
               source={document?.description ?? ''}
               className="p-l"
+              filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+                serviceInstance.service_definition.identifier
+              )}
             />
           </section>
         </div>
@@ -319,6 +323,9 @@ const Page = async ({
           <ShareableResourceDetails
             documentData={document}
             downloadNumber={document.download_number}
+            filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+              serviceInstance.service_definition.identifier
+            )}
           />
         )}
       </div>

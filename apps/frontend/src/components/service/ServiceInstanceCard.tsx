@@ -128,7 +128,6 @@ const ServiceInstanceCard = ({
                   width="580"
                   height="281"
                   src={serviceInstance.illustrationDocumentUrl!}
-                  priority={false}
                   loading="lazy"
                   alt={`Illustration of ${serviceInstance.name}`}
                   className={

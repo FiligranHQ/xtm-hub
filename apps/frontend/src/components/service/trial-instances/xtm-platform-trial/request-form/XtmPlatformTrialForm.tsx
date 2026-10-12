@@ -16,6 +16,10 @@ import {
 import { SelectField } from '@/components/ui/SelectField';
 import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
 import { useTranslate } from '@/hooks/use-translate';
+import {
+  FiligranWebsiteUtmCampaign,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
 import { Button, Checkbox } from '@filigran/design-system';
 import { WarningIcon } from '@filigran/icon';
 import {
@@ -90,7 +94,10 @@ export const XtmPlatformTrialForm = ({
       target="_blank"
       rel="noopener noreferrer"
       className="underline text-primary"
-      href="https://filigran.io/mssa">
+      href={withFiligranWebsiteUtm('https://filigran.io/mssa', {
+        campaign: FiligranWebsiteUtmCampaign.OTHER,
+        content: 'trial_form_mssa',
+      })}>
       {chunks}
     </Link>
   );
@@ -99,7 +106,10 @@ export const XtmPlatformTrialForm = ({
       target="_blank"
       rel="noopener noreferrer"
       className="underline text-primary"
-      href="https://filigran.io/ai-terms">
+      href={withFiligranWebsiteUtm('https://filigran.io/ai-terms', {
+        campaign: FiligranWebsiteUtmCampaign.OTHER,
+        content: 'trial_form_ai_terms',
+      })}>
       {chunks}
     </Link>
   );

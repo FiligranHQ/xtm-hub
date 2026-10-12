@@ -19,6 +19,7 @@ import { DisabledActionTooltip } from '@/components/ui/DisabledActionTooltip';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { cn } from '@/lib/utils';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { getPlatformIdentifier } from '@/utils/platform';
 import { Button } from '@filigran/design-system';
 import {
@@ -163,9 +164,15 @@ const ShareableResourceConnectorSlug = ({
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
+          serviceDefinitionIdentifier={
+            serviceInstance.service_definition?.identifier
+          }
         />
         <ShareableResourceConnectorPrivateDetails
           connectorDetails={{ ...documentData, name: documentData.name ?? '' }}
+          filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+            serviceInstance.service_definition?.identifier
+          )}
         />
       </div>
     </>

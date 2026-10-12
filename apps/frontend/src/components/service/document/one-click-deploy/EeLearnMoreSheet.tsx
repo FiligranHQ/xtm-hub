@@ -11,6 +11,10 @@ import {
 } from '@/components/ui/sheet';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
+import {
+  FiligranWebsiteUtmCampaign,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
 import { Button, Textarea } from '@filigran/design-system';
 import { reachSalesMutation as ReachSalesMutationType } from '@generated/reachSalesMutation.graphql';
 import { PlatformIdentifier } from '@graphql/generated';
@@ -28,8 +32,13 @@ interface EeLearnMoreSheetProps {
   platformIdentifier: PlatformIdentifier;
 }
 
-const EE_OPENCTI_LEARN_MORE_URL =
-  'https://filigran.io/offerings/opencti-enterprise-edition/';
+const EE_OPENCTI_LEARN_MORE_URL = withFiligranWebsiteUtm(
+  'https://filigran.io/offerings/opencti-enterprise-edition/',
+  {
+    campaign: FiligranWebsiteUtmCampaign.OTHER,
+    content: 'one_click_deploy_opencti_enterprise_edition',
+  }
+);
 
 const interestFormSchema = z.object({
   message: z.string().min(1, 'Required'),
