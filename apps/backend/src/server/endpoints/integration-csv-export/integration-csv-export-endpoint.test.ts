@@ -57,6 +57,8 @@ vi.mock('../../../utils/app-logger.util', () => ({
 }));
 
 import { ServiceDefinitionIdentifier } from '../../../__generated__/resolvers-types';
+import { MARKETING_USER_CONTEXT } from '../../../portal.const';
+import { MARKETING_TOKEN_HEADER } from '../../../security/util/marketing-token';
 import { IntegrationCsvExportEndpoint } from './integration-csv-export-endpoint';
 
 const buildResponse = () => ({
@@ -72,13 +74,18 @@ const buildRequest = (
   user: Record<string, unknown> | null = {
     id: 'user-1',
     selected_organization_id: 'org-1',
-  }
+  },
+  headers: Record<string, string> = {}
 ) =>
   ({
     params,
     query,
     session: { user: user ?? undefined },
+    header: (name: string) => headers[name.toLowerCase()],
   }) as unknown as Request;
+
+// Dev value whose hash and salt are in config/default.json.
+const VALID_MARKETING_TOKEN = 'changeMeMarketing';
 
 const VALID_PARAMS = { serviceInstanceId: 'U2VydmljZUluc3RhbmNlOnNlcnZpY2Ux' };
 
@@ -126,6 +133,63 @@ describe('integrationCsvExportEndpoint.exportCsv', () => {
 
     expect(res.status).toHaveBeenCalledWith(401);
     expect(loadServiceDefinitionByServiceInstanceMock).not.toHaveBeenCalled();
+  });
+
+  it.each`
+    description                   | marketingToken
+    ${'empty'}                    | ${''}
+    ${'wrong'}                    | ${'invalid-token'}
+    ${'the system token instead'} | ${'changeMe'}
+  `(
+    'returns 401 without a session when the marketing token is $description',
+    async ({ marketingToken }) => {
+      const res = buildResponse();
+      await IntegrationCsvExportEndpoint.exportCsv(
+        buildRequest(VALID_PARAMS, {}, null, {
+          [MARKETING_TOKEN_HEADER]: marketingToken,
+        }),
+        res as unknown as Response
+      );
+
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(loadServiceDefinitionByServiceInstanceMock).not.toHaveBeenCalled();
+    }
+  );
+
+  it('exports as the marketing user without a session when the marketing token is valid', async () => {
+    loadDocumentsMock.mockResolvedValue({
+      edges: [buildDocumentEdge({ id: 'doc-1', name: 'My Integration' })],
+    });
+    useCasesByDocumentIdLoaderLoadManyMock.mockResolvedValue([[]]);
+    solutionCategoriesByDocumentIdLoaderLoadManyMock.mockResolvedValue([[]]);
+
+    const res = buildResponse();
+    await IntegrationCsvExportEndpoint.exportCsv(
+      buildRequest(VALID_PARAMS, {}, null, {
+        [MARKETING_TOKEN_HEADER]: VALID_MARKETING_TOKEN,
+      }),
+      res as unknown as Response
+    );
+
+    expect(requestContextUpdateMock).toHaveBeenCalledWith({
+      user: MARKETING_USER_CONTEXT.user,
+    });
+    expect(res.status).toHaveBeenCalledWith(200);
+    const [csv] = res.send.mock.calls[0];
+    expect(csv).toContain('My Integration');
+  });
+
+  it('does not send a telemetry export event for a marketing token export', async () => {
+    const res = buildResponse();
+    await IntegrationCsvExportEndpoint.exportCsv(
+      buildRequest(VALID_PARAMS, {}, null, {
+        [MARKETING_TOKEN_HEADER]: VALID_MARKETING_TOKEN,
+      }),
+      res as unknown as Response
+    );
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(sendTelemetryEventMock).not.toHaveBeenCalled();
   });
 
   it('returns 404 when the service instance does not exist', async () => {
