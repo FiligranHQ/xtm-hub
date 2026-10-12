@@ -18,12 +18,12 @@
 | [6078022998](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078022998) | carinelebas | Red star and bigger Description label | later item | #3706 |
 | [6078040601](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078040601) | hervyt | Placeholder shown next to picked chips | fixed | 99627c5c9 |
 | [6078043125](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078043125) | carinelebas | Disabled slug hard to see | fixed | 1ba3ba837 (disabled text colour); the outlined disabled field is the design system look |
-| [6078174579](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078174579) | carinelebas | Table header blends with the page | later item | #3705 |
+| [6078174579](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078174579) | carinelebas | Table header blends with the page | fixed | 0080a0b38, #3705 |
 | [6078209819](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078209819) | carinelebas | Use case colours missing on cards and table | fixed | d1ff91a66, #3759 |
 | [6078221657](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078221657) | jpkha | Use case colours missing on cards and table | fixed | d1ff91a66, #3759 |
 | [6078248175](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078248175) | jpkha | Card titles over two lines | fixed | f40239af5, #3763 |
 | [6078390074](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078390074) | carinelebas | Use case colours faint in dark mode | answered | Design system Chip colour wash (21%, no border); feedback for the design system |
-| [6078440880](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078440880) | hervyt | Trial invitation covers Log in / Sign up | fixed | 406d8150a |
+| [6078440880](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078440880) | hervyt | Trial invitation covers Log in / Sign up | fixed | 406d8150a, then 53776aac3: an in-page Alert again, no longer dismissible |
 | [6078457917](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078457917) | jpkha | Workspace switcher caret not at the end | fixed | e694b75dd |
 | [6078469889](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078469889) | carinelebas | Trial status panel too tall, faint checkbox labels | fixed | 5a400df02, 1ba3ba837 |
 | [6078510763](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6078510763) | jpkha | Enabled status should be green | fixed | 5ca23452d |
