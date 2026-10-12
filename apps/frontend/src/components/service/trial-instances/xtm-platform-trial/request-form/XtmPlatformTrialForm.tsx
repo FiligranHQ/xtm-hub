@@ -274,7 +274,6 @@ export const XtmPlatformTrialForm = ({
                 onValueChange={field.onChange}
                 error={fieldState.error?.message}
                 triggerClassName={selectLayerClassName}
-                contentClassName={selectLayerClassName}
               />
             )}
           />
@@ -290,7 +289,7 @@ export const XtmPlatformTrialForm = ({
                 values={Object.values(DeploymentRequestJobTitle)}
                 translationNamespace="DeploymentRequestJobTitle"
                 error={fieldState.error?.message}
-                selectClassName={selectLayerClassName}
+                triggerClassName={selectLayerClassName}
               />
             )}
           />
@@ -306,7 +305,7 @@ export const XtmPlatformTrialForm = ({
                 values={Object.values(DeploymentRequestActivitySector)}
                 translationNamespace="DeploymentRequestActivitySector"
                 error={fieldState.error?.message}
-                selectClassName={selectLayerClassName}
+                triggerClassName={selectLayerClassName}
               />
             )}
           />
@@ -330,7 +329,7 @@ export const XtmPlatformTrialForm = ({
                   }
                   translationNamespace="DeploymentRequestUseCase"
                   error={fieldState.error?.message}
-                  selectClassName={selectLayerClassName}
+                  triggerClassName={selectLayerClassName}
                 />
               )}
             />

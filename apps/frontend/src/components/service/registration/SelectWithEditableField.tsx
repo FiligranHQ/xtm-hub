@@ -27,6 +27,7 @@ interface SelectWithEditableFieldProps {
   required?: boolean;
   /** Puts the field in error and shows the message below it. */
   error?: string;
+  /** Layer of the trigger and the free-text input; the panel stays at layer 1. */
   layerClassName?: string;
 }
 
@@ -146,7 +147,7 @@ export const SelectWithEditableField = ({
           </SelectTrigger>
 
           <SelectContent
-            className={cn(layerClassName)}
+            className="layer-1"
             onCloseAutoFocus={handleCloseAutoFocus}>
             {/* First, so the list's five visible rows always show it. */}
             <SelectItem value={OTHER_VALUE}>

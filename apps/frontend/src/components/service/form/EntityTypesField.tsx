@@ -35,7 +35,6 @@ export const ServiceFormEntityTypesField = ({
       value={field.value ?? []}
       onValueChange={field.onChange}
       getOptionLabel={ENTITY_TYPE_OPTION_IDS.getOptionLabel}
-      contentClassName="layer-2"
     />
   );
 };

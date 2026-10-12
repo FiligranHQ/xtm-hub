@@ -172,7 +172,6 @@ export const TrialsManageUsersForm = ({
               value={value ?? []}
               onValueChange={onChange}
               getOptionLabel={optionIds.getOptionLabel}
-              contentClassName="layer-2"
             />
           );
         }}

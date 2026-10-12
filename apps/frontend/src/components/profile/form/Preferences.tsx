@@ -51,6 +51,8 @@ export const ProfileFormPreferences = () => {
           ]}
           value={currentTheme}
           onValueChange={setTheme}
+          // The card is layer 1, where a layer-1 panel paints the input colour.
+          contentClassName="layer-0"
         />
 
         <SelectField
@@ -62,6 +64,7 @@ export const ProfileFormPreferences = () => {
           }))}
           value={locale}
           onValueChange={onLocaleChange}
+          contentClassName="layer-0"
         />
       </CardContent>
     </Card>

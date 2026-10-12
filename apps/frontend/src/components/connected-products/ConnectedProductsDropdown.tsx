@@ -49,7 +49,7 @@ export const ConnectedProductsDropdown = () => {
             })}
           </Button>
         </MenuTrigger>
-        <MenuContent>
+        <MenuContent className="layer-1">
           {connectedPlatforms.length > 0 && (
             <>
               <div className="max-h-[70vh] overflow-y-auto overflow-x-hidden">

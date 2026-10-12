@@ -56,7 +56,7 @@ export const RoleSelect = ({
           className={triggerClassName}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent className="layer-2">
+        <SelectContent className="layer-1">
           {isOptional && (
             <SelectItem value={NO_ROLE_VALUE}>
               {t('Service.Bundle.ManageTrial.Roles.NoAccess')}

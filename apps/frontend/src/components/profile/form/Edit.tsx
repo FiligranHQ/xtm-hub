@@ -45,6 +45,8 @@ const CountryField = ({
       value={field.value ? { name: field.value } : undefined}
       onValueChange={(value) => field.onChange(value?.name)}
       error={error?.message}
+      // The card is layer 1, where a layer-1 panel paints the input colour.
+      contentClassName="layer-0"
     />
   );
 };

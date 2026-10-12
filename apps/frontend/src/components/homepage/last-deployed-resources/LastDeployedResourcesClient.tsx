@@ -50,7 +50,7 @@ const LastDeployedResourcesClient = ({
             className="w-56">
             <SelectValue placeholder={t('ProductPlaceholder')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="layer-1">
             {platforms.map((platform) => {
               const platformMeta = platform.platformIdentifier
                 ? PlatformMetadataMapping[platform.platformIdentifier]

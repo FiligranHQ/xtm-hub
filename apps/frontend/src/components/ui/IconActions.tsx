@@ -64,7 +64,9 @@ export const IconActions = ({
           icon={icon}
         />
       </MenuTrigger>
-      <MenuContent align="end">
+      <MenuContent
+        align="end"
+        className="layer-1">
         <IconActionContext.Provider value={{ setMenuOpen }}>
           {children}
         </IconActionContext.Provider>

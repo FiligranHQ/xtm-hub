@@ -210,13 +210,15 @@ const DataTableMenu = () => {
           }
         />
       </MenuTrigger>
-      <MenuContent align="end">
+      <MenuContent
+        align="end"
+        className="layer-1">
         <MenuItem onClick={onClickResetTable}>
           {labels.resetTableLabel}
         </MenuItem>
         <MenuSub>
           <MenuSubTrigger>{labels.columnsLabel}</MenuSubTrigger>
-          <MenuSubContent>
+          <MenuSubContent className="layer-1">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -234,7 +236,7 @@ const DataTableMenu = () => {
         </MenuSub>
         <MenuSub>
           <MenuSubTrigger>{labels.rowsPerPageLabel}</MenuSubTrigger>
-          <MenuSubContent>
+          <MenuSubContent className="layer-1">
             {PAGE_SIZES.map((size) => (
               <MenuItem
                 key={size}
@@ -326,7 +328,9 @@ const DataTableColumnMenu = <TData, TValue>({
           }
         />
       </MenuTrigger>
-      <MenuContent align="start">
+      <MenuContent
+        align="start"
+        className="layer-1">
         {canSort && (
           <>
             <MenuItem

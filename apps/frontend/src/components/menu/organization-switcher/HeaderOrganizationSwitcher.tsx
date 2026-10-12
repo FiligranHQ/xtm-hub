@@ -86,7 +86,9 @@ const HeaderOrganizationSwitcher = ({
             className="w-full">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent align="start">
+          <SelectContent
+            align="start"
+            className="layer-1">
             {organizationOptions.map((organization) => (
               <SelectItem
                 key={organization.value}

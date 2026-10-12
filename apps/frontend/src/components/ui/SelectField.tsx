@@ -28,6 +28,10 @@ export interface SelectFieldProps extends Pick<
   error?: string;
   /** Merged over the full-width trigger. */
   triggerClassName?: string;
+  /**
+   * Layer of the portalled panel, `layer-1` by default so it never paints the
+   * input colour. A field on a layer-1 surface passes `layer-0`.
+   */
   contentClassName?: string;
 }
 
@@ -38,7 +42,7 @@ export const SelectField = ({
   options,
   error,
   triggerClassName,
-  contentClassName,
+  contentClassName = 'layer-1',
   ...selectProps
 }: SelectFieldProps) => (
   // The root renders no element: this div keeps its parts together inside a

@@ -43,7 +43,6 @@ export const CapabilityMultiSelect = ({
       value={value ?? []}
       onValueChange={onChange}
       getOptionLabel={optionIds.getOptionLabel}
-      contentClassName="layer-2"
     />
   );
 };

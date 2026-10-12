@@ -158,4 +158,31 @@ describe('SelectField', () => {
     expect(screen.getByRole('combobox', { name: LABEL })).toBeDisabled();
     expect(screen.queryByRole('option')).not.toBeInTheDocument();
   });
+
+  it.each<[string | undefined, string, string]>([
+    [undefined, 'layer-1', 'layer-0'],
+    ['layer-0', 'layer-0', 'layer-1'],
+  ])(
+    'should open the list in the layer given by contentClassName %s, layer 1 by default',
+    async (contentClassName, expectedLayer, replacedLayer) => {
+      // Given
+      const { user } = testRender(
+        <SelectField
+          label={LABEL}
+          options={OPTIONS}
+          value={undefined}
+          onValueChange={vi.fn()}
+          contentClassName={contentClassName}
+        />
+      );
+
+      // When
+      await user.click(screen.getByRole('combobox', { name: LABEL }));
+
+      // Then
+      const list = screen.getByRole('listbox');
+      expect(list.closest(`.${expectedLayer}`)).not.toBeNull();
+      expect(list.closest(`.${replacedLayer}`)).toBeNull();
+    }
+  );
 });

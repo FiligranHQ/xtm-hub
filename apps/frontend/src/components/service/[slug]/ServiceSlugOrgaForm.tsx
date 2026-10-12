@@ -227,7 +227,6 @@ export const ServiceSlugOrgaForm = ({
                   }}
                   filterOptions={(options) => options}
                   getOptionLabel={organizationOptionIds.getOptionLabel}
-                  contentClassName="layer-2"
                 />
               )}
             />

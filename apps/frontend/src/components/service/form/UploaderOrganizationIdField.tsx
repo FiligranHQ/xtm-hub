@@ -50,7 +50,7 @@ export const ServiceFormUploaderOrganizationIdField = ({
             placeholder={t('OrganizationInServiceAction.SelectOrganization')}
           />
         </SelectTrigger>
-        <SelectContent className="layer-2">
+        <SelectContent className="layer-1">
           {me?.organizations.map((node) => {
             return (
               <SelectItem

@@ -48,6 +48,10 @@ type AppComboboxBaseProps<T> = Omit<
   placeholder?: string;
   onBlur?: ComboboxInputProps['onBlur'];
   emptyMessage?: ReactNode;
+  /**
+   * Layer of the portalled panel, `layer-1` by default so it never paints the
+   * input colour. A field on a layer-1 surface passes `layer-0`.
+   */
   contentClassName?: string;
   'data-testid'?: string;
 };
@@ -63,7 +67,7 @@ export const AppCombobox = <T,>({
   placeholder,
   onBlur,
   emptyMessage,
-  contentClassName,
+  contentClassName = 'layer-1',
   'data-testid': testId,
   multiple,
   value,

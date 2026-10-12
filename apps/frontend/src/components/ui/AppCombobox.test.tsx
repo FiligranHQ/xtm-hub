@@ -257,4 +257,32 @@ describe('AppCombobox', () => {
     expect(field).not.toHaveAttribute('aria-describedby');
     expect(field).toBeValid();
   });
+
+  it.each<[string | undefined, string, string]>([
+    [undefined, 'layer-1', 'layer-0'],
+    ['layer-0', 'layer-0', 'layer-1'],
+  ])(
+    'should open the list in the layer given by contentClassName %s, layer 1 by default',
+    async (contentClassName, expectedLayer, replacedLayer) => {
+      // Given
+      const { user } = testRender(
+        <AppCombobox
+          label={LABEL}
+          options={OPTIONS}
+          value={null}
+          onValueChange={vi.fn()}
+          getOptionLabel={getOptionLabel}
+          contentClassName={contentClassName}
+        />
+      );
+
+      // When
+      await user.click(screen.getByRole('combobox', { name: LABEL }));
+
+      // Then
+      const list = screen.getByRole('listbox', { name: LABEL });
+      expect(list.closest(`.${expectedLayer}`)).not.toBeNull();
+      expect(list.closest(`.${replacedLayer}`)).toBeNull();
+    }
+  );
 });

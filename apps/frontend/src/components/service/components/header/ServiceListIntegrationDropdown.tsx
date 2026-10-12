@@ -24,7 +24,7 @@ export const ServiceListIntegrationDropdown = ({
       <MenuTrigger asChild>
         <Button>{t('Service.OpenctiIntegrations.AddService')}</Button>
       </MenuTrigger>
-      <MenuContent>
+      <MenuContent className="layer-1">
         <MenuGroup>
           <MenuLabel>
             {t('Service.OpenctiIntegrations.IntegrationType')}

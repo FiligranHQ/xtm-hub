@@ -129,7 +129,7 @@ const UseCases = () => {
                   className="w-45">
                   <SelectValue placeholder={t('UseCaseListPage.Product')} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="layer-1">
                   <SelectItem value="all">
                     {t('UseCaseListPage.AllProducts')}
                   </SelectItem>

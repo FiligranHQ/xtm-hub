@@ -42,7 +42,6 @@ export const ServiceFormSolutionCategoryField = ({
       value={field.value ?? []}
       onValueChange={field.onChange}
       getOptionLabel={solutionCategoryOptionIds.getOptionLabel}
-      contentClassName="layer-2"
     />
   );
 };

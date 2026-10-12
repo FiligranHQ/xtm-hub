@@ -281,7 +281,6 @@ const EpicForm = ({
                   field.onChange(sortFiligranProducts(products))
                 }
                 getOptionLabel={FILIGRAN_PRODUCT_OPTION_IDS.getOptionLabel}
-                contentClassName="layer-2"
               />
             )}
           />
@@ -302,7 +301,6 @@ const EpicForm = ({
                 value={field.value ?? Timeline.Now}
                 onValueChange={field.onChange}
                 error={fieldState.error?.message}
-                contentClassName="layer-2"
               />
             )}
           />

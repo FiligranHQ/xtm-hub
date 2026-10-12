@@ -12,6 +12,7 @@ interface CountryComboboxProps {
   value?: CountryOption | undefined;
   onValueChange: (value: CountryOption | undefined) => void;
   error?: string;
+  contentClassName?: string;
 }
 
 export const CountryCombobox = ({
@@ -19,6 +20,7 @@ export const CountryCombobox = ({
   value,
   onValueChange,
   error,
+  contentClassName,
 }: CountryComboboxProps) => {
   const t = useTranslate();
   const { countries } = countryData;
@@ -36,6 +38,7 @@ export const CountryCombobox = ({
       onValueChange={(next) => onValueChange(next ?? undefined)}
       getOptionLabel={(country) => country.name}
       isOptionEqualToValue={(a, b) => a.name === b.name}
+      contentClassName={contentClassName}
     />
   );
 };

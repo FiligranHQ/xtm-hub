@@ -70,7 +70,7 @@ const AutoFormEnum = ({
               {field.value ? findItem(field.value)?.[1] : noSelectionLabel}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="layer-1">
             {values.map(([value, label]) => (
               <SelectItem
                 value={label}

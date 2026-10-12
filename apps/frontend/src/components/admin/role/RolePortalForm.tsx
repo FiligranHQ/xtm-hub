@@ -51,7 +51,6 @@ const CapabilitiesField = ({
       value={field.value ?? []}
       onValueChange={field.onChange}
       getOptionLabel={portalCapabilityOptionIds.getOptionLabel}
-      contentClassName="layer-2"
     />
   );
 };

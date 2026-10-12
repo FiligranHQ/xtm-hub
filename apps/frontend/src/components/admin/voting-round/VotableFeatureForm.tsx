@@ -146,7 +146,6 @@ const VotableFeatureForm = ({
                 form.setValue('use_case_ids', [], { shouldDirty: true });
               }}
               error={fieldState.error?.message}
-              contentClassName="layer-2"
             />
           )}
         />

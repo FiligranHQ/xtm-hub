@@ -41,7 +41,7 @@ export const SortControls = ({
         <SelectTrigger aria-label={t('SortControls.SortBy')}>
           <SelectValue placeholder={t('SortControls.SortBy')} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="layer-1">
           {orderByOptions.map((option) => (
             <SelectItem
               key={option.value}

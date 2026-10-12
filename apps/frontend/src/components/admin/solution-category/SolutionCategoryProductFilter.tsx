@@ -30,7 +30,7 @@ const SolutionCategoryProductFilter = ({
         className="w-full sm:w-45">
         <SelectValue placeholder={t('SolutionCategory.ListPage.Product')} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="layer-1">
         <SelectItem value="all">
           {t('SolutionCategory.ListPage.AllProducts')}
         </SelectItem>

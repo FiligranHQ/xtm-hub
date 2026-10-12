@@ -110,7 +110,6 @@ const SelectUsersFormField = ({
       isOptionEqualToValue={(a, b) => a.value === b.value}
       filterOptions={(options) => options}
       disabled={disabled}
-      contentClassName="layer-2"
     />
   );
 };

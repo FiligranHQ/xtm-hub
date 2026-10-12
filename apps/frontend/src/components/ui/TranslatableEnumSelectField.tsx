@@ -11,7 +11,7 @@ interface TranslatableEnumSelectFieldProps<
   values: string[];
   translationNamespace: string;
   error?: string;
-  selectClassName?: string;
+  triggerClassName?: string;
 }
 
 export const TranslatableEnumSelectField = <T extends FieldValues>({
@@ -21,7 +21,7 @@ export const TranslatableEnumSelectField = <T extends FieldValues>({
   values,
   translationNamespace,
   error,
-  selectClassName,
+  triggerClassName,
 }: TranslatableEnumSelectFieldProps<T>) => {
   const t = useTranslate();
   return (
@@ -36,8 +36,7 @@ export const TranslatableEnumSelectField = <T extends FieldValues>({
       value={field.value}
       onValueChange={field.onChange}
       error={error}
-      triggerClassName={selectClassName}
-      contentClassName={selectClassName}
+      triggerClassName={triggerClassName}
     />
   );
 };

@@ -32,12 +32,14 @@ export const PaginationManageDropdown = ({
           icon={<TableTuneIcon className="h-[1.125rem] w-[1.125rem]" />}
         />
       </MenuTrigger>
-      <MenuContent align="end">
+      <MenuContent
+        align="end"
+        className="layer-1">
         <MenuSub>
           <MenuSubTrigger>
             {t('GenericActions.Paginate.RowsPerPage')}
           </MenuSubTrigger>
-          <MenuSubContent>
+          <MenuSubContent className="layer-1">
             {[50, 100, 200, 300, 500].map((size) => (
               <MenuItem
                 key={size}

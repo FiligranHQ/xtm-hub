@@ -86,7 +86,6 @@ export const TrialUserFormSkeleton = ({
                   labelPosition={pickerLabel ? 'top' : 'none'}
                   placeholder={pickerPlaceholder}
                   error={fieldState.error?.message}
-                  contentClassName="layer-2"
                   options={usersOptionIds.ids}
                   value={field.value ?? []}
                   onValueChange={(values) => {
