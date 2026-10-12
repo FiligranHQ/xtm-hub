@@ -41,3 +41,6 @@
 | [6120475771](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6120475771) | jpkha | Tags gone from the +N tooltip | fixed | 6a9d58668 |
 | [6121326004](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6121326004) | jpkha | Dropdown in a sheet like the inputs | fixed | e89f723f5 |
 | [6121349462](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6121349462) | jpkha | Column menu like the table header | fixed | e89f723f5 |
+| [5491766465](https://github.com/XTM-Hub/xtm-hub/pull/3715#pullrequestreview-5491766465) | hervyt | Approval | answered | Approval with no remark |
+| [6126234379](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6126234379) | elisavaldegas | XTM Platform translated in French | follow-up | #3793 (same on main) |
+| [6127011513](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6127011513) | elisavaldegas | Connect product shows its raw key | fixed | 739aadbe6 |
