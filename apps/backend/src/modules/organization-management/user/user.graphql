@@ -217,8 +217,9 @@ type UserPendingSubscription {
 }
 
 type Subscription {
-  User(organizationId: ID): UserSubscription
+  User(organizationId: ID!): UserSubscription
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])
+  AdminUser: UserSubscription @auth(portalCapa: [BYPASS])
   MeUser: MeUserSubscription @auth
   UserPending(organizationId: ID!): UserPendingSubscription
     @auth(orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_ACCESS])

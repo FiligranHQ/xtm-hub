@@ -2027,6 +2027,7 @@ export const mockSubscription = (overrides?: Partial<Subscription>, _relationshi
     relationshipsToOmit.add('Subscription');
     return {
         __typename: 'Subscription',
+        AdminUser: overrides && overrides.hasOwnProperty('AdminUser') ? overrides.AdminUser! : relationshipsToOmit.has('UserSubscription') ? {} as UserSubscription : mockUserSubscription({}, relationshipsToOmit),
         MeUser: overrides && overrides.hasOwnProperty('MeUser') ? overrides.MeUser! : relationshipsToOmit.has('MeUserSubscription') ? {} as MeUserSubscription : mockMeUserSubscription({}, relationshipsToOmit),
         ServiceInstance: overrides && overrides.hasOwnProperty('ServiceInstance') ? overrides.ServiceInstance! : relationshipsToOmit.has('ServiceInstanceSubscription') ? {} as ServiceInstanceSubscription : mockServiceInstanceSubscription({}, relationshipsToOmit),
         User: overrides && overrides.hasOwnProperty('User') ? overrides.User! : relationshipsToOmit.has('UserSubscription') ? {} as UserSubscription : mockUserSubscription({}, relationshipsToOmit),

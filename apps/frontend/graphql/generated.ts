@@ -2798,6 +2798,7 @@ export type SubscribedServiceInstanceConfiguration = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  AdminUser: Maybe<UserSubscription>;
   MeUser: Maybe<MeUserSubscription>;
   ServiceInstance: Maybe<ServiceInstanceSubscription>;
   User: Maybe<UserSubscription>;
@@ -2806,7 +2807,7 @@ export type Subscription = {
 
 
 export type SubscriptionUserArgs = {
-  organizationId: InputMaybe<Scalars['ID']['input']>;
+  organizationId: Scalars['ID']['input'];
 };
 
 

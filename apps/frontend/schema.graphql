@@ -1215,7 +1215,8 @@ type UserPendingSubscription {
 }
 
 type Subscription {
-  User(organizationId: ID): UserSubscription
+  User(organizationId: ID!): UserSubscription
+  AdminUser: UserSubscription
   MeUser: MeUserSubscription
   UserPending(organizationId: ID!): UserPendingSubscription
   ServiceInstance: ServiceInstanceSubscription
