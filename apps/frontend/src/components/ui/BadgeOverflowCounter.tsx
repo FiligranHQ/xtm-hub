@@ -172,12 +172,13 @@ const BadgeOverflowCounter = ({
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              {/* Chips wash out on the tooltip's own fill, so the names are plain text. */}
-              <ul className="flex flex-col gap-xxs max-w-sm">
-                {badges.slice(visibleTags).map(({ id, name }) => (
-                  <li key={id}>{getBadgeLabel(name)}</li>
-                ))}
-              </ul>
+              <div className="flex flex-wrap gap-s">
+                {badges
+                  .slice(visibleTags)
+                  .map(({ id, name, color }) =>
+                    renderChip({ key: id, label: getBadgeLabel(name), color })
+                  )}
+              </div>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

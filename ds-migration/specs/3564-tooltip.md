@@ -149,6 +149,9 @@ recoloured the legacy bubble goes. Content markup inside the bubble (`<p>`, span
   invariant; the badge itself, outside the design system, keeps it.
 - **`NavigationLinks`' tooltip content** keeps its two lines but drops the `content-body-base` override (the bubble's
   `content-compact` applies) and replaces the legacy `text-muted-foreground` with the design system secondary text token.
+- **The `+N` overflow tooltip lists the hidden tags as chips** (team review on #3715, 2026-10-12): the names
+  were plain text for a while, because grey chips looked off on the blue bubble, but the tags carry their use case
+  colour and the team wants them back as tags. The chips keep their own colours and wrap inside the bubble's cap.
 - **`LogoField`'s provider is dead code**: it wraps no `Tooltip`, so it is removed rather than re-imported.
 - **Partial mocks in tests**: the components now import tooltips from the module that also exports `Button`,
   `IconButton` and `Badge`, so the stubs spread `importOriginal()`.
