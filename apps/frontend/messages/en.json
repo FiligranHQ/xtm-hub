@@ -16,9 +16,9 @@
   },
   "CapabilityDescription": {
     "Capabilities": {
-      "ADMINISTRATE_ORGANIZATION": "Allow every capabilities actions within an organization",
+      "ADMINISTRATE_ORGANIZATION": "Grants every capability within the organization",
       "MANAGE_ACCESS": "Ability to invite other users to this organization",
-      "MANAGE_PLATFORM_REGISTRATION": "Ability to connect and disconnect products",
+      "MANAGE_PLATFORM_REGISTRATION": "Ability to connect and disconnect products, and to start, cancel and manage trials",
       "MANAGE_SUBSCRIPTION": "Ability to manage and subscribe the organization to services"
     },
     "Description": "You can add specific capabilities to Filigran users",
@@ -475,7 +475,7 @@
       "GoToPlatform": "Go to {title}",
       "Details": "Details",
       "Documentation": "Documentation",
-      "ConnectPlatform": "Connect {platformName}",
+      "ConnectProduct": "Connect product",
       "Trial": "Trial",
       "EE": "EE"
     }
@@ -496,8 +496,7 @@
     "RegisteredPlatformsCard": {
       "RegisteredOn": "on",
       "Contract": "Contract",
-      "Remaining": "remaining",
-      "DaysRemaining": "{days, plural, =1 {# day} other {# days}}"
+      "DaysRemaining": "<badge>{days, plural, =1 {# day} other {# days}}</badge> remaining"
     }
   },
   "PublicHomePage": {
@@ -1598,12 +1597,6 @@
         "expertise": "We lack the internal analysts/expertise to utilize the tool effectively"
       },
       "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
-      "Header": {
-        "ActiveTrial": "Active trial",
-        "ActiveTrialCount": "{count} active trial{count, plural, one {} other {s}}",
-        "DaysRemaining": "remaining day",
-        "OpenInNewTab": "Open {title} in new tab"
-      },
       "LearnMore": {
         "Link": "Learn more",
         "openaev": {
@@ -1734,9 +1727,9 @@
             "Description": "Please create a Filigran account or log in to an existing one."
           },
           "NotAdmin": {
-            "Title": "To request a trial you must be an organization admin.",
-            "Description": "Please contact the organization’s admin in your company",
-            "AdminListTitle": "{count, plural, =1 {Administrator} other {Administrators}}"
+            "Title": "You need the “Manage platform registration” capability to start a trial.",
+            "Description": "Ask an administrator of your organization to grant it.",
+            "AdminListTitle": "{count, plural, =1 {Member who has this capability} other {Members who have this capability}}"
           },
           "PersonalSpace": {
             "Title": "Trials are not available in a personal space"

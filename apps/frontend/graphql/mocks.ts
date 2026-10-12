@@ -1476,7 +1476,6 @@ export const mockQuery = (overrides?: Partial<Query>, _relationshipsToOmit: Set<
         mostDeployedDocuments: overrides && overrides.hasOwnProperty('mostDeployedDocuments') ? overrides.mostDeployedDocuments! : [relationshipsToOmit.has('Document') ? {} as Document : mockDocument({}, relationshipsToOmit)],
         newestDocuments: overrides && overrides.hasOwnProperty('newestDocuments') ? overrides.newestDocuments! : [relationshipsToOmit.has('Document') ? {} as Document : mockDocument({}, relationshipsToOmit)],
         newsFeedItems: overrides && overrides.hasOwnProperty('newsFeedItems') ? overrides.newsFeedItems! : relationshipsToOmit.has('NewsFeedItemConnection') ? {} as NewsFeedItemConnection : mockNewsFeedItemConnection({}, relationshipsToOmit),
-        node: overrides && overrides.hasOwnProperty('node') ? overrides.node! : relationshipsToOmit.has('Node') ? {} as Node : mockNode({}, relationshipsToOmit),
         openCTIPlatformRegistrationStatus: overrides && overrides.hasOwnProperty('openCTIPlatformRegistrationStatus') ? overrides.openCTIPlatformRegistrationStatus! : relationshipsToOmit.has('OpenCtiPlatformRegistrationStatusResponse') ? {} as OpenCtiPlatformRegistrationStatusResponse : mockOpenCtiPlatformRegistrationStatusResponse({}, relationshipsToOmit),
         organization: overrides && overrides.hasOwnProperty('organization') ? overrides.organization! : relationshipsToOmit.has('Organization') ? {} as Organization : mockOrganization({}, relationshipsToOmit),
         organizations: overrides && overrides.hasOwnProperty('organizations') ? overrides.organizations! : relationshipsToOmit.has('OrganizationConnection') ? {} as OrganizationConnection : mockOrganizationConnection({}, relationshipsToOmit),
@@ -1523,6 +1522,7 @@ export const mockRefreshPlatformRegistrationConnectivityStatusAllTenantsInput = 
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('RefreshPlatformRegistrationConnectivityStatusAllTenantsInput');
     return {
+        platformContract: overrides && overrides.hasOwnProperty('platformContract') ? overrides.platformContract! : PlatformContract.Ce,
         platformId: overrides && overrides.hasOwnProperty('platformId') ? overrides.platformId! : 'cursim',
         platformIdentifier: overrides && overrides.hasOwnProperty('platformIdentifier') ? overrides.platformIdentifier! : PlatformIdentifier.Openaev,
         platformVersion: overrides && overrides.hasOwnProperty('platformVersion') ? overrides.platformVersion! : 'quidem',
@@ -1543,6 +1543,7 @@ export const mockRefreshPlatformRegistrationConnectivityStatusInput = (overrides
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('RefreshPlatformRegistrationConnectivityStatusInput');
     return {
+        platformContract: overrides && overrides.hasOwnProperty('platformContract') ? overrides.platformContract! : PlatformContract.Ce,
         platformId: overrides && overrides.hasOwnProperty('platformId') ? overrides.platformId! : 'blandior',
         platformIdentifier: overrides && overrides.hasOwnProperty('platformIdentifier') ? overrides.platformIdentifier! : PlatformIdentifier.Openaev,
         platformVersion: overrides && overrides.hasOwnProperty('platformVersion') ? overrides.platformVersion! : 'stabilis',
@@ -1563,6 +1564,7 @@ export const mockRefreshPlatformRegistrationConnectivityStatusSingleTenantInput 
     const relationshipsToOmit: Set<string> = new Set(_relationshipsToOmit);
     relationshipsToOmit.add('RefreshPlatformRegistrationConnectivityStatusSingleTenantInput');
     return {
+        platformContract: overrides && overrides.hasOwnProperty('platformContract') ? overrides.platformContract! : PlatformContract.Ce,
         platformId: overrides && overrides.hasOwnProperty('platformId') ? overrides.platformId! : 'molestiae',
         platformIdentifier: overrides && overrides.hasOwnProperty('platformIdentifier') ? overrides.platformIdentifier! : PlatformIdentifier.Openaev,
         platformVersion: overrides && overrides.hasOwnProperty('platformVersion') ? overrides.platformVersion! : 'verto',

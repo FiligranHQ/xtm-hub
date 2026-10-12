@@ -3,6 +3,7 @@ import {
   FiligranWebsiteUtmCampaign,
   withFiligranWebsiteUtm,
 } from '@/utils/filigran-website-utm';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const THREAD_CONFERENCE_URL = withFiligranWebsiteUtm(
@@ -30,11 +31,12 @@ const ThreadConferenceBanner = async () => {
               maskImage:
                 'linear-gradient(to right, black 80%, transparent 100%)',
             }}>
-            <img
+            <Image
               src="/thread-logo.svg"
               className="h-auto w-full max-w-[36rem] invert dark:invert-0"
-              width="576"
-              alt="XTM Hub logo"
+              width={576}
+              height={153}
+              alt={t('ThreadConference.ImageAlt')}
             />
           </div>
           <div className="flex flex-col items-center gap-s p-m text-center sm:items-start sm:text-left sm:justify-center">

@@ -20,7 +20,7 @@
     "pending_user_digest": false,
     "public_roadmap_monthly_reminder": false
   },
-  "enabled_features": [],
+  "enabled_features": ["TRIAL_INVITE"],
   "auth0": {
     "domain": "filigran.eu.auth0.com",
     "clientId": "changeme",
@@ -99,7 +99,7 @@
   "mail_use_queue_processing": true,
   "hubspot_webhook_url": "changeMe",
   "saas_manager": {
-    "enabled": false,
+    "enabled": true,
     "url": "https://saasmanager.staging.filigran.io",
     "token": "ChangeMe"
   },

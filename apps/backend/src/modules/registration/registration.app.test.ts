@@ -450,8 +450,15 @@ describe('registration app', () => {
         );
       };
 
+      const initialSaasManagerEnabled = portalConfig.saas_manager.enabled;
+
       beforeEach(() => {
         requestContext.set(requestContextRegistererUserSecondOrga);
+        portalConfig.saas_manager.enabled = false;
+      });
+
+      afterEach(() => {
+        portalConfig.saas_manager.enabled = initialSaasManagerEnabled;
       });
 
       it('should not enqueue the commercial model refresh when the SaaS Manager is disabled', async () => {
@@ -473,10 +480,6 @@ describe('registration app', () => {
       describe('when the SaaS Manager is enabled', () => {
         beforeEach(() => {
           portalConfig.saas_manager.enabled = true;
-        });
-
-        afterEach(() => {
-          portalConfig.saas_manager.enabled = false;
         });
 
         it('should register the platform without waiting for the SaaS Manager', async () => {
@@ -931,6 +934,16 @@ describe('registration app', () => {
   });
 
   describe('refreshCommercialModel', () => {
+    const initialSaasManagerEnabled = portalConfig.saas_manager.enabled;
+
+    beforeEach(() => {
+      portalConfig.saas_manager.enabled = false;
+    });
+
+    afterEach(() => {
+      portalConfig.saas_manager.enabled = initialSaasManagerEnabled;
+    });
+
     const createPlatform = async (commercialModel: CommercialModel) => {
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const platformId = uuidv4();
@@ -977,10 +990,6 @@ describe('registration app', () => {
     describe('when the SaaS Manager is enabled', () => {
       beforeEach(() => {
         portalConfig.saas_manager.enabled = true;
-      });
-
-      afterEach(() => {
-        portalConfig.saas_manager.enabled = false;
       });
 
       it('should set the SaaS commercial model when the SaaS Manager returns PROD', async () => {

@@ -28,7 +28,7 @@ describe('ThreadConferenceBanner', () => {
       name: 'ThreadConference.AriaLabel',
     });
     const threadLogo = screen.getByRole('img', {
-      name: 'XTM Hub logo',
+      name: 'ThreadConference.ImageAlt',
     });
     const conferenceDate = screen.getByText('ThreadConference.Date');
     const conferenceCta = screen.getByText('ThreadConference.Cta');

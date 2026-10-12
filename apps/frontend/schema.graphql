@@ -152,7 +152,6 @@ type Query {
   userServiceFromSubscription(first: Int!, after: ID, orderBy: UserServiceOrdering!, orderMode: OrderingMode!, subscription_id: SubscriptionId!): UserServiceConnection
   epics(first: Int!, after: ID, orderBy: EpicOrdering!, orderMode: OrderingMode!, searchTerm: String): EpicConnection
   countEpicsPerTimeline: [EpicCountPerTimeline!]!
-  node(id: ID!): Node
 }
 
 type Mutation {
@@ -1351,6 +1350,7 @@ input RefreshPlatformRegistrationConnectivityStatusInput {
   token: String!
   platformVersion: String!
   platformIdentifier: PlatformIdentifier
+  platformContract: PlatformContract
 }
 
 input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
@@ -1361,6 +1361,7 @@ input RefreshPlatformRegistrationConnectivityStatusSingleTenantInput {
   tenantId: String!
   tenantName: String!
   platformIdentifier: PlatformIdentifier!
+  platformContract: PlatformContract
 }
 
 input TenantDetails {
@@ -1374,6 +1375,7 @@ input RefreshPlatformRegistrationConnectivityStatusAllTenantsInput {
   platformId: String!
   platformVersion: String!
   platformIdentifier: PlatformIdentifier!
+  platformContract: PlatformContract
   tenants: [TenantDetails!]!
 }
 
