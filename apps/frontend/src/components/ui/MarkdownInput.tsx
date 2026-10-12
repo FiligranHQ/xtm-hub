@@ -1,6 +1,13 @@
 import MDEditor from '@uiw/react-md-editor';
 import { useTheme } from 'next-themes';
+import type { CSSProperties } from 'react';
 import rehypeSanitize from 'rehype-sanitize';
+
+// The editor and its toolbar both paint this library variable.
+const editorStyle = {
+  '--md-editor-background-color': 'var(--bg-input-default)',
+  color: 'var(--text-default-primary)',
+} as CSSProperties;
 
 const MarkdownInput = ({
   value,
@@ -21,15 +28,12 @@ const MarkdownInput = ({
         value={value}
         onChange={onChange}
         highlightEnable={false}
-        style={{
-          background: 'var(--page-background)',
-          color: 'var(--text-foreground)',
-        }}
+        style={editorStyle}
         previewOptions={{
           rehypePlugins: [[rehypeSanitize]],
           style: {
             background: 'transparent',
-            color: 'var(--text-foreground)',
+            color: 'var(--text-default-primary)',
           },
         }}
         textareaProps={{
@@ -37,7 +41,7 @@ const MarkdownInput = ({
           disabled,
           style: {
             background: 'transparent',
-            color: 'var(--text-foreground)',
+            color: 'var(--text-default-primary)',
           },
         }}
       />
