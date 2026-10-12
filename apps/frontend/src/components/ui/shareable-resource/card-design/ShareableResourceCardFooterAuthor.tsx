@@ -29,7 +29,7 @@ export const ShareableResourceCardFooterAuthor = ({
           </div>
         )}
       </div>
-      <div className="flex flex-row shrink-0">
+      <div className="flex flex-row shrink-0 gap-xs">
         <ShareLinkButton
           documentId={document.id}
           url={shareLinkUrl}
