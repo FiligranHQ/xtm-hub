@@ -1,8 +1,15 @@
 import { getTranslate } from '@/hooks/get-translate';
+import {
+  FiligranWebsiteUtmCampaign,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const THREAD_CONFERENCE_URL = 'https://filigran.io/thread?form_origin=xtmhub';
+const THREAD_CONFERENCE_URL = withFiligranWebsiteUtm(
+  'https://filigran.io/thread?form_origin=xtmhub',
+  { campaign: FiligranWebsiteUtmCampaign.HOME_BANNER, content: 'thread' }
+);
 
 const ThreadConferenceBanner = async () => {
   const t = await getTranslate();

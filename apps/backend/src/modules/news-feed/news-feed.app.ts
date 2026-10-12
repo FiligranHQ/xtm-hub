@@ -87,7 +87,15 @@ export const NewsFeedApp = {
         .filter((m) => m.key !== NewsFeedItemMetadataKey.DocumentId)
         .map((m) => ({
           key: m.key as NewsFeedItemMetadataKey,
-          value: m.value,
+          value:
+            m.key === NewsFeedItemMetadataKey.UrlPath && m.value
+              ? NewsFeedHelper.addUtmToUrlPath({
+                  urlPath: m.value,
+                  type: item.type,
+                  // The consuming platform is where the link is clicked, resolved from its id and token
+                  platformIdentifier: resolvedConfiguration.platformIdentifier,
+                })
+              : m.value,
         })),
     }));
 

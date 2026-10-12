@@ -1,6 +1,10 @@
 'use client';
 
 import { useTranslate } from '@/hooks/use-translate';
+import {
+  FiligranWebsiteUtmCampaign,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
 import { PlatformIdentifier } from '@graphql/generated';
 import Link from 'next/link';
 import { ReactNode } from 'react';
@@ -17,7 +21,13 @@ export const TrialsStorageLimitation = ({
 
   const renderLink = (chunks: ReactNode) => (
     <Link
-      href="https://filigran.io/offerings/software-as-a-service/"
+      href={withFiligranWebsiteUtm(
+        'https://filigran.io/offerings/software-as-a-service/',
+        {
+          campaign: FiligranWebsiteUtmCampaign.OTHER,
+          content: 'trial_storage_saas_offering',
+        }
+      )}
       target="_blank"
       rel="noopener noreferrer"
       className="underline">

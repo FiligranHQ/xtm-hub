@@ -1,16 +1,19 @@
 import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
 import { useTranslate } from '@/hooks/use-translate';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 
 // Component interface
 interface ShareableResourceDescriptionProps {
   shortDescription: string;
   longDescription: string;
+  serviceDefinitionIdentifier?: string;
 }
 
 // Component
 const ShareableResourceDescription = ({
   shortDescription,
   longDescription,
+  serviceDefinitionIdentifier,
 }: ShareableResourceDescriptionProps) => {
   const t = useTranslate();
 
@@ -24,6 +27,9 @@ const ShareableResourceDescription = ({
         <MarkdownRendererWithTheme
           source={longDescription}
           className="p-l !bg-elevation-background-layer-1 markdown-content"
+          filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+            serviceDefinitionIdentifier
+          )}
         />
       </section>
     </div>

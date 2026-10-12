@@ -29,3 +29,16 @@ export const newsFeedConfigurationMapping: Partial<
     platformIdentifier: PlatformIdentifier.Opencti,
   },
 };
+
+export const NEWS_FEED_UTM_MEDIUM = 'newsfeed';
+export const NEWS_FEED_UTM_CAMPAIGN = 'hub_resources';
+export const NEWS_FEED_UTM_CONTENT_FALLBACK = 'other';
+
+export const newsFeedUtmContentMapping: Partial<
+  Record<NewsFeedItemType, string>
+> = {
+  [NewsFeedItemType.ResourceCustomDashboard]: 'custom_dashboard',
+  [NewsFeedItemType.ResourceCustomView]: 'custom_view',
+  [NewsFeedItemType.ResourceIntegration]: 'integration',
+  [NewsFeedItemType.ResourcePlaybook]: 'playbook',
+};

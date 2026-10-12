@@ -25,6 +25,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import useDecodedParams from '@/hooks/use-decoded-params';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { EntityTypeOrFiligranLogo } from '@/utils/shareable-resources/entity-type';
 import {
@@ -173,11 +174,17 @@ const ShareableResourceSlug = ({
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
+          serviceDefinitionIdentifier={
+            serviceInstance.service_definition?.identifier
+          }
         />
         {documentData && (
           <ShareableResourceDetails
             documentData={documentData}
             downloadNumber={documentDownloadNumber}
+            filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+              serviceInstance.service_definition?.identifier
+            )}
           />
         )}
       </div>
