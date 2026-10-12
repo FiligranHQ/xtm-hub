@@ -87,7 +87,14 @@ export const NewsFeedApp = {
         .filter((m) => m.key !== NewsFeedItemMetadataKey.DocumentId)
         .map((m) => ({
           key: m.key as NewsFeedItemMetadataKey,
-          value: m.value,
+          value:
+            m.key === NewsFeedItemMetadataKey.UrlPath && m.value
+              ? NewsFeedHelper.addUtmToUrlPath({
+                  urlPath: m.value,
+                  type: item.type,
+                  platformIdentifier: item.platform_identifier,
+                })
+              : m.value,
         })),
     }));
 

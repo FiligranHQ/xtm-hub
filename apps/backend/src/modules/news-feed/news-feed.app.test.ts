@@ -297,6 +297,13 @@ describe('newsFeedApp', () => {
             expect.objectContaining({ key: NewsFeedItemMetadataKey.UrlPath }),
           ])
         );
+        expect(
+          result.news_feed_items[0]?.metadata.find(
+            (m) => m.key === NewsFeedItemMetadataKey.UrlPath
+          )?.value
+        ).toContain(
+          'utm_source=opencti&utm_medium=newsfeed&utm_campaign=hub_resources&utm_content=custom_dashboard'
+        );
         expect(result.news_feed_items[0]?.metadata).toEqual(
           expect.not.arrayContaining([
             expect.objectContaining({
