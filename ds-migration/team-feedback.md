@@ -35,3 +35,9 @@
 | [6082441783](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6082441783) | fimow | Navbar not the design system one (hover, chevrons, scrollbar shift) | later item | #3557 |
 | [6082704153](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6082704153) | fimow | Top banners use Alert, not the Figma Banner | answered | Design system 1.2.0 has no Banner; Alert stays until the library ships it |
 | [6083210687](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6083210687) | fimow | Filter by service full width, toolbar widths inconsistent | follow-up | #3768 (same on main) |
+| [6084461342](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6084461342) | fimow | Hand-rolled callouts instead of Alert | follow-up | #3785 (same on main, phase 2 #3709) |
+| [6119884964](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6119884964) | hervyt | Markdown editor white in light theme | fixed | 610012dca |
+| [6119913773](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6119913773) | hervyt | Checkbox halo cut in a dialog | answered | DialogBody scrolls and clips the Checkbox halo; feedback for the design system |
+| [6120475771](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6120475771) | jpkha | Tags gone from the +N tooltip | fixed | 6a9d58668 |
+| [6121326004](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6121326004) | jpkha | Dropdown in a sheet like the inputs | fixed | e89f723f5 |
+| [6121349462](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6121349462) | jpkha | Column menu like the table header | fixed | e89f723f5 |
