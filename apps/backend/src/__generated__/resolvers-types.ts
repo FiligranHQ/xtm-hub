@@ -2360,6 +2360,7 @@ export type QueryXtmonePlatformIntegrationStatusArgs = {
 };
 
 export type RefreshPlatformRegistrationConnectivityStatusAllTenantsInput = {
+  platformContract?: InputMaybe<PlatformContract>;
   platformId: Scalars['String']['input'];
   platformIdentifier: PlatformIdentifier;
   platformVersion: Scalars['String']['input'];
@@ -2372,6 +2373,7 @@ export type RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse = {
 };
 
 export type RefreshPlatformRegistrationConnectivityStatusInput = {
+  platformContract?: InputMaybe<PlatformContract>;
   platformId: Scalars['String']['input'];
   platformIdentifier?: InputMaybe<PlatformIdentifier>;
   platformVersion: Scalars['String']['input'];
@@ -2384,6 +2386,7 @@ export type RefreshPlatformRegistrationConnectivityStatusResponse = {
 };
 
 export type RefreshPlatformRegistrationConnectivityStatusSingleTenantInput = {
+  platformContract?: InputMaybe<PlatformContract>;
   platformId: Scalars['String']['input'];
   platformIdentifier: PlatformIdentifier;
   platformVersion: Scalars['String']['input'];
