@@ -16,7 +16,7 @@
   },
   "CapabilityDescription": {
     "Capabilities": {
-      "ADMINISTRATE_ORGANIZATION": "Donne toutes les capacités au sein de l'organisation",
+      "ADMINISTRATE_ORGANIZATION": "Possibilité d'effectuer toutes les actions au sein d'une organisation",
       "MANAGE_ACCESS": "Possibilité d'inviter d'autres utilisateurs dans cette organisation",
       "MANAGE_PLATFORM_REGISTRATION": "Possibilité de connecter et de déconnecter les produits, ainsi que de démarrer, annuler et gérer les essais",
       "MANAGE_SUBSCRIPTION": "Possibilité de gérer et d'abonner l'organisation à des services"
