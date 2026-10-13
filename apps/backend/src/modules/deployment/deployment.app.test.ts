@@ -2027,6 +2027,32 @@ describe('deployment app', () => {
         deploymentRequest
       );
     });
+
+    it('should throw DeploymentRequestNotFound and leave the bundle queue untouched when the request is a bundle child', async () => {
+      // Given a queued bundle and its queued child
+      const {
+        bundle,
+        children: [child],
+      } = await TestHelper.deploymentRequest.createBundle({
+        bundle: {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          ordering: 1,
+        },
+        children: [{ hub_status: DeploymentRequestHubStatus.Queued }],
+      });
+
+      // When moving the child to the top of the queue
+      const call = DeploymentApp.reorderDeploymentRequestInQueue({
+        id: child!.id,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      // Then it is not found and the bundle keeps its rank
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+      await TestHelper.deploymentRequest.assertProperties(bundle.id, {
+        ordering: 1,
+      });
+    });
   });
 
   describe('cancelDeploymentRequest', () => {
