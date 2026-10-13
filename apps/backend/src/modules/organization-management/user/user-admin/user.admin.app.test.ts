@@ -217,6 +217,16 @@ describe('users admin app', () => {
   });
 
   describe('editUserCapabilities', () => {
+    const createdUsers: User[] = [];
+
+    afterEach(async () => {
+      await Promise.all(
+        createdUsers
+          .splice(0)
+          .map((user) => UserHelper.removeUser({ id: user.id }))
+      );
+    });
+
     it('should reject the user when they have no pending request in the selected organization', async () => {
       requestContext.set(requestContextAdminSecondOrga);
 
@@ -237,13 +247,13 @@ describe('users admin app', () => {
     });
 
     it('should reject the user when the selected organization is the caller personal space', async () => {
+      const caller = await UserProvisioningDomain.createUser(
+        { email: `edit-capabilities-${uuidv4()}@edit-capabilities-test.io` },
+        { sendWelcomeEmail: false }
+      );
+      createdUsers.push(caller);
       requestContext.set({
-        user: {
-          ...requestContextSimpleUserSecondOrga.user,
-          selected_organization_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE
-              .PERSONAL_SPACE_ID,
-        },
+        user: (await UserDomain.loadUserBy({ 'User.id': caller.id }))!,
       });
 
       const call = UserAdminApp.editUserCapabilities({
