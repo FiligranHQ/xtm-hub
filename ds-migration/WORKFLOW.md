@@ -164,8 +164,10 @@ The spec exists and the script has just captured its screens on the untouched co
 5. **Return** the structured result. Write `commit_subject` and `commit_body` with the `commit-splitter`
    agent's message rules: `feat(frontend): migrate <Name> to @filigran/design-system (#<issue>)` for
    kinds `ds` and `adoption`, `feat(frontend): rebuild <Name> on @filigran/design-system primitives
-   (#<issue>)` for `candidate`, `chore(frontend): remove the legacy filigran-ui copy (#<issue>)` for
-   `cleanup`. The body is three to six lines on what changed and why, with no trailer.
+   (#<issue>)` for `candidate`, `refactor(frontend): move the <family> off the legacy theme utilities
+   (#<issue>)` for a `legacy-<family>` item, `chore(frontend): remove the legacy filigran-ui copy
+   (#<issue>)` for `remove-filigran-ui`. The body is three to six lines on what changed and why, with
+   no trailer.
 
 The script then validates again, the `after` screenshots included: a screen that no longer renders
 blocks the item.

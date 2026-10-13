@@ -287,6 +287,7 @@ check "frontend started from apps/frontend, its log kept" 'grep -q "starting the
 ds-migration/run.sh publish >"$SB/out.log" 2>&1
 check "publish refreshes the issues, pushes and waits for the checks" 'grep -q "^gh issue edit 3561 --body-file" "$SB/calls.log" && grep -q "^gh pr checks" "$SB/calls.log" && grep -q "published: the required checks of PR #9999 pass" "$SB/out.log"'
 check "done item ticked in the PR body" 'grep -q "^- \[x\] #3561 textarea: done" "$SB/pr-body.md"'
+check "an item main already shipped stays out of the PR body" '! grep -q "#3530" "$SB/pr-body.md"'
 check "item done only once the e2e aggregator passed" '[ "$(status_of 3561-textarea)" = done ] && [ "$(cat "$SB/checks-count")" -ge 5 ]'
 
 echo "D. required check fails, one CI fix, still failing: stop"
