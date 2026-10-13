@@ -20,7 +20,7 @@ export const PublicHeaderContent = async ({
       <Link
         href={`/${locale}`}
         className="md:hidden">
-        <LogoXTMDark className="text-primary mr-2 h-8 w-auto" />
+        <LogoXTMDark className="text-icon-highlight mr-2 h-8 w-auto" />
         <span className="sr-only">{t('Metadata.SiteName')}</span>
       </Link>
       <div className="flex items-center gap-2 ml-auto">

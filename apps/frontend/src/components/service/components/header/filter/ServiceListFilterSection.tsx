@@ -27,7 +27,7 @@ export const ServiceListFilterSection = ({
         return (
           <div
             key={filterKey}
-            className="w-full border-b border-border p-2 last:border-b-0">
+            className="w-full border-b border-elevation-subtle p-2 last:border-b-0">
             {filter.title && (
               <div className="content-body-compact-medium pb-1">
                 {filter.title}
@@ -43,7 +43,7 @@ export const ServiceListFilterSection = ({
           key={filterKey}
           type="multiple"
           defaultValue={index === 0 ? [filterKey] : []}
-          className="w-full border-b border-border last:border-b-0">
+          className="w-full border-b border-elevation-subtle last:border-b-0">
           <AccordionItem
             value={filterKey}
             className="border-0">

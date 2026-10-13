@@ -23,7 +23,7 @@ export const AppShell = ({
       <div className="flex flex-row grow min-h-0">
         {menu}
         <div className="flex flex-col w-full h-full min-h-0 min-w-0">
-          <header className="sticky top-0 z-20 flex h-16 w-full shrink-0 items-center border-b border-elevation-border-strong px-4 justify-between backdrop-blur-sm before:content-[''] before:absolute before:inset-0 before:bg-gradient-background before:opacity-50 before:-z-1">
+          <header className="sticky top-0 z-20 flex h-16 w-full shrink-0 items-center border-b border-elevation-default px-4 justify-between backdrop-blur-sm before:content-[''] before:absolute before:inset-0 before:bg-gradient-default before:opacity-50 before:-z-1">
             {headerContent}
           </header>
           <SharedContent className={contentClassName}>

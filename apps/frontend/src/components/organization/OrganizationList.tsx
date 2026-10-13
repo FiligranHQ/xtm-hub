@@ -72,7 +72,7 @@ const OrganizationList = () => {
           <div className="flex items-center justify-end">
             <IconActions
               aria-label={t('Utils.OpenMenu')}
-              icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+              icon={<MoreVertIcon className="h-4 w-4 text-icon-highlight" />}>
               <IconActionsItem
                 onClick={() => {
                   router.push(

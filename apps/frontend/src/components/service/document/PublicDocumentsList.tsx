@@ -151,7 +151,7 @@ const PublicDocumentsList = ({
     <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
       <div
         ref={headerRef}
-        className="sticky top-0 py-3 z-15 relative bg-gradient-background">
+        className="sticky top-0 py-3 z-15 relative bg-gradient-default">
         <ServiceListHeader
           search={search}
           onSearchChange={setSearch}

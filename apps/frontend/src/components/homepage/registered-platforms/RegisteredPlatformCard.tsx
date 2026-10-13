@@ -96,7 +96,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             </TooltipProvider>
           </div>
           <p className="text-content-body-compact shrink-0">
-            <span className="text-muted-foreground">
+            <span className="text-default-secondary">
               {tRegisteredPlatformsCard('RegisteredOn')}
             </span>{' '}
             {registrationDate}
@@ -111,7 +111,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
           />
           {platform.contract === PlatformContract.Trial &&
             platform.remainingTrialDays !== undefined && (
-              <div className="flex gap-2 items-center text-content-body-compact text-text-default-secondary">
+              <div className="flex gap-2 items-center text-content-body-compact text-default-secondary">
                 {tRegisteredPlatformsCard.rich('DaysRemaining', {
                   days: platform.remainingTrialDays,
                   badge: (chunks) => (
@@ -132,7 +132,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
     <Link
       href={platform.href}
       prefetch={false}
-      className="block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      className="block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
       {cardContent}
     </Link>
   ) : (

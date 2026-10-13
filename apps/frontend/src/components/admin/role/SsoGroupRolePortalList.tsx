@@ -58,7 +58,9 @@ const SsoGroupRolePortalList = () => {
   return (
     <>
       {isError && (
-        <div className="mb-2 text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="mb-2 text-sm text-feedback-error-primary">
+          {t('Utils.Error')}
+        </div>
       )}
       <DataTable
         columns={columns}

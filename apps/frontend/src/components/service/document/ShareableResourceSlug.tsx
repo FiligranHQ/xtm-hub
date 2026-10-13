@@ -120,7 +120,7 @@ const ShareableResourceSlug = ({
                           <IconButton
                             asChild
                             priority="tertiary"
-                            className="z-[2] text-primary"
+                            className="z-[2] text-filigran-brand-primary"
                             aria-label={t(
                               'Service.ShareableResources.Download'
                             )}

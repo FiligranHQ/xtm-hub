@@ -48,16 +48,16 @@ export const RegistrationLearnMore = async ({
 
   return (
     <>
-      <Section className="bg-blue-800/5 px-6">
+      <Section className="bg-filigran-brand-primary-transparency-10 px-6">
         <div className="text-center w-[70%] m-auto">
-          <h2 className="text-primary text-2xl mb-4">
+          <h2 className="text-filigran-brand-primary text-2xl mb-4">
             {t('Service.Trials.XTMPlatform.Title')}
           </h2>
           <p>{t('Service.Trials.XTMPlatform.Description', { platformName })}</p>
         </div>
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex flex-col gap-2 basis-full">
-            <div className="rounded p-6 basis-full bg-elevation-background-layer-1">
+            <div className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
               <h3 className="mb-3 flex gap-2">
                 <Image
                   width="25"
@@ -76,7 +76,7 @@ export const RegistrationLearnMore = async ({
               </p>
               <p>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</p>
             </div>
-            <div className="rounded p-6 basis-full bg-elevation-background-layer-1">
+            <div className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
               <h3 className="mb-3 flex gap-2">
                 <Image
                   width="25"
@@ -127,7 +127,7 @@ export const RegistrationLearnMore = async ({
             ))}
           </div>
           <div className="order-first text-sm lg:order-last basis-full">
-            <h2 className="text-primary text-2xl mb-4">
+            <h2 className="text-filigran-brand-primary text-2xl mb-4">
               {t('Service.Trials.QuickStart.Title')}
             </h2>
             <p className="mb-4">

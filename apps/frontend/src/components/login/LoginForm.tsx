@@ -52,7 +52,7 @@ const LoginForm = () => {
     });
   };
   return (
-    <div className="bg-elevation-background-layer-1 border border-border-light rounded w-full p-4 mb-4">
+    <div className="bg-[var(--bg-elevation-default-layer-1)] border border-elevation-subtle rounded w-full p-4 mb-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

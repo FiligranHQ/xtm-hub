@@ -44,9 +44,9 @@ export const XtmPlatformTrialStatusPanel = ({
   }: XtmPlatformTrialStatusPanelDateRow) => (
     <span
       key={labelKey}
-      className="whitespace-nowrap text-content-body-compact text-text-default-secondary">
+      className="whitespace-nowrap text-content-body-compact text-default-secondary">
       {t(`Service.Trials.XtmPlatform.Page.Status.${labelKey}`)}:{' '}
-      <span className="text-text-default-primary">
+      <span className="text-default-primary">
         {formatDate(date, 'DATE_MEDIUM') ?? '-'}
       </span>
     </span>
@@ -55,14 +55,14 @@ export const XtmPlatformTrialStatusPanel = ({
   const singleDateRow = dateRows.length === 1 ? dateRows[0] : undefined;
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded bg-elevation-background-layer-2 p-6">
+    <div className="flex w-full flex-col gap-6 rounded bg-[var(--bg-elevation-default-layer-2)] p-6">
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center text-content-body-base">
-            <span className="text-text-default-secondary">
+            <span className="text-default-secondary">
               {t('Service.Trials.Form.AssociatedEmail')}
             </span>
-            <span className="text-text-default-primary">{requesterEmail}</span>
+            <span className="text-default-primary">{requesterEmail}</span>
           </div>
           {singleDateRow && renderDateRow(singleDateRow)}
         </div>
@@ -73,7 +73,7 @@ export const XtmPlatformTrialStatusPanel = ({
         )}
       </div>
 
-      <div className="flex flex-col gap-2 rounded p-4 bg-elevation-background-layer-3">
+      <div className="flex flex-col gap-2 rounded p-4 bg-[var(--bg-elevation-default-layer-3)]">
         <h3 className="heading-xs">
           {t(
             isInProgress
@@ -94,7 +94,7 @@ export const XtmPlatformTrialStatusPanel = ({
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-6 rounded border border-elevation-border-subtle-layer-3 px-6 py-16 text-center">
+      <div className="flex flex-col items-center justify-center gap-6 rounded border border-[var(--border-elevation-subtle-layer-3)] px-6 py-16 text-center">
         <div className="flex flex-col gap-1">
           <p className="heading-xs">
             {t(`Service.Trials.XtmPlatform.Page.Status.${state}.Title`)}

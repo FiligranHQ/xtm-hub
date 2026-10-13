@@ -140,7 +140,7 @@ const EpicFieldLabel = ({
               <button
                 type="button"
                 aria-label={t(infoKey)}
-                className="text-muted-foreground">
+                className="text-default-secondary">
                 <InfoIcon className="size-4" />
               </button>
             </TooltipTrigger>
@@ -160,7 +160,7 @@ type CharacterLimitProps = {
 const CharacterCounter = ({ value, maxChars }: CharacterLimitProps) => {
   const t = useTranslate();
   return (
-    <p className="text-muted-foreground txt-sub-content ml-auto shrink-0">
+    <p className="text-default-secondary txt-sub-content ml-auto shrink-0">
       {t('Epic.Form.CharacterCount', { count: value.length, maxChars })}
     </p>
   );
@@ -383,7 +383,7 @@ const EpicForm = ({
         />
 
         <Separator />
-        <p className="text-muted-foreground txt-category uppercase">
+        <p className="text-default-secondary txt-category uppercase">
           {t('Epic.Form.DetailsSection')}
         </p>
 
@@ -435,7 +435,7 @@ const EpicForm = ({
           )}
         />
 
-        <SheetFooter className="bg-elevation-background-layer-2 sticky bottom-0 -mx-6 gap-4 border-t px-6 py-3 sm:items-center sm:justify-between">
+        <SheetFooter className="bg-[var(--bg-elevation-default-layer-2)] sticky bottom-0 -mx-6 gap-4 border-t px-6 py-3 sm:items-center sm:justify-between">
           <FormField
             control={form.control}
             name="active"

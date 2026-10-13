@@ -86,7 +86,9 @@ const ClientSection = ({ params, fromDashboard }: ClientSectionProps) => {
     return (
       <>
         <BreadcrumbNav value={breadcrumbs} />
-        <div className="text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="text-sm text-feedback-error-primary">
+          {t('Utils.Error')}
+        </div>
       </>
     );
   }

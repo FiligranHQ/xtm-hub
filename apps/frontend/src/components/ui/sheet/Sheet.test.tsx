@@ -69,7 +69,7 @@ const FOOTER_CLASSES = [
   'pb-6',
 ];
 const PANEL_BACKGROUND_CLASS = 'bg-elevation-default';
-const CALLER_BACKGROUND_CLASS = 'bg-gradient-background';
+const CALLER_BACKGROUND_CLASS = 'bg-gradient-default';
 const HEADER_DIRECTION_CLASS = 'flex-col';
 const CALLER_PADDING_LEFT_CLASS = 'pl-4';
 const CALLER_DIRECTION_CLASS = 'flex-row';

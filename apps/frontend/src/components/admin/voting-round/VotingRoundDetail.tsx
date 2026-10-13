@@ -90,7 +90,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
   }
 
   if (!round) {
-    return <p className="text-muted-foreground">{t('Utils.NotFound')}</p>;
+    return <p className="text-default-secondary">{t('Utils.NotFound')}</p>;
   }
 
   return (
@@ -102,7 +102,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
             <VotingRoundStatusBadge status={round.status} />
           </div>
           {round.description && (
-            <p className="text-muted-foreground">{round.description}</p>
+            <p className="text-default-secondary">{round.description}</p>
           )}
         </div>
         <VotingRoundStatusActions

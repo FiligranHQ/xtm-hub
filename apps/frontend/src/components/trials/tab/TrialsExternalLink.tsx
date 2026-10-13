@@ -25,7 +25,7 @@ export const TrialsExternalLink = ({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn('text-text-brand-primary underline', className)}
+      className={cn('underline', className)}
       onClick={(event) => event.stopPropagation()}>
       {trimmedUrl}
     </a>

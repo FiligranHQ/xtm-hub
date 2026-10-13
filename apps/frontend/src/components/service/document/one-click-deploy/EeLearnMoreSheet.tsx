@@ -122,12 +122,12 @@ const EeLearnMoreSheet = ({
             <p className="text-sm font-semibold">
               {t('Service.ShareableResources.Deploy.EELearnMore.Heading')}
             </p>
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-default-secondary">
               {t(
                 'Service.ShareableResources.Deploy.EELearnMore.FirstParagraph'
               )}
             </p>
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-default-secondary">
               {t(
                 'Service.ShareableResources.Deploy.EELearnMore.SecondParagraph'
               )}
@@ -141,7 +141,7 @@ const EeLearnMoreSheet = ({
                   'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionTitle'
                 )}
               </h3>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-default-secondary">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionDescription'
                 )}
@@ -150,7 +150,7 @@ const EeLearnMoreSheet = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 href={EE_OPENCTI_LEARN_MORE_URL}
-                className="text-sm underline text-primary w-fit">
+                className="text-sm underline text-filigran-brand-primary w-fit">
                 {t('Service.ShareableResources.Deploy.EELearnMore.Link')}
               </Link>
             </div>
@@ -160,7 +160,7 @@ const EeLearnMoreSheet = ({
                   'Service.ShareableResources.Deploy.EELearnMore.InterestedTitle'
                 )}
               </h3>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-default-secondary">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.InterestedSubtitle'
                 )}

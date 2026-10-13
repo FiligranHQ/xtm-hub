@@ -201,7 +201,7 @@ const VotableFeatureForm = ({
                     backgroundSize: 'cover',
                   }}
                   className="relative min-h-[10rem] rounded border">
-                  <div className="flex h-12 flex-row items-center justify-end bg-elevation-background-layer-1 opacity-90">
+                  <div className="flex h-12 flex-row items-center justify-end bg-[var(--bg-elevation-default-layer-1)] opacity-90">
                     <IconButton
                       variant="destructive"
                       priority="secondary"

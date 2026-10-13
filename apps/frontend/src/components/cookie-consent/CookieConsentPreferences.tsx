@@ -81,7 +81,7 @@ export const CookieConsentPreferences = () => {
 
         <DialogBody>
           <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
+            <div className="flex items-center justify-between gap-4 border-b border-elevation-subtle pb-4">
               <span className="body-compact">
                 {t('PreferenceForAllServices')}
               </span>
@@ -127,7 +127,7 @@ export const CookieConsentPreferences = () => {
                     </div>
 
                     {services.length > 0 && openDrawers[category] ? (
-                      <div className="ml-4 flex flex-col gap-3 border-l border-border pl-4">
+                      <div className="ml-4 flex flex-col gap-3 border-l border-elevation-subtle pl-4">
                         {services.map((service) => (
                           <div
                             key={service.id}

@@ -11,11 +11,11 @@ const XtmPlatform = async ({ welcomeName }: XtmPlatformProps = {}) => {
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
       <div className="flex flex-col gap-4">
-        <span className="text-primary heading-sm font-semibold tracking-wide">
+        <span className="text-filigran-brand-primary heading-sm font-semibold tracking-wide">
           {welcomeName ? t('LabelWithName', { name: welcomeName }) : t('Label')}
         </span>
         <h1 className="heading-2xl">{t('Title')}</h1>
-        <p className="text-muted-foreground text-xs max-w-110">
+        <p className="text-default-secondary text-xs max-w-110">
           {t('Description')}
         </p>
         <div className="w-53 flex items-center justify-between gap-2">

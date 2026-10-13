@@ -74,7 +74,7 @@ export const BundleProductCard = ({
 
   const productNameRow = (
     <div className="flex items-center justify-between gap-2 py-4">
-      <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
+      <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
         {t('XtmPlatformTrial.Products.ProductName')}:
       </span>
       <div className="flex items-center gap-1 min-w-0">
@@ -86,7 +86,7 @@ export const BundleProductCard = ({
           <IconButton
             priority="tertiary"
             size="sm"
-            className="shrink-0 rounded border border-elevation-border-strong text-text-default-primary"
+            className="shrink-0 rounded border border-elevation-default text-default-primary"
             aria-label={t('XtmPlatformTrial.Products.EditName')}
             icon={<EditIcon className="size-4" />}
             onClick={() => setOpenEditName(true)}
@@ -122,14 +122,14 @@ export const BundleProductCard = ({
             <XtmoneConnectionStatus status={xtmoneStatus} />
           </div>
         ) : (
-          <div className="flex flex-col divide-y divide-elevation-border-subtle-layer-1">
+          <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle-layer-1)]">
             {productNameRow}
             <div className="flex items-start justify-between gap-2 py-4">
-              <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
+              <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.ConnectionStatus')}:
               </span>
               {!hasConnectivityInfo ? (
-                <span className="text-content-body-base text-text-default-secondary text-left">
+                <span className="text-content-body-base text-default-secondary text-left">
                   {t('XtmPlatformTrial.Products.StatusUnavailable')}
                 </span>
               ) : isConnected ? (
@@ -141,14 +141,14 @@ export const BundleProductCard = ({
                   <span className="text-feedback-error-primary">
                     {t('XtmPlatformTrial.Products.ConnectionLost')}
                   </span>{' '}
-                  <span className="text-text-default-primary">
+                  <span className="text-default-primary">
                     {t('XtmPlatformTrial.Products.ReconnectHint')}
                   </span>
                 </span>
               )}
             </div>
             <div className="flex items-center justify-between gap-2 py-4">
-              <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
+              <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.LastConnection')}:
               </span>
               <span className="text-content-body-compact truncate">
@@ -157,7 +157,7 @@ export const BundleProductCard = ({
               </span>
             </div>
             <div className="flex items-start justify-between gap-2 py-4">
-              <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
+              <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.Role')}:
               </span>
               {hasAccess ? (
@@ -165,7 +165,7 @@ export const BundleProductCard = ({
                   {roleLabel}
                 </span>
               ) : (
-                <span className="text-content-body-compact text-left text-text-default-primary">
+                <span className="text-content-body-compact text-left text-default-primary">
                   {t('XtmPlatformTrial.Products.NoRole')}{' '}
                   {t('XtmPlatformTrial.Products.NoRoleHint')}
                 </span>

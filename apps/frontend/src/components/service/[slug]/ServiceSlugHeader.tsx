@@ -52,11 +52,11 @@ const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
             <h1>{serviceInstance.name}</h1>
             <BadgeOverflowCounter badges={serviceTags as BadgeOverflow[]} />
           </div>
-          <p className="text-sm text-muted-foreground italic line-clamp-3">
+          <p className="text-sm text-default-secondary italic line-clamp-3">
             {serviceInstance.description}
           </p>
           <div>
-            <p className="text-xs uppercase text-muted-foreground pb-1">
+            <p className="text-xs uppercase text-default-secondary pb-1">
               {t('Service.Management.AvailableCapabilities')}
             </p>
             {availableCapabilities.length > 0 ? (
@@ -69,7 +69,7 @@ const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-default-secondary">
                 {t('Service.Management.NoAvailableCapabilities')}
               </p>
             )}

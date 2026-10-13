@@ -43,7 +43,7 @@ export const TrialGuidePage = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <p className="heading-sm bg-clip-text text-transparent bg-gradient-legacy-focus w-fit mb-1 mt-6">
+      <p className="heading-sm text-gradient-focus w-fit mb-1 mt-6">
         {t('Service.TrialGuide.Eyebrow')}
       </p>
       <div className="flex items-start justify-between gap-3 flex-wrap mb-6">
@@ -74,7 +74,7 @@ export const TrialGuidePage = () => {
             />
             <stop
               offset="100%"
-              style={{ stopColor: 'var(--color-filigran-ia-main)' }}
+              style={{ stopColor: 'var(--color-filigran-ia-primary)' }}
             />
           </linearGradient>
         </defs>

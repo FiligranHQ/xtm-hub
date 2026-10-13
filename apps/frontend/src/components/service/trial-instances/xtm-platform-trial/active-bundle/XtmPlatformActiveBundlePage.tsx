@@ -62,9 +62,9 @@ export const XtmPlatformActiveBundlePage = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-3">
-        <div className="h-8 w-64 rounded bg-elevation-surface-highlight-layer-1" />
-        <div className="h-4 w-full rounded bg-elevation-surface-highlight-layer-1" />
-        <div className="h-4 w-5/6 rounded bg-elevation-surface-highlight-layer-1" />
+        <div className="h-8 w-64 rounded bg-[var(--bg-elevation-highlight-layer-1)]" />
+        <div className="h-4 w-full rounded bg-[var(--bg-elevation-highlight-layer-1)]" />
+        <div className="h-4 w-5/6 rounded bg-[var(--bg-elevation-highlight-layer-1)]" />
       </div>
     );
   }
@@ -88,7 +88,7 @@ export const XtmPlatformActiveBundlePage = () => {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="heading-2xl">{t('XtmPlatformTrial.Title')}</h1>
-          <p className="text-content-body-base text-text-default-secondary">
+          <p className="text-content-body-base text-default-secondary">
             {t('XtmPlatformTrial.Subtitle')}
           </p>
         </div>

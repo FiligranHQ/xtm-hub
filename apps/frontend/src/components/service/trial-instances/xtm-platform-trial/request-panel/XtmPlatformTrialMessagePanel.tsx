@@ -13,8 +13,8 @@ export const XtmPlatformTrialMessagePanel = ({
   details,
   actions,
 }: XtmPlatformTrialMessagePanelProps) => (
-  <div className="flex h-full flex-col gap-4 rounded p-4 bg-elevation-background-layer-2 lg:min-h-[346px]">
-    <div className="flex flex-1 flex-col items-center justify-center gap-8 rounded border border-elevation-border-default-layer-1">
+  <div className="flex h-full flex-col gap-4 rounded p-4 bg-[var(--bg-elevation-default-layer-2)] lg:min-h-[346px]">
+    <div className="flex flex-1 flex-col items-center justify-center gap-8 rounded border border-[var(--border-elevation-default-layer-1)]">
       <div className="flex flex-col gap-2 text-center">
         <p className="heading-xs">{title}</p>
         <p className="content-body-base">{description}</p>

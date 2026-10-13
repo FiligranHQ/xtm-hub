@@ -18,7 +18,7 @@ import Link from 'next/link';
 import React from 'react';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-primary text-2xl mb-4">{children}</h2>
+  <h2 className="text-filigran-brand-primary text-2xl mb-4">{children}</h2>
 );
 
 const P = ({
@@ -89,27 +89,27 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
           </article>
         </div>
         <div className="flex flex-col md:flex-row justify-between gap-4">
-          <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
-            <h3 className="flex items-center gap-4 text-primary mb-2 font-bold">
-              <span className="p-2 bg-blue/5 rounded">
+          <article className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
+            <h3 className="flex items-center gap-4 text-filigran-brand-primary mb-2 font-bold">
+              <span className="p-2 bg-filigran-brand-primary-transparency-10 rounded">
                 <ArrowsInputIcon className="size-4" />
               </span>
               {t(`${baseTranslationKey}.Blocks.First.Title`)}
             </h3>
             <P>{t(`${baseTranslationKey}.Blocks.First.Description`)}</P>
           </article>
-          <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
-            <h3 className="flex items-center gap-4 text-primary mb-2 font-bold">
-              <span className="p-2 bg-blue/5 rounded">
+          <article className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
+            <h3 className="flex items-center gap-4 text-filigran-brand-primary mb-2 font-bold">
+              <span className="p-2 bg-filigran-brand-primary-transparency-10 rounded">
                 <AnalyticsIcon className="size-4" />
               </span>
               {t(`${baseTranslationKey}.Blocks.Second.Title`)}
             </h3>
             <P>{t(`${baseTranslationKey}.Blocks.Second.Description`)}</P>
           </article>
-          <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
-            <h3 className="flex items-center gap-4 text-primary mb-2 font-bold">
-              <span className="p-2 bg-blue/5 rounded">
+          <article className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
+            <h3 className="flex items-center gap-4 text-filigran-brand-primary mb-2 font-bold">
+              <span className="p-2 bg-filigran-brand-primary-transparency-10 rounded">
                 <ArrowsOutputIcon className="size-4" />
               </span>
               {t(`${baseTranslationKey}.Blocks.Third.Title`)}

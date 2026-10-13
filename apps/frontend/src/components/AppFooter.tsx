@@ -47,7 +47,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
   return (
     <footer
       className={cn(
-        'text-text-default-primary content-body-compact bg-elevation-bg-layer-0 pt-6 px-0',
+        'text-default-primary content-body-compact pt-6 px-0',
         className
       )}>
       <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-4 text-center">

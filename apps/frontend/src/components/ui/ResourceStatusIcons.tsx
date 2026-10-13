@@ -24,7 +24,7 @@ export interface ResourceStatusIconsProps {
   iconClassName?: string;
 }
 
-const ICON_CLASS = 'h-6 w-6 shrink-0 text-alert-success-primary';
+const ICON_CLASS = 'h-6 w-6 shrink-0 text-icon-success';
 
 interface StatusIconProps {
   label: string;

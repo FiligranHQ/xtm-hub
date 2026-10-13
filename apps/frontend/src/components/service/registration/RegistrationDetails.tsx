@@ -103,7 +103,7 @@ export const RegistrationDetails = ({
       DeploymentRequestHubStatus.Active;
 
   return (
-    <section className="flex justify-between p-6 border border-solid border-blue rounded">
+    <section className="flex justify-between p-6 border border-solid border-filigran-brand-primary rounded">
       <ul className="text-sm flex flex-col gap-4">
         {platform.title && (
           <li>
@@ -176,8 +176,8 @@ export const RegistrationDetails = ({
               <span
                 className={
                   isConnectionStatusOk
-                    ? 'text-alert-success-primary'
-                    : 'text-destructive'
+                    ? 'text-feedback-success-primary'
+                    : 'text-feedback-error-primary'
                 }>
                 {isConnectionStatusOk ? (
                   t('Register.Details.ConnectionStatus.Connected')
@@ -217,7 +217,7 @@ export const RegistrationDetails = ({
                 </span>
               ) : (
                 <span>
-                  <span className="text-destructive mr-1">
+                  <span className="text-feedback-error-primary mr-1">
                     {t('RegistrationDetails.NoAccess')}
                   </span>
                   {t('RegistrationDetails.NoAccessContact', {

@@ -70,7 +70,7 @@ export const TrialUserRolePanelFields = ({
                     triggerClassName="w-full layer-2"
                   />
                   {isUntouchedAndMixed && (
-                    <p className="text-content-body-compact text-text-default-secondary">
+                    <p className="text-content-body-compact text-default-secondary">
                       {t(
                         'Service.Bundle.ManageTrial.EditUsersDialog.MixedRoles'
                       )}

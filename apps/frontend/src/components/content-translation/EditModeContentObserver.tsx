@@ -326,7 +326,7 @@ export const EditModeContentObserver = () => {
             }
             style={{ top: badge.top, left: badge.left }}
             className="pointer-events-none fixed z-[100] -translate-x-1/2 -translate-y-1/2">
-            <EditIcon className="text-primary bg-elevation-background-layer-1 h-4 w-4 rounded-full p-0.5 shadow" />
+            <EditIcon className="text-icon-highlight bg-[var(--bg-elevation-default-layer-1)] h-4 w-4 rounded-full p-0.5 shadow" />
           </div>,
           document.body
         )

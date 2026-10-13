@@ -141,7 +141,7 @@ export const TrialCancelSheet = ({
       setOpen={setOpen}
       title={t('Service.Trials.Cancellation.ConfirmationForm.Title')}>
       {isCancellationDefinitive && (
-        <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-1 p-2 text-sm mt-4">
+        <div className="border border-solid border-alert-warning rounded text-feedback-warning-primary flex items-center gap-1 p-2 text-sm mt-4">
           <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-1" />
           {t('Service.Trials.Cancellation.ConfirmationForm.NoNewTrialPossible')}
         </div>

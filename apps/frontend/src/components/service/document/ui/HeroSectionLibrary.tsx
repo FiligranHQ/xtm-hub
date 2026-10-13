@@ -40,7 +40,7 @@ export const HeroSectionLibrary = ({
   return (
     <section className="pt-3 pb-8">
       <div className="flex flex-col gap-2">
-        <p className="text-primary font-bold">{eyebrow}</p>
+        <p className="text-filigran-brand-primary font-bold">{eyebrow}</p>
         <div className="flex flex-row items-center">
           <h1 className="heading-2xl">{name}</h1>
           {showLibraryUpdate && (

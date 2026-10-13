@@ -126,7 +126,7 @@ export const ContentEditDialog = ({
         </DialogDescription>
 
         <DialogBody>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-default-secondary text-sm">
             {tCommon('EditableText.DraftHint')}
           </p>
           <Form {...form}>

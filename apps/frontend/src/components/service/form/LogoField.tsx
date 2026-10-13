@@ -54,7 +54,7 @@ export const ServiceFormLogoField = ({
               backgroundSize: 'cover',
             }}
             className="min-h-[15rem] border rounded relative">
-            <div className="flex flex-row items-center bg-elevation-background-layer-1 h-12 opacity-90">
+            <div className="flex flex-row items-center bg-[var(--bg-elevation-default-layer-1)] h-12 opacity-90">
               <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-2 mr-2 flex-1 min-w-0">
                 {(logo as ExistingFile)?.file_name ?? (logo as NewFile)?.name}
               </div>
@@ -73,7 +73,7 @@ export const ServiceFormLogoField = ({
             </div>
           </div>
         ) : (
-          <div className="w-24 p-3 border border-light flex items-center justify-center">
+          <div className="w-24 p-3 border flex items-center justify-center">
             <EntityTypeOrFiligranLogo entityTypes={entityTypes} />
           </div>
         )}

@@ -74,20 +74,20 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
 
   return (
     <div className="flex flex-col md:flex-row md:h-screen w-screen overflow-y-auto md:overflow-hidden">
-      <div className="bg-elevation-background-layer-1 flex md:h-full md:w-2/5 flex-col pl-6 pr-0 py-6 md:overflow-hidden order-1">
+      <div className="bg-[var(--bg-elevation-default-layer-1)] flex md:h-full md:w-2/5 flex-col pl-6 pr-0 py-6 md:overflow-hidden order-1">
         {/* Header */}
         <div className="shrink-0 flex justify-center pr-6">
           <FiligranLogoDark className="h-8.25 w-33" />
         </div>
         {/* Body */}
-        <div className="md:flex-1 md:min-h-0 md:overflow-y-auto pr-6 scrollbar-thin [scrollbar-color:transparent_transparent] hover:[scrollbar-color:color-mix(in_srgb,var(--muted-foreground)_40%,transparent)_transparent] transition-[scrollbar-color] duration-300">
+        <div className="md:flex-1 md:min-h-0 md:overflow-y-auto pr-6 scrollbar-thin [scrollbar-color:transparent_transparent] hover:[scrollbar-color:color-mix(in_srgb,var(--text-default-secondary)_40%,transparent)_transparent] transition-[scrollbar-color] duration-300">
           <div className="mx-auto w-full max-w-125 flex flex-col justify-start min-h-full py-6">
-            <h1 className="shrink-0 mt-auto text-3xl leading-9 font-medium text-foreground">
+            <h1 className="shrink-0 mt-auto text-3xl leading-9 font-medium text-default-primary">
               {t('Title1')}
               <br />
               {t('Title2')}
             </h1>
-            <p className="shrink-0 mt-2 text-sm leading-6 font-bold text-foreground">
+            <p className="shrink-0 mt-2 text-sm leading-6 font-bold text-default-primary">
               {t('Subtitle')}
             </p>
             <div
@@ -98,37 +98,35 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
         </div>
         {/* Footer */}
         <div className="shrink-0 flex flex-col items-center gap-1.5 text-xs pr-6">
-          <p className="text-sm leading-6 text-foreground flex items-center gap-2">
+          <p className="text-sm leading-6 text-default-primary flex items-center gap-2">
             {t('AlreadyHaveAccount')}
             <Link
               href={oidcHref}
               prefetch={false}
-              className="text-primary font-bold underline">
+              className="text-filigran-brand-primary font-bold underline">
               {t('LogIn')}
             </Link>
           </p>
           {showLocalLogin && (
             <Link
               href={loginHref}
-              className="text-primary underline">
+              className="text-filigran-brand-primary underline">
               {t('LoginWithLocal')}
             </Link>
           )}
-          <div className="flex items-center gap-1 text-muted-foreground/20 text-xs">
+          <div className="flex items-center gap-1 text-[var(--text-default-secondary)]/20 text-xs">
             {t('MadeBy')}
             <FiligranLogo className="h-4 w-auto" />
           </div>
         </div>
       </div>
-      <div
-        className="md:w-3/5 flex flex-col justify-center order-2"
-        style={{ backgroundColor: 'var(--color-ds-bg-1)' }}>
+      <div className="md:w-3/5 flex flex-col justify-center order-2 bg-[var(--bg-elevation-default-layer-0)]">
         <div className="flex flex-col items-center gap-8 m-[clamp(2rem,5vw,8rem)]">
           <div className="shrink-0 flex flex-col gap-1 text-center">
-            <p className="text-sm leading-6 font-bold text-primary">
+            <p className="text-sm leading-6 font-bold text-filigran-brand-primary">
               {t('WelcomeTitle')}
             </p>
-            <h2 className="text-3xl leading-9 font-medium text-foreground">
+            <h2 className="text-3xl leading-9 font-medium text-default-primary">
               {t('WelcomeSubtitle')}
             </h2>
           </div>

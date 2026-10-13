@@ -102,7 +102,7 @@ export const FeatureVotingList = ({
       {!isLoading && !round && (
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold">{t('FeatureVoting.Title')}</h1>
-          <p className="text-muted-foreground">
+          <p className="text-default-secondary">
             {t('FeatureVoting.NoOpenRound')}
           </p>
         </div>
@@ -113,7 +113,7 @@ export const FeatureVotingList = ({
             <h1 className="text-2xl font-semibold">
               {t('FeatureVoting.Title')}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-default-secondary">
               {round.description ?? t('FeatureVoting.Description')}
             </p>
           </div>
@@ -127,7 +127,7 @@ export const FeatureVotingList = ({
                   {FiligranProductMapping[product].name}
                 </h2>
               </div>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-default-secondary text-sm">
                 {t('FeatureVoting.OneVotePerProduct')}
               </p>
               <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">

@@ -20,7 +20,7 @@ export const XtmPlatformTrialPitch = () => {
         <h2 className="heading-2xl">
           {t('Service.Trials.XtmPlatform.Page.PitchTitle')}
         </h2>
-        <p className="content-body-base text-text-default-secondary">
+        <p className="content-body-base text-default-secondary">
           {t('Service.Trials.XtmPlatform.Page.PitchDescription')}
         </p>
       </div>
@@ -44,7 +44,7 @@ export const XtmPlatformTrialPitch = () => {
                     `Service.Trials.XtmPlatform.Page.Products.${platformIdentifier}.Tagline`
                   )}
                 </h3>
-                <p className="content-body-compact text-text-default-secondary">
+                <p className="content-body-compact text-default-secondary">
                   {t(
                     `Service.Trials.XtmPlatform.Page.Products.${platformIdentifier}.Description`
                   )}

@@ -59,7 +59,7 @@ export const ConnectedProductItem = ({
         {detailPath && (
           <IconButton
             priority="tertiary"
-            className="h-7 w-7 text-text-default-primary"
+            className="h-7 w-7 text-default-primary"
             aria-label={t('Header.ConnectedProducts.Details')}
             icon={<TextSnippetIcon className="h-4 w-4 shrink-0" />}
             asChild>
@@ -69,7 +69,7 @@ export const ConnectedProductItem = ({
         {platform.url && (
           <IconButton
             priority="tertiary"
-            className="h-7 w-7 text-text-default-primary"
+            className="h-7 w-7 text-default-primary"
             aria-label={t('Header.ConnectedProducts.GoToPlatform', {
               title:
                 platform.title ?? platformMeta?.name ?? platform.identifier,

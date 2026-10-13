@@ -79,7 +79,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
           <div className="w-1/3">
             <LogoXTMDark className="pb-6" />
 
-            <SharedContent className="flex flex-col bg-gradient-background px-3 pt-3 sm:px-6 sm:p-6">
+            <SharedContent className="flex flex-col bg-gradient-default px-3 pt-3 sm:px-6 sm:p-6">
               {children}
             </SharedContent>
           </div>

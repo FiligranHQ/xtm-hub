@@ -39,7 +39,7 @@ export const TrialsProductValues = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="flex items-center gap-1 cursor-help">
-                  <span className="text-text-default-secondary">
+                  <span className="text-default-secondary">
                     {product.platform_identifier?.toUpperCase()}
                   </span>
                   {asLink ? (

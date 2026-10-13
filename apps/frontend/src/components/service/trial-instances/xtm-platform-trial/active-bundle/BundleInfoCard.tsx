@@ -26,7 +26,7 @@ const InfoRow = ({
   children: React.ReactNode;
 }) => (
   <div className="flex items-center justify-between gap-2 py-4">
-    <span className="text-content-body-base text-text-default-secondary">
+    <span className="text-content-body-base text-default-secondary">
       {label}:
     </span>
     <span className="text-content-body-compact truncate">{children}</span>
@@ -55,7 +55,7 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
             {t('XtmPlatformTrial.BundleInfo.Title')}
           </span>
         </div>
-        <div className="flex flex-col divide-y divide-elevation-border-subtle-layer-2">
+        <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle-layer-2)]">
           <InfoRow label={t('XtmPlatformTrial.BundleInfo.OrganizationName')}>
             {bundle.organization_name ?? '-'}
           </InfoRow>

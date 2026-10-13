@@ -79,7 +79,7 @@ const ShareableResourceConnectorSlug = ({
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="whitespace-nowrap">{documentData.name}</h1>
             {documentData.manager_supported && (
-              <div className="flex items-center gap-2 py-1 px-4 font-semibold bg-green-100 text-alert-success-primary dark:bg-turquoise-900 rounded">
+              <div className="flex items-center gap-2 py-1 px-4 font-semibold bg-feedback-success-secondary-transparency-30 text-feedback-success-primary rounded">
                 <MotionPlayIcon className="h-5 w-5 shrink-0 mr-1" />
                 {t('Utils.AutomaticDeploy')}
               </div>
@@ -87,14 +87,14 @@ const ShareableResourceConnectorSlug = ({
 
             <div
               className={cn(
-                'flex items-center gap-2 py-1 px-4 font-semibold rounded text-text-default-primary',
+                'flex items-center gap-2 py-1 px-4 font-semibold rounded text-default-primary',
                 documentData.verified
                   ? 'bg-[rgba(15,188,255,0.21)]'
-                  : 'bg-feedback-neutral-secondary-transparency'
+                  : 'bg-feedback-neutral-secondary-transparency-30'
               )}>
               {documentData.verified ? (
                 <>
-                  <LogoFiligranIcon className="h-5 w-5 shrink-0 mr-1 text-text-default-primary" />
+                  <LogoFiligranIcon className="h-5 w-5 shrink-0 mr-1 text-icon-default" />
                   {t('Service.ShareableResources.Details.SupportedByFiligran')}
                 </>
               ) : (
@@ -149,8 +149,8 @@ const ShareableResourceConnectorSlug = ({
         className="mt-4"
       />
       {documentData.verified && (
-        <div className="border border-solid border-blue rounded flex items-center gap-1 p-2 text-sm mt-4">
-          <InfoIcon className="shrink-0 h-4 w-4 mr-1 text-primary" />
+        <div className="border border-solid border-alert-info rounded flex items-center gap-1 p-2 text-sm mt-4">
+          <InfoIcon className="shrink-0 h-4 w-4 mr-1 text-icon-info" />
           {t('Service.Connectors.ImproveIntegrationPrefix')}
           <Link
             href={manifest_url}

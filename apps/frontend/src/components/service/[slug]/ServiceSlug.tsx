@@ -149,7 +149,7 @@ const ServiceSlug = ({
           <div className="flex items-center justify-end">
             <IconActions
               aria-label={t('Utils.OpenMenu')}
-              icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+              icon={<MoreVertIcon className="h-4 w-4 text-icon-highlight" />}>
               <IconActionsLink
                 href={`/${APP_PATH}/admin/service/${row.id}/subscription`}>
                 {t('Service.Management.ManageUsers')}
@@ -262,7 +262,7 @@ const ServiceSlug = ({
 
       <div>
         <ServiceSlugHeader serviceInstance={serviceInstance} />
-        <div className="border rounded bg-elevation-background-layer-1 p-3">
+        <div className="border rounded bg-[var(--bg-elevation-default-layer-1)] p-3">
           <h2 className="">{t('Service.Management.Description') + ':'}</h2>
 
           <DataTable

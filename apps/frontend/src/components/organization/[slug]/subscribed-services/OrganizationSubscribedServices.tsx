@@ -200,10 +200,12 @@ const OrganizationSubscribedServicesSlug = ({
   return (
     <>
       {isError && (
-        <div className="mb-2 text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="mb-2 text-sm text-feedback-error-primary">
+          {t('Utils.Error')}
+        </div>
       )}
       {!isError && !isLoading && subscribedServicesData.length === 0 && (
-        <div className="mb-2 text-sm text-muted-foreground">
+        <div className="mb-2 text-sm text-default-secondary">
           {t('Service.SubscribedServicesList.NoSubscribedServices')}
         </div>
       )}

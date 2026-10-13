@@ -232,7 +232,7 @@ export const ServiceSlugOrgaForm = ({
             />
           )}
 
-          <div className="border border-primary rounded p-4">
+          <div className="border border-filigran-brand-primary rounded p-4">
             <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
             <p className="txt-sub-content italic">
               {t('OrganizationInServiceAction.SelectCapaDescription')}

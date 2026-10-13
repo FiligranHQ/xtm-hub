@@ -76,7 +76,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
                   <MoreVertIcon
                     aria-hidden={true}
                     focusable={false}
-                    className="h-4 w-4 text-primary"
+                    className="h-4 w-4 text-icon-highlight"
                   />
                 }>
                 {row.original.service_definition?.identifier !==

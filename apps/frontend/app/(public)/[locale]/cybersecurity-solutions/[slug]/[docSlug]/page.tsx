@@ -272,7 +272,7 @@ const Page = async ({
             />
           </div>
         ) : (
-          <div className="w-24 p-3 border border-light shrink-0">
+          <div className="w-24 p-3 border shrink-0">
             <LogoFiligranIcon className="size-18" />
           </div>
         )}
@@ -305,10 +305,10 @@ const Page = async ({
       )}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <div className="flex-[3_3_0%]">
-          <h3 className="py-2 txt-container-title truncate text-muted-foreground">
+          <h3 className="py-2 txt-container-title truncate text-default-secondary">
             {t('PublicResourcePage.Overview')}
           </h3>
-          <section className="rounded bg-elevation-background-layer-1">
+          <section className="rounded bg-[var(--bg-elevation-default-layer-1)]">
             <h2 className="p-4">{document?.short_description}</h2>
             <ResourceMarkdownRenderer
               source={document?.description ?? ''}

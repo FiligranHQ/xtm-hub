@@ -54,7 +54,7 @@ const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
               value={`${key}-accordion`}>
               <AccordionTrigger
                 className={cn(
-                  'h-9 py-1 pl-6 content-body-compact text-text-default-secondary cursor-pointer hover:bg-hover',
+                  'h-9 py-1 pl-6 content-body-compact text-default-secondary cursor-pointer hover:bg-elevation-hover',
                   NAVIGATION_HOVER_CLASSES
                 )}>
                 <span className="flex flex-1 items-center justify-between gap-1 truncate pr-1">
@@ -62,7 +62,7 @@ const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
                   {link.badge && (
                     <span
                       aria-hidden={true}
-                      className="inline-flex min-w-4 items-center justify-center rounded-full border border-border/70 bg-muted px-1.5 py-0.5 text-[10px] font-medium leading-none text-muted-foreground">
+                      className="inline-flex min-w-4 items-center justify-center rounded-full border border-[var(--border-elevation-subtle)]/70 bg-elevation-highlight px-1.5 py-0.5 text-[10px] font-medium leading-none text-default-secondary">
                       {link.badge}
                     </span>
                   )}
@@ -112,7 +112,7 @@ export const LinkedSection = ({
       aria-label={section.label}>
       <MenuItemIcon icon={Icon} />
       {open && (
-        <span className="flex-1 px-2 text-left text-foreground content-body-base truncate">
+        <span className="flex-1 px-2 text-left text-default-primary content-body-base truncate">
           {section.label}
         </span>
       )}
@@ -143,7 +143,7 @@ export const ClosedSection = ({ section }: { section: SectionConfig }) => {
           className={cn(
             'h-9 w-full justify-start rounded-none pl-5 cursor-pointer',
             currentPath.startsWith(section.pathPrefix)
-              ? 'bg-primary/10 shadow-[inset_2px_0px] shadow-primary'
+              ? 'bg-filigran-brand-primary-transparency-10 shadow-[inset_2px_0px] shadow-filigran-brand-primary'
               : NAVIGATION_HOVER_CLASSES
           )}
           aria-label={section.label}
@@ -172,9 +172,9 @@ export const OpenedSection = ({ section }: { section: SectionConfig }) => {
     <AccordionItem
       className="border-none"
       value={section.key}>
-      <AccordionTrigger className="h-9 pl-5 py-1 cursor-pointer hover:bg-hover font-normal hover:shadow-[inset_2px_0px] hover:shadow-white">
+      <AccordionTrigger className="h-9 pl-5 py-1 cursor-pointer hover:bg-elevation-hover font-normal hover:shadow-[inset_2px_0px]">
         <MenuItemIcon icon={Icon} />
-        <span className="flex-1 px-2 text-left text-foreground text-sm content-body-base truncate">
+        <span className="flex-1 px-2 text-left text-default-primary text-sm content-body-base truncate">
           {section.label}
         </span>
       </AccordionTrigger>

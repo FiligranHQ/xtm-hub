@@ -200,7 +200,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
         className="flex flex-col gap-2 rounded-xs border-0 p-0">
         <span className="sr-only">{optionLabel}</span>
         {flatOptions.length === 0 ? (
-          <span className="content-body-compact text-text-default-secondary">
+          <span className="content-body-compact text-default-secondary">
             {noResultString}
           </span>
         ) : (
@@ -223,7 +223,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
                     {option.label}
                   </span>
                   {facetCounts && (
-                    <span className="ml-auto shrink-0 rounded bg-elevation-surface-highlight-layer-0 px-1.5 content-body-compact text-text-default-secondary">
+                    <span className="ml-auto shrink-0 rounded bg-[var(--bg-elevation-highlight-layer-0)] px-1.5 content-body-compact text-default-secondary">
                       {getFacetCount(facetCounts, option.value)}
                     </span>
                   )}
@@ -253,7 +253,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
                   {option.label}
                 </span>
                 {facetCounts && (
-                  <span className="ml-auto shrink-0 rounded bg-elevation-surface-highlight-layer-0 px-1.5 content-body-compact text-text-default-secondary">
+                  <span className="ml-auto shrink-0 rounded bg-[var(--bg-elevation-highlight-layer-0)] px-1.5 content-body-compact text-default-secondary">
                     {getFacetCount(facetCounts, option.value)}
                   </span>
                 )}

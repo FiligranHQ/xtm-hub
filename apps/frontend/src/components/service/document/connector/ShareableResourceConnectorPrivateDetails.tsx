@@ -31,7 +31,7 @@ export const ShareableResourceConnectorPrivateDetails = ({
 
   const compatibilityItem =
     incompatiblePlatformsCount > 0 ? (
-      <span className="text-muted-foreground/60 flex gap-2 items-center">
+      <span className="text-[var(--text-default-secondary)]/60 flex gap-2 items-center">
         {connectorDetails?.minimum_deployable_version}
         <CheckIndeterminateIcon className="h-4 w-4" />
       </span>

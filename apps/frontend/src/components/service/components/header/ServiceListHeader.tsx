@@ -147,8 +147,8 @@ export const ServiceListHeader = ({
                   className={cn(
                     'h-5 w-5',
                     storedDisplayMode === ServiceListDisplayMode.Tab
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
+                      ? 'text-icon-highlight'
+                      : 'text-icon-subtle'
                   )}
                 />
               </button>
@@ -168,8 +168,8 @@ export const ServiceListHeader = ({
                   className={cn(
                     'h-4 w-4',
                     storedDisplayMode === ServiceListDisplayMode.List
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
+                      ? 'text-icon-highlight'
+                      : 'text-icon-subtle'
                   )}
                 />
               </button>

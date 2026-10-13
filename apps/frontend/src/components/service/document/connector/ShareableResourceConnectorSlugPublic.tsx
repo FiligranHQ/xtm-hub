@@ -57,21 +57,21 @@ const ShareableResourceConnectorSlugPublic = async ({
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="whitespace-nowrap">{documentData.name}</h1>
             {documentData.manager_supported && (
-              <div className="flex items-center gap-2 py-1 px-4 font-semibold bg-green-100 text-alert-success-primary dark:bg-turquoise-900 rounded">
+              <div className="flex items-center gap-2 py-1 px-4 font-semibold bg-feedback-success-secondary-transparency-30 text-feedback-success-primary rounded">
                 <MotionPlayIcon className="h-5 w-5 shrink-0 mr-1" />
                 {t('Utils.AutomaticDeploy')}
               </div>
             )}
             <div
               className={cn(
-                'flex items-center gap-2 py-1 px-4 font-semibold rounded text-text-default-primary',
+                'flex items-center gap-2 py-1 px-4 font-semibold rounded text-default-primary',
                 documentData.verified
                   ? 'bg-[rgba(15,188,255,0.21)]'
-                  : 'bg-feedback-neutral-secondary-transparency'
+                  : 'bg-feedback-neutral-secondary-transparency-30'
               )}>
               {documentData.verified ? (
                 <>
-                  <LogoFiligranIcon className="h-5 w-5 shrink-0 mr-1 text-text-default-primary" />
+                  <LogoFiligranIcon className="h-5 w-5 shrink-0 mr-1 text-icon-default" />
                   {t('Service.ShareableResources.Details.SupportedByFiligran')}
                 </>
               ) : (
@@ -106,10 +106,10 @@ const ShareableResourceConnectorSlugPublic = async ({
 
       <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <div className="flex-[3_3_0%] min-w-0">
-          <h3 className="py-2 txt-container-title truncate text-muted-foreground">
+          <h3 className="py-2 txt-container-title truncate text-default-secondary">
             {t('PublicResourcePage.Overview')}
           </h3>
-          <section className="rounded bg-elevation-background-layer-1 overflow-x-auto">
+          <section className="rounded bg-[var(--bg-elevation-default-layer-1)] overflow-x-auto">
             <h2 className="p-4">{documentData?.short_description}</h2>
             <ResourceMarkdownRenderer
               source={documentData?.description ?? ''}

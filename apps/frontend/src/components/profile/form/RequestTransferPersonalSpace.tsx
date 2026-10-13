@@ -64,7 +64,7 @@ export const RequestTransferPersonalSpace = () => {
   return (
     <>
       <Separator className="my-2" />
-      <h2 className="text-destructive">{t('Utils.DangerZone')}</h2>
+      <h2 className="text-feedback-error-primary">{t('Utils.DangerZone')}</h2>
       <Card>
         <CardHeader>
           <CardTitle as="h3">

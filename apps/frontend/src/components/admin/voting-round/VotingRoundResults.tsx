@@ -49,14 +49,14 @@ export const VotingRoundResults = ({ roundId }: { roundId: string }) => {
         <h2 className="text-xl font-semibold">
           {t('VotingRound.Results.Title')}
         </h2>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-default-secondary text-sm">
           {t('VotingRound.Results.TotalVoters', {
             count: results.total_voters,
           })}
         </p>
       </div>
       {sections.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
+        <p className="text-default-secondary text-sm">
           {t('VotingRound.Results.Empty')}
         </p>
       ) : (
@@ -74,15 +74,15 @@ export const VotingRoundResults = ({ roundId }: { roundId: string }) => {
               {ranked.map((result, index) => (
                 <li
                   key={result.feature.id}
-                  className="flex items-center gap-3 rounded bg-elevation-background-layer-1 p-2">
-                  <span className="w-6 text-center text-muted-foreground">
+                  className="flex items-center gap-3 rounded bg-[var(--bg-elevation-default-layer-1)] p-2">
+                  <span className="w-6 text-center text-default-secondary">
                     {index + 1}
                   </span>
                   <span className="flex-1 truncate">
                     {result.feature.title}
                   </span>
                   {!result.feature.active && (
-                    <span className="text-muted-foreground text-xs">
+                    <span className="text-default-secondary text-xs">
                       {t('VotingRound.Results.InactiveFeature')}
                     </span>
                   )}

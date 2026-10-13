@@ -104,7 +104,7 @@ const ServiceCard = ({
               size="sm"
               className="z-[2]"
               aria-label={t('Utils.OpenMenu')}
-              icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+              icon={<MoreVertIcon className="h-4 w-4 text-icon-highlight" />}>
               {userCanUpdate && (
                 <IconActionsItem onClick={() => onClickOnUpdate()}>
                   {t('MenuActions.Update')}

@@ -77,14 +77,14 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
       <div className="mobile:hidden flex items-center gap-2">
         <DisplayLogo
           className={cn(
-            'text-primary mr-2 h-full py-4',
+            'text-icon-highlight mr-2 h-full py-4',
             displayLogo ? '' : 'hidden'
           )}
         />
         <HeaderOrganizationSwitcher />
       </div>
 
-      <DisplayLogo className="text-primary mr-2 h-full py-4 sm:hidden" />
+      <DisplayLogo className="text-icon-highlight mr-2 h-full py-4 sm:hidden" />
 
       <div className="flex items-center gap-2">
         <div className="mobile:hidden flex items-center gap-2">
@@ -124,10 +124,10 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
             <SheetContent
               side="left"
               closeLabel={t('Header.CloseMenu')}
-              className="bg-gradient-background">
-              <SheetHeader className="flex flex-row justify-between pl-4 bg-gradient-background">
+              className="bg-gradient-default">
+              <SheetHeader className="flex flex-row justify-between pl-4 bg-gradient-default">
                 <div className="flex items-center gap-2">
-                  <DisplayLogo className="text-primary h-8" />
+                  <DisplayLogo className="text-icon-highlight h-8" />
                   <SheetTitle className="sr-only">
                     {t('Header.BrandName')}
                   </SheetTitle>
@@ -143,12 +143,12 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
                 </div>
                 <div className="mt-auto pt-4 pb-6 flex flex-col text-center">
                   <Link href={`/${APP_PATH}/profile`}>
-                    <div className="w-full p-2 hover:bg-hover rounded">
+                    <div className="w-full p-2 hover:bg-elevation-hover rounded">
                       {t('MenuUser.Profile')}
                     </div>
                   </Link>
                   <div
-                    className="p-2 hover:bg-hover rounded cursor-pointer"
+                    className="p-2 hover:bg-elevation-hover rounded cursor-pointer"
                     onClick={handleLogout}>
                     {t('LoginPage.Logout')}
                   </div>

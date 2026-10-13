@@ -257,7 +257,9 @@ const SubscriptionSlug = ({
               {canManageUserServices && (
                 <IconActions
                   aria-label={t('Utils.OpenMenu')}
-                  icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+                  icon={
+                    <MoreVertIcon className="h-4 w-4 text-icon-highlight" />
+                  }>
                   <IconActionsItem
                     onClick={() => setEditUserService(row.original)}>
                     {t('Utils.Update')}

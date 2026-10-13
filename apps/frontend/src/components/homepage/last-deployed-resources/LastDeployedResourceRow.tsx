@@ -48,7 +48,7 @@ const LastDeployedResourceRow = ({
       href={url}
       prefetch={false}
       className="group contents">
-      <div className="min-w-0 max-w-full justify-self-start inline-flex items-center gap-3 overflow-hidden rounded p-2 bg-elevation-background-layer-1 group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
+      <div className="min-w-0 max-w-full justify-self-start inline-flex items-center gap-3 overflow-hidden rounded p-2 bg-[var(--bg-elevation-default-layer-1)] group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-focus">
         <ResourceTypeIcon
           resourceType={resourceType}
           className="size-6 shrink-0"
@@ -74,10 +74,10 @@ const LastDeployedResourceRow = ({
           )}
         </div>
       </div>
-      <div className="shrink-0 md:max-w-56 lg:max-w-72 xl:max-w-80 2xl:max-w-96 flex items-center gap-2 overflow-hidden whitespace-nowrap text-text-default-secondary txt-small rounded group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-ring">
+      <div className="shrink-0 md:max-w-56 lg:max-w-72 xl:max-w-80 2xl:max-w-96 flex items-center gap-2 overflow-hidden whitespace-nowrap text-default-secondary txt-small rounded group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-focus">
         <CalendarMonthIcon className="size-4 shrink-0" />
         <span className="shrink-0">{t('On')}</span>
-        <span className="shrink-0 content-body-base text-text-default-primary">
+        <span className="shrink-0 content-body-base text-default-primary">
           {deployedAt}
         </span>
         <span className="shrink-0">{t('By')}</span>

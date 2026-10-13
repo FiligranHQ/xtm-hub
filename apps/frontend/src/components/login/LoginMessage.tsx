@@ -5,10 +5,10 @@ const LoginMessage = () => {
   const t = useTranslate();
 
   return (
-    <div className="bg-elevation-background-layer-1 border border-border-light rounded w-full p-6 text-sm text-center">
+    <div className="bg-[var(--bg-elevation-default-layer-1)] border border-elevation-subtle rounded w-full p-6 text-sm text-center">
       {t('LoginPage.DontHaveAccount')}{' '}
       <Link
-        className="text-primary"
+        className="text-filigran-brand-primary"
         href="/sign-up">
         {t('LoginPage.SignUp')}
       </Link>

@@ -487,7 +487,9 @@ const UserList = ({ organization }: UserListProps) => {
                     onClick={(event) => event.stopPropagation()}>
                     <IconActions
                       aria-label={t('Utils.OpenMenu')}
-                      icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+                      icon={
+                        <MoreVertIcon className="h-4 w-4 text-icon-highlight" />
+                      }>
                       {showResendInvite && (
                         <IconActionsItem
                           disabled={isResendingInvite}
@@ -649,7 +651,7 @@ const UserList = ({ organization }: UserListProps) => {
         }}
       />
       {data.users.totalCount === 0 && (
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-sm text-default-secondary">
           {t('UserListPage.NoUsers')}
         </p>
       )}

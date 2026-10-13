@@ -19,12 +19,6 @@
     var(--darkblue-700) 30%,
     transparent
   );
-  --hover-background: var(--color-gray-150);
-  --color-primary: var(--primary);
-  --color-foreground: var(--foreground);
-  --color-destructive: var(--destructive);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-ds-bg: var(--ds-bg-main);
 }
 
 .dark,
@@ -35,7 +29,6 @@ body[data-theme='Dark'] {
     var(--blue-500) 30%,
     transparent
   );
-  --hover-background: var(--color-filigran-brand-primary-transparency);
 }
 
 /* The design system declares the input tokens on :root only, which freezes them at layer 0:
@@ -59,19 +52,19 @@ body[data-theme='Dark'] {
 @layer base {
   html {
     font-size: 100%;
-    @apply bg-background;
+    @apply bg-elevation-default;
   }
 
   * {
-    @apply border-border;
+    @apply border-elevation-subtle;
   }
 
   body {
     font-family: var(--font-ibm-plex-sans), system-ui, sans-serif;
     font-size: var(--text-content-body-base);
     font-weight: var(--font-weight-content-body-base);
-    background: var(--gradient-background);
-    color: var(--color-text-default-primary);
+    background: var(--gradient-default);
+    color: var(--text-default-primary);
   }
 
   h1,
@@ -117,11 +110,11 @@ body[data-theme='Dark'] {
   word-wrap: break-word;
 
   h1 {
-    @apply border-border mt-6 mb-4 border-b pb-2 text-2xl font-semibold;
+    @apply border-elevation-subtle mt-6 mb-4 border-b pb-2 text-2xl font-semibold;
   }
 
   h2 {
-    @apply border-border mt-5 mb-3 border-b pb-2 text-xl font-semibold;
+    @apply border-elevation-subtle mt-5 mb-3 border-b pb-2 text-xl font-semibold;
   }
 
   h3 {
@@ -139,7 +132,7 @@ body[data-theme='Dark'] {
   }
 
   a {
-    @apply text-primary underline hover:no-underline;
+    @apply text-filigran-brand-primary underline hover:no-underline;
   }
 
   ul,
@@ -165,15 +158,15 @@ body[data-theme='Dark'] {
   }
 
   blockquote {
-    @apply border-border text-muted-foreground my-3 border-l-4 pl-4 italic;
+    @apply border-elevation-subtle text-default-secondary my-3 border-l-4 pl-4 italic;
   }
 
   code:not(pre code) {
-    @apply bg-muted rounded px-1.5 py-0.5 font-mono text-sm;
+    @apply bg-elevation-highlight rounded px-1.5 py-0.5 font-mono text-sm;
   }
 
   pre {
-    @apply bg-muted my-3 overflow-x-auto rounded-xs p-4;
+    @apply bg-elevation-highlight my-3 overflow-x-auto rounded-xs p-4;
   }
 
   pre code {
@@ -181,7 +174,7 @@ body[data-theme='Dark'] {
   }
 
   hr {
-    @apply border-border my-6 border-t;
+    @apply border-elevation-subtle my-6 border-t;
   }
 
   table {
@@ -190,11 +183,11 @@ body[data-theme='Dark'] {
 
   th,
   td {
-    @apply border-border border px-3 py-2 text-left;
+    @apply border-elevation-subtle border px-3 py-2 text-left;
   }
 
   th {
-    @apply bg-muted font-semibold;
+    @apply bg-elevation-heading font-semibold;
   }
 
   img {
@@ -218,21 +211,22 @@ body[data-theme='Dark'] {
 /* In-context editing: an outline never changes the layout and follows its
    element when it scrolls, clips or hides. */
 [data-content-editable] {
-  outline: 1px dashed color-mix(in srgb, var(--color-primary) 50%, transparent);
+  outline: 1px dashed
+    color-mix(in srgb, var(--color-filigran-brand-primary) 50%, transparent);
   outline-offset: 1px;
   cursor: pointer;
 }
 
 [data-content-editable]:hover {
   outline-style: solid;
-  outline-color: var(--color-primary);
+  outline-color: var(--color-filigran-brand-primary);
 }
 
 [data-content-editable='overridden'],
 [data-content-editable='overridden']:hover {
-  outline-color: var(--color-yellow-400);
+  outline-color: var(--color-feedback-alert-primary);
 }
 
 [data-content-edit-badge='overridden'] svg {
-  color: var(--color-yellow-400);
+  color: var(--color-feedback-alert-primary);
 }

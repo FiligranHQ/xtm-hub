@@ -27,8 +27,8 @@ export const XtmPlatformTrialRequestStepper = ({
                 fontClass="content-body-base-bold"
                 bgFadedClass={
                   isCurrent
-                    ? 'bg-feedback-success-secondary-transparency'
-                    : 'bg-feedback-neutral-secondary-transparency'
+                    ? 'bg-feedback-success-secondary-transparency-30'
+                    : 'bg-feedback-neutral-secondary-transparency-30'
                 }
                 textClass={
                   isCurrent

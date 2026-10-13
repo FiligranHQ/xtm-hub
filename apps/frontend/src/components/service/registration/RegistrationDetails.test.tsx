@@ -329,10 +329,10 @@ describe('RegistrationDetails', () => {
       });
 
       const noAccessEl = screen.getByText('RegistrationDetails.NoAccess');
-      expect(noAccessEl).toHaveClass('text-destructive');
+      expect(noAccessEl).toHaveClass('text-feedback-error-primary');
 
       const contactEl = screen.getByText('RegistrationDetails.NoAccessContact');
-      expect(contactEl).not.toHaveClass('text-destructive');
+      expect(contactEl).not.toHaveClass('text-feedback-error-primary');
     });
 
     it('should not render access row for non-trial', () => {

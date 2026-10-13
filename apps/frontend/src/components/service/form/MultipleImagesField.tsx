@@ -111,10 +111,10 @@ export const ServiceFormMultipleImagesField = ({
                 }}
                 className="min-h-[15rem] border rounded relative">
                 <div
-                  className={`absolute inset-0 bg-black-1000 flex flex-col items-center justify-center transition-all duration-800 ease-in ${
+                  className={`absolute inset-0 bg-[var(--black-1000)] flex flex-col items-center justify-center transition-all duration-800 ease-in ${
                     imagesToDelete.includes(doc!.id)
-                      ? 'bg-black-1000/90 opacity-100'
-                      : 'bg-black-1000/0 opacity-0'
+                      ? 'bg-[var(--black-1000)]/90 opacity-100'
+                      : 'bg-[var(--black-1000)]/0 opacity-0'
                   }`}>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -135,12 +135,12 @@ export const ServiceFormMultipleImagesField = ({
                   </Tooltip>
                   <DeleteIcon
                     focusable={false}
-                    className="size-6 text-muted-foreground"
+                    className="size-6 text-icon-subtle"
                   />
                 </div>
 
                 {!imagesToDelete.includes(doc!.id) && (
-                  <div className="flex flex-row items-center bg-elevation-background-layer-1 h-12 opacity-90">
+                  <div className="flex flex-row items-center bg-[var(--bg-elevation-default-layer-1)] h-12 opacity-90">
                     <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-2 mr-2 flex-1 min-w-0">
                       {(doc as ExistingFile)?.file_name ??
                         (doc as NewFile)?.name}

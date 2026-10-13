@@ -58,9 +58,9 @@ export const PaginationArrowButtons = ({
         icon={<ArrowPreviousIcon className="size-3" />}
       />
       <div
-        className="leading-none text-text-secondary txt-sub-content whitespace-nowrap text-center"
+        className="leading-none text-default-secondary txt-sub-content whitespace-nowrap text-center"
         style={{ width: counterWidth }}>
-        <span className="text-foreground">
+        <span className="text-default-primary">
           {rangeStart}
           {' - '}
           {rangeEnd}

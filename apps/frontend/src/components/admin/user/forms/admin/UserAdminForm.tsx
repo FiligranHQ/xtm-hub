@@ -139,7 +139,8 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
         <div
           className={cn(
             '!mt-3 px-4 py-2 space-y-2',
-            fields.length > 0 && 'border bg-card rounded'
+            fields.length > 0 &&
+              'border bg-[var(--bg-elevation-default-layer-1)] rounded'
           )}>
           {fields.map((field, index) => {
             return (

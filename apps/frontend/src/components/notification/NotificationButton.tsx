@@ -131,10 +131,10 @@ const PendingUserNotifications = ({
       <PopoverTrigger asChild>
         <Button
           priority="tertiary"
-          className="text-primary w-9 px-0 relative">
+          className="text-filigran-brand-primary w-9 px-0 relative">
           <NotificationsIcon className="h-4 w-4" />
           {nbUsers > 0 && (
-            <span className="absolute top-2 right-2.5 block h-[6px] w-[6px] transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full"></span>
+            <span className="absolute top-2 right-2.5 block h-[6px] w-[6px] transform translate-x-1/2 -translate-y-1/2 bg-feedback-error-primary rounded-full"></span>
           )}
         </Button>
       </PopoverTrigger>
@@ -155,7 +155,7 @@ const PendingUserNotifications = ({
                 href={`/${APP_PATH}/manage/user?pendingUsers`}
                 onClick={() => setOpenPopover(false)}
                 className="flex items-center my-2 px-4">
-                <IndividualIcon className="mr-4 h-4 w-4 text-muted-foreground" />
+                <IndividualIcon className="mr-4 h-4 w-4 text-icon-subtle" />
                 <div className="">
                   <span className="block text-sm">
                     {t('Notifications.UserNotification.Title')}
@@ -163,7 +163,9 @@ const PendingUserNotifications = ({
                   <span className="block text-xs">
                     {t.rich('Notifications.UserNotification.Text', {
                       nameFormat: (chunk) => (
-                        <span className="text-primary">{chunk}</span>
+                        <span className="text-filigran-brand-primary">
+                          {chunk}
+                        </span>
                       ),
                       name: `${user.first_name} ${user.last_name}`,
                     })}

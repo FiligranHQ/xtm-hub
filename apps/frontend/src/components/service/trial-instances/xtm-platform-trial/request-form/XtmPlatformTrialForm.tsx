@@ -93,7 +93,7 @@ export const XtmPlatformTrialForm = ({
     <Link
       target="_blank"
       rel="noopener noreferrer"
-      className="underline text-primary"
+      className="underline text-filigran-brand-primary"
       href={withFiligranWebsiteUtm('https://filigran.io/mssa', {
         campaign: FiligranWebsiteUtmCampaign.OTHER,
         content: 'trial_form_mssa',
@@ -105,7 +105,7 @@ export const XtmPlatformTrialForm = ({
     <Link
       target="_blank"
       rel="noopener noreferrer"
-      className="underline text-primary"
+      className="underline text-filigran-brand-primary"
       href={withFiligranWebsiteUtm('https://filigran.io/ai-terms', {
         campaign: FiligranWebsiteUtmCampaign.OTHER,
         content: 'trial_form_ai_terms',
@@ -196,9 +196,9 @@ export const XtmPlatformTrialForm = ({
   };
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded bg-elevation-background-layer-2 p-6">
+    <div className="flex w-full flex-col gap-6 rounded bg-[var(--bg-elevation-default-layer-2)] p-6">
       <div className="flex items-center gap-4">
-        <span className="text-content-body-base text-muted-foreground">
+        <span className="text-content-body-base text-default-secondary">
           {t('Service.Trials.Form.AssociatedEmail')}
         </span>
         <span className="txt-default-bold">{me?.email}</span>
@@ -208,14 +208,14 @@ export const XtmPlatformTrialForm = ({
         <form
           className="flex w-full flex-col gap-4"
           onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-2 rounded bg-hover p-4 bg-elevation-background-layer-2">
+          <div className="flex flex-col gap-2 rounded bg-[var(--bg-elevation-highlight-layer-2)] p-4">
             <h3 className="txt-title-xs">
               {t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}
             </h3>
 
             {hasOngoingStandaloneTrials ? (
-              <div className="flex items-start gap-1 rounded border border-solid border-red p-2">
-                <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
+              <div className="flex items-start gap-1 rounded border border-solid border-alert-error p-2">
+                <WarningIcon className="size-4 mt-1 shrink-0 text-icon-error" />
                 <div className="flex flex-col gap-1">
                   <span>
                     {t(
@@ -231,8 +231,8 @@ export const XtmPlatformTrialForm = ({
                 </div>
               </div>
             ) : (
-              <div className="flex items-start gap-1 rounded border border-solid border-alert-alert-primary p-2">
-                <WarningIcon className="size-4 mt-1 shrink-0 text-alert-alert-primary" />
+              <div className="flex items-start gap-1 rounded border border-solid border-alert-alert p-2">
+                <WarningIcon className="size-4 mt-1 shrink-0 text-icon-alert" />
                 <div className="flex flex-col gap-1 content-body-compact">
                   <span>
                     {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
@@ -389,8 +389,8 @@ export const XtmPlatformTrialForm = ({
         confirmLabel={t('Utils.Confirm')}
         destructive
         onConfirm={onConfirmOngoingTrial}>
-        <div className="flex items-start gap-1 rounded border border-solid border-red p-2">
-          <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
+        <div className="flex items-start gap-1 rounded border border-solid border-alert-error p-2">
+          <WarningIcon className="size-4 mt-1 shrink-0 text-icon-error" />
           <div className="flex flex-col gap-1">
             <span>
               {t(
