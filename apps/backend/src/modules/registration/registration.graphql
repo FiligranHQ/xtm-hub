@@ -195,8 +195,9 @@ type Query {
     input: CanUnregisterPlatformInput!
   ): CanUnregisterResponse! @auth
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform @auth
-  registeredSaasPlatformMetadata(platformId: String!): SaasPlatformMetadata
-    @auth
+  registeredSaasPlatformMetadata(
+    input: RegisteredPlatformInput!
+  ): SaasPlatformMetadata @auth
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
     @auth
   saasPlatforms(

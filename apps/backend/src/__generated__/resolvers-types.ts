@@ -2235,7 +2235,7 @@ export type QueryRegisteredProductVersionsArgs = {
 
 
 export type QueryRegisteredSaasPlatformMetadataArgs = {
-  platformId: Scalars['String']['input'];
+  input: RegisteredPlatformInput;
 };
 
 
@@ -4779,7 +4779,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   registeredProductVersions?: Resolver<Array<ResolversTypes['RegisteredProductVersion']>, ParentType, ContextType, RequireFields<QueryRegisteredProductVersionsArgs, 'product'>>;
-  registeredSaasPlatformMetadata?: Resolver<Maybe<ResolversTypes['SaasPlatformMetadata']>, ParentType, ContextType, RequireFields<QueryRegisteredSaasPlatformMetadataArgs, 'platformId'>>;
+  registeredSaasPlatformMetadata?: Resolver<Maybe<ResolversTypes['SaasPlatformMetadata']>, ParentType, ContextType, RequireFields<QueryRegisteredSaasPlatformMetadataArgs, 'input'>>;
   rolePortals?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
   saasPlatforms?: Resolver<ResolversTypes['RegisteredPlatformConnection'], ParentType, ContextType, RequireFields<QuerySaasPlatformsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;

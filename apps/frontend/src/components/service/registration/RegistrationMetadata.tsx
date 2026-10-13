@@ -1,6 +1,7 @@
 'use client';
 
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
+import { Skeleton } from '@/components/ui/skeleton';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
@@ -24,6 +25,9 @@ import { useId } from 'react';
 import { useFragment } from 'react-relay';
 import { useCopyToClipboard } from 'usehooks-ts';
 
+// Matches the backend cache: a remount within a minute would only get the same answer back.
+const SAAS_PLATFORM_METADATA_STALE_TIME = 60_000;
+
 interface RegistrationMetadataProps {
   registeredPlatform: registeredPlatformByServiceInstanceId_fragment$key;
 }
@@ -44,20 +48,27 @@ export const RegistrationMetadata = ({
     );
   const isSaas = platform.commercial_model === CommercialModel.Saas;
 
-  const variables = { platformId: platform.platform_id };
+  const variables = {
+    input: { service_instance_id: platform.service_instance_id },
+  };
   const { data, isPending } = useRegisteredSaasPlatformMetadataQuery(
     portalGraphqlClient,
     variables,
     {
       queryKey: registrationKeys.registeredSaasPlatformMetadata(variables),
       enabled: isSaas,
+      staleTime: SAAS_PLATFORM_METADATA_STALE_TIME,
     }
   );
   const metadata = data?.registeredSaasPlatformMetadata;
   const hostname = metadata?.hostname;
 
-  if (isPending || !isSaas) {
+  if (!isSaas) {
     return null;
+  }
+
+  if (isPending) {
+    return <RegistrationMetadataSkeleton />;
   }
 
   const copyHostname = async (hostname: string) => {
@@ -155,6 +166,32 @@ export const RegistrationMetadata = ({
           </span>
           {metadata?.region ?? t('Register.Metrics.Metadata.Unavailable')}
         </li>
+      </ul>
+    </section>
+  );
+};
+
+const RegistrationMetadataSkeleton = () => {
+  const t = useTranslate();
+
+  return (
+    <section
+      aria-busy="true"
+      className="flex justify-between p-xl">
+      <ul className="text-sm flex flex-col gap-l">
+        {[
+          'Register.Metrics.Metadata.Hostname',
+          'Register.Metrics.Metadata.SubscribedPlan',
+          'Register.Metrics.Metadata.Contract',
+          'Register.Metrics.Metadata.RegionalArea',
+        ].map((labelKey) => (
+          <li
+            key={labelKey}
+            className="flex items-center">
+            <span className="mr-xs text-default-secondary">{t(labelKey)}:</span>
+            <Skeleton className="h-4 w-40" />
+          </li>
+        ))}
       </ul>
     </section>
   );

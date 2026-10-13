@@ -140,7 +140,7 @@ describe('RegistrationMetadata', () => {
       // Then
       expect(useRegisteredSaasPlatformMetadataQuery).toHaveBeenCalledWith(
         expect.anything(),
-        { platformId: saasPlatform.platform_id },
+        { input: { service_instance_id: saasPlatform.service_instance_id } },
         expect.objectContaining({ enabled: false })
       );
     });
@@ -154,20 +154,48 @@ describe('RegistrationMetadata', () => {
       // Then
       expect(useRegisteredSaasPlatformMetadataQuery).toHaveBeenCalledWith(
         expect.anything(),
-        { platformId: saasPlatform.platform_id },
+        { input: { service_instance_id: saasPlatform.service_instance_id } },
         expect.objectContaining({ enabled: true })
       );
     });
 
-    it('should render nothing while the metadata is loading', () => {
+    it.each`
+      labelKey
+      ${'Register.Metrics.Metadata.Hostname'}
+      ${'Register.Metrics.Metadata.SubscribedPlan'}
+      ${'Register.Metrics.Metadata.Contract'}
+      ${'Register.Metrics.Metadata.RegionalArea'}
+    `(
+      'should keep the $labelKey row in place while the metadata is loading',
+      ({ labelKey }) => {
+        // Given
+        mockMetadataQuery({ isPending: true });
+
+        // When
+        renderMetadata();
+
+        // Then
+        expect(getRow(labelKey).closest('section')).toHaveAttribute(
+          'aria-busy',
+          'true'
+        );
+      }
+    );
+
+    it('should not display any value while the metadata is loading', () => {
       // Given
       mockMetadataQuery({ isPending: true });
 
       // When
-      const { container } = renderMetadata();
+      renderMetadata();
 
       // Then
-      expect(container).toBeEmptyDOMElement();
+      expect(
+        screen.queryByText('Register.Metrics.Metadata.Unavailable')
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: COPY_HOSTNAME_LABEL })
+      ).not.toBeInTheDocument();
     });
 
     it.each`

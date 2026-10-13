@@ -10,6 +10,7 @@ export const basePlatform: registeredPlatformByServiceInstanceId_fragment$data =
   {
     ' $fragmentType': 'registeredPlatformByServiceInstanceId_fragment',
     id: 'platform-id',
+    service_instance_id: 'service-instance-id',
     platform_id: 'pid',
     myGroups: null,
     tenant_id: null,

@@ -2242,7 +2242,7 @@ export type QueryRegisteredProductVersionsArgs = {
 
 
 export type QueryRegisteredSaasPlatformMetadataArgs = {
-  platformId: Scalars['String']['input'];
+  input: RegisteredPlatformInput;
 };
 
 
@@ -3645,7 +3645,7 @@ export type RegisteredPlatformsQueryVariables = Exact<{
 export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
 
 export type RegisteredSaasPlatformMetadataQueryVariables = Exact<{
-  platformId: Scalars['String']['input'];
+  input: RegisteredPlatformInput;
 }>;
 
 
@@ -5895,8 +5895,8 @@ useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.inf
 useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
 
 export const RegisteredSaasPlatformMetadataDocument = `
-    query RegisteredSaasPlatformMetadata($platformId: String!) {
-  registeredSaasPlatformMetadata(platformId: $platformId) {
+    query RegisteredSaasPlatformMetadata($input: RegisteredPlatformInput!) {
+  registeredSaasPlatformMetadata(input: $input) {
     hostname
     plan
     start_date

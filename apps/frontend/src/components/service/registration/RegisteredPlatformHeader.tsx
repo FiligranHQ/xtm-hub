@@ -38,7 +38,12 @@ export const RegisteredPlatformHeader = ({
   return (
     <div className="flex flex-row">
       <div>
-        <h1>{platform.title}</h1>
+        {platform.contract === PlatformContract.Trial ? (
+          <h2>{platform.title}</h2>
+        ) : (
+          <h1>{platform.title}</h1>
+        )}
+
         <div className="flex gap-m">
           <Chip
             label={t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
