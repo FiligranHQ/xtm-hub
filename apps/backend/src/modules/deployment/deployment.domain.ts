@@ -16,6 +16,7 @@ import DeploymentRequest, {
   DeploymentRequestMutator,
 } from '../../model/kanel/public/DeploymentRequest';
 import { OrganizationId } from '../../model/kanel/public/Organization';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { auth0Client } from '../../thirdparty/auth0/client';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
@@ -73,6 +74,19 @@ export const DeploymentRequestDomain = {
     return getDeploymentRequestWithUserDataQuery()
       .whereIn('DeploymentRequest.parent_id', parentIds)
       .orderBy('DeploymentRequest.platform_identifier', 'asc');
+  },
+
+  loadFullDeploymentRequestsByServiceInstanceIds: async (
+    serviceInstanceIds: readonly ServiceInstanceId[]
+  ): Promise<FullyQualifiedDeploymentRequest[]> => {
+    if (serviceInstanceIds.length === 0) {
+      return [];
+    }
+
+    return getDeploymentRequestWithUserDataQuery().whereIn(
+      'DeploymentRequest.service_instance_id',
+      serviceInstanceIds
+    );
   },
 
   loadDeploymentRequestWithChildren: async (

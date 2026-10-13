@@ -13,7 +13,6 @@ import {
 } from '../../utils/error/error.code';
 import { mapToGraphQLError } from '../../utils/error/error.mapping';
 import { BadRequestError } from '../../utils/error/error.util';
-import { DeploymentRequestDomain } from '../deployment/deployment.domain';
 import { ServiceGroupApp } from '../deployment/group/service-group.app';
 import { extractPlatformToken } from '../security-management/token/platform-token.util';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
@@ -32,10 +31,10 @@ const resolvers: Resolvers = {
         id as ServiceInstanceId,
         context.user.id
       ),
-    deployment_request: ({ id }, _, __) =>
-      DeploymentRequestDomain.loadFullDeploymentRequest({
-        service_instance_id: id as ServiceInstanceId,
-      }),
+    deployment_request: ({ id }, _, context) =>
+      context.dataLoaders.deploymentRequest.deploymentRequestByServiceInstanceLoader.load(
+        id as ServiceInstanceId
+      ),
     organization: ({ id }, _, context) =>
       context.dataLoaders.registration.ownerOrganizationByServiceInstanceLoader.load(
         id as ServiceInstanceId

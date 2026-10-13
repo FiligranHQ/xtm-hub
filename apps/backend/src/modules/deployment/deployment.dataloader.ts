@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader';
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import {
   DeploymentRequestDomain,
   FullyQualifiedDeploymentRequest,
@@ -9,6 +10,10 @@ export interface DeploymentRequestDataLoaders {
   childrenByParentLoader: DataLoader<
     DeploymentRequestId,
     FullyQualifiedDeploymentRequest[]
+  >;
+  deploymentRequestByServiceInstanceLoader: DataLoader<
+    ServiceInstanceId,
+    FullyQualifiedDeploymentRequest | null
   >;
 }
 
@@ -31,9 +36,26 @@ export const DeploymentRequestDataLoader = {
     return parentIds.map((parentId) => map.get(parentId) ?? []);
   },
 
+  batchLoadByServiceInstanceIds: async (
+    serviceInstanceIds: readonly ServiceInstanceId[]
+  ): Promise<(FullyQualifiedDeploymentRequest | null)[]> => {
+    const rows =
+      await DeploymentRequestDomain.loadFullDeploymentRequestsByServiceInstanceIds(
+        serviceInstanceIds
+      );
+
+    const map = new Map<ServiceInstanceId, FullyQualifiedDeploymentRequest>(
+      rows.map((row) => [row.service_instance_id, row])
+    );
+    return serviceInstanceIds.map((id) => map.get(id) ?? null);
+  },
+
   create: (): DeploymentRequestDataLoaders => ({
     childrenByParentLoader: new DataLoader(
       DeploymentRequestDataLoader.batchLoadChildren
+    ),
+    deploymentRequestByServiceInstanceLoader: new DataLoader(
+      DeploymentRequestDataLoader.batchLoadByServiceInstanceIds
     ),
   }),
 };

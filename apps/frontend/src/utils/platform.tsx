@@ -1,5 +1,6 @@
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
 import {
+  DeploymentRequest,
   LicenseType,
   PlatformContract,
   PlatformIdentifier,
@@ -24,3 +25,7 @@ export const isEeCapableContract = (
 export const requiresEnterpriseEdition = (
   licenseType: LicenseType | string | null | undefined
 ): boolean => licenseType === LicenseType.Commercial;
+
+export const isBundleProduct = (
+  deploymentRequest: Pick<DeploymentRequest, 'parent_id'> | null | undefined
+): boolean => Boolean(deploymentRequest?.parent_id);

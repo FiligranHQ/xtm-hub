@@ -1,7 +1,9 @@
+import { XTM_PLATFORM_TRIAL_PATH } from '@/utils/path/constant';
 import {
   DocumentImageType,
   PlatformContract,
   PlatformIdentifier,
+  RegisteredPlatformsQuery,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -11,6 +13,16 @@ import {
   mapRegisteredPlatformsToHomepageCards,
   resolveRemainingTrialDays,
 } from './Homepage.utils';
+
+const OPENCTI_REGISTERED_PLATFORM_ID = 'rp-1';
+const OPENCTI_TITLE = 'OpenCTI Platform';
+const OPENCTI_SERVICE_INSTANCE_ID = 'instance-1';
+const OPENCTI_START_DATE = '2025-12-01T00:00:00.000Z';
+const BUNDLE_PRODUCT_REGISTERED_PLATFORM_ID = 'rp-2';
+const BUNDLE_PRODUCT_TITLE = 'OpenAEV Bundle Product';
+const BUNDLE_DEPLOYMENT_REQUEST_ID = 'bundle-deployment-request-1';
+const BUNDLE_PRODUCT_START_DATE = '2025-12-15T00:00:00.000Z';
+const BUNDLE_PRODUCT_END_DATE = '2026-01-03T00:00:00.000Z';
 
 describe('buildDistinctPlatformIdentifiersFromServiceDefinition', () => {
   it.each`
@@ -82,50 +94,58 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
     vi.useRealTimers();
   });
 
-  it('maps registered platforms to homepage cards and resolves remaining trial days', () => {
-    const cards = mapRegisteredPlatformsToHomepageCards([
-      {
-        id: 'rp-1',
-        identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-        title: 'OpenCTI Platform',
-        contract: PlatformContract.Ce,
-        subscription: {
-          start_date: '2025-12-01T00:00:00.000Z',
-          end_date: null,
-          service_instance_id: 'instance-1',
+  it('should map each platform to a card, linking bundle products to the XTM Platform trial page, when registered platforms resolve to a platform', () => {
+    // Given
+    const registeredPlatforms: RegisteredPlatformsQuery['registeredPlatforms'] =
+      [
+        {
+          id: OPENCTI_REGISTERED_PLATFORM_ID,
+          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+          title: OPENCTI_TITLE,
+          contract: PlatformContract.Ce,
+          deployment_request: null,
+          subscription: {
+            start_date: OPENCTI_START_DATE,
+            end_date: null,
+            service_instance_id: OPENCTI_SERVICE_INSTANCE_ID,
+          },
         },
-      },
-      {
-        id: 'rp-2',
-        identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
-        title: 'OpenAEV Trial Platform',
-        contract: PlatformContract.Trial,
-        subscription: {
-          start_date: '2025-12-15T00:00:00.000Z',
-          end_date: '2026-01-03T00:00:00.000Z',
-          service_instance_id: 'instance-2',
+        {
+          id: BUNDLE_PRODUCT_REGISTERED_PLATFORM_ID,
+          identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
+          title: BUNDLE_PRODUCT_TITLE,
+          contract: PlatformContract.Trial,
+          deployment_request: { parent_id: BUNDLE_DEPLOYMENT_REQUEST_ID },
+          subscription: {
+            start_date: BUNDLE_PRODUCT_START_DATE,
+            end_date: BUNDLE_PRODUCT_END_DATE,
+            service_instance_id: 'instance-2',
+          },
         },
-      },
-    ] as Parameters<typeof mapRegisteredPlatformsToHomepageCards>[0]);
+      ];
 
+    // When
+    const cards = mapRegisteredPlatformsToHomepageCards(registeredPlatforms);
+
+    // Then
     expect(cards).toEqual([
       {
-        id: 'rp-1',
+        id: OPENCTI_REGISTERED_PLATFORM_ID,
         platformIdentifier: PlatformIdentifier.Opencti,
-        title: 'OpenCTI Platform',
-        registrationDate: '2025-12-01T00:00:00.000Z',
+        title: OPENCTI_TITLE,
+        registrationDate: OPENCTI_START_DATE,
         contract: PlatformContract.Ce,
         remainingTrialDays: undefined,
-        href: '/app/service/opencti_registration/instance-1',
+        href: `/app/service/opencti_registration/${OPENCTI_SERVICE_INSTANCE_ID}`,
       },
       {
-        id: 'rp-2',
+        id: BUNDLE_PRODUCT_REGISTERED_PLATFORM_ID,
         platformIdentifier: PlatformIdentifier.Openaev,
-        title: 'OpenAEV Trial Platform',
-        registrationDate: '2025-12-15T00:00:00.000Z',
+        title: BUNDLE_PRODUCT_TITLE,
+        registrationDate: BUNDLE_PRODUCT_START_DATE,
         contract: PlatformContract.Trial,
         remainingTrialDays: 2,
-        href: '/app/service/openaev_registration/instance-2',
+        href: XTM_PLATFORM_TRIAL_PATH,
       },
     ]);
   });

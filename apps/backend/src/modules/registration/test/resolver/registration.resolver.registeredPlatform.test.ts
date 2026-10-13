@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   contextSimpleUserFiligran2,
   GRAPHQL_RESOLVE_INFO,
@@ -7,16 +7,10 @@ import {
 import { RegisteredPlatform } from '../../../../__generated__/resolvers-types';
 import ServiceGroup from '../../../../model/kanel/public/ServiceGroup';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
-import { DeploymentRequestDomain } from '../../../deployment/deployment.domain';
+import { FullyQualifiedDeploymentRequest } from '../../../deployment/deployment.domain';
 import { ServiceGroupDomain } from '../../../deployment/group/service-group.domain';
 import * as ServiceInstanceDomain from '../../../service/instance/service-instance.domain';
 import registrationResolver from '../../registration.resolver';
-
-vi.mock('../../../deployment/deployment.domain', () => ({
-  DeploymentRequestDomain: {
-    loadFullDeploymentRequest: vi.fn(),
-  },
-}));
 
 vi.mock('../../../deployment/group/service-group.domain', () => ({
   ServiceGroupDomain: {
@@ -113,7 +107,11 @@ describe('registeredPlatform type resolvers', () => {
   });
 
   describe('registeredPlatform.deployment_request', () => {
-    it('should call DeploymentRequestDomain.loadFullDeploymentRequest with the service_instance_id from parent', async () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('should load the deployment request of the service instance through the request-scoped dataloader', async () => {
       // Given
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const expectedRequest = {
@@ -125,9 +123,13 @@ describe('registeredPlatform type resolvers', () => {
         requester_first_name: 'John',
         requester_last_name: 'Doe',
       };
-      const loadFullDeploymentRequestSpy = vi
-        .spyOn(DeploymentRequestDomain, 'loadFullDeploymentRequest')
-        .mockResolvedValue(expectedRequest as never);
+      const loadSpy = vi
+        .spyOn(
+          contextSimpleUserFiligran2.dataLoaders.deploymentRequest
+            .deploymentRequestByServiceInstanceLoader,
+          'load'
+        )
+        .mockResolvedValue(expectedRequest as FullyQualifiedDeploymentRequest);
 
       // When
       const result = await registrationResolver.RegisteredPlatform!
@@ -139,9 +141,7 @@ describe('registeredPlatform type resolvers', () => {
       );
 
       // Then
-      expect(loadFullDeploymentRequestSpy).toHaveBeenCalledWith({
-        service_instance_id: serviceInstanceId,
-      });
+      expect(loadSpy).toHaveBeenCalledWith(serviceInstanceId);
       expect(result).toMatchObject(expectedRequest);
     });
   });

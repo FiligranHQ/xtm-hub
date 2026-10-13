@@ -330,6 +330,41 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
+  describe('loadFullDeploymentRequestsByServiceInstanceIds', () => {
+    afterEach(async () => {
+      await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
+    });
+
+    it('should return the deployment requests of the requested service instances only, with their requester data', async () => {
+      // Given
+      const { bundle: firstBundle } =
+        await TestHelper.deploymentRequest.createBundle();
+      const { bundle: secondBundle } =
+        await TestHelper.deploymentRequest.createBundle();
+      await TestHelper.deploymentRequest.createBundle();
+
+      // When
+      const deploymentRequests =
+        await DeploymentRequestDomain.loadFullDeploymentRequestsByServiceInstanceIds(
+          [firstBundle.service_instance_id, secondBundle.service_instance_id]
+        );
+
+      // Then
+      const byId = (a: { id: string }, b: { id: string }) =>
+        a.id < b.id ? -1 : 1;
+      expect([...deploymentRequests].sort(byId)).toMatchObject(
+        [firstBundle, secondBundle]
+          .sort(byId)
+          .map(({ id, service_instance_id }) => ({
+            id,
+            service_instance_id,
+            organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+            requester_email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+          }))
+      );
+    });
+  });
+
   describe('loadDeploymentRequestWithChildren', () => {
     afterEach(async () => {
       await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();

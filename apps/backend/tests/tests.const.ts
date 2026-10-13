@@ -415,6 +415,9 @@ export const contextSimpleUserFiligran2: PortalContext = {
   dataLoaders: {
     deploymentRequest: {
       childrenByParentLoader: { load: () => Promise.resolve([]) },
+      deploymentRequestByServiceInstanceLoader: {
+        load: () => Promise.resolve(null),
+      },
     } as unknown as DeploymentRequestDataLoaders,
     document: {
       documentByIdLoader: { load: () => Promise.resolve(null) },
