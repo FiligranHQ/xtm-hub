@@ -12,7 +12,6 @@ vi.mock('next/headers', () => ({
 }));
 
 const PRODUCTION_DOMAIN = 'hub.filigran.io';
-const WWW_PRODUCTION_DOMAIN = 'www.hub.filigran.io';
 const SITEMAP_URL = 'https://hub.filigran.io/sitemap.xml';
 
 const givenHost = (host: string | null) => {
@@ -34,22 +33,19 @@ describe('robots', () => {
     robotsMocks.headersMock.mockReset();
   });
 
-  it.each([PRODUCTION_DOMAIN, WWW_PRODUCTION_DOMAIN])(
-    'should disallow null document slugs for every public locale when the domain is %s',
-    async (domain) => {
-      givenHost(domain);
+  it('should disallow null document slugs for every public locale when the domain is production', async () => {
+    givenHost(PRODUCTION_DOMAIN);
 
-      const rule = await getSingleRule();
+    const rule = await getSingleRule();
 
-      expect(asArray(rule.disallow)).toEqual(
-        expect.arrayContaining(
-          publicLocales.map(
-            (locale) => `/${locale}/cybersecurity-solutions/*/null$`
-          )
+    expect(asArray(rule.disallow)).toEqual(
+      expect.arrayContaining(
+        publicLocales.map(
+          (locale) => `/${locale}/cybersecurity-solutions/*/null$`
         )
-      );
-    }
-  );
+      )
+    );
+  });
 
   it('should still disallow everything by default when the domain is production', async () => {
     givenHost(PRODUCTION_DOMAIN);
@@ -100,7 +96,7 @@ describe('robots', () => {
     expect(sitemap).toBe(SITEMAP_URL);
   });
 
-  it.each([['hub-prerelease.filigran.io'], ['localhost:3002'], [''], [null]])(
+  it.each([['hub.prerelease.filigran.io'], ['localhost:3002'], [''], [null]])(
     'should only disallow everything when the host is %s',
     async (host) => {
       givenHost(host);

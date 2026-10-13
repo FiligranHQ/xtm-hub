@@ -16,8 +16,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     (locale) => `/${locale}/cybersecurity-solutions/*/null$`
   );
 
-  const isProductionDomain =
-    domain === 'hub.filigran.io' || domain === 'www.hub.filigran.io';
+  const isProductionDomain = domain === 'hub.filigran.io';
 
   if (isProductionDomain) {
     return {
