@@ -6,21 +6,19 @@ import { UnregisterButton } from '@/components/service/registration/UnregisterBu
 import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
 import { useTranslate } from '@/hooks/use-translate';
 import { Button } from '@filigran/design-system';
+import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   DeploymentRequestHubStatus,
   OrganizationCapability,
   PlatformContract,
   PortalCapability,
-  RegisteredPlatformDetailFragment,
 } from '@graphql/generated';
-import { registrationKeys } from '@graphql/registration/registration.keys';
-import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useContext, useState } from 'react';
 
 interface ConnectedProductButtonsProps {
-  platform: RegisteredPlatformDetailFragment;
+  platform: registeredPlatformByServiceInstanceId_fragment$data;
 }
 
 export const ConnectedProductButtons = ({
@@ -30,11 +28,6 @@ export const ConnectedProductButtons = ({
   const searchParams = useSearchParams();
   const openForm = searchParams.get('openForm') === 'true';
 
-  const queryClient = useQueryClient();
-  const refreshPlatform = () =>
-    queryClient.invalidateQueries({
-      queryKey: registrationKeys.registeredPlatformByServiceInstanceIdAll(),
-    });
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
 
   const { hasOrganizationCapability, hasCapability } =
@@ -93,7 +86,6 @@ export const ConnectedProductButtons = ({
                 serviceInstanceId={serviceInstanceId}
                 organizationId={platform.subscription?.organization.id}
                 defaultOpen={openForm}
-                onUpdated={refreshPlatform}
               />
             </GuardCapacityComponent>
           )}
@@ -115,7 +107,6 @@ export const ConnectedProductButtons = ({
           serviceDefinitionIdentifier={platform.identifier}
           open={openPlatformSheet}
           setOpen={setOpenPlatformSheet}
-          onUpdated={refreshPlatform}
         />
       )}
     </>

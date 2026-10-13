@@ -76,6 +76,26 @@ describe('ConnectedProductButtons', () => {
     });
   });
 
+  it('should not show the Access button when a non-trial platform has no URL', () => {
+    // Given / When
+    renderButtons({ ...basePlatform, url: '' });
+
+    // Then
+    expect(
+      screen.queryByText(/Register\.Details\.Access/)
+    ).not.toBeInTheDocument();
+  });
+
+  it('should open the platform URL in a new tab from the Access button', () => {
+    // Given / When
+    renderButtons(basePlatform);
+
+    // Then
+    const accessLink = screen.getByRole('link', { name: /Access/i });
+    expect(accessLink).toHaveAttribute('href', basePlatform.url);
+    expect(accessLink).toHaveAttribute('target', '_blank');
+  });
+
   describe('TrialsManageUsersDialog visibility', () => {
     it.each`
       label                             | capabilities                                           | shouldShow

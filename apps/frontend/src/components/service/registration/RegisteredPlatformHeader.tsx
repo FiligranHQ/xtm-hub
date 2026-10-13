@@ -58,10 +58,7 @@ export const RegisteredPlatformHeader = ({
       </div>
       {shouldDisplayHeaderButtons && (
         <div className="ml-auto">
-          <ConnectedProductButtons
-            direction={'row'}
-            platform={platform}
-          />
+          <ConnectedProductButtons platform={platform} />
         </div>
       )}
     </div>

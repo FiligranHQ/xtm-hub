@@ -79,4 +79,10 @@ describe('computePeriodProgress', () => {
       computePeriodProgress(startDate, startDate, new Date(startDate))
     ).toEqual({ totalDays: 0, daysLeft: 0, elapsedPercent: 100 });
   });
+
+  it('should consider a period ending before it starts as fully elapsed', () => {
+    expect(
+      computePeriodProgress(endDate, startDate, new Date(startDate))
+    ).toEqual({ totalDays: 0, daysLeft: 0, elapsedPercent: 100 });
+  });
 });

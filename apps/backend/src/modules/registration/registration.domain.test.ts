@@ -513,6 +513,32 @@ describe('registration domain', () => {
 
       expect(platforms).toEqual([]);
     });
+
+    it.each([
+      ['READ_SAAS_METRICS', CAPABILITY_READ_SAAS_METRICS],
+      ['BYPASS', CAPABILITY_BYPASS],
+    ])(
+      'should not return a platform of another organization even when the user has %s',
+      async (_, capability) => {
+        // Given
+        requestContext.set({
+          ...requestContextSimpleUserFiligran2,
+          user: {
+            ...requestContextSimpleUserFiligran2.user,
+            capabilities: [capability],
+          },
+        });
+
+        // When
+        const platforms =
+          await RegistrationDomain.loadRegisteredPlatformsByServiceInstanceIds([
+            openCTIServiceInstanceId,
+          ]);
+
+        // Then
+        expect(platforms).toEqual([]);
+      }
+    );
   });
 
   describe('loadAllActiveRegisteredPlatformsByPlatformIdentifier', () => {

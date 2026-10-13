@@ -4,25 +4,21 @@ import {
   contextSimpleUserFiligran2,
   GRAPHQL_RESOLVE_INFO,
 } from '../../../../../tests/tests.const';
-import {
-  DeploymentRequestPlatformRegion,
-  SaasPlatformMetadata,
-} from '../../../../__generated__/resolvers-types';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
+import { SaasPlatformMetadata } from '../../../../__generated__/resolvers-types';
 import { RegistrationApp } from '../../registration.app';
 import registrationResolver from '../../registration.resolver';
 
 describe('query.registeredSaasPlatformMetadata', () => {
-  it('should pass the service_instance_id to registrationApp and return its metadata', async () => {
+  it('should pass the platformId to registrationApp and return its metadata', async () => {
     // Given
-    const serviceInstanceId = uuidv4() as ServiceInstanceId;
+    const platformId = uuidv4();
     const expectedMetadata: SaasPlatformMetadata = {
       hostname: 'my-platform.example.com',
-      subscribedPlan: 'Enterprise',
-      startDate: new Date('2026-01-01T00:00:00.000Z'),
-      endDate: new Date('2027-01-01T00:00:00.000Z'),
-      regionalArea: DeploymentRequestPlatformRegion.EuWest,
-      platformVersion: '6.7.17',
+      plan: 'Enterprise',
+      start_date: new Date('2026-01-01T00:00:00.000Z'),
+      end_date: new Date('2027-01-01T00:00:00.000Z'),
+      region: 'eu-west',
+      version: '6.7.17',
     };
     vi.spyOn(
       RegistrationApp,
@@ -33,7 +29,7 @@ describe('query.registeredSaasPlatformMetadata', () => {
     const result = await registrationResolver.Query!
       .registeredSaasPlatformMetadata!(
       {},
-      { input: { service_instance_id: serviceInstanceId } },
+      { platformId },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
@@ -41,11 +37,11 @@ describe('query.registeredSaasPlatformMetadata', () => {
     // Then
     expect(
       RegistrationApp.loadRegisteredSaasPlatformMetadata
-    ).toHaveBeenCalledWith(serviceInstanceId);
+    ).toHaveBeenCalledWith(platformId);
     expect(result).toMatchObject(expectedMetadata);
   });
 
-  it('should return null when registrationApp finds no platform visible to the user', async () => {
+  it('should return null when registrationApp cannot load the metadata', async () => {
     // Given
     vi.spyOn(
       RegistrationApp,
@@ -56,7 +52,7 @@ describe('query.registeredSaasPlatformMetadata', () => {
     const result = await registrationResolver.Query!
       .registeredSaasPlatformMetadata!(
       {},
-      { input: { service_instance_id: uuidv4() as ServiceInstanceId } },
+      { platformId: uuidv4() },
       contextSimpleUserFiligran2,
       GRAPHQL_RESOLVE_INFO
     );
