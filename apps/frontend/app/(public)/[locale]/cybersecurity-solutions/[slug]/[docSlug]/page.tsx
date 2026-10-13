@@ -1,5 +1,6 @@
 import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/ShareableResourceConnectorSlugPublic';
 import { PublicResourceActions } from '@/components/service/document/PublicResourceActions';
+import ResourceMarkdownRenderer from '@/components/service/document/ResourceMarkdownRenderer';
 import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
 import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
 import BadgeOverflowCounter, {
@@ -11,6 +12,7 @@ import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { formatPersonNames } from '@/utils/format/name';
 import {
   buildFiligranOrganizationJsonLd,
@@ -26,7 +28,6 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
-import { MarkdownRenderer } from '@filigran/ui/clients';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -309,10 +310,12 @@ const Page = async ({
           </h3>
           <section className="rounded bg-elevation-background-layer-1">
             <h2 className="p-l">{document?.short_description}</h2>
-            <MarkdownRenderer
+            <ResourceMarkdownRenderer
               source={document?.description ?? ''}
-              colorMode="dark"
-              className="p-l !bg-elevation-background-layer-1 markdown-content"
+              className="p-l"
+              filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+                serviceInstance.service_definition.identifier
+              )}
             />
           </section>
         </div>
@@ -320,6 +323,9 @@ const Page = async ({
           <ShareableResourceDetails
             documentData={document}
             downloadNumber={document.download_number}
+            filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+              serviceInstance.service_definition.identifier
+            )}
           />
         )}
       </div>

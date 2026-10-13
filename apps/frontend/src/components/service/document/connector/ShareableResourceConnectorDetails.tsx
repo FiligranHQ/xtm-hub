@@ -6,6 +6,10 @@ import { ShareableResourceBasicInformation } from '@/components/service/document
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
 import { useTranslate } from '@/hooks/use-translate';
 import { roundToNearest } from '@/lib/utils';
+import {
+  FiligranWebsiteUtm,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
 import { Button } from '@filigran/design-system';
 import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
 import { PlatformIdentifier } from '@graphql/generated';
@@ -28,6 +32,7 @@ export interface ShareableResourceConnectorDetailsProps {
     contact?: string | null;
   };
   compatibilityItem?: React.ReactNode;
+  filigranWebsiteUtm?: FiligranWebsiteUtm;
 }
 
 const CONNECTOR_DOCUMENTATION =
@@ -35,6 +40,7 @@ const CONNECTOR_DOCUMENTATION =
 export const ShareableResourceConnectorDetails = ({
   connectorDetails,
   compatibilityItem,
+  filigranWebsiteUtm,
 }: ShareableResourceConnectorDetailsProps) => {
   const t = useTranslate();
   const platformName = PlatformMetadataMapping[PlatformIdentifier.Opencti].name;
@@ -65,7 +71,14 @@ export const ShareableResourceConnectorDetails = ({
             priority="tertiary"
             asChild>
             <Link
-              href={connectorDetails.subscription_link}
+              href={
+                filigranWebsiteUtm
+                  ? withFiligranWebsiteUtm(
+                      connectorDetails.subscription_link,
+                      filigranWebsiteUtm
+                    )
+                  : connectorDetails.subscription_link
+              }
               rel="noopener noreferrer"
               target="_blank">
               <OpenInNewIcon className="h-4 w-4 mr-s" />
@@ -107,25 +120,37 @@ export const ShareableResourceConnectorDetails = ({
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
-        <ShareableResourceDetailsLink url={CONNECTOR_DOCUMENTATION} />
+        <ShareableResourceDetailsLink
+          url={CONNECTOR_DOCUMENTATION}
+          filigranWebsiteUtm={filigranWebsiteUtm}
+        />
       </ShareableResourceDetailItem>
 
       {connectorDetails?.datasheet_url && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.DatasheetURL')}>
-          <ShareableResourceDetailsLink url={connectorDetails.datasheet_url} />
+          <ShareableResourceDetailsLink
+            url={connectorDetails.datasheet_url}
+            filigranWebsiteUtm={filigranWebsiteUtm}
+          />
         </ShareableResourceDetailItem>
       )}
       {connectorDetails?.blogpost_url && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.BlogpostURL')}>
-          <ShareableResourceDetailsLink url={connectorDetails.blogpost_url} />
+          <ShareableResourceDetailsLink
+            url={connectorDetails.blogpost_url}
+            filigranWebsiteUtm={filigranWebsiteUtm}
+          />
         </ShareableResourceDetailItem>
       )}
       {connectorDetails?.demo_url && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.DemoURL')}>
-          <ShareableResourceDetailsLink url={connectorDetails.demo_url} />
+          <ShareableResourceDetailsLink
+            url={connectorDetails.demo_url}
+            filigranWebsiteUtm={filigranWebsiteUtm}
+          />
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem

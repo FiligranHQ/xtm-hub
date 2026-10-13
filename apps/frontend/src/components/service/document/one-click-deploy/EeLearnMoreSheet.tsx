@@ -1,22 +1,21 @@
 import EeBadge from '@/components/service/document/one-click-deploy/EeBadge';
 import { ReachSalesMutation } from '@/components/service/trial-instances/reach-sales.graphql';
-import { useTranslate } from '@/hooks/use-translate';
-import { Button } from '@filigran/design-system';
+import { Form, FormField } from '@/components/ui/form';
+import { Separator } from '@/components/ui/separator';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  Textarea,
-  toast,
-} from '@filigran/ui';
-import { Separator } from '@filigran/ui/clients';
+} from '@/components/ui/sheet';
+import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
+import { useTranslate } from '@/hooks/use-translate';
+import {
+  FiligranWebsiteUtmCampaign,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
+import { Button, Textarea } from '@filigran/design-system';
 import { reachSalesMutation as ReachSalesMutationType } from '@generated/reachSalesMutation.graphql';
 import { PlatformIdentifier } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,8 +32,13 @@ interface EeLearnMoreSheetProps {
   platformIdentifier: PlatformIdentifier;
 }
 
-const EE_OPENCTI_LEARN_MORE_URL =
-  'https://filigran.io/offerings/opencti-enterprise-edition/';
+const EE_OPENCTI_LEARN_MORE_URL = withFiligranWebsiteUtm(
+  'https://filigran.io/offerings/opencti-enterprise-edition/',
+  {
+    campaign: FiligranWebsiteUtmCampaign.OTHER,
+    content: 'one_click_deploy_opencti_enterprise_edition',
+  }
+);
 
 const interestFormSchema = z.object({
   message: z.string().min(1, 'Required'),
@@ -78,14 +82,15 @@ const EeLearnMoreSheet = ({
         platformIdentifier,
       },
       onError(error) {
-        toast({
-          variant: 'destructive',
+        showSnackbar({
+          severity: 'error',
           title: t('Utils.Error'),
           description: t(`Error.Server.${error.message}`),
         });
       },
       onCompleted() {
-        toast({
+        showSnackbar({
+          severity: 'success',
           title: t('Service.Trials.ReachOutToSalesSuccessTitle'),
           description: t('Service.Trials.ReachOutToSalesSuccessMessage'),
         });
@@ -98,8 +103,10 @@ const EeLearnMoreSheet = ({
     <Sheet
       open={open}
       onOpenChange={setOpen}>
-      <SheetContent side="right">
-        <SheetHeader className="pl-xl">
+      <SheetContent
+        side="right"
+        closeLabel={t('Utils.Close')}>
+        <SheetHeader>
           <div className="flex items-center gap-s">
             <SheetTitle>
               {t('Service.ShareableResources.Deploy.EELearnMore.Title')}
@@ -165,17 +172,16 @@ const EeLearnMoreSheet = ({
                   <FormField
                     control={form.control}
                     name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea
-                            rows={4}
-                            placeholder={defaultMessage}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                    render={({ field, fieldState }) => (
+                      <Textarea
+                        aria-label={t(
+                          'Service.ShareableResources.Deploy.EELearnMore.InterestedTitle'
+                        )}
+                        rows={4}
+                        placeholder={defaultMessage}
+                        error={fieldState.error?.message}
+                        {...field}
+                      />
                     )}
                   />
                   <div className="flex justify-end">

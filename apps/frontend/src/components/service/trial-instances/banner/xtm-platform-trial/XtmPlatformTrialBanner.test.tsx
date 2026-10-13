@@ -1,33 +1,79 @@
 import { XtmPlatformTrialBanner } from '@/components/service/trial-instances/banner/xtm-platform-trial/XtmPlatformTrialBanner';
 import testRender from '@/utils/test/test-render';
+import { screen, within } from '@testing-library/react';
 import { usePathname } from 'next/navigation';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+const NO_TRIAL_TEXT = 'Service.Trials.XtmPlatform.NoTrial.Text';
+const ACTIVE_TEXT = 'Service.Trials.XtmPlatform.Active.Text';
+const ENDING_TEXT = 'Service.Trials.XtmPlatform.Ending.Text';
+const DAYS_LEFT = 'Service.Trials.XtmPlatform.DaysLeft';
+const LEARN_MORE = 'Service.Trials.LearnMore.Link';
+const LEARN_MORE_HREF = '/app/service/xtm-platform-trial';
+const DAYS_LEFT_COUNT = 12;
+
 describe('XtmPlatformTrialBanner', () => {
   afterEach(() => {
-    window.localStorage.clear();
     vi.mocked(usePathname).mockReset();
   });
 
-  it('should render nothing for the "none" state', () => {
+  it('should render nothing when the state is none', () => {
+    // Given
     const { container } = testRender(<XtmPlatformTrialBanner state="none" />);
 
+    // Then
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('should render the no-trial copy, learn more link and a dismiss button', () => {
-    const { getByText, getByRole } = testRender(
+  it.each`
+    state         | text
+    ${'no-trial'} | ${NO_TRIAL_TEXT}
+    ${'active'}   | ${ACTIVE_TEXT}
+    ${'ending'}   | ${ENDING_TEXT}
+  `(
+    'should render the $state copy as an in-page alert when the state is $state',
+    ({ state, text }) => {
+      // Given
+      const { container } = testRender(
+        <XtmPlatformTrialBanner state={state} />
+      );
+
+      // Then
+      expect(within(container).getByRole('status')).toHaveTextContent(text);
+    }
+  );
+
+  it.each(['no-trial', 'active', 'ending'] as const)(
+    'should render no close button when the state is %s',
+    (state) => {
+      // Given
+      testRender(
+        <XtmPlatformTrialBanner
+          state={state}
+          daysLeft={DAYS_LEFT_COUNT}
+          learnMoreHref={LEARN_MORE_HREF}
+        />
+      );
+
+      // Then
+      expect(screen.queryByRole('button')).toBeNull();
+    }
+  );
+
+  it('should render the learn more link to the trial page when there is no trial', () => {
+    // Given
+    testRender(
       <XtmPlatformTrialBanner
         state="no-trial"
-        learnMoreHref="/app/service/xtm-platform-trial"
+        learnMoreHref={LEARN_MORE_HREF}
       />
     );
 
-    expect(
-      getByText('Service.Trials.XtmPlatform.NoTrial.Text')
-    ).toBeInTheDocument();
-    expect(getByText('Service.Trials.LearnMore.Link')).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Utils.Close' })).toBeInTheDocument();
+    // Then
+    expect(screen.getByRole('link', { name: LEARN_MORE })).toHaveAttribute(
+      'href',
+      LEARN_MORE_HREF
+    );
   });
 
   it.each`
@@ -37,63 +83,35 @@ describe('XtmPlatformTrialBanner', () => {
   `(
     'should hide the learn more link when already on the $page trial page',
     ({ pathname, learnMoreHref }) => {
+      // Given
       vi.mocked(usePathname).mockReturnValue(pathname);
 
-      const { getByText, queryByText } = testRender(
+      // When
+      testRender(
         <XtmPlatformTrialBanner
           state="no-trial"
           learnMoreHref={learnMoreHref}
         />
       );
 
-      expect(
-        getByText('Service.Trials.XtmPlatform.NoTrial.Text')
-      ).toBeInTheDocument();
-      expect(queryByText('Service.Trials.LearnMore.Link')).toBeNull();
+      // Then
+      expect(screen.queryByRole('link', { name: LEARN_MORE })).toBeNull();
     }
   );
 
-  it('should render the active copy, days-left badge and a dismiss button', () => {
-    const { getByText, getByRole } = testRender(
-      <XtmPlatformTrialBanner
-        state="active"
-        daysLeft={12}
-      />
-    );
+  it.each(['active', 'ending'] as const)(
+    'should render the days-left chip when the state is %s',
+    (state) => {
+      // Given
+      testRender(
+        <XtmPlatformTrialBanner
+          state={state}
+          daysLeft={DAYS_LEFT_COUNT}
+        />
+      );
 
-    expect(
-      getByText('Service.Trials.XtmPlatform.Active.Text')
-    ).toBeInTheDocument();
-    expect(
-      getByText('Service.Trials.XtmPlatform.DaysLeft')
-    ).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Utils.Close' })).toBeInTheDocument();
-  });
-
-  it('should render the ending copy, days-left badge and no dismiss button', () => {
-    const { getByText, queryByRole } = testRender(
-      <XtmPlatformTrialBanner
-        state="ending"
-        daysLeft={3}
-      />
-    );
-
-    expect(
-      getByText('Service.Trials.XtmPlatform.Ending.Text')
-    ).toBeInTheDocument();
-    expect(
-      getByText('Service.Trials.XtmPlatform.DaysLeft')
-    ).toBeInTheDocument();
-    expect(queryByRole('button', { name: 'Utils.Close' })).toBeNull();
-  });
-
-  it('should render nothing once dismissed', async () => {
-    const { getByRole, container, user } = testRender(
-      <XtmPlatformTrialBanner state="no-trial" />
-    );
-
-    await user.click(getByRole('button', { name: 'Utils.Close' }));
-
-    expect(container).toBeEmptyDOMElement();
-  });
+      // Then
+      expect(screen.getByRole('status')).toHaveTextContent(DAYS_LEFT);
+    }
+  );
 });

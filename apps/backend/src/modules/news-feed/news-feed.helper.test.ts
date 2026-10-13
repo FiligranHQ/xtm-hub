@@ -108,4 +108,85 @@ describe('news-feed.helper', () => {
       });
     });
   });
+
+  describe('addUtmToUrlPath', () => {
+    const NEWS_FEED_UTM =
+      'utm_source=opencti&utm_medium=newsfeed&utm_campaign=hub_resources';
+
+    it.each`
+      type                                        | expectedContent
+      ${NewsFeedItemType.ResourceCustomDashboard} | ${'custom_dashboard'}
+      ${NewsFeedItemType.ResourceCustomView}      | ${'custom_view'}
+      ${NewsFeedItemType.ResourceIntegration}     | ${'integration'}
+      ${NewsFeedItemType.ResourcePlaybook}        | ${'playbook'}
+      ${'UNKNOWN_TYPE'}                           | ${'other'}
+    `(
+      'should set utm_content=$expectedContent for type $type',
+      ({
+        type,
+        expectedContent,
+      }: {
+        type: NewsFeedItemType;
+        expectedContent: string;
+      }) => {
+        const result = NewsFeedHelper.addUtmToUrlPath({
+          urlPath: 'redirect/opencti_custom_dashboards',
+          type,
+          platformIdentifier: PlatformIdentifier.Opencti,
+        });
+
+        expect(result).toBe(
+          `redirect/opencti_custom_dashboards?${NEWS_FEED_UTM}&utm_content=${expectedContent}`
+        );
+      }
+    );
+
+    it.each`
+      urlPath                                                       | expected                                                                                               | description
+      ${'redirect/opencti_playbooks?document_id=RG9jdW1lbnQ6MQ=='}  | ${`redirect/opencti_playbooks?document_id=RG9jdW1lbnQ6MQ%3D%3D&${NEWS_FEED_UTM}&utm_content=playbook`} | ${'keeps existing query parameters'}
+      ${'/redirect/opencti_playbooks?document_id=abc#details'}      | ${`/redirect/opencti_playbooks?document_id=abc&${NEWS_FEED_UTM}&utm_content=playbook#details`}         | ${'keeps the leading slash and the fragment'}
+      ${'redirect/opencti_playbooks?utm_source=other&utm_medium=x'} | ${`redirect/opencti_playbooks?${NEWS_FEED_UTM}&utm_content=playbook`}                                  | ${'overwrites existing utm values without duplicating them'}
+    `(
+      'should tag the url path: $description',
+      ({ urlPath, expected }: { urlPath: string; expected: string }) => {
+        const result = NewsFeedHelper.addUtmToUrlPath({
+          urlPath,
+          type: NewsFeedItemType.ResourcePlaybook,
+          platformIdentifier: PlatformIdentifier.Opencti,
+        });
+
+        expect(result).toBe(expected);
+      }
+    );
+
+    it('should be idempotent', () => {
+      const params = {
+        type: NewsFeedItemType.ResourceIntegration,
+        platformIdentifier: PlatformIdentifier.Opencti,
+      };
+      const once = NewsFeedHelper.addUtmToUrlPath({
+        urlPath: 'redirect/opencti_integrations?document_id=abc',
+        ...params,
+      });
+
+      const twice = NewsFeedHelper.addUtmToUrlPath({
+        urlPath: once,
+        ...params,
+      });
+
+      expect(twice).toBe(once);
+    });
+
+    it('should use the platform identifier as utm_source', () => {
+      const result = NewsFeedHelper.addUtmToUrlPath({
+        urlPath: 'redirect/openaev_scenarios',
+        type: NewsFeedItemType.ResourceCustomDashboard,
+        platformIdentifier: PlatformIdentifier.Openaev,
+      });
+
+      expect(new URLSearchParams(result.split('?')[1]).get('utm_source')).toBe(
+        'openaev'
+      );
+    });
+  });
 });

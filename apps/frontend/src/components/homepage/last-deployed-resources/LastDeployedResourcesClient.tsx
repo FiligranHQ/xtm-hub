@@ -3,6 +3,7 @@
 import LastDeployedResourceRow from '@/components/homepage/last-deployed-resources/LastDeployedResourceRow';
 import { LastDeployedPlatform } from '@/components/homepage/last-deployed-resources/LastDeployedResourcesSection';
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { Separator } from '@/components/ui/separator';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
@@ -11,8 +12,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@filigran/ui';
-import { Separator } from '@filigran/ui/clients';
+} from '@filigran/design-system';
 import { useLastDeployedOverviewQueryQuery } from '@graphql/generated';
 import { Fragment, useState } from 'react';
 
@@ -45,10 +45,12 @@ const LastDeployedResourcesClient = ({
         <Select
           value={selectedServiceInstanceId}
           onValueChange={setSelectedServiceInstanceId}>
-          <SelectTrigger className="w-56">
+          <SelectTrigger
+            aria-label={t('ProductPlaceholder')}
+            className="w-56">
             <SelectValue placeholder={t('ProductPlaceholder')} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="layer-1">
             {platforms.map((platform) => {
               const platformMeta = platform.platformIdentifier
                 ? PlatformMetadataMapping[platform.platformIdentifier]
@@ -76,7 +78,7 @@ const LastDeployedResourcesClient = ({
               <li
                 aria-hidden="true"
                 className="col-span-full shrink-0">
-                <Separator className="bg-elevation-border-subtle" />
+                <Separator />
               </li>
             )}
             <li className="grid grid-cols-subgrid col-span-full items-center">

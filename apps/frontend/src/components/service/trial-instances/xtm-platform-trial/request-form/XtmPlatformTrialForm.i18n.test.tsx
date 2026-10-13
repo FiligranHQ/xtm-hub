@@ -9,8 +9,10 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.unmock('next-intl');
 
-const MSSA_URL = 'https://filigran.io/mssa';
-const AI_TERMS_URL = 'https://filigran.io/ai-terms';
+const MSSA_URL =
+  'https://filigran.io/mssa?utm_source=xtm_hub&utm_medium=referral&utm_campaign=other&utm_content=trial_form_mssa';
+const AI_TERMS_URL =
+  'https://filigran.io/ai-terms?utm_source=xtm_hub&utm_medium=referral&utm_campaign=other&utm_content=trial_form_ai_terms';
 
 const LOCALES: [string, typeof en][] = [
   ['en', en],

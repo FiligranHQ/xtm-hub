@@ -1,19 +1,26 @@
-import { Button } from '@filigran/design-system';
-import { OpenInNewIcon } from '@filigran/icon';
 import {
+  FiligranWebsiteUtm,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
+import {
+  Button,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@filigran/ui/clients';
+} from '@filigran/design-system';
+import { OpenInNewIcon } from '@filigran/icon';
 import Link from 'next/link';
 
 interface ShareableResourceDetailsLinkProps {
   url: string;
+  // Tags the link when it points to filigran.io, the displayed url stays untouched
+  filigranWebsiteUtm?: FiligranWebsiteUtm;
 }
 
 export const ShareableResourceDetailsLink = ({
   url,
+  filigranWebsiteUtm,
 }: ShareableResourceDetailsLinkProps) => {
   return (
     <TooltipProvider>
@@ -24,7 +31,11 @@ export const ShareableResourceDetailsLink = ({
             priority="tertiary"
             asChild>
             <Link
-              href={url}
+              href={
+                filigranWebsiteUtm
+                  ? withFiligranWebsiteUtm(url, filigranWebsiteUtm)
+                  : url
+              }
               rel="noopener noreferrer"
               target="_blank">
               <OpenInNewIcon className="h-4 w-4 mr-s" />

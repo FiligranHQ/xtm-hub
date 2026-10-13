@@ -187,7 +187,7 @@ describe('usePrivateNavigation', () => {
       },
       {
         key: 'filigran-blog',
-        href: 'https://filigran.io/our-blog/',
+        href: 'https://filigran.io/blog?utm_source=xtm_hub&utm_medium=referral&utm_campaign=sidebar&utm_content=blog',
         icon: expect.any(Function),
         label: 'Blog',
         external: true,
@@ -220,7 +220,7 @@ describe('usePrivateNavigation', () => {
       label: 'OpenCRQ',
       links: [
         {
-          href: 'https://filigran.io/products/opencrq',
+          href: 'https://filigran.io/products/opencrq?utm_source=xtm_hub&utm_medium=referral&utm_campaign=sidebar&utm_content=opencrq_about',
           label: 'About',
           external: true,
           badge: 'ComingSoon',
@@ -368,7 +368,7 @@ describe('usePrivateNavigation', () => {
       },
       {
         key: 'filigran-blog',
-        href: 'https://filigran.io/our-blog/',
+        href: 'https://filigran.io/blog?utm_source=xtm_hub&utm_medium=referral&utm_campaign=sidebar&utm_content=blog',
         icon: expect.any(Function),
         label: 'Blog',
         external: true,

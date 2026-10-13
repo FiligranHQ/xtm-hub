@@ -1,13 +1,13 @@
 import { FilterSheet } from '@/components/service/components/header/filter/FilterSheet';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
-import { SearchInput } from '@/components/ui/SearchInput';
+import { Separator } from '@/components/ui/separator';
 import { SortControls } from '@/components/ui/SortControls';
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
-import { debounceHandleInput } from '@/utils/debounce';
+import { SearchField } from '@filigran/design-system';
 import { CalendarViewMonthIcon, ListViewIcon } from '@filigran/icon';
-import { Separator } from '@filigran/ui/clients';
 import { DocumentOrdering } from '@graphql/generated';
 import React from 'react';
 
@@ -83,12 +83,20 @@ export const ServiceListHeader = ({
     label: t(`DocumentOrdering.${value}`),
   }));
 
+  const searchHandlers = useDebouncedSearch({
+    apply: onSearchChange,
+    appliedTerm: search,
+  });
+
   const searchInput = (
-    <SearchInput
-      containerClass="max-sm:w-full sm:w-[20rem]"
+    <SearchField
+      className="max-sm:w-full sm:w-[20rem]"
+      aria-label={t('GenericActions.Search')}
       placeholder={t('GenericActions.Search')}
+      clearLabel={t('DesignSystem.SearchField.Clear')}
       defaultValue={search}
-      onChange={debounceHandleInput(onSearchChange)}
+      onChange={searchHandlers.onChange}
+      onClear={searchHandlers.onClear}
     />
   );
 
@@ -146,7 +154,7 @@ export const ServiceListHeader = ({
               </button>
               <Separator
                 orientation="vertical"
-                className="h-5 w-px bg-border"
+                className="h-5"
               />
               <button
                 type="button"

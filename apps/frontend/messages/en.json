@@ -114,21 +114,6 @@
       "SeeMore": "See more"
     }
   },
-  "Datatable": {
-    "Asc": "Asc",
-    "ClearSelection": "Clear selection",
-    "ColumnOptions": "Column options",
-    "Columns": "Columns",
-    "Desc": "Desc",
-    "GoFirstPage": "Go to first page",
-    "GoLastPage": "Go to last page",
-    "GoNextPage": "Go to next page",
-    "GoPreviousPage": "Go to previous page",
-    "Hide": "Hide",
-    "ManageColumnsVisibility": "Manage columns visibility",
-    "ResetTable": "Reset table",
-    "RowsPerPage": "Rows per page"
-  },
   "DeploymentRequestUseCase": {
     "threat_profiling_cti": "Threat Profiling (CTI)",
     "threat_profiling_fimi": "Threat Profiling (FIMI)",
@@ -1202,6 +1187,7 @@
       "UnavailableDeployments": "This connector is not available for automatic deployment."
     },
     "CreationStatus": "Creation status",
+    "FilterByService": "Filter by service",
     "Form": {
       "AddImage": "Add image",
       "Author": "Author",
@@ -1216,7 +1202,6 @@
       "DescriptionLabel": "Description",
       "DescriptionPlaceholder": "This is a paragraph to describe the {documentType}.",
       "DescriptionUpdateJSONFile": "You're about to upload a new json file. The previous json file will be deleted. Do you want to continue?",
-      "DropDocuments": "Drop documents here",
       "ExistingJSONFile": "Existing JSON file: {file_name}",
       "GithubUrlLabel": "Github link (url)",
       "Illustration": "Illustration",
@@ -1230,7 +1215,6 @@
       "MinimumDeployableVersionPlaceholder": "1.0.0",
       "NameLabel": "Name",
       "NamePlaceholder": "{documentType} name",
-      "NoImage": "No image selected",
       "PlaybookSupportedLabel": "Playbook supported",
       "ProductVersionLabel": "{platform} compatibility version",
       "ProductVersionPlaceholder": "1.0.0",
@@ -1248,7 +1232,6 @@
       "SolutionCategoriesPlaceholder": "Add solution categories",
       "SubscriptionLinkLabel": "Subscription link (url)",
       "UpdateJSONFile": "Update JSON file",
-      "UploadImage": "Upload new image(s)",
       "UploadLogo": "Upload new logo",
       "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "Use cases",
@@ -2004,7 +1987,6 @@
       }
     },
     "FileForm": {
-      "DropDocuments": "Drop documents here",
       "NoDocument": "No document selected",
       "SelectDocument": "Select document"
     },
@@ -2132,9 +2114,6 @@
   },
   "ServiceName": {
     "custom_dashboards": "Custom Dashboard"
-  },
-  "SelectUsers": {
-    "ClearAllSelections": "Clear all selections"
   },
   "Sort Asc": "Sort Asc",
   "Sort Desc": "Sort Desc",
@@ -2330,6 +2309,63 @@
     "AutomaticDeploy": "Automatic deploy",
     "And": "and",
     "Or": "or"
+  },
+  "DesignSystem": {
+    "Breadcrumbs": {
+      "Label": "Breadcrumb"
+    },
+    "Carousel": {
+      "GoToSlide": "Go to slide {slide}",
+      "Next": "Next slide",
+      "Previous": "Previous slide"
+    },
+    "Combobox": {
+      "SelectedValues": "Selected values",
+      "ToggleOptions": "Toggle options"
+    },
+    "DataTable": {
+      "ClearSelection": "Clear selection",
+      "ColumnOptions": "Column options",
+      "Columns": "Columns",
+      "HideColumn": "Hide",
+      "ManageColumns": "Manage columns visibility",
+      "NextPage": "Go to next page",
+      "PreviousPage": "Go to previous page",
+      "ResetTable": "Reset table",
+      "RowsPerPage": "Rows per page",
+      "SelectAll": "Select all",
+      "SelectedCount": "{count} selected",
+      "SelectRow": "Select row",
+      "SortAscending": "Asc",
+      "SortDescending": "Desc"
+    },
+    "DatePicker": {
+      "Calendar": "Calendar",
+      "FieldCalendar": "{label} calendar",
+      "Clear": "Clear date",
+      "Confirm": "OK",
+      "Hours": "Hours",
+      "Minutes": "Minutes",
+      "Month": "Month",
+      "NextMonth": "Next month",
+      "OpenCalendar": "Open calendar",
+      "Period": "AM/PM",
+      "PreviousMonth": "Previous month",
+      "Seconds": "Seconds",
+      "Year": "Year"
+    },
+    "FileSelect": {
+      "Clear": "Remove all files",
+      "FileRejected": "{fileName} was not added ({reason, select, accept {unsupported format} other {over the size limit}}).",
+      "FilesRejected": "{count} files were not added (unsupported format or over the size limit).",
+      "Loading": "Loading",
+      "Placeholder": "No file selected.",
+      "RemoveFile": "Remove {fileName}",
+      "Trigger": "Select your file"
+    },
+    "SearchField": {
+      "Clear": "Clear search"
+    }
   },
   "Platform": {
     "Update": "Update",

@@ -112,7 +112,7 @@ describe('PublicNavigation — open={true}', () => {
     const aboutLink = screen.getByRole('link', { name: /Menu.About/ });
     expect(aboutLink).toHaveAttribute(
       'href',
-      'https://filigran.io/products/opencrq'
+      'https://filigran.io/products/opencrq?utm_source=xtm_hub&utm_medium=referral&utm_campaign=sidebar&utm_content=opencrq_about'
     );
     expect(aboutLink).toHaveAttribute('target', '_blank');
     expect(within(aboutLink).getByText('Menu.ComingSoon')).toBeInTheDocument();
