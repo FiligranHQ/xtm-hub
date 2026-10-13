@@ -84,10 +84,7 @@ import {
 } from '../registration/registration.domain';
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { CompetitorDomain } from './competitor/competitor.domain';
-import {
-  BUNDLE_REQUEST_CANCELLATION_REASON,
-  DeploymentCancellationApp,
-} from './deployment-cancellation.app';
+import { DeploymentCancellationApp } from './deployment-cancellation.app';
 import {
   DeploymentApp,
   XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
@@ -398,59 +395,6 @@ describe('deployment app', () => {
         });
       });
 
-      it('should bypass the free trial limit check for bundle products', async () => {
-        // Given
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            organization_requester_id:
-              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-            platform_identifier: PlatformIdentifier.Opencti,
-            hub_status: DeploymentRequestHubStatus.Active,
-            counts_in_orga_quota: true,
-          }
-        );
-
-        // When
-        const bundle = await DeploymentApp.createDeploymentRequest({
-          ...TEST_DEPLOYMENT,
-          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
-          use_cases_by_product: [
-            {
-              platform_identifier: PlatformIdentifier.Opencti,
-              use_case: DeploymentRequestUseCase.ThreatHunting,
-            },
-          ],
-        });
-
-        // Then
-        expect(bundle.id).toBeDefined();
-        const children = await TestHelper.deploymentRequest.loadMany({
-          parent_id: bundle.id as DeploymentRequestId,
-        });
-        expect(children).toHaveLength(2);
-      });
-
-      it('should allow a bundle when another organization has an on-going trial', async () => {
-        const otherOrgaTrial =
-          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
-              organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-              hub_status: DeploymentRequestHubStatus.Pending,
-              counts_in_orga_quota: true,
-            }
-          );
-
-        await DeploymentApp.createDeploymentRequest({
-          ...TEST_DEPLOYMENT,
-          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
-        });
-
-        await TestHelper.deploymentRequest.assertProperties(
-          otherOrgaTrial.id as DeploymentRequestId,
-          { hub_status: DeploymentRequestHubStatus.Pending }
-        );
-      });
-
       it.each([
         [DeploymentRequestHubStatus.Cancelled],
         [DeploymentRequestHubStatus.Expired],
@@ -479,6 +423,31 @@ describe('deployment app', () => {
           expect(children).toHaveLength(2);
         }
       );
+
+      it('should allow a bundle when another organization has an ongoing bundle', async () => {
+        // Given
+        const { bundle: otherOrganizationBundle } =
+          await TestHelper.deploymentRequest.createBundle({
+            bundle: {
+              organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+              hub_status: DeploymentRequestHubStatus.Pending,
+              counts_in_orga_quota: true,
+            },
+          });
+
+        // When
+        const bundle = await DeploymentApp.createDeploymentRequest({
+          ...TEST_DEPLOYMENT,
+          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
+        });
+
+        // Then
+        expect(bundle.id).toBeDefined();
+        await TestHelper.deploymentRequest.assertProperties(
+          otherOrganizationBundle.id,
+          { hub_status: DeploymentRequestHubStatus.Pending }
+        );
+      });
 
       it('should reject a second bundle for the same organization', async () => {
         await DeploymentApp.createDeploymentRequest({
@@ -576,79 +545,6 @@ describe('deployment app', () => {
           name: XTM_PLATFORM_BUNDLE_SERVICE_INSTANCE_NAME,
         });
         expect(serviceInstances).toBeUndefined();
-      });
-
-      describe('standalone trials cancellation', () => {
-        it('should cancel ongoing standalone trials of the organization when the bundle is requested', async () => {
-          // Given an ongoing standalone trial of the requesting organization
-          const standalone =
-            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-              {
-                organization_requester_id:
-                  TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-                hub_status: DeploymentRequestHubStatus.Active,
-              }
-            );
-
-          // When the bundle is requested
-          await DeploymentApp.createDeploymentRequest({
-            ...TEST_DEPLOYMENT,
-            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
-          });
-
-          // Then the standalone trial is cancelled
-          await TestHelper.deploymentRequest.assertProperties(standalone.id, {
-            hub_status: DeploymentRequestHubStatus.Cancelled,
-            cancellation_reason: BUNDLE_REQUEST_CANCELLATION_REASON,
-          });
-        });
-
-        it('should not cancel standalone trials of another organization', async () => {
-          // Given an ongoing standalone trial owned by another organization
-          const standalone =
-            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-              {
-                organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-                hub_status: DeploymentRequestHubStatus.Active,
-              }
-            );
-
-          // When a bundle is requested by another organization
-          await DeploymentApp.createDeploymentRequest({
-            ...TEST_DEPLOYMENT,
-            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
-          });
-
-          const untouched =
-            await DeploymentRequestDomain.loadDeploymentRequestBy({
-              id: standalone.id,
-            });
-
-          // Then the other organization's standalone trial is untouched
-          expect(untouched).toMatchObject({
-            hub_status: DeploymentRequestHubStatus.Active,
-          });
-        });
-
-        it('should not cancel the children of the bundle itself', async () => {
-          // When the bundle is requested with its child trials
-          const bundle = await DeploymentApp.createDeploymentRequest({
-            ...TEST_DEPLOYMENT,
-            products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Opencti],
-          });
-
-          const children = await TestHelper.deploymentRequest.loadMany({
-            parent_id: bundle.id as DeploymentRequestId,
-          });
-
-          // Then the bundle's own children are untouched
-          expect(children).not.toHaveLength(0);
-          children.forEach((child) => {
-            expect(child.hub_status).not.toBe(
-              DeploymentRequestHubStatus.Cancelled
-            );
-          });
-        });
       });
     });
   });
@@ -1975,7 +1871,6 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
-        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -2000,7 +1895,6 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
-        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: DeploymentRequestHubStatus.Active,
         end_date: bundle.end_date,
@@ -2024,7 +1918,6 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
-        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -2045,7 +1938,6 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
-        ongoingStandaloneTrials: [],
         isBlacklisted: true,
         hub_status: null,
         end_date: null,
@@ -2086,7 +1978,6 @@ describe('deployment app', () => {
       );
 
       expect(platformTrialStatus).toEqual({
-        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
@@ -2102,26 +1993,6 @@ describe('deployment app', () => {
       );
 
       await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
-    });
-
-    it('should report the standalone product as ongoing when the organization has an active standalone trial', async () => {
-      // Given an organization with an ongoing standalone OpenCTI trial
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        {
-          platform_identifier: PlatformIdentifier.Opencti,
-          hub_status: DeploymentRequestHubStatus.Active,
-        }
-      );
-
-      // When loading the platform trial status
-      const platformTrialStatus = await DeploymentApp.loadPlatformTrialStatus(
-        TEST_ORGANIZATIONS.FILIGRAN.ID
-      );
-
-      // Then the standalone product is reported as ongoing
-      expect(platformTrialStatus.ongoingStandaloneTrials).toEqual([
-        PlatformIdentifier.Opencti,
-      ]);
     });
   });
 

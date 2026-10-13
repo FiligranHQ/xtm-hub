@@ -127,22 +127,6 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
-  loadOngoingStandaloneTrialsForOrganization: async (
-    organizationId: OrganizationId
-  ): Promise<DeploymentRequest[]> => {
-    return db<DeploymentRequest[]>('DeploymentRequest')
-      .where('organization_requester_id', '=', organizationId)
-      .where('type', '=', DeploymentRequestDeploymentType.Trial)
-      .whereNull('parent_id')
-      .whereIn('hub_status', [
-        DeploymentRequestHubStatus.Active,
-        DeploymentRequestHubStatus.Pending,
-        DeploymentRequestHubStatus.Provisioning,
-        DeploymentRequestHubStatus.Queued,
-      ])
-      .select('*');
-  },
-
   getMaxOrderingInQueue: async (
     queue: DeploymentRequestQueue,
     hubStatus: DeploymentRequestHubStatus
