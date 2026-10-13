@@ -200,21 +200,20 @@ export const UserAdminApp = {
       ErrorCode.CantAddUserToPersonalSpace
     );
 
-    return withTransaction(async () => {
-      const pendingUser =
-        await UserOrganizationPendingDomain.lockUserOrganizationPending(
-          userId,
-          organizationId
-        );
-      if (!pendingUser) {
-        throw new Error(ErrorCode.PendingUserNotFound);
-      }
-
-      return UserHelper.acceptPendingUserWithCapabilities({
+    // No lock on purpose: accepting a request that another administrator declines at the same time is unlikely to happen and acceptable
+    const [pendingUser] =
+      await UserOrganizationPendingDomain.loadUserOrganizationPending({
         user_id: userId,
         organization_id: organizationId,
-        orgCapabilities: input.capabilities,
       });
+    if (!pendingUser) {
+      throw new Error(ErrorCode.PendingUserNotFound);
+    }
+
+    return UserHelper.acceptPendingUserWithCapabilities({
+      user_id: userId,
+      organization_id: organizationId,
+      orgCapabilities: input.capabilities,
     });
   },
 
