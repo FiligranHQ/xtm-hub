@@ -1,7 +1,6 @@
 import {
   TRIALS_PRODUCT_ORDER,
   TRIALS_TAB_CONFIG,
-  TrialsScope,
   TrialsTabType,
 } from '@/components/trials/trials.const';
 import {
@@ -23,31 +22,13 @@ export const sortProducts = (
 ): TrialsProductFragment[] =>
   [...products].sort((left, right) => productRank(left) - productRank(right));
 
-export const STANDALONE_PARENT_ID_FILTER_VALUE = 'null';
-
 export const buildTrialsFilters = (
-  type: TrialsTabType,
-  scope: TrialsScope
+  type: TrialsTabType
 ): DeploymentRequestFilter[] => [
   {
     key: DeploymentRequestFilterKey.Type,
-    value:
-      scope.kind === 'bundle'
-        ? [DeploymentRequestDeploymentType.Bundle]
-        : [DeploymentRequestDeploymentType.Trial],
+    value: [DeploymentRequestDeploymentType.Bundle],
   },
-  ...(scope.kind === 'product'
-    ? [
-        {
-          key: DeploymentRequestFilterKey.PlatformIdentifier,
-          value: [scope.platformIdentifier],
-        },
-        {
-          key: DeploymentRequestFilterKey.ParentId,
-          value: [STANDALONE_PARENT_ID_FILTER_VALUE],
-        },
-      ]
-    : []),
   {
     key: DeploymentRequestFilterKey.HubStatus,
     value: TRIALS_TAB_CONFIG[type].statuses,

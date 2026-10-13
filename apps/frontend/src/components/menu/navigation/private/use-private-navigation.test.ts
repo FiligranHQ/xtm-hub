@@ -298,12 +298,12 @@ describe('usePrivateNavigation', () => {
 
   it.each`
     capabilities                                                                                           | expectedSettingsLabels
-    ${[PortalCapability.Bypass]}                                                                           | ${['Parameter', 'Security', 'Roles', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'CSMBoard', 'Competitor', 'NewsFeed']}
-    ${[PortalCapability.ReadTrials]}                                                                       | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial']}
+    ${[PortalCapability.Bypass]}                                                                           | ${['Parameter', 'Security', 'Roles', 'UseCase', 'SolutionCategory', 'VotingRound', 'Organization', 'Service', 'ManageTrials', 'CSMBoard', 'Competitor', 'NewsFeed']}
+    ${[PortalCapability.ReadTrials]}                                                                       | ${['ManageTrials']}
     ${[PortalCapability.ReadSaasMetrics]}                                                                  | ${['CSMBoard']}
     ${[PortalCapability.ModifyCompetitors]}                                                                | ${['Competitor']}
-    ${[PortalCapability.ReadTrials, PortalCapability.ModifyCompetitors]}                                   | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'Competitor']}
-    ${[PortalCapability.ReadTrials, PortalCapability.ReadSaasMetrics, PortalCapability.ModifyCompetitors]} | ${['ManageTrials', 'OpenCTITrial', 'OpenAEVTrial', 'CSMBoard', 'Competitor']}
+    ${[PortalCapability.ReadTrials, PortalCapability.ModifyCompetitors]}                                   | ${['ManageTrials', 'Competitor']}
+    ${[PortalCapability.ReadTrials, PortalCapability.ReadSaasMetrics, PortalCapability.ModifyCompetitors]} | ${['ManageTrials', 'CSMBoard', 'Competitor']}
   `(
     'filters settings links according to portal capabilities $capabilities',
     ({ capabilities, expectedSettingsLabels }) => {

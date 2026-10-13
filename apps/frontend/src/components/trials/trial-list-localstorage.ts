@@ -1,20 +1,17 @@
-import {
-  TrialsScope,
-  TrialsTabType,
-  trialsScopeKey,
-} from '@/components/trials/trials.const';
+import { TrialsTabType } from '@/components/trials/trials.const';
 import { DeploymentRequestOrdering, OrderingMode } from '@graphql/generated';
 import { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import { useLocalStorage } from 'usehooks-ts';
 
+const TRIALS_LIST_STORAGE_SCOPE = 'bundle';
+
 export const useTrialsListLocalstorage = <U>(
   columns: ColumnDef<U>[],
   type: TrialsTabType,
-  scope: TrialsScope,
   defaultOrder: DeploymentRequestOrdering,
   defaultOrderMode: OrderingMode
 ) => {
-  const suffix = `${trialsScopeKey(scope)}_${type}`;
+  const suffix = `${TRIALS_LIST_STORAGE_SCOPE}_${type}`;
   const [orderMode, setOrderMode, removeOrderMode] =
     useLocalStorage<OrderingMode>(
       `orderModeTrialsList_${suffix}`,

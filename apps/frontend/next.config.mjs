@@ -30,8 +30,8 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/app/admin/trials',
-        destination: '/app/admin/opencti-trials',
+        source: '/app/admin/(trials|opencti-trials|openaev-trials)',
+        destination: '/app/admin/manage-trials',
         permanent: true,
       },
 
