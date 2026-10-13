@@ -28,16 +28,26 @@ import portalConfig from '../../config';
 import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
-import Organization, { OrganizationId, } from '../../model/kanel/public/Organization';
+import Organization, {
+  OrganizationId,
+} from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
-import { type CommercialModelJobData, REGISTRATION_QUEUES, } from '../../thirdparty/pgboss/registration.jobs';
+import {
+  type CommercialModelJobData,
+  REGISTRATION_QUEUES,
+} from '../../thirdparty/pgboss/registration.jobs';
 import { SaasManagerClient } from '../../thirdparty/saasmanager/client';
 import { logApp } from '../../utils/app-logger.util';
-import { BadRequestErrorCode, ErrorCode, ForbiddenErrorCode, NotFoundErrorCode, } from '../../utils/error/error.code';
+import {
+  BadRequestErrorCode,
+  ErrorCode,
+  ForbiddenErrorCode,
+  NotFoundErrorCode,
+} from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
 import { isValidVersion } from '../../utils/versioning';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
@@ -51,7 +61,11 @@ import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
-import { DomainRegisteredPlatform, PlatformConfigurationInput, RegistrationDomain, } from './registration.domain';
+import {
+  DomainRegisteredPlatform,
+  PlatformConfigurationInput,
+  RegistrationDomain,
+} from './registration.domain';
 import { RegistrationHelper } from './registration.helper';
 
 /**
