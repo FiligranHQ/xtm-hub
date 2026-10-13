@@ -3854,6 +3854,14 @@ export type GiveDeploymentFeedbackMutationVariables = Exact<{
 
 export type GiveDeploymentFeedbackMutation = { __typename?: 'Mutation', giveDeploymentFeedback: { __typename?: 'Success', success: boolean } };
 
+export type ReachSalesMutationVariables = Exact<{
+  message: InputMaybe<Scalars['String']['input']>;
+  deploymentRequestType: InputMaybe<DeploymentRequestDeploymentType>;
+}>;
+
+
+export type ReachSalesMutation = { __typename?: 'Mutation', contactUs: { __typename?: 'Success', success: boolean } };
+
 export type PlatformTrialStatusQueryVariables = Exact<{
   organizationId: Scalars['OrganizationId']['input'];
 }>;
@@ -7114,6 +7122,35 @@ export const useGiveDeploymentFeedbackMutation = <
 useGiveDeploymentFeedbackMutation.getKey = () => ['GiveDeploymentFeedback'];
 useGiveDeploymentFeedbackMutation.getRootKey = () => ['GiveDeploymentFeedback'] as const;
 useGiveDeploymentFeedbackMutation.fetcher = (client: GraphQLClient, variables: GiveDeploymentFeedbackMutationVariables, headers?: RequestInit['headers']) => fetcher<GiveDeploymentFeedbackMutation, GiveDeploymentFeedbackMutationVariables>(client, GiveDeploymentFeedbackDocument, variables, headers);
+
+export const ReachSalesDocument = `
+    mutation ReachSales($message: String, $deploymentRequestType: DeploymentRequestDeploymentType) {
+  contactUs(message: $message, deploymentRequestType: $deploymentRequestType) {
+    success
+  }
+}
+    `;
+
+export const useReachSalesMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<ReachSalesMutation, TError, ReachSalesMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<ReachSalesMutation, TError, ReachSalesMutationVariables, TContext>(
+      {
+    mutationKey: ['ReachSales'],
+    mutationFn: (variables?: ReachSalesMutationVariables) => fetcher<ReachSalesMutation, ReachSalesMutationVariables>(client, ReachSalesDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useReachSalesMutation.getKey = () => ['ReachSales'];
+useReachSalesMutation.getRootKey = () => ['ReachSales'] as const;
+useReachSalesMutation.fetcher = (client: GraphQLClient, variables?: ReachSalesMutationVariables, headers?: RequestInit['headers']) => fetcher<ReachSalesMutation, ReachSalesMutationVariables>(client, ReachSalesDocument, variables, headers);
 
 export const PlatformTrialStatusDocument = `
     query PlatformTrialStatus($organizationId: OrganizationId!) {

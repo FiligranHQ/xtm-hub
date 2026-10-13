@@ -1,56 +1,49 @@
 'use client';
-import { ReachSalesMutation } from '@/components/service/trial-instances/reach-sales.graphql';
 import { ReachSalesDialogForm } from '@/components/service/trial-instances/reach-sales/ReachSalesDialogForm';
 import { DialogInformative } from '@/components/ui/Dialog';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { Button } from '@filigran/design-system';
 import {
   DeploymentRequestDeploymentType,
-  PlatformIdentifier,
+  useReachSalesMutation,
 } from '@graphql/generated';
 import { useMemo, useState } from 'react';
-import { useMutation } from 'react-relay';
 
 interface ReachSalesButtonProps {
   variant: 'default' | 'gradient' | 'secondary';
-  platformIdentifier?: PlatformIdentifier;
-  platformId?: string;
-  deploymentRequestType?: DeploymentRequestDeploymentType;
 }
 
-export const ReachSalesButton = ({
-  variant,
-  platformId,
-  platformIdentifier,
-  deploymentRequestType,
-}: ReachSalesButtonProps) => {
+export const ReachSalesButton = ({ variant }: ReachSalesButtonProps) => {
   const t = useTranslate();
-  const [commitReachSalesMutation, isInFlight] =
-    useMutation(ReachSalesMutation);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
     useState(false);
   const [isInformationDialogOpen, setIsInformationDialogOpen] = useState(false);
 
-  const handleReachSales = (message: string) => {
-    commitReachSalesMutation({
-      variables: {
-        message,
-        platformId,
-        platformIdentifier,
-        deploymentRequestType,
-      },
-      onError(error) {
-        showSnackbar({
-          severity: 'error',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-      onCompleted() {
+  const { mutate: reachSales, isPending: isInFlight } = useReachSalesMutation(
+    portalGraphqlClient,
+    {
+      onSuccess: () => {
         setIsConfirmationDialogOpen(false);
         setIsInformationDialogOpen(true);
       },
+      onError: (error: unknown) => {
+        const errorMessage =
+          error instanceof Error ? error.message : 'UnknownError';
+        showSnackbar({
+          severity: 'error',
+          title: t('Utils.Error'),
+          description: t(`Error.Server.${errorMessage}`),
+        });
+      },
+    }
+  );
+
+  const handleReachSales = (message: string) => {
+    reachSales({
+      message,
+      deploymentRequestType: DeploymentRequestDeploymentType.Bundle,
     });
   };
 
