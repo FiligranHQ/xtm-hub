@@ -97,9 +97,9 @@ development_status:
   # Move the app off the utilities the legacy theme generates, one family per item, then remove
   # the legacy copy, its theme and aliases, and forbid @filigran/ui imports
   epic-4-cleanup: backlog
-  new-legacy-spacing: backlog
-  new-legacy-typography: backlog
-  new-legacy-colours: backlog
+  3800-legacy-spacing: backlog
+  3801-legacy-typography: backlog
+  3802-legacy-colours: backlog
   3708-remove-filigran-ui: backlog
 
 
@@ -111,7 +111,7 @@ dependencies:
   3701-tag-input: [3534-badge, 3545-combobox]
   3705-data-table: [3541-checkbox, 3558-menu, 3693-skeleton]
   3707-auto-form: [3541-checkbox, 3548-file-select, 3553-radio, 3556-input, 3561-textarea, 3566-select, 3568-switch, 3698-accordion, 3689-date-picker, 3706-form]
-  3708-remove-filigran-ui: [epic-1-primitives, epic-2-composites, epic-3-candidates, new-legacy-spacing, new-legacy-typography, new-legacy-colours]
+  3708-remove-filigran-ui: [epic-1-primitives, epic-2-composites, epic-3-candidates, 3800-legacy-spacing, 3801-legacy-typography, 3802-legacy-colours]
 
 # Issues an item also closes: the legacy file it migrates is all they cover.
 covers:
