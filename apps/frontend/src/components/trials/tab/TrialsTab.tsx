@@ -6,19 +6,18 @@ import {
 } from '@/components/trials/tab/trials-tab.utils';
 import { TrialsProducts } from '@/components/trials/tab/TrialsProducts';
 import { TrialsProductValues } from '@/components/trials/tab/TrialsProductValues';
+import { TrialsRowActions } from '@/components/trials/tab/TrialsRowActions';
 import { useTrialsListLocalstorage } from '@/components/trials/trial-list-localstorage';
 import {
   TRIALS_TAB_CONFIG,
   trialsRegionKey,
   TrialsTabType,
 } from '@/components/trials/trials.const';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
 } from '@/components/ui/handle-sorting.utils';
-import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import {
   useAdminByPass,
@@ -29,38 +28,24 @@ import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { daysUntil, useDateFormatter } from '@/utils/date';
 import { getDataTableLabels } from '@/utils/design-system/data-table';
-import { xtmPlatformTrialManageUsersFromDashboardPath } from '@/utils/path/constant';
 import {
-  IconButton,
   SearchField,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/design-system';
-import {
-  ArrowShapeUpIcon,
-  ArrowShapeUpStackIcon,
-  CheckIndeterminateIcon,
-  CloseIcon,
-  GroupIcon,
-} from '@filigran/icon';
+import { CheckIndeterminateIcon } from '@filigran/icon';
 import { trialsKeys } from '@graphql/deployment/deployment.keys';
 import {
-  DeploymentRequestHubStatus,
   DeploymentRequestOrdering,
   OrderingMode,
   PortalCapability,
-  ReorderDeploymentRequestInQueueDirection,
   TrialsProductFragment,
   TrialsRowFragment,
-  useTrialsAdminCancelDeploymentRequestMutation,
   useTrialsListQuery,
-  useTrialsReorderDeploymentRequestInQueueMutation,
 } from '@graphql/generated';
-import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import Link from 'next/link';
 import { ReactNode, useMemo, useState } from 'react';
 
 type TrialsColumn = ColumnDef<TrialsRowFragment>;
@@ -125,166 +110,6 @@ const productColumns = (t: Translate): TrialsColumn[] => [
       )
   ),
 ];
-
-interface TrialsRowActionsProps {
-  request: TrialsRowFragment;
-  type: TrialsTabType;
-}
-
-const TrialsRowActions = ({ request, type }: TrialsRowActionsProps) => {
-  const t = useTranslate();
-  const queryClient = useQueryClient();
-  const isAdminByPass = useAdminByPass();
-  const userHasModifyTrialCapa = useUserHasPortalCapability([
-    PortalCapability.ModifyTrials,
-  ]);
-  const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
-
-  const invalidateTrials = () =>
-    queryClient.invalidateQueries({ queryKey: trialsKeys.all() });
-
-  const onError = (error: unknown) => {
-    const errorMessage =
-      error instanceof Error ? error.message : 'UnknownError';
-    showSnackbar({
-      severity: 'error',
-      title: t('Utils.Error'),
-      description: <>{t(`Error.Server.${errorMessage}`)}</>,
-    });
-  };
-
-  const { mutate: cancelRequest } =
-    useTrialsAdminCancelDeploymentRequestMutation(portalGraphqlClient, {
-      onSuccess: async () => {
-        await invalidateTrials();
-        showSnackbar({
-          severity: 'success',
-          title: t('Utils.Success'),
-          description: t('TrialsDashboard.Toast.BundleCancelled'),
-        });
-      },
-      onError,
-    });
-
-  const { mutate: reorderRequest } =
-    useTrialsReorderDeploymentRequestInQueueMutation(portalGraphqlClient, {
-      onSuccess: async () => {
-        await invalidateTrials();
-        showSnackbar({
-          severity: 'success',
-          title: t('Utils.Success'),
-          description: t('TrialsDashboard.Toast.BundleReordered'),
-        });
-      },
-      onError,
-    });
-
-  const isCancellable =
-    canModifyTrial &&
-    (type === TrialsTabType.Running || type === TrialsTabType.Waiting);
-  const isReorderable = canModifyTrial && type === TrialsTabType.Waiting;
-  const canManageUsers =
-    type === TrialsTabType.Running &&
-    isAdminByPass &&
-    request.hub_status === DeploymentRequestHubStatus.Active;
-
-  return (
-    <>
-      {isCancellable && (
-        <ConfirmDialog
-          title={t('Service.Trials.Cancellation.Confirmation.Title')}
-          confirmLabel={t('MenuActions.Delete')}
-          trigger={
-            <IconButton
-              variant="destructive"
-              priority="tertiary"
-              className="border m-1"
-              aria-label={t('TrialsDashboard.Actions.CancelBundle')}
-              icon={<CloseIcon className="h-4 w-4" />}
-            />
-          }
-          onConfirm={() => cancelRequest({ deploymentRequestId: request.id })}>
-          {t('TrialsDashboard.Cancellation.Confirmation', {
-            organizationName: request.organization_name ?? '',
-          })}
-        </ConfirmDialog>
-      )}
-      {isReorderable && (
-        <>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <IconButton
-                  priority="tertiary"
-                  className="border m-1"
-                  aria-label={t('TrialsDashboard.Actions.MoveToTop')}
-                  icon={<ArrowShapeUpStackIcon className="h-4 w-4" />}
-                  onClick={() =>
-                    reorderRequest({
-                      input: {
-                        id: request.id,
-                        direction: ReorderDeploymentRequestInQueueDirection.Top,
-                      },
-                    })
-                  }
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                {t('TrialsDashboard.Actions.MoveToTop')}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <IconButton
-                  priority="tertiary"
-                  className="border m-1"
-                  aria-label={t('TrialsDashboard.Actions.MoveUp')}
-                  icon={<ArrowShapeUpIcon className="h-4 w-4" />}
-                  onClick={() =>
-                    reorderRequest({
-                      input: {
-                        id: request.id,
-                        direction: ReorderDeploymentRequestInQueueDirection.Up,
-                      },
-                    })
-                  }
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                {t('TrialsDashboard.Actions.MoveUp')}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </>
-      )}
-      {canManageUsers && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <IconButton
-                asChild
-                priority="tertiary"
-                className="border m-1"
-                aria-label={t('Service.Trials.ManageUsers.Title')}
-                icon={<GroupIcon className="h-4 w-4" />}>
-                <Link
-                  href={xtmPlatformTrialManageUsersFromDashboardPath(
-                    request.service_instance_id
-                  )}
-                />
-              </IconButton>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t('Service.Trials.ManageUsers.Title')}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-    </>
-  );
-};
 
 const buildTrialsColumns = (
   type: TrialsTabType,
@@ -439,13 +264,13 @@ interface TrialsTabProps {
 const TrialsTab = ({ type }: TrialsTabProps) => {
   const t = useTranslate();
   const formatDate = useDateFormatter();
-  const isAdminByPass = useAdminByPass();
+  const isAdminByPass = Boolean(useAdminByPass());
   const userHasModifyTrialCapa = useUserHasPortalCapability([
     PortalCapability.ModifyTrials,
   ]);
-  const isReorderTrialsAllowed = Boolean(
-    type === TrialsTabType.Waiting && (isAdminByPass || userHasModifyTrialCapa)
-  );
+  const canModifyTrials = Boolean(isAdminByPass || userHasModifyTrialCapa);
+  const isReorderTrialsAllowed =
+    type === TrialsTabType.Waiting && canModifyTrials;
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const { defaultOrder, defaultOrderMode } = TRIALS_TAB_CONFIG[type];
 
@@ -460,10 +285,19 @@ const TrialsTab = ({ type }: TrialsTabProps) => {
           <TrialsRowActions
             request={request}
             type={type}
+            canModifyTrials={canModifyTrials}
+            isAdminByPass={isAdminByPass}
           />
         )
       ),
-    [type, t, formatDate, isReorderTrialsAllowed]
+    [
+      type,
+      t,
+      formatDate,
+      isReorderTrialsAllowed,
+      canModifyTrials,
+      isAdminByPass,
+    ]
   );
 
   const {
