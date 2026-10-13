@@ -56,16 +56,3 @@ export const TRIALS_PRODUCT_ORDER: PlatformIdentifier[] = [
 export const trialsRegionKey = (
   region: DeploymentRequestPlatformRegion
 ): string => `Region.${region.toUpperCase()}`;
-
-export type TrialsScope =
-  | { kind: 'bundle' }
-  | { kind: 'product'; platformIdentifier: PlatformIdentifier };
-
-export const BUNDLE_SCOPE: TrialsScope = { kind: 'bundle' };
-
-export const productScope = (
-  platformIdentifier: PlatformIdentifier
-): TrialsScope => ({ kind: 'product', platformIdentifier });
-
-export const trialsScopeKey = (scope: TrialsScope): string =>
-  scope.kind === 'bundle' ? 'bundle' : scope.platformIdentifier;

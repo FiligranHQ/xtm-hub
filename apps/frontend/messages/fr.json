@@ -654,8 +654,6 @@
     "Settings": "Paramètres",
     "SettingsLabel": "Menu des paramètres",
     "Users": "Utilisateurs",
-    "OpenCTITrial": "Essai OpenCTI",
-    "OpenAEVTrial": "Essai OpenAEV",
     "Competitor": "Concurrent",
     "NewsFeed": "Fil d'actualité",
     "VotingRound": "Vote des fonctionnalités",
@@ -772,7 +770,6 @@
       "StartDate": "Date de début",
       "EndDate": "Date de fin",
       "RemainingDays": "Jours restants",
-      "Status": "Statut",
       "Region": "Région",
       "PlatformId": "ID de la plateforme",
       "PlatformUrl": "URL de la plateforme",
@@ -795,7 +792,6 @@
       "Quotas": "Quotas"
     },
     "Toast": {
-      "TrialsReordered": "Les demandes ont été réorganisées",
       "BundleCancelled": "L'essai bundle a bien été annulé.",
       "BundleReordered": "Le bundle a été repositionné dans la file d'attente."
     },
@@ -803,8 +799,7 @@
       "SearchTrials": "Recherche par email ou par organisation",
       "MoveToTop": "Placer en tête",
       "MoveUp": "Remonter",
-      "CancelBundle": "Annuler l'essai bundle",
-      "CancelTrial": "Annuler l'essai"
+      "CancelBundle": "Annuler l'essai bundle"
     },
     "UpdateQuotasForm": {
       "QuotasUpdated": "Le quota a été mis à jour avec succès",
@@ -1767,8 +1762,7 @@
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
-          "NewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès.",
-          "Admin": "L'essai gratuit d'OpenCTI a été annulé avec succès."
+          "NewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès."
         },
         "ConfirmationForm": {
           "Title": "Annuler votre essai gratuit d'OpenCTI",
@@ -1780,8 +1774,7 @@
           "CancellationReasonRequired": "Veuillez sélectionner une raison d'annulation"
         },
         "Confirmation": {
-          "Title": "Annulation de l'essai",
-          "Admin": "Êtes-vous sûr de vouloir annuler l'essai gratuit d'OpenCTI de l'organisation {organizationName} ?"
+          "Title": "Annulation de l'essai"
         }
       },
       "Form": {
