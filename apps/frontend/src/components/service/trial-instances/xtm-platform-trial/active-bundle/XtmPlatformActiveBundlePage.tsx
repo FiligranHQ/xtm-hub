@@ -13,7 +13,6 @@ import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
-  DeploymentRequestDeploymentType,
   OrganizationCapability,
   PlatformIdentifier,
   useXtmPlatformBundleQuery,
@@ -93,10 +92,7 @@ export const XtmPlatformActiveBundlePage = () => {
           </p>
         </div>
         <div className="flex items-center gap-s shrink-0">
-          <ReachSalesButton
-            variant="gradient"
-            deploymentRequestType={DeploymentRequestDeploymentType.Bundle}
-          />
+          <ReachSalesButton variant="gradient" />
           <SlackSupportButton />
         </div>
       </div>

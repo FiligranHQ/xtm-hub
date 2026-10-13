@@ -1,4 +1,3 @@
-import GuardCapacityComponent from '@/components/AdminGuard';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import {
   CONTRACT_LABEL_BY_CONTRACT,
@@ -7,21 +6,16 @@ import {
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
 import { PlatformUpdateSheet } from '@/components/service/components/PlatformUpdateSheet';
 import { UnregisterButton } from '@/components/service/registration/UnregisterButton';
-import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
-import { TrialCancelSheet } from '@/components/service/trial-instances/TrialCancelSheet';
 import { useTranslate } from '@/hooks/use-translate';
 import { isWithinLastMonths, useDateFormatter } from '@/utils/date';
-import { formatTitleCase } from '@/utils/format/case';
 import { Button } from '@filigran/design-system';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
-  DeploymentRequestHubStatus,
   OrganizationCapability,
   PlatformContract,
   PortalCapability,
 } from '@graphql/generated';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { useContext, useState } from 'react';
 import { useFragment } from 'react-relay';
 
@@ -34,11 +28,8 @@ export const RegistrationDetails = ({
 }: RegistrationDetailsProps) => {
   const t = useTranslate();
   const formatDate = useDateFormatter();
-  const searchParams = useSearchParams();
-  const openForm = searchParams.get('openForm') === 'true';
 
   const [openPlatformSheet, setOpenPlatformSheet] = useState(false);
-  const [openCancelSheet, setOpenCancelSheet] = useState(false);
 
   const { hasOrganizationCapability, hasCapability } =
     useContext(PortalContext);
@@ -58,19 +49,6 @@ export const RegistrationDetails = ({
       registeredPlatform
     );
 
-  const isCancellable =
-    platform.deployment_request &&
-    ![
-      DeploymentRequestHubStatus.Expired,
-      DeploymentRequestHubStatus.Cancelled,
-    ].includes(
-      platform.deployment_request?.hub_status as DeploymentRequestHubStatus
-    );
-
-  const isCancellationDefinitive =
-    DeploymentRequestHubStatus.Active ===
-    platform.deployment_request?.hub_status;
-
   const isTrial = platform.contract === PlatformContract.Trial;
   const serviceInstanceId = platform.subscription?.service_instance?.id;
   const displayUpdatePlatform =
@@ -80,27 +58,10 @@ export const RegistrationDetails = ({
     platform.identifier
   );
 
-  const isTrialActive =
-    isTrial &&
-    platform.deployment_request?.hub_status ===
-      DeploymentRequestHubStatus.Active;
-
-  const userHasTrialAccess = Boolean(platform.myGroups?.length);
-  const displayAccessPlatformButtonForTrial =
-    userHasTrialAccess &&
-    platform.url &&
-    platform.deployment_request?.hub_status ===
-      DeploymentRequestHubStatus.Active;
-
   const isConnectionStatusOk = isWithinLastMonths(
     new Date(platform.last_connectivity_check),
     1
   );
-
-  const isLastConnectivityCheckDisplayed =
-    !isTrial ||
-    platform?.deployment_request?.hub_status ===
-      DeploymentRequestHubStatus.Active;
 
   return (
     <section className="flex justify-between p-xl border border-solid border-blue rounded">
@@ -115,21 +76,6 @@ export const RegistrationDetails = ({
           <span className="mr-xs">{t('Register.Details.ProductURL')}:</span>
           <span>{platform.url ? platform.url : '-'}</span>
         </li>
-        {platform.deployment_request?.hub_status && (
-          <li>
-            <span className="mr-xs">{t('Register.Details.Status')}:</span>
-            {formatTitleCase(platform.deployment_request?.hub_status)}
-            {isCancellable && (
-              <Button
-                priority="tertiary"
-                variant="destructive"
-                className="m-0 p-0 ml-4 h-full underline"
-                onClick={() => setOpenCancelSheet(true)}>
-                {t('Utils.Cancel')}
-              </Button>
-            )}
-          </li>
-        )}
         {isTrial ? (
           <>
             <li>
@@ -158,18 +104,11 @@ export const RegistrationDetails = ({
             </li>
           </>
         )}
-
-        {platform.deployment_request?.region && (
-          <li>
-            <span className="mr-xs">{t('Register.Details.Region')}:</span>
-            {t(`Region.${platform.deployment_request.region.toUpperCase()}`)}
-          </li>
-        )}
         <li>
           <span className="mr-xs">{t('Register.Details.License')}:</span>
           {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
         </li>
-        {isLastConnectivityCheckDisplayed && (
+        {!isTrial && (
           <>
             <li>
               <span className="mr-xs">
@@ -206,34 +145,10 @@ export const RegistrationDetails = ({
             </li>
           </>
         )}
-        {isTrialActive && (
-          <li>
-            <span>
-              <span className="mr-xs">{t('Register.Details.Access')}:</span>
-              {userHasTrialAccess ? (
-                <span>
-                  {(platform.myGroups ?? [])
-                    .map((group) => group.name)
-                    .filter(Boolean)
-                    .join(', ')}
-                </span>
-              ) : (
-                <span>
-                  <span className="text-destructive mr-xs">
-                    {t('RegistrationDetails.NoAccess')}
-                  </span>
-                  {t('RegistrationDetails.NoAccessContact', {
-                    email: platform.deployment_request?.requester_email ?? '',
-                  })}
-                </span>
-              )}
-            </span>
-          </li>
-        )}
       </ul>
 
       <div className="flex flex-col gap-m">
-        {(displayAccessPlatformButtonForTrial || !isTrial) && (
+        {!isTrial && (
           <Button asChild>
             <Link
               target="_blank"
@@ -243,22 +158,6 @@ export const RegistrationDetails = ({
             </Link>
           </Button>
         )}
-
-        {displayAccessPlatformButtonForTrial &&
-          isTrial &&
-          serviceInstanceId && (
-            <GuardCapacityComponent
-              capacityRestriction={[
-                OrganizationCapability.AdministrateOrganization,
-                OrganizationCapability.ManagePlatformRegistration,
-              ]}>
-              <TrialsManageUsersDialog
-                serviceInstanceId={serviceInstanceId}
-                organizationId={platform.subscription?.organization.id}
-                defaultOpen={openForm}
-              />
-            </GuardCapacityComponent>
-          )}
         {displayUpdatePlatform && (
           <Button
             priority="secondary"
@@ -277,14 +176,6 @@ export const RegistrationDetails = ({
           serviceDefinitionIdentifier={platform.identifier}
           open={openPlatformSheet}
           setOpen={setOpenPlatformSheet}
-        />
-      )}
-      {platform.deployment_request && (
-        <TrialCancelSheet
-          deploymentRequestId={platform.deployment_request.id}
-          isCancellationDefinitive={isCancellationDefinitive}
-          open={openCancelSheet}
-          setOpen={setOpenCancelSheet}
         />
       )}
     </section>

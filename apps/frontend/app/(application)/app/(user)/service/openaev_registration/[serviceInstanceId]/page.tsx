@@ -1,14 +1,14 @@
+import {
+  RegistrationDetailsPage,
+  RegistrationDetailsPageProps,
+} from '@/components/service/registration/RegistrationDetailsPage';
 import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
 import { ServiceInstanceTag } from '@graphql/generated';
-import ClientSection from './client-section';
 
-export interface ServiceOpenAEVRegistrationPageProps {
-  params: Promise<{ serviceInstanceId: string }>;
-}
-const Page = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
+const Page = ({ params }: RegistrationDetailsPageProps) => {
   return (
     <>
-      <ClientSection params={params} />
+      <RegistrationDetailsPage params={params} />
       <RegistrationLearnMore serviceInstanceTag={ServiceInstanceTag.OpenAev} />
     </>
   );

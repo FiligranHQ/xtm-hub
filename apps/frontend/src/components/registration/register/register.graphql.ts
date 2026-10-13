@@ -81,9 +81,7 @@ export const registeredPlatformByServiceInstanceId = graphql`
     $input: RegisteredPlatformInput!
   ) {
     registeredPlatform(input: $input) {
-      platform_id
       title
-      contract
       ...registeredPlatformByServiceInstanceId_fragment
     }
   }
@@ -105,20 +103,6 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
       service_instance {
         id
       }
-      organization {
-        id
-      }
-    }
-    deployment_request {
-      id
-      hub_status
-      region
-      counts_in_orga_quota
-      platform_identifier
-      requester_email
-    }
-    myGroups {
-      name
     }
   }
 `;

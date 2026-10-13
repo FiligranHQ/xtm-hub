@@ -24,7 +24,6 @@ import { portalGraphqlClient } from '@/lib/graphql-client';
 import { Button } from '@filigran/design-system';
 import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
-  DeploymentRequestDeploymentType,
   DeploymentRequestSource,
   useCreateDeploymentRequestMutation,
   XtmPlatformBundleDetailsFragment,
@@ -130,10 +129,7 @@ export const PrivateXtmPlatformTrialPanel = ({
         {t('Service.Trials.XtmPlatform.Page.Status.CancelTrialRequest')}
       </Button>
     ) : (
-      <ReachSalesButton
-        variant="default"
-        deploymentRequestType={DeploymentRequestDeploymentType.Bundle}
-      />
+      <ReachSalesButton variant="default" />
     );
 
     return (

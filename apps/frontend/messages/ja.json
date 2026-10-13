@@ -868,10 +868,6 @@
       "Description": "この組織のユーザーリクエストを管理するために必要な権限がありません。"
     }
   },
-  "RegistrationDetails": {
-    "NoAccess": "アクセス禁止",
-    "NoAccessContact": "トライアル管理者{email}までご連絡ください。"
-  },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
     "opencti": "OpenCTI",
@@ -945,9 +941,7 @@
       "StartDate": "開始日",
       "EndDate": "終了日",
       "ConnectedOn": "ログイン日時",
-      "Region": "地域",
       "License": "ライセンス",
-      "Status": "ステータス",
       "PrivatePlatform": "プライベート・プラットフォーム",
       "LastConnectionCheck": "最終接続チェック",
       "Access": "アクセス"
@@ -1566,61 +1560,7 @@
         "expertise": "ツールを効果的に利用するためのアナリストや専門家が社内にいない"
       },
       "LearnMore": {
-        "Link": "もっと詳しく",
-        "openaev": {
-          "WhatCanYouDo": {
-            "Title": "OpenAEVトライアルで何ができる？",
-            "FirstParagraph": "攻撃をシミュレートし、防御を評価し、セキュリティ態勢を改善するために、OpenAEV のすべての機能を 30 日間お試しいただけます。これには、既存の EDR エージェントの使用、自動シナリオ生成、AI を活用した修復ガイダンスなど、OpenAEV SaaS ベースの Enterprise Edition のすべての機能が含まれます。",
-            "SecondParagraph": "攻撃シーケンスのシミュレーション、現実的な卓上演習、セキュリティ態勢の検証、リーダーシップへのサイバー回復力の報告など、特定のニーズに合わせてOpenAEVのすべての機能をテストできます。",
-            "Link": "OpenAEV Enterprise Editionのすべての機能を見る"
-          },
-          "Blocks": {
-            "First": {
-              "Title": "優先順位付け",
-              "Description": "OpenCTI脅威インテリジェンスとMITRE ATT&CKマッピングを活用して、攻撃シミュレーションを構築し、脆弱性と悪用可能な攻撃経路を特定します。"
-            },
-            "Second": {
-              "Title": "テスト",
-              "Description": "アトミックテスト、カスタム攻撃シーケンス、または事前にパッケージ化されたシナリオにより、防御を継続的に検証します。OpenAEVのネイティブEDRまたは主要ベンダーとの事前統合を使用して、卓上演習を実行し、チームの対応をテストします。"
-            },
-            "Third": {
-              "Title": "修正",
-              "Description": "ドリルダウン分析、AI を活用した改善ガイダンス、チームのフィードバックにより、セキュリティ態勢の改善箇所を特定します。"
-            }
-          }
-        },
-        "opencti": {
-          "WhatCanYouDo": {
-            "Title": "OpenCTI トライアルで何ができますか？",
-            "FirstParagraph": "OpenCTIの全機能を30日間お試しいただき、脅威インテリジェンスを強化してください。これには、自動化されたプレイブック、優先情報要件（PIR）の設定機能、FINTEL、AIを活用したファイルのインポート、レポート作成、NLP検索機能など、OpenCTI Enterprise Editionの全機能が含まれます。",
-            "SecondParagraph": "OpenCTIが、脅威ハンティング、インシデントレスポンス、ケース管理など、特定のニーズをどのようにサポートし、好みのデータソースと統合して、実用的な脅威インテリジェンスをセキュリティスタック全体に流すことができるかをご覧ください。",
-            "Link": "OpenCTI Enterprise Editionの全機能をご覧ください。"
-          },
-          "Blocks": {
-            "First": {
-              "Title": "取り込み",
-              "Description": "商用、オープンソース、社内など、あらゆるフィードからの脅威インテリジェンスを、300 以上のインテグレーションを活用し STIX 2.1 フレームワークで標準化された一元的なプラットフォームに統合し、充実させます。AIが支援するCTIレポートのインポートにより、アナリストの作業時間を大幅に削減します。"
-            },
-            "Second": {
-              "Title": "処理",
-              "Description": "強力なダッシュボードの可視化、ナレッジ・ハイパーグラフ、プレイブックにアクセスし、タイムラインと ATT&CK マッピングを使用して脅威アクター間でピボットします。脅威やインシデントの管理ニーズに合わせてダッシュボードをカスタマイズし、あらゆるステップでAIを活用できます。"
-            },
-            "Third": {
-              "Title": "出力",
-              "Description": "脅威インテリジェンスをセキュリティ・システム全体に浸透させます。チームやツール間でインテリジェンスを共有・拡散し、役割ベースのアクセス権でタイムリーなアクションを実現します。OpenCTI と完全に統合された OpenAEV を使用して、セキュリティ態勢を検証し、改善します。"
-            }
-          }
-        }
-      },
-      "PageHeader": {
-        "Welcome": "Filigran へようこそ",
-        "Title": "{platformName} の無料トライアルを始めましょう!"
-      },
-      "Storage": {
-        "Title": "トライアル環境のストレージに関する重要なお知らせ",
-        "NoSLA": "<strong>無料トライアル環境には SLA は含まれません。</strong> クラウドプロバイダーの障害が発生した場合、復旧時間は保証されません。トライアル環境には重要なデータや代替不可能なデータを保存しないことを推奨します。",
-        "OpenCTIDescription": "OpenCTI 無料トライアルでは、すべての <link>Enterprise Edition SaaS 機能</link> を含む「small」SaaS インスタンスをユーザーに提供しますが、<strong>計算能力とストレージは制限されます (インテリジェンスデータストレージは最大 40GB、ファイルストレージは 3GB)。</strong> このトライアル中に豊富なデータセットを含む大規模なプレミアムフィードを取り込むと、ストレージがすぐに使い切られる可能性があります。",
-        "OpenAEVDescription": "OpenAEV 無料トライアルでは、すべての <link>Enterprise Edition SaaS 機能</link> を含む「small」インスタンスをユーザーに提供しますが、計算能力は低減され、ストレージは <strong>16GB</strong> に制限されます。"
+        "Link": "もっと詳しく"
       },
       "XTMPlatform": {
         "Title": "あなたの eXtended Threat Management (XTM) スイート",
@@ -1743,12 +1683,9 @@
       "ReachOutToSalesSuccessMessage": "折り返しご連絡いたします。",
       "Cancellation": {
         "Toast": {
-          "NoNewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。新規のOpenCTIトライアルはリクエストできませんのでご注意ください。",
-          "NewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。"
+          "NoNewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。新規のOpenCTIトライアルはリクエストできませんのでご注意ください。"
         },
         "ConfirmationForm": {
-          "Title": "OpenCTI 無料トライアルをキャンセルする",
-          "NoNewTrialPossible": "この操作の後、新しい OpenCTI トライアルをリクエストすることはできませんのでご注意ください。",
           "CancellationReason": "キャンセル理由",
           "CancellationReasonPlaceholder": "理由を選択してください",
           "CancellationReasonOther": "その他",
