@@ -137,6 +137,8 @@ kind_of() {
 
 issue_of() { local n="${1%%-*}"; [[ $n =~ ^[0-9]+$ ]] && echo "$n" || true; }
 name_of() { perl -pe 's/(^|-)(\w)/\U$2/g' <<<"${1#*-}"; }
+# The utility family a cleanup item moves off the legacy theme (<n>-legacy-spacing: spacing), or nothing.
+family_of() { [[ $1 == *-legacy-* ]] && echo "${1#*-legacy-}" || true; }
 
 # ---------------------------------------------------------------- preconditions and git
 
@@ -848,7 +850,12 @@ default_subject() {
   name="$(name_of "$2")"
   case "$1" in
     candidate) echo "feat(frontend): rebuild $name on @filigran/design-system primitives (#$3)" ;;
-    cleanup) echo "chore(frontend): remove the legacy filigran-ui copy (#$3)" ;;
+    cleanup)
+      if [ -n "$(family_of "$2")" ]; then
+        echo "refactor(frontend): move the $(family_of "$2") off the legacy theme utilities (#$3)"
+      else
+        echo "chore(frontend): remove the legacy filigran-ui copy (#$3)"
+      fi ;;
     *) echo "feat(frontend): migrate $name to @filigran/design-system (#$3)" ;;
   esac
 }
@@ -1244,7 +1251,12 @@ create_issues() {
     name="$(perl -pe 's/(^|-)(\w)/\U$2/g' <<<"${2#new-}")"
     case "$1" in
       epic-3*) echo "feat(frontend): rebuild $name on @filigran/design-system primitives" ;;
-      epic-4*) echo "chore(frontend): remove the legacy filigran-ui copy" ;;
+      epic-4*)
+        if [ -n "$(family_of "$2")" ]; then
+          echo "refactor(frontend): move the $(family_of "$2") off the legacy theme utilities"
+        else
+          echo "chore(frontend): remove the legacy filigran-ui copy"
+        fi ;;
       *) echo "feat(frontend): migrate $name to @filigran/design-system" ;;
     esac
   }
