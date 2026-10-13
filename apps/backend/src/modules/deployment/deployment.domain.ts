@@ -99,10 +99,6 @@ export const DeploymentRequestDomain = {
     deploymentRequest: DeploymentRequest,
     childrenHubStatus?: DeploymentRequestHubStatus
   ): Promise<DeploymentRequest[]> => {
-    if (deploymentRequest.type !== DeploymentRequestDeploymentType.Bundle) {
-      return [deploymentRequest];
-    }
-
     const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
       parent_id: deploymentRequest.id,
       ...(childrenHubStatus ? { hub_status: childrenHubStatus } : {}),
@@ -222,19 +218,11 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
-  loadTrialsToExpire: async (): Promise<DeploymentRequest[]> => {
+  loadBundlesToExpire: async (): Promise<DeploymentRequest[]> => {
     return db<DeploymentRequest[]>('DeploymentRequest')
       .where('end_date', '<', new Date())
       .where('hub_status', '=', DeploymentRequestHubStatus.Active)
-      .where((qb) => {
-        qb.where('type', '=', DeploymentRequestDeploymentType.Bundle).orWhere(
-          (subQb) => {
-            subQb
-              .where('type', '=', DeploymentRequestDeploymentType.Trial)
-              .whereNull('parent_id');
-          }
-        );
-      })
+      .where('type', '=', DeploymentRequestDeploymentType.Bundle)
       .select('*');
   },
 

@@ -363,23 +363,6 @@ describe('deploymentRequestDomain', () => {
       ]);
     });
 
-    it('should return the standalone trial alone', async () => {
-      const standalone =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {}
-        );
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { platform_identifier: PlatformIdentifier.Openaev }
-      );
-
-      const family =
-        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
-          standalone
-        );
-
-      expect(family).toEqual([standalone]);
-    });
-
     it('should only return children matching the given hub status', async () => {
       const {
         bundle,
@@ -408,54 +391,40 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
-  describe('loadTrialsToExpire', () => {
+  describe('loadBundlesToExpire', () => {
     afterEach(async () => {
       await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
-    it('should return expired bundles and standalone trials, but not bundle children', async () => {
+    it('should return expired bundles, but not bundle children', async () => {
       const expiredDate = new Date(Date.UTC(2020, 0, 1));
       const futureDate = new Date(Date.UTC(2999, 0, 1));
 
-      const {
-        bundle: expiredBundle,
-        children: [expiredChild],
-      } = await TestHelper.deploymentRequest.createBundle({
-        bundle: {
-          hub_status: DeploymentRequestHubStatus.Active,
-          end_date: expiredDate,
-        },
-        children: [
-          {
+      const { bundle: expiredBundle } =
+        await TestHelper.deploymentRequest.createBundle({
+          bundle: {
             hub_status: DeploymentRequestHubStatus.Active,
             end_date: expiredDate,
           },
-        ],
-      });
-      const expiredStandalone =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            hub_status: DeploymentRequestHubStatus.Active,
-            end_date: expiredDate,
-          }
-        );
-      const ongoingBundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-            hub_status: DeploymentRequestHubStatus.Active,
-            end_date: futureDate,
-          }
-        );
-
-      const toExpire = await DeploymentRequestDomain.loadTrialsToExpire();
-
-      expect(toExpire.map(({ id }) => id).sort()).toEqual(
-        [expiredBundle.id, expiredStandalone.id].sort()
+          children: [
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+              end_date: expiredDate,
+            },
+          ],
+        });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          hub_status: DeploymentRequestHubStatus.Active,
+          end_date: futureDate,
+        }
       );
-      expect(toExpire.map(({ id }) => id)).not.toContain(expiredChild.id);
-      expect(toExpire.map(({ id }) => id)).not.toContain(ongoingBundle.id);
+
+      const toExpire = await DeploymentRequestDomain.loadBundlesToExpire();
+
+      expect(toExpire.map(({ id }) => id)).toEqual([expiredBundle.id]);
     });
   });
 
