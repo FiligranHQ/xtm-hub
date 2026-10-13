@@ -958,18 +958,16 @@
       "LastConnectionCheck": "Dernier contrôle de connexion",
       "Access": "Accès",
       "PlatformInformation": "Informations sur la plateforme",
-      "RegistrationTitle": "Enregistrement - XTM Hub",
-      "SubscriptionTitle": "Abonnement - SaaS Manager"
+      "PlatformVersion": "Version de la plateforme"
     },
     "Metrics": {
       "Metadata": {
         "Hostname": "Nom d'hôte",
+        "CopyHostname": "Copier le nom d'hôte",
         "SubscribedPlan": "Offre souscrite",
         "Contract": "Contrat",
         "RegionalArea": "Zone régionale",
-        "PlatformVersion": "Version de la plateforme",
         "DaysLeft": "{days, plural, =1 {# jour restant} other {# jours restants}}",
-        "ReservedForSaas": "Cette fonctionnalité est réservée aux clients SaaS.",
         "Unavailable": "Les informations sont actuellement indisponibles."
       }
     },

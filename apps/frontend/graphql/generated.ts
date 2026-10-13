@@ -2553,7 +2553,6 @@ export type SaasPlatformMetadata = {
   plan: Maybe<Scalars['String']['output']>;
   region: Maybe<Scalars['String']['output']>;
   start_date: Maybe<Scalars['Date']['output']>;
-  version: Maybe<Scalars['String']['output']>;
 };
 
 export type SendTelemetryMutation = {
@@ -3650,7 +3649,7 @@ export type RegisteredSaasPlatformMetadataQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null, version: string | null } | null };
+export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null } | null };
 
 export type AddRolePortalMutationVariables = Exact<{
   input: AddRolePortalInput;
@@ -5903,7 +5902,6 @@ export const RegisteredSaasPlatformMetadataDocument = `
     start_date
     end_date
     region
-    version
   }
 }
     `;

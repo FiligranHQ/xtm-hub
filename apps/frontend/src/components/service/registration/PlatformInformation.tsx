@@ -20,14 +20,8 @@ export const PlatformInformation = ({
       <h2>{t('Register.Details.PlatformInformation')}</h2>
       <Separator className="m-m" />
       <div className="grid grid-cols-2">
-        <div>
-          <h3>{t('Register.Details.RegistrationTitle')}</h3>
-          <RegistrationDetails registeredPlatform={registeredPlatform} />
-        </div>
-        <div>
-          <h3>{t('Register.Details.SubscriptionTitle')}</h3>
-          <RegistrationMetadata registeredPlatform={registeredPlatform} />
-        </div>
+        <RegistrationDetails registeredPlatform={registeredPlatform} />
+        <RegistrationMetadata registeredPlatform={registeredPlatform} />
       </div>
     </div>
   );

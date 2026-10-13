@@ -1770,7 +1770,6 @@ export const mockSaasPlatformMetadata = (overrides?: Partial<SaasPlatformMetadat
         plan: overrides && overrides.hasOwnProperty('plan') ? overrides.plan! : 'vester',
         region: overrides && overrides.hasOwnProperty('region') ? overrides.region! : 'quia',
         start_date: overrides && overrides.hasOwnProperty('start_date') ? overrides.start_date! : '2021-09-07T04:38:52.386Z',
-        version: overrides && overrides.hasOwnProperty('version') ? overrides.version! : 'averto',
     };
 };
 

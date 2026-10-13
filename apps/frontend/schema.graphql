@@ -1424,7 +1424,6 @@ type SaasPlatformMetadata {
   start_date: Date
   end_date: Date
   region: String
-  version: String
 }
 
 input AutoRegisterPlatformInput {

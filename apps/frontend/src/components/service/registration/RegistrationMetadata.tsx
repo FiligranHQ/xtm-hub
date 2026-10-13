@@ -1,10 +1,19 @@
 'use client';
 
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
+import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { computePeriodProgress, useDateFormatter } from '@/utils/date';
-import { ProgressBar } from '@filigran/design-system';
+import {
+  Icon,
+  IconButton,
+  ProgressBar,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/design-system';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   CommercialModel,
@@ -13,6 +22,7 @@ import {
 import { registrationKeys } from '@graphql/registration/registration.keys';
 import { useId } from 'react';
 import { useFragment } from 'react-relay';
+import { useCopyToClipboard } from 'usehooks-ts';
 
 interface RegistrationMetadataProps {
   registeredPlatform: registeredPlatformByServiceInstanceId_fragment$key;
@@ -25,6 +35,7 @@ export const RegistrationMetadata = ({
   const formatDate = useDateFormatter();
   const contractLabelId = useId();
   const daysLeftId = useId();
+  const [, copy] = useCopyToClipboard();
 
   const platform =
     useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
@@ -43,18 +54,20 @@ export const RegistrationMetadata = ({
     }
   );
   const metadata = data?.registeredSaasPlatformMetadata;
+  const hostname = metadata?.hostname;
 
-  if (!isSaas) {
-    return (
-      <div className="mt-xl text-default-secondary">
-        {t('Register.Metrics.Metadata.ReservedForSaas')}
-      </div>
-    );
-  }
-
-  if (isPending) {
+  if (isPending || !isSaas) {
     return null;
   }
+
+  const copyHostname = async (hostname: string) => {
+    const copied = await copy(hostname);
+    showSnackbar(
+      copied
+        ? { severity: 'success', title: t('Utils.Copied') }
+        : { severity: 'error', title: t('Utils.FailedToCopy') }
+    );
+  };
 
   const contractPeriod =
     metadata?.start_date && metadata?.end_date
@@ -64,11 +77,43 @@ export const RegistrationMetadata = ({
   return (
     <section className="flex justify-between p-xl">
       <ul className="text-sm flex flex-col gap-l">
-        <li>
-          <span className="mr-xs text-default-secondary">
-            {t('Register.Metrics.Metadata.Hostname')}:
+        <li className="flex items-center">
+          <span>
+            <span className="mr-xs text-default-secondary">
+              {t('Register.Metrics.Metadata.Hostname')}:
+            </span>
+            {hostname ? (
+              <span className="font-mono text-filigran-brand-primary">
+                {hostname}
+              </span>
+            ) : (
+              t('Register.Metrics.Metadata.Unavailable')
+            )}
           </span>
-          {metadata?.hostname ?? t('Register.Metrics.Metadata.Unavailable')}
+          {hostname && (
+            <TooltipProvider>
+              <Tooltip delayDuration={50}>
+                <TooltipTrigger asChild>
+                  <IconButton
+                    priority="tertiary"
+                    size="sm"
+                    className="ml-xs"
+                    aria-label={t('Register.Metrics.Metadata.CopyHostname')}
+                    icon={
+                      <Icon
+                        name="files"
+                        size={16}
+                      />
+                    }
+                    onClick={() => copyHostname(hostname)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t('Register.Metrics.Metadata.CopyHostname')}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </li>
         <li>
           <span className="mr-xs text-default-secondary">
@@ -109,12 +154,6 @@ export const RegistrationMetadata = ({
             {t('Register.Metrics.Metadata.RegionalArea')}:
           </span>
           {metadata?.region ?? t('Register.Metrics.Metadata.Unavailable')}
-        </li>
-        <li>
-          <span className="mr-xs text-default-secondary">
-            {t('Register.Metrics.Metadata.PlatformVersion')}:
-          </span>
-          {metadata?.version ?? t('Register.Metrics.Metadata.Unavailable')}
         </li>
       </ul>
     </section>

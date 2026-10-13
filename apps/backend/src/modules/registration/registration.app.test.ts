@@ -1083,6 +1083,38 @@ describe('registration app', () => {
         expect(platform?.commercial_model).toBe(commercialModel);
       }
     );
+
+    it.each([
+      ['6.7.17', '6.7.17'],
+      [undefined, ''],
+    ])(
+      'should return the version reported by the platform when it is %s',
+      async (platformVersion, expectedVersion) => {
+        // Given
+        const serviceInstanceId = await RegistrationDomain.registerNewPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          serviceDefinitionId: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
+          configuration: {
+            registerer_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.REGISTERER.ID,
+            platform_id: uuidv4(),
+            platform_url: 'http://example.com',
+            platform_title: 'My OpenCTI platform',
+            platform_contract: PlatformContract.Ee,
+            platform_version: platformVersion,
+            token: uuidv4(),
+          },
+          platformIdentifier: PlatformIdentifier.Opencti,
+        });
+
+        // When
+        const platform =
+          await RegistrationApp.loadRegisteredPlatform(serviceInstanceId);
+
+        // Then
+        expect(platform?.version).toBe(expectedVersion);
+      }
+    );
   });
 
   describe('loadRegisteredSaasPlatformMetadata', () => {
@@ -1095,7 +1127,6 @@ describe('registration app', () => {
       start_date: startDate,
       end_date: endDate,
       region: 'eu-west',
-      version: '6.7.17',
     };
     const emptyMetadata = {
       hostname: null,
@@ -1103,7 +1134,6 @@ describe('registration app', () => {
       start_date: null,
       end_date: null,
       region: null,
-      version: null,
     };
 
     afterEach(() => {
@@ -1140,7 +1170,11 @@ describe('registration app', () => {
           ({
             ok: true,
             status: 200,
-            json: async () => ({ ...fullMetadata, unexpected: 'ignored' }),
+            json: async () => ({
+              ...fullMetadata,
+              version: '6.7.17',
+              unexpected: 'ignored',
+            }),
           }) as Response
       );
 

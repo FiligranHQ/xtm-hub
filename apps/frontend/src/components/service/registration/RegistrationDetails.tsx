@@ -206,6 +206,13 @@ export const RegistrationDetails = ({
             </span>
           </li>
         )}
+
+        <li>
+          <span className="mr-xs text-default-secondary">
+            {t('Register.Details.PlatformVersion')}:
+          </span>
+          {platform.version || '-'}
+        </li>
       </ul>
 
       {platform.deployment_request && (

@@ -2546,7 +2546,6 @@ export type SaasPlatformMetadata = {
   plan?: Maybe<Scalars['String']['output']>;
   region?: Maybe<Scalars['String']['output']>;
   start_date?: Maybe<Scalars['Date']['output']>;
-  version?: Maybe<Scalars['String']['output']>;
 };
 
 export type SendTelemetryMutation = {
@@ -4922,7 +4921,6 @@ export type SaasPlatformMetadataResolvers<ContextType = PortalContext, ParentTyp
   plan?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   region?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

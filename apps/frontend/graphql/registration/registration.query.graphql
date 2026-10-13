@@ -19,6 +19,5 @@ query RegisteredSaasPlatformMetadata($platformId: String!) {
     start_date
     end_date
     region
-    version
   }
 }

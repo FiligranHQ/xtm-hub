@@ -7,11 +7,17 @@ import {
   RegisteredSaasPlatformMetadataQuery,
   useRegisteredSaasPlatformMetadataQuery,
 } from '@graphql/generated';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { useTranslations } from 'next-intl';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
+
+const { showSnackbarMock } = vi.hoisted(() => ({ showSnackbarMock: vi.fn() }));
+
+vi.mock('@/components/ui/snackbar/snackbar-store', () => ({
+  showSnackbar: showSnackbarMock,
+}));
 
 let mockPlatformData: registeredPlatformByServiceInstanceId_fragment$data;
 
@@ -33,7 +39,6 @@ vi.mock('@graphql/generated', async (importOriginal) => {
 const HOSTNAME = 'my-platform.filigran.io';
 const PLAN = 'Enterprise';
 const REGION = 'eu-west';
-const VERSION = '6.7.17';
 const START_DATE = '2026-01-01T12:00:00.000Z';
 const END_DATE = '2026-01-11T12:00:00.000Z';
 const NOW = '2026-01-04T12:00:00.000Z';
@@ -56,7 +61,6 @@ const fullMetadata: Metadata = {
   start_date: START_DATE,
   end_date: END_DATE,
   region: REGION,
-  version: VERSION,
 };
 
 const emptyMetadata: Metadata = {
@@ -65,7 +69,6 @@ const emptyMetadata: Metadata = {
   start_date: null,
   end_date: null,
   region: null,
-  version: null,
 };
 
 const mockMetadataQuery = ({
@@ -87,6 +90,8 @@ const renderMetadata = (
   return testRender(<RegistrationMetadata registeredPlatform={platform} />);
 };
 
+const COPY_HOSTNAME_LABEL = 'Register.Metrics.Metadata.CopyHostname';
+
 const getRow = (labelKey: string) =>
   screen.getByText(`${labelKey}:`).closest('li') as HTMLElement;
 
@@ -102,23 +107,26 @@ describe('RegistrationMetadata', () => {
       typeof useTranslations
     >);
     mockMetadataQuery();
+    showSnackbarMock.mockClear();
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   describe('when the platform is not a SaaS one', () => {
     it.each([[CommercialModel.Other], [null]])(
-      'should explain the feature is reserved for SaaS when the commercial model is %s',
+      'should render nothing when the commercial model is %s',
       (commercialModel) => {
         // Given / When
-        renderMetadata({ ...saasPlatform, commercial_model: commercialModel });
+        const { container } = renderMetadata({
+          ...saasPlatform,
+          commercial_model: commercialModel,
+        });
 
         // Then
-        expect(
-          screen.getByText('Register.Metrics.Metadata.ReservedForSaas')
-        ).toBeInTheDocument();
+        expect(container).toBeEmptyDOMElement();
       }
     );
 
@@ -163,18 +171,71 @@ describe('RegistrationMetadata', () => {
     });
 
     it.each`
-      labelKey                                       | value
-      ${'Register.Metrics.Metadata.Hostname'}        | ${HOSTNAME}
-      ${'Register.Metrics.Metadata.SubscribedPlan'}  | ${PLAN}
-      ${'Register.Metrics.Metadata.Contract'}        | ${FORMATTED_CONTRACT}
-      ${'Register.Metrics.Metadata.RegionalArea'}    | ${REGION}
-      ${'Register.Metrics.Metadata.PlatformVersion'} | ${VERSION}
+      labelKey                                      | value
+      ${'Register.Metrics.Metadata.Hostname'}       | ${HOSTNAME}
+      ${'Register.Metrics.Metadata.SubscribedPlan'} | ${PLAN}
+      ${'Register.Metrics.Metadata.Contract'}       | ${FORMATTED_CONTRACT}
+      ${'Register.Metrics.Metadata.RegionalArea'}   | ${REGION}
     `('should display $value in the $labelKey row', ({ labelKey, value }) => {
       // Given / When
       renderMetadata();
 
       // Then
       expect(within(getRow(labelKey)).getByText(value)).toBeInTheDocument();
+    });
+
+    it('should copy the hostname to the clipboard when clicking the copy button', async () => {
+      // Given
+      const { user } = renderMetadata();
+      // userEvent.setup() installs its own clipboard stub, so read it after render
+      const writeText = vi.spyOn(navigator.clipboard, 'writeText');
+
+      // When
+      await user.click(
+        screen.getByRole('button', { name: COPY_HOSTNAME_LABEL })
+      );
+
+      // Then
+      await waitFor(() => expect(writeText).toHaveBeenCalledWith(HOSTNAME));
+    });
+
+    it.each`
+      outcome        | writeText                                    | expectedSnackbar
+      ${'succeeds'}  | ${() => Promise.resolve()}                   | ${{ severity: 'success', title: 'Utils.Copied' }}
+      ${'is denied'} | ${() => Promise.reject(new Error('denied'))} | ${{ severity: 'error', title: 'Utils.FailedToCopy' }}
+    `(
+      'should tell the user the result when the copy $outcome',
+      async ({ writeText, expectedSnackbar }) => {
+        // Given
+        vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const { user } = renderMetadata();
+        vi.spyOn(navigator.clipboard, 'writeText').mockImplementation(
+          writeText
+        );
+
+        // When
+        await user.click(
+          screen.getByRole('button', { name: COPY_HOSTNAME_LABEL })
+        );
+
+        // Then
+        await waitFor(() =>
+          expect(showSnackbarMock).toHaveBeenCalledWith(expectedSnackbar)
+        );
+      }
+    );
+
+    it('should not offer to copy the hostname when it is unavailable', () => {
+      // Given
+      mockMetadataQuery({ metadata: { ...fullMetadata, hostname: null } });
+
+      // When
+      renderMetadata();
+
+      // Then
+      expect(
+        screen.queryByRole('button', { name: COPY_HOSTNAME_LABEL })
+      ).not.toBeInTheDocument();
     });
 
     it('should show how much of the contract has elapsed', () => {
@@ -206,7 +267,6 @@ describe('RegistrationMetadata', () => {
       ${'Register.Metrics.Metadata.SubscribedPlan'}
       ${'Register.Metrics.Metadata.Contract'}
       ${'Register.Metrics.Metadata.RegionalArea'}
-      ${'Register.Metrics.Metadata.PlatformVersion'}
     `(
       'should display the unavailable message in the $labelKey row when the field is missing',
       ({ labelKey }) => {
@@ -235,7 +295,7 @@ describe('RegistrationMetadata', () => {
       // Then
       expect(
         screen.getAllByText('Register.Metrics.Metadata.Unavailable')
-      ).toHaveLength(5);
+      ).toHaveLength(4);
     });
 
     it.each`

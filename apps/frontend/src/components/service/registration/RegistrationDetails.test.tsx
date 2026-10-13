@@ -10,6 +10,8 @@ import { screen, within } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
 
+const PLATFORM_VERSION = '6.8.1';
+
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 vi.mock('@/components/service/trial-instances/TrialCancelSheet', () => ({
@@ -109,6 +111,24 @@ describe('RegistrationDetails', () => {
         within(platformUrlRow as HTMLElement).getByText('-')
       ).toBeInTheDocument();
     });
+
+    it.each([
+      [PLATFORM_VERSION, PLATFORM_VERSION],
+      ['', '-'],
+      [null, '-'],
+    ])(
+      'should render the platform version reported by the platform when it is %s',
+      (version, expectedText) => {
+        // Given / When
+        renderDetails({ ...basePlatform, version });
+
+        // Then
+        const versionRow = screen
+          .getByText(/Register\.Details\.PlatformVersion/i)
+          .closest('li') as HTMLElement;
+        expect(within(versionRow).getByText(expectedText)).toBeInTheDocument();
+      }
+    );
 
     it('should show "Start date" and "End date" for trial, not "Connected on"', () => {
       renderDetails(trialPlatform);

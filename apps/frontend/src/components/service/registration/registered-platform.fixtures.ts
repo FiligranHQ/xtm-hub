@@ -15,6 +15,7 @@ export const basePlatform: registeredPlatformByServiceInstanceId_fragment$data =
     tenant_id: null,
     title: 'My Platform',
     url: 'https://platform.example.com',
+    version: '6.7.0',
     identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
     contract: PlatformContract.Ee,
     deployment_request: null,

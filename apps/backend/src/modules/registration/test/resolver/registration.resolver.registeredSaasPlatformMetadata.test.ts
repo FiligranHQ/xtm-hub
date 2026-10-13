@@ -18,7 +18,6 @@ describe('query.registeredSaasPlatformMetadata', () => {
       start_date: new Date('2026-01-01T00:00:00.000Z'),
       end_date: new Date('2027-01-01T00:00:00.000Z'),
       region: 'eu-west',
-      version: '6.7.17',
     };
     vi.spyOn(
       RegistrationApp,

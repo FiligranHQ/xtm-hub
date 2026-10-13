@@ -230,7 +230,6 @@ export const RegistrationApp = {
         start_date: responseBody?.start_date ?? null,
         end_date: responseBody?.end_date ?? null,
         region: responseBody?.region ?? null,
-        version: responseBody?.version ?? null,
       };
     } catch (error) {
       logApp.error(

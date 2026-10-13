@@ -2,15 +2,20 @@ import { PlatformInformation } from '@/components/service/registration/PlatformI
 import { basePlatform } from '@/components/service/registration/registered-platform.fixtures';
 import testRender from '@/utils/test/test-render';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { CommercialModel } from '@graphql/generated';
+import {
+  CommercialModel,
+  useRegisteredSaasPlatformMetadataQuery,
+} from '@graphql/generated';
 import { screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
+const HOSTNAME = 'my-platform.filigran.io';
+
 const platform: registeredPlatformByServiceInstanceId_fragment$data = {
   ...basePlatform,
-  commercial_model: CommercialModel.Other,
+  commercial_model: CommercialModel.Saas,
 };
 
 vi.mock('react-relay', async (importOriginal) => ({
@@ -18,24 +23,48 @@ vi.mock('react-relay', async (importOriginal) => ({
   useFragment: () => platform,
 }));
 
+vi.mock('@graphql/generated', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@graphql/generated')>();
+  const useRegisteredSaasPlatformMetadataQuery = Object.assign(vi.fn(), {
+    getKey: actual.useRegisteredSaasPlatformMetadataQuery.getKey,
+  });
+  return { ...actual, useRegisteredSaasPlatformMetadataQuery };
+});
+
+const mockMetadataQuery = () =>
+  vi.mocked(useRegisteredSaasPlatformMetadataQuery).mockReturnValue({
+    data: {
+      registeredSaasPlatformMetadata: {
+        hostname: HOSTNAME,
+        plan: null,
+        start_date: null,
+        end_date: null,
+        region: null,
+      },
+    },
+    isPending: false,
+  } as ReturnType<typeof useRegisteredSaasPlatformMetadataQuery>);
+
 const renderInformation = () =>
   testRender(<PlatformInformation registeredPlatform={platform} />);
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('PlatformInformation', () => {
-  it.each`
-    level | title
-    ${2}  | ${'Register.Details.PlatformInformation'}
-    ${3}  | ${'Register.Details.RegistrationTitle'}
-    ${3}  | ${'Register.Details.SubscriptionTitle'}
-  `('should display the $title heading', ({ level, title }) => {
+  beforeEach(() => {
+    mockMetadataQuery();
+  });
+
+  it('should display the platform information heading', () => {
     // Given / When
     renderInformation();
 
     // Then
     expect(
-      screen.getByRole('heading', { level, name: title })
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Register.Details.PlatformInformation',
+      })
     ).toBeInTheDocument();
   });
 
@@ -52,8 +81,6 @@ describe('PlatformInformation', () => {
     renderInformation();
 
     // Then
-    expect(
-      screen.getByText('Register.Metrics.Metadata.ReservedForSaas')
-    ).toBeInTheDocument();
+    expect(screen.getByText(HOSTNAME)).toBeInTheDocument();
   });
 });
