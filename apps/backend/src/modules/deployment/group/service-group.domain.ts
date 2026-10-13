@@ -39,25 +39,6 @@ export const GROUPS_BY_PLATFORM_IDENTIFIER: Partial<
 };
 
 export const ServiceGroupDomain = {
-  loadGroupsServiceInstanceIds: async (
-    groupIds: ServiceGroupId[]
-  ): Promise<ServiceInstanceId[]> => {
-    const serviceInstances = await db<{ id: ServiceInstanceId }[]>(
-      'ServiceInstance'
-    )
-      .leftJoin(
-        'ServiceGroup',
-        'ServiceGroup.service_instance_id',
-        '=',
-        'ServiceInstance.id'
-      )
-      .whereIn('ServiceGroup.id', groupIds)
-      .distinct('ServiceInstance.id')
-      .select('ServiceInstance.id');
-
-    return serviceInstances.map(({ id }) => id);
-  },
-
   loadServiceGroups: async (
     field: ServiceGroupMutator
   ): Promise<ServiceGroup[]> => {
@@ -90,19 +71,6 @@ export const ServiceGroupDomain = {
       .where('ServiceGroup.service_instance_id', '=', serviceInstanceId)
       .where('ServiceGroup_User.user_id', '=', userId)
       .select('ServiceGroup.*');
-  },
-
-  loadGroupUsers: async (groupId: ServiceGroupId): Promise<User[]> => {
-    return db<User[]>('ServiceGroup')
-      .leftJoin(
-        'ServiceGroup_User',
-        'ServiceGroup.id',
-        '=',
-        'ServiceGroup_User.group_id'
-      )
-      .innerJoin('User', 'ServiceGroup_User.user_id', '=', 'User.id')
-      .where('ServiceGroup.id', '=', groupId)
-      .select('User.*');
   },
 
   loadGroupUsersByServiceAndName: async (
@@ -144,14 +112,6 @@ export const ServiceGroupDomain = {
     return rows.map(({ user_id }) => user_id);
   },
 
-  removeUsersFromGroups: async (groupIds: ServiceGroupId[]) => {
-    if (!groupIds.length) {
-      return;
-    }
-
-    await db('ServiceGroup_User').del().whereIn('group_id', groupIds);
-  },
-
   removeUsersFromServiceGroups: async (
     userIds: UserId[],
     groupIds: ServiceGroupId[]
@@ -180,6 +140,7 @@ export const ServiceGroupDomain = {
       deploymentRequestId: DeploymentRequestId;
       groupId: ServiceGroupId;
       serviceInstanceId: ServiceInstanceId;
+      platformId: string | null;
     }[]
   > => {
     const sevenDaysAgo = new Date();
@@ -189,6 +150,7 @@ export const ServiceGroupDomain = {
       groupId: ServiceGroupId;
       deploymentRequestId: DeploymentRequestId;
       serviceInstanceId: ServiceInstanceId;
+      platformId: string | null;
     }>('ServiceGroup')
       .join(
         'DeploymentRequest',
@@ -209,7 +171,8 @@ export const ServiceGroupDomain = {
       .select(
         'ServiceGroup.id as groupId',
         'DeploymentRequest.id as deploymentRequestId',
-        'ServiceGroup.service_instance_id as serviceInstanceId'
+        'ServiceGroup.service_instance_id as serviceInstanceId',
+        'DeploymentRequest.platform_id as platformId'
       );
   },
 

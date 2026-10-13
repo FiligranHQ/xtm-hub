@@ -63,57 +63,6 @@ describe('serviceGroupDomain', () => {
     await TestHelper.serviceGroupUser.delete({});
   });
 
-  describe('loadGroupsServiceInstanceIds', () => {
-    it('should return distinct service instance ids associated with groups', async () => {
-      const groupIds = [adminGroupId, analystGroupId, readerGroupId];
-      const ids =
-        await ServiceGroupDomain.loadGroupsServiceInstanceIds(groupIds);
-
-      expect(ids).toHaveLength(2);
-      expect(ids.find((id) => id === serviceInstanceId1)).toBeTruthy();
-      expect(ids.find((id) => id === serviceInstanceId2)).toBeTruthy();
-    });
-  });
-
-  describe('loadGroupUsers', () => {
-    it('should return users associated to service group', async () => {
-      await TestHelper.serviceGroupUser.create({
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        group_id: adminGroupId,
-      });
-      await TestHelper.serviceGroupUser.create({
-        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-        group_id: adminGroupId,
-      });
-      await TestHelper.serviceGroupUser.create({
-        user_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
-        group_id: analystGroupId,
-      });
-
-      const adminUsers = await ServiceGroupDomain.loadGroupUsers(adminGroupId);
-      expect(adminUsers).toHaveLength(2);
-      expect(
-        adminUsers.find(
-          ({ id }) => id === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
-        )
-      ).toBeTruthy();
-      expect(
-        adminUsers.find(
-          ({ id }) =>
-            id === TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
-        )
-      ).toBeTruthy();
-
-      const analystUsers =
-        await ServiceGroupDomain.loadGroupUsers(analystGroupId);
-      expect(analystUsers).toHaveLength(1);
-      expect(
-        analystUsers[0]?.id ===
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
-      ).toBe(true);
-    });
-  });
-
   describe('addUsersToGroup', () => {
     it('should add users to the service group', async () => {
       await ServiceGroupDomain.addUsersToGroup(adminGroupId, [
@@ -190,11 +139,13 @@ describe('serviceGroupDomain', () => {
         // Given
         const endDate = new Date();
         endDate.setDate(endDate.getDate() - 8);
+        const platformId = uuidv4();
         const deploymentRequest =
           await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
             {
               hub_status,
               end_date: endDate,
+              platform_id: platformId,
             }
           );
         trackedServiceInstanceIds.push(deploymentRequest.service_instance_id);
@@ -214,6 +165,7 @@ describe('serviceGroupDomain', () => {
           {
             deploymentRequestId: deploymentRequest.id,
             serviceInstanceId: deploymentRequest.service_instance_id,
+            platformId,
             groupId,
           },
         ]);

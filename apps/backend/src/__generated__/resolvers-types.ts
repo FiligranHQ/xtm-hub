@@ -39,7 +39,6 @@ export type Scalars = {
   NewsFeedItemId: { input: NewsFeedItemId; output: NewsFeedItemId; }
   OrganizationId: { input: OrganizationId; output: OrganizationId; }
   ServiceCapabilityId: { input: ServiceCapabilityId; output: ServiceCapabilityId; }
-  ServiceGroupId: { input: any; output: any; }
   ServiceInstanceId: { input: ServiceInstanceId; output: ServiceInstanceId; }
   SolutionCategoryId: { input: SolutionCategoryId; output: SolutionCategoryId; }
   SubscriptionId: { input: SubscriptionId; output: SubscriptionId; }
@@ -1138,7 +1137,6 @@ export type Mutation = {
   updatePlatformServiceMetadata?: Maybe<RegisteredPlatform>;
   updateRolePortal: RolePortal;
   updateSSOGroupRolePortal: SsoGroupRolePortal;
-  updateServiceGroups: Array<ServiceGroup>;
   updateSubscription?: Maybe<SubscriptionModel>;
   updateVotableFeature: VotableFeature;
   updateVotingRound: VotingRound;
@@ -1592,11 +1590,6 @@ export type MutationUpdateSsoGroupRolePortalArgs = {
 };
 
 
-export type MutationUpdateServiceGroupsArgs = {
-  input: UpdateServiceGroupsInput;
-};
-
-
 export type MutationUpdateSubscriptionArgs = {
   input: UpdateSubscriptionInput;
   subscription_id: Scalars['SubscriptionId']['input'];
@@ -2000,7 +1993,6 @@ export type Query = {
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstanceMetadata: Array<SeoServiceInstanceMetadata>;
   seoServiceInstances: Array<SeoServiceInstance>;
-  serviceGroups: Array<ServiceGroup>;
   serviceInstanceById?: Maybe<ServiceInstance>;
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
@@ -2248,11 +2240,6 @@ export type QuerySeoServiceInstanceArgs = {
 export type QuerySeoServiceInstanceMetadataArgs = {
   language?: InputMaybe<Locale>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
-};
-
-
-export type QueryServiceGroupsArgs = {
-  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2604,7 +2591,6 @@ export type ServiceGroup = Node & {
   __typename?: 'ServiceGroup';
   id: Scalars['ID']['output'];
   name: ServiceGroupName;
-  users?: Maybe<Array<User>>;
 };
 
 export enum ServiceGroupName {
@@ -3037,15 +3023,6 @@ export type UpdateRolePortalInput = {
 export type UpdateSsoGroupRolePortalInput = {
   rolePortal: Scalars['String']['input'];
   ssoGroup: Scalars['String']['input'];
-};
-
-export type UpdateServiceGroupsInput = {
-  groups: Array<UpdateServiceGroupsInputGroup>;
-};
-
-export type UpdateServiceGroupsInputGroup = {
-  id: Scalars['ServiceGroupId']['input'];
-  userIds: Array<Scalars['UserId']['input']>;
 };
 
 export type UpdateSubscriptionInput = {
@@ -3590,7 +3567,6 @@ export type ResolversTypes = ResolversObject<{
   ServiceDefinition: ResolverTypeWrapper<ServiceDefinition>;
   ServiceDefinitionIdentifier: ServiceDefinitionIdentifier;
   ServiceGroup: ResolverTypeWrapper<ServiceGroup>;
-  ServiceGroupId: ResolverTypeWrapper<Scalars['ServiceGroupId']['output']>;
   ServiceGroupName: ServiceGroupName;
   ServiceInstance: ResolverTypeWrapper<ServiceInstance>;
   ServiceInstanceCreationStatus: ServiceInstanceCreationStatus;
@@ -3640,8 +3616,6 @@ export type ResolversTypes = ResolversObject<{
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateRolePortalInput: UpdateRolePortalInput;
   UpdateSSOGroupRolePortalInput: UpdateSsoGroupRolePortalInput;
-  UpdateServiceGroupsInput: UpdateServiceGroupsInput;
-  UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   UpdateSubscriptionInput: UpdateSubscriptionInput;
   UpdateVotableFeatureInput: UpdateVotableFeatureInput;
   UpdateVotingRoundInput: UpdateVotingRoundInput;
@@ -3826,7 +3800,6 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceConnection: ServiceConnection;
   ServiceDefinition: ServiceDefinition;
   ServiceGroup: ServiceGroup;
-  ServiceGroupId: Scalars['ServiceGroupId']['output'];
   ServiceInstance: ServiceInstance;
   ServiceInstanceEdge: ServiceInstanceEdge;
   ServiceInstanceFilter: ServiceInstanceFilter;
@@ -3866,8 +3839,6 @@ export type ResolversParentTypes = ResolversObject<{
   UpdatePlatformServiceMetadataInput: UpdatePlatformServiceMetadataInput;
   UpdateRolePortalInput: UpdateRolePortalInput;
   UpdateSSOGroupRolePortalInput: UpdateSsoGroupRolePortalInput;
-  UpdateServiceGroupsInput: UpdateServiceGroupsInput;
-  UpdateServiceGroupsInputGroup: UpdateServiceGroupsInputGroup;
   UpdateSubscriptionInput: UpdateSubscriptionInput;
   UpdateVotableFeatureInput: UpdateVotableFeatureInput;
   UpdateVotingRoundInput: UpdateVotingRoundInput;
@@ -4491,7 +4462,6 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   updatePlatformServiceMetadata?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<MutationUpdatePlatformServiceMetadataArgs, 'input'>>;
   updateRolePortal?: Resolver<ResolversTypes['RolePortal'], ParentType, ContextType, RequireFields<MutationUpdateRolePortalArgs, 'input' | 'name'>>;
   updateSSOGroupRolePortal?: Resolver<ResolversTypes['SSOGroupRolePortal'], ParentType, ContextType, RequireFields<MutationUpdateSsoGroupRolePortalArgs, 'input' | 'rolePortal' | 'ssoGroup'>>;
-  updateServiceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<MutationUpdateServiceGroupsArgs, 'input'>>;
   updateSubscription?: Resolver<Maybe<ResolversTypes['SubscriptionModel']>, ParentType, ContextType, RequireFields<MutationUpdateSubscriptionArgs, 'input' | 'subscription_id'>>;
   updateVotableFeature?: Resolver<ResolversTypes['VotableFeature'], ParentType, ContextType, RequireFields<MutationUpdateVotableFeatureArgs, 'id' | 'input'>>;
   updateVotingRound?: Resolver<ResolversTypes['VotingRound'], ParentType, ContextType, RequireFields<MutationUpdateVotingRoundArgs, 'id' | 'input'>>;
@@ -4763,7 +4733,6 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
   seoServiceInstanceMetadata?: Resolver<Array<ResolversTypes['SeoServiceInstanceMetadata']>, ParentType, ContextType, RequireFields<QuerySeoServiceInstanceMetadataArgs, 'service_instance_id'>>;
   seoServiceInstances?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType>;
-  serviceGroups?: Resolver<Array<ResolversTypes['ServiceGroup']>, ParentType, ContextType, RequireFields<QueryServiceGroupsArgs, 'serviceInstanceId'>>;
   serviceInstanceById?: Resolver<Maybe<ResolversTypes['ServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceByIdArgs, 'service_instance_id'>>;
   serviceInstanceLinksByTags?: Resolver<Array<ResolversTypes['SeoServiceInstance']>, ParentType, ContextType, RequireFields<QueryServiceInstanceLinksByTagsArgs, 'tags'>>;
   serviceInstances?: Resolver<ResolversTypes['ServiceConnection'], ParentType, ContextType, RequireFields<QueryServiceInstancesArgs, 'first' | 'orderBy' | 'orderMode'>>;
@@ -4950,13 +4919,8 @@ export type ServiceDefinitionResolvers<ContextType = PortalContext, ParentType e
 export type ServiceGroupResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceGroup'] = ResolversParentTypes['ServiceGroup']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['ServiceGroupName'], ParentType, ContextType>;
-  users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
-
-export interface ServiceGroupIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['ServiceGroupId'], any> {
-  name: 'ServiceGroupId';
-}
 
 export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['ServiceInstance'] = ResolversParentTypes['ServiceInstance']> = ResolversObject<{
   capabilities?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
@@ -5513,7 +5477,6 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   ServiceConnection?: ServiceConnectionResolvers<ContextType>;
   ServiceDefinition?: ServiceDefinitionResolvers<ContextType>;
   ServiceGroup?: ServiceGroupResolvers<ContextType>;
-  ServiceGroupId?: GraphQLScalarType;
   ServiceInstance?: ServiceInstanceResolvers<ContextType>;
   ServiceInstanceEdge?: ServiceInstanceEdgeResolvers<ContextType>;
   ServiceInstanceId?: GraphQLScalarType;

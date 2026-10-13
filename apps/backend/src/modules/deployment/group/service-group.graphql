@@ -1,5 +1,3 @@
-scalar ServiceGroupId
-
 enum ServiceGroupName {
   Admin
   Analyst
@@ -12,7 +10,6 @@ enum ServiceGroupName {
 type ServiceGroup implements Node {
   id: ID!
   name: ServiceGroupName!
-  users: [User!]
 }
 
 type UserPlatformGroup {
@@ -23,15 +20,6 @@ type UserPlatformGroup {
 type BundleUserServiceGroup {
   user: User!
   groups: [UserPlatformGroup!]!
-}
-
-input UpdateServiceGroupsInputGroup {
-  id: ServiceGroupId!
-  userIds: [UserId!]!
-}
-
-input UpdateServiceGroupsInput {
-  groups: [UpdateServiceGroupsInputGroup!]!
 }
 
 input BundleUserRoleAssignmentInput {
@@ -56,11 +44,6 @@ input UpdateBundleUserGroupsInput {
 }
 
 type Query {
-  serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
-    @auth(
-      portalCapa: [BYPASS]
-      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
-    )
   bundleUserServiceGroups(
     serviceInstanceId: ServiceInstanceId!
   ): [BundleUserServiceGroup!]!
@@ -76,11 +59,6 @@ type Query {
 }
 
 type Mutation {
-  updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
-    @auth(
-      portalCapa: [BYPASS]
-      orgaCapa: [ADMINISTRATE_ORGANIZATION, MANAGE_PLATFORM_REGISTRATION]
-    )
   addUsersToBundleGroups(
     serviceInstanceId: ServiceInstanceId!
     input: AddUsersToBundleGroupsInput!

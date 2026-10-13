@@ -397,7 +397,6 @@
       "SEO_SERVICE_INSTANCE_NOT_FOUND": "SEOサービスのインスタンスのメタデータが見つかりませんでした",
       "SERVICE_DEFINITION_NOT_FOUND": "サービス定義が見つかりませんでした",
       "SERVICE_GROUP_NOT_FOUND": "サービスグループが見つかりません",
-      "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "あなたはこれを行うことはできません",
       "SERVICE_INSTANCE_NOT_FOUND": "サービスインスタンスが見つかりません",
       "SERVICE_INSTANCE_NOT_PUBLIC": "このサービスへのアクセス権がありません",
       "SERVICE_NOT_FOUND": "サービスが見つかりません",
@@ -1713,8 +1712,7 @@
         "FormRequested": "無料トライアルを申し込みました。プラットフォームの準備が整い次第、Eメールをお送りします！"
       },
       "ManageUsers": {
-        "Title": "ユーザーを管理する",
-        "Email": "Eメール"
+        "Title": "ユーザーを管理する"
       }
     },
     "TrialGuide": {

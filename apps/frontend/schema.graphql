@@ -89,7 +89,6 @@ type Query {
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
   xtmPlatformBundle: DeploymentRequest
   xtmonePlatformIntegrationStatus(serviceInstanceId: ServiceInstanceId!): XtmoneIntegrationStatus
-  serviceGroups(serviceInstanceId: ServiceInstanceId!): [ServiceGroup!]!
   bundleUserServiceGroups(serviceInstanceId: ServiceInstanceId!): [BundleUserServiceGroup!]!
   bundleProducts(serviceInstanceId: ServiceInstanceId!): [PlatformIdentifier!]!
   documentExists(documentName: String, service_instance_id: ServiceInstanceId!): Boolean
@@ -168,7 +167,6 @@ type Mutation {
   cancelDeploymentRequest(deploymentRequestId: DeploymentRequestId!, cancellationReason: String): DeploymentRequest
   adminCancelDeploymentRequest(deploymentRequestId: DeploymentRequestId!): DeploymentRequest
   updateDeploymentQuotaCapacity(input: UpdateDeploymentQuotaCapacityInput!): Success!
-  updateServiceGroups(input: UpdateServiceGroupsInput!): [ServiceGroup!]!
   addUsersToBundleGroups(serviceInstanceId: ServiceInstanceId!, input: AddUsersToBundleGroupsInput!): [BundleUserServiceGroup!]!
   removeUsersFromBundleGroups(serviceInstanceId: ServiceInstanceId!, userIds: [UserId!]!): [UserId!]!
   updateBundleUserGroups(serviceInstanceId: ServiceInstanceId!, input: UpdateBundleUserGroupsInput!): [BundleUserServiceGroup!]!
@@ -599,11 +597,6 @@ input UpdateDeploymentQuotaCapacityInput {
   newCapacity: Int!
 }
 
-"""
-A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string
-"""
-scalar ServiceGroupId
-
 enum ServiceGroupName {
   Admin
   Analyst
@@ -616,7 +609,6 @@ enum ServiceGroupName {
 type ServiceGroup implements Node {
   id: ID!
   name: ServiceGroupName!
-  users: [User!]
 }
 
 type UserPlatformGroup {
@@ -627,15 +619,6 @@ type UserPlatformGroup {
 type BundleUserServiceGroup {
   user: User!
   groups: [UserPlatformGroup!]!
-}
-
-input UpdateServiceGroupsInputGroup {
-  id: ServiceGroupId!
-  userIds: [UserId!]!
-}
-
-input UpdateServiceGroupsInput {
-  groups: [UpdateServiceGroupsInputGroup!]!
 }
 
 input BundleUserRoleAssignmentInput {

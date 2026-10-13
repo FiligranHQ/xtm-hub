@@ -397,7 +397,6 @@
       "SEO_SERVICE_INSTANCE_NOT_FOUND": "SEO Service instance metadata was not found",
       "SERVICE_DEFINITION_NOT_FOUND": "Service definition was not found",
       "SERVICE_GROUP_NOT_FOUND": "Service group was not found",
-      "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "You are not allowed to do this",
       "SERVICE_INSTANCE_NOT_FOUND": "Service instance was not found",
       "SERVICE_INSTANCE_NOT_PUBLIC": "You do not have access to this service",
       "SERVICE_NOT_FOUND": "Service was not found",
@@ -1713,8 +1712,7 @@
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
       },
       "ManageUsers": {
-        "Title": "Manage users",
-        "Email": "Email"
+        "Title": "Manage users"
       }
     },
     "TrialGuide": {

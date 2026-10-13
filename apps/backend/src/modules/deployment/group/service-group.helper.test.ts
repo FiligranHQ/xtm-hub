@@ -3,17 +3,14 @@ import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { TestHelper } from '../../../../tests/helper/test.helper';
 import { TEST_ORGANIZATIONS } from '../../../../tests/tests.const';
 import {
-  DeploymentRequestDeploymentType,
-  PlatformConfigurationStatus,
-  PlatformContract,
   PlatformIdentifier,
   ServiceGroupName,
+  UserAccountStatus,
 } from '../../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../../model/kanel/public/DeploymentRequest';
 import ServiceGroupModel, {
   ServiceGroupId,
 } from '../../../model/kanel/public/ServiceGroup';
-import ServiceGroupUser from '../../../model/kanel/public/ServiceGroupUser';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import User, { UserId } from '../../../model/kanel/public/User';
 import * as mailService from '../../../server/mail-service';
@@ -21,108 +18,10 @@ import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { formatName } from '../../../utils/format';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
-import { UpdateGroupsPayload } from './service-group.app';
-import { ServiceGroupHelper, UserGroups } from './service-group.helper';
+import { ServiceGroupHelper } from './service-group.helper';
 
 describe('serviceGroupHelper', () => {
-  const userId1 = 'u1' as UserId;
-  const userId2 = 'u2' as UserId;
-
   const groupId1 = 'g1' as ServiceGroupId;
-  const groupId2 = 'g2' as ServiceGroupId;
-  const groupId3 = 'g3' as ServiceGroupId;
-
-  describe('buildUserGroupsDiff', () => {
-    it('should return an empty array when oldUsers and newUsers are empty', () => {
-      const result = ServiceGroupHelper.buildUserGroupsDiff([], []);
-      expect(result).toEqual([]);
-    });
-
-    it("should not return users whose groups haven't changed", () => {
-      const oldUsers: ServiceGroupUser[] = [
-        { user_id: userId1, group_id: groupId1 },
-        { user_id: userId2, group_id: groupId2 },
-      ];
-      const newUsers: UpdateGroupsPayload = [
-        { id: groupId1, userIds: [userId1] },
-        { id: groupId2, userIds: [userId2] },
-      ];
-
-      const expected: UserGroups[] = [];
-
-      const result = ServiceGroupHelper.buildUserGroupsDiff(oldUsers, newUsers);
-      expect(result).toEqual(expected);
-    });
-
-    it('should mark a user as modified when all of their groups are removed', () => {
-      const oldUsers: ServiceGroupUser[] = [
-        { user_id: userId1, group_id: groupId1 },
-        { user_id: userId1, group_id: groupId2 },
-      ];
-      const newUsers: UpdateGroupsPayload = [];
-
-      const expected: UserGroups[] = [{ user_id: userId1, group_ids: [] }];
-
-      const result = ServiceGroupHelper.buildUserGroupsDiff(oldUsers, newUsers);
-      expect(result).toEqual(expected);
-    });
-
-    it('should mark a user as modified when they are completely new', () => {
-      const oldUsers: ServiceGroupUser[] = [];
-      const newUsers: UpdateGroupsPayload = [
-        { id: groupId1, userIds: [userId1] },
-        { id: groupId2, userIds: [userId1] },
-      ];
-      const expected: UserGroups[] = [
-        {
-          user_id: userId1,
-          group_ids: [groupId1, groupId2],
-        },
-      ];
-
-      const result = ServiceGroupHelper.buildUserGroupsDiff(oldUsers, newUsers);
-      expect(result).toEqual(expected);
-    });
-
-    it('should handle when a user had multiple groups and now has fewer', () => {
-      const oldUsers: ServiceGroupUser[] = [
-        { user_id: userId1, group_id: groupId1 },
-        { user_id: userId1, group_id: groupId2 },
-        { user_id: userId1, group_id: groupId3 },
-      ];
-      const newUsers: UpdateGroupsPayload = [
-        { id: groupId1, userIds: [userId1] },
-      ];
-
-      const expected: UserGroups[] = [
-        { user_id: userId1, group_ids: [groupId1] },
-      ];
-
-      const result = ServiceGroupHelper.buildUserGroupsDiff(oldUsers, newUsers);
-      expect(result).toEqual(expected);
-    });
-
-    it('should handle when a user gains new groups', () => {
-      const oldUsers: ServiceGroupUser[] = [
-        { user_id: userId1, group_id: groupId1 },
-      ];
-      const newUsers: UpdateGroupsPayload = [
-        { id: groupId1, userIds: [userId1] },
-        { id: groupId2, userIds: [userId1] },
-        { id: groupId3, userIds: [userId1] },
-      ];
-
-      const expected: UserGroups[] = [
-        {
-          user_id: userId1,
-          group_ids: [groupId1, groupId2, groupId3],
-        },
-      ];
-
-      const result = ServiceGroupHelper.buildUserGroupsDiff(oldUsers, newUsers);
-      expect(result).toEqual(expected);
-    });
-  });
 
   describe('toServiceGroupResponse', () => {
     it('should cast the service group name to a ServiceGroupName', () => {
@@ -349,216 +248,6 @@ describe('serviceGroupHelper', () => {
       );
 
       expect(auth0Spy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('sendFreeTrialWelcomeEmails', () => {
-    const serviceInstanceIds: ServiceInstanceId[] = [];
-    let simple2User: User;
-
-    beforeAll(async () => {
-      const users = await UserDomain.loadUsers([
-        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-      ]);
-      simple2User = users[0]!;
-    });
-
-    afterEach(async () => {
-      for (const serviceInstanceId of serviceInstanceIds) {
-        await TestHelper.platformConfiguration.delete({
-          service_instance_id: serviceInstanceId,
-        });
-        await TestHelper.serviceInstance.delete({ id: serviceInstanceId });
-      }
-      serviceInstanceIds.length = 0;
-      vi.restoreAllMocks();
-    });
-
-    const createPlatformConfiguration = async (
-      platformId: string,
-      platformUrl: string
-    ) => {
-      const serviceInstance = await TestHelper.serviceInstance.create({});
-      const serviceInstanceId = serviceInstance.id;
-      serviceInstanceIds.push(serviceInstanceId);
-      await TestHelper.platformConfiguration.create({
-        service_instance_id: serviceInstanceId,
-        status: PlatformConfigurationStatus.Active,
-        platform_id: platformId,
-        platform_url: platformUrl,
-        registerer_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-        platform_title: 'Test Platform',
-        platform_version: '1.0.0',
-        platform_contract: PlatformContract.Ee,
-        token: uuidv4(),
-      });
-    };
-
-    it('should send a free_trial_user_added email to each newly added user', async () => {
-      const platformId = uuidv4();
-      const platformUrl = 'https://test-platform.example.com';
-      const endDate = new Date('2026-06-01');
-      await createPlatformConfiguration(platformId, platformUrl);
-
-      const sendMailSpy = vi
-        .spyOn(mailService, 'sendMail')
-        .mockResolvedValue(undefined);
-
-      const expectedTrialEndDate = endDate.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: '2-digit',
-      });
-
-      await ServiceGroupHelper.sendFreeTrialWelcomeEmails({
-        platformId,
-        platformIdentifier: PlatformIdentifier.Opencti,
-        deploymentType: DeploymentRequestDeploymentType.Trial,
-        endDate,
-        newlyAddedUsers: [simple2User],
-        adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-      });
-
-      expect(sendMailSpy).toHaveBeenCalledTimes(1);
-      expect(sendMailSpy).toHaveBeenCalledWith({
-        to: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-        template: 'free_trial_user_added',
-        params: {
-          firstName: formatName(
-            TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME
-          ),
-          platformUrl,
-          platformIdentifier: PlatformIdentifier.Opencti,
-          adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          trialEndDate: expectedTrialEndDate,
-        },
-      });
-    });
-
-    it.each([
-      ['platformId', null, PlatformIdentifier.Opencti],
-      ['platformIdentifier', uuidv4(), null],
-    ])(
-      'should do nothing when %s is missing',
-      async (_field, platformId, platformIdentifier) => {
-        const sendMailSpy = vi
-          .spyOn(mailService, 'sendMail')
-          .mockResolvedValue(undefined);
-
-        await ServiceGroupHelper.sendFreeTrialWelcomeEmails({
-          platformId,
-          platformIdentifier,
-          deploymentType: DeploymentRequestDeploymentType.Trial,
-          endDate: new Date(),
-          newlyAddedUsers: [simple2User],
-          adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-        });
-
-        expect(sendMailSpy).not.toHaveBeenCalled();
-      }
-    );
-
-    it('should do nothing when there are no newly added users', async () => {
-      const sendMailSpy = vi
-        .spyOn(mailService, 'sendMail')
-        .mockResolvedValue(undefined);
-
-      await ServiceGroupHelper.sendFreeTrialWelcomeEmails({
-        platformId: uuidv4(),
-        platformIdentifier: PlatformIdentifier.Opencti,
-        deploymentType: DeploymentRequestDeploymentType.Trial,
-        endDate: new Date(),
-        newlyAddedUsers: [],
-        adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-      });
-
-      expect(sendMailSpy).not.toHaveBeenCalled();
-    });
-
-    it('should do nothing when there is no matching platform configuration', async () => {
-      const sendMailSpy = vi
-        .spyOn(mailService, 'sendMail')
-        .mockResolvedValue(undefined);
-
-      await ServiceGroupHelper.sendFreeTrialWelcomeEmails({
-        platformId: uuidv4(),
-        platformIdentifier: PlatformIdentifier.Opencti,
-        deploymentType: DeploymentRequestDeploymentType.Trial,
-        endDate: new Date(),
-        newlyAddedUsers: [simple2User],
-        adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-      });
-
-      expect(sendMailSpy).not.toHaveBeenCalled();
-    });
-
-    it('should do nothing when the deployment type is not Trial', async () => {
-      const platformId = uuidv4();
-      await createPlatformConfiguration(
-        platformId,
-        'https://test-platform.example.com'
-      );
-
-      const sendMailSpy = vi
-        .spyOn(mailService, 'sendMail')
-        .mockResolvedValue(undefined);
-
-      await ServiceGroupHelper.sendFreeTrialWelcomeEmails({
-        platformId,
-        platformIdentifier: PlatformIdentifier.Opencti,
-        deploymentType: DeploymentRequestDeploymentType.Bundle,
-        endDate: new Date(),
-        newlyAddedUsers: [simple2User],
-        adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-      });
-
-      expect(sendMailSpy).not.toHaveBeenCalled();
-    });
-
-    it('should do nothing when there is no end date', async () => {
-      const platformId = uuidv4();
-      await createPlatformConfiguration(
-        platformId,
-        'https://test-platform.example.com'
-      );
-
-      const sendMailSpy = vi
-        .spyOn(mailService, 'sendMail')
-        .mockResolvedValue(undefined);
-
-      await ServiceGroupHelper.sendFreeTrialWelcomeEmails({
-        platformId,
-        platformIdentifier: PlatformIdentifier.Opencti,
-        deploymentType: DeploymentRequestDeploymentType.Trial,
-        endDate: null,
-        newlyAddedUsers: [simple2User],
-        adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-      });
-
-      expect(sendMailSpy).not.toHaveBeenCalled();
-    });
-
-    it('should swallow errors raised while sending emails', async () => {
-      const platformId = uuidv4();
-      await createPlatformConfiguration(
-        platformId,
-        'https://test-platform.example.com'
-      );
-
-      vi.spyOn(mailService, 'sendMail').mockRejectedValue(
-        new Error('smtp down')
-      );
-
-      await expect(
-        ServiceGroupHelper.sendFreeTrialWelcomeEmails({
-          platformId,
-          platformIdentifier: PlatformIdentifier.Opencti,
-          deploymentType: DeploymentRequestDeploymentType.Trial,
-          endDate: new Date(),
-          newlyAddedUsers: [simple2User],
-          adminEmail: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-        })
-      ).resolves.toBeUndefined();
     });
   });
 
@@ -803,81 +492,57 @@ describe('serviceGroupHelper', () => {
     });
   });
 
-  describe('updateAuth0Groups', () => {
-    const bundleIds: DeploymentRequestId[] = [];
+  describe('removeAuth0Groups', () => {
+    const insertedUserIds: UserId[] = [];
 
     afterEach(async () => {
-      for (const bundleId of bundleIds) {
-        await TestHelper.deploymentRequest.deleteBundle(bundleId);
+      for (const id of insertedUserIds) {
+        await TestHelper.user.delete({ id });
       }
-      bundleIds.length = 0;
+      insertedUserIds.length = 0;
       vi.restoreAllMocks();
     });
 
-    it('should throw DeploymentRequestNotFound when there is no deployment request for the service instance', async () => {
-      const call = ServiceGroupHelper.updateAuth0Groups(
-        [],
-        [],
-        uuidv4() as ServiceInstanceId
+    it('should throw InvalidPlatformId when no platform id is given', async () => {
+      // When
+      const call = ServiceGroupHelper.removeAuth0Groups(
+        [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
+        null
       );
 
-      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
-    });
-
-    it('should throw InvalidPlatformId when the deployment request has no platform_id', async () => {
-      const deploymentRequest =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          { platform_id: null }
-        );
-      bundleIds.push(deploymentRequest.id);
-
-      const call = ServiceGroupHelper.updateAuth0Groups(
-        [],
-        [],
-        deploymentRequest.service_instance_id
-      );
-
+      // Then
       await expect(call).rejects.toThrow(ErrorCode.InvalidPlatformId);
     });
 
-    it('should call auth0 with the new groups for each updated user', async () => {
-      const platformId = uuidv4();
-      const deploymentRequest =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          { platform_id: platformId }
+    it.each([UserAccountStatus.Waiting, UserAccountStatus.Expired])(
+      'should not send a %s user to Auth0 when removing the platform groups',
+      async (status) => {
+        // Given
+        const platformId = uuidv4();
+        const userWithoutAuth0Account = await TestHelper.user.insert({
+          email: `user-${uuidv4()}@filigran.io`,
+          status,
+        });
+        insertedUserIds.push(userWithoutAuth0Account.id);
+        const auth0Spy = vi
+          .spyOn(auth0ClientMock, 'updateUserRBACInstance')
+          .mockResolvedValue(undefined);
+
+        // When
+        await ServiceGroupHelper.removeAuth0Groups(
+          [
+            userWithoutAuth0Account.id,
+            TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+          ],
+          platformId
         );
-      bundleIds.push(deploymentRequest.id);
 
-      const groupId = uuidv4() as ServiceGroupId;
-      await TestHelper.serviceGroup.create({
-        id: groupId,
-        name: 'Admin',
-        service_instance_id: deploymentRequest.service_instance_id,
-      });
-
-      const auth0Spy = vi
-        .spyOn(auth0ClientMock, 'updateUserRBACInstance')
-        .mockResolvedValue(undefined);
-
-      const oldUsers: ServiceGroupUser[] = [];
-      const newUsers: UpdateGroupsPayload = [
-        {
-          id: groupId,
-          userIds: [TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID],
-        },
-      ];
-
-      await ServiceGroupHelper.updateAuth0Groups(
-        oldUsers,
-        newUsers,
-        deploymentRequest.service_instance_id
-      );
-
-      expect(auth0Spy).toHaveBeenCalledTimes(1);
-      expect(auth0Spy).toHaveBeenCalledWith(
-        TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
-        { [platformId]: { groups: ['Admin'] } }
-      );
-    });
+        // Then
+        expect(auth0Spy).toHaveBeenCalledExactlyOnceWith(
+          TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
+          { [platformId]: { groups: [] } }
+        );
+      }
+    );
   });
 });

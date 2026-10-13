@@ -28,13 +28,6 @@ export interface PlatformRegisteredModel {
   adminName: string;
   platformIdentifier: PlatformIdentifier;
 }
-export interface FreeTrialUserAddedModel {
-  firstName: string;
-  platformUrl: string;
-  platformIdentifier: PlatformIdentifier;
-  adminEmail: string;
-  trialEndDate: string;
-}
 export interface FreeTrialBundleModel {
   firstName: string;
   productNames: string;
@@ -148,7 +141,6 @@ export type MailTemplates = {
   free_trial_bundle_active: FreeTrialBundleActiveModel;
   free_trial_bundle_cancelled: FreeTrialBundleModel;
   free_trial_bundle_expired: FreeTrialBundleModel;
-  free_trial_user_added: FreeTrialUserAddedModel;
   free_trial_bundle_user_added: FreeTrialBundleUserAddedModel;
   organization_pending_user_digest: OrganizationPendingUserDigestModel;
   admin_saas_bundle_requested: AdminSaasBundleRequestedModel;
@@ -190,10 +182,6 @@ export const templateSubjects: {
     `Your ${BUNDLE_PLATFORM_NAME} Trial Has Been Cancelled`,
   free_trial_bundle_expired: () =>
     `Your ${BUNDLE_PLATFORM_NAME} Trial Has Expired`,
-  free_trial_user_added: (params: FreeTrialUserAddedModel) =>
-    `Welcome to your ${
-      PlatformIdentifierToString[params.platformIdentifier]
-    } free trial!`,
   free_trial_bundle_user_added: () =>
     `You’ve Been Added to an ${BUNDLE_PLATFORM_NAME} Trial`,
   organization_pending_user_digest: () =>

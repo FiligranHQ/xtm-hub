@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   afterEach,
-  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -10,11 +9,9 @@ import {
   type MockInstance,
 } from 'vitest';
 import {
-  requestContextAdminSecondOrga,
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
   requestContextSimpleUserFiligran2,
-  SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
@@ -22,7 +19,6 @@ import {
   OrganizationCapability,
   PlatformIdentifier,
   ServiceGroupName,
-  ServiceInstanceCreationStatus,
   UserAccountStatus,
 } from '../../../__generated__/resolvers-types';
 import { databaseContext } from '../../../context/database.context';
@@ -64,218 +60,12 @@ vi.mock('../../../utils/feature-flag.util', async (importOriginal) => ({
 }));
 
 describe('serviceGroupApp', () => {
-  const adminGroupId = uuidv4() as ServiceGroupId;
-  const analystGroupId = uuidv4() as ServiceGroupId;
-  const adminGroupIdServiceInstance2 = uuidv4() as ServiceGroupId;
-  const analystGroupIdServiceInstance2 = uuidv4() as ServiceGroupId;
-
-  const serviceInstanceId1 = uuidv4() as ServiceInstanceId;
-  const serviceInstanceId2 = uuidv4() as ServiceInstanceId;
-
-  beforeAll(async () => {
-    await TestHelper.serviceInstance.create({
-      id: serviceInstanceId1,
-      name: 'Service instance 1',
-      description: '',
-      creation_status: ServiceInstanceCreationStatus.Ready,
-      public: false,
-      tags: [],
-      service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-    });
-    await TestHelper.serviceInstance.create({
-      id: serviceInstanceId2,
-      name: 'Service instance 2',
-      description: '',
-      creation_status: ServiceInstanceCreationStatus.Ready,
-      public: false,
-      tags: [],
-      service_definition_id: SERVICES.DEFINITIONS.OPENCTI_REGISTRATION.ID,
-    });
-
-    await TestHelper.serviceGroup.create({
-      id: adminGroupId,
-      name: 'Admin',
-      service_instance_id: serviceInstanceId1,
-    });
-    await TestHelper.serviceGroup.create({
-      id: analystGroupId,
-      name: 'Analyst',
-      service_instance_id: serviceInstanceId1,
-    });
-    await TestHelper.serviceGroup.create({
-      id: adminGroupIdServiceInstance2,
-      name: 'Admin',
-      service_instance_id: serviceInstanceId2,
-    });
-    await TestHelper.serviceGroup.create({
-      id: analystGroupIdServiceInstance2,
-      name: 'Analyst',
-      service_instance_id: serviceInstanceId2,
-    });
-  });
-
   let telemetrySpy: MockInstance;
 
   beforeEach(() => {
     telemetrySpy = vi
       .spyOn(TelemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue();
-  });
-
-  describe('updateGroups', () => {
-    afterEach(async () => {
-      for (const groupId of [
-        adminGroupId,
-        analystGroupId,
-        adminGroupIdServiceInstance2,
-        analystGroupIdServiceInstance2,
-      ]) {
-        await TestHelper.serviceGroupUser.delete({ group_id: groupId });
-      }
-
-      for (const serviceInstanceId of [
-        serviceInstanceId1,
-        serviceInstanceId2,
-      ]) {
-        await TestHelper.deploymentRequest.delete({
-          service_instance_id: serviceInstanceId,
-        });
-        await TestHelper.subscription.delete({
-          service_instance_id: serviceInstanceId,
-        });
-        await TestHelper.platformConfiguration.delete({
-          service_instance_id: serviceInstanceId,
-        });
-      }
-    });
-
-    const payload = [
-      {
-        id: adminGroupId,
-        userIds: [
-          TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-        ],
-      },
-      {
-        id: analystGroupId,
-        userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
-      },
-    ];
-
-    it('should prevent user from updating groups in multiple service instances', async () => {
-      const call = ServiceGroupApp.updateGroups([
-        ...payload,
-        {
-          id: adminGroupIdServiceInstance2,
-          userIds: [
-            TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-          ],
-        },
-      ]);
-
-      await expect(call).rejects.toThrow(
-        ErrorCode.ServiceGroupsLinkedToMultipleServiceInstances
-      );
-    });
-
-    it('should prevent user from updating groups in another organization than selected', async () => {
-      await TestHelper.subscription.create({
-        service_instance_id: serviceInstanceId1,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
-
-      requestContext.set(requestContextAdminSecondOrga);
-      const call = ServiceGroupApp.updateGroups(payload);
-
-      await expect(call).rejects.toThrow(
-        ErrorCode.OrganizationDoesNotMatchSelectedOrganization
-      );
-    });
-
-    it('should allow bypass user to update groups in another organization', async () => {
-      requestContext.set(requestContextAdminUser);
-
-      await TestHelper.subscription.create({
-        service_instance_id: serviceInstanceId2,
-        organization_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
-
-      await TestHelper.deploymentRequest.create({
-        service_instance_id: serviceInstanceId2,
-        user_requester_id:
-          TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-        organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-      });
-
-      const bypassPayload = [
-        {
-          id: adminGroupIdServiceInstance2,
-          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID],
-        },
-        {
-          id: analystGroupIdServiceInstance2,
-          userIds: [TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID],
-        },
-      ];
-
-      const result = await ServiceGroupApp.updateGroups(bypassPayload);
-
-      expect(result).toBeInstanceOf(Array);
-      expect(result).toHaveLength(2);
-    });
-
-    it('should update groups with new user list and remove old ones', async () => {
-      requestContext.set(requestContextAdminUser);
-
-      await TestHelper.serviceGroupUser.create({
-        group_id: analystGroupId,
-        user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-      });
-      await TestHelper.subscription.create({
-        service_instance_id: serviceInstanceId1,
-        organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
-      await TestHelper.deploymentRequest.create({
-        service_instance_id: serviceInstanceId1,
-        user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-        organization_requester_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
-      });
-
-      const result = await ServiceGroupApp.updateGroups(payload);
-
-      expect(result).toBeInstanceOf(Array);
-      expect(result).toHaveLength(2);
-
-      const admins = await TestHelper.serviceGroupUser.load({
-        group_id: adminGroupId,
-      });
-
-      expect(admins).toHaveLength(2);
-      expect(
-        admins!.find(
-          ({ user_id }) =>
-            user_id === TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID
-        )
-      ).toBeTruthy();
-      expect(
-        admins!.find(
-          ({ user_id }) =>
-            user_id ===
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID
-        )
-      ).toBeTruthy();
-
-      const analysts = await TestHelper.serviceGroupUser.load({
-        group_id: analystGroupId,
-      });
-
-      expect(analysts).toHaveLength(1);
-      expect(analysts?.[0]?.user_id).toBe(
-        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID
-      );
-    });
   });
 
   describe('removeExpiredGroups', () => {

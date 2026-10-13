@@ -397,7 +397,6 @@
       "SEO_SERVICE_INSTANCE_NOT_FOUND": "Les métadonnées de l'instance du service SEO sont introuvables.",
       "SERVICE_DEFINITION_NOT_FOUND": "La définition du service n'a pas été trouvée",
       "SERVICE_GROUP_NOT_FOUND": "Le groupe de service n'a pas été trouvé",
-      "SERVICE_GROUPS_LINKED_TO_MULTIPLE_SERVICE_INSTANCES": "Vous n'êtes pas autorisé à faire ceci",
       "SERVICE_INSTANCE_NOT_FOUND": "L'instance du service n'a pas été trouvée",
       "SERVICE_INSTANCE_NOT_PUBLIC": "Vous n'avez pas accès à ce service",
       "SERVICE_NOT_FOUND": "Le service n'a pas été trouvé",
@@ -1713,8 +1712,7 @@
         "FormRequested": "Vous avez demandé un essai gratuit. Vous recevrez un e-mail dès que la plateforme sera prête !"
       },
       "ManageUsers": {
-        "Title": "Gérer les utilisateurs",
-        "Email": "Email"
+        "Title": "Gérer les utilisateurs"
       }
     },
     "TrialGuide": {

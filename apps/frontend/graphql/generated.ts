@@ -35,8 +35,6 @@ export type Scalars = {
   NewsFeedItemId: { input: any; output: any; }
   /** A Relay global ID for Organization, extracted to a branded OrganizationId string */
   OrganizationId: { input: any; output: any; }
-  /** A Relay global ID for ServiceGroup, extracted to a branded ServiceGroupId string */
-  ServiceGroupId: { input: any; output: any; }
   /** A Relay global ID for ServiceInstance, extracted to a branded ServiceInstanceId string */
   ServiceInstanceId: { input: any; output: any; }
   /** A Relay global ID for Service_Capability, extracted to a branded Service_CapabilityId string */
@@ -1145,7 +1143,6 @@ export type Mutation = {
   updatePlatformServiceMetadata: Maybe<RegisteredPlatform>;
   updateRolePortal: RolePortal;
   updateSSOGroupRolePortal: SsoGroupRolePortal;
-  updateServiceGroups: Array<ServiceGroup>;
   updateSubscription: Maybe<SubscriptionModel>;
   updateVotableFeature: VotableFeature;
   updateVotingRound: VotingRound;
@@ -1599,11 +1596,6 @@ export type MutationUpdateSsoGroupRolePortalArgs = {
 };
 
 
-export type MutationUpdateServiceGroupsArgs = {
-  input: UpdateServiceGroupsInput;
-};
-
-
 export type MutationUpdateSubscriptionArgs = {
   input: UpdateSubscriptionInput;
   subscription_id: Scalars['SubscriptionId']['input'];
@@ -2007,7 +1999,6 @@ export type Query = {
   seoServiceInstance: SeoServiceInstance;
   seoServiceInstanceMetadata: Array<SeoServiceInstanceMetadata>;
   seoServiceInstances: Array<SeoServiceInstance>;
-  serviceGroups: Array<ServiceGroup>;
   serviceInstanceById: Maybe<ServiceInstance>;
   serviceInstanceLinksByTags: Array<SeoServiceInstance>;
   serviceInstances: ServiceConnection;
@@ -2255,11 +2246,6 @@ export type QuerySeoServiceInstanceArgs = {
 export type QuerySeoServiceInstanceMetadataArgs = {
   language: InputMaybe<Locale>;
   service_instance_id: Scalars['ServiceInstanceId']['input'];
-};
-
-
-export type QueryServiceGroupsArgs = {
-  serviceInstanceId: Scalars['ServiceInstanceId']['input'];
 };
 
 
@@ -2611,7 +2597,6 @@ export type ServiceGroup = Node & {
   __typename?: 'ServiceGroup';
   id: Scalars['ID']['output'];
   name: ServiceGroupName;
-  users: Maybe<Array<User>>;
 };
 
 export enum ServiceGroupName {
@@ -3044,15 +3029,6 @@ export type UpdateRolePortalInput = {
 export type UpdateSsoGroupRolePortalInput = {
   rolePortal: Scalars['String']['input'];
   ssoGroup: Scalars['String']['input'];
-};
-
-export type UpdateServiceGroupsInput = {
-  groups: Array<UpdateServiceGroupsInputGroup>;
-};
-
-export type UpdateServiceGroupsInputGroup = {
-  id: Scalars['ServiceGroupId']['input'];
-  userIds: Array<Scalars['UserId']['input']>;
 };
 
 export type UpdateSubscriptionInput = {

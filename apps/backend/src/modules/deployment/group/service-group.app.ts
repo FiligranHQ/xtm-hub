@@ -28,7 +28,6 @@ import { UserDomain } from '../../organization-management/user/user-domain/user.
 import { UserOrganizationApp } from '../../organization-management/user/user-organization/user-organization.app';
 import { UserProvisioningDomain } from '../../organization-management/user/user-provisioning/user-provisioning.domain';
 import { UserHelper } from '../../organization-management/user/user.helper';
-import { DeploymentRequestDomain } from '../deployment.domain';
 import { ServiceGroupDomain } from './service-group.domain';
 import {
   ServiceGroupHelper,
@@ -36,26 +35,9 @@ import {
 } from './service-group.helper';
 import { ServiceGroupSecurityHelper } from './service-group.security.helper';
 
-export type UpdateGroupsPayload = { id: ServiceGroupId; userIds: UserId[] }[];
-
 const MAX_INVITED_EMAILS = 50;
 
 export const ServiceGroupApp = {
-  loadGroups: async ({
-    serviceInstanceId,
-  }: {
-    serviceInstanceId: ServiceInstanceId;
-  }): Promise<ServiceGroupResponse[]> => {
-    const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
-      service_instance_id: serviceInstanceId,
-    });
-    return serviceGroups.map(ServiceGroupHelper.toServiceGroupResponse);
-  },
-
-  loadGroupUsers: async (groupId: ServiceGroupId): Promise<User[]> => {
-    return ServiceGroupDomain.loadGroupUsers(groupId);
-  },
-
   loadGroupsByServiceInstanceAndUser: async (
     serviceInstanceId: ServiceInstanceId,
     userId: UserId
@@ -408,82 +390,22 @@ export const ServiceGroupApp = {
     return ServiceGroupApp.loadBundleUserServiceGroups(serviceInstanceId);
   },
 
-  updateGroups: async (
-    groups: UpdateGroupsPayload
-  ): Promise<ServiceGroupResponse[]> => {
-    const user = requestContext.requireUser();
-    const groupIds = groups.map(({ id }) => id);
-
-    const serviceInstanceIds =
-      await ServiceGroupDomain.loadGroupsServiceInstanceIds(groupIds);
-    const [firstServiceInstanceId] = serviceInstanceIds;
-    if (!firstServiceInstanceId || serviceInstanceIds.length !== 1) {
-      throw new Error(ErrorCode.ServiceGroupsLinkedToMultipleServiceInstances);
-    }
-
-    const oldUsers = await ServiceGroupDomain.loadServiceInstanceGroupUsers(
-      firstServiceInstanceId
-    );
-
-    await ServiceGroupSecurityHelper.assertOrganizationAccess(
-      firstServiceInstanceId
-    );
-
-    const oldUserIds = new Set(oldUsers.map((u) => u.user_id));
-    const addedUserIds = [
-      ...new Set(groups.flatMap(({ userIds }) => userIds)),
-    ].filter((id) => !oldUserIds.has(id));
-
-    await withTransaction(async () => {
-      await ServiceGroupDomain.removeUsersFromGroups(groupIds);
-
-      const addUserToGroupPromises = groups.map(async (group) => {
-        await ServiceGroupDomain.addUsersToGroup(group.id, group.userIds);
-      });
-
-      await Promise.all(addUserToGroupPromises);
-
-      await ServiceGroupHelper.updateAuth0Groups(
-        oldUsers,
-        groups,
-        firstServiceInstanceId
-      );
-    });
-
-    if (addedUserIds.length > 0) {
-      const deploymentRequest =
-        await DeploymentRequestDomain.loadDeploymentRequestBy({
-          service_instance_id: serviceInstanceIds[0],
-        });
-      if (deploymentRequest) {
-        const addedUsers = await UserDomain.loadUsers(addedUserIds);
-        await ServiceGroupHelper.sendFreeTrialWelcomeEmails({
-          platformId: deploymentRequest.platform_id,
-          platformIdentifier: deploymentRequest.platform_identifier,
-          deploymentType: deploymentRequest.type,
-          endDate: deploymentRequest.end_date,
-          newlyAddedUsers: addedUsers,
-          adminEmail: user.email,
-        });
-      }
-    }
-
-    const serviceGroups = await ServiceGroupDomain.loadServiceGroups({
-      service_instance_id: serviceInstanceIds[0],
-    });
-    return serviceGroups.map(ServiceGroupHelper.toServiceGroupResponse);
-  },
   removeExpiredGroups: async (): Promise<void> => {
     const rows = await ServiceGroupDomain.loadGroupsForExpiredTrials();
 
     const byServiceInstance = rows.reduce<
       Map<
         ServiceInstanceId,
-        { deploymentRequestId: string; groupIds: ServiceGroupId[] }
+        {
+          deploymentRequestId: string;
+          platformId: string | null;
+          groupIds: ServiceGroupId[];
+        }
       >
     >((acc, row) => {
       const entry = acc.get(row.serviceInstanceId) ?? {
         deploymentRequestId: row.deploymentRequestId,
+        platformId: row.platformId,
         groupIds: [],
       };
       entry.groupIds.push(row.groupId);
@@ -493,21 +415,20 @@ export const ServiceGroupApp = {
 
     for (const [
       serviceInstanceId,
-      { deploymentRequestId, groupIds },
+      { deploymentRequestId, platformId, groupIds },
     ] of byServiceInstance) {
       logApp.info('Removing users from expired trial groups', {
         deploymentRequestId,
         groupCount: groupIds.length,
       });
       try {
-        const oldUsers =
+        const groupUsers =
           await ServiceGroupDomain.loadServiceInstanceGroupUsers(
             serviceInstanceId
           );
-        await ServiceGroupHelper.updateAuth0Groups(
-          oldUsers,
-          [],
-          serviceInstanceId
+        await ServiceGroupHelper.removeAuth0Groups(
+          groupUsers.map(({ user_id }) => user_id),
+          platformId
         );
         await ServiceGroupDomain.deleteGroups(groupIds);
       } catch (error) {
