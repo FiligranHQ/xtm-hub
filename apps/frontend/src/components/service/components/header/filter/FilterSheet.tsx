@@ -1,14 +1,14 @@
 import { ServiceListFilterSection } from '@/components/service/components/header/filter/ServiceListFilterSection';
 import { ServiceListFilterMap } from '@/components/service/components/header/ServiceListHeader';
-import { useTranslate } from '@/hooks/use-translate';
-import { IconButton } from '@filigran/design-system';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@filigran/ui/clients';
+} from '@/components/ui/sheet';
+import { useTranslate } from '@/hooks/use-translate';
+import { IconButton } from '@filigran/design-system';
 import { Funnel } from 'lucide-react';
 
 interface FilterSheetProps {
@@ -33,7 +33,7 @@ export const FilterSheet = ({ filters }: FilterSheetProps) => {
         closeLabel={t('Utils.Close')}
         aria-describedby={undefined}
         className="bg-gradient-background">
-        <SheetHeader className="bg-gradient-background border-elevation-border-strong">
+        <SheetHeader className="bg-gradient-background">
           <SheetTitle>{t('Service.List.Filters')}</SheetTitle>
         </SheetHeader>
         <ServiceListFilterSection filters={filters} />
