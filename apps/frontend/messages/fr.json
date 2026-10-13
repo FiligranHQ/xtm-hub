@@ -939,7 +939,6 @@
         "NotConnected": "Connexion perdue",
         "NotConnectedDetails": "Vous devez à nouveau connecter votre produit."
       },
-      "Description": "Cliquez ici pour accéder à votre produit privé.",
       "ProductName": "Nom du produit",
       "Product": "Produit",
       "ProductURL": "URL du produit",
@@ -1493,10 +1492,6 @@
       "NoSubscribedServices": "Aucun service souscrit trouvé pour cette organisation."
     },
     "Organizations": "Organisations",
-    "RegisteredPlatforms": {
-      "PlatformDetails": "Détails du produit",
-      "GoToMyPlatform": "Accéder à mon produit"
-    },
     "SearchServices": "Rechercher un service...",
     "ServiceName": "Nom du service",
     "ShareableResources": {
@@ -1563,11 +1558,6 @@
     "SubscribeService": "Souscrire au service {serviceName}",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "Trials": {
-      "Active": "Votre essai gratuit d'OpenCTI est actif",
-      "Provisioning": "Votre essai gratuit d'OpenCTI est en cours de provisionnement.",
-      "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
-      "Expired": "Votre essai gratuit d'OpenCTI a expiré.",
-      "Cancelled": "Votre essai gratuit d'OpenCTI a été annulé.",
       "CancellationReason": {
         "value": "Les renseignements manquent d'informations exploitables pour nos besoins spécifiques",
         "compatibility": "Incompatible avec notre pile de sécurité existante",
@@ -1575,7 +1565,6 @@
         "legal-security": "L'équipe de sécurité interne ou l'équipe juridique a exigé une résiliation immédiate",
         "expertise": "Nous n'avons pas les analystes/expertises internes pour utiliser l'outil efficacement"
       },
-      "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
       "LearnMore": {
         "Link": "En savoir plus",
         "openaev": {
@@ -1623,15 +1612,12 @@
           }
         }
       },
-      "OpenAEVPlatformBreadcrumb": "Plateforme d'essai OpenAEV",
-      "OpenCTIPlatformBreadcrumb": "Plateforme d'essai OpenCTI",
       "PageHeader": {
         "Welcome": "Bienvenue chez Filigran",
         "Title": "Démarrons votre essai gratuit de {platformName} !"
       },
       "Storage": {
         "Title": "Note importante sur le stockage de votre environnement d'essai",
-        "SaaSFeaturesLink": "fonctionnalités Enterprise Edition SaaS",
         "NoSLA": "<strong>L'environnement d'essai gratuit n'inclut pas de SLA.</strong> En cas de panne du fournisseur cloud, le temps de restauration n'est pas garanti. Nous recommandons de ne pas stocker de données critiques ou irremplaçables dans votre environnement d'essai.",
         "OpenCTIDescription": "L'essai gratuit OpenCTI fournit aux utilisateurs une instance SaaS « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec <strong>une puissance de calcul et un stockage réduits (jusqu'à 40 Go de stockage de données de threat intelligence et 3 Go de stockage de fichiers).</strong> L'ingestion de gros flux premium avec des jeux de données riches peut rapidement saturer votre stockage.",
         "OpenAEVDescription": "L'essai gratuit OpenAEV fournit aux utilisateurs une instance « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec une puissance de calcul réduite et un stockage limité à <strong>16 Go</strong>."
@@ -1748,7 +1734,6 @@
         "Subtitle": "Tirez le meilleur de votre produit {platformName} !",
         "Description": "Explorez des guides pas-à-pas, des cours d'experts et les retours de la communauté pour résoudre des cas d'usage concrets et devenir un champion Filigran !"
       },
-      "GoToMyTrial": "Accéder à mon essai",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
       "ReachOutToSales": "Contacter l'équipe commerciale",
       "ReachOutToSalesMessageLabel": "Message",
@@ -1756,7 +1741,6 @@
       "NeedSupport": "Besoin d'aide",
       "ReachOutToSalesSuccessTitle": "Merci !",
       "ReachOutToSalesSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
-      "ReachOutToSalesDefaultMessage": "Tapez votre message pour demander de l'aide",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
@@ -1783,7 +1767,6 @@
         "JobTitlePlaceholder": "Sélectionnez votre fonction",
         "ActivitySector": "Secteur d'activité",
         "ActivitySectorPlaceholder": "Sélectionnez votre secteur d'activité",
-        "UseCase": "Cas d'utilisation",
         "UseCasePlaceholder": "Sélectionnez votre cas d'utilisation",
         "Error": {
           "AcceptTerms": "Veuillez accepter les conditions d'essai pour continuer",
@@ -1791,18 +1774,6 @@
         },
         "TermsAgreement": "Je reconnais avoir lu, compris et accepté les conditions d'essai du <mssa>MSSA</mssa> et les <aiterms>conditions d'utilisation de l'IA</aiterms>",
         "FormRequested": "Vous avez demandé un essai gratuit. Vous recevrez un e-mail dès que la plateforme sera prête !"
-      },
-      "Display": {
-        "New": "Nouveau",
-        "Requested": "Demandé",
-        "opencti": {
-          "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
-          "FreeTrialDescription": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition pour commencer à rendre opérationnelle votre veille sur les menaces de bout en bout !"
-        },
-        "openaev": {
-          "Title": "Essai gratuit d'OpenAEV pendant 30 jours",
-          "FreeTrialDescription": "Explorez OpenAEV pour simuler des scénarios d'attaque réels, évaluer votre posture de sécurité et améliorer votre cyber-résilience - au niveau technique et humain."
-        }
       },
       "ManageUsers": {
         "Title": "Gérer les utilisateurs",
