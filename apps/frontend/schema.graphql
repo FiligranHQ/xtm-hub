@@ -568,7 +568,6 @@ type PlatformTrialStatus {
   isBlacklisted: Boolean!
   hub_status: DeploymentRequestHubStatus
   end_date: Date
-  ongoingStandaloneTrials: [PlatformIdentifier!]!
 }
 
 enum DeploymentRequestOrdering {

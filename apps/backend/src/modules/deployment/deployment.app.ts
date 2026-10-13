@@ -434,34 +434,22 @@ export const DeploymentApp = {
     if (organization.personal_space) {
       return {
         deploymentRequestId: null,
-        ongoingStandaloneTrials: [],
         isBlacklisted: false,
         hub_status: null,
         end_date: null,
       };
     }
 
-    const bundle =
-      await DeploymentRequestDomain.loadBundleTrialForOrganization(
-        organizationId
-      );
-
-    const standaloneTrials =
-      await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
-        organizationId
-      );
+    const [bundle, isBlacklisted] = await Promise.all([
+      DeploymentRequestDomain.loadBundleTrialForOrganization(organizationId),
+      CompetitorApp.isOrganizationBlacklisted(organization),
+    ]);
 
     return {
       deploymentRequestId: bundle?.id ?? null,
-      isBlacklisted:
-        await CompetitorApp.isOrganizationBlacklisted(organization),
+      isBlacklisted,
       hub_status: bundle?.hub_status ?? null,
       end_date: bundle?.end_date ?? null,
-      ongoingStandaloneTrials: standaloneTrials
-        .map(({ platform_identifier }) => platform_identifier)
-        .filter(
-          (identifier): identifier is PlatformIdentifier => identifier !== null
-        ),
     };
   },
 
@@ -826,12 +814,6 @@ const createBundleDeploymentRequest = async ({
           source: input.source,
           parent_id: null,
         });
-
-      if (isPlaceAvailable) {
-        await DeploymentCancellationApp.cancelOngoingStandaloneTrialsForBundle(
-          bundleDeploymentRequest
-        );
-      }
 
       try {
         const createDeploymentEvent =
