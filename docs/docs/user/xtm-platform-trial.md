@@ -38,9 +38,6 @@ If you do not have the required capability, contact your organization's administ
 > ⚠️ Choose your trial bundle carefully. Once your trial starts, products cannot be added or changed,
 > and no additional trial can be requested for the same organization.
 
-If your organization already has an ongoing OpenCTI or OpenAEV trial, requesting an XTM Platform Trial
-cancels it, and its data is not transferred to the new products.
-
 If Filigran does not have enough capacity to host the trial in the requested region, your request is
 placed on a waiting list and starts as soon as a slot becomes available.
 

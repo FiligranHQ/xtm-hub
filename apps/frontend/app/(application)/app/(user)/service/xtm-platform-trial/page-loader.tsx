@@ -34,10 +34,7 @@ const PageLoader = () => {
 
   const bundle = data?.xtmPlatformBundle ?? null;
 
-  const { view, showLimitations, ongoingStandaloneTrials } =
-    useXtmPlatformTrialPanelView(bundle, {
-      enabled: bundle?.hub_status !== DeploymentRequestHubStatus.Active,
-    });
+  const view = useXtmPlatformTrialPanelView(bundle);
 
   if (isLoading) {
     return null;
@@ -54,10 +51,9 @@ const PageLoader = () => {
             <PrivateXtmPlatformTrialPanel
               bundle={bundle}
               view={view}
-              ongoingStandaloneTrials={ongoingStandaloneTrials}
             />
           }
-          showLimitations={showLimitations}
+          showLimitations={view.kind === 'form'}
         />
       )}
     </>
