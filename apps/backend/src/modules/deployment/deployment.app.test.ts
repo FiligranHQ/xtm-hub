@@ -33,7 +33,6 @@ import {
   DeploymentRequestSource,
   DeploymentRequestUseCase,
   PlatformConfigurationStatus,
-  PlatformContract,
   PlatformIdentifier,
   ReorderDeploymentRequestInQueueDirection,
   ServiceDefinitionIdentifier,
@@ -71,15 +70,12 @@ import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { ServiceGroupDomain } from './group/service-group.domain';
 
 import { MockInstance } from '@vitest/spy';
-import { toGlobalId } from 'graphql-relay/node/node.js';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import { CompetitorId } from '../../model/kanel/public/Competitor';
 import { OrganizationId } from '../../model/kanel/public/Organization';
-import { UserId } from '../../model/kanel/public/User';
 import { PortalContext } from '../../model/portal-context';
-import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
 import {
   DomainRegisteredPlatform,
   RegistrationDomain,
@@ -1008,14 +1004,18 @@ describe('deployment app', () => {
     beforeEach(async () => {
       requestContext.set(requestContextSystemUserManageDeployment);
 
-      initialDeployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+      const {
+        children: [child],
+      } = await TestHelper.deploymentRequest.createBundle({
+        children: [
           {
             hub_status: DeploymentRequestHubStatus.Pending,
             target_state: DeploymentRequestPlatformState.Active,
             actual_state: DeploymentRequestPlatformState.Provisioning,
-          }
-        )) as DeploymentRequest;
+          },
+        ],
+      });
+      initialDeployment = child!;
     });
 
     it('should update a deployment request', async () => {
@@ -1106,18 +1106,21 @@ describe('deployment app', () => {
     ])(
       'with Active status for $platformIdentifier, it should create the expected ServiceGroups with admin user',
       async ({ platformIdentifier, expectedGroups }) => {
-        const platformDeployment =
-          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        const {
+          children: [platformDeployment],
+        } = await TestHelper.deploymentRequest.createBundle({
+          children: [
             {
               platform_identifier: platformIdentifier,
               hub_status: DeploymentRequestHubStatus.Pending,
               target_state: DeploymentRequestPlatformState.Active,
               actual_state: DeploymentRequestPlatformState.Provisioning,
-            }
-          )) as DeploymentRequest;
+            },
+          ],
+        });
 
         const deployment = await DeploymentApp.updateDeploymentRequest({
-          id: platformDeployment.id as DeploymentRequestId,
+          id: platformDeployment!.id,
           actual_state: DeploymentRequestPlatformState.Active,
           start_date: new Date(2025, 1, 3),
           end_date: new Date(2025, 2, 3),
@@ -1189,6 +1192,35 @@ describe('deployment app', () => {
       }
     });
 
+    it('should update a legacy top-level trial when the platform reports it removed', async () => {
+      // Given a finished legacy standalone product trial being removed
+      const legacyTrial =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            hub_status: DeploymentRequestHubStatus.Expired,
+            target_state: DeploymentRequestPlatformState.Removed,
+            actual_state: DeploymentRequestPlatformState.Removing,
+          }
+        );
+
+      // When the SaaS manager reports it removed
+      await DeploymentApp.updateDeploymentRequest({
+        id: legacyTrial.id,
+        actual_state: DeploymentRequestPlatformState.Removed,
+      });
+
+      // Then the row is updated
+      const dbDeploymentRequest =
+        await DeploymentRequestDomain.loadDeploymentRequestBy({
+          id: legacyTrial.id,
+        });
+      expect(dbDeploymentRequest).toMatchObject({
+        hub_status: DeploymentRequestHubStatus.Expired,
+        target_state: DeploymentRequestPlatformState.Removed,
+        actual_state: DeploymentRequestPlatformState.Removed,
+      });
+    });
+
     describe('redeploy after removal', () => {
       it.each`
         actualState                                | description
@@ -1197,23 +1229,26 @@ describe('deployment app', () => {
       `(
         'should allow going back to provisioning from $actualState when target state is active ($description)',
         async ({ actualState }) => {
-          const removedDeployment =
-            (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          const {
+            children: [removedDeployment],
+          } = await TestHelper.deploymentRequest.createBundle({
+            children: [
               {
                 hub_status: DeploymentRequestHubStatus.Provisioning,
                 target_state: DeploymentRequestPlatformState.Active,
                 actual_state: actualState,
-              }
-            )) as DeploymentRequest;
+              },
+            ],
+          });
 
           await DeploymentApp.updateDeploymentRequest({
-            id: removedDeployment.id as DeploymentRequestId,
+            id: removedDeployment!.id,
             actual_state: DeploymentRequestPlatformState.Provisioning,
           });
 
           const dbDeploymentRequest =
             await DeploymentRequestDomain.loadDeploymentRequestBy({
-              id: removedDeployment.id as DeploymentRequestId,
+              id: removedDeployment!.id,
             });
 
           expect(dbDeploymentRequest).toMatchObject({
@@ -1230,17 +1265,20 @@ describe('deployment app', () => {
       `(
         'should reject going back to provisioning from $actualState when target state is removed ($description)',
         async ({ actualState }) => {
-          const removedDeployment =
-            (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          const {
+            children: [removedDeployment],
+          } = await TestHelper.deploymentRequest.createBundle({
+            children: [
               {
                 hub_status: DeploymentRequestHubStatus.Cancelled,
                 target_state: DeploymentRequestPlatformState.Removed,
                 actual_state: actualState,
-              }
-            )) as DeploymentRequest;
+              },
+            ],
+          });
 
           const call = DeploymentApp.updateDeploymentRequest({
-            id: removedDeployment.id as DeploymentRequestId,
+            id: removedDeployment!.id,
             actual_state: DeploymentRequestPlatformState.Provisioning,
           });
 
@@ -1251,14 +1289,17 @@ describe('deployment app', () => {
       );
 
       it('should not overwrite hub_status when the request is cancelled concurrently after validation but before the locked write', async () => {
-        const removedDeployment =
-          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        const {
+          children: [removedDeployment],
+        } = await TestHelper.deploymentRequest.createBundle({
+          children: [
             {
               hub_status: DeploymentRequestHubStatus.Provisioning,
               target_state: DeploymentRequestPlatformState.Active,
               actual_state: DeploymentRequestPlatformState.Removed,
-            }
-          );
+            },
+          ],
+        });
 
         const originalUpdate =
           DeploymentRequestDomain.updateDeploymentRequestByIdIfTargetState;
@@ -1277,13 +1318,13 @@ describe('deployment app', () => {
 
         try {
           await DeploymentApp.updateDeploymentRequest({
-            id: removedDeployment.id as DeploymentRequestId,
+            id: removedDeployment!.id,
             actual_state: DeploymentRequestPlatformState.Provisioning,
           });
 
           const dbDeploymentRequest =
             await DeploymentRequestDomain.loadDeploymentRequestBy({
-              id: removedDeployment.id as DeploymentRequestId,
+              id: removedDeployment!.id,
             });
 
           expect(dbDeploymentRequest).toMatchObject({
@@ -1339,7 +1380,7 @@ describe('deployment app', () => {
       }
     );
     describe('telemetry', () => {
-      it('should send a telemetry event', async () => {
+      it('should send a telemetry event for the bundle, then for the product', async () => {
         vi.useFakeTimers();
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
@@ -1356,7 +1397,24 @@ describe('deployment app', () => {
           failure_reason: 'not failed',
         });
 
-        expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
+        expect(telemetrySpy).toHaveBeenCalledTimes(2);
+        expect(telemetrySpy).toHaveBeenNthCalledWith(1, {
+          '@timestamp': '2025-02-03T13:12:15.000Z',
+          event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
+          organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
+          organization_name: TEST_ORGANIZATIONS.FILIGRAN.NAME,
+          organization_type: TelemetryOrganizationType.PROFESSIONAL,
+          source: TelemetrySource.XTMHUB,
+          user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.ID,
+          deployment_id: initialDeployment.parent_id,
+          deployment_type: DeploymentRequestDeploymentType.Bundle,
+          platform_id: null,
+          start_date,
+          end_date,
+          status: DeploymentRequestHubStatus.Pending,
+          parent_id: undefined,
+        });
+        expect(telemetrySpy).toHaveBeenNthCalledWith(2, {
           '@timestamp': '2025-02-03T13:12:15.000Z',
           event_type: TelemetryEventType.UPDATE_DEPLOYMENT,
           organization_id: TEST_ORGANIZATIONS.FILIGRAN.ID,
@@ -1370,7 +1428,7 @@ describe('deployment app', () => {
           start_date,
           end_date,
           status: DeploymentRequestHubStatus.Active,
-          parent_id: undefined,
+          parent_id: initialDeployment.parent_id,
         });
       });
 
@@ -1411,86 +1469,6 @@ describe('deployment app', () => {
         expect(deployment).toBeDefined();
       });
     });
-    describe('mail', () => {
-      it('should send a mail in case deployment request is in provisioning (only first time)', async () => {
-        await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as DeploymentRequestId,
-          actual_state: DeploymentRequestPlatformState.Provisioning,
-        });
-
-        expect(mockSendMail).toHaveBeenCalledWith({
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'free_trial_provisioning',
-          params: {
-            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-            platformIdentifier: PlatformIdentifier.Opencti,
-          },
-        });
-
-        mockSendMail.mockClear();
-
-        await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as DeploymentRequestId,
-          actual_state: DeploymentRequestPlatformState.Provisioning,
-        });
-
-        expect(mockSendMail).not.toHaveBeenCalled();
-      });
-
-      it('should send a mail in case deployment request is in active (only first time)', async () => {
-        vi.spyOn(
-          PlatformConfigurationDomain,
-          'loadConfigurationByPlatform'
-        ).mockResolvedValue({
-          service_instance_id: uuidv4() as ServiceInstanceId,
-          registerer_id: uuidv4() as UserId,
-          platform_id: uuidv4(),
-          tenant_id: null,
-          tenant_name: null,
-          platform_url: 'http://example.com',
-          platform_title: 'OpenCTI',
-          platform_version: '1.0.0',
-          platform_contract: PlatformContract.Trial,
-          token: 'token',
-          status: PlatformConfigurationStatus.Active,
-          last_connectivity_check: new Date(),
-        });
-
-        await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as DeploymentRequestId,
-          start_date: new Date(2025, 12, 1),
-          end_date: new Date(2026, 1, 1),
-          actual_state: DeploymentRequestPlatformState.Active,
-          platform_id: uuidv4(),
-        });
-
-        expect(mockSendMail).toHaveBeenCalledWith({
-          to: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-          template: 'free_trial_registered',
-          params: {
-            firstName: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-            platformUrl: 'http://example.com',
-            platformIdentifier: PlatformIdentifier.Opencti,
-            globalServiceInstanceId: toGlobalId(
-              'ServiceInstance',
-              initialDeployment.service_instance_id
-            ),
-          },
-        });
-
-        mockSendMail.mockClear();
-
-        await DeploymentApp.updateDeploymentRequest({
-          id: initialDeployment?.id as DeploymentRequestId,
-          start_date: new Date(2025, 12, 1),
-          end_date: new Date(2026, 1, 1),
-          actual_state: DeploymentRequestPlatformState.Active,
-        });
-
-        expect(mockSendMail).not.toHaveBeenCalled();
-      });
-    });
-
     describe('bundle updates', () => {
       it('should update actual_state and platform_id only, ignoring bundle-unsupported fields', async () => {
         const bundle =
@@ -1836,6 +1814,31 @@ describe('deployment app', () => {
           DeploymentRequestHubStatus.Pending
         );
       });
+
+      it.each`
+        actualState
+        ${DeploymentRequestPlatformState.Provisioning}
+        ${DeploymentRequestPlatformState.Active}
+      `(
+        'should not send the mail again when the bundle is reported $actualState twice',
+        async ({ actualState }) => {
+          // Given a bundle that already reached the reported state
+          await DeploymentApp.updateDeploymentRequest({
+            id: bundle.id as DeploymentRequestId,
+            actual_state: actualState,
+          });
+          mockSendMail.mockClear();
+
+          // When the same state is reported again
+          await DeploymentApp.updateDeploymentRequest({
+            id: bundle.id as DeploymentRequestId,
+            actual_state: actualState,
+          });
+
+          // Then no mail is sent
+          expect(mockSendMail).not.toHaveBeenCalled();
+        }
+      );
     });
   });
   describe('loadPlatformTrialStatus', () => {
@@ -2088,14 +2091,14 @@ describe('deployment app', () => {
         counts_in_orga_quota,
         target_state,
       }) => {
-        // Given a deployment request in the provided hub/actual state
-        const initialDeployment =
-          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
+        // Given a bundle in the provided hub/actual state
+        const { bundle: initialDeployment } =
+          await TestHelper.deploymentRequest.createBundle({
+            bundle: {
               hub_status,
               actual_state,
-            }
-          )) as DeploymentRequest;
+            },
+          });
         const cancellationReason = isAdmin ? undefined : 'my reason';
 
         // When cancelling the deployment request
@@ -2152,10 +2155,8 @@ describe('deployment app', () => {
     });
 
     it('should throw if user is not in organization and not isAdmin', async () => {
-      const deployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {}
-        )) as DeploymentRequest;
+      const { bundle: deployment } =
+        await TestHelper.deploymentRequest.createBundle();
       requestContext.set(requestContextAdminSecondOrga);
 
       const call = DeploymentApp.cancelDeploymentRequest(deployment.id, false);
@@ -2166,10 +2167,8 @@ describe('deployment app', () => {
     });
 
     it('should not throw if user is not in organization and isAdmin', async () => {
-      const deployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {}
-        )) as DeploymentRequest;
+      const { bundle: deployment } =
+        await TestHelper.deploymentRequest.createBundle();
       requestContext.set(requestContextAdminSecondOrga);
 
       const response = await DeploymentApp.cancelDeploymentRequest(
@@ -2180,10 +2179,8 @@ describe('deployment app', () => {
       expect(response).toBeTruthy();
     });
     it('should send a telemetry event', async () => {
-      const deployment =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {}
-        );
+      const { bundle: deployment } =
+        await TestHelper.deploymentRequest.createBundle();
       vi.useFakeTimers();
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
@@ -2203,7 +2200,7 @@ describe('deployment app', () => {
         source: TelemetrySource.XTMHUB,
         user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
         deployment_id: deployment.id,
-        deployment_type: DeploymentRequestDeploymentType.Trial,
+        deployment_type: DeploymentRequestDeploymentType.Bundle,
         status: DeploymentRequestHubStatus.Cancelled,
         start_date: null,
         end_date: null,
@@ -2262,134 +2259,68 @@ describe('deployment app', () => {
         expect(freePlaceSpy).not.toHaveBeenCalled();
       }
     );
-    it('should send a mail to the trial requester', async () => {
-      const deployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            user_requester_id:
-              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-          }
-        )) as DeploymentRequest;
-
-      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
-
-      expect(mockSendMail).toHaveBeenCalledWith({
-        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
-        template: 'free_trial_cancelled',
-        params: {
-          firstName: '',
-          platformIdentifier: PlatformIdentifier.Opencti,
-        },
-      });
-    });
-
     it.each`
-      platformIdentifier            | description
-      ${PlatformIdentifier.Opencti} | ${'a standalone OpenCTI trial'}
-      ${PlatformIdentifier.Openaev} | ${'a standalone OpenAEV trial'}
+      isAdmin  | description
+      ${false} | ${'as a customer'}
+      ${true}  | ${'as a platform admin'}
     `(
-      'should attempt to delete the Auth0 audience for $description',
-      async ({ platformIdentifier }) => {
-        // Given a deployment request that should have an Auth0 audience
-        const deleteAudienceSpy = vi.spyOn(
-          auth0ClientMock,
-          'deleteAudienceAPI'
-        );
-        const deployment =
-          (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
-              hub_status: DeploymentRequestHubStatus.Active,
-              actual_state: DeploymentRequestPlatformState.Active,
-              platform_id: uuidv4(),
-              platform_identifier: platformIdentifier,
-            }
-          )) as DeploymentRequest;
+      'should not find a legacy top-level trial to cancel $description',
+      async ({ isAdmin }) => {
+        // Given a legacy standalone product trial
+        const legacyTrial =
+          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+            { hub_status: DeploymentRequestHubStatus.Expired }
+          );
 
-        // When cancelling the deployment request
-        await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
-
-        // Then the Auth0 audience deletion is attempted
-        expect(deleteAudienceSpy).toHaveBeenCalledWith(
-          deployment.organization_requester_id,
-          deployment.platform_id
+        // When cancelling it
+        const call = DeploymentApp.cancelDeploymentRequest(
+          legacyTrial.id,
+          isAdmin,
+          'my reason'
         );
+
+        // Then it is not found and stays untouched
+        await expect(call).rejects.toThrow(
+          NotFoundErrorCode.DeploymentRequestNotFound
+        );
+        await TestHelper.deploymentRequest.assertProperties(legacyTrial.id, {
+          hub_status: DeploymentRequestHubStatus.Expired,
+          cancellation_date: null,
+          cancellation_reason: null,
+        });
       }
     );
-
-    it('should not attempt to delete the Auth0 audience for a standalone XtmOne trial', async () => {
-      // Given a standalone XtmOne trial, which never has an Auth0 audience
-      const deleteAudienceSpy = vi.spyOn(auth0ClientMock, 'deleteAudienceAPI');
-      const deployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            hub_status: DeploymentRequestHubStatus.Active,
-            actual_state: DeploymentRequestPlatformState.Active,
-            platform_id: uuidv4(),
-            platform_identifier: PlatformIdentifier.Xtmone,
-          }
-        )) as DeploymentRequest;
-
-      // When cancelling the deployment request
-      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
-
-      // Then the Auth0 audience deletion is never attempted
-      expect(deleteAudienceSpy).not.toHaveBeenCalled();
-    });
-
     it('should log an error when deleting a missing OpenCTI audience (404)', async () => {
       // Given a deletion of the Auth0 audience that fails with a 404
       vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
         statusCode: 404,
       });
       const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
-      const deployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+      const {
+        bundle,
+        children: [childOpencti],
+      } = await TestHelper.deploymentRequest.createBundle({
+        bundle: {
+          hub_status: DeploymentRequestHubStatus.Active,
+          actual_state: DeploymentRequestPlatformState.Active,
+        },
+        children: [
           {
             hub_status: DeploymentRequestHubStatus.Active,
             actual_state: DeploymentRequestPlatformState.Active,
             platform_id: uuidv4(),
             platform_identifier: PlatformIdentifier.Opencti,
-          }
-        )) as DeploymentRequest;
+          },
+        ],
+      });
 
-      // When cancelling the deployment request
-      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
+      // When cancelling the bundle
+      await DeploymentApp.cancelDeploymentRequest(bundle.id, true);
 
       // Then it logs an error
       expect(errorSpy).toHaveBeenCalledWith(
         'Unable to delete audience',
-        expect.objectContaining({ deploymentRequestId: deployment.id })
-      );
-    });
-
-    it('should log a warning instead of an error when deleting a missing OpenAEV audience (404)', async () => {
-      // Given a deletion of the Auth0 audience that fails with a 404
-      vi.spyOn(auth0ClientMock, 'deleteAudienceAPI').mockRejectedValue({
-        statusCode: 404,
-      });
-      const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
-      const warnSpy = vi.spyOn(logApp, 'warn').mockImplementation(() => {});
-      const deployment =
-        (await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            hub_status: DeploymentRequestHubStatus.Active,
-            actual_state: DeploymentRequestPlatformState.Active,
-            platform_id: uuidv4(),
-            platform_identifier: PlatformIdentifier.Openaev,
-          }
-        )) as DeploymentRequest;
-
-      // When cancelling the deployment request
-      await DeploymentApp.cancelDeploymentRequest(deployment.id, true);
-
-      // Then it logs a warning, not an error
-      expect(warnSpy).toHaveBeenCalledWith(
-        'No Auth0 audience to delete for OpenAEV trial',
-        expect.objectContaining({ deploymentRequestId: deployment.id })
-      );
-      expect(errorSpy).not.toHaveBeenCalledWith(
-        'Unable to delete audience',
-        expect.anything()
+        expect.objectContaining({ deploymentRequestId: childOpencti!.id })
       );
     });
 
@@ -2400,25 +2331,22 @@ describe('deployment app', () => {
         await resetQuotaAvailabilities();
       });
 
-      const createStandaloneTrial = (hubStatus: DeploymentRequestHubStatus) =>
-        TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription({
-          organization_requester_id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-          region: QUOTA_REGION,
-          hub_status: hubStatus,
+      const createBundleInQuota = async (
+        hubStatus: DeploymentRequestHubStatus
+      ) => {
+        const { bundle } = await TestHelper.deploymentRequest.createBundle({
+          bundle: {
+            organization_requester_id:
+              TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+            region: QUOTA_REGION,
+            hub_status: hubStatus,
+          },
         });
+        return bundle;
+      };
 
-      it('should give the bundle place back when a standalone trial is cancelled', async () => {
-        const request = await createStandaloneTrial(
-          DeploymentRequestHubStatus.Active
-        );
-
-        await DeploymentApp.cancelDeploymentRequest(request.id, true);
-
-        expect(await loadAvailability(bundleQuotaFilter)).toBe(6);
-      });
-
-      it('should give back nothing when a queued standalone trial is cancelled', async () => {
-        const queued = await createStandaloneTrial(
+      it('should give back nothing when a queued bundle is cancelled', async () => {
+        const queued = await createBundleInQuota(
           DeploymentRequestHubStatus.Queued
         );
 
@@ -2427,11 +2355,11 @@ describe('deployment app', () => {
         expect(await loadAvailability(bundleQuotaFilter)).toBe(5);
       });
 
-      it('should promote a queued bundle and its children when a standalone trial is cancelled', async () => {
+      it('should promote a queued bundle and its children when an active bundle is cancelled', async () => {
         await TestHelper.deploymentRequestQuota.update(bundleQuotaFilter, {
           availability: 0,
         });
-        const standalone = await createStandaloneTrial(
+        const activeBundle = await createBundleInQuota(
           DeploymentRequestHubStatus.Active
         );
 
@@ -2450,7 +2378,7 @@ describe('deployment app', () => {
         expect(bundle.hub_status).toBe(DeploymentRequestHubStatus.Queued);
 
         requestContext.set(requestContextRegistererUserSecondOrga);
-        await DeploymentApp.cancelDeploymentRequest(standalone.id, true);
+        await DeploymentApp.cancelDeploymentRequest(activeBundle.id, true);
 
         expect(await loadAvailability(bundleQuotaFilter)).toBe(0);
         await TestHelper.deploymentRequest.assertProperties(
@@ -2464,44 +2392,6 @@ describe('deployment app', () => {
         for (const child of children) {
           expect(child.hub_status).toBe(DeploymentRequestHubStatus.Pending);
         }
-      });
-
-      it('should promote the queued bundle rather than the queued trial', async () => {
-        await TestHelper.deploymentRequestQuota.update(bundleQuotaFilter, {
-          availability: 0,
-        });
-        const standalone = await createStandaloneTrial(
-          DeploymentRequestHubStatus.Active
-        );
-        const queuedTrial = await createStandaloneTrial(
-          DeploymentRequestHubStatus.Queued
-        );
-
-        requestContext.set(requestContextAdminUser);
-        const queuedBundle = await DeploymentApp.createDeploymentRequest({
-          ...TEST_DEPLOYMENT,
-          region: QUOTA_REGION,
-          products: [PlatformIdentifier.Xtmone, PlatformIdentifier.Openaev],
-          use_cases_by_product: [
-            {
-              platform_identifier: PlatformIdentifier.Openaev,
-              use_case: DeploymentRequestUseCase.ThreatHunting,
-            },
-          ],
-        });
-        expect(queuedBundle.hub_status).toBe(DeploymentRequestHubStatus.Queued);
-
-        requestContext.set(requestContextRegistererUserSecondOrga);
-        await DeploymentApp.cancelDeploymentRequest(standalone.id, true);
-
-        await TestHelper.deploymentRequest.assertProperties(
-          queuedBundle.id as DeploymentRequestId,
-          { hub_status: DeploymentRequestHubStatus.Pending }
-        );
-        await TestHelper.deploymentRequest.assertProperties(queuedTrial.id, {
-          hub_status: DeploymentRequestHubStatus.Queued,
-        });
-        expect(await loadAvailability(bundleQuotaFilter)).toBe(0);
       });
     });
 
@@ -3140,24 +3030,24 @@ describe('deployment app', () => {
       const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
       vi.setSystemTime(date);
 
-      const expiredTrial =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
+      const { bundle: expiredTrial } =
+        await TestHelper.deploymentRequest.createBundle({
+          bundle: {
             hub_status: DeploymentRequestHubStatus.Active,
             target_state: DeploymentRequestPlatformState.Active,
             actual_state: DeploymentRequestPlatformState.Active,
             end_date: new Date(Date.UTC(2025, 1, 1)),
-          }
-        );
-      const nonExpiredTrial =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
+          },
+        });
+      const { bundle: nonExpiredTrial } =
+        await TestHelper.deploymentRequest.createBundle({
+          bundle: {
             hub_status: DeploymentRequestHubStatus.Active,
             target_state: DeploymentRequestPlatformState.Active,
             actual_state: DeploymentRequestPlatformState.Active,
             end_date: new Date(Date.UTC(2025, 1, 5)),
-          }
-        );
+          },
+        });
 
       await DeploymentApp.expireTrials();
 
@@ -3201,14 +3091,14 @@ describe('deployment app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
         const expiredDate = new Date(Date.UTC(2025, 1, 1));
-        const trial =
-          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
+        const { bundle: trial } =
+          await TestHelper.deploymentRequest.createBundle({
+            bundle: {
               hub_status: hub_status,
               target_state: target_state,
               end_date: expiredDate,
-            }
-          );
+            },
+          });
 
         // When expiring trials
         await DeploymentApp.expireTrials();
@@ -3225,34 +3115,6 @@ describe('deployment app', () => {
         });
       }
     );
-    it('should send a mail to the requester', async () => {
-      vi.useFakeTimers();
-      const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
-      vi.setSystemTime(date);
-      const expiredDate = new Date(Date.UTC(2025, 1, 1));
-
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        {
-          hub_status: DeploymentRequestHubStatus.Active,
-          target_state: DeploymentRequestPlatformState.Active,
-          end_date: expiredDate,
-          user_requester_id:
-            TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
-        }
-      );
-
-      await DeploymentApp.expireTrials();
-
-      expect(mockSendMail).toHaveBeenCalledWith({
-        to: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
-        template: 'free_trial_expired',
-        params: {
-          firstName: '',
-          platformIdentifier: PlatformIdentifier.Opencti,
-        },
-      });
-    });
-
     it('should send a single expiration mail for a bundle and none for its products', async () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date(Date.UTC(2025, 1, 3, 13, 12, 15)));
@@ -3307,9 +3169,9 @@ describe('deployment app', () => {
       const start_date = new Date(2024, 12, 1);
       const end_date = new Date(2025, 1, 1);
 
-      const trial =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
+      const { bundle: trial } = await TestHelper.deploymentRequest.createBundle(
+        {
+          bundle: {
             hub_status: DeploymentRequestHubStatus.Active,
             target_state: DeploymentRequestPlatformState.Active,
             start_date,
@@ -3318,8 +3180,9 @@ describe('deployment app', () => {
               TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
             organization_requester_id:
               TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-          }
-        );
+          },
+        }
+      );
 
       await DeploymentApp.expireTrials();
 
@@ -3331,8 +3194,8 @@ describe('deployment app', () => {
         organization_type: TelemetryOrganizationType.PROFESSIONAL,
         source: TelemetrySource.XTMHUB,
         user_id: SYSTEM_USER_UUID,
-        deployment_id: trial?.id,
-        deployment_type: DeploymentRequestDeploymentType.Trial,
+        deployment_id: trial.id,
+        deployment_type: DeploymentRequestDeploymentType.Bundle,
         platform_id: null,
         start_date,
         end_date,
@@ -3392,24 +3255,6 @@ describe('deployment app', () => {
         }
       });
 
-      it('should not expire a standalone trial that is still running', async () => {
-        const ongoingStandalone =
-          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
-              hub_status: DeploymentRequestHubStatus.Active,
-              actual_state: DeploymentRequestPlatformState.Active,
-              end_date: new Date(Date.UTC(2999, 0, 1)),
-            }
-          );
-
-        await DeploymentApp.expireTrials();
-
-        await TestHelper.deploymentRequest.assertProperties(
-          ongoingStandalone.id,
-          { hub_status: DeploymentRequestHubStatus.Active }
-        );
-      });
-
       it('should leave the whole bundle untouched when one row fails to be expired', async () => {
         const originalUpdate =
           DeploymentRequestDomain.updateDeploymentRequestById;
@@ -3462,14 +3307,14 @@ describe('deployment app', () => {
         await resetQuotaAvailabilities();
       });
 
-      it('should give the bundle place back when a standalone trial is expired', async () => {
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
+      it('should give the bundle place back when a bundle is expired', async () => {
+        await TestHelper.deploymentRequest.createBundle({
+          bundle: {
             region: QUOTA_REGION,
             hub_status: DeploymentRequestHubStatus.Active,
             end_date: new Date(Date.UTC(2025, 0, 1)),
-          }
-        );
+          },
+        });
 
         await DeploymentApp.expireTrials();
 

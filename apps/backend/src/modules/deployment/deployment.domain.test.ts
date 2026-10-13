@@ -16,10 +16,7 @@ import {
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import { UserId } from '../../model/kanel/public/User';
 import { auth0Client } from '../../thirdparty/auth0/client';
-import {
-  DeploymentRequestDomain,
-  shouldDeleteDeploymentRequestAudience,
-} from './deployment.domain';
+import { DeploymentRequestDomain } from './deployment.domain';
 import { ServiceGroupDomain } from './group/service-group.domain';
 import { bundleQuotaKey, QuotaKey } from './quota/deployment.quota.domain';
 
@@ -339,23 +336,6 @@ describe('deploymentRequestDomain', () => {
       ]);
     });
 
-    it('should return the standalone trial alone', async () => {
-      const standalone =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {}
-        );
-      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-        { platform_identifier: PlatformIdentifier.Openaev }
-      );
-
-      const family =
-        await DeploymentRequestDomain.loadDeploymentRequestWithChildren(
-          standalone
-        );
-
-      expect(family).toEqual([standalone]);
-    });
-
     it('should only return children matching the given hub status', async () => {
       const {
         bundle,
@@ -384,54 +364,40 @@ describe('deploymentRequestDomain', () => {
     });
   });
 
-  describe('loadTrialsToExpire', () => {
+  describe('loadBundlesToExpire', () => {
     afterEach(async () => {
       await TestHelper.deploymentRequest.deleteAllWithServiceInstanceAndSubscription();
     });
 
-    it('should return expired bundles and standalone trials, but not bundle children', async () => {
+    it('should return expired bundles, but not bundle children', async () => {
       const expiredDate = new Date(Date.UTC(2020, 0, 1));
       const futureDate = new Date(Date.UTC(2999, 0, 1));
 
-      const {
-        bundle: expiredBundle,
-        children: [expiredChild],
-      } = await TestHelper.deploymentRequest.createBundle({
-        bundle: {
-          hub_status: DeploymentRequestHubStatus.Active,
-          end_date: expiredDate,
-        },
-        children: [
-          {
+      const { bundle: expiredBundle } =
+        await TestHelper.deploymentRequest.createBundle({
+          bundle: {
             hub_status: DeploymentRequestHubStatus.Active,
             end_date: expiredDate,
           },
-        ],
-      });
-      const expiredStandalone =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            hub_status: DeploymentRequestHubStatus.Active,
-            end_date: expiredDate,
-          }
-        );
-      const ongoingBundle =
-        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-          {
-            type: DeploymentRequestDeploymentType.Bundle,
-            platform_identifier: null,
-            hub_status: DeploymentRequestHubStatus.Active,
-            end_date: futureDate,
-          }
-        );
-
-      const toExpire = await DeploymentRequestDomain.loadTrialsToExpire();
-
-      expect(toExpire.map(({ id }) => id).sort()).toEqual(
-        [expiredBundle.id, expiredStandalone.id].sort()
+          children: [
+            {
+              hub_status: DeploymentRequestHubStatus.Active,
+              end_date: expiredDate,
+            },
+          ],
+        });
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          type: DeploymentRequestDeploymentType.Bundle,
+          platform_identifier: null,
+          hub_status: DeploymentRequestHubStatus.Active,
+          end_date: futureDate,
+        }
       );
-      expect(toExpire.map(({ id }) => id)).not.toContain(expiredChild.id);
-      expect(toExpire.map(({ id }) => id)).not.toContain(ongoingBundle.id);
+
+      const toExpire = await DeploymentRequestDomain.loadBundlesToExpire();
+
+      expect(toExpire.map(({ id }) => id)).toEqual([expiredBundle.id]);
     });
   });
 
@@ -1843,67 +1809,5 @@ describe('deploymentRequestDomain', () => {
         }
       );
     });
-  });
-
-  describe('shouldDeleteDeploymentRequestAudience', () => {
-    it('should return false for a bundle', () => {
-      expect(
-        shouldDeleteDeploymentRequestAudience({
-          type: DeploymentRequestDeploymentType.Bundle,
-          platform_identifier: null,
-          parent_id: null,
-        })
-      ).toBe(false);
-    });
-
-    it('should return false for an xtmone trial', () => {
-      expect(
-        shouldDeleteDeploymentRequestAudience({
-          type: DeploymentRequestDeploymentType.Trial,
-          platform_identifier: PlatformIdentifier.Xtmone,
-          parent_id: null,
-        })
-      ).toBe(false);
-    });
-
-    it('should return false for an openaev bundle child', () => {
-      expect(
-        shouldDeleteDeploymentRequestAudience({
-          type: DeploymentRequestDeploymentType.Trial,
-          platform_identifier: PlatformIdentifier.Openaev,
-          parent_id: uuidv4() as DeploymentRequestId,
-        })
-      ).toBe(false);
-    });
-
-    it('should return true for a standalone openaev trial', () => {
-      expect(
-        shouldDeleteDeploymentRequestAudience({
-          type: DeploymentRequestDeploymentType.Trial,
-          platform_identifier: PlatformIdentifier.Openaev,
-          parent_id: null,
-        })
-      ).toBe(true);
-    });
-
-    it.each`
-      description
-      ${'standalone'}
-      ${'bundle child'}
-    `(
-      'should return true for an opencti $description trial',
-      ({ description }) => {
-        expect(
-          shouldDeleteDeploymentRequestAudience({
-            type: DeploymentRequestDeploymentType.Trial,
-            platform_identifier: PlatformIdentifier.Opencti,
-            parent_id:
-              description === 'bundle child'
-                ? (uuidv4() as DeploymentRequestId)
-                : null,
-          })
-        ).toBe(true);
-      }
-    );
   });
 });
