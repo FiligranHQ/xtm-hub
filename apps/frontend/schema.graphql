@@ -1419,11 +1419,11 @@ input RegisteredPlatformInput {
 
 type SaasPlatformMetadata {
   hostname: String!
-  subscribedPlan: String!
-  startDate: Date!
-  endDate: Date!
-  regionalArea: String!
-  platformVersion: String!
+  plan: String!
+  start_date: Date!
+  end_date: Date!
+  region: String!
+  version: String!
 }
 
 input AutoRegisterPlatformInput {

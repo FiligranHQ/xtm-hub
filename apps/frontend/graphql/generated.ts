@@ -2547,12 +2547,12 @@ export type SsoGroupRolePortal = {
 
 export type SaasPlatformMetadata = {
   __typename?: 'SaasPlatformMetadata';
-  endDate: Scalars['Date']['output'];
+  end_date: Scalars['Date']['output'];
   hostname: Scalars['String']['output'];
-  platformVersion: Scalars['String']['output'];
-  regionalArea: Scalars['String']['output'];
-  startDate: Scalars['Date']['output'];
-  subscribedPlan: Scalars['String']['output'];
+  plan: Scalars['String']['output'];
+  region: Scalars['String']['output'];
+  start_date: Scalars['Date']['output'];
+  version: Scalars['String']['output'];
 };
 
 export type SendTelemetryMutation = {
@@ -3649,7 +3649,7 @@ export type RegisteredSaasPlatformMetadataQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string, subscribedPlan: string, startDate: any, endDate: any, regionalArea: string, platformVersion: string } | null };
+export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string, plan: string, start_date: any, end_date: any, region: string, version: string } | null };
 
 export type AddRolePortalMutationVariables = Exact<{
   input: AddRolePortalInput;
@@ -5898,11 +5898,11 @@ export const RegisteredSaasPlatformMetadataDocument = `
     query RegisteredSaasPlatformMetadata($platformId: String!) {
   registeredSaasPlatformMetadata(platformId: $platformId) {
     hostname
-    subscribedPlan
-    startDate
-    endDate
-    regionalArea
-    platformVersion
+    plan
+    start_date
+    end_date
+    region
+    version
   }
 }
     `;

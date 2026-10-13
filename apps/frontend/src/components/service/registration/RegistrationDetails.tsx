@@ -62,7 +62,6 @@ export const RegistrationDetails = ({
     platform?.deployment_request?.hub_status ===
       DeploymentRequestHubStatus.Active;
 
-  console.log('platform', platform);
   return (
     <section className="flex justify-between p-xl">
       <ul className="text-sm flex flex-col gap-l">

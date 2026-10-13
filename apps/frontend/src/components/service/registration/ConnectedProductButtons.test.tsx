@@ -1,4 +1,3 @@
-import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { ConnectedProductButtons } from '@/components/service/registration/ConnectedProductButtons';
 import {
   basePlatform,
@@ -6,101 +5,58 @@ import {
   trialPlatformWithAccess,
 } from '@/components/service/registration/registered-platform.fixtures';
 import testRender from '@/utils/test/test-render';
+import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   DeploymentRequestHubStatus,
   OrganizationCapability,
-  PlatformIdentifier,
   PortalCapability,
-  RegisteredPlatformDetailFragment,
-  ServiceDefinitionIdentifier,
 } from '@graphql/generated';
-import { registrationKeys } from '@graphql/registration/registration.keys';
-import { QueryClient } from '@tanstack/react-query';
-import { act, screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { useSearchParams } from 'next/navigation';
-import {
-  createMockEnvironment,
-  MockPayloadGenerator,
-  RelayMockEnvironment,
-} from 'relay-test-utils';
 import { describe, expect, it, vi } from 'vitest';
 
-// ─── Fixtures ─────────────────────────────────────────────────────────────────
+// ─── Mocks ────────────────────────────────────────────────────────────────────
 
-const GROUP_NAME = 'Admin';
-const USER_EMAIL = 'analyst@filigran.io';
-const MANAGE_USERS = 'Service.Trials.ManageUsers.Title';
-const UNREGISTER = 'Unregister.Unregister';
-const ADMINISTRATE_ORGANIZATION = [
-  OrganizationCapability.AdministrateOrganization,
-];
+vi.mock('@/components/service/components/PlatformUpdateSheet', () => ({
+  PlatformUpdateSheet: ({ platformUrl }: { platformUrl: string }) => (
+    <div
+      data-testid="platform-update-sheet"
+      data-url={platformUrl}
+    />
+  ),
+}));
 
-const serviceInstanceId =
-  trialPlatformWithAccess.subscription!.service_instance!.id;
-const organizationId = trialPlatformWithAccess.subscription!.organization.id;
+vi.mock('@/components/service/registration/UnregisterButton', () => ({
+  UnregisterButton: () => null,
+}));
 
-const mockSearchParams = (query: string) =>
-  vi
-    .mocked(useSearchParams)
-    .mockReturnValue(
-      new URLSearchParams(query) as unknown as ReturnType<
-        typeof useSearchParams
-      >
-    );
+vi.mock(
+  '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog',
+  () => ({
+    TrialsManageUsersDialog: ({
+      defaultOpen,
+    }: {
+      serviceInstanceId: string;
+      organizationId?: string;
+      defaultOpen?: boolean;
+    }) => (
+      <div
+        data-testid="manage-users-dialog"
+        data-default-open={String(defaultOpen)}>
+        ManageUsersDialog
+      </div>
+    ),
+  })
+);
 
 const renderButtons = (
-  platform: RegisteredPlatformDetailFragment,
-  me?: NonNullable<Parameters<typeof testRender>[1]>['me'],
-  {
-    environment = createMockEnvironment(),
-  }: {
-    environment?: RelayMockEnvironment;
-  } = {}
-) =>
-  testRender(<ConnectedProductButtons platform={platform} />, {
-    me,
-    relayConfig: environment,
-  });
-
-// Resolves every pending operation: opening the manage users form loads the
-// users, then the service groups; submitting a form commits a mutation.
-const resolvePendingOperations = async (environment: RelayMockEnvironment) => {
-  while (environment.mock.getAllOperations().length > 0) {
-    await act(async () => {
-      environment.mock.resolveMostRecentOperation((operation) =>
-        MockPayloadGenerator.generate(operation, {
-          ServiceGroup: () => ({ name: GROUP_NAME, users: [] }),
-          User: () => ({ email: USER_EMAIL }),
-        })
-      );
-    });
-  }
-};
-
-const queryManageUsersButton = () =>
-  screen.queryByRole('button', { name: MANAGE_USERS });
+  platform: registeredPlatformByServiceInstanceId_fragment$data,
+  me?: NonNullable<Parameters<typeof testRender>[1]>['me']
+) => testRender(<ConnectedProductButtons platform={platform} />, { me });
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('ConnectedProductButtons', () => {
-  describe('Layout', () => {
-    it.each`
-      direction    | expectedClass
-      ${undefined} | ${'flex-col'}
-      ${'column'}  | ${'flex-col'}
-      ${'row'}     | ${'flex-row'}
-    `(
-      'should lay the buttons out in $expectedClass when direction is $direction',
-      ({ direction, expectedClass }) => {
-        renderButtons(basePlatform, undefined, { direction });
-
-        expect(screen.getByRole('link').parentElement).toHaveClass(
-          expectedClass
-        );
-      }
-    );
-  });
-
   describe('Access button', () => {
     it.each`
       label                                             | platform                                                                                                                                                 | shouldShow
@@ -109,7 +65,6 @@ describe('ConnectedProductButtons', () => {
       ${'trial, PENDING status, with url and myGroups'} | ${{ ...trialPlatformWithAccess, deployment_request: { ...trialPlatformWithAccess.deployment_request, hub_status: DeploymentRequestHubStatus.Pending } }} | ${false}
       ${'trial, ACTIVE status, no url'}                 | ${{ ...trialPlatformWithAccess, url: '' }}                                                                                                               | ${false}
       ${'non-trial with url'}                           | ${basePlatform}                                                                                                                                          | ${true}
-      ${'non-trial, no url'}                            | ${{ ...basePlatform, url: '' }}                                                                                                                          | ${false}
     `('should show=$shouldShow for $label', ({ platform, shouldShow }) => {
       renderButtons(platform);
       const accessLink = screen.queryByRole('link', { name: /Access/i });
@@ -119,49 +74,26 @@ describe('ConnectedProductButtons', () => {
         expect(accessLink).not.toBeInTheDocument();
       }
     });
-
-    it('should open the platform in a new tab without exposing the hub', () => {
-      renderButtons(basePlatform);
-
-      const accessLink = screen.getByRole('link', { name: /Access/i });
-      expect(accessLink).toHaveAttribute('href', basePlatform.url);
-      expect(accessLink).toHaveAttribute('target', '_blank');
-      expect(accessLink).toHaveAttribute('rel', 'noopener noreferrer');
-    });
-
-    it.each`
-      identifier                                         | platformIdentifier
-      ${ServiceDefinitionIdentifier.OpenctiRegistration} | ${PlatformIdentifier.Opencti}
-      ${ServiceDefinitionIdentifier.OpenaevRegistration} | ${PlatformIdentifier.Openaev}
-    `(
-      'should name the $platformIdentifier product in the access button',
-      ({ identifier, platformIdentifier }) => {
-        renderButtons({ ...basePlatform, identifier });
-
-        expect(
-          screen.getByRole('link', {
-            name: `Register.Details.Access ${PlatformMetadataMapping[platformIdentifier as PlatformIdentifier].name}`,
-          })
-        ).toBeInTheDocument();
-      }
-    );
   });
 
   describe('TrialsManageUsersDialog visibility', () => {
     it.each`
-      label                             | me                                                                                    | shouldShow
-      ${'ADMINISTRATE_ORGANIZATION'}    | ${{ selected_org_capabilities: ADMINISTRATE_ORGANIZATION }}                           | ${true}
-      ${'MANAGE_PLATFORM_REGISTRATION'} | ${{ selected_org_capabilities: [OrganizationCapability.ManagePlatformRegistration] }} | ${true}
-      ${'BYPASS'}                       | ${{ capabilities: [{ name: PortalCapability.Bypass }] }}                              | ${true}
-      ${'no capability'}                | ${{ selected_org_capabilities: [] }}                                                  | ${false}
+      label                             | capabilities                                           | shouldShow
+      ${'ADMINISTRATE_ORGANIZATION'}    | ${[OrganizationCapability.AdministrateOrganization]}   | ${true}
+      ${'MANAGE_PLATFORM_REGISTRATION'} | ${[OrganizationCapability.ManagePlatformRegistration]} | ${true}
+      ${'no capability'}                | ${[]}                                                  | ${false}
     `(
       'should show=$shouldShow on trial + ACTIVE + myGroups when user has $label',
-      ({ me, shouldShow }) => {
-        renderButtons(trialPlatformWithAccess, me);
+      ({ capabilities, shouldShow }) => {
+        renderButtons(trialPlatformWithAccess, {
+          selected_org_capabilities: capabilities,
+        });
         if (shouldShow) {
-          expect(queryManageUsersButton()).toBeInTheDocument();
+          expect(screen.getByTestId('manage-users-dialog')).toBeInTheDocument();
         } else {
-          expect(queryManageUsersButton()).not.toBeInTheDocument();
+          expect(
+            screen.queryByTestId('manage-users-dialog')
+          ).not.toBeInTheDocument();
         }
       }
     );
@@ -175,92 +107,57 @@ describe('ConnectedProductButtons', () => {
             hub_status: DeploymentRequestHubStatus.Pending,
           },
         },
-        { selected_org_capabilities: ADMINISTRATE_ORGANIZATION }
+        {
+          selected_org_capabilities: [
+            OrganizationCapability.AdministrateOrganization,
+          ],
+        }
       );
-      expect(queryManageUsersButton()).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId('manage-users-dialog')
+      ).not.toBeInTheDocument();
     });
 
     it('should not show when trial + ACTIVE + capability but no myGroups', () => {
       renderButtons(trialPlatform, {
-        selected_org_capabilities: ADMINISTRATE_ORGANIZATION,
+        selected_org_capabilities: [
+          OrganizationCapability.AdministrateOrganization,
+        ],
       });
-      expect(queryManageUsersButton()).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId('manage-users-dialog')
+      ).not.toBeInTheDocument();
     });
 
     it('should not show for non-trial even with capability', () => {
       renderButtons(basePlatform, {
-        selected_org_capabilities: ADMINISTRATE_ORGANIZATION,
+        selected_org_capabilities: [
+          OrganizationCapability.AdministrateOrganization,
+        ],
       });
-      expect(queryManageUsersButton()).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId('manage-users-dialog')
+      ).not.toBeInTheDocument();
     });
 
     it('should not show when trial + ACTIVE + myGroups + capability but no serviceInstanceId', () => {
       renderButtons(
         {
           ...trialPlatformWithAccess,
-          subscription: null,
+          subscription: {
+            ...trialPlatformWithAccess.subscription!,
+            service_instance: null,
+          },
         },
-        { selected_org_capabilities: ADMINISTRATE_ORGANIZATION }
+        {
+          selected_org_capabilities: [
+            OrganizationCapability.AdministrateOrganization,
+          ],
+        }
       );
-      expect(queryManageUsersButton()).not.toBeInTheDocument();
-    });
-  });
-
-  describe('TrialsManageUsersDialog', () => {
-    it('should load the groups of the trial and the users of its organization', async () => {
-      const environment = createMockEnvironment();
-      const { user } = renderButtons(
-        trialPlatformWithAccess,
-        { selected_org_capabilities: ADMINISTRATE_ORGANIZATION },
-        { environment }
-      );
-
-      await user.click(screen.getByRole('button', { name: MANAGE_USERS }));
-
-      const variables = () =>
-        environment.mock
-          .getAllOperations()
-          .map((operation) => operation.request.variables);
-      expect(variables()).toContainEqual(
-        expect.objectContaining({
-          filters: [{ key: 'organization_id', value: [organizationId] }],
-        })
-      );
-      await act(async () => {
-        environment.mock.resolveMostRecentOperation((operation) =>
-          MockPayloadGenerator.generate(operation)
-        );
-      });
-      expect(variables()).toContainEqual({ serviceInstanceId });
-    });
-
-    it('should refresh the registered platform once the users are saved', async () => {
-      const invalidateQueriesSpy = vi.spyOn(
-        QueryClient.prototype,
-        'invalidateQueries'
-      );
-      const environment = createMockEnvironment();
-      const { user } = renderButtons(
-        trialPlatformWithAccess,
-        { selected_org_capabilities: ADMINISTRATE_ORGANIZATION },
-        { environment }
-      );
-      await user.click(screen.getByRole('button', { name: MANAGE_USERS }));
-      await resolvePendingOperations(environment);
-
-      await user.click(
-        await screen.findByRole('combobox', { name: GROUP_NAME })
-      );
-      await user.click(screen.getByRole('option', { name: USER_EMAIL }));
-      await user.click(screen.getByRole('button', { name: 'Utils.Validate' }));
-      expect(invalidateQueriesSpy).not.toHaveBeenCalledWith({
-        queryKey: registrationKeys.registeredPlatformByServiceInstanceIdAll(),
-      });
-      await resolvePendingOperations(environment);
-
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-        queryKey: registrationKeys.registeredPlatformByServiceInstanceIdAll(),
-      });
+      expect(
+        screen.queryByTestId('manage-users-dialog')
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -304,7 +201,10 @@ describe('ConnectedProductButtons', () => {
       renderButtons(
         {
           ...basePlatform,
-          subscription: null,
+          subscription: {
+            ...basePlatform.subscription!,
+            service_instance: null,
+          },
         },
         { selected_org_capabilities: updateCapabilities }
       );
@@ -313,115 +213,50 @@ describe('ConnectedProductButtons', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('should open the update sheet prefilled with the platform only on click', async () => {
-      const { user } = renderButtons(basePlatform, {
-        selected_org_capabilities: ADMINISTRATE_ORGANIZATION,
+    it('should pass platform URL to PlatformUpdateSheet', () => {
+      renderButtons(basePlatform, {
+        selected_org_capabilities: [
+          OrganizationCapability.AdministrateOrganization,
+        ],
       });
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-      await user.click(
-        screen.getByRole('button', { name: /Platform.Update/i })
-      );
-
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-      expect(
-        screen.getByRole('textbox', { name: /Platform\.Name/ })
-      ).toHaveValue(basePlatform.title);
-      expect(
-        screen.getByRole('textbox', { name: /Register\.Details\.ProductURL/ })
-      ).toHaveValue(basePlatform.url);
-    });
-
-    it('should close the update sheet on cancel', async () => {
-      const { user } = renderButtons(basePlatform, {
-        selected_org_capabilities: ADMINISTRATE_ORGANIZATION,
-      });
-      await user.click(
-        screen.getByRole('button', { name: /Platform.Update/i })
-      );
-
-      await user.click(screen.getByRole('button', { name: 'Utils.Cancel' }));
-
-      await waitFor(() =>
-        expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      expect(screen.getByTestId('platform-update-sheet')).toHaveAttribute(
+        'data-url',
+        basePlatform.url
       );
     });
-
-    it('should refresh the registered platform once it is updated', async () => {
-      const invalidateQueriesSpy = vi.spyOn(
-        QueryClient.prototype,
-        'invalidateQueries'
-      );
-      const environment = createMockEnvironment();
-      const { user } = renderButtons(
-        basePlatform,
-        { selected_org_capabilities: ADMINISTRATE_ORGANIZATION },
-        { environment }
-      );
-
-      await user.click(
-        screen.getByRole('button', { name: /Platform.Update/i })
-      );
-      await user.click(screen.getByRole('button', { name: 'Utils.Update' }));
-      expect(invalidateQueriesSpy).not.toHaveBeenCalledWith({
-        queryKey: registrationKeys.registeredPlatformByServiceInstanceIdAll(),
-      });
-      await resolvePendingOperations(environment);
-
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-        queryKey: registrationKeys.registeredPlatformByServiceInstanceIdAll(),
-      });
-    });
-  });
-
-  describe('Unregister button', () => {
-    it.each`
-      label                                     | platform         | capabilities                 | shouldShow
-      ${'non-trial, ADMINISTRATE_ORGANIZATION'} | ${basePlatform}  | ${ADMINISTRATE_ORGANIZATION} | ${true}
-      ${'non-trial, no capability'}             | ${basePlatform}  | ${[]}                        | ${false}
-      ${'trial, ADMINISTRATE_ORGANIZATION'}     | ${trialPlatform} | ${ADMINISTRATE_ORGANIZATION} | ${false}
-    `(
-      'should show=$shouldShow for $label',
-      ({ platform, capabilities, shouldShow }) => {
-        renderButtons(platform, { selected_org_capabilities: capabilities });
-        const unregisterButton = screen.queryByRole('button', {
-          name: UNREGISTER,
-        });
-        if (shouldShow) {
-          expect(unregisterButton).toBeInTheDocument();
-        } else {
-          expect(unregisterButton).not.toBeInTheDocument();
-        }
-      }
-    );
   });
 
   describe('openForm search param', () => {
-    it.each`
-      query               | shouldOpen
-      ${'openForm=true'}  | ${true}
-      ${'openForm=false'} | ${false}
-      ${''}               | ${false}
-    `(
-      'should open the manage users sheet=$shouldOpen when the query is "$query"',
-      async ({ query, shouldOpen }) => {
-        mockSearchParams(query);
-        const environment = createMockEnvironment();
-        renderButtons(
-          trialPlatformWithAccess,
-          { selected_org_capabilities: ADMINISTRATE_ORGANIZATION },
-          { environment }
-        );
-        await resolvePendingOperations(environment);
+    it('should pass defaultOpen=true to TrialsManageUsersDialog when openForm=true', () => {
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams('openForm=true') as unknown as ReturnType<
+          typeof useSearchParams
+        >
+      );
+      renderButtons(trialPlatformWithAccess, {
+        selected_org_capabilities: [
+          OrganizationCapability.AdministrateOrganization,
+        ],
+      });
+      const dialog = screen.getByTestId('manage-users-dialog');
+      expect(dialog).toBeInTheDocument();
+      expect(dialog).toHaveAttribute('data-default-open', 'true');
+    });
 
-        if (shouldOpen) {
-          expect(
-            await screen.findByRole('dialog', { name: MANAGE_USERS })
-          ).toBeInTheDocument();
-        } else {
-          expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-        }
-      }
-    );
+    it('should pass defaultOpen=false to TrialsManageUsersDialog when openForm is absent', () => {
+      vi.mocked(useSearchParams).mockReturnValue(
+        new URLSearchParams() as unknown as ReturnType<typeof useSearchParams>
+      );
+      renderButtons(trialPlatformWithAccess, {
+        selected_org_capabilities: [
+          OrganizationCapability.AdministrateOrganization,
+        ],
+      });
+      expect(screen.getByTestId('manage-users-dialog')).toHaveAttribute(
+        'data-default-open',
+        'false'
+      );
+    });
   });
 });

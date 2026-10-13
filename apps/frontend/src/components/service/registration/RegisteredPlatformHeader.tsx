@@ -1,29 +1,29 @@
 'use client';
 
-import { PortalContext } from '@/components/me/AppPortalContext';
 import { CONTRACT_LABEL_BY_CONTRACT } from '@/components/registration/PlatformIdentifierMapping';
+import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
 import { ConnectedProductButtons } from '@/components/service/registration/ConnectedProductButtons';
 import { useTranslate } from '@/hooks/use-translate';
 import { isWithinLastMonths } from '@/utils/date';
 import { Chip } from '@filigran/design-system';
-import {
-  PlatformContract,
-  RegisteredPlatformDetailFragment,
-} from '@graphql/generated';
-import { useContext } from 'react';
+import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import { PlatformContract } from '@graphql/generated';
+import { useFragment } from 'react-relay';
 
 interface RegisteredPlatformHeaderProps {
-  registeredPlatform: RegisteredPlatformDetailFragment;
+  registeredPlatform: registeredPlatformByServiceInstanceId_fragment$key;
 }
 
 export const RegisteredPlatformHeader = ({
-  registeredPlatform: platform,
+  registeredPlatform,
 }: RegisteredPlatformHeaderProps) => {
   const t = useTranslate();
 
-  const { me } = useContext(PortalContext);
-  const shouldDisplayHeaderButtons =
-    me?.selected_organization_id === platform.subscription?.organization.id;
+  const platform =
+    useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
+      registeredPlatformByServiceInstanceIdFragment,
+      registeredPlatform
+    );
   const isConnectionStatusOk = isWithinLastMonths(
     new Date(platform.last_connectivity_check),
     1
@@ -50,11 +50,12 @@ export const RegisteredPlatformHeader = ({
           />
         </div>
       </div>
-      {shouldDisplayHeaderButtons && (
-        <div className="ml-auto">
-          <ConnectedProductButtons platform={platform} />
-        </div>
-      )}
+      <div className="ml-auto">
+        <ConnectedProductButtons
+          direction={'row'}
+          platform={platform}
+        />
+      </div>
     </div>
   );
 };

@@ -2540,12 +2540,12 @@ export type SsoGroupRolePortal = {
 
 export type SaasPlatformMetadata = {
   __typename?: 'SaasPlatformMetadata';
-  endDate: Scalars['Date']['output'];
+  end_date: Scalars['Date']['output'];
   hostname: Scalars['String']['output'];
-  platformVersion: Scalars['String']['output'];
-  regionalArea: Scalars['String']['output'];
-  startDate: Scalars['Date']['output'];
-  subscribedPlan: Scalars['String']['output'];
+  plan: Scalars['String']['output'];
+  region: Scalars['String']['output'];
+  start_date: Scalars['Date']['output'];
+  version: Scalars['String']['output'];
 };
 
 export type SendTelemetryMutation = {
@@ -4915,12 +4915,12 @@ export type SsoGroupRolePortalResolvers<ContextType = PortalContext, ParentType 
 }>;
 
 export type SaasPlatformMetadataResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SaasPlatformMetadata'] = ResolversParentTypes['SaasPlatformMetadata']> = ResolversObject<{
-  endDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  end_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   hostname?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  platformVersion?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  regionalArea?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  startDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  subscribedPlan?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  plan?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  start_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

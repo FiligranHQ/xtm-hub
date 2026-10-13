@@ -42,8 +42,8 @@ export const RegistrationMetadata = ({
   }
 
   const { daysLeft, elapsedPercent } = computePeriodProgress(
-    metadata.startDate,
-    metadata.endDate
+    metadata.start_date,
+    metadata.end_date
   );
 
   return (
@@ -59,7 +59,7 @@ export const RegistrationMetadata = ({
           <span className="mr-xs text-default-secondary">
             {t('Register.Metrics.Metadata.SubscribedPlan')}:
           </span>
-          {metadata.subscribedPlan}
+          {metadata.plan}
         </li>
         <li className="flex flex-col gap-s">
           <span>
@@ -68,7 +68,7 @@ export const RegistrationMetadata = ({
               className="mr-xs text-default-secondary">
               {t('Register.Metrics.Metadata.Contract')}:
             </span>
-            {formatDate(metadata.startDate)} → {formatDate(metadata.endDate)}
+            {formatDate(metadata.start_date)} → {formatDate(metadata.end_date)}
           </span>
           <div className="flex items-center gap-s">
             <ProgressBar
@@ -87,13 +87,13 @@ export const RegistrationMetadata = ({
           <span className="mr-xs text-default-secondary">
             {t('Register.Metrics.Metadata.RegionalArea')}:
           </span>
-          {metadata.regionalArea}
+          {metadata.region}
         </li>
         <li>
           <span className="mr-xs text-default-secondary">
             {t('Register.Metrics.Metadata.PlatformVersion')}:
           </span>
-          {metadata.platformVersion}
+          {metadata.version}
         </li>
       </ul>
     </section>

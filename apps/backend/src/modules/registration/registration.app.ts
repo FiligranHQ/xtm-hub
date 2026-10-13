@@ -211,11 +211,11 @@ export const RegistrationApp = {
     // Call platform here
     return {
       hostname: 'acme.opencti.filigran.io',
-      subscribedPlan: 'Enterprise Edition',
-      startDate: '2026-09-15 08:04:14.431000 +00:00',
-      endDate: '2026-10-24 08:04:14.431000 +00:00',
-      regionalArea: 'EU-West',
-      platformVersion: '1.2002.2',
+      plan: 'Enterprise Edition',
+      start_date: '2026-09-15 08:04:14.431000 +00:00',
+      end_date: '2026-10-24 08:04:14.431000 +00:00',
+      region: 'EU-West',
+      version: '1.2002.2',
     };
   },
 

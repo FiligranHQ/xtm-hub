@@ -17,7 +17,6 @@ import {
   // eslint-disable-next-line no-restricted-imports
   requestContextAdminUser,
   requestContextRegistererUserSecondOrga,
-  requestContextSimpleUserFiligran2,
   requestContextSimpleUserSecondOrga,
   SERVICES,
   TEST_ORGANIZATIONS,
@@ -76,7 +75,6 @@ import { TelemetryEventType } from '../telemetry/telemetry.types';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { RegistrationApp } from './registration.app';
 import { RegistrationDomain } from './registration.domain';
-import { SaasPlatformMetadataPlaceholder } from './registration.saas-metadata.stub';
 
 describe('registration app', () => {
   afterAll(async () => {
