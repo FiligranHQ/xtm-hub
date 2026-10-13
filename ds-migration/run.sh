@@ -272,7 +272,9 @@ merge_base() {
     git merge --abort
     return 1
   fi
-  git add -- $conflicted && git commit --quiet --no-edit || { git merge --abort; return 1; }
+  # The session may add or change files beyond the conflicted ones: all of them belong to the merge.
+  git add -A -- . ':(exclude)ds-migration'
+  git commit --quiet --no-edit || { git merge --abort; return 1; }
   log "merge conflicts with $BASE resolved: $(jq -r .summary <<<"$result" | head -1)"
 }
 

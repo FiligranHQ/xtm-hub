@@ -115,6 +115,8 @@ if [[ "$prompt" == *"Sync fix mode"* ]]; then
 fi
 if [[ "$prompt" == *"Merge conflict mode"* ]]; then
   for f in $(git diff --name-only --diff-filter=U); do git show ":2:$f" > "$f"; done
+  # A resolution may need a file no side had.
+  echo "export const resolved = true;" > apps/frontend/src/resolution.ts
   echo '{"type":"result","structured_output":{"status":"DONE","summary":"Kept the migration and the change from main.","commit_subject":"","commit_body":""}}'; exit 0
 fi
 if [[ "$prompt" == *"Epic review mode"* ]]; then echo '{"type":"result","structured_output":{"findings":"Verdict: consistent."}}'; exit 0; fi
@@ -376,6 +378,7 @@ git clone -q "$SB/remote.git" "$SB/other"
 (cd "$SB/other" && printf "import { Textarea } from '@filigran/ui/legacy';\nexport const Form = () => <Textarea />;\n" >apps/frontend/src/Form.tsx && git add -A && git -c commit.gpgsign=false commit -qm "feat: change Form on main" && git push -q origin main)
 run --once
 check "a conflict with main at the start of an item is resolved by a session" '[ "$(status_of 3568-switch)" = done ] && grep -q "merge conflicts with main resolved" "$SB/out.log" && ! grep -q "^<<<<<<<" apps/frontend/src/Form.tsx && git log --merges --format=%s -1 | grep -q "origin/main"'
+check "the merge commit holds every file the conflict session wrote" 'git show --name-only --format= "$(git log --merges --format=%H -1)" | grep -qx apps/frontend/src/resolution.ts'
 touch "$SB/pr-conflict"
 run --once
 check "a PR that conflicts while waiting for checks merges main instead of waiting" '[ "$(status_of 3553-radio)" = done ] && grep -q "conflicted with main, which no check runs on: main merged" "$SB/out.log" && [ -f apps/frontend/src/late.ts ]'
