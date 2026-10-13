@@ -10,6 +10,12 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     `/${locale}/$`,
   ]);
 
+  // `$` anchors the rule so a document whose slug merely starts with `null` stays crawlable.
+  // The rule is longer than `/<locale>/cybersecurity-solutions/*`, so it wins over that allow rule.
+  const nullDocumentSlugDisallowRules = publicLocales.map(
+    (locale) => `/${locale}/cybersecurity-solutions/*/null$`
+  );
+
   const isProductionDomain =
     domain === 'hub.filigran.io' || domain === 'www.hub.filigran.io';
 
@@ -18,7 +24,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
       rules: [
         {
           userAgent: '*',
-          disallow: '/',
+          disallow: ['/', ...nullDocumentSlugDisallowRules],
           allow: [
             '/sitemap.xml',
             '/login',
