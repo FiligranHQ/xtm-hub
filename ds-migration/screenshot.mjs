@@ -55,7 +55,9 @@ const login = async (browser) => {
   await page.goto(`${APP_URL}/login`);
   await page.getByPlaceholder('email').fill(EMAIL);
   await page.getByPlaceholder('password').fill(PASSWORD);
-  await page.getByRole('button', { name: 'Sign in' }).click();
+  // Enter, not a click on Sign in: the cookie banner can cover the button, and accepting it
+  // would hide the banner from the screens.
+  await page.getByPlaceholder('password').press('Enter');
   await page.waitForURL((url) => !url.pathname.includes('/login'));
   const state = await context.storageState();
   await context.close();
