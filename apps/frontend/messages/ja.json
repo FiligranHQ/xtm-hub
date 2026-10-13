@@ -941,7 +941,6 @@
         "NotConnected": "接続が切れた",
         "NotConnectedDetails": "プラットフォームを再登録してください。"
       },
-      "Description": "プライベート・プラットフォームへのアクセスはこちらをクリックしてください。",
       "ProductName": "製品名",
       "Product": "製品",
       "ProductURL": "商品URL",
@@ -1508,10 +1507,6 @@
       "NoSubscribedServices": "この組織に契約済みサービスはありません。"
     },
     "Organizations": "組織",
-    "RegisteredPlatforms": {
-      "PlatformDetails": "製品の詳細",
-      "GoToMyPlatform": "私の製品へ"
-    },
     "SearchServices": "検索サービス...",
     "ServiceName": "サービス名",
     "ShareableResources": {
@@ -1578,11 +1573,6 @@
     "SubscribeService": "{serviceName} サービスを購読する",
     "SubscribeSuccessful": "サービスへの登録が完了しました。これで登録したサービスにこのサービスが表示されます。",
     "Trials": {
-      "Active": "OpenCTI 無料トライアルは有効です",
-      "Provisioning": "OpenCTI 無料トライアルは現在プロビジョニング中です。",
-      "Requested": "OpenCTI 無料トライアルがリクエストされました。",
-      "Expired": "OpenCTI 無料トライアルは終了しました。",
-      "Cancelled": "OpenCTI 無料トライアルはキャンセルされました。",
       "CancellationReason": {
         "value": "インテリジェンスには、当社の特定のニーズに対する実用的な洞察が欠けています。",
         "compatibility": "既存のセキュリティ・スタックと互換性がない",
@@ -1590,7 +1580,6 @@
         "legal-security": "社内のセキュリティ・チームまたは法務チームが早急な終結を要求した",
         "expertise": "ツールを効果的に利用するためのアナリストや専門家が社内にいない"
       },
-      "DaysRemaining": "{days, plural, =1 {# 日残り} other {# 日残り}}",
       "LearnMore": {
         "Link": "もっと詳しく",
         "openaev": {
@@ -1638,15 +1627,12 @@
           }
         }
       },
-      "OpenAEVPlatformBreadcrumb": "OpenAEV トライアルプラットフォーム",
-      "OpenCTIPlatformBreadcrumb": "OpenCTI トライアルプラットフォーム",
       "PageHeader": {
         "Welcome": "Filigran へようこそ",
         "Title": "{platformName} の無料トライアルを始めましょう!"
       },
       "Storage": {
         "Title": "トライアル環境のストレージに関する重要なお知らせ",
-        "SaaSFeaturesLink": "Enterprise Edition SaaS 機能",
         "NoSLA": "<strong>無料トライアル環境には SLA は含まれません。</strong> クラウドプロバイダーの障害が発生した場合、復旧時間は保証されません。トライアル環境には重要なデータや代替不可能なデータを保存しないことを推奨します。",
         "OpenCTIDescription": "OpenCTI 無料トライアルでは、すべての <link>Enterprise Edition SaaS 機能</link> を含む「small」SaaS インスタンスをユーザーに提供しますが、<strong>計算能力とストレージは制限されます (インテリジェンスデータストレージは最大 40GB、ファイルストレージは 3GB)。</strong> このトライアル中に豊富なデータセットを含む大規模なプレミアムフィードを取り込むと、ストレージがすぐに使い切られる可能性があります。",
         "OpenAEVDescription": "OpenAEV 無料トライアルでは、すべての <link>Enterprise Edition SaaS 機能</link> を含む「small」インスタンスをユーザーに提供しますが、計算能力は低減され、ストレージは <strong>16GB</strong> に制限されます。"
@@ -1763,7 +1749,6 @@
         "Subtitle": "{platformName} 製品を最大限に活用しましょう",
         "Description": "ステップバイステップのガイド、エキスパートのコース、コミュニティのフィードバックを活用して、実際のユースケースを解決し、Filigran チャンピオンになりましょう!"
       },
-      "GoToMyTrial": "私のトライアルへ",
       "InfoPersonalSpace": "個人のスペースではトライアルを開始できません。組織のスペースに移動してください。",
       "ReachOutToSales": "営業に連絡する",
       "ReachOutToSalesMessageLabel": "メッセージ",
@@ -1771,7 +1756,6 @@
       "NeedSupport": "サポート希望",
       "ReachOutToSalesSuccessTitle": "ありがとうございます",
       "ReachOutToSalesSuccessMessage": "折り返しご連絡いたします。",
-      "ReachOutToSalesDefaultMessage": "メッセージを入力してください。",
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。新規のOpenCTIトライアルはリクエストできませんのでご注意ください。",
@@ -1798,7 +1782,6 @@
         "JobTitlePlaceholder": "役職を選択してください",
         "ActivitySector": "活動分野",
         "ActivitySectorPlaceholder": "業種を選択してください",
-        "UseCase": "用途",
         "UseCasePlaceholder": "ユースケースを選択してください",
         "Error": {
           "AcceptTerms": "続行するには試用条件に同意してください",
@@ -1806,18 +1789,6 @@
         },
         "TermsAgreement": "<mssa>MSSA</mssa>および<aiterms>AI利用規約</aiterms>の試用条件を読み、理解し、同意します。",
         "FormRequested": "無料トライアルを申し込みました。プラットフォームの準備が整い次第、Eメールをお送りします！"
-      },
-      "Display": {
-        "New": "新しい",
-        "Requested": "リクエスト",
-        "opencti": {
-          "Title": "OpenCTI 30日間無料トライアル",
-          "FreeTrialDescription": "OpenCTI Enterprise Editionの全機能をお試しいただき、脅威インテリジェンスのエンドツーエンドの運用を開始してください！"
-        },
-        "openaev": {
-          "Title": "OpenAEV 30日間無料トライアル",
-          "FreeTrialDescription": "OpenAEV を使って、実際の攻撃シナリオをシミュレートし、セキュリティ態勢を評価し、サイバー耐性を向上させましょう。"
-        }
       },
       "ManageUsers": {
         "Title": "ユーザーを管理する",
