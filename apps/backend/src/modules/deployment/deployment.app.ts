@@ -253,7 +253,10 @@ export const DeploymentApp = {
     direction: ReorderDeploymentRequestInQueueDirection;
   }): Promise<Success> => {
     const deploymentRequest =
-      await DeploymentRequestDomain.loadDeploymentRequestBy({ id });
+      await DeploymentRequestDomain.loadDeploymentRequestBy({
+        id,
+        type: DeploymentRequestDeploymentType.Bundle,
+      });
     if (!deploymentRequest) {
       throw new Error(ErrorCode.DeploymentRequestNotFound);
     }
@@ -795,11 +798,7 @@ const createBundleDeploymentRequest = async ({
       });
 
       const maxOrdering = await DeploymentRequestDomain.getMaxOrderingInQueue(
-        {
-          type: DeploymentRequestDeploymentType.Bundle,
-          platform_identifier: null,
-          region: input.region,
-        },
+        bundleQuotaKey(input.region),
         bundleHubStatus
       );
 

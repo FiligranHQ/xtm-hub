@@ -2063,6 +2063,48 @@ describe('deployment app', () => {
         deploymentRequest
       );
     });
+
+    it('should throw DeploymentRequestNotFound and leave the bundle queue untouched when the request is a bundle child', async () => {
+      // Given a bundle queue and a queued bundle child in the same region
+      const { bundle: firstBundle } =
+        await TestHelper.deploymentRequest.createBundle({
+          bundle: {
+            hub_status: DeploymentRequestHubStatus.Queued,
+            ordering: 1,
+          },
+        });
+      const { bundle: secondBundle } =
+        await TestHelper.deploymentRequest.createBundle({
+          bundle: {
+            hub_status: DeploymentRequestHubStatus.Queued,
+            ordering: 2,
+          },
+        });
+      const {
+        children: [child],
+      } = await TestHelper.deploymentRequest.createBundle({
+        bundle: {
+          hub_status: DeploymentRequestHubStatus.Queued,
+          ordering: 3,
+        },
+        children: [{ hub_status: DeploymentRequestHubStatus.Queued }],
+      });
+
+      // When moving it to the top of the queue
+      const call = DeploymentApp.reorderDeploymentRequestInQueue({
+        id: child!.id,
+        direction: ReorderDeploymentRequestInQueueDirection.Top,
+      });
+
+      // Then it is not found and the bundles keep their rank
+      await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
+      await TestHelper.deploymentRequest.assertProperties(firstBundle.id, {
+        ordering: 1,
+      });
+      await TestHelper.deploymentRequest.assertProperties(secondBundle.id, {
+        ordering: 2,
+      });
+    });
   });
 
   describe('cancelDeploymentRequest', () => {
@@ -3365,17 +3407,15 @@ describe('deployment app', () => {
         'should not free place when request hub status is $hub_status',
         async ({ hub_status }) => {
           // Given a deployment request in a status not counted in quotas
-          const deploymentRequest =
-            await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-              {
-                hub_status,
-              }
-            );
+          const { bundle: deploymentRequest } =
+            await TestHelper.deploymentRequest.createBundle({
+              bundle: { hub_status },
+            });
 
           // When releasing its place
           await DeploymentCancellationApp.releaseDeploymentRequestPlace(
-            deploymentRequest!.hub_status,
-            deploymentRequest!
+            deploymentRequest.hub_status,
+            deploymentRequest
           );
 
           // Then no place is freed
@@ -3390,16 +3430,14 @@ describe('deployment app', () => {
       });
 
       it('should not send telemetry event when deployment request was not moved to pending', async () => {
-        const deploymentRequest =
-          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
-              hub_status: DeploymentRequestHubStatus.Active,
-            }
-          );
+        const { bundle: deploymentRequest } =
+          await TestHelper.deploymentRequest.createBundle({
+            bundle: { hub_status: DeploymentRequestHubStatus.Active },
+          });
 
         await DeploymentCancellationApp.releaseDeploymentRequestPlace(
-          deploymentRequest!.hub_status,
-          deploymentRequest!
+          deploymentRequest.hub_status,
+          deploymentRequest
         );
 
         expect(telemetrySpy).not.toHaveBeenCalled();
@@ -3410,29 +3448,25 @@ describe('deployment app', () => {
         const date = new Date(Date.UTC(2025, 1, 3, 13, 12, 15));
         vi.setSystemTime(date);
 
-        const queuedDeploymentRequest =
-          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
-              type: DeploymentRequestDeploymentType.Bundle,
-              platform_identifier: null,
+        const { bundle: queuedDeploymentRequest } =
+          await TestHelper.deploymentRequest.createBundle({
+            bundle: {
               hub_status: DeploymentRequestHubStatus.Queued,
               activity_sector:
                 DeploymentRequestActivitySector.ComputerNetworkSecurity,
               region: DeploymentRequestPlatformRegion.UsEast,
               platform_id: uuidv4(),
-            }
-          );
+            },
+          });
 
-        const deploymentRequest =
-          await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
-            {
-              hub_status: DeploymentRequestHubStatus.Active,
-            }
-          );
+        const { bundle: deploymentRequest } =
+          await TestHelper.deploymentRequest.createBundle({
+            bundle: { hub_status: DeploymentRequestHubStatus.Active },
+          });
 
         await DeploymentCancellationApp.releaseDeploymentRequestPlace(
-          deploymentRequest!.hub_status,
-          deploymentRequest!
+          deploymentRequest.hub_status,
+          deploymentRequest
         );
 
         expect(telemetrySpy).toHaveBeenCalledExactlyOnceWith({
@@ -3443,9 +3477,9 @@ describe('deployment app', () => {
           organization_type: TelemetryOrganizationType.PROFESSIONAL,
           source: TelemetrySource.XTMHUB,
           user_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
-          deployment_id: queuedDeploymentRequest!.id,
+          deployment_id: queuedDeploymentRequest.id,
           deployment_type: DeploymentRequestDeploymentType.Bundle,
-          platform_id: queuedDeploymentRequest!.platform_id,
+          platform_id: queuedDeploymentRequest.platform_id,
           start_date: null,
           end_date: null,
           status: DeploymentRequestHubStatus.Pending,
