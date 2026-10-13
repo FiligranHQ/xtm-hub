@@ -1612,6 +1612,7 @@ export const mockRegisteredPlatform = (overrides?: Partial<RegisteredPlatform>, 
     relationshipsToOmit.add('RegisteredPlatform');
     return {
         __typename: 'RegisteredPlatform',
+        commercial_model: overrides && overrides.hasOwnProperty('commercial_model') ? overrides.commercial_model! : CommercialModel.Other,
         contract: overrides && overrides.hasOwnProperty('contract') ? overrides.contract! : PlatformContract.Ce,
         deployment_request: overrides && overrides.hasOwnProperty('deployment_request') ? overrides.deployment_request! : relationshipsToOmit.has('DeploymentRequest') ? {} as DeploymentRequest : mockDeploymentRequest({}, relationshipsToOmit),
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : '9944b8a0-4c4a-4f05-bf08-5a17aa0b0833',

@@ -94,6 +94,7 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
     id
     platform_id
     last_connectivity_check
+    commercial_model
     tenant_id
     title
     contract

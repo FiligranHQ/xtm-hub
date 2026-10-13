@@ -28,26 +28,16 @@ import portalConfig from '../../config';
 import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
-import Organization, {
-  OrganizationId,
-} from '../../model/kanel/public/Organization';
+import Organization, { OrganizationId, } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
-import {
-  type CommercialModelJobData,
-  REGISTRATION_QUEUES,
-} from '../../thirdparty/pgboss/registration.jobs';
+import { type CommercialModelJobData, REGISTRATION_QUEUES, } from '../../thirdparty/pgboss/registration.jobs';
 import { SaasManagerClient } from '../../thirdparty/saasmanager/client';
 import { logApp } from '../../utils/app-logger.util';
-import {
-  BadRequestErrorCode,
-  ErrorCode,
-  ForbiddenErrorCode,
-  NotFoundErrorCode,
-} from '../../utils/error/error.code';
+import { BadRequestErrorCode, ErrorCode, ForbiddenErrorCode, NotFoundErrorCode, } from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
 import { isValidVersion } from '../../utils/versioning';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
@@ -61,11 +51,7 @@ import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
-import {
-  DomainRegisteredPlatform,
-  PlatformConfigurationInput,
-  RegistrationDomain,
-} from './registration.domain';
+import { DomainRegisteredPlatform, PlatformConfigurationInput, RegistrationDomain, } from './registration.domain';
 import { RegistrationHelper } from './registration.helper';
 
 /**
@@ -207,16 +193,41 @@ export const RegistrationApp = {
 
   loadRegisteredSaasPlatformMetadata: async (
     platformId: string
-  ): Promise<SaasPlatformMetadata> => {
-    // Call platform here
-    return {
-      hostname: 'acme.opencti.filigran.io',
-      plan: 'Enterprise Edition',
-      start_date: '2026-09-15 08:04:14.431000 +00:00',
-      end_date: '2026-10-24 08:04:14.431000 +00:00',
-      region: 'EU-West',
-      version: '1.2002.2',
-    };
+  ): Promise<SaasPlatformMetadata | null> => {
+    try {
+      const response = await SaasManagerClient.callInstanceApi({
+        platform_id: platformId,
+      });
+      if (!response.ok) {
+        logApp.error(
+          'Unable to load the platform metadata from the SaaS Manager',
+          {
+            platformId,
+            status: response.status,
+          }
+        );
+        return null;
+      }
+      const responseBody =
+        (await response.json()) as Partial<SaasPlatformMetadata> | null;
+      return {
+        hostname: responseBody?.hostname ?? null,
+        plan: responseBody?.plan ?? null,
+        start_date: responseBody?.start_date ?? null,
+        end_date: responseBody?.end_date ?? null,
+        region: responseBody?.region ?? null,
+        version: responseBody?.version ?? null,
+      };
+    } catch (error) {
+      logApp.error(
+        'Unable to load the platform metadata from the SaaS Manager',
+        {
+          platformId,
+          error,
+        }
+      );
+      return null;
+    }
   },
 
   loadRegisteredPlatforms: async (
@@ -669,6 +680,7 @@ export const mapDomainRegisteredPlatformToGraphQL = (
     platform_id: platform.platform_id ?? platform.id,
     last_connectivity_check: platform?.last_connectivity_check ?? null,
     status: platform.status ?? null,
+    commercial_model: platform.commercial_model ?? null,
     tenant_id: platform.tenant_id,
     tenant_name: platform.tenant_name,
     title: platform.platform_title ?? defaultTitle,

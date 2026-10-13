@@ -968,7 +968,9 @@
         "Contract": "Contract",
         "RegionalArea": "Regional area",
         "PlatformVersion": "Platform version",
-        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}"
+        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}",
+        "ReservedForSaas": "This feature is only available for SaaS customers",
+        "Unavailable": "The information is currently unavailable"
       }
     },
     "Error": {

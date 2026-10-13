@@ -1263,6 +1263,7 @@ type RegisteredPlatform implements Node {
   deployment_request: DeploymentRequest
   last_connectivity_check: Date
   status: PlatformConfigurationStatus
+  commercial_model: CommercialModel
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
   organization: Organization
@@ -1418,12 +1419,12 @@ input RegisteredPlatformInput {
 }
 
 type SaasPlatformMetadata {
-  hostname: String!
-  plan: String!
-  start_date: Date!
-  end_date: Date!
-  region: String!
-  version: String!
+  hostname: String
+  plan: String
+  start_date: Date
+  end_date: Date
+  region: String
+  version: String
 }
 
 input AutoRegisterPlatformInput {

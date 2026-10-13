@@ -961,6 +961,18 @@
       "RegistrationTitle": "登録 - XTM Hub",
       "SubscriptionTitle": "サブスクリプション - SaaS Manager"
     },
+    "Metrics": {
+      "Metadata": {
+        "Hostname": "ホスト名",
+        "SubscribedPlan": "契約プラン",
+        "Contract": "契約",
+        "RegionalArea": "リージョン",
+        "PlatformVersion": "プラットフォームのバージョン",
+        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}",
+        "ReservedForSaas": "この機能はSaaSのお客様のみご利用いただけます",
+        "Unavailable": "現在、この情報はご利用いただけません。"
+      }
+    },
     "Error": {
       "Capability": {
         "AdminListTitle": "あなたの組織の管理者は以下の通りです：",
@@ -1053,16 +1065,6 @@
       "Description1": "あなたの {platformIdentifier} 製品 {platformTitle} は、権限制限のため同じ組織で再接続されます。",
       "Description2": "変更を希望する場合は、組織の管理者に連絡してください。",
       "Title": "製品再接続のお知らせ"
-    },
-    "Metrics": {
-      "Metadata": {
-        "Hostname": "ホスト名",
-        "SubscribedPlan": "契約プラン",
-        "Contract": "契約",
-        "RegionalArea": "リージョン",
-        "PlatformVersion": "プラットフォームのバージョン",
-        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}"
-      }
     }
   },
   "RemoveUserOrgDialog": {

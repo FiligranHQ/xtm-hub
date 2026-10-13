@@ -1,5 +1,6 @@
 'use client';
 
+import { PortalContext } from '@/components/me/AppPortalContext';
 import { CONTRACT_LABEL_BY_CONTRACT } from '@/components/registration/PlatformIdentifierMapping';
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
 import { ConnectedProductButtons } from '@/components/service/registration/ConnectedProductButtons';
@@ -8,6 +9,7 @@ import { isWithinLastMonths } from '@/utils/date';
 import { Chip } from '@filigran/design-system';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { PlatformContract } from '@graphql/generated';
+import { useContext } from 'react';
 import { useFragment } from 'react-relay';
 
 interface RegisteredPlatformHeaderProps {
@@ -19,11 +21,15 @@ export const RegisteredPlatformHeader = ({
 }: RegisteredPlatformHeaderProps) => {
   const t = useTranslate();
 
+  const { me } = useContext(PortalContext);
   const platform =
     useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
       registeredPlatformByServiceInstanceIdFragment,
       registeredPlatform
     );
+
+  const shouldDisplayHeaderButtons =
+    me?.selected_organization_id === platform.subscription?.organization.id;
   const isConnectionStatusOk = isWithinLastMonths(
     new Date(platform.last_connectivity_check),
     1
@@ -50,12 +56,14 @@ export const RegisteredPlatformHeader = ({
           />
         </div>
       </div>
-      <div className="ml-auto">
-        <ConnectedProductButtons
-          direction={'row'}
-          platform={platform}
-        />
-      </div>
+      {shouldDisplayHeaderButtons && (
+        <div className="ml-auto">
+          <ConnectedProductButtons
+            direction={'row'}
+            platform={platform}
+          />
+        </div>
+      )}
     </div>
   );
 };

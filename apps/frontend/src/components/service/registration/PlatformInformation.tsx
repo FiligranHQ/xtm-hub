@@ -16,7 +16,7 @@ export const PlatformInformation = ({
   const t = useTranslate();
 
   return (
-    <div className="mt-m p-xl bg-elevation-background-layer-2">
+    <div className="my-m p-xl bg-elevation-background-layer-2">
       <h2>{t('Register.Details.PlatformInformation')}</h2>
       <Separator className="m-m" />
       <div className="grid grid-cols-2">

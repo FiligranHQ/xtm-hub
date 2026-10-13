@@ -2431,6 +2431,7 @@ export type RegisterPlatformInput = {
 
 export type RegisteredPlatform = Node & {
   __typename?: 'RegisteredPlatform';
+  commercial_model: Maybe<CommercialModel>;
   contract: PlatformContract;
   deployment_request: Maybe<DeploymentRequest>;
   id: Scalars['ID']['output'];
@@ -2547,12 +2548,12 @@ export type SsoGroupRolePortal = {
 
 export type SaasPlatformMetadata = {
   __typename?: 'SaasPlatformMetadata';
-  end_date: Scalars['Date']['output'];
-  hostname: Scalars['String']['output'];
-  plan: Scalars['String']['output'];
-  region: Scalars['String']['output'];
-  start_date: Scalars['Date']['output'];
-  version: Scalars['String']['output'];
+  end_date: Maybe<Scalars['Date']['output']>;
+  hostname: Maybe<Scalars['String']['output']>;
+  plan: Maybe<Scalars['String']['output']>;
+  region: Maybe<Scalars['String']['output']>;
+  start_date: Maybe<Scalars['Date']['output']>;
+  version: Maybe<Scalars['String']['output']>;
 };
 
 export type SendTelemetryMutation = {
@@ -3649,7 +3650,7 @@ export type RegisteredSaasPlatformMetadataQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string, plan: string, start_date: any, end_date: any, region: string, version: string } | null };
+export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null, version: string | null } | null };
 
 export type AddRolePortalMutationVariables = Exact<{
   input: AddRolePortalInput;

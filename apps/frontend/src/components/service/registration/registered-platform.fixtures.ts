@@ -19,6 +19,7 @@ export const basePlatform: registeredPlatformByServiceInstanceId_fragment$data =
     contract: PlatformContract.Ee,
     deployment_request: null,
     last_connectivity_check: null,
+    commercial_model: null,
     subscription: {
       start_date: '2025-01-01',
       end_date: null,

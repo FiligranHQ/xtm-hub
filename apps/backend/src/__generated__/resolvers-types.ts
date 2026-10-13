@@ -2424,6 +2424,7 @@ export type RegisterPlatformInput = {
 
 export type RegisteredPlatform = Node & {
   __typename?: 'RegisteredPlatform';
+  commercial_model?: Maybe<CommercialModel>;
   contract: PlatformContract;
   deployment_request?: Maybe<DeploymentRequest>;
   id: Scalars['ID']['output'];
@@ -2540,12 +2541,12 @@ export type SsoGroupRolePortal = {
 
 export type SaasPlatformMetadata = {
   __typename?: 'SaasPlatformMetadata';
-  end_date: Scalars['Date']['output'];
-  hostname: Scalars['String']['output'];
-  plan: Scalars['String']['output'];
-  region: Scalars['String']['output'];
-  start_date: Scalars['Date']['output'];
-  version: Scalars['String']['output'];
+  end_date?: Maybe<Scalars['Date']['output']>;
+  hostname?: Maybe<Scalars['String']['output']>;
+  plan?: Maybe<Scalars['String']['output']>;
+  region?: Maybe<Scalars['String']['output']>;
+  start_date?: Maybe<Scalars['Date']['output']>;
+  version?: Maybe<Scalars['String']['output']>;
 };
 
 export type SendTelemetryMutation = {
@@ -4824,6 +4825,7 @@ export type RefreshUserPlatformTokenResponseResolvers<ContextType = PortalContex
 }>;
 
 export type RegisteredPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['RegisteredPlatform'] = ResolversParentTypes['RegisteredPlatform']> = ResolversObject<{
+  commercial_model?: Resolver<Maybe<ResolversTypes['CommercialModel']>, ParentType, ContextType>;
   contract?: Resolver<ResolversTypes['PlatformContract'], ParentType, ContextType>;
   deployment_request?: Resolver<Maybe<ResolversTypes['DeploymentRequest']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -4915,12 +4917,12 @@ export type SsoGroupRolePortalResolvers<ContextType = PortalContext, ParentType 
 }>;
 
 export type SaasPlatformMetadataResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SaasPlatformMetadata'] = ResolversParentTypes['SaasPlatformMetadata']> = ResolversObject<{
-  end_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  hostname?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  plan?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  start_date?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  end_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  hostname?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  plan?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  region?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  start_date?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

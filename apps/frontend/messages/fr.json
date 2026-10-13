@@ -961,6 +961,18 @@
       "RegistrationTitle": "Enregistrement - XTM Hub",
       "SubscriptionTitle": "Abonnement - SaaS Manager"
     },
+    "Metrics": {
+      "Metadata": {
+        "Hostname": "Nom d'hôte",
+        "SubscribedPlan": "Offre souscrite",
+        "Contract": "Contrat",
+        "RegionalArea": "Zone régionale",
+        "PlatformVersion": "Version de la plateforme",
+        "DaysLeft": "{days, plural, =1 {# jour restant} other {# jours restants}}",
+        "ReservedForSaas": "Cette fonctionnalité est réservée aux clients SaaS.",
+        "Unavailable": "Les informations sont actuellement indisponibles."
+      }
+    },
     "Error": {
       "Capability": {
         "AdminListTitle": "Les administrateurs de votre organisation sont les suivants :",
@@ -1053,16 +1065,6 @@
       "Description1": "Votre produit {platformIdentifier} {platformTitle} sera reconnecté sous la même organisation en raison de restrictions de capacité.",
       "Description2": "Si vous souhaitez demander un changement, veuillez contacter l'administrateur de votre organisation.",
       "Title": "Avis de reconnexion du produit"
-    },
-    "Metrics": {
-      "Metadata": {
-        "Hostname": "Nom d'hôte",
-        "SubscribedPlan": "Offre souscrite",
-        "Contract": "Contrat",
-        "RegionalArea": "Zone régionale",
-        "PlatformVersion": "Version de la plateforme",
-        "DaysLeft": "{days, plural, =1 {# jour restant} other {# jours restants}}"
-      }
     }
   },
   "RemoveUserOrgDialog": {
