@@ -220,7 +220,7 @@ const UserList = ({ organization }: UserListProps) => {
   const userListSubscription = graphql`
     subscription UserListSubscription(
       $connections: [ID!]!
-      $organizationId: ID
+      $organizationId: ID!
     ) {
       User(organizationId: $organizationId) {
         add @appendNode(connections: $connections, edgeTypeName: "UserEdge") {
@@ -230,15 +230,37 @@ const UserList = ({ organization }: UserListProps) => {
     }
   `;
 
+  const adminUserListSubscription = graphql`
+    subscription UserListAdminSubscription($connections: [ID!]!) {
+      AdminUser {
+        add @appendNode(connections: $connections, edgeTypeName: "UserEdge") {
+          ...UserList_fragment
+        }
+      }
+    }
+  `;
+
   const userListSubscriptionConfig = useMemo(
-    () => ({
-      variables: {
-        connections: [connectionID],
-        organizationId: isAdminPath ? undefined : organization,
-      },
-      subscription: userListSubscription,
-    }),
-    [connectionID, isAdminPath, organization, userListSubscription]
+    () =>
+      isAdminPath
+        ? {
+            variables: { connections: [connectionID] },
+            subscription: adminUserListSubscription,
+          }
+        : {
+            variables: {
+              connections: [connectionID],
+              organizationId: organization,
+            },
+            subscription: userListSubscription,
+          },
+    [
+      adminUserListSubscription,
+      connectionID,
+      isAdminPath,
+      organization,
+      userListSubscription,
+    ]
   );
   useSubscription(userListSubscriptionConfig);
 

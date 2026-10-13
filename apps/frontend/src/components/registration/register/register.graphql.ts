@@ -32,6 +32,7 @@ export const CanUnregisterPlatformFragment = graphql`
     isAllowed
     isInOrganization
     organizationId
+    organizationName
   }
 `;
 

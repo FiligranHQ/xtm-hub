@@ -1386,7 +1386,7 @@ describe('registration app', () => {
     });
 
     it('should allow user to register when he has the required capabilities', async () => {
-      const organizationId = uuidv4();
+      const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       isUserAllowedOnOrganizationSpy.mockReturnValue(
         Promise.resolve({ isAllowed: true })
       );
@@ -1403,10 +1403,13 @@ describe('registration app', () => {
 
       expect(result.isAllowed).toBeTruthy();
       expect(result.organizationId).toBe(organizationId);
+      expect(result.organizationName).toBe(
+        TEST_ORGANIZATIONS.SECOND_ORGANIZATION.NAME
+      );
     });
 
     it('should not allow user to register when he does not have the required capabilities', async () => {
-      const organizationId = uuidv4();
+      const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       loadResolvedConfigurationByPlatformSpy.mockReturnValue(
         Promise.resolve(buildResolved())
       );
@@ -1424,6 +1427,7 @@ describe('registration app', () => {
       expect(result.isAllowed).toBeFalsy();
       expect(result.isInOrganization).toBeFalsy();
       expect(result.organizationId).toBe(organizationId);
+      expect(result.organizationName).toBeNull();
     });
   });
 

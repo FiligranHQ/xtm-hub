@@ -502,6 +502,7 @@ export const RegistrationApp = {
   }: CanUnregisterPlatformInput): Promise<{
     isAllowed: boolean;
     organizationId: OrganizationId | null;
+    organizationName: string | null;
     isInOrganization: boolean;
   }> => {
     const resolvedConfiguration =
@@ -530,11 +531,17 @@ export const RegistrationApp = {
         organizationId: subscription.organization_id,
         requiredCapability: OrganizationCapability.ManagePlatformRegistration,
       });
+    const organization = isAllowed
+      ? await OrganizationDomain.loadOrganizationBy({
+          id: subscription.organization_id,
+        })
+      : undefined;
 
     return {
       isAllowed,
       isInOrganization,
       organizationId: subscription.organization_id,
+      organizationName: organization?.name ?? null,
     };
   },
 
