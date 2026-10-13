@@ -1,0 +1,87 @@
+meta {
+  name: PulseNetworkOverview
+  type: graphql
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+body:graphql {
+  query PulseNetworkOverview {
+    pulseNetworkOverview {
+      day
+      settings {
+        enabled
+        disabled_reason
+        k_threshold
+        retention_months
+        retention_days
+        digest_size
+        contribution_window_days
+        contribution_grace_days
+        trending_cache_ttl_minutes
+      }
+      platforms {
+        registered
+        contributing
+        active_last_24_hours
+        active_last_7_days
+        preview_only
+        lapsed
+        unregistered
+        digest_readers_last_24_hours
+      }
+      keys {
+        tracked
+        published
+        suppressed
+      }
+      ingestion {
+        batches_today
+        records_today
+        batches_last_30_days
+        records_last_30_days
+      }
+      activity {
+        day
+        batches
+        records
+        events
+        platforms
+      }
+      sectors {
+        sector_bucket
+        platforms
+        events
+      }
+      regions {
+        region_bucket
+        platforms
+        events
+      }
+      kinds {
+        object_type
+        event_kind
+        platforms
+        events
+      }
+      rejections {
+        operation
+        code
+        requests
+        last_day
+      }
+      last_digest_at
+      last_trending_at
+    }
+  }
+}
+
+docs {
+  Hub administrators only (BYPASS capability): set the session cookie.
+  Counts, buckets and dates of the Threat Pulse network, never a value, a hash or a pseudonym.
+}

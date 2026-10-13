@@ -1120,6 +1120,8 @@ export type Mutation = {
   logout: Scalars['ID']['output'];
   newProductVersion: Success;
   publishContentTranslationDrafts: Array<ContentTranslationEntry>;
+  pulsePurge: PulsePurgeResult;
+  pushPulse: PushPulseResult;
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
   refreshPlatformRegistrationConnectivityStatusAllTenants: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse;
   refreshPlatformRegistrationConnectivityStatusSingleTenant: RefreshPlatformRegistrationConnectivityStatusResponse;
@@ -1470,6 +1472,16 @@ export type MutationLoginArgs = {
 export type MutationNewProductVersionArgs = {
   product: PlatformIdentifier;
   version: Scalars['String']['input'];
+};
+
+
+export type MutationPulsePurgeArgs = {
+  platformId: Scalars['String']['input'];
+};
+
+
+export type MutationPushPulseArgs = {
+  input: PushPulseInput;
 };
 
 
@@ -1948,6 +1960,498 @@ export type PublicDocumentSlugInfo = {
   updated_at: Maybe<Scalars['Date']['output']>;
 };
 
+export type PulseBenchmarkInput = {
+  day: Scalars['String']['input'];
+  period: PulsePeriod;
+  /** Must equal the XTM-Hub-Platform-Id header */
+  platformId: Scalars['String']['input'];
+};
+
+export type PulseBenchmarkItem = {
+  __typename?: 'PulseBenchmarkItem';
+  hash: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  platform_count: Scalars['Int']['output'];
+  ratio: Scalars['Float']['output'];
+  sector_median: Scalars['Float']['output'];
+};
+
+export type PulseBenchmarkMetric = {
+  __typename?: 'PulseBenchmarkMetric';
+  event_kind: PulseEventKind;
+  /** Null when the network has fewer than k active platforms in the period */
+  network_median: Maybe<Scalars['Float']['output']>;
+  object_type: PulseObjectType;
+  /** Events of the calling platform over the period, in every sector it reported under; compared with network_median */
+  platform_count: Scalars['Int']['output'];
+  /** Null when the sector bucket has fewer than k active platforms in the period */
+  sector_median: Maybe<Scalars['Float']['output']>;
+  /** Events of the calling platform over the period in its current sector only; compared with sector_median */
+  sector_platform_count: Scalars['Int']['output'];
+};
+
+export type PulseBenchmarkResult = {
+  __typename?: 'PulseBenchmarkResult';
+  metrics: Array<PulseBenchmarkMetric>;
+  period: PulsePeriod;
+  region_bucket: PulseRegionBucket;
+  sector_bucket: PulseSectorBucket;
+  /** Null when the sector bucket has fewer than k active platforms in the period */
+  sector_platforms_bucket: Maybe<Scalars['String']['output']>;
+  /** At most 50 items */
+  top_items: Array<PulseBenchmarkItem>;
+};
+
+export enum PulseContributionStatus {
+  /** The caller contributed within the contribution window */
+  Active = 'active',
+  /** The caller contributed within the grace period, not within the window */
+  Grace = 'grace',
+  /** The caller's last contribution is older than the grace period */
+  Lapsed = 'lapsed',
+  /** The caller never contributed */
+  None = 'none'
+}
+
+export type PulseDigest = {
+  __typename?: 'PulseDigest';
+  day: Scalars['String']['output'];
+  /** The most prevalent published keys of the network, PULSE_DIGEST_SIZE at most */
+  items: Array<PulseDigestItem>;
+  region_bucket: Maybe<PulseRegionBucket>;
+  sector_bucket: Maybe<PulseSectorBucket>;
+  trending: PulseDigestTrending;
+};
+
+export type PulseDigestInput = {
+  /** UTC day of the salt the digest hashes are computed with */
+  day: Scalars['String']['input'];
+  /** The sector trending of every region when absent */
+  region_bucket: InputMaybe<PulseRegionBucket>;
+  /** The network trending when absent */
+  sector_bucket: InputMaybe<PulseSectorBucket>;
+};
+
+export type PulseDigestItem = {
+  __typename?: 'PulseDigestItem';
+  /** Transport hash under the salt of the digest day */
+  hash: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  prevalence_bucket: PulsePrevalenceBucket;
+  trend: PulseTrendDirection;
+};
+
+export type PulseDigestTrending = {
+  __typename?: 'PulseDigestTrending';
+  /** The first ranks only */
+  items: Array<PulseDigestTrendingItem>;
+  /** Ranks after the named ones, up to 10, counted but not named */
+  locked_count: Scalars['Int']['output'];
+  period: PulsePeriod;
+};
+
+export type PulseDigestTrendingItem = {
+  __typename?: 'PulseDigestTrendingItem';
+  hash: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  prevalence_bucket: PulsePrevalenceBucket;
+  rank: Scalars['Int']['output'];
+  trend: PulseTrendDirection;
+};
+
+export enum PulseEventKind {
+  Created = 'created',
+  Detected = 'detected',
+  Hunted = 'hunted',
+  Referenced = 'referenced',
+  Sighted = 'sighted'
+}
+
+export type PulseLookupInput = {
+  day: Scalars['String']['input'];
+  /** 1..1000 hashes under the day's salt */
+  hashes: Array<Scalars['String']['input']>;
+  object_type: PulseObjectType;
+};
+
+export type PulseLookupResult = {
+  __typename?: 'PulseLookupResult';
+  first_seen_network: Maybe<Scalars['String']['output']>;
+  /** Echo of the requested hash, same order as the request */
+  hash: Scalars['String']['output'];
+  last_seen_network: Maybe<Scalars['String']['output']>;
+  /** 5-9, 10-24, 25-49, 50-99, 100-249 or 250+ */
+  platforms_bucket: Maybe<Scalars['String']['output']>;
+  prevalence_bucket: Maybe<PulsePrevalenceBucket>;
+  /** Distinct platforms over the retention period >= k */
+  published: Scalars['Boolean']['output'];
+  sector_platforms_bucket: Maybe<Scalars['String']['output']>;
+  /** Null unless the caller's sector bucket has at least k platforms on the key over 30 days */
+  sector_trend: Maybe<PulseTrendDirection>;
+  trend: Maybe<PulseTrendDirection>;
+  /** 12 weekly values, oldest first, never exact counts: each is the lower bound of the platforms range of its week (5, 10, 25, ...), 0 below k, and k for a week published as the <5 range */
+  trend_series: Maybe<Array<Scalars['Int']['output']>>;
+};
+
+export type PulseNetworkActivityDay = {
+  __typename?: 'PulseNetworkActivityDay';
+  batches: Scalars['Int']['output'];
+  day: Scalars['String']['output'];
+  /** Sum of the event counts of the day */
+  events: Scalars['Float']['output'];
+  /** Platforms that contributed to the day */
+  platforms: Scalars['Int']['output'];
+  records: Scalars['Float']['output'];
+};
+
+export type PulseNetworkIngestion = {
+  __typename?: 'PulseNetworkIngestion';
+  batches_last_30_days: Scalars['Int']['output'];
+  batches_today: Scalars['Int']['output'];
+  records_last_30_days: Scalars['Float']['output'];
+  records_today: Scalars['Float']['output'];
+};
+
+export type PulseNetworkKeyCounts = {
+  __typename?: 'PulseNetworkKeyCounts';
+  /** Keys reported by at least k platforms: the only ones ever published */
+  published: Scalars['Float']['output'];
+  /** Keys reported by fewer than k platforms: never published */
+  suppressed: Scalars['Float']['output'];
+  /** Keys held over the retention period */
+  tracked: Scalars['Float']['output'];
+};
+
+export type PulseNetworkKindCoverage = {
+  __typename?: 'PulseNetworkKindCoverage';
+  event_kind: PulseEventKind;
+  events: Scalars['Float']['output'];
+  object_type: PulseObjectType;
+  /** Platforms that reported it over the last 30 days */
+  platforms: Scalars['Int']['output'];
+};
+
+export enum PulseNetworkOperation {
+  PulseBenchmark = 'pulse_benchmark',
+  PulseDigest = 'pulse_digest',
+  PulseLookup = 'pulse_lookup',
+  PulsePurge = 'pulse_purge',
+  PulseSalt = 'pulse_salt',
+  PulseStatus = 'pulse_status',
+  PulseTrending = 'pulse_trending',
+  PushPulse = 'push_pulse'
+}
+
+export type PulseNetworkOverview = {
+  __typename?: 'PulseNetworkOverview';
+  /** The last 30 UTC days, the oldest first, every day present */
+  activity: Array<PulseNetworkActivityDay>;
+  /** Current UTC day */
+  day: Scalars['String']['output'];
+  ingestion: PulseNetworkIngestion;
+  keys: PulseNetworkKeyCounts;
+  /** Object types and event kinds of the last 30 days */
+  kinds: Array<PulseNetworkKindCoverage>;
+  last_digest_at: Maybe<Scalars['Date']['output']>;
+  last_trending_at: Maybe<Scalars['Date']['output']>;
+  platforms: PulseNetworkPlatformCounts;
+  regions: Array<PulseNetworkRegionCoverage>;
+  /** Requests refused over the last 7 UTC days */
+  rejections: Array<PulseNetworkRejection>;
+  sectors: Array<PulseNetworkSectorCoverage>;
+  settings: PulseNetworkSettings;
+};
+
+export type PulseNetworkPlatform = {
+  __typename?: 'PulseNetworkPlatform';
+  batches_last_30_days: Scalars['Int']['output'];
+  first_contribution_day: Maybe<Scalars['String']['output']>;
+  /** The service instance of the registration */
+  id: Scalars['ID']['output'];
+  last_batch_at: Maybe<Scalars['Date']['output']>;
+  last_contribution_day: Maybe<Scalars['String']['output']>;
+  last_purge_day: Maybe<Scalars['String']['output']>;
+  organization_name: Maybe<Scalars['String']['output']>;
+  /** Purges requested over the retention period */
+  purge_requests: Scalars['Int']['output'];
+  records_last_30_days: Scalars['Float']['output'];
+  region_bucket: Maybe<PulseRegionBucket>;
+  sector_bucket: Maybe<PulseSectorBucket>;
+  status: PulseNetworkPlatformStatus;
+  title: Scalars['String']['output'];
+};
+
+export type PulseNetworkPlatformConnection = {
+  __typename?: 'PulseNetworkPlatformConnection';
+  edges: Array<PulseNetworkPlatformEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PulseNetworkPlatformCounts = {
+  __typename?: 'PulseNetworkPlatformCounts';
+  /** Platforms whose last contribution day is one of the last 7 UTC days */
+  active_last_7_days: Scalars['Int']['output'];
+  /** Platforms that pushed a batch over the last 24 hours */
+  active_last_24_hours: Scalars['Int']['output'];
+  /** Platforms within the contribution window or the grace period. Null while the settings are invalid */
+  contributing: Maybe<Scalars['Int']['output']>;
+  /** Platforms that downloaded the preview digest over the last 24 hours */
+  digest_readers_last_24_hours: Scalars['Int']['output'];
+  /** Platforms whose last contribution is older than the grace period. Null while the settings are invalid */
+  lapsed: Maybe<Scalars['Int']['output']>;
+  /** Registered platforms with no contribution held: the preview only. Null while the service is disabled */
+  preview_only: Maybe<Scalars['Int']['output']>;
+  /** Active OpenCTI registrations */
+  registered: Scalars['Int']['output'];
+  /** Contributors no active registration matches any more. Null while the service is disabled */
+  unregistered: Maybe<Scalars['Int']['output']>;
+};
+
+export type PulseNetworkPlatformEdge = {
+  __typename?: 'PulseNetworkPlatformEdge';
+  cursor: Scalars['String']['output'];
+  node: PulseNetworkPlatform;
+};
+
+export enum PulseNetworkPlatformOrdering {
+  LastContributionDay = 'last_contribution_day',
+  OrganizationName = 'organization_name',
+  PurgeRequests = 'purge_requests',
+  RecordsLast_30Days = 'records_last_30_days',
+  Status = 'status',
+  Title = 'title'
+}
+
+export enum PulseNetworkPlatformStatus {
+  /** Contributed within the contribution window or the grace period */
+  Contributing = 'contributing',
+  /** The last contribution is older than the grace period */
+  Lapsed = 'lapsed',
+  /** No contribution held (never contributed, purged or expired): the preview only */
+  PreviewOnly = 'preview_only'
+}
+
+export type PulseNetworkRegionCoverage = {
+  __typename?: 'PulseNetworkRegionCoverage';
+  events: Scalars['Float']['output'];
+  platforms: Scalars['Int']['output'];
+  region_bucket: PulseRegionBucket;
+};
+
+export type PulseNetworkRejection = {
+  __typename?: 'PulseNetworkRejection';
+  code: PulseNetworkRejectionCode;
+  /** Last UTC day with such a rejection */
+  last_day: Scalars['String']['output'];
+  operation: PulseNetworkOperation;
+  requests: Scalars['Int']['output'];
+};
+
+export enum PulseNetworkRejectionCode {
+  BadUserInput = 'BAD_USER_INPUT',
+  Forbidden = 'FORBIDDEN',
+  PulseContributionRequired = 'PULSE_CONTRIBUTION_REQUIRED',
+  PulseDisabled = 'PULSE_DISABLED',
+  PulseRateLimited = 'PULSE_RATE_LIMITED',
+  Unauthenticated = 'UNAUTHENTICATED'
+}
+
+export type PulseNetworkSectorCoverage = {
+  __typename?: 'PulseNetworkSectorCoverage';
+  /** Events of the last 30 days */
+  events: Scalars['Float']['output'];
+  /** Platforms whose current sector bucket it is */
+  platforms: Scalars['Int']['output'];
+  sector_bucket: PulseSectorBucket;
+};
+
+export type PulseNetworkSettings = {
+  __typename?: 'PulseNetworkSettings';
+  contribution_grace_days: Maybe<Scalars['Int']['output']>;
+  contribution_window_days: Maybe<Scalars['Int']['output']>;
+  digest_size: Maybe<Scalars['Int']['output']>;
+  /** Why the service is disabled, null while it is enabled */
+  disabled_reason: Maybe<Scalars['String']['output']>;
+  enabled: Scalars['Boolean']['output'];
+  /** The settings are null when one of them is invalid */
+  k_threshold: Maybe<Scalars['Int']['output']>;
+  /** Days from the first day the retention keeps to today, both included */
+  retention_days: Maybe<Scalars['Int']['output']>;
+  retention_months: Maybe<Scalars['Int']['output']>;
+  trending_cache_ttl_minutes: Maybe<Scalars['Int']['output']>;
+};
+
+export type PulseNetworkTrending = {
+  __typename?: 'PulseNetworkTrending';
+  /** When the service computed the list it serves (cached for the trending TTL) */
+  computed_at: Maybe<Scalars['Date']['output']>;
+  day: Scalars['String']['output'];
+  items: Array<PulseNetworkTrendingItem>;
+  period: PulsePeriod;
+};
+
+export type PulseNetworkTrendingItem = {
+  __typename?: 'PulseNetworkTrendingItem';
+  first_seen_network: Maybe<Scalars['String']['output']>;
+  growth: Scalars['Float']['output'];
+  /** The first characters of the at-rest key: an identifier, it reveals nothing about the object */
+  key_id: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  platforms_bucket: Scalars['String']['output'];
+  prevalence_bucket: PulsePrevalenceBucket;
+  trend: PulseTrendDirection;
+};
+
+export enum PulseObjectType {
+  AttackPattern = 'attack_pattern',
+  Indicator = 'indicator',
+  IntrusionSet = 'intrusion_set',
+  Malware = 'malware',
+  Tool = 'tool',
+  Vulnerability = 'vulnerability'
+}
+
+export enum PulsePeriod {
+  Last_7Days = 'last_7_days',
+  Last_30Days = 'last_30_days',
+  Last_90Days = 'last_90_days'
+}
+
+export enum PulsePrevalenceBucket {
+  Common = 'common',
+  Rare = 'rare',
+  Uncommon = 'uncommon',
+  Widespread = 'widespread'
+}
+
+export type PulsePurgeResult = {
+  __typename?: 'PulsePurgeResult';
+  deleted_records: Scalars['Int']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type PulseRecordInput = {
+  /** 1..100000 */
+  count: Scalars['Int']['input'];
+  event_kind: PulseEventKind;
+  /** AES-128-ECB of the stable key under the day's salt, ^[0-9a-f]{32}$ */
+  hash: Scalars['String']['input'];
+  object_type: PulseObjectType;
+};
+
+export enum PulseRegionBucket {
+  Africa = 'africa',
+  AsiaPacific = 'asia_pacific',
+  Europe = 'europe',
+  Global = 'global',
+  LatinAmerica = 'latin_america',
+  MiddleEast = 'middle_east',
+  NorthAmerica = 'north_america',
+  Undisclosed = 'undisclosed'
+}
+
+export type PulseSalt = {
+  __typename?: 'PulseSalt';
+  /** UTC day, YYYY-MM-DD */
+  day: Scalars['String']['output'];
+  /** 32 lowercase hex characters (16 random bytes, generated once per UTC day) */
+  salt: Scalars['String']['output'];
+};
+
+export enum PulseSectorBucket {
+  Defense = 'defense',
+  EducationResearch = 'education_research',
+  EnergyUtilities = 'energy_utilities',
+  Finance = 'finance',
+  Government = 'government',
+  Healthcare = 'healthcare',
+  Manufacturing = 'manufacturing',
+  NonProfit = 'non_profit',
+  Other = 'other',
+  RetailConsumer = 'retail_consumer',
+  Technology = 'technology',
+  Telecommunications = 'telecommunications',
+  Transportation = 'transportation',
+  Undisclosed = 'undisclosed'
+}
+
+export type PulseStatus = {
+  __typename?: 'PulseStatus';
+  contribution_grace_days: Scalars['Int']['output'];
+  contribution_status: PulseContributionStatus;
+  contribution_window_days: Scalars['Int']['output'];
+  /** Active contributors over 30 days: <k below the anonymity threshold, else a platforms bucket */
+  contributors_bucket: Scalars['String']['output'];
+  day: Scalars['String']['output'];
+  k_threshold: Scalars['Int']['output'];
+  last_contribution_day: Maybe<Scalars['String']['output']>;
+  /** The caller can read lookups, trending and benchmarks (active or grace) */
+  read_access: Scalars['Boolean']['output'];
+  /** Last day of read access without a new contribution */
+  read_access_until: Maybe<Scalars['String']['output']>;
+  retention_months: Scalars['Int']['output'];
+};
+
+export enum PulseTrendDirection {
+  Falling = 'falling',
+  Rising = 'rising',
+  Stable = 'stable'
+}
+
+export type PulseTrendingInput = {
+  day: Scalars['String']['input'];
+  /** Default 50, max 200 */
+  first: InputMaybe<Scalars['Int']['input']>;
+  /** Null for every object type */
+  object_types: InputMaybe<Array<PulseObjectType>>;
+  period: PulsePeriod;
+  /** Null for every region */
+  region_bucket: InputMaybe<PulseRegionBucket>;
+  /** Null for the whole network */
+  sector_bucket: InputMaybe<PulseSectorBucket>;
+};
+
+export type PulseTrendingItem = {
+  __typename?: 'PulseTrendingItem';
+  /** First day one week of the history reached k platforms; null while no week did */
+  first_seen_network: Maybe<Scalars['String']['output']>;
+  /** (recent + 1) / (baseline + 1) */
+  growth: Scalars['Float']['output'];
+  /** Hash of the item under the requested day's salt */
+  hash: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  platforms_bucket: Scalars['String']['output'];
+  prevalence_bucket: PulsePrevalenceBucket;
+  trend: PulseTrendDirection;
+};
+
+export type PulseTrendingResult = {
+  __typename?: 'PulseTrendingResult';
+  day: Scalars['String']['output'];
+  items: Array<PulseTrendingItem>;
+  period: PulsePeriod;
+  region_bucket: Maybe<PulseRegionBucket>;
+  sector_bucket: Maybe<PulseSectorBucket>;
+};
+
+export type PushPulseInput = {
+  /** Random UUID the platform draws once per batch and sends again on every retry: a batch already recorded is answered with its first result and counted once */
+  batch_id: Scalars['String']['input'];
+  /** Salt day used for every hash of the batch (today or yesterday, UTC) */
+  day: Scalars['String']['input'];
+  /** 1..5000 records, (hash, object_type, event_kind) unique inside a batch */
+  records: Array<PulseRecordInput>;
+  region_bucket: PulseRegionBucket;
+  sector_bucket: PulseSectorBucket;
+};
+
+export type PushPulseResult = {
+  __typename?: 'PushPulseResult';
+  accepted: Scalars['Int']['output'];
+  day: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   bundleProducts: Array<PlatformIdentifier>;
@@ -1987,6 +2491,15 @@ export type Query = {
   publicDocumentSlugsByServiceSlug: Array<PublicDocumentSlugInfo>;
   publicDocuments: DocumentConnection;
   publicDocumentsByServiceSlug: Array<Document>;
+  pulseBenchmark: PulseBenchmarkResult;
+  pulseDigest: PulseDigest;
+  pulseLookup: Array<PulseLookupResult>;
+  pulseNetworkOverview: PulseNetworkOverview;
+  pulseNetworkPlatforms: PulseNetworkPlatformConnection;
+  pulseNetworkTrending: PulseNetworkTrending;
+  pulseSalt: PulseSalt;
+  pulseStatus: PulseStatus;
+  pulseTrending: PulseTrendingResult;
   registeredPlatform: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   /**
@@ -2212,6 +2725,47 @@ export type QueryPublicDocumentsArgs = {
 
 export type QueryPublicDocumentsByServiceSlugArgs = {
   serviceInstanceSlug: Scalars['String']['input'];
+};
+
+
+export type QueryPulseBenchmarkArgs = {
+  input: PulseBenchmarkInput;
+};
+
+
+export type QueryPulseDigestArgs = {
+  input: PulseDigestInput;
+};
+
+
+export type QueryPulseLookupArgs = {
+  input: PulseLookupInput;
+};
+
+
+export type QueryPulseNetworkPlatformsArgs = {
+  after: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: PulseNetworkPlatformOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<PulseNetworkPlatformStatus>;
+};
+
+
+export type QueryPulseNetworkTrendingArgs = {
+  first: InputMaybe<Scalars['Int']['input']>;
+  period: PulsePeriod;
+};
+
+
+export type QueryPulseSaltArgs = {
+  day: Scalars['String']['input'];
+};
+
+
+export type QueryPulseTrendingArgs = {
+  input: PulseTrendingInput;
 };
 
 
@@ -3791,6 +4345,33 @@ export type SolutionCategoriesListQueryVariables = Exact<{
 
 export type SolutionCategoriesListQuery = { __typename?: 'Query', solutionCategories: { __typename?: 'SolutionCategoryConnection', totalCount: number, edges: Array<{ __typename?: 'SolutionCategoryEdge', node: { __typename?: 'SolutionCategory', id: string, name: string, product: Array<FiligranProduct> } }> } | null };
 
+export type ThreatPulseOverviewQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ThreatPulseOverviewQuery = { __typename?: 'Query', pulseNetworkOverview: { __typename?: 'PulseNetworkOverview', day: string, last_digest_at: any | null, last_trending_at: any | null, settings: { __typename?: 'PulseNetworkSettings', enabled: boolean, disabled_reason: string | null, k_threshold: number | null, retention_months: number | null, retention_days: number | null, digest_size: number | null, contribution_window_days: number | null, contribution_grace_days: number | null, trending_cache_ttl_minutes: number | null }, platforms: { __typename?: 'PulseNetworkPlatformCounts', registered: number, contributing: number | null, active_last_24_hours: number, active_last_7_days: number, preview_only: number | null, lapsed: number | null, unregistered: number | null, digest_readers_last_24_hours: number }, keys: { __typename?: 'PulseNetworkKeyCounts', tracked: number, published: number, suppressed: number }, ingestion: { __typename?: 'PulseNetworkIngestion', batches_today: number, records_today: number, batches_last_30_days: number, records_last_30_days: number }, activity: Array<{ __typename?: 'PulseNetworkActivityDay', day: string, batches: number, records: number, events: number, platforms: number }>, sectors: Array<{ __typename?: 'PulseNetworkSectorCoverage', sector_bucket: PulseSectorBucket, platforms: number, events: number }>, regions: Array<{ __typename?: 'PulseNetworkRegionCoverage', region_bucket: PulseRegionBucket, platforms: number, events: number }>, kinds: Array<{ __typename?: 'PulseNetworkKindCoverage', object_type: PulseObjectType, event_kind: PulseEventKind, platforms: number, events: number }>, rejections: Array<{ __typename?: 'PulseNetworkRejection', operation: PulseNetworkOperation, code: PulseNetworkRejectionCode, requests: number, last_day: string }> } };
+
+export type ThreatPulseTrendingQueryVariables = Exact<{
+  period: PulsePeriod;
+  first: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type ThreatPulseTrendingQuery = { __typename?: 'Query', pulseNetworkTrending: { __typename?: 'PulseNetworkTrending', day: string, period: PulsePeriod, computed_at: any | null, items: Array<{ __typename?: 'PulseNetworkTrendingItem', key_id: string, object_type: PulseObjectType, platforms_bucket: string, prevalence_bucket: PulsePrevalenceBucket, trend: PulseTrendDirection, growth: number, first_seen_network: string | null }> } };
+
+export type ThreatPulsePlatformRowFragment = { __typename?: 'PulseNetworkPlatform', id: string, title: string, organization_name: string | null, sector_bucket: PulseSectorBucket | null, region_bucket: PulseRegionBucket | null, status: PulseNetworkPlatformStatus, first_contribution_day: string | null, last_contribution_day: string | null, last_batch_at: any | null, batches_last_30_days: number, records_last_30_days: number, purge_requests: number, last_purge_day: string | null };
+
+export type ThreatPulsePlatformsQueryVariables = Exact<{
+  count: Scalars['Int']['input'];
+  cursor: InputMaybe<Scalars['ID']['input']>;
+  orderBy: PulseNetworkPlatformOrdering;
+  orderMode: OrderingMode;
+  searchTerm: InputMaybe<Scalars['String']['input']>;
+  status: InputMaybe<PulseNetworkPlatformStatus>;
+}>;
+
+
+export type ThreatPulsePlatformsQuery = { __typename?: 'Query', pulseNetworkPlatforms: { __typename?: 'PulseNetworkPlatformConnection', totalCount: number, edges: Array<{ __typename?: 'PulseNetworkPlatformEdge', node: { __typename?: 'PulseNetworkPlatform', id: string, title: string, organization_name: string | null, sector_bucket: PulseSectorBucket | null, region_bucket: PulseRegionBucket | null, status: PulseNetworkPlatformStatus, first_contribution_day: string | null, last_contribution_day: string | null, last_batch_at: any | null, batches_last_30_days: number, records_last_30_days: number, purge_requests: number, last_purge_day: string | null } }> } };
+
 export type CreateDeploymentRequestMutationVariables = Exact<{
   input: CreateDeploymentRequestInput;
 }>;
@@ -4220,6 +4801,23 @@ export const SolutionCategoryRowFragmentDoc = `
   id
   name
   product
+}
+    `;
+export const ThreatPulsePlatformRowFragmentDoc = `
+    fragment ThreatPulsePlatformRow on PulseNetworkPlatform {
+  id
+  title
+  organization_name
+  sector_bucket
+  region_bucket
+  status
+  first_contribution_day
+  last_contribution_day
+  last_batch_at
+  batches_last_30_days
+  records_last_30_days
+  purge_requests
+  last_purge_day
 }
     `;
 export const UseCaseRowFragmentDoc = `
@@ -6853,6 +7451,251 @@ export const useInfiniteSolutionCategoriesListQuery = <
 useInfiniteSolutionCategoriesListQuery.getKey = (variables: SolutionCategoriesListQueryVariables) => ['SolutionCategoriesList.infinite', variables];
 useInfiniteSolutionCategoriesListQuery.getRootKey = () => ['SolutionCategoriesList.infinite'] as const;
 useSolutionCategoriesListQuery.fetcher = (client: GraphQLClient, variables: SolutionCategoriesListQueryVariables, headers?: RequestInit['headers']) => fetcher<SolutionCategoriesListQuery, SolutionCategoriesListQueryVariables>(client, SolutionCategoriesListDocument, variables, headers);
+
+export const ThreatPulseOverviewDocument = `
+    query ThreatPulseOverview {
+  pulseNetworkOverview {
+    day
+    settings {
+      enabled
+      disabled_reason
+      k_threshold
+      retention_months
+      retention_days
+      digest_size
+      contribution_window_days
+      contribution_grace_days
+      trending_cache_ttl_minutes
+    }
+    platforms {
+      registered
+      contributing
+      active_last_24_hours
+      active_last_7_days
+      preview_only
+      lapsed
+      unregistered
+      digest_readers_last_24_hours
+    }
+    keys {
+      tracked
+      published
+      suppressed
+    }
+    ingestion {
+      batches_today
+      records_today
+      batches_last_30_days
+      records_last_30_days
+    }
+    activity {
+      day
+      batches
+      records
+      events
+      platforms
+    }
+    sectors {
+      sector_bucket
+      platforms
+      events
+    }
+    regions {
+      region_bucket
+      platforms
+      events
+    }
+    kinds {
+      object_type
+      event_kind
+      platforms
+      events
+    }
+    rejections {
+      operation
+      code
+      requests
+      last_day
+    }
+    last_digest_at
+    last_trending_at
+  }
+}
+    `;
+
+export const useThreatPulseOverviewQuery = <
+      TData = ThreatPulseOverviewQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: ThreatPulseOverviewQueryVariables,
+      options?: Omit<UseQueryOptions<ThreatPulseOverviewQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ThreatPulseOverviewQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ThreatPulseOverviewQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['ThreatPulseOverview'] : ['ThreatPulseOverview', variables],
+    queryFn: fetcher<ThreatPulseOverviewQuery, ThreatPulseOverviewQueryVariables>(client, ThreatPulseOverviewDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useThreatPulseOverviewQuery.getKey = (variables?: ThreatPulseOverviewQueryVariables) => variables === undefined ? ['ThreatPulseOverview'] : ['ThreatPulseOverview', variables];
+useThreatPulseOverviewQuery.getRootKey = () => ['ThreatPulseOverview'] as const;
+export const useInfiniteThreatPulseOverviewQuery = <
+      TData = InfiniteData<ThreatPulseOverviewQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ThreatPulseOverviewQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ThreatPulseOverviewQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ThreatPulseOverviewQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ThreatPulseOverviewQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['ThreatPulseOverview.infinite'] : ['ThreatPulseOverview.infinite', variables],
+      queryFn: (metaData) => fetcher<ThreatPulseOverviewQuery, ThreatPulseOverviewQueryVariables>(client, ThreatPulseOverviewDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteThreatPulseOverviewQuery.getKey = (variables?: ThreatPulseOverviewQueryVariables) => variables === undefined ? ['ThreatPulseOverview.infinite'] : ['ThreatPulseOverview.infinite', variables];
+useInfiniteThreatPulseOverviewQuery.getRootKey = () => ['ThreatPulseOverview.infinite'] as const;
+useThreatPulseOverviewQuery.fetcher = (client: GraphQLClient, variables?: ThreatPulseOverviewQueryVariables, headers?: RequestInit['headers']) => fetcher<ThreatPulseOverviewQuery, ThreatPulseOverviewQueryVariables>(client, ThreatPulseOverviewDocument, variables, headers);
+
+export const ThreatPulseTrendingDocument = `
+    query ThreatPulseTrending($period: PulsePeriod!, $first: Int) {
+  pulseNetworkTrending(period: $period, first: $first) {
+    day
+    period
+    computed_at
+    items {
+      key_id
+      object_type
+      platforms_bucket
+      prevalence_bucket
+      trend
+      growth
+      first_seen_network
+    }
+  }
+}
+    `;
+
+export const useThreatPulseTrendingQuery = <
+      TData = ThreatPulseTrendingQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ThreatPulseTrendingQueryVariables,
+      options?: Omit<UseQueryOptions<ThreatPulseTrendingQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ThreatPulseTrendingQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ThreatPulseTrendingQuery, TError, TData>(
+      {
+    queryKey: ['ThreatPulseTrending', variables],
+    queryFn: fetcher<ThreatPulseTrendingQuery, ThreatPulseTrendingQueryVariables>(client, ThreatPulseTrendingDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useThreatPulseTrendingQuery.getKey = (variables: ThreatPulseTrendingQueryVariables) => ['ThreatPulseTrending', variables];
+useThreatPulseTrendingQuery.getRootKey = () => ['ThreatPulseTrending'] as const;
+export const useInfiniteThreatPulseTrendingQuery = <
+      TData = InfiniteData<ThreatPulseTrendingQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ThreatPulseTrendingQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ThreatPulseTrendingQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ThreatPulseTrendingQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ThreatPulseTrendingQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['ThreatPulseTrending.infinite', variables],
+      queryFn: (metaData) => fetcher<ThreatPulseTrendingQuery, ThreatPulseTrendingQueryVariables>(client, ThreatPulseTrendingDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteThreatPulseTrendingQuery.getKey = (variables: ThreatPulseTrendingQueryVariables) => ['ThreatPulseTrending.infinite', variables];
+useInfiniteThreatPulseTrendingQuery.getRootKey = () => ['ThreatPulseTrending.infinite'] as const;
+useThreatPulseTrendingQuery.fetcher = (client: GraphQLClient, variables: ThreatPulseTrendingQueryVariables, headers?: RequestInit['headers']) => fetcher<ThreatPulseTrendingQuery, ThreatPulseTrendingQueryVariables>(client, ThreatPulseTrendingDocument, variables, headers);
+
+export const ThreatPulsePlatformsDocument = `
+    query ThreatPulsePlatforms($count: Int!, $cursor: ID, $orderBy: PulseNetworkPlatformOrdering!, $orderMode: OrderingMode!, $searchTerm: String, $status: PulseNetworkPlatformStatus) {
+  pulseNetworkPlatforms(
+    first: $count
+    after: $cursor
+    orderBy: $orderBy
+    orderMode: $orderMode
+    searchTerm: $searchTerm
+    status: $status
+  ) {
+    totalCount
+    edges {
+      node {
+        ...ThreatPulsePlatformRow
+      }
+    }
+  }
+}
+    ${ThreatPulsePlatformRowFragmentDoc}`;
+
+export const useThreatPulsePlatformsQuery = <
+      TData = ThreatPulsePlatformsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ThreatPulsePlatformsQueryVariables,
+      options?: Omit<UseQueryOptions<ThreatPulsePlatformsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ThreatPulsePlatformsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ThreatPulsePlatformsQuery, TError, TData>(
+      {
+    queryKey: ['ThreatPulsePlatforms', variables],
+    queryFn: fetcher<ThreatPulsePlatformsQuery, ThreatPulsePlatformsQueryVariables>(client, ThreatPulsePlatformsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useThreatPulsePlatformsQuery.getKey = (variables: ThreatPulsePlatformsQueryVariables) => ['ThreatPulsePlatforms', variables];
+useThreatPulsePlatformsQuery.getRootKey = () => ['ThreatPulsePlatforms'] as const;
+export const useInfiniteThreatPulsePlatformsQuery = <
+      TData = InfiniteData<ThreatPulsePlatformsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ThreatPulsePlatformsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ThreatPulsePlatformsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ThreatPulsePlatformsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ThreatPulsePlatformsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['ThreatPulsePlatforms.infinite', variables],
+      queryFn: (metaData) => fetcher<ThreatPulsePlatformsQuery, ThreatPulsePlatformsQueryVariables>(client, ThreatPulsePlatformsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteThreatPulsePlatformsQuery.getKey = (variables: ThreatPulsePlatformsQueryVariables) => ['ThreatPulsePlatforms.infinite', variables];
+useInfiniteThreatPulsePlatformsQuery.getRootKey = () => ['ThreatPulsePlatforms.infinite'] as const;
+useThreatPulsePlatformsQuery.fetcher = (client: GraphQLClient, variables: ThreatPulsePlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<ThreatPulsePlatformsQuery, ThreatPulsePlatformsQueryVariables>(client, ThreatPulsePlatformsDocument, variables, headers);
 
 export const CreateDeploymentRequestDocument = `
     mutation CreateDeploymentRequest($input: CreateDeploymentRequestInput!) {

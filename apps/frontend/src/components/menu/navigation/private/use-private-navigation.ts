@@ -176,6 +176,11 @@ export const usePrivateNavigation = (): NavigationConfig => {
       label: tMenuLinks('NewsFeed'),
       restriction: [PortalCapability.Bypass],
     },
+    {
+      href: `/${APP_PATH}/admin/threat-pulse`,
+      label: tMenuLinks('ThreatPulse'),
+      restriction: [PortalCapability.Bypass],
+    },
   ];
   const settingsLinks = settingsLinksConfig
     .filter(

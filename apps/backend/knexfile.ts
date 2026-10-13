@@ -104,7 +104,21 @@ type BaseDatabaseType =
   | 'VotableFeature_UseCase'
   | 'FeatureVote'
   | 'ContentTranslation'
-  | 'ContentTranslationDraft';
+  | 'ContentTranslationDraft'
+  | 'PulseSalt'
+  | 'PulsePlatform'
+  | 'PulseContribution'
+  | 'PulseKey'
+  | 'PulseKeyContributor'
+  | 'PulsePlatformDailyTotal'
+  | 'PulseRateLimit'
+  | 'PulseTrendingSnapshot'
+  | 'PulseDigestSnapshot'
+  | 'PulseDataGeneration'
+  | 'PulseBatch'
+  | 'PulsePlatformDailyIngestion'
+  | 'PulseRejection'
+  | 'PulsePurgeRequest';
 
 export type DatabaseType =
   | BaseDatabaseType

@@ -1,0 +1,42 @@
+meta {
+  name: PulseNetworkTrending
+  type: graphql
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/graphql-api
+  body: graphql
+  auth: inherit
+}
+
+body:graphql {
+  query PulseNetworkTrending($period: PulsePeriod!, $first: Int) {
+    pulseNetworkTrending(period: $period, first: $first) {
+      day
+      period
+      computed_at
+      items {
+        key_id
+        object_type
+        platforms_bucket
+        prevalence_bucket
+        trend
+        growth
+        first_seen_network
+      }
+    }
+  }
+}
+
+body:graphql:vars {
+  {
+    "period": "last_7_days",
+    "first": 50
+  }
+}
+
+docs {
+  Hub administrators only (BYPASS capability): set the session cookie.
+  The items the network publishes, at or above k, as the platforms see them. `key_id` is a shortened identifier, not a hash a platform can look up.
+}

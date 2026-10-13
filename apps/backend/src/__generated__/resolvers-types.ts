@@ -1113,6 +1113,8 @@ export type Mutation = {
   logout: Scalars['ID']['output'];
   newProductVersion: Success;
   publishContentTranslationDrafts: Array<ContentTranslationEntry>;
+  pulsePurge: PulsePurgeResult;
+  pushPulse: PushPulseResult;
   refreshPlatformRegistrationConnectivityStatus: RefreshPlatformRegistrationConnectivityStatusResponse;
   refreshPlatformRegistrationConnectivityStatusAllTenants: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse;
   refreshPlatformRegistrationConnectivityStatusSingleTenant: RefreshPlatformRegistrationConnectivityStatusResponse;
@@ -1463,6 +1465,16 @@ export type MutationLoginArgs = {
 export type MutationNewProductVersionArgs = {
   product: PlatformIdentifier;
   version: Scalars['String']['input'];
+};
+
+
+export type MutationPulsePurgeArgs = {
+  platformId: Scalars['String']['input'];
+};
+
+
+export type MutationPushPulseArgs = {
+  input: PushPulseInput;
 };
 
 
@@ -1941,6 +1953,498 @@ export type PublicDocumentSlugInfo = {
   updated_at?: Maybe<Scalars['Date']['output']>;
 };
 
+export type PulseBenchmarkInput = {
+  day: Scalars['String']['input'];
+  period: PulsePeriod;
+  /** Must equal the XTM-Hub-Platform-Id header */
+  platformId: Scalars['String']['input'];
+};
+
+export type PulseBenchmarkItem = {
+  __typename?: 'PulseBenchmarkItem';
+  hash: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  platform_count: Scalars['Int']['output'];
+  ratio: Scalars['Float']['output'];
+  sector_median: Scalars['Float']['output'];
+};
+
+export type PulseBenchmarkMetric = {
+  __typename?: 'PulseBenchmarkMetric';
+  event_kind: PulseEventKind;
+  /** Null when the network has fewer than k active platforms in the period */
+  network_median?: Maybe<Scalars['Float']['output']>;
+  object_type: PulseObjectType;
+  /** Events of the calling platform over the period, in every sector it reported under; compared with network_median */
+  platform_count: Scalars['Int']['output'];
+  /** Null when the sector bucket has fewer than k active platforms in the period */
+  sector_median?: Maybe<Scalars['Float']['output']>;
+  /** Events of the calling platform over the period in its current sector only; compared with sector_median */
+  sector_platform_count: Scalars['Int']['output'];
+};
+
+export type PulseBenchmarkResult = {
+  __typename?: 'PulseBenchmarkResult';
+  metrics: Array<PulseBenchmarkMetric>;
+  period: PulsePeriod;
+  region_bucket: PulseRegionBucket;
+  sector_bucket: PulseSectorBucket;
+  /** Null when the sector bucket has fewer than k active platforms in the period */
+  sector_platforms_bucket?: Maybe<Scalars['String']['output']>;
+  /** At most 50 items */
+  top_items: Array<PulseBenchmarkItem>;
+};
+
+export enum PulseContributionStatus {
+  /** The caller contributed within the contribution window */
+  Active = 'active',
+  /** The caller contributed within the grace period, not within the window */
+  Grace = 'grace',
+  /** The caller's last contribution is older than the grace period */
+  Lapsed = 'lapsed',
+  /** The caller never contributed */
+  None = 'none'
+}
+
+export type PulseDigest = {
+  __typename?: 'PulseDigest';
+  day: Scalars['String']['output'];
+  /** The most prevalent published keys of the network, PULSE_DIGEST_SIZE at most */
+  items: Array<PulseDigestItem>;
+  region_bucket?: Maybe<PulseRegionBucket>;
+  sector_bucket?: Maybe<PulseSectorBucket>;
+  trending: PulseDigestTrending;
+};
+
+export type PulseDigestInput = {
+  /** UTC day of the salt the digest hashes are computed with */
+  day: Scalars['String']['input'];
+  /** The sector trending of every region when absent */
+  region_bucket?: InputMaybe<PulseRegionBucket>;
+  /** The network trending when absent */
+  sector_bucket?: InputMaybe<PulseSectorBucket>;
+};
+
+export type PulseDigestItem = {
+  __typename?: 'PulseDigestItem';
+  /** Transport hash under the salt of the digest day */
+  hash: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  prevalence_bucket: PulsePrevalenceBucket;
+  trend: PulseTrendDirection;
+};
+
+export type PulseDigestTrending = {
+  __typename?: 'PulseDigestTrending';
+  /** The first ranks only */
+  items: Array<PulseDigestTrendingItem>;
+  /** Ranks after the named ones, up to 10, counted but not named */
+  locked_count: Scalars['Int']['output'];
+  period: PulsePeriod;
+};
+
+export type PulseDigestTrendingItem = {
+  __typename?: 'PulseDigestTrendingItem';
+  hash: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  prevalence_bucket: PulsePrevalenceBucket;
+  rank: Scalars['Int']['output'];
+  trend: PulseTrendDirection;
+};
+
+export enum PulseEventKind {
+  Created = 'created',
+  Detected = 'detected',
+  Hunted = 'hunted',
+  Referenced = 'referenced',
+  Sighted = 'sighted'
+}
+
+export type PulseLookupInput = {
+  day: Scalars['String']['input'];
+  /** 1..1000 hashes under the day's salt */
+  hashes: Array<Scalars['String']['input']>;
+  object_type: PulseObjectType;
+};
+
+export type PulseLookupResult = {
+  __typename?: 'PulseLookupResult';
+  first_seen_network?: Maybe<Scalars['String']['output']>;
+  /** Echo of the requested hash, same order as the request */
+  hash: Scalars['String']['output'];
+  last_seen_network?: Maybe<Scalars['String']['output']>;
+  /** 5-9, 10-24, 25-49, 50-99, 100-249 or 250+ */
+  platforms_bucket?: Maybe<Scalars['String']['output']>;
+  prevalence_bucket?: Maybe<PulsePrevalenceBucket>;
+  /** Distinct platforms over the retention period >= k */
+  published: Scalars['Boolean']['output'];
+  sector_platforms_bucket?: Maybe<Scalars['String']['output']>;
+  /** Null unless the caller's sector bucket has at least k platforms on the key over 30 days */
+  sector_trend?: Maybe<PulseTrendDirection>;
+  trend?: Maybe<PulseTrendDirection>;
+  /** 12 weekly values, oldest first, never exact counts: each is the lower bound of the platforms range of its week (5, 10, 25, ...), 0 below k, and k for a week published as the <5 range */
+  trend_series?: Maybe<Array<Scalars['Int']['output']>>;
+};
+
+export type PulseNetworkActivityDay = {
+  __typename?: 'PulseNetworkActivityDay';
+  batches: Scalars['Int']['output'];
+  day: Scalars['String']['output'];
+  /** Sum of the event counts of the day */
+  events: Scalars['Float']['output'];
+  /** Platforms that contributed to the day */
+  platforms: Scalars['Int']['output'];
+  records: Scalars['Float']['output'];
+};
+
+export type PulseNetworkIngestion = {
+  __typename?: 'PulseNetworkIngestion';
+  batches_last_30_days: Scalars['Int']['output'];
+  batches_today: Scalars['Int']['output'];
+  records_last_30_days: Scalars['Float']['output'];
+  records_today: Scalars['Float']['output'];
+};
+
+export type PulseNetworkKeyCounts = {
+  __typename?: 'PulseNetworkKeyCounts';
+  /** Keys reported by at least k platforms: the only ones ever published */
+  published: Scalars['Float']['output'];
+  /** Keys reported by fewer than k platforms: never published */
+  suppressed: Scalars['Float']['output'];
+  /** Keys held over the retention period */
+  tracked: Scalars['Float']['output'];
+};
+
+export type PulseNetworkKindCoverage = {
+  __typename?: 'PulseNetworkKindCoverage';
+  event_kind: PulseEventKind;
+  events: Scalars['Float']['output'];
+  object_type: PulseObjectType;
+  /** Platforms that reported it over the last 30 days */
+  platforms: Scalars['Int']['output'];
+};
+
+export enum PulseNetworkOperation {
+  PulseBenchmark = 'pulse_benchmark',
+  PulseDigest = 'pulse_digest',
+  PulseLookup = 'pulse_lookup',
+  PulsePurge = 'pulse_purge',
+  PulseSalt = 'pulse_salt',
+  PulseStatus = 'pulse_status',
+  PulseTrending = 'pulse_trending',
+  PushPulse = 'push_pulse'
+}
+
+export type PulseNetworkOverview = {
+  __typename?: 'PulseNetworkOverview';
+  /** The last 30 UTC days, the oldest first, every day present */
+  activity: Array<PulseNetworkActivityDay>;
+  /** Current UTC day */
+  day: Scalars['String']['output'];
+  ingestion: PulseNetworkIngestion;
+  keys: PulseNetworkKeyCounts;
+  /** Object types and event kinds of the last 30 days */
+  kinds: Array<PulseNetworkKindCoverage>;
+  last_digest_at?: Maybe<Scalars['Date']['output']>;
+  last_trending_at?: Maybe<Scalars['Date']['output']>;
+  platforms: PulseNetworkPlatformCounts;
+  regions: Array<PulseNetworkRegionCoverage>;
+  /** Requests refused over the last 7 UTC days */
+  rejections: Array<PulseNetworkRejection>;
+  sectors: Array<PulseNetworkSectorCoverage>;
+  settings: PulseNetworkSettings;
+};
+
+export type PulseNetworkPlatform = {
+  __typename?: 'PulseNetworkPlatform';
+  batches_last_30_days: Scalars['Int']['output'];
+  first_contribution_day?: Maybe<Scalars['String']['output']>;
+  /** The service instance of the registration */
+  id: Scalars['ID']['output'];
+  last_batch_at?: Maybe<Scalars['Date']['output']>;
+  last_contribution_day?: Maybe<Scalars['String']['output']>;
+  last_purge_day?: Maybe<Scalars['String']['output']>;
+  organization_name?: Maybe<Scalars['String']['output']>;
+  /** Purges requested over the retention period */
+  purge_requests: Scalars['Int']['output'];
+  records_last_30_days: Scalars['Float']['output'];
+  region_bucket?: Maybe<PulseRegionBucket>;
+  sector_bucket?: Maybe<PulseSectorBucket>;
+  status: PulseNetworkPlatformStatus;
+  title: Scalars['String']['output'];
+};
+
+export type PulseNetworkPlatformConnection = {
+  __typename?: 'PulseNetworkPlatformConnection';
+  edges: Array<PulseNetworkPlatformEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PulseNetworkPlatformCounts = {
+  __typename?: 'PulseNetworkPlatformCounts';
+  /** Platforms whose last contribution day is one of the last 7 UTC days */
+  active_last_7_days: Scalars['Int']['output'];
+  /** Platforms that pushed a batch over the last 24 hours */
+  active_last_24_hours: Scalars['Int']['output'];
+  /** Platforms within the contribution window or the grace period. Null while the settings are invalid */
+  contributing?: Maybe<Scalars['Int']['output']>;
+  /** Platforms that downloaded the preview digest over the last 24 hours */
+  digest_readers_last_24_hours: Scalars['Int']['output'];
+  /** Platforms whose last contribution is older than the grace period. Null while the settings are invalid */
+  lapsed?: Maybe<Scalars['Int']['output']>;
+  /** Registered platforms with no contribution held: the preview only. Null while the service is disabled */
+  preview_only?: Maybe<Scalars['Int']['output']>;
+  /** Active OpenCTI registrations */
+  registered: Scalars['Int']['output'];
+  /** Contributors no active registration matches any more. Null while the service is disabled */
+  unregistered?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PulseNetworkPlatformEdge = {
+  __typename?: 'PulseNetworkPlatformEdge';
+  cursor: Scalars['String']['output'];
+  node: PulseNetworkPlatform;
+};
+
+export enum PulseNetworkPlatformOrdering {
+  LastContributionDay = 'last_contribution_day',
+  OrganizationName = 'organization_name',
+  PurgeRequests = 'purge_requests',
+  RecordsLast_30Days = 'records_last_30_days',
+  Status = 'status',
+  Title = 'title'
+}
+
+export enum PulseNetworkPlatformStatus {
+  /** Contributed within the contribution window or the grace period */
+  Contributing = 'contributing',
+  /** The last contribution is older than the grace period */
+  Lapsed = 'lapsed',
+  /** No contribution held (never contributed, purged or expired): the preview only */
+  PreviewOnly = 'preview_only'
+}
+
+export type PulseNetworkRegionCoverage = {
+  __typename?: 'PulseNetworkRegionCoverage';
+  events: Scalars['Float']['output'];
+  platforms: Scalars['Int']['output'];
+  region_bucket: PulseRegionBucket;
+};
+
+export type PulseNetworkRejection = {
+  __typename?: 'PulseNetworkRejection';
+  code: PulseNetworkRejectionCode;
+  /** Last UTC day with such a rejection */
+  last_day: Scalars['String']['output'];
+  operation: PulseNetworkOperation;
+  requests: Scalars['Int']['output'];
+};
+
+export enum PulseNetworkRejectionCode {
+  BadUserInput = 'BAD_USER_INPUT',
+  Forbidden = 'FORBIDDEN',
+  PulseContributionRequired = 'PULSE_CONTRIBUTION_REQUIRED',
+  PulseDisabled = 'PULSE_DISABLED',
+  PulseRateLimited = 'PULSE_RATE_LIMITED',
+  Unauthenticated = 'UNAUTHENTICATED'
+}
+
+export type PulseNetworkSectorCoverage = {
+  __typename?: 'PulseNetworkSectorCoverage';
+  /** Events of the last 30 days */
+  events: Scalars['Float']['output'];
+  /** Platforms whose current sector bucket it is */
+  platforms: Scalars['Int']['output'];
+  sector_bucket: PulseSectorBucket;
+};
+
+export type PulseNetworkSettings = {
+  __typename?: 'PulseNetworkSettings';
+  contribution_grace_days?: Maybe<Scalars['Int']['output']>;
+  contribution_window_days?: Maybe<Scalars['Int']['output']>;
+  digest_size?: Maybe<Scalars['Int']['output']>;
+  /** Why the service is disabled, null while it is enabled */
+  disabled_reason?: Maybe<Scalars['String']['output']>;
+  enabled: Scalars['Boolean']['output'];
+  /** The settings are null when one of them is invalid */
+  k_threshold?: Maybe<Scalars['Int']['output']>;
+  /** Days from the first day the retention keeps to today, both included */
+  retention_days?: Maybe<Scalars['Int']['output']>;
+  retention_months?: Maybe<Scalars['Int']['output']>;
+  trending_cache_ttl_minutes?: Maybe<Scalars['Int']['output']>;
+};
+
+export type PulseNetworkTrending = {
+  __typename?: 'PulseNetworkTrending';
+  /** When the service computed the list it serves (cached for the trending TTL) */
+  computed_at?: Maybe<Scalars['Date']['output']>;
+  day: Scalars['String']['output'];
+  items: Array<PulseNetworkTrendingItem>;
+  period: PulsePeriod;
+};
+
+export type PulseNetworkTrendingItem = {
+  __typename?: 'PulseNetworkTrendingItem';
+  first_seen_network?: Maybe<Scalars['String']['output']>;
+  growth: Scalars['Float']['output'];
+  /** The first characters of the at-rest key: an identifier, it reveals nothing about the object */
+  key_id: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  platforms_bucket: Scalars['String']['output'];
+  prevalence_bucket: PulsePrevalenceBucket;
+  trend: PulseTrendDirection;
+};
+
+export enum PulseObjectType {
+  AttackPattern = 'attack_pattern',
+  Indicator = 'indicator',
+  IntrusionSet = 'intrusion_set',
+  Malware = 'malware',
+  Tool = 'tool',
+  Vulnerability = 'vulnerability'
+}
+
+export enum PulsePeriod {
+  Last_7Days = 'last_7_days',
+  Last_30Days = 'last_30_days',
+  Last_90Days = 'last_90_days'
+}
+
+export enum PulsePrevalenceBucket {
+  Common = 'common',
+  Rare = 'rare',
+  Uncommon = 'uncommon',
+  Widespread = 'widespread'
+}
+
+export type PulsePurgeResult = {
+  __typename?: 'PulsePurgeResult';
+  deleted_records: Scalars['Int']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type PulseRecordInput = {
+  /** 1..100000 */
+  count: Scalars['Int']['input'];
+  event_kind: PulseEventKind;
+  /** AES-128-ECB of the stable key under the day's salt, ^[0-9a-f]{32}$ */
+  hash: Scalars['String']['input'];
+  object_type: PulseObjectType;
+};
+
+export enum PulseRegionBucket {
+  Africa = 'africa',
+  AsiaPacific = 'asia_pacific',
+  Europe = 'europe',
+  Global = 'global',
+  LatinAmerica = 'latin_america',
+  MiddleEast = 'middle_east',
+  NorthAmerica = 'north_america',
+  Undisclosed = 'undisclosed'
+}
+
+export type PulseSalt = {
+  __typename?: 'PulseSalt';
+  /** UTC day, YYYY-MM-DD */
+  day: Scalars['String']['output'];
+  /** 32 lowercase hex characters (16 random bytes, generated once per UTC day) */
+  salt: Scalars['String']['output'];
+};
+
+export enum PulseSectorBucket {
+  Defense = 'defense',
+  EducationResearch = 'education_research',
+  EnergyUtilities = 'energy_utilities',
+  Finance = 'finance',
+  Government = 'government',
+  Healthcare = 'healthcare',
+  Manufacturing = 'manufacturing',
+  NonProfit = 'non_profit',
+  Other = 'other',
+  RetailConsumer = 'retail_consumer',
+  Technology = 'technology',
+  Telecommunications = 'telecommunications',
+  Transportation = 'transportation',
+  Undisclosed = 'undisclosed'
+}
+
+export type PulseStatus = {
+  __typename?: 'PulseStatus';
+  contribution_grace_days: Scalars['Int']['output'];
+  contribution_status: PulseContributionStatus;
+  contribution_window_days: Scalars['Int']['output'];
+  /** Active contributors over 30 days: <k below the anonymity threshold, else a platforms bucket */
+  contributors_bucket: Scalars['String']['output'];
+  day: Scalars['String']['output'];
+  k_threshold: Scalars['Int']['output'];
+  last_contribution_day?: Maybe<Scalars['String']['output']>;
+  /** The caller can read lookups, trending and benchmarks (active or grace) */
+  read_access: Scalars['Boolean']['output'];
+  /** Last day of read access without a new contribution */
+  read_access_until?: Maybe<Scalars['String']['output']>;
+  retention_months: Scalars['Int']['output'];
+};
+
+export enum PulseTrendDirection {
+  Falling = 'falling',
+  Rising = 'rising',
+  Stable = 'stable'
+}
+
+export type PulseTrendingInput = {
+  day: Scalars['String']['input'];
+  /** Default 50, max 200 */
+  first?: InputMaybe<Scalars['Int']['input']>;
+  /** Null for every object type */
+  object_types?: InputMaybe<Array<PulseObjectType>>;
+  period: PulsePeriod;
+  /** Null for every region */
+  region_bucket?: InputMaybe<PulseRegionBucket>;
+  /** Null for the whole network */
+  sector_bucket?: InputMaybe<PulseSectorBucket>;
+};
+
+export type PulseTrendingItem = {
+  __typename?: 'PulseTrendingItem';
+  /** First day one week of the history reached k platforms; null while no week did */
+  first_seen_network?: Maybe<Scalars['String']['output']>;
+  /** (recent + 1) / (baseline + 1) */
+  growth: Scalars['Float']['output'];
+  /** Hash of the item under the requested day's salt */
+  hash: Scalars['String']['output'];
+  object_type: PulseObjectType;
+  platforms_bucket: Scalars['String']['output'];
+  prevalence_bucket: PulsePrevalenceBucket;
+  trend: PulseTrendDirection;
+};
+
+export type PulseTrendingResult = {
+  __typename?: 'PulseTrendingResult';
+  day: Scalars['String']['output'];
+  items: Array<PulseTrendingItem>;
+  period: PulsePeriod;
+  region_bucket?: Maybe<PulseRegionBucket>;
+  sector_bucket?: Maybe<PulseSectorBucket>;
+};
+
+export type PushPulseInput = {
+  /** Random UUID the platform draws once per batch and sends again on every retry: a batch already recorded is answered with its first result and counted once */
+  batch_id: Scalars['String']['input'];
+  /** Salt day used for every hash of the batch (today or yesterday, UTC) */
+  day: Scalars['String']['input'];
+  /** 1..5000 records, (hash, object_type, event_kind) unique inside a batch */
+  records: Array<PulseRecordInput>;
+  region_bucket: PulseRegionBucket;
+  sector_bucket: PulseSectorBucket;
+};
+
+export type PushPulseResult = {
+  __typename?: 'PushPulseResult';
+  accepted: Scalars['Int']['output'];
+  day: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   bundleProducts: Array<PlatformIdentifier>;
@@ -1980,6 +2484,15 @@ export type Query = {
   publicDocumentSlugsByServiceSlug: Array<PublicDocumentSlugInfo>;
   publicDocuments: DocumentConnection;
   publicDocumentsByServiceSlug: Array<Document>;
+  pulseBenchmark: PulseBenchmarkResult;
+  pulseDigest: PulseDigest;
+  pulseLookup: Array<PulseLookupResult>;
+  pulseNetworkOverview: PulseNetworkOverview;
+  pulseNetworkPlatforms: PulseNetworkPlatformConnection;
+  pulseNetworkTrending: PulseNetworkTrending;
+  pulseSalt: PulseSalt;
+  pulseStatus: PulseStatus;
+  pulseTrending: PulseTrendingResult;
   registeredPlatform?: Maybe<RegisteredPlatform>;
   registeredPlatforms: Array<RegisteredPlatform>;
   /**
@@ -2205,6 +2718,47 @@ export type QueryPublicDocumentsArgs = {
 
 export type QueryPublicDocumentsByServiceSlugArgs = {
   serviceInstanceSlug: Scalars['String']['input'];
+};
+
+
+export type QueryPulseBenchmarkArgs = {
+  input: PulseBenchmarkInput;
+};
+
+
+export type QueryPulseDigestArgs = {
+  input: PulseDigestInput;
+};
+
+
+export type QueryPulseLookupArgs = {
+  input: PulseLookupInput;
+};
+
+
+export type QueryPulseNetworkPlatformsArgs = {
+  after?: InputMaybe<Scalars['ID']['input']>;
+  first: Scalars['Int']['input'];
+  orderBy: PulseNetworkPlatformOrdering;
+  orderMode: OrderingMode;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<PulseNetworkPlatformStatus>;
+};
+
+
+export type QueryPulseNetworkTrendingArgs = {
+  first?: InputMaybe<Scalars['Int']['input']>;
+  period: PulsePeriod;
+};
+
+
+export type QueryPulseSaltArgs = {
+  day: Scalars['String']['input'];
+};
+
+
+export type QueryPulseTrendingArgs = {
+  input: PulseTrendingInput;
 };
 
 
@@ -3488,6 +4042,7 @@ export type ResolversTypes = ResolversObject<{
   FiligranProduct: FiligranProduct;
   Filter: Filter;
   FilterKey: FilterKey;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   GenericServiceCapability: ResolverTypeWrapper<GenericServiceCapability>;
   GiveDeploymentFeedbackInput: GiveDeploymentFeedbackInput;
   HasRepliedSatisfaction: HasRepliedSatisfaction;
@@ -3551,6 +4106,53 @@ export type ResolversTypes = ResolversObject<{
   ProductUseCaseInput: ProductUseCaseInput;
   ProvisionedNewsFeedItem: ResolverTypeWrapper<ProvisionedNewsFeedItem>;
   PublicDocumentSlugInfo: ResolverTypeWrapper<PublicDocumentSlugInfo>;
+  PulseBenchmarkInput: PulseBenchmarkInput;
+  PulseBenchmarkItem: ResolverTypeWrapper<PulseBenchmarkItem>;
+  PulseBenchmarkMetric: ResolverTypeWrapper<PulseBenchmarkMetric>;
+  PulseBenchmarkResult: ResolverTypeWrapper<PulseBenchmarkResult>;
+  PulseContributionStatus: PulseContributionStatus;
+  PulseDigest: ResolverTypeWrapper<PulseDigest>;
+  PulseDigestInput: PulseDigestInput;
+  PulseDigestItem: ResolverTypeWrapper<PulseDigestItem>;
+  PulseDigestTrending: ResolverTypeWrapper<PulseDigestTrending>;
+  PulseDigestTrendingItem: ResolverTypeWrapper<PulseDigestTrendingItem>;
+  PulseEventKind: PulseEventKind;
+  PulseLookupInput: PulseLookupInput;
+  PulseLookupResult: ResolverTypeWrapper<PulseLookupResult>;
+  PulseNetworkActivityDay: ResolverTypeWrapper<PulseNetworkActivityDay>;
+  PulseNetworkIngestion: ResolverTypeWrapper<PulseNetworkIngestion>;
+  PulseNetworkKeyCounts: ResolverTypeWrapper<PulseNetworkKeyCounts>;
+  PulseNetworkKindCoverage: ResolverTypeWrapper<PulseNetworkKindCoverage>;
+  PulseNetworkOperation: PulseNetworkOperation;
+  PulseNetworkOverview: ResolverTypeWrapper<PulseNetworkOverview>;
+  PulseNetworkPlatform: ResolverTypeWrapper<PulseNetworkPlatform>;
+  PulseNetworkPlatformConnection: ResolverTypeWrapper<PulseNetworkPlatformConnection>;
+  PulseNetworkPlatformCounts: ResolverTypeWrapper<PulseNetworkPlatformCounts>;
+  PulseNetworkPlatformEdge: ResolverTypeWrapper<PulseNetworkPlatformEdge>;
+  PulseNetworkPlatformOrdering: PulseNetworkPlatformOrdering;
+  PulseNetworkPlatformStatus: PulseNetworkPlatformStatus;
+  PulseNetworkRegionCoverage: ResolverTypeWrapper<PulseNetworkRegionCoverage>;
+  PulseNetworkRejection: ResolverTypeWrapper<PulseNetworkRejection>;
+  PulseNetworkRejectionCode: PulseNetworkRejectionCode;
+  PulseNetworkSectorCoverage: ResolverTypeWrapper<PulseNetworkSectorCoverage>;
+  PulseNetworkSettings: ResolverTypeWrapper<PulseNetworkSettings>;
+  PulseNetworkTrending: ResolverTypeWrapper<PulseNetworkTrending>;
+  PulseNetworkTrendingItem: ResolverTypeWrapper<PulseNetworkTrendingItem>;
+  PulseObjectType: PulseObjectType;
+  PulsePeriod: PulsePeriod;
+  PulsePrevalenceBucket: PulsePrevalenceBucket;
+  PulsePurgeResult: ResolverTypeWrapper<PulsePurgeResult>;
+  PulseRecordInput: PulseRecordInput;
+  PulseRegionBucket: PulseRegionBucket;
+  PulseSalt: ResolverTypeWrapper<PulseSalt>;
+  PulseSectorBucket: PulseSectorBucket;
+  PulseStatus: ResolverTypeWrapper<PulseStatus>;
+  PulseTrendDirection: PulseTrendDirection;
+  PulseTrendingInput: PulseTrendingInput;
+  PulseTrendingItem: ResolverTypeWrapper<PulseTrendingItem>;
+  PulseTrendingResult: ResolverTypeWrapper<PulseTrendingResult>;
+  PushPulseInput: PushPulseInput;
+  PushPulseResult: ResolverTypeWrapper<PushPulseResult>;
   Query: ResolverTypeWrapper<{}>;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse: ResolverTypeWrapper<RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse>;
@@ -3743,6 +4345,7 @@ export type ResolversParentTypes = ResolversObject<{
   Facet: Facet;
   FacetBucket: FacetBucket;
   Filter: Filter;
+  Float: Scalars['Float']['output'];
   GenericServiceCapability: GenericServiceCapability;
   GiveDeploymentFeedbackInput: GiveDeploymentFeedbackInput;
   ID: Scalars['ID']['output'];
@@ -3789,6 +4392,41 @@ export type ResolversParentTypes = ResolversObject<{
   ProductUseCaseInput: ProductUseCaseInput;
   ProvisionedNewsFeedItem: ProvisionedNewsFeedItem;
   PublicDocumentSlugInfo: PublicDocumentSlugInfo;
+  PulseBenchmarkInput: PulseBenchmarkInput;
+  PulseBenchmarkItem: PulseBenchmarkItem;
+  PulseBenchmarkMetric: PulseBenchmarkMetric;
+  PulseBenchmarkResult: PulseBenchmarkResult;
+  PulseDigest: PulseDigest;
+  PulseDigestInput: PulseDigestInput;
+  PulseDigestItem: PulseDigestItem;
+  PulseDigestTrending: PulseDigestTrending;
+  PulseDigestTrendingItem: PulseDigestTrendingItem;
+  PulseLookupInput: PulseLookupInput;
+  PulseLookupResult: PulseLookupResult;
+  PulseNetworkActivityDay: PulseNetworkActivityDay;
+  PulseNetworkIngestion: PulseNetworkIngestion;
+  PulseNetworkKeyCounts: PulseNetworkKeyCounts;
+  PulseNetworkKindCoverage: PulseNetworkKindCoverage;
+  PulseNetworkOverview: PulseNetworkOverview;
+  PulseNetworkPlatform: PulseNetworkPlatform;
+  PulseNetworkPlatformConnection: PulseNetworkPlatformConnection;
+  PulseNetworkPlatformCounts: PulseNetworkPlatformCounts;
+  PulseNetworkPlatformEdge: PulseNetworkPlatformEdge;
+  PulseNetworkRegionCoverage: PulseNetworkRegionCoverage;
+  PulseNetworkRejection: PulseNetworkRejection;
+  PulseNetworkSectorCoverage: PulseNetworkSectorCoverage;
+  PulseNetworkSettings: PulseNetworkSettings;
+  PulseNetworkTrending: PulseNetworkTrending;
+  PulseNetworkTrendingItem: PulseNetworkTrendingItem;
+  PulsePurgeResult: PulsePurgeResult;
+  PulseRecordInput: PulseRecordInput;
+  PulseSalt: PulseSalt;
+  PulseStatus: PulseStatus;
+  PulseTrendingInput: PulseTrendingInput;
+  PulseTrendingItem: PulseTrendingItem;
+  PulseTrendingResult: PulseTrendingResult;
+  PushPulseInput: PushPulseInput;
+  PushPulseResult: PushPulseResult;
   Query: {};
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput: RefreshPlatformRegistrationConnectivityStatusAllTenantsInput;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse;
@@ -4455,6 +5093,8 @@ export type MutationResolvers<ContextType = PortalContext, ParentType extends Re
   logout?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   newProductVersion?: Resolver<ResolversTypes['Success'], ParentType, ContextType, RequireFields<MutationNewProductVersionArgs, 'product' | 'version'>>;
   publishContentTranslationDrafts?: Resolver<Array<ResolversTypes['ContentTranslationEntry']>, ParentType, ContextType>;
+  pulsePurge?: Resolver<ResolversTypes['PulsePurgeResult'], ParentType, ContextType, RequireFields<MutationPulsePurgeArgs, 'platformId'>>;
+  pushPulse?: Resolver<ResolversTypes['PushPulseResult'], ParentType, ContextType, RequireFields<MutationPushPulseArgs, 'input'>>;
   refreshPlatformRegistrationConnectivityStatus?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusArgs, 'input'>>;
   refreshPlatformRegistrationConnectivityStatusAllTenants?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusAllTenantsArgs, 'input'>>;
   refreshPlatformRegistrationConnectivityStatusSingleTenant?: Resolver<ResolversTypes['RefreshPlatformRegistrationConnectivityStatusResponse'], ParentType, ContextType, RequireFields<MutationRefreshPlatformRegistrationConnectivityStatusSingleTenantArgs, 'input'>>;
@@ -4704,6 +5344,278 @@ export type PublicDocumentSlugInfoResolvers<ContextType = PortalContext, ParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PulseBenchmarkItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseBenchmarkItem'] = ResolversParentTypes['PulseBenchmarkItem']> = ResolversObject<{
+  hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  object_type?: Resolver<ResolversTypes['PulseObjectType'], ParentType, ContextType>;
+  platform_count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  ratio?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  sector_median?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseBenchmarkMetricResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseBenchmarkMetric'] = ResolversParentTypes['PulseBenchmarkMetric']> = ResolversObject<{
+  event_kind?: Resolver<ResolversTypes['PulseEventKind'], ParentType, ContextType>;
+  network_median?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  object_type?: Resolver<ResolversTypes['PulseObjectType'], ParentType, ContextType>;
+  platform_count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  sector_median?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  sector_platform_count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseBenchmarkResultResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseBenchmarkResult'] = ResolversParentTypes['PulseBenchmarkResult']> = ResolversObject<{
+  metrics?: Resolver<Array<ResolversTypes['PulseBenchmarkMetric']>, ParentType, ContextType>;
+  period?: Resolver<ResolversTypes['PulsePeriod'], ParentType, ContextType>;
+  region_bucket?: Resolver<ResolversTypes['PulseRegionBucket'], ParentType, ContextType>;
+  sector_bucket?: Resolver<ResolversTypes['PulseSectorBucket'], ParentType, ContextType>;
+  sector_platforms_bucket?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  top_items?: Resolver<Array<ResolversTypes['PulseBenchmarkItem']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseDigestResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseDigest'] = ResolversParentTypes['PulseDigest']> = ResolversObject<{
+  day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  items?: Resolver<Array<ResolversTypes['PulseDigestItem']>, ParentType, ContextType>;
+  region_bucket?: Resolver<Maybe<ResolversTypes['PulseRegionBucket']>, ParentType, ContextType>;
+  sector_bucket?: Resolver<Maybe<ResolversTypes['PulseSectorBucket']>, ParentType, ContextType>;
+  trending?: Resolver<ResolversTypes['PulseDigestTrending'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseDigestItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseDigestItem'] = ResolversParentTypes['PulseDigestItem']> = ResolversObject<{
+  hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  object_type?: Resolver<ResolversTypes['PulseObjectType'], ParentType, ContextType>;
+  prevalence_bucket?: Resolver<ResolversTypes['PulsePrevalenceBucket'], ParentType, ContextType>;
+  trend?: Resolver<ResolversTypes['PulseTrendDirection'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseDigestTrendingResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseDigestTrending'] = ResolversParentTypes['PulseDigestTrending']> = ResolversObject<{
+  items?: Resolver<Array<ResolversTypes['PulseDigestTrendingItem']>, ParentType, ContextType>;
+  locked_count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  period?: Resolver<ResolversTypes['PulsePeriod'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseDigestTrendingItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseDigestTrendingItem'] = ResolversParentTypes['PulseDigestTrendingItem']> = ResolversObject<{
+  hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  object_type?: Resolver<ResolversTypes['PulseObjectType'], ParentType, ContextType>;
+  prevalence_bucket?: Resolver<ResolversTypes['PulsePrevalenceBucket'], ParentType, ContextType>;
+  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  trend?: Resolver<ResolversTypes['PulseTrendDirection'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseLookupResultResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseLookupResult'] = ResolversParentTypes['PulseLookupResult']> = ResolversObject<{
+  first_seen_network?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  last_seen_network?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  platforms_bucket?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  prevalence_bucket?: Resolver<Maybe<ResolversTypes['PulsePrevalenceBucket']>, ParentType, ContextType>;
+  published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  sector_platforms_bucket?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sector_trend?: Resolver<Maybe<ResolversTypes['PulseTrendDirection']>, ParentType, ContextType>;
+  trend?: Resolver<Maybe<ResolversTypes['PulseTrendDirection']>, ParentType, ContextType>;
+  trend_series?: Resolver<Maybe<Array<ResolversTypes['Int']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkActivityDayResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkActivityDay'] = ResolversParentTypes['PulseNetworkActivityDay']> = ResolversObject<{
+  batches?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  events?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  platforms?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  records?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkIngestionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkIngestion'] = ResolversParentTypes['PulseNetworkIngestion']> = ResolversObject<{
+  batches_last_30_days?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  batches_today?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  records_last_30_days?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  records_today?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkKeyCountsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkKeyCounts'] = ResolversParentTypes['PulseNetworkKeyCounts']> = ResolversObject<{
+  published?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  suppressed?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  tracked?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkKindCoverageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkKindCoverage'] = ResolversParentTypes['PulseNetworkKindCoverage']> = ResolversObject<{
+  event_kind?: Resolver<ResolversTypes['PulseEventKind'], ParentType, ContextType>;
+  events?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  object_type?: Resolver<ResolversTypes['PulseObjectType'], ParentType, ContextType>;
+  platforms?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkOverviewResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkOverview'] = ResolversParentTypes['PulseNetworkOverview']> = ResolversObject<{
+  activity?: Resolver<Array<ResolversTypes['PulseNetworkActivityDay']>, ParentType, ContextType>;
+  day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ingestion?: Resolver<ResolversTypes['PulseNetworkIngestion'], ParentType, ContextType>;
+  keys?: Resolver<ResolversTypes['PulseNetworkKeyCounts'], ParentType, ContextType>;
+  kinds?: Resolver<Array<ResolversTypes['PulseNetworkKindCoverage']>, ParentType, ContextType>;
+  last_digest_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  last_trending_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  platforms?: Resolver<ResolversTypes['PulseNetworkPlatformCounts'], ParentType, ContextType>;
+  regions?: Resolver<Array<ResolversTypes['PulseNetworkRegionCoverage']>, ParentType, ContextType>;
+  rejections?: Resolver<Array<ResolversTypes['PulseNetworkRejection']>, ParentType, ContextType>;
+  sectors?: Resolver<Array<ResolversTypes['PulseNetworkSectorCoverage']>, ParentType, ContextType>;
+  settings?: Resolver<ResolversTypes['PulseNetworkSettings'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkPlatformResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkPlatform'] = ResolversParentTypes['PulseNetworkPlatform']> = ResolversObject<{
+  batches_last_30_days?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  first_contribution_day?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  last_batch_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  last_contribution_day?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  last_purge_day?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organization_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  purge_requests?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  records_last_30_days?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  region_bucket?: Resolver<Maybe<ResolversTypes['PulseRegionBucket']>, ParentType, ContextType>;
+  sector_bucket?: Resolver<Maybe<ResolversTypes['PulseSectorBucket']>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['PulseNetworkPlatformStatus'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkPlatformConnectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkPlatformConnection'] = ResolversParentTypes['PulseNetworkPlatformConnection']> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['PulseNetworkPlatformEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkPlatformCountsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkPlatformCounts'] = ResolversParentTypes['PulseNetworkPlatformCounts']> = ResolversObject<{
+  active_last_7_days?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  active_last_24_hours?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  contributing?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  digest_readers_last_24_hours?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lapsed?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  preview_only?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  registered?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  unregistered?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkPlatformEdgeResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkPlatformEdge'] = ResolversParentTypes['PulseNetworkPlatformEdge']> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['PulseNetworkPlatform'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkRegionCoverageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkRegionCoverage'] = ResolversParentTypes['PulseNetworkRegionCoverage']> = ResolversObject<{
+  events?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  platforms?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  region_bucket?: Resolver<ResolversTypes['PulseRegionBucket'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkRejectionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkRejection'] = ResolversParentTypes['PulseNetworkRejection']> = ResolversObject<{
+  code?: Resolver<ResolversTypes['PulseNetworkRejectionCode'], ParentType, ContextType>;
+  last_day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  operation?: Resolver<ResolversTypes['PulseNetworkOperation'], ParentType, ContextType>;
+  requests?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkSectorCoverageResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkSectorCoverage'] = ResolversParentTypes['PulseNetworkSectorCoverage']> = ResolversObject<{
+  events?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  platforms?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  sector_bucket?: Resolver<ResolversTypes['PulseSectorBucket'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkSettingsResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkSettings'] = ResolversParentTypes['PulseNetworkSettings']> = ResolversObject<{
+  contribution_grace_days?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  contribution_window_days?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  digest_size?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  disabled_reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  k_threshold?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  retention_days?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  retention_months?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  trending_cache_ttl_minutes?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkTrendingResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkTrending'] = ResolversParentTypes['PulseNetworkTrending']> = ResolversObject<{
+  computed_at?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  items?: Resolver<Array<ResolversTypes['PulseNetworkTrendingItem']>, ParentType, ContextType>;
+  period?: Resolver<ResolversTypes['PulsePeriod'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseNetworkTrendingItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseNetworkTrendingItem'] = ResolversParentTypes['PulseNetworkTrendingItem']> = ResolversObject<{
+  first_seen_network?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  growth?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  key_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  object_type?: Resolver<ResolversTypes['PulseObjectType'], ParentType, ContextType>;
+  platforms_bucket?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  prevalence_bucket?: Resolver<ResolversTypes['PulsePrevalenceBucket'], ParentType, ContextType>;
+  trend?: Resolver<ResolversTypes['PulseTrendDirection'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulsePurgeResultResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulsePurgeResult'] = ResolversParentTypes['PulsePurgeResult']> = ResolversObject<{
+  deleted_records?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseSaltResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseSalt'] = ResolversParentTypes['PulseSalt']> = ResolversObject<{
+  day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  salt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseStatusResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseStatus'] = ResolversParentTypes['PulseStatus']> = ResolversObject<{
+  contribution_grace_days?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  contribution_status?: Resolver<ResolversTypes['PulseContributionStatus'], ParentType, ContextType>;
+  contribution_window_days?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  contributors_bucket?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  k_threshold?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  last_contribution_day?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  read_access?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  read_access_until?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  retention_months?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseTrendingItemResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseTrendingItem'] = ResolversParentTypes['PulseTrendingItem']> = ResolversObject<{
+  first_seen_network?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  growth?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  object_type?: Resolver<ResolversTypes['PulseObjectType'], ParentType, ContextType>;
+  platforms_bucket?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  prevalence_bucket?: Resolver<ResolversTypes['PulsePrevalenceBucket'], ParentType, ContextType>;
+  trend?: Resolver<ResolversTypes['PulseTrendDirection'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PulseTrendingResultResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PulseTrendingResult'] = ResolversParentTypes['PulseTrendingResult']> = ResolversObject<{
+  day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  items?: Resolver<Array<ResolversTypes['PulseTrendingItem']>, ParentType, ContextType>;
+  period?: Resolver<ResolversTypes['PulsePeriod'], ParentType, ContextType>;
+  region_bucket?: Resolver<Maybe<ResolversTypes['PulseRegionBucket']>, ParentType, ContextType>;
+  sector_bucket?: Resolver<Maybe<ResolversTypes['PulseSectorBucket']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PushPulseResultResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['PushPulseResult'] = ResolversParentTypes['PushPulseResult']> = ResolversObject<{
+  accepted?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  day?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   bundleProducts?: Resolver<Array<ResolversTypes['PlatformIdentifier']>, ParentType, ContextType, RequireFields<QueryBundleProductsArgs, 'serviceInstanceId'>>;
   bundleUserServiceGroups?: Resolver<Array<ResolversTypes['BundleUserServiceGroup']>, ParentType, ContextType, RequireFields<QueryBundleUserServiceGroupsArgs, 'serviceInstanceId'>>;
@@ -4737,6 +5649,15 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   publicDocumentSlugsByServiceSlug?: Resolver<Array<ResolversTypes['PublicDocumentSlugInfo']>, ParentType, ContextType, RequireFields<QueryPublicDocumentSlugsByServiceSlugArgs, 'serviceInstanceSlug'>>;
   publicDocuments?: Resolver<ResolversTypes['DocumentConnection'], ParentType, ContextType, RequireFields<QueryPublicDocumentsArgs, 'first' | 'orderBy' | 'orderMode' | 'serviceInstanceId' | 'slug'>>;
   publicDocumentsByServiceSlug?: Resolver<Array<ResolversTypes['Document']>, ParentType, ContextType, RequireFields<QueryPublicDocumentsByServiceSlugArgs, 'serviceInstanceSlug'>>;
+  pulseBenchmark?: Resolver<ResolversTypes['PulseBenchmarkResult'], ParentType, ContextType, RequireFields<QueryPulseBenchmarkArgs, 'input'>>;
+  pulseDigest?: Resolver<ResolversTypes['PulseDigest'], ParentType, ContextType, RequireFields<QueryPulseDigestArgs, 'input'>>;
+  pulseLookup?: Resolver<Array<ResolversTypes['PulseLookupResult']>, ParentType, ContextType, RequireFields<QueryPulseLookupArgs, 'input'>>;
+  pulseNetworkOverview?: Resolver<ResolversTypes['PulseNetworkOverview'], ParentType, ContextType>;
+  pulseNetworkPlatforms?: Resolver<ResolversTypes['PulseNetworkPlatformConnection'], ParentType, ContextType, RequireFields<QueryPulseNetworkPlatformsArgs, 'first' | 'orderBy' | 'orderMode'>>;
+  pulseNetworkTrending?: Resolver<ResolversTypes['PulseNetworkTrending'], ParentType, ContextType, RequireFields<QueryPulseNetworkTrendingArgs, 'period'>>;
+  pulseSalt?: Resolver<ResolversTypes['PulseSalt'], ParentType, ContextType, RequireFields<QueryPulseSaltArgs, 'day'>>;
+  pulseStatus?: Resolver<ResolversTypes['PulseStatus'], ParentType, ContextType>;
+  pulseTrending?: Resolver<ResolversTypes['PulseTrendingResult'], ParentType, ContextType, RequireFields<QueryPulseTrendingArgs, 'input'>>;
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   registeredProductVersions?: Resolver<Array<ResolversTypes['RegisteredProductVersion']>, ParentType, ContextType, RequireFields<QueryRegisteredProductVersionsArgs, 'product'>>;
@@ -5473,6 +6394,35 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   PlatformTrialStatus?: PlatformTrialStatusResolvers<ContextType>;
   ProvisionedNewsFeedItem?: ProvisionedNewsFeedItemResolvers<ContextType>;
   PublicDocumentSlugInfo?: PublicDocumentSlugInfoResolvers<ContextType>;
+  PulseBenchmarkItem?: PulseBenchmarkItemResolvers<ContextType>;
+  PulseBenchmarkMetric?: PulseBenchmarkMetricResolvers<ContextType>;
+  PulseBenchmarkResult?: PulseBenchmarkResultResolvers<ContextType>;
+  PulseDigest?: PulseDigestResolvers<ContextType>;
+  PulseDigestItem?: PulseDigestItemResolvers<ContextType>;
+  PulseDigestTrending?: PulseDigestTrendingResolvers<ContextType>;
+  PulseDigestTrendingItem?: PulseDigestTrendingItemResolvers<ContextType>;
+  PulseLookupResult?: PulseLookupResultResolvers<ContextType>;
+  PulseNetworkActivityDay?: PulseNetworkActivityDayResolvers<ContextType>;
+  PulseNetworkIngestion?: PulseNetworkIngestionResolvers<ContextType>;
+  PulseNetworkKeyCounts?: PulseNetworkKeyCountsResolvers<ContextType>;
+  PulseNetworkKindCoverage?: PulseNetworkKindCoverageResolvers<ContextType>;
+  PulseNetworkOverview?: PulseNetworkOverviewResolvers<ContextType>;
+  PulseNetworkPlatform?: PulseNetworkPlatformResolvers<ContextType>;
+  PulseNetworkPlatformConnection?: PulseNetworkPlatformConnectionResolvers<ContextType>;
+  PulseNetworkPlatformCounts?: PulseNetworkPlatformCountsResolvers<ContextType>;
+  PulseNetworkPlatformEdge?: PulseNetworkPlatformEdgeResolvers<ContextType>;
+  PulseNetworkRegionCoverage?: PulseNetworkRegionCoverageResolvers<ContextType>;
+  PulseNetworkRejection?: PulseNetworkRejectionResolvers<ContextType>;
+  PulseNetworkSectorCoverage?: PulseNetworkSectorCoverageResolvers<ContextType>;
+  PulseNetworkSettings?: PulseNetworkSettingsResolvers<ContextType>;
+  PulseNetworkTrending?: PulseNetworkTrendingResolvers<ContextType>;
+  PulseNetworkTrendingItem?: PulseNetworkTrendingItemResolvers<ContextType>;
+  PulsePurgeResult?: PulsePurgeResultResolvers<ContextType>;
+  PulseSalt?: PulseSaltResolvers<ContextType>;
+  PulseStatus?: PulseStatusResolvers<ContextType>;
+  PulseTrendingItem?: PulseTrendingItemResolvers<ContextType>;
+  PulseTrendingResult?: PulseTrendingResultResolvers<ContextType>;
+  PushPulseResult?: PushPulseResultResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RefreshPlatformRegistrationConnectivityStatusAllTenantsResponse?: RefreshPlatformRegistrationConnectivityStatusAllTenantsResponseResolvers<ContextType>;
   RefreshPlatformRegistrationConnectivityStatusResponse?: RefreshPlatformRegistrationConnectivityStatusResponseResolvers<ContextType>;
