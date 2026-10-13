@@ -1,0 +1,3 @@
+mutation NewsFeedDeleteItem($id: NewsFeedItemId!) {
+  deleteNewsFeedItem(id: $id)
+}
