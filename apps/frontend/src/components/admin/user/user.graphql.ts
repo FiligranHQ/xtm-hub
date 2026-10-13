@@ -25,25 +25,6 @@ export const UserSlugEditMutation = graphql`
   }
 `;
 
-export const userSlugFragment = graphql`
-  fragment userSlug_fragment on User {
-    id
-    email
-    last_name
-    first_name
-    disabled
-    organizations @required(action: THROW) {
-      id
-      name
-      personal_space
-    }
-    roles_portal @required(action: THROW) {
-      id
-      name
-    }
-  }
-`;
-
 export const userMeSubscription = graphql`
   subscription userMeSubscription {
     MeUser {
