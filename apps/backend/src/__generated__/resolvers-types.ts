@@ -148,6 +148,7 @@ export type CanUnregisterResponse = {
   isInOrganization?: Maybe<Scalars['Boolean']['output']>;
   isPlatformRegistered: Scalars['Boolean']['output'];
   organizationId?: Maybe<Scalars['OrganizationId']['output']>;
+  organizationName?: Maybe<Scalars['String']['output']>;
 };
 
 export type Capability = Node & {
@@ -1791,6 +1792,14 @@ export type OrganizationInput = {
   name: Scalars['String']['input'];
 };
 
+export type OrganizationMemberContact = {
+  __typename?: 'OrganizationMemberContact';
+  email: Scalars['String']['output'];
+  first_name?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  last_name?: Maybe<Scalars['String']['output']>;
+};
+
 export enum OrganizationOrdering {
   Name = 'name'
 }
@@ -2008,7 +2017,7 @@ export type Query = {
   userServiceCapabilities: UserServiceCapabilitiesResponse;
   userServiceFromSubscription?: Maybe<UserServiceConnection>;
   users: UserConnection;
-  usersWithCapabilitiesInOrganization: Array<User>;
+  usersWithCapabilitiesInOrganization: Array<OrganizationMemberContact>;
   votingRound?: Maybe<VotingRound>;
   votingRoundResults: VotingRoundResults;
   votingRounds: Array<VotingRound>;
@@ -2782,6 +2791,7 @@ export type SubscribedServiceInstanceConfiguration = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  AdminUser?: Maybe<UserSubscription>;
   MeUser?: Maybe<MeUserSubscription>;
   ServiceInstance?: Maybe<ServiceInstanceSubscription>;
   User?: Maybe<UserSubscription>;
@@ -2790,7 +2800,7 @@ export type Subscription = {
 
 
 export type SubscriptionUserArgs = {
-  organizationId?: InputMaybe<Scalars['ID']['input']>;
+  organizationId: Scalars['ID']['input'];
 };
 
 
@@ -3533,6 +3543,7 @@ export type ResolversTypes = ResolversObject<{
   OrganizationEdge: ResolverTypeWrapper<OrganizationEdge>;
   OrganizationId: ResolverTypeWrapper<Scalars['OrganizationId']['output']>;
   OrganizationInput: OrganizationInput;
+  OrganizationMemberContact: ResolverTypeWrapper<OrganizationMemberContact>;
   OrganizationOrdering: OrganizationOrdering;
   OrganizationRef: ResolverTypeWrapper<OrganizationRef>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
@@ -3778,6 +3789,7 @@ export type ResolversParentTypes = ResolversObject<{
   OrganizationEdge: OrganizationEdge;
   OrganizationId: Scalars['OrganizationId']['output'];
   OrganizationInput: OrganizationInput;
+  OrganizationMemberContact: OrganizationMemberContact;
   OrganizationRef: OrganizationRef;
   PageInfo: PageInfo;
   PlatformDeploymentRequest: PlatformDeploymentRequest;
@@ -3931,6 +3943,7 @@ export type CanUnregisterResponseResolvers<ContextType = PortalContext, ParentTy
   isInOrganization?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isPlatformRegistered?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   organizationId?: Resolver<Maybe<ResolversTypes['OrganizationId']>, ParentType, ContextType>;
+  organizationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4616,6 +4629,14 @@ export interface OrganizationIdScalarConfig extends GraphQLScalarTypeConfig<Reso
   name: 'OrganizationId';
 }
 
+export type OrganizationMemberContactResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationMemberContact'] = ResolversParentTypes['OrganizationMemberContact']> = ResolversObject<{
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  first_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  last_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type OrganizationRefResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['OrganizationRef'] = ResolversParentTypes['OrganizationRef']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -4760,7 +4781,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   userServiceCapabilities?: Resolver<ResolversTypes['UserServiceCapabilitiesResponse'], ParentType, ContextType, RequireFields<QueryUserServiceCapabilitiesArgs, 'service_instance_id'>>;
   userServiceFromSubscription?: Resolver<Maybe<ResolversTypes['UserServiceConnection']>, ParentType, ContextType, RequireFields<QueryUserServiceFromSubscriptionArgs, 'first' | 'orderBy' | 'orderMode' | 'subscription_id'>>;
   users?: Resolver<ResolversTypes['UserConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, 'first' | 'orderBy' | 'orderMode'>>;
-  usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
+  usersWithCapabilitiesInOrganization?: Resolver<Array<ResolversTypes['OrganizationMemberContact']>, ParentType, ContextType, RequireFields<QueryUsersWithCapabilitiesInOrganizationArgs, 'input'>>;
   votingRound?: Resolver<Maybe<ResolversTypes['VotingRound']>, ParentType, ContextType, RequireFields<QueryVotingRoundArgs, 'id'>>;
   votingRoundResults?: Resolver<ResolversTypes['VotingRoundResults'], ParentType, ContextType, RequireFields<QueryVotingRoundResultsArgs, 'id'>>;
   votingRounds?: Resolver<Array<ResolversTypes['VotingRound']>, ParentType, ContextType, Partial<QueryVotingRoundsArgs>>;
@@ -5074,9 +5095,10 @@ export type SubscribedServiceInstanceConfigurationResolvers<ContextType = Portal
 }>;
 
 export type SubscriptionResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  AdminUser?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "AdminUser", ParentType, ContextType>;
   MeUser?: SubscriptionResolver<Maybe<ResolversTypes['MeUserSubscription']>, "MeUser", ParentType, ContextType>;
   ServiceInstance?: SubscriptionResolver<Maybe<ResolversTypes['ServiceInstanceSubscription']>, "ServiceInstance", ParentType, ContextType>;
-  User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType, Partial<SubscriptionUserArgs>>;
+  User?: SubscriptionResolver<Maybe<ResolversTypes['UserSubscription']>, "User", ParentType, ContextType, RequireFields<SubscriptionUserArgs, 'organizationId'>>;
   UserPending?: SubscriptionResolver<Maybe<ResolversTypes['UserPendingSubscription']>, "UserPending", ParentType, ContextType, RequireFields<SubscriptionUserPendingArgs, 'organizationId'>>;
 }>;
 
@@ -5464,6 +5486,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   OrganizationConnection?: OrganizationConnectionResolvers<ContextType>;
   OrganizationEdge?: OrganizationEdgeResolvers<ContextType>;
   OrganizationId?: GraphQLScalarType;
+  OrganizationMemberContact?: OrganizationMemberContactResolvers<ContextType>;
   OrganizationRef?: OrganizationRefResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PlatformDeploymentRequest?: PlatformDeploymentRequestResolvers<ContextType>;

@@ -8,12 +8,15 @@ import {
   contextSimpleUserSecondOrga,
   TEST_ORGANIZATIONS,
 } from '../../../../../tests/tests.const';
+import { OrganizationCapability } from '../../../../__generated__/resolvers-types';
 import portalConfig from '../../../../config';
 import { requestContext } from '../../../../context/request.context';
 import User, { UserId } from '../../../../model/kanel/public/User';
 import * as MailService from '../../../../server/mail-service';
 import { ErrorCode } from '../../../../utils/error/error.code';
+import { UserDomain } from '../user-domain/user.domain';
 import { UserOrganizationPendingDomain } from '../user-pending/user-organization-pending.domain';
+import { UserProvisioningDomain } from '../user-provisioning/user-provisioning.domain';
 import { UserHelper } from '../user.helper';
 import { UserOrganizationApp } from './user-organization.app';
 import { UserOrganizationDomain } from './user-organization.domain';
@@ -536,6 +539,65 @@ describe('usersOrganizationApp', () => {
           organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
         })
       ).rejects.toThrow(ErrorCode.MissingCapabilityOnOrganization);
+    });
+  });
+
+  describe('loadOrganizationMemberContactsByCapabilities', () => {
+    const secondOrganizationAdminContact = {
+      id: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.ID,
+      email: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.ADMIN_ORGA.EMAIL,
+      first_name: null,
+      last_name: null,
+    };
+    let createdUserIds: UserId[] = [];
+
+    beforeEach(() => {
+      createdUserIds = [];
+    });
+
+    afterEach(async () => {
+      await Promise.all(
+        createdUserIds.map((id) => UserHelper.removeUser({ id }))
+      );
+    });
+
+    it('should return the administrators contacts when the caller is a member of the organization', async () => {
+      requestContext.set({
+        user: (await UserDomain.loadUserBy({
+          'User.id': TEST_ORGANIZATIONS.SECOND_ORGANIZATION.USERS.SIMPLE.ID,
+        }))!,
+      });
+
+      const contacts =
+        await UserOrganizationApp.loadOrganizationMemberContactsByCapabilities({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          capabilities: [OrganizationCapability.AdministrateOrganization],
+        });
+
+      expect(contacts).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining(secondOrganizationAdminContact),
+        ])
+      );
+    });
+
+    it('should reject the call when the caller is a non-member with their personal space selected', async () => {
+      const user = await UserProvisioningDomain.createUser(
+        { email: `member-contacts-${uuidv4()}@member-contacts-test.io` },
+        { sendWelcomeEmail: false }
+      );
+      createdUserIds.push(user.id);
+      requestContext.set({
+        user: (await UserDomain.loadUserBy({ 'User.id': user.id }))!,
+      });
+
+      const call =
+        UserOrganizationApp.loadOrganizationMemberContactsByCapabilities({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          capabilities: [OrganizationCapability.AdministrateOrganization],
+        });
+
+      await expect(call).rejects.toThrow(ErrorCode.UserIsNotInOrganization);
     });
   });
 });
