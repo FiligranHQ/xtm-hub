@@ -142,7 +142,7 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
         {...getDataTableLabels(t)}
         data={serviceData}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
             <SearchField
               className="w-full sm:w-1/3"
               aria-label={t('Service.SearchServices')}

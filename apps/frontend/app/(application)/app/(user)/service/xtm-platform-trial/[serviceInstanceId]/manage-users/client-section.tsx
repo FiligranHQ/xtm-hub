@@ -96,7 +96,7 @@ const ClientSection = ({ params, fromDashboard }: ClientSectionProps) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <div className="flex flex-col gap-l">
+      <div className="flex flex-col gap-4">
         <ManageTrialHeader
           serviceInstanceId={decodedServiceInstanceId}
           products={products}

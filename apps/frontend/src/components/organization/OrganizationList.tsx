@@ -51,7 +51,7 @@ const OrganizationList = () => {
         enableSorting: false,
         cell: ({ row }) => {
           return (
-            <div className="flex space-x-s">
+            <div className="flex space-x-2">
               {row.original.domains?.map((domain) => (
                 <Chip
                   key={domain}
@@ -176,7 +176,7 @@ const OrganizationList = () => {
           columns={columns}
           data={organizationDataTable}
           toolbar={
-            <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+            <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
               <SearchField
                 className="w-full sm:w-1/3"
                 aria-label={t(
@@ -189,7 +189,7 @@ const OrganizationList = () => {
                 onChange={searchHandlers.onChange}
                 onClear={searchHandlers.onClear}
               />
-              <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+              <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
                 <DataTableHeadBarOptions />
                 <CreateOrganization
                   connectionId={organizationsData.organizations.__id}

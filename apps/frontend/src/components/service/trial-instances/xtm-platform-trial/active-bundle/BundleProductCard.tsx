@@ -73,11 +73,11 @@ export const BundleProductCard = ({
     registeredPlatform?.last_connectivity_check ?? null;
 
   const productNameRow = (
-    <div className="flex items-center justify-between gap-s py-l">
+    <div className="flex items-center justify-between gap-2 py-4">
       <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
         {t('XtmPlatformTrial.Products.ProductName')}:
       </span>
-      <div className="flex items-center gap-xs min-w-0">
+      <div className="flex items-center gap-1 min-w-0">
         <Chip
           className="min-w-0"
           label={product.service_instance?.name ?? '-'}
@@ -102,8 +102,8 @@ export const BundleProductCard = ({
       className="h-full">
       <CardContent
         clamp={0}
-        className="flex flex-col gap-m h-full">
-        <div className="flex gap-s items-center min-w-0">
+        className="flex flex-col gap-3 h-full">
+        <div className="flex gap-2 items-center min-w-0">
           <Image
             src={darkTextLogo}
             alt={name}
@@ -118,13 +118,13 @@ export const BundleProductCard = ({
         {isXtmone ? (
           <div className="flex flex-col">
             {productNameRow}
-            <Separator className="mb-m" />
+            <Separator className="mb-3" />
             <XtmoneConnectionStatus status={xtmoneStatus} />
           </div>
         ) : (
           <div className="flex flex-col divide-y divide-elevation-border-subtle-layer-1">
             {productNameRow}
-            <div className="flex items-start justify-between gap-s py-l">
+            <div className="flex items-start justify-between gap-2 py-4">
               <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.ConnectionStatus')}:
               </span>
@@ -147,7 +147,7 @@ export const BundleProductCard = ({
                 </span>
               )}
             </div>
-            <div className="flex items-center justify-between gap-s py-l">
+            <div className="flex items-center justify-between gap-2 py-4">
               <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.LastConnection')}:
               </span>
@@ -156,7 +156,7 @@ export const BundleProductCard = ({
                   '-'}
               </span>
             </div>
-            <div className="flex items-start justify-between gap-s py-l">
+            <div className="flex items-start justify-between gap-2 py-4">
               <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.Role')}:
               </span>

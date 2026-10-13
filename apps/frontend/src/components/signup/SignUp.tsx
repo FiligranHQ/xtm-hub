@@ -92,7 +92,7 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
             </p>
             <div
               id="hubspot-form"
-              className="mt-l mb-auto w-full shrink-0"
+              className="mt-4 mb-auto w-full shrink-0"
             />
           </div>
         </div>

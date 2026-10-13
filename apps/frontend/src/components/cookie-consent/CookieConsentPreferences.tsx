@@ -92,7 +92,7 @@ export const CookieConsentPreferences = () => {
               />
             </div>
 
-            <div className="flex flex-col gap-4 pl-xl">
+            <div className="flex flex-col gap-4 pl-6">
               {VISIBLE_CATEGORIES.map((category) => {
                 const { required, services } = CONSENT_REGISTRY[category];
                 return (

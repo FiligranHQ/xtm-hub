@@ -60,7 +60,7 @@ export const PublicResourceActions = ({
   });
 
   return (
-    <div className="flex items-center gap-s ml-auto">
+    <div className="flex items-center gap-2 ml-auto">
       <ShareLinkButton
         documentId={documentData.id}
         url={pageUrl}

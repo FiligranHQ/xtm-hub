@@ -89,8 +89,8 @@ export const ManageTrialHeader = ({
   );
 
   return (
-    <header className="flex flex-col gap-l">
-      <div className="flex flex-col gap-xs">
+    <header className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
         <p className="heading-sm w-fit bg-clip-text text-transparent bg-gradient-legacy-focus">
           {t('Service.Bundle.ManageTrial.Eyebrow')}
         </p>
@@ -99,17 +99,17 @@ export const ManageTrialHeader = ({
           {t('Service.Bundle.ManageTrial.Description')}
         </p>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-m">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Button
           priority="secondary"
-          className="gap-s border-elevation-border-default-layer-0"
+          className="gap-2 border-elevation-border-default-layer-0"
           asChild>
           <Link href={backHref}>
             <ArrowUpwardIcon className="h-3 w-3 -rotate-90" />
             {t(backLabelKey)}
           </Link>
         </Button>
-        <div className="flex flex-wrap items-center gap-s">
+        <div className="flex flex-wrap items-center gap-2">
           {selectedUsers.length > 0 && (
             <TooltipProvider>
               <Tooltip>

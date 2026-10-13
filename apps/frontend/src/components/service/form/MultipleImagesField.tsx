@@ -97,7 +97,7 @@ export const ServiceFormMultipleImagesField = ({
       <p className="text-xs">{t('Service.Form.ImagesDisclaimer')}</p>
       {images?.length > 0 && (
         <div
-          className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-xl min-h-[15rem] pb-xl"
+          className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-6 min-h-[15rem] pb-6"
           data-testid="images-grid">
           <TooltipProvider delayDuration={1}>
             {images.map((doc) => (
@@ -141,7 +141,7 @@ export const ServiceFormMultipleImagesField = ({
 
                 {!imagesToDelete.includes(doc!.id) && (
                   <div className="flex flex-row items-center bg-elevation-background-layer-1 h-12 opacity-90">
-                    <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-s mr-s flex-1 min-w-0">
+                    <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-2 mr-2 flex-1 min-w-0">
                       {(doc as ExistingFile)?.file_name ??
                         (doc as NewFile)?.name}
                     </div>
@@ -154,7 +154,7 @@ export const ServiceFormMultipleImagesField = ({
                           variant="destructive"
                           priority="secondary"
                           type="button"
-                          className="ml-auto m-s"
+                          className="m-2 ml-auto"
                           aria-label={t('Service.Form.DeleteImage')}
                           icon={<DeleteIcon className="size-4" />}
                           onClick={() => {

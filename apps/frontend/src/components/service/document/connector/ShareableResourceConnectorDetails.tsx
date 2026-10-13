@@ -57,7 +57,7 @@ export const ShareableResourceConnectorDetails = ({
             <Link
               href={connectorDetails.source_code}
               target="_blank">
-              <LogoGitIcon className="h-4 w-4 mr-s" />
+              <LogoGitIcon className="h-4 w-4 mr-2" />
               {connectorDetails.name}
             </Link>
           </Button>
@@ -81,7 +81,7 @@ export const ShareableResourceConnectorDetails = ({
               }
               rel="noopener noreferrer"
               target="_blank">
-              <OpenInNewIcon className="h-4 w-4 mr-s" />
+              <OpenInNewIcon className="h-4 w-4 mr-2" />
               {t('Service.Connectors.VendorContact')}
             </Link>
           </Button>
@@ -90,7 +90,7 @@ export const ShareableResourceConnectorDetails = ({
       {connectorDetails.integration_type && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.IntegrationType')}>
-          <div className="flex items-center gap-s">
+          <div className="flex items-center gap-2">
             <span>
               {t(
                 `Service.OpenctiIntegrations.Type.${connectorDetails.integration_type}`

@@ -61,7 +61,7 @@ const StatusRow = ({
   isLoading: boolean;
   unavailable: boolean;
 }) => (
-  <div className="flex items-center justify-between gap-s px-s py-l">
+  <div className="flex items-center justify-between gap-2 px-2 py-4">
     <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
       {label}
     </span>

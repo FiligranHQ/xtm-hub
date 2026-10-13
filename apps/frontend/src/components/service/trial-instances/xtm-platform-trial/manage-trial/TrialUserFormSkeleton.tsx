@@ -72,13 +72,13 @@ export const TrialUserFormSkeleton = ({
   return (
     <Form {...form}>
       <form
-        className="flex flex-col gap-l"
+        className="flex flex-col gap-4"
         onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="userIds"
           render={({ field, fieldState }) => (
-            <div className="flex flex-col gap-s">
+            <div className="flex flex-col gap-2">
               <div className="layer-2">
                 <AppCombobox
                   multiple
@@ -121,7 +121,7 @@ export const TrialUserFormSkeleton = ({
           mixedRoleDefaults={mixedRoleDefaults}
         />
 
-        <div className="flex justify-end gap-s">
+        <div className="flex justify-end gap-2">
           <Button
             priority="secondary"
             type="button"

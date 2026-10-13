@@ -13,12 +13,12 @@ interface EpicItemFooterProps {
 export const EpicItemFooter = ({ epic, children }: EpicItemFooterProps) => {
   return (
     <>
-      <div className="flex flex-wrap items-start gap-x-s gap-y-xs">
-        <div className="flex flex-wrap items-center gap-x-s gap-y-xs">
+      <div className="flex flex-wrap items-start gap-x-2 gap-y-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           {sortFiligranProducts(epic.products).map((product) => (
             <div
               key={product}
-              className="flex h-9 items-center gap-xs whitespace-nowrap">
+              className="flex h-9 items-center gap-1 whitespace-nowrap">
               <p className="bold">{FiligranProductMapping[product].logo}</p>
 
               <p className="bold">{FiligranProductMapping[product].name}</p>
@@ -31,10 +31,10 @@ export const EpicItemFooter = ({ epic, children }: EpicItemFooterProps) => {
             />
           )}
         </div>
-        <div className="flex flex-1 items-center gap-s">
+        <div className="flex flex-1 items-center gap-2">
           {epic.epic_type === EpicType.Integration && (
             <div className="flex h-9 shrink-0 items-center">
-              <div className="bold h-8 flex items-center capitalize txt-sub-content rounded bg-elevation-background-layer-0 text-text-default-primary p-s">
+              <div className="bold h-8 flex items-center capitalize txt-sub-content rounded bg-elevation-background-layer-0 text-text-default-primary p-2">
                 {epic.epic_type.toLowerCase()}
               </div>
             </div>

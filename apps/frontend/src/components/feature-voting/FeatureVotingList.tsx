@@ -100,7 +100,7 @@ export const FeatureVotingList = ({
       <BreadcrumbNav value={breadcrumbValue} />
       {isLoading && <Skeleton className="w-full inset-1/2" />}
       {!isLoading && !round && (
-        <div className="flex flex-col gap-s">
+        <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold">{t('FeatureVoting.Title')}</h1>
           <p className="text-muted-foreground">
             {t('FeatureVoting.NoOpenRound')}
@@ -108,8 +108,8 @@ export const FeatureVotingList = ({
         </div>
       )}
       {!isLoading && round && (
-        <div className="flex flex-col gap-xl">
-          <div className="flex flex-col gap-s">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-semibold">
               {t('FeatureVoting.Title')}
             </h1>
@@ -120,8 +120,8 @@ export const FeatureVotingList = ({
           {sections.map(({ product, features: productFeatures }) => (
             <section
               key={product}
-              className="flex flex-col gap-m">
-              <div className="flex items-center gap-s">
+              className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
                 {FiligranProductMapping[product].logo}
                 <h2 className="text-xl font-semibold">
                   {FiligranProductMapping[product].name}
@@ -130,7 +130,7 @@ export const FeatureVotingList = ({
               <p className="text-muted-foreground text-sm">
                 {t('FeatureVoting.OneVotePerProduct')}
               </p>
-              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l">
+              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {productFeatures.map((feature) => (
                   <FeatureVotingItem
                     key={feature.id}

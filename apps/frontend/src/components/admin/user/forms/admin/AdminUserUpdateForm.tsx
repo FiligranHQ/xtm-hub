@@ -147,7 +147,7 @@ export const AdminUserUpdateForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-xl">
+        className="w-full space-y-6">
         <FormField
           control={form.control}
           name="first_name"
@@ -173,7 +173,7 @@ export const AdminUserUpdateForm = ({
           )}
         />
         <CapabilityDescription />
-        <div className="flex items-center gap-m">
+        <div className="flex items-center gap-3">
           <Label>{t('UserForm.Organizations')}</Label>
           <AutocompleteOrganization
             selectedOrganizationCapabilities={form.getValues(
@@ -185,7 +185,7 @@ export const AdminUserUpdateForm = ({
 
         <div
           className={cn(
-            '!mt-m px-l py-m space-y-s',
+            '!mt-3 px-4 py-3 space-y-2',
             fields.length > 0 && 'border bg-card rounded'
           )}>
           {fields.map((field, index) => {
@@ -196,7 +196,7 @@ export const AdminUserUpdateForm = ({
                 name={`organization_capabilities.${index}.capabilities`}
                 render={({ field: formField, fieldState }) => {
                   return (
-                    <div className="grid gap-m items-center grid-cols-[1fr_4fr_3rem]">
+                    <div className="grid gap-3 items-center grid-cols-[1fr_4fr_3rem]">
                       <Label>
                         {
                           userOrganization.find(
@@ -249,7 +249,7 @@ export const AdminUserUpdateForm = ({
               })}
             </ConfirmDialog>
           )}
-          <div className="flex gap-s">
+          <div className="flex gap-2">
             <Button
               priority="secondary"
               type="button"

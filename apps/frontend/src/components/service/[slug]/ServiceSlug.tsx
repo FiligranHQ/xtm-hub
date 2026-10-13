@@ -173,8 +173,8 @@ const ServiceSlug = ({
   ];
 
   const toolbar = (
-    <div className="flex justify-between flex-wrap gap-s pt-s">
-      <div className="flex items-center gap-m ml-l">
+    <div className="flex justify-between flex-wrap gap-2 pt-2">
+      <div className="flex items-center gap-3 ml-4">
         <div className="flex-1 max-w-sm">
           <SearchField
             id="SearchTerm"
@@ -193,7 +193,7 @@ const ServiceSlug = ({
         />
       </div>
 
-      <div className="flex gap-s flex-wrap ml-auto">
+      <div className="flex gap-2 flex-wrap ml-auto">
         <ServiceSlugSubscription
           subscriptions={subscriptions}
           subscriptionToEdit={updateSubscription}
@@ -262,7 +262,7 @@ const ServiceSlug = ({
 
       <div>
         <ServiceSlugHeader serviceInstance={serviceInstance} />
-        <div className="border rounded bg-elevation-background-layer-1 p-m">
+        <div className="border rounded bg-elevation-background-layer-1 p-3">
           <h2 className="">{t('Service.Management.Description') + ':'}</h2>
 
           <DataTable

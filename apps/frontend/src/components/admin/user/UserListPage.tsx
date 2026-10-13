@@ -99,12 +99,12 @@ const UserListPage = ({ organization }: UserListPageProps) => {
           </TabsList>
           <TabsContent
             value="users"
-            className="pt-l">
+            className="pt-4">
             <UserList organization={organization} />
           </TabsContent>
           <TabsContent
             value="pendingUsers"
-            className="pt-l">
+            className="pt-4">
             {organization && <PendingUserList organization={organization} />}
           </TabsContent>
         </Tabs>

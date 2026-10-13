@@ -88,7 +88,7 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-xl">
+          className="w-full space-y-6">
           <FormField
             control={form.control}
             name="newCapacity"
@@ -110,7 +110,7 @@ export const TrialsTabQuotasPlatformUpdateForm = ({
           />
 
           <SheetFooter className="justify-end pb-0">
-            <div className="flex gap-s">
+            <div className="flex gap-2">
               <Button
                 priority="secondary"
                 type="button"

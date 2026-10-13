@@ -67,8 +67,8 @@ const XtmRoadmap = async ({
   const defaultSeeMoreHref = `/${usedLocale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/xtm-platform-roadmap`;
 
   return (
-    <section className="flex flex-col lg:flex-row gap-l items-center border border-elevation-border-strong rounded px-xl py-4">
-      <div className="flex flex-col gap-s flex-3">
+    <section className="flex flex-col lg:flex-row gap-4 items-center border border-elevation-border-strong rounded px-6 py-4">
+      <div className="flex flex-col gap-2 flex-3">
         <h2 className="heading-xl">{title}</h2>
         <p className="text-muted-foreground text-xs sm:text-sm">
           {t('Description')}
@@ -97,13 +97,13 @@ const XtmRoadmap = async ({
         />
       </div>
 
-      <div className="flex gap-l max-md:gap-m max-sm:gap-xs justify-center lg:justify-end">
+      <div className="flex gap-4 max-md:gap-3 max-sm:gap-1 justify-center lg:justify-end">
         {roadmapStats.map(
           ({ count, labelKey, bgFadedClass, textClass, barClass }) => (
             <div
               key={labelKey}
-              className="flex flex-col gap-xs max-sm:gap-[2px]">
-              <div className="flex items-center gap-s max-md:gap-xs max-sm:gap-[4px] pr-8 max-md:pr-5 max-sm:pr-1">
+              className="flex flex-col gap-1 max-sm:gap-[2px]">
+              <div className="flex items-center gap-2 max-md:gap-1 max-sm:gap-[4px] pr-8 max-md:pr-5 max-sm:pr-1">
                 <CountBadge
                   count={count}
                   bgFadedClass={bgFadedClass}
@@ -116,7 +116,7 @@ const XtmRoadmap = async ({
                 </span>
               </div>
               <div
-                className={`h-0.5 mt-xs max-sm:mt-px w-full ${barClass} rounded-full`}
+                className={`h-0.5 mt-1 max-sm:mt-px w-full ${barClass} rounded-full`}
               />
             </div>
           )

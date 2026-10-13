@@ -85,7 +85,7 @@ export const DocumentActionsCell = ({ document }: DocumentActionsCellProps) => {
 
   return (
     <div
-      className="flex items-center gap-xs"
+      className="flex items-center gap-1"
       onClick={(event) => event.stopPropagation()}>
       <ShareLinkButton
         documentId={document.id}

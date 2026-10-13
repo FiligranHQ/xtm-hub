@@ -50,7 +50,7 @@ export const PublicSubLink = ({
 
   const content = (
     <>
-      <span className="flex min-w-0 flex-1 items-center gap-xs">
+      <span className="flex min-w-0 flex-1 items-center gap-1">
         {external && <OpenInNewIcon className="h-3 w-3 shrink-0" />}
         <span className={cn('truncate', !href && 'text-text-default-disabled')}>
           {label}
@@ -164,7 +164,7 @@ export const NavigationLinkMenu = ({
         buttonVariants({
           priority: 'tertiary',
           className:
-            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-s content-body-compact text-text-default-secondary text-xs',
+            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-2 content-body-compact text-text-default-secondary text-xs',
         }),
         currentPath === href
           ? NAVIGATION_ACTIVE_CLASSES

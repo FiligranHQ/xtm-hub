@@ -57,7 +57,7 @@ const SolutionCategoryForm = ({
   return (
     <Form {...form}>
       <form
-        className="w-full space-y-xl"
+        className="w-full space-y-6"
         onSubmit={form.handleSubmit(handleSubmit)}>
         <FormField
           control={form.control}
@@ -107,7 +107,7 @@ const SolutionCategoryForm = ({
               })}
             </ConfirmDialog>
           )}
-          <div className="flex gap-s">
+          <div className="flex gap-2">
             <Button
               priority="secondary"
               type="button"

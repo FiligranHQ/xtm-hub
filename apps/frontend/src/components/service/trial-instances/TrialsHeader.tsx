@@ -18,8 +18,8 @@ export const TrialsHeader = ({
   const platformName = PlatformMetadataMapping[platformIdentifier].name;
 
   return (
-    <header className="px-m pt-m pb-xxl text-center">
-      <div className="flex flex-col gap-s">
+    <header className="px-3 pt-3 pb-8 text-center">
+      <div className="flex flex-col gap-2">
         <p className="text-filigran-brand-primary font-bold">
           {t('Service.Trials.PageHeader.Welcome')}
         </p>
@@ -27,7 +27,7 @@ export const TrialsHeader = ({
           {t('Service.Trials.PageHeader.Title', { platformName })}
         </h1>
       </div>
-      <div className="flex flex-wrap justify-center gap-s mt-l">{actions}</div>
+      <div className="flex flex-wrap justify-center gap-2 mt-4">{actions}</div>
     </header>
   );
 };

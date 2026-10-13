@@ -19,14 +19,14 @@ const ShareableResourceDescription = ({
 
   return (
     <div className="flex-[3_3_0%] min-w-0">
-      <h2 className="py-s txt-container-title truncate text-muted-foreground">
+      <h2 className="py-2 txt-container-title truncate text-muted-foreground">
         {t('Service.ShareableResources.Details.Overview')}
       </h2>
       <section className="rounded bg-elevation-background-layer-1 overflow-x-auto">
-        <h3 className="p-l">{shortDescription}</h3>
+        <h3 className="p-4">{shortDescription}</h3>
         <ResourceMarkdownRenderer
           source={longDescription}
-          className="p-l"
+          className="p-4"
           filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
             serviceDefinitionIdentifier
           )}

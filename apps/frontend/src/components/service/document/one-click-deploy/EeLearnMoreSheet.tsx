@@ -107,7 +107,7 @@ const EeLearnMoreSheet = ({
         side="right"
         closeLabel={t('Utils.Close')}>
         <SheetHeader>
-          <div className="flex items-center gap-s">
+          <div className="flex items-center gap-2">
             <SheetTitle>
               {t('Service.ShareableResources.Deploy.EELearnMore.Title')}
             </SheetTitle>
@@ -117,8 +117,8 @@ const EeLearnMoreSheet = ({
             {t('Service.ShareableResources.Deploy.EELearnMore.Subtitle')}
           </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col min-h-full pb-l">
-          <div className="flex flex-col gap-l">
+        <div className="flex flex-col min-h-full pb-4">
+          <div className="flex flex-col gap-4">
             <p className="text-sm font-semibold">
               {t('Service.ShareableResources.Deploy.EELearnMore.Heading')}
             </p>
@@ -133,10 +133,10 @@ const EeLearnMoreSheet = ({
               )}
             </p>
           </div>
-          <div className="mt-auto flex flex-col gap-xl">
+          <div className="mt-auto flex flex-col gap-6">
             <Separator />
             <div className="flex flex-col">
-              <h3 className="text-sm font-semibold mb-s">
+              <h3 className="text-sm font-semibold mb-2">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionTitle'
                 )}
@@ -154,7 +154,7 @@ const EeLearnMoreSheet = ({
                 {t('Service.ShareableResources.Deploy.EELearnMore.Link')}
               </Link>
             </div>
-            <div className="flex flex-col gap-s">
+            <div className="flex flex-col gap-2">
               <h3 className="text-sm font-semibold">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.InterestedTitle'
@@ -168,7 +168,7 @@ const EeLearnMoreSheet = ({
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
-                  className="flex flex-col gap-s">
+                  className="flex flex-col gap-2">
                   <FormField
                     control={form.control}
                     name="message"

@@ -15,8 +15,8 @@ export const XtmPlatformTrialPitch = () => {
   const t = useTranslate();
 
   return (
-    <section className="flex flex-col gap-xl">
-      <div className="flex flex-col gap-xs mb-xxl">
+    <section className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1 mb-8">
         <h2 className="heading-2xl">
           {t('Service.Trials.XtmPlatform.Page.PitchTitle')}
         </h2>
@@ -25,7 +25,7 @@ export const XtmPlatformTrialPitch = () => {
         </p>
       </div>
 
-      <div className="flex flex-col gap-xl pr-30">
+      <div className="flex flex-col gap-6 pr-30">
         {BUNDLE_PRODUCTS.map((platformIdentifier) => {
           const { name, Icon, iconClassName } =
             PlatformMetadataMapping[platformIdentifier];
@@ -33,8 +33,8 @@ export const XtmPlatformTrialPitch = () => {
           return (
             <article
               key={platformIdentifier}
-              className="flex flex-col gap-s">
-              <div className="flex items-center gap-s">
+              className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
                 <Icon className={cn('size-6', iconClassName)} />
                 <span className="heading-md">{name}</span>
               </div>

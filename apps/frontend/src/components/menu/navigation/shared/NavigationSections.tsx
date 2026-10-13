@@ -29,7 +29,7 @@ import { useEffect } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 
 const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
-  <ul className="space-y-xs">
+  <ul className="space-y-1">
     {links.map((link) => {
       const nestedLinks = link.subLinks ?? [];
       const hasNestedLinks = nestedLinks.length > 0;
@@ -57,7 +57,7 @@ const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
                   'h-9 py-1 pl-6 content-body-compact text-text-default-secondary cursor-pointer hover:bg-hover',
                   NAVIGATION_HOVER_CLASSES
                 )}>
-                <span className="flex flex-1 items-center justify-between gap-xs truncate pr-xs">
+                <span className="flex flex-1 items-center justify-between gap-1 truncate pr-1">
                   <span className="truncate">{link.label}</span>
                   {link.badge && (
                     <span
@@ -112,7 +112,7 @@ export const LinkedSection = ({
       aria-label={section.label}>
       <MenuItemIcon icon={Icon} />
       {open && (
-        <span className="flex-1 px-s text-left text-foreground content-body-base truncate">
+        <span className="flex-1 px-2 text-left text-foreground content-body-base truncate">
           {section.label}
         </span>
       )}
@@ -174,7 +174,7 @@ export const OpenedSection = ({ section }: { section: SectionConfig }) => {
       value={section.key}>
       <AccordionTrigger className="h-9 pl-5 py-1 cursor-pointer hover:bg-hover font-normal hover:shadow-[inset_2px_0px] hover:shadow-white">
         <MenuItemIcon icon={Icon} />
-        <span className="flex-1 px-s text-left text-foreground text-sm content-body-base truncate">
+        <span className="flex-1 px-2 text-left text-foreground text-sm content-body-base truncate">
           {section.label}
         </span>
       </AccordionTrigger>

@@ -196,8 +196,8 @@ export const XtmPlatformTrialForm = ({
   };
 
   return (
-    <div className="flex w-full flex-col gap-xl rounded bg-elevation-background-layer-2 p-xl">
-      <div className="flex items-center gap-l">
+    <div className="flex w-full flex-col gap-6 rounded bg-elevation-background-layer-2 p-6">
+      <div className="flex items-center gap-4">
         <span className="text-content-body-base text-muted-foreground">
           {t('Service.Trials.Form.AssociatedEmail')}
         </span>
@@ -206,17 +206,17 @@ export const XtmPlatformTrialForm = ({
 
       <Form {...form}>
         <form
-          className="flex w-full flex-col gap-l"
+          className="flex w-full flex-col gap-4"
           onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-s rounded bg-hover p-l bg-elevation-background-layer-2">
+          <div className="flex flex-col gap-2 rounded bg-hover p-4 bg-elevation-background-layer-2">
             <h3 className="txt-title-xs">
               {t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}
             </h3>
 
             {hasOngoingStandaloneTrials ? (
-              <div className="flex items-start gap-xs rounded border border-solid border-red p-s">
+              <div className="flex items-start gap-1 rounded border border-solid border-red p-2">
                 <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
-                <div className="flex flex-col gap-xs">
+                <div className="flex flex-col gap-1">
                   <span>
                     {t(
                       'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning',
@@ -231,9 +231,9 @@ export const XtmPlatformTrialForm = ({
                 </div>
               </div>
             ) : (
-              <div className="flex items-start gap-xs rounded border border-solid border-alert-alert-primary p-s">
+              <div className="flex items-start gap-1 rounded border border-solid border-alert-alert-primary p-2">
                 <WarningIcon className="size-4 mt-1 shrink-0 text-alert-alert-primary" />
-                <div className="flex flex-col gap-xs content-body-compact">
+                <div className="flex flex-col gap-1 content-body-compact">
                   <span>
                     {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
                   </span>
@@ -246,7 +246,7 @@ export const XtmPlatformTrialForm = ({
               </div>
             )}
 
-            <div className="flex items-center gap-xl">
+            <div className="flex items-center gap-6">
               {SELECTABLE_PRODUCTS.map((platformIdentifier) => (
                 <Checkbox
                   key={platformIdentifier}
@@ -389,9 +389,9 @@ export const XtmPlatformTrialForm = ({
         confirmLabel={t('Utils.Confirm')}
         destructive
         onConfirm={onConfirmOngoingTrial}>
-        <div className="flex items-start gap-xs rounded border border-solid border-red p-s">
+        <div className="flex items-start gap-1 rounded border border-solid border-red p-2">
           <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
-          <div className="flex flex-col gap-xs">
+          <div className="flex flex-col gap-1">
             <span>
               {t(
                 'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning',

@@ -28,7 +28,7 @@ export const ManageTrialRoleDescriptions = ({
     <Accordion
       type="single"
       collapsible
-      className={cn('flex flex-col gap-l', !stacked && 'md:flex-row')}>
+      className={cn('flex flex-col gap-4', !stacked && 'md:flex-row')}>
       {bundleRolePanels.map(({ platform, roles, defaultRole }) => {
         const namespace = `Service.Bundle.ManageTrial.Roles.${platform}`;
 
@@ -45,14 +45,14 @@ export const ManageTrialRoleDescriptions = ({
                 'pr-0 cursor-pointer data-[state=open]:border-b-0',
                 !stacked && 'border-b border-elevation-border-default-layer-0'
               )}>
-              <span className="flex items-center gap-xs text-header-heading-xs">
+              <span className="flex items-center gap-1 text-header-heading-xs">
                 <InfoIcon className="h-4 w-4 shrink-0" />
                 {t(`${namespace}.Title`, { count: roles.length })}
               </span>
             </AccordionTrigger>
             <AccordionContent
               className={cn(
-                'flex flex-col gap-s',
+                'flex flex-col gap-2',
                 !stacked && 'border-b border-elevation-border-default-layer-0'
               )}>
               {roles.map((role) => (

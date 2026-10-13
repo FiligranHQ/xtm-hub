@@ -64,7 +64,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
       header: t('Service.Form.UseCasesLabel'),
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex flex-wrap gap-xs">
+        <div className="flex flex-wrap gap-1">
           {row.original.use_cases.map((useCase) => (
             <Chip
               key={useCase.id}
@@ -94,10 +94,10 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
   }
 
   return (
-    <div className="flex flex-col gap-xl">
-      <div className="flex flex-wrap items-center justify-between gap-m">
-        <div className="flex flex-col gap-xs">
-          <div className="flex items-center gap-s">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
             <h1 className="text-2xl font-semibold">{round.name}</h1>
             <VotingRoundStatusBadge status={round.status} />
           </div>
@@ -113,7 +113,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
         />
       </div>
 
-      <section className="flex flex-col gap-m">
+      <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">
             {t('VotingRound.Feature.SectionTitle')}

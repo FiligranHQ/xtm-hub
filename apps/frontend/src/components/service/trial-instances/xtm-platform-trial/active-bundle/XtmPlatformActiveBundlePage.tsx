@@ -61,7 +61,7 @@ export const XtmPlatformActiveBundlePage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-m">
+      <div className="flex flex-col gap-3">
         <div className="h-8 w-64 rounded bg-elevation-surface-highlight-layer-1" />
         <div className="h-4 w-full rounded bg-elevation-surface-highlight-layer-1" />
         <div className="h-4 w-5/6 rounded bg-elevation-surface-highlight-layer-1" />
@@ -84,15 +84,15 @@ export const XtmPlatformActiveBundlePage = () => {
   ].filter((product) => product !== undefined);
 
   return (
-    <div className="flex flex-col gap-m">
-      <div className="flex flex-col gap-m sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-xs">
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-1">
           <h1 className="heading-2xl">{t('XtmPlatformTrial.Title')}</h1>
           <p className="text-content-body-base text-text-default-secondary">
             {t('XtmPlatformTrial.Subtitle')}
           </p>
         </div>
-        <div className="flex items-center gap-s shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <ReachSalesButton
             variant="gradient"
             deploymentRequestType={DeploymentRequestDeploymentType.Bundle}
@@ -100,7 +100,7 @@ export const XtmPlatformActiveBundlePage = () => {
           <SlackSupportButton />
         </div>
       </div>
-      <div className="grid gap-m sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <BundleInfoCard
           bundle={bundle}
           canManage={canManage}
@@ -109,7 +109,7 @@ export const XtmPlatformActiveBundlePage = () => {
           <BundleGuideCard />
         </div>
       </div>
-      <div className="grid gap-m sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {orderedProducts.map((product) => (
           <BundleProductCard
             key={product.service_instance_id}

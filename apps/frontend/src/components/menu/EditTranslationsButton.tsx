@@ -36,7 +36,7 @@ export const EditTranslationsButton = ({
         priority="tertiary"
         disabled={isPending || isExiting}
         className={cn(
-          'h-9 px-m w-full justify-start rounded-none text-foreground',
+          'h-9 px-3 w-full justify-start rounded-none text-foreground',
           isEditMode && NAVIGATION_ACTIVE_CLASSES
         )}
         onClick={() => (isEditMode ? exitEditMode() : setEditMode(true))}>

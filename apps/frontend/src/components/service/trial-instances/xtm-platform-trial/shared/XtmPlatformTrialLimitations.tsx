@@ -6,8 +6,8 @@ import { InfoIcon } from '@filigran/icon';
 export const XtmPlatformTrialLimitations = () => {
   const t = useTranslate();
   return (
-    <div className="rounded p-m bg-feedback-info-secondary-transparency">
-      <h2 className="flex items-center gap-s mb-s heading-xs">
+    <div className="rounded p-3 bg-feedback-info-secondary-transparency">
+      <h2 className="flex items-center gap-2 mb-2 heading-xs">
         <InfoIcon className="size-4 text-feedback-info-primary" />
         {t('Service.Trials.XtmPlatform.Page.Limitations.Title')}
       </h2>
@@ -15,7 +15,7 @@ export const XtmPlatformTrialLimitations = () => {
         <p className="text-sm">
           {t('Service.Trials.XtmPlatform.Page.Limitations.Intro')}
         </p>
-        <ul className="text-sm mb-l list-disc pl-l">
+        <ul className="text-sm mb-4 list-disc pl-4">
           <li>{t('Service.Trials.XtmPlatform.Page.Limitations.OpenCTI')}</li>
           <li>{t('Service.Trials.XtmPlatform.Page.Limitations.OpenAEV')}</li>
         </ul>

@@ -46,7 +46,7 @@ const TrialsList = ({ scope }: TrialsListProps) => {
         <TabsContent
           key={type}
           value={type}
-          className="pt-l">
+          className="pt-4">
           <TrialsTab
             type={type}
             scope={scope}
@@ -56,7 +56,7 @@ const TrialsList = ({ scope }: TrialsListProps) => {
       {scope.kind === 'bundle' && (
         <TabsContent
           value={QUOTAS_TAB}
-          className="pt-l">
+          className="pt-4">
           <TrialsTabQuotasPlatform />
         </TabsContent>
       )}

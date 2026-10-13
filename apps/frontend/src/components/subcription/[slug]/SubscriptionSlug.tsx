@@ -282,8 +282,8 @@ const SubscriptionSlug = ({
   });
 
   const toolbar = (
-    <div className="flex justify-between flex-wrap gap-s pt-s">
-      <div className="flex gap-s flex-wrap ml-auto">
+    <div className="flex justify-between flex-wrap gap-2 pt-2">
+      <div className="flex gap-2 flex-wrap ml-auto">
         <SubscriptionSlugUserService
           connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
           subscription={queryDataSubscription}

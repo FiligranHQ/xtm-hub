@@ -41,11 +41,11 @@ export const ServiceForm = ({ handleSubmit }: ServiceFormProps) => {
   };
 
   return (
-    <div className="absolute inset-0 p-xl pt-[5rem]">
+    <div className="absolute inset-0 p-6 pt-[5rem]">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-xl">
+          className="w-full space-y-6">
           <FormField
             control={form.control}
             name="illustration_document"

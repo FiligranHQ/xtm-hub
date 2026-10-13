@@ -141,13 +141,13 @@ export const TrialCancelSheet = ({
       setOpen={setOpen}
       title={t('Service.Trials.Cancellation.ConfirmationForm.Title')}>
       {isCancellationDefinitive && (
-        <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm mt-4">
-          <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
+        <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-1 p-2 text-sm mt-4">
+          <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-1" />
           {t('Service.Trials.Cancellation.ConfirmationForm.NoNewTrialPossible')}
         </div>
       )}
       <AutoForm
-        className="mt-l"
+        className="mt-4"
         formSchema={trialCancelSchema}
         onSubmit={(values) => {
           onSubmit(values);
@@ -160,7 +160,7 @@ export const TrialCancelSheet = ({
             fieldType: CancellationReasonField,
           },
         }}>
-        <div className="flex justify-end gap-s">
+        <div className="flex justify-end gap-2">
           <Button
             priority="secondary"
             type="button"

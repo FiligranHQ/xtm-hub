@@ -128,7 +128,7 @@ const BadgeOverflowCounter = ({
     <div
       ref={containerRef}
       className={cn(
-        'flex gap-s overflow-hidden flex-1 items-center',
+        'flex gap-2 overflow-hidden flex-1 items-center',
         className
       )}>
       {firstBadge &&
@@ -172,7 +172,7 @@ const BadgeOverflowCounter = ({
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              <div className="flex flex-wrap gap-s">
+              <div className="flex flex-wrap gap-2">
                 {badges
                   .slice(visibleTags)
                   .map(({ id, name, color }) =>

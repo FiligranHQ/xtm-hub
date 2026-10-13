@@ -63,12 +63,12 @@ export const SharedNavigation = ({
         </ul>
       )}
 
-      <Separator className="my-s" />
-      <ul className="space-y-s pb-s">
+      <Separator className="my-2" />
+      <ul className="space-y-2 pb-2">
         {bottomLinks.map((link) => (
           <li
             key={link.key}
-            className={link.highlight ? 'px-4 pt-s' : undefined}>
+            className={link.highlight ? 'px-4 pt-2' : undefined}>
             <NavigationLinkMenu
               open={open}
               href={link.href}
@@ -83,7 +83,7 @@ export const SharedNavigation = ({
 
       {footerSections.length > 0 && (
         <>
-          <Separator className="my-s" />
+          <Separator className="my-2" />
           {open ? (
             <Accordion
               type="single"

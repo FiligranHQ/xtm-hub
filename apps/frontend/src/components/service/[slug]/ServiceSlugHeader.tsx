@@ -47,8 +47,8 @@ const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
   return (
     <>
       <div>
-        <div className="flex flex-col gap-m mb-m">
-          <div className="flex flex-row gap-m">
+        <div className="flex flex-col gap-3 mb-3">
+          <div className="flex flex-row gap-3">
             <h1>{serviceInstance.name}</h1>
             <BadgeOverflowCounter badges={serviceTags as BadgeOverflow[]} />
           </div>
@@ -56,11 +56,11 @@ const ServiceSlugHeader = ({ serviceInstance }: ServiceSlugHeaderProps) => {
             {serviceInstance.description}
           </p>
           <div>
-            <p className="text-xs uppercase text-muted-foreground pb-xs">
+            <p className="text-xs uppercase text-muted-foreground pb-1">
               {t('Service.Management.AvailableCapabilities')}
             </p>
             {availableCapabilities.length > 0 ? (
-              <div className="flex flex-wrap gap-xs">
+              <div className="flex flex-wrap gap-1">
                 {availableCapabilities.map((capability) => (
                   <Chip
                     key={capability.id}

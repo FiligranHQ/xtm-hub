@@ -44,7 +44,7 @@ const ServiceListHeaderButtons = ({}) => {
   const isIntegration = type === ShareableResourceType.OPENCTI_INTEGRATION;
 
   return (
-    <div className="flex gap-s">
+    <div className="flex gap-2">
       {isIntegration && (
         <IntegrationsCsvExportButton
           serviceInstanceId={serviceInstance.id}

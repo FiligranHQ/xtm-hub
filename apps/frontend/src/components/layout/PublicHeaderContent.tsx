@@ -23,7 +23,7 @@ export const PublicHeaderContent = async ({
         <LogoXTMDark className="text-primary mr-2 h-8 w-auto" />
         <span className="sr-only">{t('Metadata.SiteName')}</span>
       </Link>
-      <div className="flex items-center gap-s ml-auto">
+      <div className="flex items-center gap-2 ml-auto">
         <PublicHeaderAuthButtons />
         <div className="md:hidden flex items-center">
           <PublicMobileMenuButton visibleServiceSlugs={visibleServiceSlugs} />

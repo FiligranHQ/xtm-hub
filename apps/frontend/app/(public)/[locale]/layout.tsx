@@ -77,7 +77,7 @@ const RootLayout = async ({
               visibleServiceSlugs={visibleServiceSlugs}
             />
           }
-          contentClassName="container pt-l">
+          contentClassName="container pt-4">
           {children}
         </AppShell>
         <EditModeContentObserver />

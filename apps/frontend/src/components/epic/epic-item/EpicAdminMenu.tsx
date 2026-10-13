@@ -50,7 +50,7 @@ export const EpicAdminMenu = ({
           <Chip
             label={t('Epic.Timeline.draft')}
             severity="medium"
-            className="mr-s"
+            className="mr-2"
           />
         )}
         <ShareLinkButton url={shareableUrl} />

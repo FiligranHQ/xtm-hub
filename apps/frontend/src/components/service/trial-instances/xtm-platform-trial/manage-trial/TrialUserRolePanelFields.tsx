@@ -26,7 +26,7 @@ export const TrialUserRolePanelFields = ({
 }: TrialUserRolePanelFieldsProps) => {
   const t = useTranslate();
   return (
-    <div className="flex flex-col md:flex-row gap-l mt-l">
+    <div className="flex flex-col md:flex-row gap-4 mt-4">
       {bundleRolePanels.map(({ platform, roles, defaultRole }) => {
         const fieldName: RoleFormField = `${platform}Role`;
         const namespace = `Service.Bundle.ManageTrial.Roles.${platform}`;

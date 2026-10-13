@@ -37,8 +37,8 @@ export const ConnectedProductItem = ({
       : undefined;
 
   return (
-    <div className="hover:cursor-default flex min-h-12 w-full items-center gap-m">
-      <div className="flex min-w-0 flex-1 items-center gap-s">
+    <div className="hover:cursor-default flex min-h-12 w-full items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         {platformMeta?.Icon && (
           <platformMeta.Icon className="h-6 w-6 shrink-0" />
         )}
@@ -55,7 +55,7 @@ export const ConnectedProductItem = ({
           severity="ee"
         />
       )}
-      <div className="flex w-16 items-center justify-end gap-xs">
+      <div className="flex w-16 items-center justify-end gap-1">
         {detailPath && (
           <IconButton
             priority="tertiary"

@@ -27,9 +27,9 @@ export const ServiceListFilterSection = ({
         return (
           <div
             key={filterKey}
-            className="w-full border-b border-border p-s last:border-b-0">
+            className="w-full border-b border-border p-2 last:border-b-0">
             {filter.title && (
-              <div className="content-body-compact-medium pb-xs">
+              <div className="content-body-compact-medium pb-1">
                 {filter.title}
               </div>
             )}

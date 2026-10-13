@@ -103,7 +103,7 @@ export const ServiceSlugAddCapabilities = ({
             })}
           </p>
 
-          <div className="flex flex-col gap-s py-m">
+          <div className="flex flex-col gap-2 py-3">
             {availableCapabilities.length === 0 ? (
               <p className="text-sm text-muted-foreground italic">
                 {t('Service.Management.NoAvailableCapabilities')}

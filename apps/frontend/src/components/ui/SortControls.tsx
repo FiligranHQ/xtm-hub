@@ -31,7 +31,7 @@ export const SortControls = ({
   const t = useTranslate();
 
   return (
-    <div className={cn(className, 'flex gap-s items-center')}>
+    <div className={cn(className, 'flex gap-2 items-center')}>
       <span className="whitespace-nowrap text-sm">
         {t('SortControls.SortBy')}
       </span>

@@ -55,9 +55,9 @@ export const XtmPlatformTrialStatusPanel = ({
   const singleDateRow = dateRows.length === 1 ? dateRows[0] : undefined;
 
   return (
-    <div className="flex w-full flex-col gap-xl rounded bg-elevation-background-layer-2 p-xl">
-      <div className="flex flex-col gap-s">
-        <div className="flex items-center justify-between gap-l">
+    <div className="flex w-full flex-col gap-6 rounded bg-elevation-background-layer-2 p-6">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center text-content-body-base">
             <span className="text-text-default-secondary">
               {t('Service.Trials.Form.AssociatedEmail')}
@@ -67,13 +67,13 @@ export const XtmPlatformTrialStatusPanel = ({
           {singleDateRow && renderDateRow(singleDateRow)}
         </div>
         {dateRows.length > 1 && (
-          <div className="flex items-center justify-between gap-l">
+          <div className="flex items-center justify-between gap-4">
             {dateRows.map(renderDateRow)}
           </div>
         )}
       </div>
 
-      <div className="flex flex-col gap-s rounded p-l bg-elevation-background-layer-3">
+      <div className="flex flex-col gap-2 rounded p-4 bg-elevation-background-layer-3">
         <h3 className="heading-xs">
           {t(
             isInProgress
@@ -81,7 +81,7 @@ export const XtmPlatformTrialStatusPanel = ({
               : 'Service.Trials.XtmPlatform.Page.Status.ProductsIncluded'
           )}
         </h3>
-        <div className="flex items-center gap-xl">
+        <div className="flex items-center gap-6">
           {products.map((product) => (
             <Checkbox
               key={product}
@@ -94,8 +94,8 @@ export const XtmPlatformTrialStatusPanel = ({
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-xl rounded border border-elevation-border-subtle-layer-3 px-xl py-16 text-center">
-        <div className="flex flex-col gap-xs">
+      <div className="flex flex-col items-center justify-center gap-6 rounded border border-elevation-border-subtle-layer-3 px-6 py-16 text-center">
+        <div className="flex flex-col gap-1">
           <p className="heading-xs">
             {t(`Service.Trials.XtmPlatform.Page.Status.${state}.Title`)}
           </p>
@@ -108,7 +108,7 @@ export const XtmPlatformTrialStatusPanel = ({
         ) : null}
       </div>
 
-      <div className="flex justify-end gap-s">{actions}</div>
+      <div className="flex justify-end gap-2">{actions}</div>
     </div>
   );
 };

@@ -17,7 +17,7 @@ const RoleSheetFormFooter = ({ isDirty }: { isDirty: boolean }) => {
 
   return (
     <SheetFooter className="pt-2">
-      <div className="flex gap-s">
+      <div className="flex gap-2">
         <Button
           type="button"
           priority="secondary"

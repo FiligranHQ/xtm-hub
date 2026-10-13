@@ -82,7 +82,7 @@ const ServiceInstanceCard = ({
       )}
       {serviceInstance.hoverLinks && (
         <div className="absolute inset-0 bg-elevation-background-layer-1 dark:bg-black-1000/80 z-10 opacity-0 hover:opacity-100 flex">
-          <div className="flex flex-col gap-s m-auto">
+          <div className="flex flex-col gap-2 m-auto">
             {serviceInstance.hoverLinks?.map(renderHoverButton)}
           </div>
         </div>
@@ -90,11 +90,11 @@ const ServiceInstanceCard = ({
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-ring rounded flex flex-col">
         <div
           className={cn(
-            'flex relative justify-center items-center flex-col gap-s overflow-hidden box-border px-s',
+            'flex relative justify-center items-center flex-col gap-2 overflow-hidden box-border px-2',
             serviceInstance.card_background ?? 'bg-blue-900'
           )}>
           <LogoFiligranIcon className="absolute opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
-          <div className="mt-s flex items-center h-12 w-full">
+          <div className="mt-2 flex items-center h-12 w-full">
             {serviceInstance.logoBackgroundImageUrl && (
               <div
                 className={cn(
@@ -138,7 +138,7 @@ const ServiceInstanceCard = ({
                   unoptimized={!!serviceInstance.isCustomIllustrationDocument}
                 />
                 <h3
-                  className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-s max-w-[80%]"
+                  className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-2 max-w-[80%]"
                   style={{ textShadow: '1px 1px 1px #000' }}>
                   {serviceInstance.name}
                 </h3>
@@ -155,7 +155,7 @@ const ServiceInstanceCard = ({
               ))}
           </div>
         </div>
-        <div className="min-h-40 flex flex-col p-l gap-l flex-1 bg-elevation-background-layer-1 group-hover:bg-hover">
+        <div className="min-h-40 flex flex-col p-4 gap-4 flex-1 bg-elevation-background-layer-1 group-hover:bg-hover">
           <div className="flex items-start min-h-12 w-full text-ellipsis overflow-hidden">
             {rightAction || serviceInstance.hoverLinks ? (
               <h2>
@@ -175,7 +175,7 @@ const ServiceInstanceCard = ({
               </Link>
             )}
 
-            <div className="flex pl-s ml-auto gap-m items-start">
+            <div className="flex pl-2 ml-auto gap-3 items-start">
               {serviceInstance.displayLinkArrow && (
                 <div className="pt-2">
                   <ArrowOutwardIcon className="size-3 shrink-0" />
@@ -188,7 +188,7 @@ const ServiceInstanceCard = ({
           </p>
           {rightAction && (
             <div
-              className="flex pt-s mt-auto ml-auto
+              className="flex pt-2 mt-auto ml-auto
           [&>button]:focus-visible:outline-none [&>button]:after:cursor-pointer [&>button]:after:content-[' '] [&>button]:after:absolute [&>button]:after:inset-0">
               {rightAction}
             </div>

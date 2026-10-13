@@ -182,7 +182,7 @@ export const BundleCancelSheet = ({
                 fieldType: cancellationReasonFieldType,
               },
             }}>
-            <div className="mt-l flex items-center gap-xs rounded border border-solid border-red p-s">
+            <div className="mt-4 flex items-center gap-1 rounded border border-solid border-red p-2">
               <WarningIcon className="size-4 shrink-0 text-destructive" />
               <div className="content-body-compact text-text-default-primary">
                 <span>{t('XtmPlatformTrial.CancelDialog.Warning')}</span>

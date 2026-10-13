@@ -38,10 +38,10 @@ export const TrialsStorageLimitation = ({
 
   return (
     <div className="p-6 rounded bg-elevation-background-layer-0">
-      <h2 className="text-primary text-2xl mb-l">
+      <h2 className="text-primary text-2xl mb-4">
         {t('Service.Trials.Storage.Title')}
       </h2>
-      <p className="text-sm mb-l">
+      <p className="text-sm mb-4">
         {t.rich(
           isOpenCTI
             ? 'Service.Trials.Storage.OpenCTIDescription'
@@ -49,7 +49,7 @@ export const TrialsStorageLimitation = ({
           { link: renderLink, strong: renderStrong }
         )}
       </p>
-      <p className="text-sm mb-l">
+      <p className="text-sm mb-4">
         {t.rich('Service.Trials.Storage.NoSLA', { strong: renderStrong })}
       </p>
     </div>

@@ -143,7 +143,7 @@ describe('HomepageResourceCard', () => {
       );
 
       // The footer div should be present but contain no badges
-      const footerBadges = container.querySelectorAll('.pl-m.pb-m > *');
+      const footerBadges = container.querySelectorAll('.pl-3.pb-3 > *');
       expect(footerBadges).toHaveLength(0);
     });
   });

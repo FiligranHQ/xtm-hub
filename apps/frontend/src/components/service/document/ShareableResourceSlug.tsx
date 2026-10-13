@@ -82,7 +82,7 @@ const ShareableResourceSlug = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <div className="flex gap-s pb-l flex-col md:flex-row">
+      <div className="flex gap-2 pb-4 flex-col md:flex-row">
         {logo ? (
           <div className="w-24 shrink-0 rounded overflow-hidden">
             <Image
@@ -95,7 +95,7 @@ const ShareableResourceSlug = ({
             />
           </div>
         ) : (
-          <div className="w-24 p-m shrink-0 flex items-center justify-center">
+          <div className="w-24 p-3 shrink-0 flex items-center justify-center">
             <EntityTypeOrFiligranLogo
               entityTypes={getEntityTypes(documentData)}
             />
@@ -103,8 +103,8 @@ const ShareableResourceSlug = ({
         )}
         <div className="flex flex-col justify-center w-full">
           <div className="flex items-start ">
-            <h1 className="whitespace-nowrap mb-s">{documentData.name}</h1>
-            <div className="flex gap-s ml-auto">
+            <h1 className="whitespace-nowrap mb-2">{documentData.name}</h1>
+            <div className="flex gap-2 ml-auto">
               <ShareLinkButton
                 documentId={documentData.id}
                 url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
@@ -171,7 +171,7 @@ const ShareableResourceSlug = ({
         images={carouselImages}
       />
       {children}
-      <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
+      <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}

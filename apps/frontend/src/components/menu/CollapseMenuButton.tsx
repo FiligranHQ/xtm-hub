@@ -14,11 +14,11 @@ export const CollapseMenuButton = ({
 }: CollapseMenuButtonProps) => {
   const t = useTranslate();
   return (
-    <div className="shrink-0 pb-s">
+    <div className="shrink-0 pb-2">
       <Button
         priority="tertiary"
         aria-label={t('App.CollapseSidebar')}
-        className="h-9 px-m w-full justify-start rounded-none text-foreground"
+        className="h-9 px-3 w-full justify-start rounded-none text-foreground"
         onClick={handleOpenMenu}>
         <span className="flex w-8 shrink-0 justify-center">
           <span className="relative h-6 w-6">

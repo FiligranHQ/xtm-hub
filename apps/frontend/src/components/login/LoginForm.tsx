@@ -52,11 +52,11 @@ const LoginForm = () => {
     });
   };
   return (
-    <div className="bg-elevation-background-layer-1 border border-border-light rounded w-full p-l mb-l">
+    <div className="bg-elevation-background-layer-1 border border-border-light rounded w-full p-4 mb-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-l">
+          className="w-full space-y-4">
           <FormField
             control={form.control}
             name="email"

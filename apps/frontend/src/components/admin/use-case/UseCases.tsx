@@ -71,7 +71,7 @@ const UseCases = () => {
       header: t('UseCaseListPage.Product'),
       cell: ({ row }) => {
         return (
-          <div className="flex flex-wrap gap-xs">
+          <div className="flex flex-wrap gap-1">
             {row.original.product.map((product) => (
               <Chip
                 key={product}
@@ -100,7 +100,7 @@ const UseCases = () => {
   return (
     <>
       {isError && (
-        <div className="mb-s text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="mb-2 text-sm text-destructive">{t('Utils.Error')}</div>
       )}
       <DataTable
         columns={columns}
@@ -114,9 +114,9 @@ const UseCases = () => {
         }}
         onClickRow={({ original }) => setUseCaseEdit(original)}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
             <div />
-            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
               <Select
                 value={selectedProduct ?? 'all'}
                 onValueChange={(value) =>

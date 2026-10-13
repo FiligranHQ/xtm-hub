@@ -103,21 +103,21 @@ export const RegistrationDetails = ({
       DeploymentRequestHubStatus.Active;
 
   return (
-    <section className="flex justify-between p-xl border border-solid border-blue rounded">
-      <ul className="text-sm flex flex-col gap-l">
+    <section className="flex justify-between p-6 border border-solid border-blue rounded">
+      <ul className="text-sm flex flex-col gap-4">
         {platform.title && (
           <li>
-            <span className="mr-xs">{t('Register.Details.ProductName')}:</span>
+            <span className="mr-1">{t('Register.Details.ProductName')}:</span>
             {platform.title}
           </li>
         )}
         <li>
-          <span className="mr-xs">{t('Register.Details.ProductURL')}:</span>
+          <span className="mr-1">{t('Register.Details.ProductURL')}:</span>
           <span>{platform.url ? platform.url : '-'}</span>
         </li>
         {platform.deployment_request?.hub_status && (
           <li>
-            <span className="mr-xs">{t('Register.Details.Status')}:</span>
+            <span className="mr-1">{t('Register.Details.Status')}:</span>
             {formatTitleCase(platform.deployment_request?.hub_status)}
             {isCancellable && (
               <Button
@@ -133,14 +133,14 @@ export const RegistrationDetails = ({
         {isTrial ? (
           <>
             <li>
-              <span className="mr-xs">{t('Register.Details.StartDate')}:</span>
+              <span className="mr-1">{t('Register.Details.StartDate')}:</span>
               {platform.subscription?.start_date &&
               platform.subscription.end_date
                 ? formatDate(platform.subscription.start_date)
                 : '-'}
             </li>
             <li>
-              <span className="mr-xs">{t('Register.Details.EndDate')}:</span>
+              <span className="mr-1">{t('Register.Details.EndDate')}:</span>
               {platform.subscription?.end_date
                 ? formatDate(platform.subscription?.end_date)
                 : '-'}
@@ -149,9 +149,7 @@ export const RegistrationDetails = ({
         ) : (
           <>
             <li>
-              <span className="mr-xs">
-                {t('Register.Details.ConnectedOn')}:
-              </span>
+              <span className="mr-1">{t('Register.Details.ConnectedOn')}:</span>
               {platform.subscription?.start_date
                 ? formatDate(platform.subscription.start_date)
                 : '-'}
@@ -161,18 +159,18 @@ export const RegistrationDetails = ({
 
         {platform.deployment_request?.region && (
           <li>
-            <span className="mr-xs">{t('Register.Details.Region')}:</span>
+            <span className="mr-1">{t('Register.Details.Region')}:</span>
             {t(`Region.${platform.deployment_request.region.toUpperCase()}`)}
           </li>
         )}
         <li>
-          <span className="mr-xs">{t('Register.Details.License')}:</span>
+          <span className="mr-1">{t('Register.Details.License')}:</span>
           {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
         </li>
         {isLastConnectivityCheckDisplayed && (
           <>
             <li>
-              <span className="mr-xs">
+              <span className="mr-1">
                 {t('Register.Details.ConnectionStatus.Title')}:
               </span>
               <span
@@ -197,7 +195,7 @@ export const RegistrationDetails = ({
               )}
             </li>
             <li>
-              <span className="mr-xs">
+              <span className="mr-1">
                 {t('Register.Details.LastConnectionCheck')}:
               </span>
               {platform.last_connectivity_check
@@ -209,7 +207,7 @@ export const RegistrationDetails = ({
         {isTrialActive && (
           <li>
             <span>
-              <span className="mr-xs">{t('Register.Details.Access')}:</span>
+              <span className="mr-1">{t('Register.Details.Access')}:</span>
               {userHasTrialAccess ? (
                 <span>
                   {(platform.myGroups ?? [])
@@ -219,7 +217,7 @@ export const RegistrationDetails = ({
                 </span>
               ) : (
                 <span>
-                  <span className="text-destructive mr-xs">
+                  <span className="text-destructive mr-1">
                     {t('RegistrationDetails.NoAccess')}
                   </span>
                   {t('RegistrationDetails.NoAccessContact', {
@@ -232,7 +230,7 @@ export const RegistrationDetails = ({
         )}
       </ul>
 
-      <div className="flex flex-col gap-m">
+      <div className="flex flex-col gap-3">
         {(displayAccessPlatformButtonForTrial || !isTrial) && (
           <Button asChild>
             <Link

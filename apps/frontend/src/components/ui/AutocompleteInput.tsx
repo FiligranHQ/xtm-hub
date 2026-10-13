@@ -124,7 +124,7 @@ export const AutocompleteInput = ({
           id={listboxId}
           role="listbox"
           aria-label={listLabel}
-          className="absolute z-50 mt-xs max-h-60 w-full overflow-y-auto rounded border bg-elevation-background-layer-3 py-xs drop-shadow-xs">
+          className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded border bg-elevation-background-layer-3 py-1 drop-shadow-xs">
           {visibleOptions.map((option, index) => (
             <li
               key={option.value}
@@ -134,7 +134,7 @@ export const AutocompleteInput = ({
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => select(option)}
               className={cn(
-                'flex w-full cursor-pointer items-baseline gap-xs px-s py-xs text-sm hover:bg-hover',
+                'flex w-full cursor-pointer items-baseline gap-1 px-2 py-1 text-sm hover:bg-hover',
                 index === activeIndex && 'bg-hover'
               )}>
               <span className="whitespace-nowrap">{option.label}</span>

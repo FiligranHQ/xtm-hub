@@ -10,7 +10,7 @@ const HORIZONTAL_CLASSES = ['w-full', 'border-t'];
 const VERTICAL_FULL_HEIGHT_CLASS = 'h-full';
 const VERTICAL_CLASSES = [VERTICAL_FULL_HEIGHT_CLASS, 'border-l'];
 const CALLER_HEIGHT_CLASS = 'h-5';
-const SPACING_CLASS = 'my-s';
+const SPACING_CLASS = 'my-2';
 
 describe('Separator', () => {
   it('should stay out of the accessibility tree when decorative is not set', () => {

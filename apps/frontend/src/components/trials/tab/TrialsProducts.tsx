@@ -36,7 +36,7 @@ export const TrialsProducts = ({ products }: TrialsProductsProps) => {
   }
 
   return (
-    <div className="flex flex-wrap gap-s">
+    <div className="flex flex-wrap gap-2">
       {products.map((product) => (
         <TooltipProvider
           key={product.id}

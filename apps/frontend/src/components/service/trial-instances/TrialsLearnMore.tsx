@@ -18,7 +18,7 @@ import Link from 'next/link';
 import React from 'react';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-primary text-2xl mb-l">{children}</h2>
+  <h2 className="text-primary text-2xl mb-4">{children}</h2>
 );
 
 const P = ({
@@ -38,8 +38,8 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
   const baseTranslationKey = `Service.Trials.LearnMore.${platformIdentifier}`;
   return (
     <>
-      <section className="flex flex-col gap-xxl py-20 pt-0">
-        <div className="flex flex-col gap-xl items-center lg:flex-row">
+      <section className="flex flex-col gap-8 py-20 pt-0">
+        <div className="flex flex-col gap-6 items-center lg:flex-row">
           <div className="w-[413px]">
             <iframe
               width="413"
@@ -52,12 +52,12 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
               }
             />
           </div>
-          <article className="p-xl w-full md-w-[60%]">
+          <article className="p-6 w-full md-w-[60%]">
             <H2>{t(`${baseTranslationKey}.WhatCanYouDo.Title`)}</H2>
-            <P className="mb-l">
+            <P className="mb-4">
               {t(`${baseTranslationKey}.WhatCanYouDo.FirstParagraph`)}
             </P>
-            <P className="mb-l">
+            <P className="mb-4">
               {t(`${baseTranslationKey}.WhatCanYouDo.SecondParagraph`)}
             </P>
             <P>
@@ -81,16 +81,16 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
                         }
                       )
                 }
-                className="underline flex gap-s items-center">
+                className="underline flex gap-2 items-center">
                 <ArrowRightAltIcon className="size-3" />
                 {t(`${baseTranslationKey}.WhatCanYouDo.Link`)}
               </Link>
             </P>
           </article>
         </div>
-        <div className="flex flex-col md:flex-row justify-between gap-l">
+        <div className="flex flex-col md:flex-row justify-between gap-4">
           <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
-            <h3 className="flex items-center gap-l text-primary mb-s font-bold">
+            <h3 className="flex items-center gap-4 text-primary mb-2 font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <ArrowsInputIcon className="size-4" />
               </span>
@@ -99,7 +99,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             <P>{t(`${baseTranslationKey}.Blocks.First.Description`)}</P>
           </article>
           <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
-            <h3 className="flex items-center gap-l text-primary mb-s font-bold">
+            <h3 className="flex items-center gap-4 text-primary mb-2 font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <AnalyticsIcon className="size-4" />
               </span>
@@ -108,7 +108,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             <P>{t(`${baseTranslationKey}.Blocks.Second.Description`)}</P>
           </article>
           <article className="rounded p-6 basis-full bg-elevation-background-layer-1">
-            <h3 className="flex items-center gap-l text-primary mb-s font-bold">
+            <h3 className="flex items-center gap-4 text-primary mb-2 font-bold">
               <span className="p-2 bg-blue/5 rounded">
                 <ArrowsOutputIcon className="size-4" />
               </span>

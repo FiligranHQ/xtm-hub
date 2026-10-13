@@ -41,8 +41,8 @@ export const DetailCard = ({
       onClick={handleCardClick}
       className="group flex h-full flex-col overflow-hidden rounded bg-elevation-background-layer-1 hover:cursor-pointer">
       {media}
-      <div className="flex flex-1 flex-col gap-m p-l group-hover:bg-hover">
-        <div className="flex flex-col gap-m">
+      <div className="flex flex-1 flex-col gap-3 p-4 group-hover:bg-hover">
+        <div className="flex flex-col gap-3">
           <h2 className="text-base font-semibold line-clamp-2">
             <button
               type="button"

@@ -23,7 +23,7 @@ export const RegisteredPlatformsSection = async ({
   }
 
   return (
-    <section className="w-full xl:w-3/8 bg-elevation-background-layer-1 p-l rounded xl:max-h-96 xl:overflow-y-auto">
+    <section className="w-full xl:w-3/8 bg-elevation-background-layer-1 p-4 rounded xl:max-h-96 xl:overflow-y-auto">
       <div className="flex flex-col">
         <span className="heading-xs text-filigran-brand-primary">
           {welcomeName
@@ -32,13 +32,13 @@ export const RegisteredPlatformsSection = async ({
               })
             : t('PublicHomePage.XtmPlatform.Label', {})}
         </span>
-        <span className="mt-l mb-s text-content-body-base text-text-default-primary">
+        <span className="mt-4 mb-2 text-content-body-base text-text-default-primary">
           {t('PublicHomePage.XtmPlatform.ConnectedProducts', {
             count: registeredProductsCount,
           })}
         </span>
 
-        <div className="flex flex-row flex-wrap gap-m xl:flex-col xl:flex-nowrap xl:gap-0">
+        <div className="flex flex-row flex-wrap gap-3 xl:flex-col xl:flex-nowrap xl:gap-0">
           {homepageRegisteredPlatformCards.map((platformCard) => (
             <div
               key={platformCard.id}
