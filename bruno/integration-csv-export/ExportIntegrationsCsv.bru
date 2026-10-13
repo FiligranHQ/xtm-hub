@@ -26,7 +26,7 @@ params:path {
 
 headers {
   Cookie: {{cookie}}
-  ~x-xtm-hub-marketing-token: {{xtm-hub-marketing-token}}
+  ~x-xtm-hub-token: {{xtm-hub-token}}
 }
 
 docs {
@@ -36,13 +36,11 @@ docs {
   Ensure cookie is defined in environment (requires a logged-in session).
 
   Marketing tooling (e.g. HubSpot) without a session can instead send the
-  x-xtm-hub-marketing-token header (disabled above: tick it and untick Cookie).
-  Ensure xtm-hub-marketing-token is defined in environment; the local dev value
-  is "changeMeMarketing" (see marketing_token_hash / marketing_token_salt in
-  apps/backend/config/default.json). The system token is not accepted. Such an
-  export runs as a user without any capability or organization subscription,
-  so it only contains the public active integrations, and sends no telemetry
-  event.
+  system token in the x-xtm-hub-token header (disabled above: tick it and
+  untick Cookie). Ensure xtm-hub-token is defined in environment (the local dev
+  value is "changeMe"). Such an export runs as a user without any capability
+  or organization subscription, never as the system user, so it only contains
+  the public active integrations, and sends no telemetry event.
 
   Path params:
   serviceInstanceId: Relay global ID of the integrations library service
@@ -80,7 +78,7 @@ docs {
   200: CSV file stream (Content-Type: text/csv; charset=utf-8), with a
   Content-Disposition header naming the file
   "integrations-library-export-YYYY-MM-DD.csv".
-  401: user not logged in and no valid marketing token.
+  401: user not logged in and no valid system token.
   404: service instance not found.
   400: service instance is not the Integrations Library.
   500: unexpected error while generating the export.

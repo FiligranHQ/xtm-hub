@@ -18,7 +18,10 @@ import { INTEGRATION_CSV_EXPORT_METADATA_KEYS } from '../../../modules/shareable
 import { TelemetryApp } from '../../../modules/telemetry/telemetry.app';
 import { TelemetryHelper } from '../../../modules/telemetry/telemetry.helper';
 import { MARKETING_USER_CONTEXT } from '../../../portal.const';
-import { isValidMarketingToken } from '../../../security/util/marketing-token';
+import {
+  isValidSystemToken,
+  SYSTEM_TOKEN_HEADER,
+} from '../../../security/directive-graphql/validator/system-token.validator';
 import { logApp } from '../../../utils/app-logger.util';
 import { extractId } from '../../../utils/utils';
 import {
@@ -66,13 +69,16 @@ const sendTelemetry = async (
 export const IntegrationCsvExportEndpoint = {
   exportCsv: async (req: Request, res: Response): Promise<void> => {
     const sessionUser = req.session.user;
-    // Marketing tooling (e.g. HubSpot) has no session: a valid marketing token exports as the capability-less marketing user.
+    // Marketing tooling (e.g. HubSpot) has no session: a valid system token exports as the capability-less
+    // marketing user, never as the system user.
     const user =
       sessionUser ??
-      (isValidMarketingToken(req) ? MARKETING_USER_CONTEXT.user : undefined);
+      (isValidSystemToken(req.header(SYSTEM_TOKEN_HEADER) ?? null)
+        ? MARKETING_USER_CONTEXT.user
+        : undefined);
     if (!user) {
       res.status(401).json({
-        message: 'You must be logged in or provide a valid marketing token',
+        message: 'You must be logged in or provide a valid system token',
       });
       return;
     }

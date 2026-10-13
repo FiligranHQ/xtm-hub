@@ -101,7 +101,7 @@ export const CRONS_USER_CONTEXT: PortalContext = {
   },
 } as unknown as PortalContext;
 
-// Identity of the marketing token (e.g. HubSpot), never persisted: no capability, no role, and its own
+// Identity of token-authenticated marketing exports (e.g. HubSpot), never persisted: no capability, no role, and its own
 // personal space as selected organization, which has no subscription, so it only sees public data.
 export const MARKETING_USER_CONTEXT: PortalContext = {
   user: {
