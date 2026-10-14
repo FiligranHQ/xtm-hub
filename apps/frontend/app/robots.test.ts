@@ -1,21 +1,14 @@
 import { publicLocales } from '@/i18n/config';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { headers } from 'next/headers';
+import { describe, expect, it, vi } from 'vitest';
 
 import robots from './robots';
-
-const robotsMocks = vi.hoisted(() => ({
-  headersMock: vi.fn(),
-}));
-
-vi.mock('next/headers', () => ({
-  headers: robotsMocks.headersMock,
-}));
 
 const PRODUCTION_DOMAIN = 'hub.filigran.io';
 const SITEMAP_URL = 'https://hub.filigran.io/sitemap.xml';
 
 const givenHost = (host: string | null) => {
-  robotsMocks.headersMock.mockResolvedValue(
+  vi.mocked(headers).mockResolvedValue(
     new Headers(host === null ? {} : { host })
   );
 };
@@ -29,10 +22,6 @@ const getSingleRule = async () => {
 };
 
 describe('robots', () => {
-  beforeEach(() => {
-    robotsMocks.headersMock.mockReset();
-  });
-
   it('should disallow null document slugs for every public locale when the domain is production', async () => {
     givenHost(PRODUCTION_DOMAIN);
 
