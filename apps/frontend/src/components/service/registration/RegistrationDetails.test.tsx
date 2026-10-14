@@ -8,7 +8,7 @@ import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/
 import { DeploymentRequestHubStatus } from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const PLATFORM_VERSION = '6.8.1';
 
@@ -186,6 +186,41 @@ describe('RegistrationDetails', () => {
       expect(
         screen.getByText(/Register\.Details\.LastConnectionCheck/i)
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('Connection status colour', () => {
+    const NOW = '2025-03-20T12:00:00.000Z';
+
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'], now: new Date(NOW) });
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should render a recent check as connected, in the success colour', () => {
+      renderDetails({
+        ...basePlatform,
+        last_connectivity_check: '2025-03-10T12:00:00.000Z',
+      });
+
+      expect(
+        screen.getByText('Register.Details.ConnectionStatus.Connected')
+      ).toHaveClass('text-feedback-success-primary');
+    });
+
+    it('should render an old check as not connected, in the error colour', () => {
+      renderDetails({
+        ...basePlatform,
+        last_connectivity_check: '2024-12-01T12:00:00.000Z',
+      });
+
+      expect(
+        screen.getByText(/Register\.Details\.ConnectionStatus\.NotConnected\b/)
+          .parentElement
+      ).toHaveClass('text-feedback-error-primary');
     });
   });
 

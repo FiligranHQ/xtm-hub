@@ -168,6 +168,8 @@ start to render (see To validate).
   colour classes from earlier items; this item changes their token, not what the call site does (Deferred findings
   lists them). Where two call sites answered the same override differently, the secondary `Button` border, both take
   `border-elevation-default` (epic-4-cleanup review).
+- **The status colours are tested.** `ResourceStatusIcons.test` now asserts the default success colour, and
+  `RegistrationDetails.test` the success and error colours of the connection status (epic-4-cleanup deferred review).
 - **A colour class that repeats the design system button's own goes.** `text-filigran-brand-primary` on a tertiary or
   secondary `Button`, or on a tertiary `IconButton` (whose `text-icon-highlight` is the same brand colour in both
   themes), changed nothing: it is removed from `NotificationButton`, `CookieConsentBanner`, `PublicResourceActions`,
@@ -217,7 +219,5 @@ start to render (see To validate).
   them.
 - `SignUp.css` reads `var(--font-title)`, a legacy theme variable 3801's search could not see behind `--`, and
   `var(--typo-text)`, which nothing declares: 3708 has to map the first.
-- Test gaps older than this item: `ResourceStatusIcons.test` only checks the default `ICON_CLASS` negatively, and
-  `RegistrationDetails.test` has no assertion on the connected status colour.
 - `globals.css`'s `--color-filigran-decoration` hand-mixes the design system brand at 30%, a transparency the design
   system does not ship (it has 10% and 55%).
