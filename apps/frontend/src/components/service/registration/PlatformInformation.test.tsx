@@ -1,5 +1,6 @@
 import { PlatformInformation } from '@/components/service/registration/PlatformInformation';
 import { basePlatform } from '@/components/service/registration/registered-platform.fixtures';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import testRender from '@/utils/test/test-render';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
@@ -52,6 +53,7 @@ const renderInformation = () =>
 
 describe('PlatformInformation', () => {
   beforeEach(() => {
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
     mockMetadataQuery();
   });
 
@@ -76,11 +78,23 @@ describe('PlatformInformation', () => {
     expect(screen.getByText(platform.url)).toBeInTheDocument();
   });
 
-  it('should display the SaaS subscription metadata of the platform', () => {
+  it('should display the SaaS subscription metadata of the platform when SAAS_METRICS is enabled', () => {
     // Given / When
     renderInformation();
 
     // Then
     expect(screen.getByText(HOSTNAME)).toBeInTheDocument();
+  });
+
+  it('should not display the SaaS subscription metadata of the platform when SAAS_METRICS is disabled', () => {
+    // Given SAAS_METRICS is disabled
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
+
+    // When
+    renderInformation();
+
+    // Then
+    expect(screen.queryByText(HOSTNAME)).not.toBeInTheDocument();
+    expect(screen.getByText(platform.url)).toBeInTheDocument();
   });
 });

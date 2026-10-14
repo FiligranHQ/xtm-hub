@@ -1666,7 +1666,7 @@ type ServiceInstanceSubscription {
 enum FeatureFlag {
   DUMMY
   DECOUPLING_CONNECTORS
-  TRIAL_INVITE
+  SAAS_METRICS
 }
 
 type PlatformProvider {
