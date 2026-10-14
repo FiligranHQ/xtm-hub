@@ -96,7 +96,7 @@ development_status:
 
   # Move the app off the utilities the legacy theme generates, one family per item, then remove
   # the legacy copy, its theme and aliases, and forbid @filigran/ui imports
-  epic-4-cleanup: review
+  epic-4-cleanup: done
   3800-legacy-spacing: done
   3801-legacy-typography: done
   3802-legacy-colours: done
