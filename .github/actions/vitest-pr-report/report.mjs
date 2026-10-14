@@ -1,6 +1,5 @@
-// Builds a Markdown test report from Vitest JSON reports, focused on what a pull request touches: the overall
-// totals, every failed test, and the tests of the test files the pull request changes, with a ✏️ on the tests whose
-// lines changed.
+// Builds a Markdown test report from Vitest JSON reports, focused on what a pull request touches: every failed test,
+// and the tests of the test files the pull request changes, with a ✏️ on the tests whose lines changed.
 //
 // Usage: node report.mjs --id <id> --title <title> --app-dir <apps/x> --reports <dir> --base <git ref> [--max-length <n>]
 // Vitest must run with `--reporter=json --includeTaskLocation` so each test carries its line number.
@@ -198,19 +197,12 @@ const renderChangedTestFiles = (testFiles, changedLines) => {
 };
 
 const testFiles = readTestFiles();
-const allTests = testFiles.flatMap((testFile) => testFile.tests);
-const count = (status) => allTests.filter((test) => test.status === status).length;
-const passed = count('passed');
-const failed = count('failed');
-const skipped = allTests.length - passed - failed;
 
 const lines = [`<!-- vitest-report:${args.id} -->`, `### ${args.title}`, ''];
 if (testFiles.length === 0) {
   lines.push('⚠️ No test report was found: the test shards did not produce any result.');
 } else {
   lines.push(
-    `✅ **${formatCount(passed)}** passed · ❌ **${formatCount(failed)}** failed · ⏭️ **${formatCount(skipped)}** skipped · ${pluralize(testFiles.length, 'test file')}`,
-    '',
     ...renderFailures(testFiles),
     ...renderChangedTestFiles(testFiles, readChangedLines())
   );
