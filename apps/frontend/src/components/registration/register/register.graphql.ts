@@ -81,9 +81,7 @@ export const registeredPlatformByServiceInstanceId = graphql`
     $input: RegisteredPlatformInput!
   ) {
     registeredPlatform(input: $input) {
-      platform_id
       title
-      contract
       ...registeredPlatformByServiceInstanceId_fragment
     }
   }

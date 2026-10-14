@@ -1,11 +1,7 @@
 import { RegisteredPlatformOverview } from '@/components/service/registration/RegisteredPlatformOverview';
-import {
-  basePlatform,
-  trialPlatform,
-} from '@/components/service/registration/registered-platform.fixtures';
+import { basePlatform } from '@/components/service/registration/registered-platform.fixtures';
 import testRender from '@/utils/test/test-render';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { PlatformIdentifier } from '@graphql/generated';
 import { act, screen, within } from '@testing-library/react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -27,13 +23,9 @@ vi.mock('react-relay', async (importOriginal) => ({
 
 const SERVICE_INSTANCE_ID = 'service instance/id';
 const NOT_FOUND_ERROR = 'NEXT_NOT_FOUND';
-const TRIAL_WELCOME = 'Service.Trials.PageHeader.Welcome';
-const learnMoreTitle = (platformIdentifier: PlatformIdentifier) =>
-  `Service.Trials.LearnMore.${platformIdentifier}.WhatCanYouDo.Title`;
 
 const renderOverview = async (
-  platform: registeredPlatformByServiceInstanceId_fragment$data | null,
-  platformIdentifier: PlatformIdentifier = PlatformIdentifier.Opencti
+  platform: registeredPlatformByServiceInstanceId_fragment$data | null
 ) => {
   mockPlatformData = platform;
   await act(async () => {
@@ -43,7 +35,6 @@ const renderOverview = async (
           params={Promise.resolve({
             serviceInstanceId: encodeURIComponent(SERVICE_INSTANCE_ID),
           })}
-          platformIdentifier={platformIdentifier}
         />
       </Suspense>
     );
@@ -105,40 +96,4 @@ describe('RegisteredPlatformOverview', () => {
       })
     ).toBeInTheDocument();
   });
-
-  it.each`
-    section         | text
-    ${'header'}     | ${TRIAL_WELCOME}
-    ${'learn more'} | ${learnMoreTitle(PlatformIdentifier.Opencti)}
-  `(
-    'should not display the trial $section when the platform is not a trial',
-    async ({ text }) => {
-      // Given / When
-      await renderOverview(basePlatform);
-
-      // Then
-      expect(screen.queryByText(text)).not.toBeInTheDocument();
-    }
-  );
-
-  it('should display the trial header when the platform is a trial', async () => {
-    // Given / When
-    await renderOverview(trialPlatform);
-
-    // Then
-    expect(screen.getByText(TRIAL_WELCOME)).toBeInTheDocument();
-  });
-
-  it.each([[PlatformIdentifier.Opencti], [PlatformIdentifier.Openaev]])(
-    'should display the %s learn more section when the platform is a trial',
-    async (platformIdentifier) => {
-      // Given / When
-      await renderOverview(trialPlatform, platformIdentifier);
-
-      // Then
-      expect(
-        screen.getByText(learnMoreTitle(platformIdentifier))
-      ).toBeInTheDocument();
-    }
-  );
 });

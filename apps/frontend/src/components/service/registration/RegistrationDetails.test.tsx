@@ -14,10 +14,6 @@ const PLATFORM_VERSION = '6.8.1';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-vi.mock('@/components/service/trial-instances/TrialCancelSheet', () => ({
-  TrialCancelSheet: () => null,
-}));
-
 let mockPlatformData: registeredPlatformByServiceInstanceId_fragment$data;
 
 vi.mock('react-relay', async (importOriginal) => ({
@@ -39,36 +35,7 @@ const renderDetails = (
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('RegistrationDetails', () => {
-  describe('Cancel button in status row', () => {
-    it.each`
-      hubStatus                                  | shouldShow
-      ${DeploymentRequestHubStatus.Pending}      | ${true}
-      ${DeploymentRequestHubStatus.Active}       | ${true}
-      ${DeploymentRequestHubStatus.Provisioning} | ${true}
-      ${DeploymentRequestHubStatus.Queued}       | ${true}
-      ${DeploymentRequestHubStatus.Expired}      | ${false}
-      ${DeploymentRequestHubStatus.Cancelled}    | ${false}
-    `(
-      'should show Cancel=$shouldShow for status $hubStatus',
-      ({ hubStatus, shouldShow }) => {
-        renderDetails({
-          ...trialPlatform,
-          deployment_request: {
-            ...trialPlatform.deployment_request!,
-            hub_status: hubStatus,
-          },
-        });
-        const cancelButton = screen.queryByRole('button', {
-          name: /Utils.Cancel/i,
-        });
-        if (shouldShow) {
-          expect(cancelButton).toBeInTheDocument();
-        } else {
-          expect(cancelButton).not.toBeInTheDocument();
-        }
-      }
-    );
-
+  describe('Status row', () => {
     it('should not show status row when there is no deployment_request', () => {
       renderDetails(basePlatform);
       expect(
