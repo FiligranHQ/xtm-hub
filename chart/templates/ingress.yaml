@@ -38,8 +38,7 @@ spec:
   - hosts:
     - {{ .Values.xtmhub.host }}
     {{- if .Values.xtmhub.wwwRedirect }}
-    # The certificate must cover the www host for the HTTPS redirect, and External-DNS
-    # creates its DNS record from the TLS hosts
+    # The certificate must also cover the www host for the HTTPS redirect to work
     - www.{{ .Values.xtmhub.host }}
     {{- end }}
     secretName: xtmhub-cert
