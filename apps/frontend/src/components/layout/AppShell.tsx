@@ -18,7 +18,7 @@ export const AppShell = ({
   children,
 }: AppShellProps) => {
   return (
-    <div className="flex flex-col w-full h-dvh min-h-0">
+    <div className="flex flex-col w-full h-[calc(100dvh-var(--cookie-banner-height,0px))] min-h-0">
       {banners}
       <div className="flex flex-row grow min-h-0">
         {menu}

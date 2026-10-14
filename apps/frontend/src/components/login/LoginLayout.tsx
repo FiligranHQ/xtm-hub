@@ -43,7 +43,7 @@ export const LoginLayout = ({}) => {
   }
 
   return (
-    <main className="absolute inset-0 z-0 m-auto flex max-w-[450px] flex-col justify-center">
+    <main className="absolute inset-x-0 top-0 bottom-[var(--cookie-banner-height,0px)] z-0 m-auto flex max-w-[450px] flex-col justify-center">
       <TestEnvBanner />
       <div className="flex flex-col items-center p-6 sm:p-0">
         <LoginTitleForm />

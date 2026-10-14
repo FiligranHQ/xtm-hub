@@ -123,6 +123,10 @@ Typography only: no element, accessible name, role or translation changes.
   `<p className="p-4 content-base">`, the body style (epic-4-cleanup review).
 - **A class that styles nothing goes.** `EpicItemFooter`'s type label carried `bold`, which no stylesheet defines; it
   is removed and the label keeps its `content-compact` rendering (epic-4-cleanup deferred review).
+- **The page ends above the cookie banner.** With the design system line heights the fixed banner grew a few pixels
+  and covered the login page's Sign in button at 1280x720. While it shows, the banner publishes its height as
+  `--cookie-banner-height`: the body reserves it as bottom padding, the application shell and the login layout end
+  above it, and the banner keeps its design system look (epic-4-cleanup deferred review, #3836).
 - **`uppercase` stays** on the container titles: a text transform the call site wanted, not a size.
 - **The three shadowing entries go** (`.claude/rules/design-system.md`): with the same names as the design system
   utilities and imported after them, they overrode their line height (1.25rem or 1rem instead of 150%) for the
@@ -154,5 +158,3 @@ Typography only: no element, accessible name, role or translation changes.
   0.0075em tracking unless `globals.css` sets the design system's `--tracking-normal`, the same value.
 - 3708 removes the theme's `--font-geologica` and `--font-ibm-plex-sans`, which share their names with next/font's
   variables; `globals.css` maps the design system fonts through them on `:root`, so 3708 must check that mapping.
-- With the design system line heights the fixed cookie banner grew a few pixels and covers the login page's Sign in
-  button at 1280x720 until the user answers it; Enter still submits. The screenshot script works around it. #3836

@@ -4,16 +4,38 @@ import { useConsent } from '@/components/cookie-consent/CookieConsentProvider';
 import { COPILOT_SCRIPT_ID } from '@/components/external/Copilot';
 import { useTranslate } from '@/hooks/use-translate';
 import { Button } from '@filigran/design-system';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const COPILOT_HOST_SELECTOR = `div#${COPILOT_SCRIPT_ID}`;
 const COPILOT_STYLE_ID = 'xtmhub-copilot-offset';
 const COPILOT_OFFSET = '130px';
 const COPILOT_POLL_MS = 300;
+const BANNER_HEIGHT_VAR = '--cookie-banner-height';
 
 export const CookieConsentBanner = () => {
   const t = useTranslate('CookieConsent');
   const { showBanner, acceptAll, rejectAll, openPreferences } = useConsent();
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  // The banner is fixed over the bottom of the page: publishing its height lets the page end above it,
+  // so nothing stays out of reach until the visitor answers.
+  useEffect(() => {
+    const banner = bannerRef.current;
+    if (!showBanner || !banner) {
+      return;
+    }
+
+    const root = document.documentElement;
+    const observer = new ResizeObserver(() => {
+      root.style.setProperty(BANNER_HEIGHT_VAR, `${banner.offsetHeight}px`);
+    });
+    observer.observe(banner);
+
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty(BANNER_HEIGHT_VAR);
+    };
+  }, [showBanner]);
 
   useEffect(() => {
     if (!showBanner) {
@@ -55,6 +77,7 @@ export const CookieConsentBanner = () => {
 
   return (
     <div
+      ref={bannerRef}
       role="region"
       aria-labelledby="cookie-consent-banner-title"
       className="fixed inset-x-0 bottom-0 z-50 layer-2 bg-elevation-default p-2 shadow-lg sm:p-6">

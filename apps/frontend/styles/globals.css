@@ -64,6 +64,7 @@ body[data-theme='Dark'] {
     font-weight: var(--font-weight-content-base);
     background: var(--gradient-default);
     color: var(--text-default-primary);
+    padding-bottom: var(--cookie-banner-height, 0px);
   }
 
   h1,
