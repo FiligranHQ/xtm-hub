@@ -160,9 +160,10 @@ start to render (see To validate).
   system's, which registers `text-default-*`, `text-negative-*` and `text-gradient-*` as text colours. The class that
   wins a merge today wins it after; `Sheet.test` keeps its meaning (`bg-gradient-default` still replaces the panel's
   `bg-elevation-default`). The one element with two backgrounds keeps the one that paints.
-- **Classes on design system components are mapped like the others.** `XtmRoadmap`'s `Button`, `BundleProductCard`'s
-  `IconButton`, the sidebar `Button`s and `EditionModeBanner`'s buttons carry colour classes from earlier items; this
-  item changes their token, not what the call site does (Deferred findings).
+- **Classes on design system components are mapped like the others.** About fifteen `Button`s and `IconButton`s carry
+  colour classes from earlier items; this item changes their token, not what the call site does (Deferred findings
+  lists them). Where two call sites answered the same override differently, the secondary `Button` border, both take
+  `border-elevation-default` (epic-4-cleanup review).
 - **The `gradient-ia` entry goes** (`.claude/rules/design-system.md`): it generates the design system's
   `bg-gradient-ia` from the theme. Its value is the design system's own `--gradient-ia`, so nothing moves.
 - **The `globals.css` copies go.** They republished legacy colours as runtime variables for `SignUp.css` and the
@@ -200,10 +201,17 @@ start to render (see To validate).
 
 ## Deferred findings
 
-- Design system components restyled by colour classes: `XtmRoadmap`'s secondary `Button` (`border-elevation-default`),
-  `BundleProductCard`'s `IconButton` (border and text), the sidebar `Button`s of `CollapseMenuButton` and
-  `EditTranslationsButton` (`text-default-primary`, the navigation active classes), `EditionModeBanner`'s buttons. An
-  adoption of `Navbar` and `Alert` would remove them.
+- Design system components restyled by colour classes, carried over from earlier items. Brand text on tertiary and
+  secondary buttons (`text-filigran-brand-primary`): `NotificationButton:132`, `CookieConsentBanner:72,78`,
+  `PublicResourceActions:76`, `ShareableResourceSlug:120`, `ShareLinkButton:115`. Default text on tertiary buttons:
+  `ConnectedProductItem:60,70` and the sidebar `Button`s of `CollapseMenuButton` and `EditTranslationsButton`
+  (`text-default-primary`), the `Sheet` close button (`text-icon-default`). `BundleProductCard:86` draws a tertiary
+  `IconButton` as an outlined one (`rounded border border-elevation-default text-default-primary`), the secondary role
+  written by hand. The secondary `Button` border is set to `border-elevation-default` on `XtmRoadmap:77` and
+  `ManageTrialHeader:103,157,165` (aligned on `XtmRoadmap` in the epic-4-cleanup review; it pinned the layer-0
+  border). `NavigationSections:141` sets the navigation active background, `EditionModeBanner` inverts its buttons.
+  An adoption of `Navbar` and `Alert`, or the design team's answer on brand-coloured tertiary actions, would remove
+  them.
 - `SignUp.css` reads `var(--font-title)`, a legacy theme variable 3801's search could not see behind `--`, and
   `var(--typo-text)`, which nothing declares: 3708 has to map the first.
 - Test gaps older than this item: `ResourceStatusIcons.test` only checks the default `ICON_CLASS` negatively, and
