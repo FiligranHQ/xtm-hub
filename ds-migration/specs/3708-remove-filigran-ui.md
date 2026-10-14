@@ -115,6 +115,10 @@ No element, accessible name, role or translation changes.
   import of any of them in `apps/`. The design system ships the Radix packages it needs as its own dependencies.
 - **The lint ban covers tests too.** The exemption block turns the whole rule off, so it restates it with the
   `@filigran/ui` pattern alone.
+- **The agent instructions follow the removal.** `AGENTS.md`, `.claude/rules/design-system.md` and
+  `.claude/rules/frontend.md` no longer offer `@filigran/ui` as a fallback nor name the legacy theme, and new code
+  takes the design system `<Icon name>`, as its consumer skill and the candidates do; `@filigran/icon` stays in
+  existing code until it migrates (epic-4-cleanup review, through `hub-review`).
 - **A lint rule rejects the legacy class names.** Once the theme is gone, a legacy spacing, typography or colour class
   brought back from `main` renders nothing and fails no check (#3797 did it during this epic).
   `xtm-hub-theme-rules/no-legacy-theme-class` checks every string of the `*.ts` and `*.tsx` files, tests included,
@@ -133,9 +137,6 @@ No element, accessible name, role or translation changes.
 
 - `autoprefixer`, `@types/react-color` and `extract-files` are direct frontend dependencies nothing imports; the legacy
   copy never used them.
-- Instruction drift for `hub-review`: `AGENTS.md`, `.claude/rules/design-system.md` and `.claude/rules/frontend.md`
-  still name `@filigran/ui` as a fallback import and the legacy theme as imported by `globals.css`; `frontend.md` lists
-  only `@filigran/icon` for icons, where the candidates use the design system `Icon` (#3705, #3707).
 - `SignUp.css:845` reads `var(--background-field)`, which nothing declares, and `:196` reads `var(--white-500)`, a
   design system `@theme` primitive Tailwind emits only when something it compiles uses it. Predates this item.
 - `app/(authentification)/auth/login/page.tsx` imports no `globals.css`, so that route renders without Tailwind or the
