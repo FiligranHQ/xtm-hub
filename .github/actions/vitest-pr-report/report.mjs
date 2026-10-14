@@ -10,7 +10,6 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 
-const MAX_FAILED_TESTS = 30;
 const MAX_FAILURE_LINES = 12;
 const TEST_CALL = /^\s*(it|test)\b/;
 
@@ -145,10 +144,10 @@ const renderFailures = (testFiles) => {
     return [];
   }
   const lines = ['#### ❌ Failed tests', ''];
-  for (const failure of failures.slice(0, MAX_FAILED_TESTS)) {
+  for (const failure of failures) {
     const message = stripAnsi(failure.message).trim().split('\n').slice(0, MAX_FAILURE_LINES).join('\n');
     lines.push(
-      `<details><summary>❌ <code>${escapeHtml(failure.file)}</code> › ${escapeHtml(failure.name)}</summary>`,
+      `<details open><summary>❌ <code>${escapeHtml(failure.file)}</code> › ${escapeHtml(failure.name)}</summary>`,
       '',
       '```',
       message.replace(/```/g, "'''"),
@@ -156,9 +155,6 @@ const renderFailures = (testFiles) => {
       '</details>',
       ''
     );
-  }
-  if (failures.length > MAX_FAILED_TESTS) {
-    lines.push(`_…and ${failures.length - MAX_FAILED_TESTS} more, see the job logs._`, '');
   }
   return lines;
 };
@@ -182,7 +178,7 @@ const renderChangedTestFiles = (testFiles, changedLines) => {
     const others = testFile.tests.filter((test) => !shown.includes(test));
     const changedCount = testFile.tests.filter((test) => test.changed).length;
     lines.push(
-      `<details${failed ? ' open' : ''}><summary>${failed ? '❌' : '✅'} <code>${escapeHtml(testFile.path)}</code> · ${changedCount} changed of ${pluralize(testFile.tests.length, 'test')}</summary>`,
+      `<details open><summary>${failed ? '❌' : '✅'} <code>${escapeHtml(testFile.path)}</code> · ${changedCount} changed of ${pluralize(testFile.tests.length, 'test')}</summary>`,
       '',
       ...shown.map(renderTest)
     );
@@ -223,11 +219,15 @@ if (testFiles.length === 0) {
 let body = lines.join('\n');
 const maxLength = Number(args['max-length'] ?? Infinity);
 if (body.length > maxLength) {
-  // Cut on a line boundary and close any open <details> so the rest of the comment still renders.
+  // Cut on a line boundary, then close the code block and every <details> left open so the comment still renders.
   body = body.slice(0, body.lastIndexOf('\n', maxLength));
-  if (body.lastIndexOf('<details') > body.lastIndexOf('</details>')) {
-    body += '\n\n</details>';
+  if ((body.match(/^```/gm) ?? []).length % 2 === 1) {
+    body += '\n```';
   }
+  const openDetails =
+    (body.match(/<details/g) ?? []).length -
+    (body.match(/<\/details>/g) ?? []).length;
+  body += '\n\n</details>'.repeat(openDetails);
   body += '\n\n_Report truncated, see the job summary._';
 }
 process.stdout.write(`${body}\n`);
