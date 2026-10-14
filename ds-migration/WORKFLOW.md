@@ -83,9 +83,17 @@ The legacy components next to it stay as they are until their own item.
   `<Name>.meta.ts`, `<Name>.test.tsx`, `index.ts`), on design system primitives and tokens only, so it
   can be proposed upstream as is. Move every call site to it, then delete the legacy file. The spec's
   `kind: candidate` is what lists it as a design system candidate in the PR report.
-- `cleanup` (`epic-4-cleanup`): remove `src/components/filigran-ui/`, its theme, the `@filigran/ui`
-  aliases in `tsconfig.json` and `vitest.config.ts`, the dependencies only it used, and add a
-  `no-restricted-imports` rule on `@filigran/ui`. Its dependencies guarantee epics 1 to 3 are done.
+- `cleanup` (`epic-4-cleanup`), in two shapes:
+  - `<issue>-legacy-<family>` (spacing, typography, colours): replace every class and `var(--…)` the
+    legacy theme generates for that family, in `src/` and `app/`, with the design system token or
+    utility of the same role, or the Tailwind default of the same value. Spacing has exact Tailwind
+    equivalents and changes nothing on screen. Pick typography and colours by role, never by the
+    closest look. The theme itself stays; the props mapping lists each legacy class with its
+    replacement. `target_module` is `@filigran/design-system`, with no `target_symbols`.
+  - `remove-filigran-ui`: remove `src/components/filigran-ui/`, its theme and its imports, the
+    `@filigran/ui` aliases in `tsconfig.json` and `vitest.config.ts`, the dependencies only it used,
+    and add a `no-restricted-imports` rule on `@filigran/ui`. Its dependencies guarantee epics 1 to 3
+    and the three family items are done.
 - `adoption` (`epic-5-adoptions`): the app has no legacy equivalent. Adopt the component where the code
   already hand-rolls the same pattern and the swap keeps the current look. Where adopting would change
   the look, leave the code as is and list the candidate places under `## To validate`.
@@ -115,7 +123,8 @@ a selector to crop to. Selectors are Playwright's, role-based first: `role=butto
    is the contract the script checks: keep it exact. Every legacy usage gets a row in the props
    mapping, and every ambiguous choice of the decision rules a line under `## To validate`.
 3. **Screens.** Declare one to three screens where the component renders, covering its distinct
-   usages and states, the most visible first. The `cleanup` item declares none. Run
+   usages and states, the most visible first. A `legacy-<family>` item picks the screens its
+   change touches most; `remove-filigran-ui` declares none. Run
    `node ds-migration/screenshot.mjs ds-migration/specs/<key>.md before`, open the images and fix the
    screens until each one shows the component. A component no route renders is `NEEDS_HUMAN`.
 4. **Return** `DONE`, or `NEEDS_HUMAN` with the `question`. Change no file outside
@@ -155,8 +164,10 @@ The spec exists and the script has just captured its screens on the untouched co
 5. **Return** the structured result. Write `commit_subject` and `commit_body` with the `commit-splitter`
    agent's message rules: `feat(frontend): migrate <Name> to @filigran/design-system (#<issue>)` for
    kinds `ds` and `adoption`, `feat(frontend): rebuild <Name> on @filigran/design-system primitives
-   (#<issue>)` for `candidate`, `chore(frontend): remove the legacy filigran-ui copy (#<issue>)` for
-   `cleanup`. The body is three to six lines on what changed and why, with no trailer.
+   (#<issue>)` for `candidate`, `refactor(frontend): move the <family> off the legacy theme utilities
+   (#<issue>)` for a `legacy-<family>` item, `chore(frontend): remove the legacy filigran-ui copy
+   (#<issue>)` for `remove-filigran-ui`. The body is three to six lines on what changed and why, with
+   no trailer.
 
 The script then validates again, the `after` screenshots included: a screen that no longer renders
 blocks the item.
