@@ -162,9 +162,3 @@ export const registerRegisteredPlatformListFragment = graphql`
     }
   }
 `;
-
-export const RegisterRegisteredPlatformsQuery = graphql`
-  query registerRegisteredPlatformsQuery($input: RegisteredPlatformsInput!) {
-    ...registerRegisteredPlatformListFragment
-  }
-`;
