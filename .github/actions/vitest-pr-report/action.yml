@@ -14,7 +14,9 @@ inputs:
     description: 'Workspace the tests belong to, relative to the repository root (e.g. apps/frontend).'
     required: true
   github-token:
-    description: 'Token used to post the pull request comment.'
+    description: >
+      The workflow's GITHUB_TOKEN, used to post the pull request comment. Only a comment authored by
+      github-actions[bot] is ever updated.
     required: true
 runs:
   using: 'composite'
@@ -56,10 +58,12 @@ runs:
         GH_TOKEN: ${{ inputs.github-token }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
         MARKER: '<!-- vitest-report:${{ inputs.id }} -->'
+        # Anyone can post a comment starting with the marker: only update the one the workflow posted.
+        COMMENT_AUTHOR: 'github-actions[bot]'
         COMMENT_FILE: ${{ runner.temp }}/vitest-${{ inputs.id }}-comment.md
       run: |
         comment_id=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
-          --jq ".[] | select(.body | startswith(\"${MARKER}\")) | .id" | head -n 1)
+          --jq ".[] | select(.user.login == \"${COMMENT_AUTHOR}\" and (.body | startswith(\"${MARKER}\"))) | .id" | head -n 1)
         if [ -n "$comment_id" ]; then
           gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" -F "body=@${COMMENT_FILE}" > /dev/null
         else
