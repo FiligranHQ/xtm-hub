@@ -39,7 +39,7 @@ const LastDeployedResourcesClient = ({
   return (
     <section className="w-full flex-1 min-w-0 flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <h2 className="content-body-base text-default-primary">{t('Title')}</h2>
+        <h2 className="content-base text-default-primary">{t('Title')}</h2>
         <Select
           value={selectedServiceInstanceId}
           onValueChange={setSelectedServiceInstanceId}>

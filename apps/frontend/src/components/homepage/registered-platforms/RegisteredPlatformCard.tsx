@@ -87,7 +87,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <p className="text-content-body-compact truncate min-w-0">
+                  <p className="text-content-compact truncate min-w-0">
                     {platform.title}
                   </p>
                 </TooltipTrigger>
@@ -95,14 +95,14 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <p className="text-content-body-compact shrink-0">
+          <p className="text-content-compact shrink-0">
             <span className="text-default-secondary">
               {tRegisteredPlatformsCard('RegisteredOn')}
             </span>{' '}
             {registrationDate}
           </p>
         </div>
-        <div className="text-content-body-compact-medium flex gap-4 items-center">
+        <div className="text-content-compact-medium flex gap-4 items-center">
           <Chip
             label={t(contractLabel)}
             severity={
@@ -111,7 +111,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
           />
           {platform.contract === PlatformContract.Trial &&
             platform.remainingTrialDays !== undefined && (
-              <div className="flex gap-2 items-center text-content-body-compact text-default-secondary">
+              <div className="flex gap-2 items-center text-content-compact text-default-secondary">
                 {tRegisteredPlatformsCard.rich('DaysRemaining', {
                   days: platform.remainingTrialDays,
                   badge: (chunks) => (

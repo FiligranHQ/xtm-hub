@@ -160,7 +160,7 @@ type CharacterLimitProps = {
 const CharacterCounter = ({ value, maxChars }: CharacterLimitProps) => {
   const t = useTranslate();
   return (
-    <p className="text-default-secondary txt-sub-content ml-auto shrink-0">
+    <p className="text-default-secondary content-compact ml-auto shrink-0">
       {t('Epic.Form.CharacterCount', { count: value.length, maxChars })}
     </p>
   );
@@ -383,7 +383,7 @@ const EpicForm = ({
         />
 
         <Separator />
-        <p className="text-default-secondary txt-category uppercase">
+        <p className="text-default-secondary title-xs uppercase">
           {t('Epic.Form.DetailsSection')}
         </p>
 

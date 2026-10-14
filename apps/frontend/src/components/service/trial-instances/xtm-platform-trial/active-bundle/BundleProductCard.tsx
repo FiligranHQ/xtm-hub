@@ -74,7 +74,7 @@ export const BundleProductCard = ({
 
   const productNameRow = (
     <div className="flex items-center justify-between gap-2 py-4">
-      <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
+      <span className="text-content-base text-default-secondary shrink-0 whitespace-nowrap">
         {t('XtmPlatformTrial.Products.ProductName')}:
       </span>
       <div className="flex items-center gap-1 min-w-0">
@@ -125,19 +125,19 @@ export const BundleProductCard = ({
           <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle-layer-1)]">
             {productNameRow}
             <div className="flex items-start justify-between gap-2 py-4">
-              <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
+              <span className="text-content-base text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.ConnectionStatus')}:
               </span>
               {!hasConnectivityInfo ? (
-                <span className="text-content-body-base text-default-secondary text-left">
+                <span className="text-content-base text-default-secondary text-left">
                   {t('XtmPlatformTrial.Products.StatusUnavailable')}
                 </span>
               ) : isConnected ? (
-                <span className="text-content-body-base text-feedback-success-primary text-left">
+                <span className="text-content-base text-feedback-success-primary text-left">
                   {t('XtmPlatformTrial.Products.StatusActive')}
                 </span>
               ) : (
-                <span className="text-content-body-base text-left">
+                <span className="text-content-base text-left">
                   <span className="text-feedback-error-primary">
                     {t('XtmPlatformTrial.Products.ConnectionLost')}
                   </span>{' '}
@@ -148,24 +148,24 @@ export const BundleProductCard = ({
               )}
             </div>
             <div className="flex items-center justify-between gap-2 py-4">
-              <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
+              <span className="text-content-base text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.LastConnection')}:
               </span>
-              <span className="text-content-body-compact truncate">
+              <span className="text-content-compact truncate">
                 {formatDate(lastConnectionCheck ?? undefined, 'DATE_FULL') ??
                   '-'}
               </span>
             </div>
             <div className="flex items-start justify-between gap-2 py-4">
-              <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
+              <span className="text-content-base text-default-secondary shrink-0 whitespace-nowrap">
                 {t('XtmPlatformTrial.Products.Role')}:
               </span>
               {hasAccess ? (
-                <span className="text-content-body-compact truncate">
+                <span className="text-content-compact truncate">
                   {roleLabel}
                 </span>
               ) : (
-                <span className="text-content-body-compact text-left text-default-primary">
+                <span className="text-content-compact text-left text-default-primary">
                   {t('XtmPlatformTrial.Products.NoRole')}{' '}
                   {t('XtmPlatformTrial.Products.NoRoleHint')}
                 </span>

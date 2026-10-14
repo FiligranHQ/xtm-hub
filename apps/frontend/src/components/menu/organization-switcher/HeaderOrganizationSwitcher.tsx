@@ -74,7 +74,7 @@ const HeaderOrganizationSwitcher = ({
 
   return (
     <div className="flex flex-row items-center gap-3 text-default-primary">
-      <span className="content-body-base whitespace-nowrap">
+      <span className="content-base whitespace-nowrap">
         {t('OrganizationSwitcher.Workspace')}
       </span>
       <div className={fitContainer ? 'min-w-0 flex-1' : 'w-full sm:w-55'}>

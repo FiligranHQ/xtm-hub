@@ -37,7 +37,7 @@ export const PublicSubLink = ({
     buttonVariants({
       priority: 'tertiary',
       className: cn(
-        'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case content-body-compact text-default-secondary text-xs',
+        'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case content-compact text-default-secondary text-xs',
         !href && 'cursor-default pointer-events-none',
         className
       ),
@@ -166,7 +166,7 @@ export const NavigationLinkMenu = ({
         buttonVariants({
           priority: 'tertiary',
           className:
-            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-2 content-body-compact text-default-secondary text-xs',
+            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-2 content-compact text-default-secondary text-xs',
         }),
         currentPath === href
           ? NAVIGATION_ACTIVE_CLASSES

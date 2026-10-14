@@ -25,14 +25,14 @@ export const RegisteredPlatformsSection = async ({
   return (
     <section className="w-full xl:w-3/8 bg-[var(--bg-elevation-default-layer-1)] p-4 rounded xl:max-h-96 xl:overflow-y-auto">
       <div className="flex flex-col">
-        <span className="heading-xs text-filigran-brand-primary">
+        <span className="title-xs text-filigran-brand-primary">
           {welcomeName
             ? t('PublicHomePage.XtmPlatform.LabelWithName', {
                 name: welcomeName,
               })
             : t('PublicHomePage.XtmPlatform.Label', {})}
         </span>
-        <span className="mt-4 mb-2 text-content-body-base text-default-primary">
+        <span className="mt-4 mb-2 text-content-base text-default-primary">
           {t('PublicHomePage.XtmPlatform.ConnectedProducts', {
             count: registeredProductsCount,
           })}

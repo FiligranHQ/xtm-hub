@@ -31,7 +31,7 @@ const StatusIcon = ({
 
   if (unavailable || !entry) {
     return (
-      <span className="text-content-body-compact text-default-secondary">
+      <span className="text-content-compact text-default-secondary">
         {t('XtmPlatformTrial.Products.StatusUnavailable')}
       </span>
     );
@@ -62,7 +62,7 @@ const StatusRow = ({
   unavailable: boolean;
 }) => (
   <div className="flex items-center justify-between gap-2 px-2 py-4">
-    <span className="text-content-body-base text-default-secondary shrink-0 whitespace-nowrap">
+    <span className="text-content-base text-default-secondary shrink-0 whitespace-nowrap">
       {label}
     </span>
     <StatusIcon

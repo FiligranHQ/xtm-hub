@@ -37,7 +37,7 @@ export const RegisterOrganizationForm = ({
     <div className="flex items-center justify-center">
       <div className="flex flex-col justify-between gap-6">
         <div className="space-y-3">
-          <h1 className="txt-subtitle">
+          <h1 className="title-sm">
             {t(`Register.OrganizationForm.Title`, {
               platformIdentifier: displayedIdentifier,
             })}

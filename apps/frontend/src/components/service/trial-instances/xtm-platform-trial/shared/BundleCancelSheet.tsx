@@ -184,7 +184,7 @@ export const BundleCancelSheet = ({
             }}>
             <div className="mt-4 flex items-center gap-1 rounded border border-solid border-alert-error p-2">
               <WarningIcon className="size-4 shrink-0 text-icon-error" />
-              <div className="content-body-compact text-default-primary">
+              <div className="content-compact text-default-primary">
                 <span>{t('XtmPlatformTrial.CancelDialog.Warning')}</span>
               </div>
             </div>

@@ -47,7 +47,7 @@ export const ManageTrialRoleDescriptions = ({
                 !stacked &&
                   'border-b border-[var(--border-elevation-default-layer-0)]'
               )}>
-              <span className="flex items-center gap-1 text-header-heading-xs">
+              <span className="flex items-center gap-1 text-title-xs">
                 <InfoIcon className="h-4 w-4 shrink-0" />
                 {t(`${namespace}.Title`, { count: roles.length })}
               </span>
@@ -61,8 +61,8 @@ export const ManageTrialRoleDescriptions = ({
               {roles.map((role) => (
                 <p
                   key={role}
-                  className="text-content-body-compact text-default-secondary">
-                  <span className="font-bold text-header-heading-xs">
+                  className="text-content-compact text-default-secondary">
+                  <span className="font-bold text-title-xs">
                     {t(`${namespace}.${role}.Label`)}
                     {role === defaultRole &&
                       ` ${t('Service.Bundle.ManageTrial.Roles.DefaultSuffix')}`}

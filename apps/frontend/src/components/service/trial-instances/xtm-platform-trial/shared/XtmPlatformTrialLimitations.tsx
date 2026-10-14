@@ -7,7 +7,7 @@ export const XtmPlatformTrialLimitations = () => {
   const t = useTranslate();
   return (
     <div className="rounded p-3 bg-feedback-info-secondary-transparency-30">
-      <h2 className="flex items-center gap-2 mb-2 heading-xs">
+      <h2 className="flex items-center gap-2 mb-2 title-xs">
         <InfoIcon className="size-4 text-feedback-info-primary" />
         {t('Service.Trials.XtmPlatform.Page.Limitations.Title')}
       </h2>

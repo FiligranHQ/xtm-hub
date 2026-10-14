@@ -17,10 +17,10 @@ export const XtmPlatformTrialPitch = () => {
   return (
     <section className="flex flex-col gap-6">
       <div className="flex flex-col gap-1 mb-8">
-        <h2 className="heading-2xl">
+        <h2 className="title-2xl">
           {t('Service.Trials.XtmPlatform.Page.PitchTitle')}
         </h2>
-        <p className="content-body-base text-default-secondary">
+        <p className="content-base text-default-secondary">
           {t('Service.Trials.XtmPlatform.Page.PitchDescription')}
         </p>
       </div>
@@ -36,15 +36,15 @@ export const XtmPlatformTrialPitch = () => {
               className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <Icon className={cn('size-6', iconClassName)} />
-                <span className="heading-md">{name}</span>
+                <span className="title-md">{name}</span>
               </div>
               <div className="flex flex-col">
-                <h3 className="heading-xs">
+                <h3 className="title-xs">
                   {t(
                     `Service.Trials.XtmPlatform.Page.Products.${platformIdentifier}.Tagline`
                   )}
                 </h3>
-                <p className="content-body-compact text-default-secondary">
+                <p className="content-compact text-default-secondary">
                   {t(
                     `Service.Trials.XtmPlatform.Page.Products.${platformIdentifier}.Description`
                   )}

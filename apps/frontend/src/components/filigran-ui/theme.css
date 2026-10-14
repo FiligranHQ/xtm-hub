@@ -713,30 +713,6 @@
   letter-spacing: var(--tracking-header-jumbo);
 }
 
-@utility content-highlight {
-  font-family: var(--font-content-highlight);
-  font-size: var(--text-content-highlight);
-  font-weight: var(--font-weight-content-highlight);
-  line-height: 1.25rem;
-  letter-spacing: var(--tracking-content-highlight);
-}
-
-@utility content-button {
-  font-family: var(--font-content-button);
-  font-size: var(--text-content-button);
-  font-weight: var(--font-weight-content-button);
-  line-height: 1.25rem;
-  letter-spacing: var(--tracking-content-button);
-}
-
-@utility content-caption {
-  font-family: var(--font-content-caption);
-  font-size: var(--text-content-caption);
-  font-weight: var(--font-weight-content-caption);
-  line-height: 1rem;
-  letter-spacing: var(--tracking-content-caption);
-}
-
 @utility content-body-base {
   font-family: var(--font-content-body-base);
   font-size: var(--text-content-body-base);

@@ -183,7 +183,7 @@ const ServiceInstanceCard = ({
               )}
             </div>
           </div>
-          <p className="txt-sub-content text-default-secondary">
+          <p className="content-compact text-default-secondary">
             {serviceInstance.description}
           </p>
           {rightAction && (

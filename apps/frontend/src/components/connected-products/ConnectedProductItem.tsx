@@ -42,7 +42,7 @@ export const ConnectedProductItem = ({
         {platformMeta?.Icon && (
           <platformMeta.Icon className="h-6 w-6 shrink-0" />
         )}
-        <span className="content-body-base">
+        <span className="content-base">
           {platform.title ?? platformMeta?.name ?? platform.identifier}
         </span>
       </div>

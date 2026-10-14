@@ -43,15 +43,13 @@ export const TrialGuidePage = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <p className="heading-sm text-gradient-focus w-fit mb-1 mt-6">
+      <p className="title-sm text-gradient-focus w-fit mb-1 mt-6">
         {t('Service.TrialGuide.Eyebrow')}
       </p>
       <div className="flex items-start justify-between gap-3 flex-wrap mb-6">
         <div className="flex flex-col gap-1">
-          <h1 className="heading-2xl">{t('Service.TrialGuide.Title')}</h1>
-          <p className="text-content-body-medium">
-            {t('Service.TrialGuide.Description')}
-          </p>
+          <h1 className="title-2xl">{t('Service.TrialGuide.Title')}</h1>
+          <p>{t('Service.TrialGuide.Description')}</p>
         </div>
         <SlackSupportButton />
       </div>

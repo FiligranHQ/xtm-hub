@@ -17,8 +17,8 @@ export const BundleGuideCard = () => {
         className="flex h-full items-center justify-center">
         <div className="flex w-full max-w-sm flex-col gap-4 p-2">
           <div className="flex flex-col">
-            <h2 className="text-header-heading-xl">{tGuide('Title')}</h2>
-            <p className="text-content-body-compact text-default-primary">
+            <h2 className="text-title-xl">{tGuide('Title')}</h2>
+            <p className="text-content-compact text-default-primary">
               {tGuide('Content')}
             </p>
           </div>

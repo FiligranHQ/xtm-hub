@@ -57,7 +57,7 @@ const LastDeployedResourceRow = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="min-w-0 shrink content-body-base font-bold truncate">
+                <span className="min-w-0 shrink content-base font-bold truncate">
                   {document.name}
                 </span>
               </TooltipTrigger>
@@ -74,10 +74,10 @@ const LastDeployedResourceRow = ({
           )}
         </div>
       </div>
-      <div className="shrink-0 md:max-w-56 lg:max-w-72 xl:max-w-80 2xl:max-w-96 flex items-center gap-2 overflow-hidden whitespace-nowrap text-default-secondary txt-small rounded group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-focus">
+      <div className="shrink-0 md:max-w-56 lg:max-w-72 xl:max-w-80 2xl:max-w-96 flex items-center gap-2 overflow-hidden whitespace-nowrap text-default-secondary rounded group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-focus">
         <CalendarMonthIcon className="size-4 shrink-0" />
         <span className="shrink-0">{t('On')}</span>
-        <span className="shrink-0 content-body-base text-default-primary">
+        <span className="shrink-0 content-base text-default-primary">
           {deployedAt}
         </span>
         <span className="shrink-0">{t('By')}</span>

@@ -23,7 +23,7 @@ export const TrialsHeader = ({
         <p className="text-filigran-brand-primary font-bold">
           {t('Service.Trials.PageHeader.Welcome')}
         </p>
-        <h1 className="heading-2xl">
+        <h1 className="title-2xl">
           {t('Service.Trials.PageHeader.Title', { platformName })}
         </h1>
       </div>

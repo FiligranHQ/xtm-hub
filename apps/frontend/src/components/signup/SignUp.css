@@ -165,7 +165,7 @@
   padding: 10px 20px;
   cursor: pointer;
   transition: all 0.3s;
-  font-family: var(--font-title);
+  font-family: var(--font-title-sm);
   font-weight: 500;
   display: flex;
   gap: 6px;

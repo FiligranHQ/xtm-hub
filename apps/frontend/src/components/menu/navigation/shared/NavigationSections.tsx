@@ -54,7 +54,7 @@ const SectionLinksList = ({ links }: { links: SectionLink[] }) => (
               value={`${key}-accordion`}>
               <AccordionTrigger
                 className={cn(
-                  'h-9 py-1 pl-6 content-body-compact text-default-secondary cursor-pointer hover:bg-elevation-hover',
+                  'h-9 py-1 pl-6 content-compact text-default-secondary cursor-pointer hover:bg-elevation-hover',
                   NAVIGATION_HOVER_CLASSES
                 )}>
                 <span className="flex flex-1 items-center justify-between gap-1 truncate pr-1">
@@ -112,7 +112,7 @@ export const LinkedSection = ({
       aria-label={section.label}>
       <MenuItemIcon icon={Icon} />
       {open && (
-        <span className="flex-1 px-2 text-left text-default-primary content-body-base truncate">
+        <span className="flex-1 px-2 text-left text-default-primary content-base truncate">
           {section.label}
         </span>
       )}
@@ -174,7 +174,7 @@ export const OpenedSection = ({ section }: { section: SectionConfig }) => {
       value={section.key}>
       <AccordionTrigger className="h-9 pl-5 py-1 cursor-pointer hover:bg-elevation-hover font-normal hover:shadow-[inset_2px_0px]">
         <MenuItemIcon icon={Icon} />
-        <span className="flex-1 px-2 text-left text-default-primary text-sm content-body-base truncate">
+        <span className="flex-1 px-2 text-left text-default-primary text-sm content-base truncate">
           {section.label}
         </span>
       </AccordionTrigger>

@@ -21,9 +21,9 @@ export const TrialGuideResourceCard = ({ resourceCard }: ResourceCardProps) => {
         className="flex flex-col gap-2 h-full">
         <div className="flex gap-2 items-center">
           <Icon className="size-6 shrink-0" />
-          <p className="heading-xs">{t(titleKey)}</p>
+          <p className="title-xs">{t(titleKey)}</p>
         </div>
-        <p className="text-content-body-compact grow">{t(descriptionKey)}</p>
+        <p className="text-content-compact grow">{t(descriptionKey)}</p>
         {url && (
           <div>
             <Button

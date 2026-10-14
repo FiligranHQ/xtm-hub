@@ -18,10 +18,10 @@ export const XtmPlatformTrialRequestPage = ({
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
-        <p className="heading-sm text-gradient-focus w-fit">
+        <p className="title-sm text-gradient-focus w-fit">
           {t('Service.Trials.XtmPlatform.Page.Overline')}
         </p>
-        <h1 className="heading-2xl">
+        <h1 className="title-2xl">
           {t('Service.Trials.XtmPlatform.Page.Title')}
         </h1>
       </header>

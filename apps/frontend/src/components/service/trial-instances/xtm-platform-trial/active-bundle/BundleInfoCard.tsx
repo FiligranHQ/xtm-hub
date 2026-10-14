@@ -26,10 +26,8 @@ const InfoRow = ({
   children: React.ReactNode;
 }) => (
   <div className="flex items-center justify-between gap-2 py-4">
-    <span className="text-content-body-base text-default-secondary">
-      {label}:
-    </span>
-    <span className="text-content-body-compact truncate">{children}</span>
+    <span className="text-content-base text-default-secondary">{label}:</span>
+    <span className="text-content-compact truncate">{children}</span>
   </div>
 );
 
@@ -51,7 +49,7 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
         clamp={0}
         className="flex flex-col gap-3 h-full">
         <div className="flex items-center gap-1 min-w-0">
-          <span className="text-content-body-large-medium truncate">
+          <span className="truncate">
             {t('XtmPlatformTrial.BundleInfo.Title')}
           </span>
         </div>

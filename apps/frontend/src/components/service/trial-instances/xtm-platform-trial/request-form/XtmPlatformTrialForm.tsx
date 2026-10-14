@@ -198,10 +198,10 @@ export const XtmPlatformTrialForm = ({
   return (
     <div className="flex w-full flex-col gap-6 rounded bg-[var(--bg-elevation-default-layer-2)] p-6">
       <div className="flex items-center gap-4">
-        <span className="text-content-body-base text-default-secondary">
+        <span className="text-content-base text-default-secondary">
           {t('Service.Trials.Form.AssociatedEmail')}
         </span>
-        <span className="txt-default-bold">{me?.email}</span>
+        <span>{me?.email}</span>
       </div>
 
       <Form {...form}>
@@ -209,9 +209,7 @@ export const XtmPlatformTrialForm = ({
           className="flex w-full flex-col gap-4"
           onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-2 rounded bg-[var(--bg-elevation-highlight-layer-2)] p-4">
-            <h3 className="txt-title-xs">
-              {t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}
-            </h3>
+            <h3>{t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}</h3>
 
             {hasOngoingStandaloneTrials ? (
               <div className="flex items-start gap-1 rounded border border-solid border-alert-error p-2">
@@ -233,7 +231,7 @@ export const XtmPlatformTrialForm = ({
             ) : (
               <div className="flex items-start gap-1 rounded border border-solid border-alert-alert p-2">
                 <WarningIcon className="size-4 mt-1 shrink-0 text-icon-alert" />
-                <div className="flex flex-col gap-1 content-body-compact">
+                <div className="flex flex-col gap-1 content-compact">
                   <span>
                     {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
                   </span>

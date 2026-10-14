@@ -69,7 +69,7 @@ const XtmRoadmap = async ({
   return (
     <section className="flex flex-col lg:flex-row gap-4 items-center border border-elevation-default rounded px-6 py-4">
       <div className="flex flex-col gap-2 flex-3">
-        <h2 className="heading-xl">{title}</h2>
+        <h2 className="title-xl">{title}</h2>
         <p className="text-default-secondary text-xs sm:text-sm">
           {t('Description')}
         </p>

@@ -106,7 +106,7 @@ const ShareableResourceConnectorSlugPublic = async ({
 
       <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <div className="flex-[3_3_0%] min-w-0">
-          <h3 className="py-2 txt-container-title truncate text-default-secondary">
+          <h3 className="py-2 title-xs uppercase truncate text-default-secondary">
             {t('PublicResourcePage.Overview')}
           </h3>
           <section className="rounded bg-[var(--bg-elevation-default-layer-1)] overflow-x-auto">

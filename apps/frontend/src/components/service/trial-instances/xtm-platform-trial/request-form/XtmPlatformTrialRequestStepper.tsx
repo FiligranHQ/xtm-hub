@@ -24,7 +24,7 @@ export const XtmPlatformTrialRequestStepper = ({
             <div className="flex flex-col items-center gap-1">
               <CountBadge
                 count={index + 1}
-                fontClass="content-body-base-bold"
+                fontClass="content-base-bold"
                 bgFadedClass={
                   isCurrent
                     ? 'bg-feedback-success-secondary-transparency-30'
@@ -38,7 +38,7 @@ export const XtmPlatformTrialRequestStepper = ({
               />
               <span
                 className={cn(
-                  'content-body-base-bold',
+                  'content-base-bold',
                   isCurrent
                     ? 'text-feedback-success-primary'
                     : 'text-feedback-neutral-primary'

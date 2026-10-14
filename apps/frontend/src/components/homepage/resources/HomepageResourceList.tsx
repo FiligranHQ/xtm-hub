@@ -34,7 +34,7 @@ const HomepageResourceList = ({
 
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="heading-md">{title}</h2>
+      <h2 className="title-md">{title}</h2>
       <ul className="grid grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] gap-6">
         {documents.map((resource) => {
           const resourceType = resource.type as ShareableResourceType;

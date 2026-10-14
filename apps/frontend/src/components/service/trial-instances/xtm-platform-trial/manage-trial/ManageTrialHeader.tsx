@@ -91,11 +91,11 @@ export const ManageTrialHeader = ({
   return (
     <header className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <p className="heading-sm w-fit text-gradient-focus">
+        <p className="title-sm w-fit text-gradient-focus">
           {t('Service.Bundle.ManageTrial.Eyebrow')}
         </p>
-        <h1 className="heading-2xl">{t('Service.Bundle.ManageTrial.Title')}</h1>
-        <p className="text-content-body-base max-w-3xl">
+        <h1 className="title-2xl">{t('Service.Bundle.ManageTrial.Title')}</h1>
+        <p className="text-content-base max-w-3xl">
           {t('Service.Bundle.ManageTrial.Description')}
         </p>
       </div>

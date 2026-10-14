@@ -87,8 +87,8 @@ export const XtmPlatformActiveBundlePage = () => {
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="heading-2xl">{t('XtmPlatformTrial.Title')}</h1>
-          <p className="text-content-body-base text-default-secondary">
+          <h1 className="title-2xl">{t('XtmPlatformTrial.Title')}</h1>
+          <p className="text-content-base text-default-secondary">
             {t('XtmPlatformTrial.Subtitle')}
           </p>
         </div>

@@ -100,7 +100,7 @@ const ServiceList = ({
         <div className="grow shrink min-w-0 px-3 pb-3 flex flex-col gap-6">
           {userCanUpdate && draft.length > 0 && (
             <>
-              <div className="txt-category">
+              <div className="title-xs">
                 {t(`${translationKey}.NonActive`)}:
               </div>
               <DocumentList
@@ -109,9 +109,7 @@ const ServiceList = ({
                 connectionId={connectionId}
               />
               {active.length > 0 && (
-                <div className="txt-category">
-                  {t(`${translationKey}.Active`)}:
-                </div>
+                <div className="title-xs">{t(`${translationKey}.Active`)}:</div>
               )}
             </>
           )}

@@ -282,7 +282,7 @@ export const ManageTrialTable = ({
         </div>
       )}
       {!isError && !isLoading && rows.length === 0 && (
-        <div className="text-sm text-content-body-secondary">
+        <div className="text-sm">
           {t('Service.Bundle.ManageTrial.Table.NoUsers')}
         </div>
       )}

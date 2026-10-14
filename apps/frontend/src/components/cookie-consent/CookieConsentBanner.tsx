@@ -62,10 +62,10 @@ export const CookieConsentBanner = () => {
         <div className="flex flex-1 flex-col gap-1">
           <h2
             id="cookie-consent-banner-title"
-            className="heading-md">
+            className="title-md">
             {t('Title')}
           </h2>
-          <p className="content-body-base">{t('BannerText')}</p>
+          <p className="content-base">{t('BannerText')}</p>
         </div>
         <div className="flex flex-col gap-2 sm:shrink-0 sm:flex-row">
           <Button onClick={acceptAll}>{t('AcceptAll')}</Button>

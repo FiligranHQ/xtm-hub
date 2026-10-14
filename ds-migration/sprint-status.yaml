@@ -98,9 +98,9 @@ development_status:
   # the legacy copy, its theme and aliases, and forbid @filigran/ui imports
   epic-4-cleanup: in-progress
   3800-legacy-spacing: done
-  3801-legacy-typography: done
-  3802-legacy-colours: review
-  3708-remove-filigran-ui: backlog
+  3801-legacy-typography: review
+  3802-legacy-colours: done
+  3708-remove-filigran-ui: blocked
 
 
 # An item starts only once every listed item, or epic, is done. Generated from the imports

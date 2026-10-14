@@ -42,7 +42,7 @@ export const HeroSectionLibrary = ({
       <div className="flex flex-col gap-2">
         <p className="text-filigran-brand-primary font-bold">{eyebrow}</p>
         <div className="flex flex-row items-center">
-          <h1 className="heading-2xl">{name}</h1>
+          <h1 className="title-2xl">{name}</h1>
           {showLibraryUpdate && (
             <div className="flex items-center">
               <LibraryUpdateMetadata />
@@ -50,7 +50,7 @@ export const HeroSectionLibrary = ({
           )}
         </div>
         <div className="flex gap-2">
-          <p className="max-w-lg txt-sub-content">{description}</p>
+          <p className="max-w-lg content-compact">{description}</p>
         </div>
       </div>
     </section>

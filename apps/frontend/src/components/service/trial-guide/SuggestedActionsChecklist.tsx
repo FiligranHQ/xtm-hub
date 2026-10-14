@@ -25,10 +25,8 @@ export const SuggestedActionsChecklist = ({
           <Icon className={cn('w-8.5 h-8.5', iconClassName)} />
           <span className="text-logo">{name}</span>
         </div>
-        <h2 className="heading-lg">{t('Service.TrialGuide.ChecklistTitle')}</h2>
-        <p className="text-content-body-medium mt-2">
-          {t('Service.TrialGuide.ChecklistIntro')}
-        </p>
+        <h2 className="title-lg">{t('Service.TrialGuide.ChecklistTitle')}</h2>
+        <p className="mt-2">{t('Service.TrialGuide.ChecklistIntro')}</p>
       </div>
       <div className="max-w-4xl mx-auto">
         {checklistItems.map((item, index) => (

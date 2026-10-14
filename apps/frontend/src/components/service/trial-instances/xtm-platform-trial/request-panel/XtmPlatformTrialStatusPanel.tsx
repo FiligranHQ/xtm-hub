@@ -44,7 +44,7 @@ export const XtmPlatformTrialStatusPanel = ({
   }: XtmPlatformTrialStatusPanelDateRow) => (
     <span
       key={labelKey}
-      className="whitespace-nowrap text-content-body-compact text-default-secondary">
+      className="whitespace-nowrap text-content-compact text-default-secondary">
       {t(`Service.Trials.XtmPlatform.Page.Status.${labelKey}`)}:{' '}
       <span className="text-default-primary">
         {formatDate(date, 'DATE_MEDIUM') ?? '-'}
@@ -58,7 +58,7 @@ export const XtmPlatformTrialStatusPanel = ({
     <div className="flex w-full flex-col gap-6 rounded bg-[var(--bg-elevation-default-layer-2)] p-6">
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center text-content-body-base">
+          <div className="flex items-center text-content-base">
             <span className="text-default-secondary">
               {t('Service.Trials.Form.AssociatedEmail')}
             </span>
@@ -74,7 +74,7 @@ export const XtmPlatformTrialStatusPanel = ({
       </div>
 
       <div className="flex flex-col gap-2 rounded p-4 bg-[var(--bg-elevation-default-layer-3)]">
-        <h3 className="heading-xs">
+        <h3 className="title-xs">
           {t(
             isInProgress
               ? 'Service.Trials.XtmPlatform.Page.Status.ProductsIncludedInRequest'
@@ -96,10 +96,10 @@ export const XtmPlatformTrialStatusPanel = ({
 
       <div className="flex flex-col items-center justify-center gap-6 rounded border border-[var(--border-elevation-subtle-layer-3)] px-6 py-16 text-center">
         <div className="flex flex-col gap-1">
-          <p className="heading-xs">
+          <p className="title-xs">
             {t(`Service.Trials.XtmPlatform.Page.Status.${state}.Title`)}
           </p>
-          <p className="content-body-base whitespace-pre-line">
+          <p className="content-base whitespace-pre-line">
             {t(`Service.Trials.XtmPlatform.Page.Status.${state}.Description`)}
           </p>
         </div>

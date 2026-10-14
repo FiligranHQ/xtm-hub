@@ -19,7 +19,7 @@ const ShareableResourceDescription = ({
 
   return (
     <div className="flex-[3_3_0%] min-w-0">
-      <h2 className="py-2 txt-container-title truncate text-default-secondary">
+      <h2 className="py-2 title-xs uppercase truncate text-default-secondary">
         {t('Service.ShareableResources.Details.Overview')}
       </h2>
       <section className="rounded bg-[var(--bg-elevation-default-layer-1)] overflow-x-auto">
