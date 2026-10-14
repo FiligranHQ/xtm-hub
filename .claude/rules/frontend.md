@@ -48,7 +48,6 @@ app/                                Next.js App Router
   (application)/app/(admin)/admin/  Admin panel
   (application)/app/(user)/         Service pages, org management, profile
   (public)/                         Public marketing routes
-  (authentification)/auth/          Auth callbacks
   (embed)/                          Embeddable widgets
 src/components/                     Components by domain; `ui/` holds shared primitives
 src/hooks/                          useGranted, useDecodedParams, ...
