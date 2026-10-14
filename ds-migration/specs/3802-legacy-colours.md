@@ -50,7 +50,7 @@ only the colour class changes. An element that renders only an icon or a logo (`
 | `bg-clip-text text-transparent bg-gradient-legacy-focus` | `text-gradient-focus`; on `PublicSubLink` it moves from the link to its label span, because the utility resets its direct children to `currentColor` | 5 |
 | `bg-feedback-{alert,warning,success,neutral,info}-secondary-transparency`, `bg-filigran-brand-primary-transparency` | `…-secondary-transparency-30`, `bg-filigran-brand-primary-transparency-10` | 10 (`TimelineMapping`, `XtmPlatformTrialRequestStepper`, `ShareableResourceConnectorSlug(Public)`, `XtmPlatformTrialLimitations`) |
 | `border-border`, `border-border-light`, `* { @apply border-border }` | `border-elevation-subtle` | 12 |
-| `border-elevation-border-strong` | `border-elevation-default` | 6 |
+| `border-elevation-border-strong` | `border-elevation-subtle` on the shell header and the roadmap block; `border-elevation-default` on the Thread date pill and the two buttons; dropped on the mobile menu `SheetHeader`, which draws no border | 6 |
 | `border-elevation-border-{subtle,default,strong}-layer-N`, `divide-elevation-border-subtle-layer-N` | `border-elevation-subtle`, `border-elevation-default` (strong too), `divide-[var(--border-elevation-subtle)]` in their layer-N context; five border-only elements on another layer than their context keep `border-[var(--border-elevation-*-layer-N)]` (`PaginationControls:26`, `ChecklistItem:18`, `XtmPlatformTrialMessagePanel:17`, `XtmPlatformTrialStatusPanel:97`, `ManageTrialRoleDescriptions:42`), since a `layer-N` there would move their descendants | 14, 9 files |
 | `border-primary` | `border-filigran-brand-primary` | 2 |
 | `ring-ring` (every variant), `focus-visible:ring-primary` | `ring-focus` | 5, 1 |
@@ -147,7 +147,9 @@ start to render (see To validate).
   follow that layer without re-declaring it; an element already in that layer's context takes the ambient utility
   alone. Pinning the per-layer variable instead left every field inside to re-declare the layer, and in dark an input
   without one matched a layer-2 panel (epic-4-cleanup review). A legacy class without a layer takes the ambient
-  utility. Legacy `strong` has no design system tier above `default`, so it takes `default`.
+  utility. Legacy `strong` has no design system tier above `default`: a header or block outline takes
+  `border-elevation-subtle`, as the design system's `Header` and `Card` draw theirs (epic-4-cleanup review), and the
+  rest takes `default`.
 - **Fixed colours over fixed artwork take primitives.** The service card header, the EE badge, the Thread CTA and the
   image scrim paint the same colour in both themes on purpose; a themed token would turn the light-theme pill dark
   text on a dark gradient. The design system has no role for them, so they read its primitive of the same value.
@@ -174,9 +176,6 @@ start to render (see To validate).
 
 ## To validate
 
-- Legacy `strong` borders (shell header, roadmap block, mobile sheet header, rename button) take
-  `border-elevation-default`: in dark, grayblue-300 instead of a dark navy. Alternative: `border-elevation-subtle`,
-  the tier the design system `Header` uses for its own bottom border.
 - The global border (`* { border-color }`), `border-border` and `border-border-light` take `border-elevation-subtle`:
   gray-200 in light, grayblue-500 in dark, instead of gray-150 / gray-800.
 - `text-muted-foreground` (gray-500 in light) takes `text-default-secondary` (gray-700).
