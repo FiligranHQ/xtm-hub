@@ -140,5 +140,3 @@ No element, accessible name, role or translation changes.
 
 ## Deferred findings
 
-- `SignUp.css:845` reads `var(--background-field)`, which nothing declares, and `:196` reads `var(--white-500)`, a
-  design system `@theme` primitive Tailwind emits only when something it compiles uses it. Predates this item.

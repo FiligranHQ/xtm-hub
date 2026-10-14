@@ -154,7 +154,3 @@ Typography only: no element, accessible name, role or translation changes.
 
 ## Deferred findings
 
-- 3708 removes the theme's `* { letter-spacing: var(--tracking-default) }`: text with no typography class loses its
-  0.0075em tracking unless `globals.css` sets the design system's `--tracking-normal`, the same value.
-- 3708 removes the theme's `--font-geologica` and `--font-ibm-plex-sans`, which share their names with next/font's
-  variables; `globals.css` maps the design system fonts through them on `:root`, so 3708 must check that mapping.

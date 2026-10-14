@@ -128,8 +128,3 @@ keep today's margin.
 
 ## Deferred findings
 
-- 3708 removes the theme's `container` utility with the copy, while `app/(public)/[locale]/layout.tsx:80` uses it
-  (`container pt-l`). Tailwind v4's native `container` sets breakpoint max-widths and no padding, so dropping the
-  theme entry changes that layout: 3708 needs a replacement.
-- Once 3708 removes `--spacing-xs` to `--spacing-xxl`, `w-xl`, `max-w-xs` and the other sizing utilities resolve
-  to Tailwind's container sizes again instead of the spacing scale. Nothing uses them today.

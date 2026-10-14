@@ -170,6 +170,9 @@ start to render (see To validate).
   `border-elevation-default` (epic-4-cleanup review).
 - **The status colours are tested.** `ResourceStatusIcons.test` now asserts the default success colour, and
   `RegistrationDetails.test` the success and error colours of the connection status (epic-4-cleanup deferred review).
+- **The homepage halo keeps its 30% brand.** `globals.css`'s `--color-filigran-decoration` mixes the design system
+  brand at 30%, between the 10% and 55% transparencies it ships. It is a decoration the design system does not cover,
+  built on its brand, so it stays (epic-4-cleanup deferred review).
 - **A colour class that repeats the design system button's own goes.** `text-filigran-brand-primary` on a tertiary or
   secondary `Button`, or on a tertiary `IconButton` (whose `text-icon-highlight` is the same brand colour in both
   themes), changed nothing: it is removed from `NotificationButton`, `CookieConsentBanner`, `PublicResourceActions`,
@@ -215,9 +218,4 @@ start to render (see To validate).
   written by hand. The secondary `Button` border is set to `border-elevation-default` on `XtmRoadmap:77` and
   `ManageTrialHeader:103,157,165` (aligned on `XtmRoadmap` in the epic-4-cleanup review; it pinned the layer-0
   border). `NavigationSections:141` sets the navigation active background, `EditionModeBanner` inverts its buttons.
-  An adoption of `Navbar` and `Alert`, or the design team's answer on brand-coloured tertiary actions, would remove
-  them.
-- `SignUp.css` reads `var(--font-title)`, a legacy theme variable 3801's search could not see behind `--`, and
-  `var(--typo-text)`, which nothing declares: 3708 has to map the first.
-- `globals.css`'s `--color-filigran-decoration` hand-mixes the design system brand at 30%, a transparency the design
-  system does not ship (it has 10% and 55%).
+  An adoption of `Navbar` and `Alert`, or the design team's answer on these overrides, would remove them.
