@@ -116,8 +116,11 @@ Typography only: no element, accessible name, role or translation changes.
   the base `h1` follow the contract's `h1 → title-2xl`, which is also what the app's page titles already use
   (`heading-2xl` on eight of them). `txt-subtitle` and the base `h2` take `title-sm`, not the contract's `h2 →
   title-xl`: the bare `h2`s are card and section titles (`ServiceInstanceCard`, `EpicItemDetailed`, the danger
-  zone) and two description paragraphs, and 3536 already gives card titles `title-sm`. `txt-category` is
+  zone), and 3536 already gives card titles `title-sm`. `txt-category` is
   `title-xs` exactly; `txt-sub-content` is `content-compact` at a 150% line.
+- **A resource's short description is a paragraph, not a heading.** The public resource page and the public connector
+  page rendered it as a bare `h2`, which the base `h2` would have made a bold 16px title. It becomes
+  `<p className="p-4 content-base">`, the body style (epic-4-cleanup review).
 - **`uppercase` stays** on the container titles: a text transform the call site wanted, not a size.
 - **The three shadowing entries go** (`.claude/rules/design-system.md`): with the same names as the design system
   utilities and imported after them, they overrode their line height (1.25rem or 1rem instead of 150%) for the
@@ -136,7 +139,7 @@ Typography only: no element, accessible name, role or translation changes.
 - Base `h1` and `txt-title` take `title-2xl` (32px, 500): page titles grow from 22px, the bare `h1`s of the
   registration, roadmap, admin and resource pages included. Alternative: `title-lg` (24px).
 - Base `h2` and `txt-subtitle` take `title-sm` (16px, bold). Alternative: the `Text` contract's `title-xl` (28px),
-  too large for the card titles and description paragraphs that use a bare `h2`.
+  too large for the card titles that use a bare `h2`.
 - Container titles (Overview, Basic information) take `title-xs uppercase` (14px, semibold). Alternative:
   `content-compact-medium uppercase`, which keeps 12px in the body face.
 - The six class names no theme defines are removed, keeping today's rendering. Alternative: the style their names

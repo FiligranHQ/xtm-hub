@@ -309,7 +309,7 @@ const Page = async ({
             {t('PublicResourcePage.Overview')}
           </h3>
           <section className="rounded bg-[var(--bg-elevation-default-layer-1)]">
-            <h2 className="p-4">{document?.short_description}</h2>
+            <p className="p-4 content-base">{document?.short_description}</p>
             <ResourceMarkdownRenderer
               source={document?.description ?? ''}
               className="p-4"

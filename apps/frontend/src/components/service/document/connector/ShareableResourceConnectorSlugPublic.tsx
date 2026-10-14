@@ -110,7 +110,9 @@ const ShareableResourceConnectorSlugPublic = async ({
             {t('PublicResourcePage.Overview')}
           </h3>
           <section className="rounded bg-[var(--bg-elevation-default-layer-1)] overflow-x-auto">
-            <h2 className="p-4">{documentData?.short_description}</h2>
+            <p className="p-4 content-base">
+              {documentData?.short_description}
+            </p>
             <ResourceMarkdownRenderer
               source={documentData?.description ?? ''}
               className="p-4"
