@@ -59,23 +59,26 @@ vi.mock('@tanstack/react-query', async (importOriginal) => ({
   }),
 }));
 
-vi.mock('react-relay', async (importOriginal) => ({
-  ...(await importOriginal()),
-  useMutation: () => [
-    (opts: {
-      variables: Record<string, unknown>;
-      onCompleted?: () => void;
+vi.mock('@graphql/generated', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useTrialsCancelDeploymentRequestMutation: (
+    _client: unknown,
+    options: {
+      onSuccess?: (data: unknown) => void;
       onError?: (err: Error) => void;
-    }) => {
-      testState.lastCancelDeploymentRequestVariables = opts.variables;
+    }
+  ) => ({
+    mutate: (variables: Record<string, unknown>) => {
+      testState.lastCancelDeploymentRequestVariables = variables;
       if (testState.mutationMode === 'error') {
-        opts.onError?.(new Error('Some error'));
+        options.onError?.(new Error('Some error'));
         return;
       }
-      opts.onCompleted?.();
+      options.onSuccess?.({
+        cancelDeploymentRequest: { id: bundleDeploymentRequestId },
+      });
     },
-    {},
-  ],
+  }),
 }));
 
 describe('BundleCancelSheet', () => {

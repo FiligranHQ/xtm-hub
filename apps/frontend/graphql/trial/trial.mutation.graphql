@@ -19,3 +19,17 @@ mutation ReachSales(
     success
   }
 }
+
+mutation ReachSalesAboutPlatform(
+  $message: String
+  $platformId: ID
+  $platformIdentifier: PlatformIdentifier
+) {
+  contactUs(
+    message: $message
+    platformId: $platformId
+    platformIdentifier: $platformIdentifier
+  ) {
+    success
+  }
+}
