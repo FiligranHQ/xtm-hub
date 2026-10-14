@@ -172,9 +172,13 @@ running_pid() {
   if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then echo "$pid"; fi
 }
 
-# grep reads the whole log: with -q it would stop at the first match, git log would die of
-# SIGPIPE on a long history, and pipefail would turn the match into a failure.
-item_committed() { git log --format=%s "origin/$BASE..HEAD" | grep -E "\(#$(issue_of "$1")\)$" >/dev/null; }
+# A build always changes the app: a commit of the tooling alone is no build, even tagged with the
+# item's issue. grep reads the whole log: with -q it would stop at the first match, git log would
+# die of SIGPIPE on a long history, and pipefail would turn the match into a failure.
+item_committed() {
+  git log --full-history --format=%s "origin/$BASE..HEAD" -- . ':(exclude)ds-migration' |
+    grep -E "\(#$(issue_of "$1")\)$" >/dev/null
+}
 
 # After a crash or a kill: puts aside the code left by the item that was running, and restarts
 # an item marked review whose commit never happened. The spec and the status file stay.

@@ -158,6 +158,8 @@ echo "not json"
 echo "export const v_$(echo "$slug" | tr - _) = 1;" > "apps/frontend/src/$slug.ts"
 if [[ " ${CLAUDE_E2E:-} " == *" $key "* ]]; then mkdir -p apps/e2e/tests/model && echo "// $slug locator" > "apps/e2e/tests/model/$slug.pageModel.ts"; fi
 if [[ " ${CLAUDE_E2E_SEEDS:-} " == *" $key "* ]]; then mkdir -p apps/e2e/seeds && echo "-- $slug" > "apps/e2e/seeds/$slug.sql"; fi
+# CLAUDE_SHARED: the build of these items changes the root lockfile, as a dependency removal does.
+if [[ " ${CLAUDE_SHARED:-} " == *" $key "* ]]; then echo "# $slug" >> yarn.lock; fi
 printf '\n## Deferred findings\n\n- found in review, on a bullet\n  that wraps\n' >> "ds-migration/specs/$key.md"
 echo "{\"type\":\"result\",\"structured_output\":{\"status\":\"DONE\",\"summary\":\"ok\",\"commit_subject\":\"invalid\",\"commit_body\":\"Migrate $slug.\\nCo-Authored-By: x <y@z>\"}}"
 EOF
@@ -311,8 +313,11 @@ new_repo e "development_status:
   3553-radio: backlog"
 CLAUDE_SPEC_DIRTY=3561-textarea run --once
 check "code changed in spec mode: blocked before the build" '[ "$(status_of 3561-textarea)" = blocked ] && ! grep -q "Build mode for item 3561" "$SB/calls.log" && [ -z "$(git status --porcelain -- apps)" ]'
+# A human fixes the tooling while the item is blocked and tags the fix with its issue.
+echo "// fixed" >> ds-migration/screenshot.mjs && git add ds-migration/screenshot.mjs && git -c commit.gpgsign=false commit -qm "fix(frontend): fix the screenshot script (#3561)"
 run --once
 check "a rerun retries a failed item first" '[ "$(status_of 3561-textarea)" = done ] && grep -q "3561-textarea was blocked: retrying it" "$SB/out.log"'
+check "a tooling commit tagged with the item's issue is not its build" 'grep -q "Build mode for item 3561-textarea" "$SB/calls.log" && git log --format=%s | grep -qx "feat(frontend): migrate Textarea to @filigran/design-system (#3561)"'
 SCREENSHOT_FAIL=3568-switch run --once
 check "a screen that no longer renders blocks the item" '[ "$(status_of 3568-switch)" = blocked ] && ! git log --format=%s | grep -q "Switch"'
 run --once
@@ -460,6 +465,19 @@ mkdir -p "$(git rev-parse --git-dir)/ds-migration/run.lock" && echo $$ >"$(git r
 ds-migration/run.sh feedback >"$SB/out.log" 2>&1
 check "feedback during a run is triage only" 'grep -q "run.sh is running (pid $$): triage only" "$SB/calls.log"'
 rm -rf "$(git rev-parse --git-dir)/ds-migration/run.lock"
+
+echo "Q. shared files change only in the cleanup item"
+new_repo q "development_status:
+  epic-1-primitives: backlog
+  3530-button: done
+  3561-textarea: backlog"
+CLAUDE_SHARED=3561-textarea run --once
+check "a shared file changed outside the cleanup item blocks it" '[ "$(status_of 3561-textarea)" = blocked ] && grep -q "Shared file changed outside the cleanup item: yarn.lock" "$(git rev-parse --git-dir)/ds-migration/3561-textarea-validate.log" && ! git log --format=%s | grep -q "(#3561)$"'
+new_repo q2 "development_status:
+  epic-4-cleanup: backlog
+  9003-remove-filigran-ui: backlog"
+CLAUDE_SHARED=9003-remove-filigran-ui run --once
+check "the cleanup item changes the root lockfile" '[ "$(status_of 9003-remove-filigran-ui)" = done ] && git show --stat --format= HEAD | grep -q "yarn.lock" && ! grep -q "Out of scope: yarn.lock" "$(git rev-parse --git-dir)/ds-migration/9003-remove-filigran-ui-validate.log"'
 
 echo "F. crash recovery and lock"
 new_repo f "development_status:
