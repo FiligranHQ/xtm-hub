@@ -115,6 +115,11 @@ No element, accessible name, role or translation changes.
   import of any of them in `apps/`. The design system ships the Radix packages it needs as its own dependencies.
 - **The lint ban covers tests too.** The exemption block turns the whole rule off, so it restates it with the
   `@filigran/ui` pattern alone.
+- **A lint rule rejects the legacy class names.** Once the theme is gone, a legacy spacing, typography or colour class
+  brought back from `main` renders nothing and fails no check (#3797 did it during this epic).
+  `xtm-hub-theme-rules/no-legacy-theme-class` checks every string of the `*.ts` and `*.tsx` files, tests included,
+  against the Verification searches of 3800, 3801 and 3802. The sizing utilities keep `xs` and `xl`, which name
+  Tailwind's container sizes again (epic-4-cleanup review).
 
 ## To validate
 
@@ -133,8 +138,6 @@ No element, accessible name, role or translation changes.
   only `@filigran/icon` for icons, where the candidates use the design system `Icon` (#3705, #3707).
 - `SignUp.css:845` reads `var(--background-field)`, which nothing declares, and `:196` reads `var(--white-500)`, a
   design system `@theme` primitive Tailwind emits only when something it compiles uses it. Predates this item.
-- Nothing stops new code from `main` bringing back a legacy spacing or colour class once the theme is gone: it renders
-  nothing, silently (#3797 did it before the theme went). A lint rule on the legacy class names would catch it.
 - `app/(authentification)/auth/login/page.tsx` imports no `globals.css`, so that route renders without Tailwind or the
   design system tokens; with `motion.css` now in `globals.css`, its error snackbar also loses the enter and exit
   keyframes. Predates this item.
