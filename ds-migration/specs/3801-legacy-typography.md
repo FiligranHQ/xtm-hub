@@ -136,13 +136,13 @@ Typography only: no element, accessible name, role or translation changes.
 
 ## To validate
 
-- Base `h1` and `txt-title` take `title-2xl` (32px, 500): page titles grow from 22px, the bare `h1`s of the
+- [x] Base `h1` and `txt-title` take `title-2xl` (32px, 500): page titles grow from 22px, the bare `h1`s of the
   registration, roadmap, admin and resource pages included. Alternative: `title-lg` (24px).
-- Base `h2` and `txt-subtitle` take `title-sm` (16px, bold). Alternative: the `Text` contract's `title-xl` (28px),
+- [x] Base `h2` and `txt-subtitle` take `title-sm` (16px, bold). Alternative: the `Text` contract's `title-xl` (28px),
   too large for the card titles that use a bare `h2`.
-- Container titles (Overview, Basic information) take `title-xs uppercase` (14px, semibold). Alternative:
+- [x] Container titles (Overview, Basic information) take `title-xs uppercase` (14px, semibold). Alternative:
   `content-compact-medium uppercase`, which keeps 12px in the body face.
-- The six class names no theme defines are removed, keeping today's rendering. Alternative: the style their names
+- [x] The six class names no theme defines are removed, keeping today's rendering. Alternative: the style their names
   suggest (`title-xs` for `txt-title-xs`, `content-base-bold` for `txt-default-bold`, `content-base-medium` for
   `text-content-body-medium`).
 
@@ -152,4 +152,6 @@ Typography only: no element, accessible name, role or translation changes.
   0.0075em tracking unless `globals.css` sets the design system's `--tracking-normal`, the same value.
 - 3708 removes the theme's `--font-geologica` and `--font-ibm-plex-sans`, which share their names with next/font's
   variables; `globals.css` maps the design system fonts through them on `:root`, so 3708 must check that mapping.
+- With the design system line heights the fixed cookie banner grew a few pixels and covers the login page's Sign in
+  button at 1280x720 until the user answers it; Enter still submits. The screenshot script works around it. #3836
 - `EpicItemFooter:37` carries `bold`, not a Tailwind class; the type label is not bold. Predates this item.

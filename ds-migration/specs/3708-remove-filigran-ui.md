@@ -127,10 +127,10 @@ No element, accessible name, role or translation changes.
 
 ## To validate
 
-- Global tracking stays on every element (`*`) through `--tracking-normal`. Alternative: set it on `body` only and let
+- [x] Global tracking stays on every element (`*`) through `--tracking-normal`. Alternative: set it on `body` only and let
   elements inherit their parent's tracking.
-- The thin custom scrollbar stays, now on design system variables. Alternative: drop it for the browser default.
-- The public pages and the HubSpot form keep the 2rem gutter and the 1400px cap. Alternative: Tailwind's plain
+- [x] The thin custom scrollbar stays, now on design system variables. Alternative: drop it for the browser default.
+- [x] The public pages and the HubSpot form keep the 2rem gutter and the 1400px cap. Alternative: Tailwind's plain
   `container` (no gutter, 1536px step), or the design system's `w-overlay-xl` (1360px, meant for overlays).
 
 ## Deferred findings

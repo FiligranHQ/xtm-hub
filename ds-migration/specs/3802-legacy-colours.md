@@ -176,25 +176,27 @@ start to render (see To validate).
 
 ## To validate
 
-- The global border (`* { border-color }`), `border-border` and `border-border-light` take `border-elevation-subtle`:
+- [x] The global border (`* { border-color }`), `border-border` and `border-border-light` take `border-elevation-subtle`:
   gray-200 in light, grayblue-500 in dark, instead of gray-150 / gray-800.
-- `text-muted-foreground` (gray-500 in light) takes `text-default-secondary` (gray-700).
-- `ring-ring` never painted: `--ring` is `var(--primary) / 80%`, an invalid colour. `ring-focus` makes the keyboard
+- [x] `text-muted-foreground` (gray-500 in light) takes `text-default-secondary` (gray-700).
+- [x] `ring-ring` never painted: `--ring` is `var(--primary) / 80%`, an invalid colour. `ring-focus` makes the keyboard
   focus ring of the homepage cards, the deployed-resource rows and the service cards visible in brand colour.
-- The gradient eyebrows and navigation badges render solid brand colour in light, the design system's contrast rule
+- [x] The gradient eyebrows and navigation badges render solid brand colour in light, the design system's contrast rule
   for `text-gradient-focus`. Alternative: `bg-gradient-focus bg-clip-text text-transparent`, a gradient in both themes.
-- `bg-muted` and the static `bg-hover` box of the trial form take `bg-elevation-highlight` (the box at its layer 2), the table header
+- [x] `bg-muted` and the static `bg-hover` box of the trial form take `bg-elevation-highlight` (the box at its layer 2), the table header
   `bg-elevation-heading`. Alternative: `bg-elevation-hover` everywhere `--hover-background` painted.
-- `bg-blue/5` and `bg-blue-800/5` (learn-more icon chips and section band) take the brand's 10% transparency, twice
+- [x] `bg-blue/5` and `bg-blue-800/5` (learn-more icon chips and section band) take the brand's 10% transparency, twice
   as strong. Alternative: none at 5% in the design system.
-- `RegistrationDetails`' blue outline takes the brand colour; the verified notice's takes `border-alert-info` with an
+- [x] `RegistrationDetails`' blue outline takes the brand colour; the verified notice's takes `border-alert-info` with an
   info icon. Alternative: `border-alert-info` on both.
-- The sign-up right panel (`--color-ds-bg-1`, forced dark) takes the layer-0 background. Alternative: its gradient
-  stop, `--bg-elevation-default-layer-0-gradient`, which is closer in value.
-- The eight class names no theme defines, other than the Thread voting banner's (Decisions), are removed, keeping
+- [x] The sign-up right panel (`--color-ds-bg-1`: 97% gray in light, `hsl(218 50% 9%)` in dark) takes the layer-0
+  background (gray-100 in light, grayblue-1000 in dark). The route applies no theme class, so the page renders the
+  design system's dark defaults whatever the user's theme: the panel is grayblue-1000. Alternative: its gradient stop,
+  `--bg-elevation-default-layer-0-gradient`, which is closer in value.
+- [x] The eight class names no theme defines, other than the Thread voting banner's (Decisions), are removed, keeping
   today's rendering. Alternative: the colour their names suggest (`border-elevation-subtle` for `border-light`,
   `text-filigran-brand-primary` for `text-text-brand-primary`).
-- `EditionModeBanner`'s inverted buttons read `--text-negative-primary` through arbitrary classes: the design system
+- [x] `EditionModeBanner`'s inverted buttons read `--text-negative-primary` through arbitrary classes: the design system
   has no background utility for the colour of text on brand.
 
 ## Deferred findings
