@@ -79,32 +79,30 @@ export const TrialUserFormSkeleton = ({
           name="userIds"
           render={({ field, fieldState }) => (
             <div className="flex flex-col gap-2">
-              <div className="layer-2">
-                <AppCombobox
-                  multiple
-                  label={pickerLabel || pickerPlaceholder}
-                  labelPosition={pickerLabel ? 'top' : 'none'}
-                  placeholder={pickerPlaceholder}
-                  error={fieldState.error?.message}
-                  options={usersOptionIds.ids}
-                  value={field.value ?? []}
-                  onValueChange={(values) => {
-                    field.onChange(values);
-                    onUsersChange?.(values);
-                  }}
-                  onInputChange={
-                    onUsersInputChange
-                      ? (text, meta) => {
-                          if (meta.cause !== 'select') onUsersInputChange(text);
-                        }
-                      : undefined
-                  }
-                  filterOptions={
-                    onUsersInputChange ? (options) => options : undefined
-                  }
-                  getOptionLabel={usersOptionIds.getOptionLabel}
-                />
-              </div>
+              <AppCombobox
+                multiple
+                label={pickerLabel || pickerPlaceholder}
+                labelPosition={pickerLabel ? 'top' : 'none'}
+                placeholder={pickerPlaceholder}
+                error={fieldState.error?.message}
+                options={usersOptionIds.ids}
+                value={field.value ?? []}
+                onValueChange={(values) => {
+                  field.onChange(values);
+                  onUsersChange?.(values);
+                }}
+                onInputChange={
+                  onUsersInputChange
+                    ? (text, meta) => {
+                        if (meta.cause !== 'select') onUsersInputChange(text);
+                      }
+                    : undefined
+                }
+                filterOptions={
+                  onUsersInputChange ? (options) => options : undefined
+                }
+                getOptionLabel={usersOptionIds.getOptionLabel}
+              />
               {pickerNotice}
             </div>
           )}

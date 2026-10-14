@@ -36,7 +36,7 @@ export const ChecklistItem = ({ index, item }: ChecklistItemProps) => {
           )}
         </p>
         {exampleKey && (
-          <div className="rounded p-2 bg-[var(--bg-elevation-default-layer-1)] border border-[var(--border-elevation-subtle-layer-1)]">
+          <div className="rounded p-2 layer-1 bg-elevation-default border border-elevation-subtle">
             <p className="content-compact">{t(exampleKey)}</p>
           </div>
         )}

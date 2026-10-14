@@ -56,7 +56,7 @@ const HomepageResourceCard = ({
   ) : null;
 
   return (
-    <div className="overflow-hidden flex flex-col relative rounded bg-[var(--bg-elevation-default-layer-1)] hover:bg-[var(--bg-elevation-hover-layer-1)] has-[>a:focus-visible]:ring-2 has-[>a:focus-visible]:ring-focus">
+    <div className="overflow-hidden flex flex-col relative rounded layer-1 bg-elevation-default hover:bg-elevation-hover has-[>a:focus-visible]:ring-2 has-[>a:focus-visible]:ring-focus">
       <div className="absolute top-3 right-3 flex gap-1 z-10">
         <ResourceStatusIcons
           active={active}

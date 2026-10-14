@@ -44,8 +44,7 @@ export const ManageTrialRoleDescriptions = ({
             <AccordionTrigger
               className={cn(
                 'pr-0 cursor-pointer data-[state=open]:border-b-0',
-                !stacked &&
-                  'border-b border-[var(--border-elevation-default-layer-0)]'
+                !stacked && 'border-b border-elevation-default'
               )}>
               <span className="flex items-center gap-1 text-title-xs">
                 <InfoIcon className="h-4 w-4 shrink-0" />
@@ -55,8 +54,7 @@ export const ManageTrialRoleDescriptions = ({
             <AccordionContent
               className={cn(
                 'flex flex-col gap-2',
-                !stacked &&
-                  'border-b border-[var(--border-elevation-default-layer-0)]'
+                !stacked && 'border-b border-elevation-default'
               )}>
               {roles.map((role) => (
                 <p

@@ -62,9 +62,9 @@ export const XtmPlatformActiveBundlePage = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-3">
-        <div className="h-8 w-64 rounded bg-[var(--bg-elevation-highlight-layer-1)]" />
-        <div className="h-4 w-full rounded bg-[var(--bg-elevation-highlight-layer-1)]" />
-        <div className="h-4 w-5/6 rounded bg-[var(--bg-elevation-highlight-layer-1)]" />
+        <div className="h-8 w-64 rounded layer-1 bg-elevation-highlight" />
+        <div className="h-4 w-full rounded layer-1 bg-elevation-highlight" />
+        <div className="h-4 w-5/6 rounded layer-1 bg-elevation-highlight" />
       </div>
     );
   }

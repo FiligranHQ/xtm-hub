@@ -435,7 +435,7 @@ const EpicForm = ({
           )}
         />
 
-        <SheetFooter className="bg-[var(--bg-elevation-default-layer-2)] sticky bottom-0 -mx-6 gap-4 border-t px-6 py-3 sm:items-center sm:justify-between">
+        <SheetFooter className="bg-elevation-default sticky bottom-0 -mx-6 gap-4 border-t px-6 py-3 sm:items-center sm:justify-between">
           <FormField
             control={form.control}
             name="active"

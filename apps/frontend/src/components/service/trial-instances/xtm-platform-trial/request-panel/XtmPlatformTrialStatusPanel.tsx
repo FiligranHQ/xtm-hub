@@ -55,7 +55,7 @@ export const XtmPlatformTrialStatusPanel = ({
   const singleDateRow = dateRows.length === 1 ? dateRows[0] : undefined;
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded bg-[var(--bg-elevation-default-layer-2)] p-6">
+    <div className="flex w-full flex-col gap-6 rounded layer-2 bg-elevation-default p-6">
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center text-content-base">
@@ -73,7 +73,7 @@ export const XtmPlatformTrialStatusPanel = ({
         )}
       </div>
 
-      <div className="flex flex-col gap-2 rounded p-4 bg-[var(--bg-elevation-default-layer-3)]">
+      <div className="flex flex-col gap-2 rounded p-4 layer-3 bg-elevation-default">
         <h3 className="title-xs">
           {t(
             isInProgress

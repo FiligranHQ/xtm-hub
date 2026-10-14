@@ -48,7 +48,7 @@ const LastDeployedResourceRow = ({
       href={url}
       prefetch={false}
       className="group contents">
-      <div className="min-w-0 max-w-full justify-self-start inline-flex items-center gap-3 overflow-hidden rounded p-2 bg-[var(--bg-elevation-default-layer-1)] group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-focus">
+      <div className="min-w-0 max-w-full justify-self-start inline-flex items-center gap-3 overflow-hidden rounded p-2 layer-1 bg-elevation-default group-focus-visible:outline-none group-focus-visible:ring-2 group-focus-visible:ring-focus">
         <ResourceTypeIcon
           resourceType={resourceType}
           className="size-6 shrink-0"

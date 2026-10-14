@@ -53,7 +53,7 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
             {t('XtmPlatformTrial.BundleInfo.Title')}
           </span>
         </div>
-        <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle-layer-2)]">
+        <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle)]">
           <InfoRow label={t('XtmPlatformTrial.BundleInfo.OrganizationName')}>
             {bundle.organization_name ?? '-'}
           </InfoRow>

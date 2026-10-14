@@ -186,8 +186,7 @@ export const AdminUserUpdateForm = ({
         <div
           className={cn(
             '!mt-3 px-4 py-3 space-y-2',
-            fields.length > 0 &&
-              'border bg-[var(--bg-elevation-default-layer-1)] rounded'
+            fields.length > 0 && 'layer-1 border bg-elevation-default rounded'
           )}>
           {fields.map((field, index) => {
             return (
@@ -209,6 +208,8 @@ export const AdminUserUpdateForm = ({
                         value={formField.value}
                         onChange={formField.onChange}
                         error={fieldState.error?.message}
+                        // The box is layer 1, where a layer-1 panel paints the input colour.
+                        contentClassName="layer-0"
                       />
                       <IconButton
                         type="button"

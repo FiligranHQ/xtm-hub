@@ -11,7 +11,7 @@ export const ErrorPage = ({ children }: ErrorPageProps) => {
       <div className="max-w-[450px] w-full">
         <DisplayLogo />
       </div>
-      <div className="bg-[var(--bg-elevation-default-layer-1)] rounded w-full p-4 mb-4 mt-6 max-w-[650px]">
+      <div className="layer-1 bg-elevation-default rounded w-full p-4 mb-4 mt-6 max-w-[650px]">
         {children}
       </div>
     </main>

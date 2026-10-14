@@ -37,7 +37,7 @@ export const TrialsStorageLimitation = ({
   const renderStrong = (chunks: ReactNode) => <strong>{chunks}</strong>;
 
   return (
-    <div className="p-6 rounded bg-[var(--bg-elevation-default-layer-0)]">
+    <div className="p-6 rounded bg-elevation-default">
       <h2 className="text-filigran-brand-primary text-2xl mb-4">
         {t('Service.Trials.Storage.Title')}
       </h2>

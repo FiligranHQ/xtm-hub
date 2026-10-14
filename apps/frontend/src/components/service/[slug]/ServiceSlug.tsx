@@ -262,7 +262,7 @@ const ServiceSlug = ({
 
       <div>
         <ServiceSlugHeader serviceInstance={serviceInstance} />
-        <div className="border rounded bg-[var(--bg-elevation-default-layer-1)] p-3">
+        <div className="layer-1 border rounded bg-elevation-default p-3">
           <h2 className="">{t('Service.Management.Description') + ':'}</h2>
 
           <DataTable

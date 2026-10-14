@@ -74,7 +74,7 @@ export const VotingRoundResults = ({ roundId }: { roundId: string }) => {
               {ranked.map((result, index) => (
                 <li
                   key={result.feature.id}
-                  className="flex items-center gap-3 rounded bg-[var(--bg-elevation-default-layer-1)] p-2">
+                  className="flex items-center gap-3 rounded layer-1 bg-elevation-default p-2">
                   <span className="w-6 text-center text-default-secondary">
                     {index + 1}
                   </span>

@@ -74,7 +74,7 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
 
   return (
     <div className="flex flex-col md:flex-row md:h-screen w-screen overflow-y-auto md:overflow-hidden">
-      <div className="bg-[var(--bg-elevation-default-layer-1)] flex md:h-full md:w-2/5 flex-col pl-6 pr-0 py-6 md:overflow-hidden order-1">
+      <div className="layer-1 bg-elevation-default flex md:h-full md:w-2/5 flex-col pl-6 pr-0 py-6 md:overflow-hidden order-1">
         {/* Header */}
         <div className="shrink-0 flex justify-center pr-6">
           <FiligranLogoDark className="h-8.25 w-33" />
@@ -120,7 +120,7 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
           </div>
         </div>
       </div>
-      <div className="md:w-3/5 flex flex-col justify-center order-2 bg-[var(--bg-elevation-default-layer-0)]">
+      <div className="md:w-3/5 flex flex-col justify-center order-2 bg-elevation-default">
         <div className="flex flex-col items-center gap-8 m-[clamp(2rem,5vw,8rem)]">
           <div className="shrink-0 flex flex-col gap-1 text-center">
             <p className="text-sm leading-6 font-bold text-filigran-brand-primary">

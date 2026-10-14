@@ -308,7 +308,7 @@ const Page = async ({
           <h3 className="py-2 title-xs uppercase truncate text-default-secondary">
             {t('PublicResourcePage.Overview')}
           </h3>
-          <section className="rounded bg-[var(--bg-elevation-default-layer-1)]">
+          <section className="rounded layer-1 bg-elevation-default">
             <p className="p-4 content-base">{document?.short_description}</p>
             <ResourceMarkdownRenderer
               source={document?.description ?? ''}

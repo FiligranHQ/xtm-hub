@@ -41,9 +41,9 @@ only the colour class changes. An element that renders only an icon or a logo (`
 | `text-filigran-ia-main`, `var(--color-filigran-ia-main)` | `text-filigran-ia-primary`, `var(--color-filigran-ia-primary)` | 2 (`PlatformIdentifierMapping`, `TrialGuidePage`) |
 | `EditionModeBanner`: `bg-primary text-primary-foreground`; buttons `bg-primary-foreground text-primary hover:bg-primary-foreground/90`, `border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10`; exit link `text-primary-foreground` | `bg-filigran-brand-primary text-negative-primary`; `bg-[var(--text-negative-primary)] text-filigran-brand-primary hover:bg-[var(--text-negative-primary)]/90`, `border-[var(--text-negative-primary)] text-negative-primary hover:bg-[var(--text-negative-primary)]/10`; `text-negative-primary` | 1 file |
 | `bg-primary/10`, `shadow-primary` (navigation active state) | `bg-filigran-brand-primary-transparency-10`, `shadow-filigran-brand-primary` | 2 + tests |
-| `bg-elevation-background-layer-N`; `bg-card` | `bg-[var(--bg-elevation-default-layer-N)]`; `bg-[var(--bg-elevation-default-layer-1)]` | 40, 33 files; 2 |
-| `bg-elevation-surface-highlight-layer-N` | `bg-[var(--bg-elevation-highlight-layer-N)]` | 5 |
-| `hover:bg-hover`, `group-hover:bg-hover`, the active option's `bg-hover` | same variant, `bg-elevation-hover`; on a pinned layer-N surface `bg-[var(--bg-elevation-hover-layer-N)]`: `HomepageResourceCard:59`, `ServiceInstanceCard:158`, `DetailCard:44` (layer 1), `AutocompleteInput:137-138` (layer 3) | 9 |
+| `bg-elevation-background-layer-N`; `bg-card` | `layer-N bg-elevation-default` on the surface, `bg-elevation-default` where its context already is layer N; `layer-1 bg-elevation-default` | 40, 33 files; 2 |
+| `bg-elevation-surface-highlight-layer-N` | `bg-elevation-highlight` in a layer-N context, `layer-N bg-elevation-highlight` otherwise | 5 |
+| `hover:bg-hover`, `group-hover:bg-hover`, the active option's `bg-hover` | same variant, `bg-elevation-hover`, the surface's `layer-N` resolving it: `HomepageResourceCard:59`, `ServiceInstanceCard:158`, `DetailCard:44` (layer 1), `AutocompleteInput:137-138` (layer 3) | 9 |
 | `bg-hover … bg-elevation-background-layer-2` on one box (`XtmPlatformTrialForm:211`) | `bg-[var(--bg-elevation-highlight-layer-2)]`, the highlight of the layer-2 panel it sits on (the ambient highlight equals that panel in dark); the layer class goes, `bg-hover` is later in the stylesheet and is the one that paints | 1 |
 | `bg-muted` | `bg-elevation-highlight`; the markdown `th` `bg-elevation-heading` | 4 (`globals.css` ×3, `NavigationSections:65`) |
 | `bg-gradient-background` | `bg-gradient-default` | 13 + `Sheet.test` |
@@ -51,7 +51,7 @@ only the colour class changes. An element that renders only an icon or a logo (`
 | `bg-feedback-{alert,warning,success,neutral,info}-secondary-transparency`, `bg-filigran-brand-primary-transparency` | `…-secondary-transparency-30`, `bg-filigran-brand-primary-transparency-10` | 10 (`TimelineMapping`, `XtmPlatformTrialRequestStepper`, `ShareableResourceConnectorSlug(Public)`, `XtmPlatformTrialLimitations`) |
 | `border-border`, `border-border-light`, `* { @apply border-border }` | `border-elevation-subtle` | 12 |
 | `border-elevation-border-strong` | `border-elevation-default` | 6 |
-| `border-elevation-border-{subtle,default,strong}-layer-N`, `divide-elevation-border-subtle-layer-N` | `border-[var(--border-elevation-subtle-layer-N)]`, `border-[var(--border-elevation-default-layer-N)]` (strong too), `divide-[var(--border-elevation-subtle-layer-N)]` | 14, 9 files |
+| `border-elevation-border-{subtle,default,strong}-layer-N`, `divide-elevation-border-subtle-layer-N` | `border-elevation-subtle`, `border-elevation-default` (strong too), `divide-[var(--border-elevation-subtle)]` in their layer-N context; five border-only elements on another layer than their context keep `border-[var(--border-elevation-*-layer-N)]` (`PaginationControls:26`, `ChecklistItem:18`, `XtmPlatformTrialMessagePanel:17`, `XtmPlatformTrialStatusPanel:97`, `ManageTrialRoleDescriptions:42`), since a `layer-N` there would move their descendants | 14, 9 files |
 | `border-primary` | `border-filigran-brand-primary` | 2 |
 | `ring-ring` (every variant), `focus-visible:ring-primary` | `ring-focus` | 5, 1 |
 | `border-orange`, `border-red` (warning and error notices) | `border-alert-warning`, `border-alert-error` | 4, 3 |
@@ -142,9 +142,11 @@ start to render (see To validate).
   `text-default-secondary` follow 3536 and 3564.
 - **Same names first.** `text-text-default-*`, the `*-transparency` backgrounds and `filigran-ia-main` are the
   design system tokens under their old names: same values in both themes.
-- **Layers stay pinned.** A legacy class that names a layer keeps that layer through the design system's per-layer
-  variable, the way `Dialog` and `ButtonGroup` bind one (`bg-[var(--bg-elevation-default-layer-0)]`): the element's
-  descendants keep resolving inputs and hovers where they do today. A legacy class without a layer takes the ambient
+- **A layered surface sets its layer context.** A legacy class that names a layer becomes the design system's context
+  class and the ambient utility (`layer-1 bg-elevation-default`), so the inputs, hovers, checkboxes and borders inside
+  follow that layer without re-declaring it; an element already in that layer's context takes the ambient utility
+  alone. Pinning the per-layer variable instead left every field inside to re-declare the layer, and in dark an input
+  without one matched a layer-2 panel (epic-4-cleanup review). A legacy class without a layer takes the ambient
   utility. Legacy `strong` has no design system tier above `default`, so it takes `default`.
 - **Fixed colours over fixed artwork take primitives.** The service card header, the EE badge, the Thread CTA and the
   image scrim paint the same colour in both themes on purpose; a themed token would turn the light-theme pill dark
@@ -172,9 +174,6 @@ start to render (see To validate).
 
 ## To validate
 
-- Layered surfaces read the design system's per-layer variable (`bg-[var(--bg-elevation-default-layer-1)]`).
-  Alternative: the context class `layer-1 bg-elevation-default`, which also moves the inputs, hovers and select panels
-  inside the surface to that layer.
 - Legacy `strong` borders (shell header, roadmap block, mobile sheet header, rename button) take
   `border-elevation-default`: in dark, grayblue-300 instead of a dark navy. Alternative: `border-elevation-subtle`,
   the tier the design system `Header` uses for its own bottom border.

@@ -122,7 +122,7 @@ export const BundleProductCard = ({
             <XtmoneConnectionStatus status={xtmoneStatus} />
           </div>
         ) : (
-          <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle-layer-1)]">
+          <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle)]">
             {productNameRow}
             <div className="flex items-start justify-between gap-2 py-4">
               <span className="text-content-base text-default-secondary shrink-0 whitespace-nowrap">

@@ -138,7 +138,7 @@ export interface FeatureVotingTheme {
 }
 
 const DEFAULT_THEME: FeatureVotingTheme = {
-  containerClassName: 'bg-[var(--bg-elevation-default-layer-1)]',
+  containerClassName: 'layer-1 bg-elevation-default',
   titleClassName: 'font-semibold',
   descriptionClassName: 'text-default-secondary text-sm',
 };

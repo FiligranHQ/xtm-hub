@@ -23,7 +23,7 @@ export const RegisteredPlatformsSection = async ({
   }
 
   return (
-    <section className="w-full xl:w-3/8 bg-[var(--bg-elevation-default-layer-1)] p-4 rounded xl:max-h-96 xl:overflow-y-auto">
+    <section className="w-full xl:w-3/8 layer-1 bg-elevation-default p-4 rounded xl:max-h-96 xl:overflow-y-auto">
       <div className="flex flex-col">
         <span className="title-xs text-filigran-brand-primary">
           {welcomeName

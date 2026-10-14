@@ -223,7 +223,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
                     {option.label}
                   </span>
                   {facetCounts && (
-                    <span className="ml-auto shrink-0 rounded bg-[var(--bg-elevation-highlight-layer-0)] px-1.5 content-compact text-default-secondary">
+                    <span className="ml-auto shrink-0 rounded layer-0 bg-elevation-highlight px-1.5 content-compact text-default-secondary">
                       {getFacetCount(facetCounts, option.value)}
                     </span>
                   )}
@@ -253,7 +253,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
                   {option.label}
                 </span>
                 {facetCounts && (
-                  <span className="ml-auto shrink-0 rounded bg-[var(--bg-elevation-highlight-layer-0)] px-1.5 content-compact text-default-secondary">
+                  <span className="ml-auto shrink-0 rounded layer-0 bg-elevation-highlight px-1.5 content-compact text-default-secondary">
                     {getFacetCount(facetCounts, option.value)}
                   </span>
                 )}

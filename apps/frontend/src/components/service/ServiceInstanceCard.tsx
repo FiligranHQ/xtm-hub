@@ -78,10 +78,10 @@ const ServiceInstanceCard = ({
   return (
     <li className={cn('relative rounded flex', className)}>
       {serviceInstance.disableCard && (
-        <div className="absolute inset-0  bg-[var(--bg-elevation-default-layer-0)] dark:bg-[var(--black-1000)]/60 z-10 rounded pointer-events-none" />
+        <div className="absolute inset-0 bg-elevation-default dark:bg-[var(--black-1000)]/60 z-10 rounded pointer-events-none" />
       )}
       {serviceInstance.hoverLinks && (
-        <div className="absolute inset-0 bg-[var(--bg-elevation-default-layer-1)] dark:bg-[var(--black-1000)]/80 z-10 opacity-0 hover:opacity-100 flex">
+        <div className="absolute inset-0 layer-1 bg-elevation-default dark:bg-[var(--black-1000)]/80 z-10 opacity-0 hover:opacity-100 flex">
           <div className="flex flex-col gap-2 m-auto">
             {serviceInstance.hoverLinks?.map(renderHoverButton)}
           </div>
@@ -155,7 +155,7 @@ const ServiceInstanceCard = ({
               ))}
           </div>
         </div>
-        <div className="min-h-40 flex flex-col p-4 gap-4 flex-1 bg-[var(--bg-elevation-default-layer-1)] group-hover:bg-[var(--bg-elevation-hover-layer-1)]">
+        <div className="min-h-40 flex flex-col p-4 gap-4 flex-1 layer-1 bg-elevation-default group-hover:bg-elevation-hover">
           <div className="flex items-start min-h-12 w-full text-ellipsis overflow-hidden">
             {rightAction || serviceInstance.hoverLinks ? (
               <h2>

@@ -67,7 +67,7 @@ export const TrialUserRolePanelFields = ({
                     namespace={namespace}
                     isOptional={isOptional}
                     placeholder={isUntouchedAndMixed ? title : undefined}
-                    triggerClassName="w-full layer-2"
+                    triggerClassName="w-full"
                   />
                   {isUntouchedAndMixed && (
                     <p className="text-content-compact text-default-secondary">

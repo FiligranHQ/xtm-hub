@@ -140,7 +140,7 @@ export const ServiceFormMultipleImagesField = ({
                 </div>
 
                 {!imagesToDelete.includes(doc!.id) && (
-                  <div className="flex flex-row items-center bg-[var(--bg-elevation-default-layer-1)] h-12 opacity-90">
+                  <div className="flex flex-row items-center layer-1 bg-elevation-default h-12 opacity-90">
                     <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-2 mr-2 flex-1 min-w-0">
                       {(doc as ExistingFile)?.file_name ??
                         (doc as NewFile)?.name}

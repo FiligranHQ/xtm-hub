@@ -22,7 +22,7 @@ const ShareableResourceDescription = ({
       <h2 className="py-2 title-xs uppercase truncate text-default-secondary">
         {t('Service.ShareableResources.Details.Overview')}
       </h2>
-      <section className="rounded bg-[var(--bg-elevation-default-layer-1)] overflow-x-auto">
+      <section className="rounded layer-1 bg-elevation-default overflow-x-auto">
         <h3 className="p-4">{shortDescription}</h3>
         <ResourceMarkdownRenderer
           source={longDescription}

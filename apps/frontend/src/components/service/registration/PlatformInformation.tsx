@@ -16,7 +16,7 @@ export const PlatformInformation = ({
   const t = useTranslate();
 
   return (
-    <div className="my-3 bg-[var(--bg-elevation-default-layer-2)] p-6">
+    <div className="my-3 layer-2 bg-elevation-default p-6">
       <h2>{t('Register.Details.PlatformInformation')}</h2>
       <Separator className="m-3" />
       <div className="grid grid-cols-2">

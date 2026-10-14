@@ -57,7 +57,7 @@ export const RegistrationLearnMore = async ({
         </div>
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex flex-col gap-2 basis-full">
-            <div className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
+            <div className="rounded p-6 basis-full layer-1 bg-elevation-default">
               <h3 className="mb-3 flex gap-2">
                 <Image
                   width="25"
@@ -76,7 +76,7 @@ export const RegistrationLearnMore = async ({
               </p>
               <p>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</p>
             </div>
-            <div className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
+            <div className="rounded p-6 basis-full layer-1 bg-elevation-default">
               <h3 className="mb-3 flex gap-2">
                 <Image
                   width="25"

@@ -89,7 +89,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
           </article>
         </div>
         <div className="flex flex-col md:flex-row justify-between gap-4">
-          <article className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
+          <article className="rounded p-6 basis-full layer-1 bg-elevation-default">
             <h3 className="flex items-center gap-4 text-filigran-brand-primary mb-2 font-bold">
               <span className="p-2 bg-filigran-brand-primary-transparency-10 rounded">
                 <ArrowsInputIcon className="size-4" />
@@ -98,7 +98,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             </h3>
             <P>{t(`${baseTranslationKey}.Blocks.First.Description`)}</P>
           </article>
-          <article className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
+          <article className="rounded p-6 basis-full layer-1 bg-elevation-default">
             <h3 className="flex items-center gap-4 text-filigran-brand-primary mb-2 font-bold">
               <span className="p-2 bg-filigran-brand-primary-transparency-10 rounded">
                 <AnalyticsIcon className="size-4" />
@@ -107,7 +107,7 @@ export const TrialsLearnMore = ({ platformIdentifier }: H2Props) => {
             </h3>
             <P>{t(`${baseTranslationKey}.Blocks.Second.Description`)}</P>
           </article>
-          <article className="rounded p-6 basis-full bg-[var(--bg-elevation-default-layer-1)]">
+          <article className="rounded p-6 basis-full layer-1 bg-elevation-default">
             <h3 className="flex items-center gap-4 text-filigran-brand-primary mb-2 font-bold">
               <span className="p-2 bg-filigran-brand-primary-transparency-10 rounded">
                 <ArrowsOutputIcon className="size-4" />
