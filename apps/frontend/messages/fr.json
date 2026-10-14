@@ -958,7 +958,20 @@
       "Status": "Statut",
       "PrivatePlatform": "Plateforme privée",
       "LastConnectionCheck": "Dernier contrôle de connexion",
-      "Access": "Accès"
+      "Access": "Accès",
+      "PlatformInformation": "Informations sur la plateforme",
+      "PlatformVersion": "Version de la plateforme"
+    },
+    "Metrics": {
+      "Metadata": {
+        "Hostname": "Nom d'hôte",
+        "CopyHostname": "Copier le nom d'hôte",
+        "SubscribedPlan": "Offre souscrite",
+        "Contract": "Contrat",
+        "RegionalArea": "Zone régionale",
+        "DaysLeft": "{days, plural, =1 {# jour restant} other {# jours restants}}",
+        "Unavailable": "Les informations sont actuellement indisponibles."
+      }
     },
     "Error": {
       "Capability": {

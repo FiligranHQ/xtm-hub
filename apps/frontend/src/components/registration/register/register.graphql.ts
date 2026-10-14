@@ -92,12 +92,15 @@ export const registeredPlatformByServiceInstanceId = graphql`
 export const registeredPlatformByServiceInstanceIdFragment = graphql`
   fragment registeredPlatformByServiceInstanceId_fragment on RegisteredPlatform {
     id
+    service_instance_id
     platform_id
     last_connectivity_check
+    commercial_model
     tenant_id
     title
     contract
     url
+    version
     identifier
     subscription {
       start_date

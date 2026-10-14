@@ -958,7 +958,20 @@
       "Status": "ステータス",
       "PrivatePlatform": "プライベート・プラットフォーム",
       "LastConnectionCheck": "最終接続チェック",
-      "Access": "アクセス"
+      "Access": "アクセス",
+      "PlatformInformation": "プラットフォーム情報",
+      "PlatformVersion": "プラットフォームのバージョン"
+    },
+    "Metrics": {
+      "Metadata": {
+        "Hostname": "ホスト名",
+        "CopyHostname": "ホスト名をコピー",
+        "SubscribedPlan": "契約プラン",
+        "Contract": "契約",
+        "RegionalArea": "リージョン",
+        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}",
+        "Unavailable": "現在、この情報はご利用いただけません。"
+      }
     },
     "Error": {
       "Capability": {

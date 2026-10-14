@@ -958,7 +958,20 @@
       "Status": "Status",
       "PrivatePlatform": "Private platform",
       "LastConnectionCheck": "Last connection check",
-      "Access": "Access"
+      "Access": "Access",
+      "PlatformInformation": "Platform information",
+      "PlatformVersion": "Platform version"
+    },
+    "Metrics": {
+      "Metadata": {
+        "Hostname": "Host name",
+        "CopyHostname": "Copy host name",
+        "SubscribedPlan": "Subscribed plan",
+        "Contract": "Contract",
+        "RegionalArea": "Regional area",
+        "DaysLeft": "{days, plural, =1 {# day left} other {# days left}}",
+        "Unavailable": "The information is currently unavailable"
+      }
     },
     "Error": {
       "Capability": {
