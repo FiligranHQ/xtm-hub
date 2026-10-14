@@ -71,13 +71,11 @@ export const CookieConsentBanner = () => {
           <Button onClick={acceptAll}>{t('AcceptAll')}</Button>
           <Button
             priority="secondary"
-            className="text-filigran-brand-primary"
             onClick={rejectAll}>
             {t('RejectAll')}
           </Button>
           <Button
             priority="tertiary"
-            className="text-filigran-brand-primary"
             onClick={openPreferences}>
             {t('CookieSettings')}
           </Button>

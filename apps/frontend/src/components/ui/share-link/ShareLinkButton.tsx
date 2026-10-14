@@ -116,7 +116,7 @@ export const ShareLinkCommonButton = ({
             priority="tertiary"
             size={size}
             onClick={handleCopy}
-            className="z-[2] text-filigran-brand-primary"
+            className="z-[2]"
             aria-label={
               tooltipText
                 ? t(tooltipText)

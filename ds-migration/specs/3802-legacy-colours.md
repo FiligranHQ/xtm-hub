@@ -168,6 +168,11 @@ start to render (see To validate).
   colour classes from earlier items; this item changes their token, not what the call site does (Deferred findings
   lists them). Where two call sites answered the same override differently, the secondary `Button` border, both take
   `border-elevation-default` (epic-4-cleanup review).
+- **A colour class that repeats the design system button's own goes.** `text-filigran-brand-primary` on a tertiary or
+  secondary `Button`, or on a tertiary `IconButton` (whose `text-icon-highlight` is the same brand colour in both
+  themes), changed nothing: it is removed from `NotificationButton`, `CookieConsentBanner`, `PublicResourceActions`,
+  `ShareableResourceSlug` and `ShareLinkButton`. The overrides that do change the rendering stay, traced under Deferred
+  findings for the design team (epic-4-cleanup deferred review).
 - **The `gradient-ia` entry goes** (`.claude/rules/design-system.md`): it generates the design system's
   `bg-gradient-ia` from the theme. Its value is the design system's own `--gradient-ia`, so nothing moves.
 - **The `globals.css` copies go.** They republished legacy colours as runtime variables for `SignUp.css` and the
@@ -201,9 +206,7 @@ start to render (see To validate).
 
 ## Deferred findings
 
-- Design system components restyled by colour classes, carried over from earlier items. Brand text on tertiary and
-  secondary buttons (`text-filigran-brand-primary`): `NotificationButton:132`, `CookieConsentBanner:72,78`,
-  `PublicResourceActions:76`, `ShareableResourceSlug:120`, `ShareLinkButton:115`. Default text on tertiary buttons:
+- Design system components restyled by colour classes, carried over from earlier items. Default text on tertiary buttons:
   `ConnectedProductItem:60,70` and the sidebar `Button`s of `CollapseMenuButton` and `EditTranslationsButton`
   (`text-default-primary`), the `Sheet` close button (`text-icon-default`). `BundleProductCard:86` draws a tertiary
   `IconButton` as an outlined one (`rounded border border-elevation-default text-default-primary`), the secondary role

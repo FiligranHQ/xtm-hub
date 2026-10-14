@@ -131,7 +131,7 @@ const PendingUserNotifications = ({
       <PopoverTrigger asChild>
         <Button
           priority="tertiary"
-          className="text-filigran-brand-primary w-9 px-0 relative">
+          className="w-9 px-0 relative">
           <NotificationsIcon className="h-4 w-4" />
           {nbUsers > 0 && (
             <span className="absolute top-2 right-2.5 block h-[6px] w-[6px] transform translate-x-1/2 -translate-y-1/2 bg-feedback-error-primary rounded-full"></span>
