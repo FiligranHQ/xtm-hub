@@ -334,12 +334,21 @@ jobs:
         run: |
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
             VITEST_SHARD="${{ matrix.shard }}/8"
-          mkdir -p coverage
+          mkdir -p coverage test-reports
           docker run --rm \
             -e VITEST_SHARD \
             -v $(pwd)/coverage:/app/apps/frontend/coverage \
+            -v $(pwd)/test-reports:/app/apps/frontend/test-reports \
             filigran/portal-front-test:${IMAGE_TAGS} \
-            sh -lc "yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false"
+            sh -lc "yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false --includeTaskLocation --reporter=default --reporter=json --outputFile.json=./test-reports/vitest-shard-${{ matrix.shard }}.json"
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vitest-frontend-report-shard-${{ matrix.shard }}
+          path: test-reports/
+          retention-days: 30
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
@@ -393,12 +402,21 @@ jobs:
 
       - name: Launch docker compose
         run: |
-          mkdir -p coverage
+          mkdir -p coverage test-reports
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
             VITEST_SHARD="${{ matrix.shard }}/8"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
             -e VITEST_SHARD \
-            backend-test sh -lc "VITEST_MODE=true yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false"
+            -v $(pwd)/test-reports:/app/apps/backend/test-reports \
+            backend-test sh -lc "VITEST_MODE=true yarn vitest run --shard=${VITEST_SHARD} --coverage --coverage.clean=false --includeTaskLocation --reporter=default --reporter=json --outputFile.json=./test-reports/vitest-shard-${{ matrix.shard }}.json"
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: vitest-backend-report-shard-${{ matrix.shard }}
+          path: test-reports/
+          retention-days: 30
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
@@ -452,6 +470,9 @@ jobs:
     needs: run-front-unit-tests-shards
     if: always() && contains(github.ref , 'refs/tags/') == false
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Finalize frontend shards
         run: |
@@ -460,10 +481,28 @@ jobs:
             exit 1
           fi
 
+      - name: Checkout repository
+        if: always() && needs.run-front-unit-tests-shards.result != 'skipped'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Publish test report
+        if: always() && needs.run-front-unit-tests-shards.result != 'skipped'
+        uses: ./.github/actions/vitest-pr-report
+        with:
+          id: frontend
+          title: Frontend unit tests
+          app-dir: apps/frontend
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
   run-api-unit-tests:
     needs: run-api-unit-tests-shards
     if: always() && contains(github.ref , 'refs/tags/') == false
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Finalize backend shards
         run: |
@@ -471,6 +510,21 @@ jobs:
             echo "Backend shard job failed with result: ${{ needs.run-api-unit-tests-shards.result }}"
             exit 1
           fi
+
+      - name: Checkout repository
+        if: always() && needs.run-api-unit-tests-shards.result != 'skipped'
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+
+      - name: Publish test report
+        if: always() && needs.run-api-unit-tests-shards.result != 'skipped'
+        uses: ./.github/actions/vitest-pr-report
+        with:
+          id: backend
+          title: Backend unit and integration tests
+          app-dir: apps/backend
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-feature-branch:
     needs: build-images-tests
