@@ -153,8 +153,8 @@ const THREAD_THEME: FeatureVotingTheme = {
     backgroundPosition: THREAD_BACKGROUND_POSITION,
     boxShadow: `inset 0 0 0 1px rgba(255, 255, 255, 0.1)`,
   },
-  titleClassName: 'font-semibold',
-  descriptionClassName: 'text-sm',
+  titleClassName: 'font-semibold text-[var(--white-1000)]',
+  descriptionClassName: 'text-sm text-[var(--white-500)]',
 };
 
 const THEMES: Record<FeatureVotingThemeName, FeatureVotingTheme> = {
