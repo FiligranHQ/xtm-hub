@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import '@filigran/ui/theme.css';
 import '@styles/embed.css';
 import '@styles/globals.css';
 

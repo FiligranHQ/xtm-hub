@@ -1,4 +1,3 @@
-import '@filigran/ui/theme.css';
 import '@styles/globals.css';
 
 import Login from '@/components/login/Login';

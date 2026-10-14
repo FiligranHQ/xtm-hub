@@ -86,11 +86,11 @@ export const RegistrationMetadata = ({
       : null;
 
   return (
-    <section className="flex justify-between p-xl">
-      <ul className="text-sm flex flex-col gap-l">
+    <section className="flex justify-between p-6">
+      <ul className="text-sm flex flex-col gap-4">
         <li className="flex items-center">
           <span>
-            <span className="mr-xs text-default-secondary">
+            <span className="mr-1 text-default-secondary">
               {t('Register.Metrics.Metadata.Hostname')}:
             </span>
             {hostname ? (
@@ -108,7 +108,7 @@ export const RegistrationMetadata = ({
                   <IconButton
                     priority="tertiary"
                     size="sm"
-                    className="ml-xs"
+                    className="ml-1"
                     aria-label={t('Register.Metrics.Metadata.CopyHostname')}
                     icon={
                       <Icon
@@ -127,16 +127,16 @@ export const RegistrationMetadata = ({
           )}
         </li>
         <li>
-          <span className="mr-xs text-default-secondary">
+          <span className="mr-1 text-default-secondary">
             {t('Register.Metrics.Metadata.SubscribedPlan')}:
           </span>
           {metadata?.plan ?? t('Register.Metrics.Metadata.Unavailable')}
         </li>
-        <li className="flex flex-col gap-s">
+        <li className="flex flex-col gap-2">
           <span>
             <span
               id={contractLabelId}
-              className="mr-xs text-default-secondary">
+              className="mr-1 text-default-secondary">
               {t('Register.Metrics.Metadata.Contract')}:
             </span>
             {contractPeriod
@@ -144,7 +144,7 @@ export const RegistrationMetadata = ({
               : t('Register.Metrics.Metadata.Unavailable')}
           </span>
           {contractPeriod && (
-            <div className="flex items-center gap-s">
+            <div className="flex items-center gap-2">
               <ProgressBar
                 value={contractPeriod.elapsedPercent}
                 aria-labelledby={`${contractLabelId} ${daysLeftId}`}
@@ -161,7 +161,7 @@ export const RegistrationMetadata = ({
           )}
         </li>
         <li>
-          <span className="mr-xs text-default-secondary">
+          <span className="mr-1 text-default-secondary">
             {t('Register.Metrics.Metadata.RegionalArea')}:
           </span>
           {metadata?.region ?? t('Register.Metrics.Metadata.Unavailable')}
@@ -177,8 +177,8 @@ const RegistrationMetadataSkeleton = () => {
   return (
     <section
       aria-busy="true"
-      className="flex justify-between p-xl">
-      <ul className="text-sm flex flex-col gap-l">
+      className="flex justify-between p-6">
+      <ul className="text-sm flex flex-col gap-4">
         {[
           'Register.Metrics.Metadata.Hostname',
           'Register.Metrics.Metadata.SubscribedPlan',
@@ -188,7 +188,7 @@ const RegistrationMetadataSkeleton = () => {
           <li
             key={labelKey}
             className="flex items-center">
-            <span className="mr-xs text-default-secondary">{t(labelKey)}:</span>
+            <span className="mr-1 text-default-secondary">{t(labelKey)}:</span>
             <Skeleton className="h-4 w-40" />
           </li>
         ))}

@@ -12,6 +12,11 @@ const restrictedGlobalTestMocks = new Set([
   '@/hooks/use-is-feature-enabled',
 ]);
 
+const filigranUiImportPattern = {
+  group: ['@filigran/ui', '@filigran/ui/*'],
+  message: 'Import from `@filigran/design-system` or `@/components/ui/`.',
+};
+
 const getStringLiteralValue = (node) => {
   if (node?.type === 'Literal' && typeof node.value === 'string') {
     return node.value;
@@ -372,6 +377,7 @@ const eslintConfig = [
                 "Use useTranslate from '@/hooks/use-translate' in client code, or getTranslate from '@/hooks/get-translate' in async Server Components, so texts stay editable in context.",
             },
           ],
+          patterns: [filigranUiImportPattern],
         },
       ],
     },
@@ -389,7 +395,12 @@ const eslintConfig = [
       '**/*.test.{ts,tsx}',
     ],
     rules: {
-      'no-restricted-imports': 'off',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [filigranUiImportPattern],
+        },
+      ],
     },
   },
 

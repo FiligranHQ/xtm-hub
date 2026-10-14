@@ -65,6 +65,14 @@
 #hubspot-form .container {
   display: flex;
   justify-content: space-between;
+  margin-inline: auto;
+  padding-inline: 2rem;
+}
+
+@media (width >= 1400px) {
+  #hubspot-form .container {
+    max-width: 1400px;
+  }
 }
 
 #hubspot-form .container.form-left {

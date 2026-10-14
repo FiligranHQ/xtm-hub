@@ -2,9 +2,8 @@
 @import 'tailwindcss';
 @import '@filigran/design-system/tokens/theme.css';
 @import '@filigran/design-system/styles/gradient-helpers.css';
-@import '../src/components/filigran-ui/theme.css';
-
-@reference '../src/components/filigran-ui/theme.css';
+/* The app skips the package's compiled stylesheet, which bundles these keyframes */
+@import '@filigran/design-system/styles/motion.css';
 
 @theme inline {
   --color-filigran-decoration: var(--color-filigran-decoration);
@@ -42,7 +41,6 @@ body[data-theme='Dark'] {
   --bg-input-hover: var(--bg-elevation-hover);
 }
 
-@source '../src/components/filigran-ui/**/*.{ts,tsx}';
 /* Tailwind skips node_modules: scan the design-system bundle so its component classes get generated */
 @source '../../../node_modules/@filigran/design-system/dist/**/*.mjs';
 
@@ -56,6 +54,7 @@ body[data-theme='Dark'] {
   }
 
   * {
+    letter-spacing: var(--tracking-normal);
     @apply border-elevation-subtle;
   }
 
@@ -201,6 +200,24 @@ body[data-theme='Dark'] {
   em {
     @apply italic;
   }
+}
+
+::-webkit-scrollbar {
+  width: 0.4rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 100vh;
+  border: 0.1rem solid var(--bg-elevation-default-layer-0);
+  background: var(--bg-elevation-default-layer-3);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Allow fullsize textArea in MD editor (https://github.com/uiwjs/react-md-editor/issues/625) */

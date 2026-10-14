@@ -11,9 +11,6 @@ import {
   SnackbarViewport,
 } from '@filigran/design-system';
 import { ReactNode } from 'react';
-// The app composes the tokens itself, so it never gets the enter, exit and
-// swipe keyframes bundled in the package's compiled stylesheet.
-import '@filigran/design-system/styles/motion.css';
 
 interface AppSnackbarsProps {
   children: ReactNode;

@@ -62,7 +62,7 @@ export const ConnectedProductButtons = ({
 
   return (
     <>
-      <div className={'flex gap-m flex-row'}>
+      <div className={'flex gap-3 flex-row'}>
         {displayAccessPlatformButton && (
           <Button asChild>
             <Link
