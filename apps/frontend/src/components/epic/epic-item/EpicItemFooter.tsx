@@ -34,7 +34,7 @@ export const EpicItemFooter = ({ epic, children }: EpicItemFooterProps) => {
         <div className="flex flex-1 items-center gap-2">
           {epic.epic_type === EpicType.Integration && (
             <div className="flex h-9 shrink-0 items-center">
-              <div className="bold h-8 flex items-center capitalize content-compact rounded layer-0 bg-elevation-default text-default-primary p-2">
+              <div className="h-8 flex items-center capitalize content-compact rounded layer-0 bg-elevation-default text-default-primary p-2">
                 {epic.epic_type.toLowerCase()}
               </div>
             </div>
