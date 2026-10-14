@@ -115,6 +115,9 @@ Spacing only: no accessible name, role or translation changes.
     `m-s` against the IconButton's `m-0` (`VotableFeatureForm`), `gap-s` against the Button's `gap-2`
     (`ManageTrialHeader`), `space-y-m` against AutoForm's `space-y-5` (`LibraryUpdateMetadata`), `pl-l` against
     SheetHeader's `pl-6` (`Sheet.test`): the class tailwind-merge keeps is the one that renders today.
+- **The empty footer test checks the footer.** `HomepageResourceCard.test` asserted only that `.pl-3.pb-3 > *` matched
+  nothing, which also held with no footer at all; it now asserts the footer renders and is empty (epic-4-cleanup
+  deferred review).
 - **Tests keep their meaning**: each constant moves to the numeric class of the same value; the `Sheet` caller class
   still replaces the header's own left padding, now through tailwind-merge rather than stylesheet order.
 
@@ -130,5 +133,3 @@ keep today's margin.
   theme entry changes that layout: 3708 needs a replacement.
 - Once 3708 removes `--spacing-xs` to `--spacing-xxl`, `w-xl`, `max-w-xs` and the other sizing utilities resolve
   to Tailwind's container sizes again instead of the spacing scale. Nothing uses them today.
-- `HomepageResourceCard.test.tsx:146` only asserts that `.pl-3.pb-3 > *` matches nothing, so it would also pass if
-  the footer were gone or its classes changed; nothing checks the footer renders. Predates this item.
