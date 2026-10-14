@@ -113,6 +113,8 @@ No element, accessible name, role or translation changes.
 - **Dependencies follow the earlier specs.** Each one listed was deferred here by the item that removed its last legacy
   user (3540, 3541, 3547, 3553, 3558, 3564, 3565, 3568, 3689, 3690, 3691, 3692, 3694, 3695, 3700, 3707); Grep finds no
   import of any of them in `apps/`. The design system ships the Radix packages it needs as its own dependencies.
+- **The dependencies nothing imports go too.** `autoprefixer` (the PostCSS config loads only `@tailwindcss/postcss`),
+  `@types/react-color` and `extract-files` had no importer in the app (epic-4-cleanup deferred review).
 - **The lint ban covers tests too.** The exemption block turns the whole rule off, so it restates it with the
   `@filigran/ui` pattern alone.
 - **The agent instructions follow the removal.** `AGENTS.md`, `.claude/rules/design-system.md` and
@@ -135,8 +137,6 @@ No element, accessible name, role or translation changes.
 
 ## Deferred findings
 
-- `autoprefixer`, `@types/react-color` and `extract-files` are direct frontend dependencies nothing imports; the legacy
-  copy never used them.
 - `SignUp.css:845` reads `var(--background-field)`, which nothing declares, and `:196` reads `var(--white-500)`, a
   design system `@theme` primitive Tailwind emits only when something it compiles uses it. Predates this item.
 - `app/(authentification)/auth/login/page.tsx` imports no `globals.css`, so that route renders without Tailwind or the
