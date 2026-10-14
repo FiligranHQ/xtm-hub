@@ -1,4 +1,11 @@
 import {
+  DeploymentRequestDeploymentType,
+  DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
+  PlatformIdentifier,
+  type TrialsCancelDeploymentRequestMutation,
+} from '@graphql/generated';
+import {
   Environment,
   Network,
   RecordSource,
@@ -22,12 +29,23 @@ const activeDeploymentRequestRecord = {
   __id: DEPLOYMENT_REQUEST_ID,
   __typename: 'DeploymentRequest',
   id: DEPLOYMENT_REQUEST_ID,
-  hub_status: 'ACTIVE',
-  region: 'eu',
-  type: 'STANDALONE',
-  platform_identifier: 'opencti',
+  hub_status: DeploymentRequestHubStatus.Active,
+  region: DeploymentRequestPlatformRegion.EuWest,
+  type: DeploymentRequestDeploymentType.Bundle,
+  platform_identifier: PlatformIdentifier.Opencti,
   counts_in_orga_quota: true,
   requester_email: 'user@filigran.io',
+};
+
+const cancelledDeploymentRequest: NonNullable<
+  TrialsCancelDeploymentRequestMutation['cancelDeploymentRequest']
+> = {
+  id: DEPLOYMENT_REQUEST_ID,
+  region: DeploymentRequestPlatformRegion.EuWest,
+  type: DeploymentRequestDeploymentType.Bundle,
+  platform_identifier: PlatformIdentifier.Opencti,
+  hub_status: DeploymentRequestHubStatus.Cancelled,
+  counts_in_orga_quota: false,
 };
 
 describe('syncCancelledDeploymentRequestToRelayStore', () => {
@@ -38,14 +56,10 @@ describe('syncCancelledDeploymentRequestToRelayStore', () => {
     });
 
     // When
-    syncCancelledDeploymentRequestToRelayStore(environment, {
-      id: DEPLOYMENT_REQUEST_ID,
-      region: 'eu',
-      type: 'STANDALONE',
-      platform_identifier: 'opencti',
-      hub_status: 'CANCELLED',
-      counts_in_orga_quota: false,
-    } as never);
+    syncCancelledDeploymentRequestToRelayStore(
+      environment,
+      cancelledDeploymentRequest
+    );
 
     // Then
     const record = environment
@@ -53,7 +67,7 @@ describe('syncCancelledDeploymentRequestToRelayStore', () => {
       .getSource()
       .get(DEPLOYMENT_REQUEST_ID);
     expect(record).toMatchObject({
-      hub_status: 'CANCELLED',
+      hub_status: DeploymentRequestHubStatus.Cancelled,
       counts_in_orga_quota: false,
       requester_email: 'user@filigran.io',
     });
@@ -64,10 +78,10 @@ describe('syncCancelledDeploymentRequestToRelayStore', () => {
     const environment = buildEnvironment();
 
     // When
-    syncCancelledDeploymentRequestToRelayStore(environment, {
-      id: DEPLOYMENT_REQUEST_ID,
-      hub_status: 'CANCELLED',
-    } as never);
+    syncCancelledDeploymentRequestToRelayStore(
+      environment,
+      cancelledDeploymentRequest
+    );
 
     // Then
     expect(
@@ -87,6 +101,6 @@ describe('syncCancelledDeploymentRequestToRelayStore', () => {
     // Then
     expect(
       environment.getStore().getSource().get(DEPLOYMENT_REQUEST_ID)
-    ).toMatchObject({ hub_status: 'ACTIVE' });
+    ).toMatchObject({ hub_status: DeploymentRequestHubStatus.Active });
   });
 });
