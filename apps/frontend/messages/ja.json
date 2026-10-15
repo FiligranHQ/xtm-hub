@@ -656,8 +656,6 @@
     "Settings": "設定",
     "SettingsLabel": "設定メニュー",
     "Users": "ユーザー",
-    "OpenCTITrial": "OpenCTI トライアル",
-    "OpenAEVTrial": "OpenAEVトライアル",
     "Competitor": "競技者",
     "NewsFeed": "ニュースフィード",
     "VotingRound": "機能への投票",
@@ -774,7 +772,6 @@
       "StartDate": "開始日",
       "EndDate": "終了日",
       "RemainingDays": "残り日数",
-      "Status": "状況",
       "Region": "地域",
       "PlatformId": "プラットフォームID",
       "PlatformUrl": "プラットフォームURL",
@@ -797,7 +794,6 @@
       "Quotas": "ノルマ"
     },
     "Toast": {
-      "TrialsReordered": "トライアルリクエストの並び替え",
       "BundleCancelled": "バンドルトライアルをキャンセルしました。",
       "BundleReordered": "バンドルの待ち行列の順序を変更しました。"
     },
@@ -805,8 +801,7 @@
       "SearchTrials": "電子メールまたは組織で検索",
       "MoveToTop": "トップへ戻る",
       "MoveUp": "上に移動",
-      "CancelBundle": "バンドルトライアルをキャンセル",
-      "CancelTrial": "トライアルをキャンセルする"
+      "CancelBundle": "バンドルトライアルをキャンセル"
     },
     "UpdateQuotasForm": {
       "QuotasUpdated": "クォータは正常に更新されました",
@@ -1782,8 +1777,7 @@
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。新規のOpenCTIトライアルはリクエストできませんのでご注意ください。",
-          "NewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。",
-          "Admin": "OpenCTI 無料トライアルは正常にキャンセルされました。"
+          "NewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。"
         },
         "ConfirmationForm": {
           "Title": "OpenCTI 無料トライアルをキャンセルする",
@@ -1795,8 +1789,7 @@
           "CancellationReasonRequired": "キャンセル理由を選択してください"
         },
         "Confirmation": {
-          "Title": "体験キャンセル",
-          "Admin": "本当に {organizationName} からの OpenCTI 無料トライアルをキャンセルしますか？"
+          "Title": "体験キャンセル"
         }
       },
       "Form": {

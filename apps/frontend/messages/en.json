@@ -656,8 +656,6 @@
     "Settings": "Settings",
     "SettingsLabel": "Settings menu",
     "Users": "Users",
-    "OpenCTITrial": "OpenCTI Trial",
-    "OpenAEVTrial": "OpenAEV Trial",
     "Competitor": "Competitor",
     "NewsFeed": "News Feed",
     "VotingRound": "Feature voting",
@@ -774,7 +772,6 @@
       "StartDate": "Start Date",
       "EndDate": "End Date",
       "RemainingDays": "Days remaining",
-      "Status": "Status",
       "Region": "Region",
       "PlatformId": "Platform ID",
       "PlatformUrl": "Platform URL",
@@ -797,7 +794,6 @@
       "Quotas": "Quotas"
     },
     "Toast": {
-      "TrialsReordered": "Trial requests were reordered",
       "BundleCancelled": "The bundle trial was cancelled successfully.",
       "BundleReordered": "The bundle has been reordered in the queue."
     },
@@ -805,8 +801,7 @@
       "SearchTrials": "Search by email or organization",
       "MoveToTop": "Move to top",
       "MoveUp": "Move up",
-      "CancelBundle": "Cancel the bundle trial",
-      "CancelTrial": "Cancel the trial"
+      "CancelBundle": "Cancel the bundle trial"
     },
     "UpdateQuotasForm": {
       "QuotasUpdated": "Quota has been updated successfully",
@@ -1782,8 +1777,7 @@
       "Cancellation": {
         "Toast": {
           "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new OpenCTI trials can’t be requested.",
-          "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully.",
-          "Admin": "The OpenCTI free trial was cancelled successfully."
+          "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully."
         },
         "ConfirmationForm": {
           "Title": "Cancel your OpenCTI free trial",
@@ -1795,8 +1789,7 @@
           "CancellationReasonRequired": "Please select a cancellation reason"
         },
         "Confirmation": {
-          "Title": "Trial Cancellation",
-          "Admin": "Are you sure you want to cancel OpenCTI free trial from {organizationName} ?"
+          "Title": "Trial Cancellation"
         }
       },
       "Form": {

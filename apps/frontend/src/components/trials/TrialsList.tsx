@@ -1,7 +1,7 @@
 'use client';
 import { TrialsTabQuotasPlatform } from '@/components/trials/tab/quotas/TrialsTabQuotasPlatform';
 import TrialsTab from '@/components/trials/tab/TrialsTab';
-import { TrialsScope, TrialsTabType } from '@/components/trials/trials.const';
+import { TrialsTabType } from '@/components/trials/trials.const';
 import { useTranslate } from '@/hooks/use-translate';
 import {
   Tabs,
@@ -19,11 +19,7 @@ const TAB_TITLES: Record<TrialsTabType, string> = {
 
 const QUOTAS_TAB = 'quotas';
 
-interface TrialsListProps {
-  scope: TrialsScope;
-}
-
-const TrialsList = ({ scope }: TrialsListProps) => {
+const TrialsList = () => {
   const t = useTranslate();
 
   return (
@@ -36,30 +32,23 @@ const TrialsList = ({ scope }: TrialsListProps) => {
             {t(TAB_TITLES[type])}
           </TabsTrigger>
         ))}
-        {scope.kind === 'bundle' && (
-          <TabsTrigger value={QUOTAS_TAB}>
-            {t('TrialsDashboard.TabTitle.Quotas')}
-          </TabsTrigger>
-        )}
+        <TabsTrigger value={QUOTAS_TAB}>
+          {t('TrialsDashboard.TabTitle.Quotas')}
+        </TabsTrigger>
       </TabsList>
       {Object.values(TrialsTabType).map((type) => (
         <TabsContent
           key={type}
           value={type}
           className="pt-l">
-          <TrialsTab
-            type={type}
-            scope={scope}
-          />
+          <TrialsTab type={type} />
         </TabsContent>
       ))}
-      {scope.kind === 'bundle' && (
-        <TabsContent
-          value={QUOTAS_TAB}
-          className="pt-l">
-          <TrialsTabQuotasPlatform />
-        </TabsContent>
-      )}
+      <TabsContent
+        value={QUOTAS_TAB}
+        className="pt-l">
+        <TrialsTabQuotasPlatform />
+      </TabsContent>
     </Tabs>
   );
 };
