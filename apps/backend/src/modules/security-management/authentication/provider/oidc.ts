@@ -66,6 +66,7 @@ export const addOIDCStrategy = async (
 
         const roles = [...new Set([...extractedRoles, ...rolePortal])];
         const {
+          sub,
           email,
           nickname: first_name,
           family_name,
@@ -78,6 +79,7 @@ export const addOIDCStrategy = async (
 
         await providerLoginHandler(
           {
+            idp_subject: sub,
             email,
             first_name: given_name ?? first_name ?? '',
             last_name: family_name ?? '',

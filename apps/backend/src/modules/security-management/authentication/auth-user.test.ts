@@ -1,13 +1,23 @@
 import { v4 as uuidv4 } from 'uuid';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserAccountStatus } from '../../../__generated__/resolvers-types';
+import portalConfig from '../../../config';
 import { UserId } from '../../../model/kanel/public/User';
-import { UserInfo, UserLoadUserBy } from '../../../model/user';
+import {
+  ProviderUserInfo,
+  UserInfo,
+  UserLoadUserBy,
+} from '../../../model/user';
+import { ForbiddenErrorCode } from '../../../utils/error/error.code';
 import { ServiceGroupApp } from '../../deployment/group/service-group.app';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { UserProvisioningApp } from '../../organization-management/user/user-provisioning/user-provisioning.app';
 import { UserHelper } from '../../organization-management/user/user.helper';
-import { authenticateUser, isSessionUserActive } from './auth-user';
+import {
+  authenticateUser,
+  isSessionUserActive,
+  loginFromProvider,
+} from './auth-user';
 
 vi.mock('../../deployment/group/service-group.app', () => ({
   ServiceGroupApp: {
@@ -36,6 +46,19 @@ const asUserInfo = (email: string): UserInfo => ({
   last_name: 'User',
   roles: [],
 });
+const asProviderUserInfo = (
+  email: string,
+  idpSubject: string
+): ProviderUserInfo => ({ ...asUserInfo(email), idp_subject: idpSubject });
+const newEmail = () => `auth-user-login-${uuidv4()}@filigran.io`;
+const newIdpSubject = () => `auth0|${uuidv4()}`;
+const loadIdpSubject = async (email: string) => {
+  const [user] = await UserDomain.loadUser({ email });
+  return user?.idp_subject;
+};
+
+const UNVERIFIED_IDP_SUBJECT = 'auth0|unverified-user';
+const REGENERATE_ERROR = 'session store unavailable';
 
 describe('isSessionUserActive', () => {
   describe('with a session that carries no usable identity', () => {
@@ -138,5 +161,164 @@ describe('authenticateUser', () => {
 
     expect(req.session.user).toBeUndefined();
     expect(ServiceGroupApp.grantAccessAtLogin).not.toHaveBeenCalled();
+  });
+});
+
+describe('loginFromProvider', () => {
+  let emails: string[] = [];
+
+  afterEach(async () => {
+    for (const email of emails) {
+      await UserHelper.removeUser({ email });
+    }
+    emails = [];
+  });
+
+  it('should refuse the sign-in when the IdP gives no subject', async () => {
+    // Given
+    const email = newEmail();
+
+    // When
+    const signingIn = loginFromProvider(asProviderUserInfo(email, ''));
+
+    // Then
+    await expect(signingIn).rejects.toThrow(
+      ForbiddenErrorCode.IdpSubjectNotProvided
+    );
+  });
+
+  it('should bind the subject to a new account on its first sign-in', async () => {
+    // Given
+    const email = newEmail();
+    const idpSubject = newIdpSubject();
+    emails.push(email);
+
+    // When
+    await loginFromProvider(asProviderUserInfo(email, idpSubject));
+
+    // Then
+    expect(await loadIdpSubject(email)).toBe(idpSubject);
+  });
+
+  it('should bind the subject to an existing account that has none yet', async () => {
+    // Given
+    const { email } = await createTestUser();
+    const idpSubject = newIdpSubject();
+    emails.push(email);
+
+    // When
+    await loginFromProvider(asProviderUserInfo(email, idpSubject));
+
+    // Then
+    expect(await loadIdpSubject(email)).toBe(idpSubject);
+  });
+
+  it('should sign in when the bound subject comes back', async () => {
+    // Given
+    const { email, user } = await createTestUser();
+    const idpSubject = newIdpSubject();
+    emails.push(email);
+    await loginFromProvider(asProviderUserInfo(email, idpSubject));
+
+    // When
+    const signedIn = await loginFromProvider(
+      asProviderUserInfo(email, idpSubject)
+    );
+
+    // Then
+    expect(signedIn).toMatchObject({ id: user.id, idp_subject: idpSubject });
+  });
+
+  describe('while mismatches are only logged', () => {
+    it('should still sign in when another subject claims a bound email', async () => {
+      // Given
+      const { email, user } = await createTestUser();
+      emails.push(email);
+      await loginFromProvider(asProviderUserInfo(email, newIdpSubject()));
+
+      // When
+      const signedIn = await loginFromProvider(
+        asProviderUserInfo(email, newIdpSubject())
+      );
+
+      // Then
+      expect(signedIn).toMatchObject({ id: user.id });
+    });
+
+    it('should keep the first subject when another subject claims a bound email', async () => {
+      // Given
+      const { email } = await createTestUser();
+      const firstIdpSubject = newIdpSubject();
+      emails.push(email);
+      await loginFromProvider(asProviderUserInfo(email, firstIdpSubject));
+
+      // When
+      await loginFromProvider(asProviderUserInfo(email, newIdpSubject()));
+
+      // Then
+      expect(await loadIdpSubject(email)).toBe(firstIdpSubject);
+    });
+
+    it('should not bind a subject that is already bound to another account', async () => {
+      // Given
+      const idpSubject = newIdpSubject();
+      const boundEmail = newEmail();
+      const otherEmail = newEmail();
+      emails.push(boundEmail, otherEmail);
+      await loginFromProvider(asProviderUserInfo(boundEmail, idpSubject));
+
+      // When
+      await loginFromProvider(asProviderUserInfo(otherEmail, idpSubject));
+
+      // Then
+      expect(await loadIdpSubject(otherEmail)).toBeNull();
+    });
+  });
+
+  describe('when mismatches are enforced', () => {
+    beforeEach(() => {
+      portalConfig.user_management.enforce_idp_subject = true;
+    });
+
+    afterEach(() => {
+      portalConfig.user_management.enforce_idp_subject = false;
+    });
+
+    it('should refuse the sign-in when another subject claims a bound email', async () => {
+      // Given
+      const { email } = await createTestUser();
+      emails.push(email);
+      await loginFromProvider(asProviderUserInfo(email, newIdpSubject()));
+
+      // When
+      const signingIn = loginFromProvider(
+        asProviderUserInfo(email, newIdpSubject())
+      );
+
+      // Then
+      await expect(signingIn).rejects.toThrow(
+        ForbiddenErrorCode.IdpSubjectMismatch
+      );
+    });
+
+    it('should refuse the sign-in without creating an account when a bound subject claims another email', async () => {
+      // Given
+      const idpSubject = newIdpSubject();
+      const boundEmail = newEmail();
+      const otherEmail = newEmail();
+      emails.push(boundEmail);
+      await loginFromProvider(asProviderUserInfo(boundEmail, idpSubject));
+
+      // When
+      const signingIn = loginFromProvider(
+        asProviderUserInfo(otherEmail, idpSubject)
+      );
+
+      // Then
+      await expect(signingIn).rejects.toThrow(
+        ForbiddenErrorCode.IdpSubjectMismatch
+      );
+      expect(await UserDomain.loadUser({ email: otherEmail })).toEqual([]);
+    });
   });
 });
