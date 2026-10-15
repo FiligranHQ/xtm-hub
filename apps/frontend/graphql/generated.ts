@@ -3408,6 +3408,14 @@ export type TrialsAdminCancelDeploymentRequestMutationVariables = Exact<{
 
 export type TrialsAdminCancelDeploymentRequestMutation = { __typename?: 'Mutation', adminCancelDeploymentRequest: { __typename?: 'DeploymentRequest', id: string } | null };
 
+export type TrialsCancelDeploymentRequestMutationVariables = Exact<{
+  deploymentRequestId: Scalars['DeploymentRequestId']['input'];
+  cancellationReason: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type TrialsCancelDeploymentRequestMutation = { __typename?: 'Mutation', cancelDeploymentRequest: { __typename?: 'DeploymentRequest', id: string, region: DeploymentRequestPlatformRegion, type: DeploymentRequestDeploymentType, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, counts_in_orga_quota: boolean } | null };
+
 export type TrialsReorderDeploymentRequestInQueueMutationVariables = Exact<{
   input: ReorderDeploymentRequestInQueueInput;
 }>;
@@ -3861,6 +3869,15 @@ export type ReachSalesMutationVariables = Exact<{
 
 
 export type ReachSalesMutation = { __typename?: 'Mutation', contactUs: { __typename?: 'Success', success: boolean } };
+
+export type ReachSalesAboutPlatformMutationVariables = Exact<{
+  message: InputMaybe<Scalars['String']['input']>;
+  platformId: InputMaybe<Scalars['ID']['input']>;
+  platformIdentifier: InputMaybe<PlatformIdentifier>;
+}>;
+
+
+export type ReachSalesAboutPlatformMutation = { __typename?: 'Mutation', contactUs: { __typename?: 'Success', success: boolean } };
 
 export type PlatformTrialStatusQueryVariables = Exact<{
   organizationId: Scalars['OrganizationId']['input'];
@@ -4665,6 +4682,43 @@ export const useTrialsAdminCancelDeploymentRequestMutation = <
 useTrialsAdminCancelDeploymentRequestMutation.getKey = () => ['TrialsAdminCancelDeploymentRequest'];
 useTrialsAdminCancelDeploymentRequestMutation.getRootKey = () => ['TrialsAdminCancelDeploymentRequest'] as const;
 useTrialsAdminCancelDeploymentRequestMutation.fetcher = (client: GraphQLClient, variables: TrialsAdminCancelDeploymentRequestMutationVariables, headers?: RequestInit['headers']) => fetcher<TrialsAdminCancelDeploymentRequestMutation, TrialsAdminCancelDeploymentRequestMutationVariables>(client, TrialsAdminCancelDeploymentRequestDocument, variables, headers);
+
+export const TrialsCancelDeploymentRequestDocument = `
+    mutation TrialsCancelDeploymentRequest($deploymentRequestId: DeploymentRequestId!, $cancellationReason: String) {
+  cancelDeploymentRequest(
+    deploymentRequestId: $deploymentRequestId
+    cancellationReason: $cancellationReason
+  ) {
+    id
+    region
+    type
+    platform_identifier
+    hub_status
+    counts_in_orga_quota
+  }
+}
+    `;
+
+export const useTrialsCancelDeploymentRequestMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<TrialsCancelDeploymentRequestMutation, TError, TrialsCancelDeploymentRequestMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<TrialsCancelDeploymentRequestMutation, TError, TrialsCancelDeploymentRequestMutationVariables, TContext>(
+      {
+    mutationKey: ['TrialsCancelDeploymentRequest'],
+    mutationFn: (variables?: TrialsCancelDeploymentRequestMutationVariables) => fetcher<TrialsCancelDeploymentRequestMutation, TrialsCancelDeploymentRequestMutationVariables>(client, TrialsCancelDeploymentRequestDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useTrialsCancelDeploymentRequestMutation.getKey = () => ['TrialsCancelDeploymentRequest'];
+useTrialsCancelDeploymentRequestMutation.getRootKey = () => ['TrialsCancelDeploymentRequest'] as const;
+useTrialsCancelDeploymentRequestMutation.fetcher = (client: GraphQLClient, variables: TrialsCancelDeploymentRequestMutationVariables, headers?: RequestInit['headers']) => fetcher<TrialsCancelDeploymentRequestMutation, TrialsCancelDeploymentRequestMutationVariables>(client, TrialsCancelDeploymentRequestDocument, variables, headers);
 
 export const TrialsReorderDeploymentRequestInQueueDocument = `
     mutation TrialsReorderDeploymentRequestInQueue($input: ReorderDeploymentRequestInQueueInput!) {
@@ -7151,6 +7205,39 @@ export const useReachSalesMutation = <
 useReachSalesMutation.getKey = () => ['ReachSales'];
 useReachSalesMutation.getRootKey = () => ['ReachSales'] as const;
 useReachSalesMutation.fetcher = (client: GraphQLClient, variables?: ReachSalesMutationVariables, headers?: RequestInit['headers']) => fetcher<ReachSalesMutation, ReachSalesMutationVariables>(client, ReachSalesDocument, variables, headers);
+
+export const ReachSalesAboutPlatformDocument = `
+    mutation ReachSalesAboutPlatform($message: String, $platformId: ID, $platformIdentifier: PlatformIdentifier) {
+  contactUs(
+    message: $message
+    platformId: $platformId
+    platformIdentifier: $platformIdentifier
+  ) {
+    success
+  }
+}
+    `;
+
+export const useReachSalesAboutPlatformMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<ReachSalesAboutPlatformMutation, TError, ReachSalesAboutPlatformMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<ReachSalesAboutPlatformMutation, TError, ReachSalesAboutPlatformMutationVariables, TContext>(
+      {
+    mutationKey: ['ReachSalesAboutPlatform'],
+    mutationFn: (variables?: ReachSalesAboutPlatformMutationVariables) => fetcher<ReachSalesAboutPlatformMutation, ReachSalesAboutPlatformMutationVariables>(client, ReachSalesAboutPlatformDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useReachSalesAboutPlatformMutation.getKey = () => ['ReachSalesAboutPlatform'];
+useReachSalesAboutPlatformMutation.getRootKey = () => ['ReachSalesAboutPlatform'] as const;
+useReachSalesAboutPlatformMutation.fetcher = (client: GraphQLClient, variables?: ReachSalesAboutPlatformMutationVariables, headers?: RequestInit['headers']) => fetcher<ReachSalesAboutPlatformMutation, ReachSalesAboutPlatformMutationVariables>(client, ReachSalesAboutPlatformDocument, variables, headers);
 
 export const PlatformTrialStatusDocument = `
     query PlatformTrialStatus($organizationId: OrganizationId!) {
