@@ -1,14 +1,5 @@
-import {
-  BUNDLE_SCOPE,
-  productScope,
-  TrialsScope,
-  TrialsTabType,
-} from '@/components/trials/trials.const';
-import {
-  DeploymentRequestOrdering,
-  OrderingMode,
-  PlatformIdentifier,
-} from '@graphql/generated';
+import { TrialsTabType } from '@/components/trials/trials.const';
+import { DeploymentRequestOrdering, OrderingMode } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -41,18 +32,9 @@ const COLUMN_VISIBILITY_KEY = `columnVisibilityTrialsList_${BUNDLE_RUNNING_SUFFI
 const readStored = (key: string) =>
   JSON.parse(window.localStorage.getItem(key) ?? 'null');
 
-const renderTrialsHook = (
-  type: TrialsTabType = TrialsTabType.Running,
-  scope: TrialsScope = BUNDLE_SCOPE
-) =>
+const renderTrialsHook = (type: TrialsTabType = TrialsTabType.Running) =>
   renderHook(() =>
-    useTrialsListLocalstorage(
-      COLUMNS,
-      type,
-      scope,
-      DEFAULT_ORDER,
-      DEFAULT_ORDER_MODE
-    )
+    useTrialsListLocalstorage(COLUMNS, type, DEFAULT_ORDER, DEFAULT_ORDER_MODE)
   );
 
 describe('useTrialsListLocalstorage', () => {
@@ -74,7 +56,7 @@ describe('useTrialsListLocalstorage', () => {
     });
   });
 
-  it('should restore the preferences stored for the same scope and tab', () => {
+  it('should restore the preferences stored for the same tab', () => {
     // Given
     window.localStorage.setItem(
       ORDER_BY_KEY,
@@ -86,7 +68,7 @@ describe('useTrialsListLocalstorage', () => {
     );
 
     // When
-    const { result } = renderTrialsHook(TrialsTabType.Running, BUNDLE_SCOPE);
+    const { result } = renderTrialsHook(TrialsTabType.Running);
 
     // Then
     expect(result.current).toMatchObject({
@@ -96,17 +78,10 @@ describe('useTrialsListLocalstorage', () => {
   });
 
   it.each([
-    {
-      name: 'another tab of the same scope',
-      type: TrialsTabType.Expired,
-      scope: BUNDLE_SCOPE,
-    },
-    {
-      name: 'a product scope on the same tab',
-      type: TrialsTabType.Running,
-      scope: productScope(PlatformIdentifier.Opencti),
-    },
-  ])('should ignore the preferences stored for $name', ({ type, scope }) => {
+    TrialsTabType.Cancelled,
+    TrialsTabType.Expired,
+    TrialsTabType.Waiting,
+  ])('should ignore the preferences stored for the %s tab', (type) => {
     // Given
     window.localStorage.setItem(
       PAGE_SIZE_KEY,
@@ -114,7 +89,7 @@ describe('useTrialsListLocalstorage', () => {
     );
 
     // When
-    const { result } = renderTrialsHook(type, scope);
+    const { result } = renderTrialsHook(type);
 
     // Then
     expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
