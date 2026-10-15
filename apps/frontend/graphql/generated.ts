@@ -844,7 +844,7 @@ export type FacetBucket = {
 export enum FeatureFlag {
   DecouplingConnectors = 'DECOUPLING_CONNECTORS',
   Dummy = 'DUMMY',
-  TrialInvite = 'TRIAL_INVITE'
+  SaasMetrics = 'SAAS_METRICS'
 }
 
 export enum FiligranProduct {
@@ -3609,6 +3609,23 @@ export type MeOrganizationDomainsQueryVariables = Exact<{ [key: string]: never; 
 
 export type MeOrganizationDomainsQuery = { __typename?: 'Query', me: { __typename?: 'User', organizations: Array<{ __typename?: 'Organization', id: string, domains: Array<string> | null }> | null } | null };
 
+export type NewsFeedDeleteItemMutationVariables = Exact<{
+  id: Scalars['NewsFeedItemId']['input'];
+}>;
+
+
+export type NewsFeedDeleteItemMutation = { __typename?: 'Mutation', deleteNewsFeedItem: boolean };
+
+export type NewsFeedItemRowFragment = { __typename?: 'NewsFeedItem', id: string, title: string, type: NewsFeedItemType, creation_date: any, tags: Array<string>, is_deleted: boolean, metadata: Array<{ __typename?: 'NewsFeedItemMetadata', key: NewsFeedItemMetadataKey, value: string | null }> };
+
+export type NewsFeedListQueryVariables = Exact<{
+  count: Scalars['Int']['input'];
+  cursor: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+
+export type NewsFeedListQuery = { __typename?: 'Query', newsFeedItems: { __typename?: 'NewsFeedItemConnection', totalCount: number, edges: Array<{ __typename?: 'NewsFeedItemEdge', node: { __typename?: 'NewsFeedItem', id: string, title: string, type: NewsFeedItemType, creation_date: any, tags: Array<string>, is_deleted: boolean, metadata: Array<{ __typename?: 'NewsFeedItemMetadata', key: NewsFeedItemMetadataKey, value: string | null }> } }> } };
+
 export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -4229,6 +4246,20 @@ export const VotableFeaturePublicFragmentDoc = `
   illustration_document_id
   position
   has_my_vote
+}
+    `;
+export const NewsFeedItemRowFragmentDoc = `
+    fragment NewsFeedItemRow on NewsFeedItem {
+  id
+  title
+  type
+  creation_date
+  tags
+  is_deleted
+  metadata {
+    key
+    value
+  }
 }
     `;
 export const OrganizationSubscribedServiceRowFragmentDoc = `
@@ -5636,6 +5667,91 @@ export const useInfiniteMeOrganizationDomainsQuery = <
 useInfiniteMeOrganizationDomainsQuery.getKey = (variables?: MeOrganizationDomainsQueryVariables) => variables === undefined ? ['MeOrganizationDomains.infinite'] : ['MeOrganizationDomains.infinite', variables];
 useInfiniteMeOrganizationDomainsQuery.getRootKey = () => ['MeOrganizationDomains.infinite'] as const;
 useMeOrganizationDomainsQuery.fetcher = (client: GraphQLClient, variables?: MeOrganizationDomainsQueryVariables, headers?: RequestInit['headers']) => fetcher<MeOrganizationDomainsQuery, MeOrganizationDomainsQueryVariables>(client, MeOrganizationDomainsDocument, variables, headers);
+
+export const NewsFeedDeleteItemDocument = `
+    mutation NewsFeedDeleteItem($id: NewsFeedItemId!) {
+  deleteNewsFeedItem(id: $id)
+}
+    `;
+
+export const useNewsFeedDeleteItemMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<NewsFeedDeleteItemMutation, TError, NewsFeedDeleteItemMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<NewsFeedDeleteItemMutation, TError, NewsFeedDeleteItemMutationVariables, TContext>(
+      {
+    mutationKey: ['NewsFeedDeleteItem'],
+    mutationFn: (variables?: NewsFeedDeleteItemMutationVariables) => fetcher<NewsFeedDeleteItemMutation, NewsFeedDeleteItemMutationVariables>(client, NewsFeedDeleteItemDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useNewsFeedDeleteItemMutation.getKey = () => ['NewsFeedDeleteItem'];
+useNewsFeedDeleteItemMutation.getRootKey = () => ['NewsFeedDeleteItem'] as const;
+useNewsFeedDeleteItemMutation.fetcher = (client: GraphQLClient, variables: NewsFeedDeleteItemMutationVariables, headers?: RequestInit['headers']) => fetcher<NewsFeedDeleteItemMutation, NewsFeedDeleteItemMutationVariables>(client, NewsFeedDeleteItemDocument, variables, headers);
+
+export const NewsFeedListDocument = `
+    query NewsFeedList($count: Int!, $cursor: ID) {
+  newsFeedItems(first: $count, after: $cursor) {
+    totalCount
+    edges {
+      node {
+        ...NewsFeedItemRow
+      }
+    }
+  }
+}
+    ${NewsFeedItemRowFragmentDoc}`;
+
+export const useNewsFeedListQuery = <
+      TData = NewsFeedListQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: NewsFeedListQueryVariables,
+      options?: Omit<UseQueryOptions<NewsFeedListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<NewsFeedListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<NewsFeedListQuery, TError, TData>(
+      {
+    queryKey: ['NewsFeedList', variables],
+    queryFn: fetcher<NewsFeedListQuery, NewsFeedListQueryVariables>(client, NewsFeedListDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useNewsFeedListQuery.getKey = (variables: NewsFeedListQueryVariables) => ['NewsFeedList', variables];
+useNewsFeedListQuery.getRootKey = () => ['NewsFeedList'] as const;
+export const useInfiniteNewsFeedListQuery = <
+      TData = InfiniteData<NewsFeedListQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: NewsFeedListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<NewsFeedListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<NewsFeedListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<NewsFeedListQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['NewsFeedList.infinite', variables],
+      queryFn: (metaData) => fetcher<NewsFeedListQuery, NewsFeedListQueryVariables>(client, NewsFeedListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteNewsFeedListQuery.getKey = (variables: NewsFeedListQueryVariables) => ['NewsFeedList.infinite', variables];
+useInfiniteNewsFeedListQuery.getRootKey = () => ['NewsFeedList.infinite'] as const;
+useNewsFeedListQuery.fetcher = (client: GraphQLClient, variables: NewsFeedListQueryVariables, headers?: RequestInit['headers']) => fetcher<NewsFeedListQuery, NewsFeedListQueryVariables>(client, NewsFeedListDocument, variables, headers);
 
 export const OrganizationSubscribedServicesBreadcrumbDocument = `
     query OrganizationSubscribedServicesBreadcrumb($id: ID!) {
