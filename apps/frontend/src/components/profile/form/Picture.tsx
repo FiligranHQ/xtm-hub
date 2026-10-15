@@ -72,7 +72,7 @@ export const ProfileFormPicture = ({ onSubmit }: ProfileFormPictureProps) => {
         <Button
           priority="tertiary"
           aria-label={t('Utils.Edit')}
-          className="ml-s"
+          className="ml-2"
           startIcon={<EditIcon className="h-4 w-4" />}
           onClick={() => inputRef.current?.click()}>
           {t('Utils.Edit')}

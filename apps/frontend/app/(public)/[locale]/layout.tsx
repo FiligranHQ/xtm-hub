@@ -14,7 +14,6 @@ import { loadContentTranslationDrafts } from '@/utils/content-translation/conten
 import { countPendingChanges } from '@/utils/content-translation/pending-changes';
 import { getDefaultMetadata } from '@/utils/generate-metadata';
 import { fetchVisibleServiceSlugs } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
-import '@filigran/ui/theme.css';
 import '@styles/globals.css';
 import { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
@@ -77,7 +76,7 @@ const RootLayout = async ({
               visibleServiceSlugs={visibleServiceSlugs}
             />
           }
-          contentClassName="container pt-l">
+          contentClassName="container mx-auto px-8 pt-4 min-[1400px]:max-w-[1400px]">
           {children}
         </AppShell>
         <EditModeContentObserver />

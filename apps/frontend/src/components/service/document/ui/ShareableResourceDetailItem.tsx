@@ -12,7 +12,7 @@ export const ShareableResourceDetailItem = ({
 }: ShareableResourceDetailItemProps) => {
   return (
     <div>
-      <Label className="block pb-s">{label}</Label>
+      <Label className="block pb-2">{label}</Label>
       {children}
     </div>
   );

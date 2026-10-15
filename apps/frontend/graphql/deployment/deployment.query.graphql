@@ -14,7 +14,6 @@ fragment TrialsRow on DeploymentRequest {
   hub_status
   requester_email
   organization_name
-  organization_requester_id
   region
   request_date
   start_date
@@ -22,10 +21,6 @@ fragment TrialsRow on DeploymentRequest {
   cancellation_date
   cancellation_user_email
   cancellation_reason
-  platform_identifier
-  platform_id
-  platform_url
-  url
   children {
     ...TrialsProduct
   }

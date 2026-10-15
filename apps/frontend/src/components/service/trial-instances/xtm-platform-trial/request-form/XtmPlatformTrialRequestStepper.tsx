@@ -21,14 +21,14 @@ export const XtmPlatformTrialRequestStepper = ({
           <div
             key={labelKey}
             className="flex items-start">
-            <div className="flex flex-col items-center gap-xs">
+            <div className="flex flex-col items-center gap-1">
               <CountBadge
                 count={index + 1}
-                fontClass="content-body-base-bold"
+                fontClass="content-base-bold"
                 bgFadedClass={
                   isCurrent
-                    ? 'bg-feedback-success-secondary-transparency'
-                    : 'bg-feedback-neutral-secondary-transparency'
+                    ? 'bg-feedback-success-secondary-transparency-30'
+                    : 'bg-feedback-neutral-secondary-transparency-30'
                 }
                 textClass={
                   isCurrent
@@ -38,7 +38,7 @@ export const XtmPlatformTrialRequestStepper = ({
               />
               <span
                 className={cn(
-                  'content-body-base-bold',
+                  'content-base-bold',
                   isCurrent
                     ? 'text-feedback-success-primary'
                     : 'text-feedback-neutral-primary'
@@ -49,7 +49,7 @@ export const XtmPlatformTrialRequestStepper = ({
               </span>
             </div>
             {index < STEP_LABEL_KEYS.length - 1 && (
-              <div className="mx-s mt-3 h-[2px] w-[88.5px] bg-feedback-neutral-primary" />
+              <div className="mx-2 mt-3 h-[2px] w-[88.5px] bg-feedback-neutral-primary" />
             )}
           </div>
         );

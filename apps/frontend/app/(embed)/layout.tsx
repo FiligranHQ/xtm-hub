@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import '@filigran/ui/theme.css';
 import '@styles/embed.css';
 import '@styles/globals.css';
 
@@ -59,7 +58,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
 
   if (hasError) {
     return (
-      <div className="flex flex-col w-full h-screen">
+      <div className="flex flex-col w-full h-[calc(100dvh-var(--cookie-banner-height,0px))]">
         <ErrorPage>
           <p className="text-center">
             We&#39;re sorry, something went wrong
@@ -75,11 +74,11 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
   return (
     <RelayProvider>
       <PageLoader>
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-var(--cookie-banner-height,0px))]">
           <div className="w-1/3">
             <LogoXTMDark className="pb-6" />
 
-            <SharedContent className="flex flex-col bg-gradient-background px-3 pt-3 sm:px-6 sm:p-6">
+            <SharedContent className="flex flex-col bg-gradient-default px-3 pt-3 sm:px-6 sm:p-6">
               {children}
             </SharedContent>
           </div>

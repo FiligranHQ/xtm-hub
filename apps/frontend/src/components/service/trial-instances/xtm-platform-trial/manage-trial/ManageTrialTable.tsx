@@ -277,10 +277,12 @@ export const ManageTrialTable = ({
   return (
     <>
       {isError && (
-        <div className="text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="text-sm text-feedback-error-primary">
+          {t('Utils.Error')}
+        </div>
       )}
       {!isError && !isLoading && rows.length === 0 && (
-        <div className="text-sm text-content-body-secondary">
+        <div className="text-sm">
           {t('Service.Bundle.ManageTrial.Table.NoUsers')}
         </div>
       )}

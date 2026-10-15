@@ -9,6 +9,8 @@ interface CapabilityMultiSelectProps {
   value: string[];
   onChange: (value: string[]) => void;
   error?: string;
+  /** Layer of the portalled panel: a field on a layer-1 surface passes `layer-0`. */
+  contentClassName?: string;
 }
 
 export const CapabilityMultiSelect = ({
@@ -16,6 +18,7 @@ export const CapabilityMultiSelect = ({
   value,
   onChange,
   error,
+  contentClassName,
 }: CapabilityMultiSelectProps) => {
   const t = useTranslate();
   const organizationCapabilities = useOrganizationCapabilities();
@@ -43,6 +46,7 @@ export const CapabilityMultiSelect = ({
       value={value ?? []}
       onValueChange={onChange}
       getOptionLabel={optionIds.getOptionLabel}
+      contentClassName={contentClassName}
     />
   );
 };

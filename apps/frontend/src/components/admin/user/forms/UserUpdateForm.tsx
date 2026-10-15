@@ -86,7 +86,7 @@ export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-xl">
+        className="w-full space-y-6">
         <CapabilityDescription />
         <FormField
           control={form.control}
@@ -103,7 +103,7 @@ export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
 
         <SheetFooter className="justify-between sm:justify-between pb-0">
           <RemoveUserFromOrga user={user} />
-          <div className="flex gap-s">
+          <div className="flex gap-2">
             <Button
               priority="secondary"
               type="button"

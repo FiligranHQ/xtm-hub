@@ -44,7 +44,7 @@ export const RegisteredPlatformHeader = ({
           <h1>{platform.title}</h1>
         )}
 
-        <div className="flex gap-m">
+        <div className="flex gap-3">
           <Chip
             label={t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
             severity={

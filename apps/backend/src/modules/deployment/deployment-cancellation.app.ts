@@ -20,9 +20,6 @@ import {
   quotaKeysOfRequest,
 } from './quota/deployment.quota.domain';
 
-export const BUNDLE_REQUEST_CANCELLATION_REASON =
-  'Other: Cancelled automatically when the XTM Platform trial was requested';
-
 export const DeploymentCancellationApp = {
   sendUpdateDeploymentTelemetryEvent: async (
     deploymentRequest: DeploymentRequestModel,
@@ -158,23 +155,5 @@ export const DeploymentCancellationApp = {
         return updatedDeploymentRequest;
       }
     );
-  },
-
-  cancelOngoingStandaloneTrialsForBundle: async (
-    bundle: DeploymentRequestModel
-  ): Promise<void> => {
-    const standaloneTrials =
-      await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
-        bundle.organization_requester_id
-      );
-
-    for (const trial of standaloneTrials) {
-      await DeploymentCancellationApp.applyCancellationToDeploymentRequest({
-        deploymentRequest: trial,
-        userId: bundle.user_requester_id,
-        isAdmin: false,
-        cancellationReason: BUNDLE_REQUEST_CANCELLATION_REASON,
-      });
-    }
   },
 };

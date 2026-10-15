@@ -296,7 +296,7 @@ const UserList = ({ organization }: UserListProps) => {
               enableSorting: false,
               cell: ({ row }: { row: Row<UserList_fragment$data> }) => {
                 return (
-                  <div className="flex gap-xs">
+                  <div className="flex gap-1">
                     {row.original.organization_capabilities?.map(
                       ({ id, organization: { name, personal_space } }) =>
                         !personal_space ? (
@@ -327,7 +327,7 @@ const UserList = ({ organization }: UserListProps) => {
                 row: { original: UserList_fragment$data };
               }) => {
                 return (
-                  <div className="flex gap-xs">
+                  <div className="flex gap-1">
                     <Chip
                       label={t(disabled ? 'Badge.Disabled' : 'Badge.Enabled')}
                       severity={disabled ? 'critical' : 'low'}
@@ -475,7 +475,9 @@ const UserList = ({ organization }: UserListProps) => {
                     onClick={(event) => event.stopPropagation()}>
                     <IconActions
                       aria-label={t('Utils.OpenMenu')}
-                      icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+                      icon={
+                        <MoreVertIcon className="h-4 w-4 text-icon-highlight" />
+                      }>
                       {showResendInvite && (
                         <IconActionsItem
                           disabled={isResendingInvite}
@@ -603,8 +605,8 @@ const UserList = ({ organization }: UserListProps) => {
         }}
         onClickRow={(row) => setUserEdit(row.original)}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
-            <div className="flex w-full items-center gap-s sm:w-auto">
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
+            <div className="flex w-full items-center gap-2 sm:w-auto">
               <SearchField
                 className="w-full sm:w-55"
                 aria-label={t('UserActions.SearchUser')}
@@ -620,7 +622,7 @@ const UserList = ({ organization }: UserListProps) => {
                 />
               )}
             </div>
-            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
               <DataTableHeadBarOptions />
             </div>
           </div>
@@ -636,7 +638,7 @@ const UserList = ({ organization }: UserListProps) => {
         }}
       />
       {data.users.totalCount === 0 && (
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-sm text-default-secondary">
           {t('UserListPage.NoUsers')}
         </p>
       )}

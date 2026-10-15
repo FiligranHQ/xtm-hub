@@ -1917,7 +1917,6 @@ export type PlatformTrialStatus = {
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: Maybe<DeploymentRequestHubStatus>;
   isBlacklisted: Scalars['Boolean']['output'];
-  ongoingStandaloneTrials: Array<PlatformIdentifier>;
 };
 
 export enum PortalCapability {
@@ -3425,7 +3424,7 @@ export type TrialsUpdateDeploymentQuotaCapacityMutation = { __typename?: 'Mutati
 
 export type TrialsProductFragment = { __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null };
 
-export type TrialsRowFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, organization_requester_id: any, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, platform_identifier: PlatformIdentifier | null, platform_id: string | null, platform_url: string | null, url: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null }> | null };
+export type TrialsRowFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null }> | null };
 
 export type TrialsQuotaFragment = { __typename?: 'DeploymentAvailability', id: string, region: DeploymentRequestPlatformRegion, availableCount: number, capacity: number };
 
@@ -3439,7 +3438,7 @@ export type TrialsListQueryVariables = Exact<{
 }>;
 
 
-export type TrialsListQuery = { __typename?: 'Query', deploymentRequestsList: { __typename?: 'DeploymentRequestConnection', totalCount: number, edges: Array<{ __typename?: 'DeploymentRequestEdge', node: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, organization_requester_id: any, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, platform_identifier: PlatformIdentifier | null, platform_id: string | null, platform_url: string | null, url: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null }> | null } }> } };
+export type TrialsListQuery = { __typename?: 'Query', deploymentRequestsList: { __typename?: 'DeploymentRequestConnection', totalCount: number, edges: Array<{ __typename?: 'DeploymentRequestEdge', node: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null }> | null } }> } };
 
 export type TrialsQuotasQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3652,14 +3651,14 @@ export type RegisteredPlatformsListQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, platform_id: string, title: string, url: string, contract: PlatformContract, version: string | null, identifier: ServiceDefinitionIdentifier, deployment_request: { __typename?: 'DeploymentRequest', type: DeploymentRequestDeploymentType, parent_id: any | null } | null, subscription: { __typename?: 'SubscriptionModel', end_date: any | null, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string } } | null }> };
+export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, platform_id: string, title: string, url: string, contract: PlatformContract, version: string | null, identifier: ServiceDefinitionIdentifier, deployment_request: { __typename?: 'DeploymentRequest', parent_id: any | null } | null, subscription: { __typename?: 'SubscriptionModel', end_date: any | null, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string } } | null }> };
 
 export type RegisteredPlatformsQueryVariables = Exact<{
   input: RegisteredPlatformsInput;
 }>;
 
 
-export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
+export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, deployment_request: { __typename?: 'DeploymentRequest', parent_id: any | null } | null, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
 
 export type RegisteredSaasPlatformMetadataQueryVariables = Exact<{
   input: RegisteredPlatformInput;
@@ -3855,12 +3854,20 @@ export type GiveDeploymentFeedbackMutationVariables = Exact<{
 
 export type GiveDeploymentFeedbackMutation = { __typename?: 'Mutation', giveDeploymentFeedback: { __typename?: 'Success', success: boolean } };
 
+export type ReachSalesMutationVariables = Exact<{
+  message: InputMaybe<Scalars['String']['input']>;
+  deploymentRequestType: InputMaybe<DeploymentRequestDeploymentType>;
+}>;
+
+
+export type ReachSalesMutation = { __typename?: 'Mutation', contactUs: { __typename?: 'Success', success: boolean } };
+
 export type PlatformTrialStatusQueryVariables = Exact<{
   organizationId: Scalars['OrganizationId']['input'];
 }>;
 
 
-export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', deploymentRequestId: any | null, isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null, ongoingStandaloneTrials: Array<PlatformIdentifier> } };
+export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', deploymentRequestId: any | null, isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null } };
 
 export type UseCaseAddMutationVariables = Exact<{
   input: AddUseCaseInput;
@@ -4044,7 +4051,6 @@ export const TrialsRowFragmentDoc = `
   hub_status
   requester_email
   organization_name
-  organization_requester_id
   region
   request_date
   start_date
@@ -4052,10 +4058,6 @@ export const TrialsRowFragmentDoc = `
   cancellation_date
   cancellation_user_email
   cancellation_reason
-  platform_identifier
-  platform_id
-  platform_url
-  url
   children {
     ...TrialsProduct
   }
@@ -5889,7 +5891,6 @@ export const RegisteredPlatformsListDocument = `
     version
     identifier
     deployment_request {
-      type
       parent_id
     }
     subscription {
@@ -5956,6 +5957,9 @@ export const RegisteredPlatformsDocument = `
     identifier
     title
     contract
+    deployment_request {
+      parent_id
+    }
     subscription {
       start_date
       end_date
@@ -7119,6 +7123,35 @@ useGiveDeploymentFeedbackMutation.getKey = () => ['GiveDeploymentFeedback'];
 useGiveDeploymentFeedbackMutation.getRootKey = () => ['GiveDeploymentFeedback'] as const;
 useGiveDeploymentFeedbackMutation.fetcher = (client: GraphQLClient, variables: GiveDeploymentFeedbackMutationVariables, headers?: RequestInit['headers']) => fetcher<GiveDeploymentFeedbackMutation, GiveDeploymentFeedbackMutationVariables>(client, GiveDeploymentFeedbackDocument, variables, headers);
 
+export const ReachSalesDocument = `
+    mutation ReachSales($message: String, $deploymentRequestType: DeploymentRequestDeploymentType) {
+  contactUs(message: $message, deploymentRequestType: $deploymentRequestType) {
+    success
+  }
+}
+    `;
+
+export const useReachSalesMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<ReachSalesMutation, TError, ReachSalesMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<ReachSalesMutation, TError, ReachSalesMutationVariables, TContext>(
+      {
+    mutationKey: ['ReachSales'],
+    mutationFn: (variables?: ReachSalesMutationVariables) => fetcher<ReachSalesMutation, ReachSalesMutationVariables>(client, ReachSalesDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useReachSalesMutation.getKey = () => ['ReachSales'];
+useReachSalesMutation.getRootKey = () => ['ReachSales'] as const;
+useReachSalesMutation.fetcher = (client: GraphQLClient, variables?: ReachSalesMutationVariables, headers?: RequestInit['headers']) => fetcher<ReachSalesMutation, ReachSalesMutationVariables>(client, ReachSalesDocument, variables, headers);
+
 export const PlatformTrialStatusDocument = `
     query PlatformTrialStatus($organizationId: OrganizationId!) {
   platformTrialStatus(organizationId: $organizationId) {
@@ -7126,7 +7159,6 @@ export const PlatformTrialStatusDocument = `
     isBlacklisted
     hub_status
     end_date
-    ongoingStandaloneTrials
   }
 }
     `;

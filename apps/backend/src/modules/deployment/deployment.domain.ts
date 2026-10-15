@@ -20,7 +20,7 @@ import { auth0Client } from '../../thirdparty/auth0/client';
 import { ErrorCode, UnknownErrorCode } from '../../utils/error/error.code';
 import { prefixObjectKeys } from '../../utils/utils';
 import { ServiceGroupDomain } from './group/service-group.domain';
-import { QuotaKey } from './quota/deployment.quota.domain';
+import { bundleQuotaKey, QuotaKey } from './quota/deployment.quota.domain';
 
 const scopeToQuotaKey =
   (key: QuotaKey) => (builder: Knex.QueryBuilder<DeploymentRequest>) => {
@@ -28,27 +28,6 @@ const scopeToQuotaKey =
       .where('type', '=', DeploymentRequestDeploymentType.Bundle)
       .andWhere('region', '=', key.region)
       .whereNull('parent_id');
-  };
-
-type DeploymentRequestQueue = Pick<
-  DeploymentRequest,
-  'type' | 'platform_identifier' | 'region'
->;
-
-const scopeToQueueOf =
-  (queue: DeploymentRequestQueue) =>
-  (builder: Knex.QueryBuilder<DeploymentRequest>) => {
-    builder
-      .where('type', '=', queue.type)
-      .andWhere('region', '=', queue.region)
-      .whereNull('parent_id')
-      .modify((qb) => {
-        if (queue.platform_identifier === null) {
-          qb.whereNull('platform_identifier');
-        } else {
-          qb.andWhere('platform_identifier', '=', queue.platform_identifier);
-        }
-      });
   };
 
 export const DeploymentRequestDomain = {
@@ -99,10 +78,6 @@ export const DeploymentRequestDomain = {
     deploymentRequest: DeploymentRequest,
     childrenHubStatus?: DeploymentRequestHubStatus
   ): Promise<DeploymentRequest[]> => {
-    if (deploymentRequest.type !== DeploymentRequestDeploymentType.Bundle) {
-      return [deploymentRequest];
-    }
-
     const children = await DeploymentRequestDomain.loadDeploymentRequestsBy({
       parent_id: deploymentRequest.id,
       ...(childrenHubStatus ? { hub_status: childrenHubStatus } : {}),
@@ -127,30 +102,14 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
-  loadOngoingStandaloneTrialsForOrganization: async (
-    organizationId: OrganizationId
-  ): Promise<DeploymentRequest[]> => {
-    return db<DeploymentRequest[]>('DeploymentRequest')
-      .where('organization_requester_id', '=', organizationId)
-      .where('type', '=', DeploymentRequestDeploymentType.Trial)
-      .whereNull('parent_id')
-      .whereIn('hub_status', [
-        DeploymentRequestHubStatus.Active,
-        DeploymentRequestHubStatus.Pending,
-        DeploymentRequestHubStatus.Provisioning,
-        DeploymentRequestHubStatus.Queued,
-      ])
-      .select('*');
-  },
-
   getMaxOrderingInQueue: async (
-    queue: DeploymentRequestQueue,
+    key: QuotaKey,
     hubStatus: DeploymentRequestHubStatus
   ): Promise<number | null> => {
     const result = await db<DeploymentRequest>('DeploymentRequest')
       .max('ordering as max')
       .where('hub_status', '=', hubStatus)
-      .modify(scopeToQueueOf(queue))
+      .modify(scopeToQuotaKey(key))
       .first();
     return result?.max ? parseInt(result.max as string, 10) : null;
   },
@@ -238,19 +197,11 @@ export const DeploymentRequestDomain = {
       .first();
   },
 
-  loadTrialsToExpire: async (): Promise<DeploymentRequest[]> => {
+  loadBundlesToExpire: async (): Promise<DeploymentRequest[]> => {
     return db<DeploymentRequest[]>('DeploymentRequest')
       .where('end_date', '<', new Date())
       .where('hub_status', '=', DeploymentRequestHubStatus.Active)
-      .where((qb) => {
-        qb.where('type', '=', DeploymentRequestDeploymentType.Bundle).orWhere(
-          (subQb) => {
-            subQb
-              .where('type', '=', DeploymentRequestDeploymentType.Trial)
-              .whereNull('parent_id');
-          }
-        );
-      })
+      .where('type', '=', DeploymentRequestDeploymentType.Bundle)
       .select('*');
   },
 
@@ -318,7 +269,7 @@ export const DeploymentRequestDomain = {
   ): Promise<DeploymentRequest | undefined> => {
     const maxPendingOrdering =
       await DeploymentRequestDomain.getMaxOrderingInQueue(
-        request,
+        bundleQuotaKey(request.region),
         DeploymentRequestHubStatus.Pending
       );
 
@@ -331,15 +282,13 @@ export const DeploymentRequestDomain = {
       .where('id', '=', request.id)
       .returning('*');
 
-    if (request.type === DeploymentRequestDeploymentType.Bundle) {
-      await db<DeploymentRequest>('DeploymentRequest')
-        .update({
-          hub_status: DeploymentRequestHubStatus.Pending,
-          target_state: DeploymentRequestPlatformState.Active,
-        })
-        .where('parent_id', '=', request.id)
-        .andWhere('hub_status', '=', DeploymentRequestHubStatus.Queued);
-    }
+    await db<DeploymentRequest>('DeploymentRequest')
+      .update({
+        hub_status: DeploymentRequestHubStatus.Pending,
+        target_state: DeploymentRequestPlatformState.Active,
+      })
+      .where('parent_id', '=', request.id)
+      .andWhere('hub_status', '=', DeploymentRequestHubStatus.Queued);
 
     return updatedRequest ?? undefined;
   },
@@ -361,7 +310,7 @@ export const DeploymentRequestDomain = {
     await db<DeploymentRequest>('DeploymentRequest')
       .increment('ordering', 1)
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
-      .modify(scopeToQueueOf(request));
+      .modify(scopeToQuotaKey(bundleQuotaKey(request.region)));
     const [updatedRequest] = await db<DeploymentRequest>('DeploymentRequest')
       .update({
         hub_status: DeploymentRequestHubStatus.Queued,
@@ -371,15 +320,13 @@ export const DeploymentRequestDomain = {
       .where({ id: request.id })
       .returning('*');
 
-    if (request.type === DeploymentRequestDeploymentType.Bundle) {
-      await db<DeploymentRequest>('DeploymentRequest')
-        .update({
-          hub_status: DeploymentRequestHubStatus.Queued,
-          target_state: DeploymentRequestPlatformState.Removed,
-        })
-        .where('parent_id', '=', request.id)
-        .andWhere('hub_status', '=', DeploymentRequestHubStatus.Pending);
-    }
+    await db<DeploymentRequest>('DeploymentRequest')
+      .update({
+        hub_status: DeploymentRequestHubStatus.Queued,
+        target_state: DeploymentRequestPlatformState.Removed,
+      })
+      .where('parent_id', '=', request.id)
+      .andWhere('hub_status', '=', DeploymentRequestHubStatus.Pending);
 
     return updatedRequest;
   },
@@ -432,7 +379,7 @@ export const DeploymentRequestDomain = {
     )
       .where('ordering', '<', deploymentRequest.ordering)
       .andWhere('hub_status', '=', DeploymentRequestHubStatus.Queued)
-      .modify(scopeToQueueOf(deploymentRequest))
+      .modify(scopeToQuotaKey(bundleQuotaKey(deploymentRequest.region)))
       .select('*')
       .orderBy('ordering', 'desc')
       .first();
@@ -461,7 +408,7 @@ export const DeploymentRequestDomain = {
       'DeploymentRequest'
     )
       .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
-      .modify(scopeToQueueOf(deploymentRequest))
+      .modify(scopeToQuotaKey(bundleQuotaKey(deploymentRequest.region)))
       .orderBy('ordering', 'asc')
       .first();
     if (!topDeploymentRequest) {
@@ -477,7 +424,7 @@ export const DeploymentRequestDomain = {
       await db<DeploymentRequest>('DeploymentRequest')
         .increment('ordering', 1)
         .where('hub_status', '=', DeploymentRequestHubStatus.Queued)
-        .modify(scopeToQueueOf(deploymentRequest));
+        .modify(scopeToQuotaKey(bundleQuotaKey(deploymentRequest.region)));
       await DeploymentRequestDomain.updateDeploymentRequestById(id, {
         ordering: 1,
       });

@@ -24,41 +24,31 @@ import { portalGraphqlClient } from '@/lib/graphql-client';
 import { Button } from '@filigran/design-system';
 import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
-  DeploymentRequestDeploymentType,
   DeploymentRequestSource,
-  PlatformIdentifier,
-  PlatformTrialStatusQueryVariables,
   useCreateDeploymentRequestMutation,
   XtmPlatformBundleDetailsFragment,
 } from '@graphql/generated';
-import { platformTrialKeys } from '@graphql/trial/trial.keys';
 import { useQueryClient } from '@tanstack/react-query';
 import { useContext, useState } from 'react';
 import { z } from 'zod';
 
 interface PrivateXtmPlatformTrialPanelProps {
   bundle: XtmPlatformBundleDetailsFragment | null;
-  view: XtmPlatformTrialPanelView | null;
-  ongoingStandaloneTrials: PlatformIdentifier[];
+  view: XtmPlatformTrialPanelView;
 }
 
 export const PrivateXtmPlatformTrialPanel = ({
   bundle,
   view,
-  ongoingStandaloneTrials,
 }: PrivateXtmPlatformTrialPanelProps) => {
   const { me } = useContext(PortalContext);
   const t = useTranslate();
   const organizationId = me?.selected_organization_id ?? '';
   const [isCancelSheetOpen, setIsCancelSheetOpen] = useState(false);
 
-  const variables: PlatformTrialStatusQueryVariables = { organizationId };
   const queryClient = useQueryClient();
   const { mutate } = useCreateDeploymentRequestMutation(portalGraphqlClient, {
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: platformTrialKeys.platformTrialStatus(variables),
-      });
       queryClient.invalidateQueries({
         queryKey: xtmPlatformBundleKeys.all(),
       });
@@ -90,10 +80,6 @@ export const PrivateXtmPlatformTrialPanel = ({
       },
     });
   };
-
-  if (!view) {
-    return null;
-  }
 
   if (view.kind === 'personalSpace') {
     return (
@@ -143,10 +129,7 @@ export const PrivateXtmPlatformTrialPanel = ({
         {t('Service.Trials.XtmPlatform.Page.Status.CancelTrialRequest')}
       </Button>
     ) : (
-      <ReachSalesButton
-        variant="default"
-        deploymentRequestType={DeploymentRequestDeploymentType.Bundle}
-      />
+      <ReachSalesButton variant="default" />
     );
 
     return (
@@ -170,13 +153,5 @@ export const PrivateXtmPlatformTrialPanel = ({
     );
   }
 
-  return (
-    <XtmPlatformTrialForm
-      handleSubmit={handleSubmit}
-      hasOngoingStandaloneTrials={
-        view.kind === 'form' && view.hasOngoingStandaloneTrials
-      }
-      ongoingStandaloneTrialProducts={ongoingStandaloneTrials}
-    />
-  );
+  return <XtmPlatformTrialForm handleSubmit={handleSubmit} />;
 };

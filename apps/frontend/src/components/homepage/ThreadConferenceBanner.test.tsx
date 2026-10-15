@@ -48,7 +48,12 @@ describe('ThreadConferenceBanner', () => {
       'rounded-full',
       'sm:w-fit'
     );
-    expect(dateDot).toHaveClass('h-2', 'w-2', 'rounded-full', 'bg-blue');
+    expect(dateDot).toHaveClass(
+      'h-2',
+      'w-2',
+      'rounded-full',
+      'bg-filigran-brand-primary'
+    );
     expect(threadLogo.closest('a')).toBe(bannerLink);
   });
 });

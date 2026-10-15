@@ -656,8 +656,6 @@
     "Settings": "Settings",
     "SettingsLabel": "Settings menu",
     "Users": "Users",
-    "OpenCTITrial": "OpenCTI Trial",
-    "OpenAEVTrial": "OpenAEV Trial",
     "Competitor": "Competitor",
     "NewsFeed": "News Feed",
     "VotingRound": "Feature voting",
@@ -774,7 +772,6 @@
       "StartDate": "Start Date",
       "EndDate": "End Date",
       "RemainingDays": "Days remaining",
-      "Status": "Status",
       "Region": "Region",
       "PlatformId": "Platform ID",
       "PlatformUrl": "Platform URL",
@@ -797,7 +794,6 @@
       "Quotas": "Quotas"
     },
     "Toast": {
-      "TrialsReordered": "Trial requests were reordered",
       "BundleCancelled": "The bundle trial was cancelled successfully.",
       "BundleReordered": "The bundle has been reordered in the queue."
     },
@@ -805,8 +801,7 @@
       "SearchTrials": "Search by email or organization",
       "MoveToTop": "Move to top",
       "MoveUp": "Move up",
-      "CancelBundle": "Cancel the bundle trial",
-      "CancelTrial": "Cancel the trial"
+      "CancelBundle": "Cancel the bundle trial"
     },
     "UpdateQuotasForm": {
       "QuotasUpdated": "Quota has been updated successfully",
@@ -946,7 +941,6 @@
         "NotConnected": "Connection lost",
         "NotConnectedDetails": "You should connect your product again."
       },
-      "Description": "Click here to access your Private Product.",
       "ProductName": "Product name",
       "Product": "Product",
       "ProductURL": "Product URL",
@@ -1513,10 +1507,6 @@
       "NoSubscribedServices": "No subscribed services found for this organization."
     },
     "Organizations": "Organizations",
-    "RegisteredPlatforms": {
-      "PlatformDetails": "Product details",
-      "GoToMyPlatform": "Go to my product"
-    },
     "SearchServices": "Search service...",
     "ServiceName": "Service name",
     "ShareableResources": {
@@ -1583,11 +1573,6 @@
     "SubscribeService": "Subscribe to {serviceName} service",
     "SubscribeSuccessful": "You have successfully subscribed to the service. You can now find it in your subscribed services.",
     "Trials": {
-      "Active": "Your OpenCTI free trial is active",
-      "Provisioning": "Your OpenCTI free trial is currently being provisioned.",
-      "Requested": "Your OpenCTI free trial has been requested.",
-      "Expired": "Your OpenCTI free trial has expired.",
-      "Cancelled": "Your OpenCTI free trial has been cancelled.",
       "CancellationReason": {
         "value": "Intelligence lacks actionable insight for our specific needs",
         "compatibility": "Incompatible with our existing security stack",
@@ -1595,66 +1580,8 @@
         "legal-security": "Internal security or legal team required immediate termination",
         "expertise": "We lack the internal analysts/expertise to utilize the tool effectively"
       },
-      "DaysRemaining": "{days, plural, =1 {# Day remaining} other {# Days remaining}}",
       "LearnMore": {
-        "Link": "Learn more",
-        "openaev": {
-          "WhatCanYouDo": {
-            "Title": "What can you do with your OpenAEV trial?",
-            "FirstParagraph": "Get 30 days to explore all OpenAEV functionalities to simulate attacks, evaluate your defenses, and  improve your security posture. This includes all OpenAEV SaaS-based Enterprise Edition features, including the use of your existing EDR agents, automated scenario generation, and AI-powered remediation guidance.",
-            "SecondParagraph": "Whether you want to simulate attack sequences, perform realistic tabletop exercises, validate your security posture, or report on your cyber resilience to leadership, you can test all OpenAEV capabilities for your specific needs.",
-            "Link": "Discover all OpenAEV Enterprise Edition features"
-          },
-          "Blocks": {
-            "First": {
-              "Title": "Prioritize",
-              "Description": "Build offensive attack simulations to identify vulnerabilities and exploitable attack paths, leveraging OpenCTI threat intelligence and MITRE ATT&CK mapping to prioritize threats based on your PIRs."
-            },
-            "Second": {
-              "Title": "Test",
-              "Description": "Validate your defenses continuously through atomic testing, custom attack sequences, or pre-packaged scenarios. Run tabletop exercises to test team responses, using OpenAEV's native EDR or pre-built integrations with leading vendors."
-            },
-            "Third": {
-              "Title": "Fix",
-              "Description": "Pinpoint where to improve your security posture with drill-down analytics, AI-powered remediation guidance, and team feedback — then close the loop with AI-assisted scenario creation."
-            }
-          }
-        },
-        "opencti": {
-          "WhatCanYouDo": {
-            "Title": "What can you do with your OpenCTI trial?",
-            "FirstParagraph": "Get 30 days to explore all OpenCTI functionalities and enrich your threat intelligence. This includes all OpenCTI Enterprise Edition features such as automated playbooks, ability to set-up priority intelligence requirements (PIRs), FINTEL, as well as AI-powered files import, report generation, and NLP search functionality.",
-            "SecondParagraph": "Explore how OpenCTI can support your specific needs—whether threat hunting, incident response, or case management—and integrate with your preferred data sources to make actionable threat intelligence flow across your security stack.",
-            "Link": "Discover all OpenCTI Enterprise Edition features"
-          },
-          "Blocks": {
-            "First": {
-              "Title": "Ingestion",
-              "Description": "Consolidate and enrich threat intelligence from any feed—commercial, open-source, internal—into a centralized platform, leveraging 300+ integrations and standardized on the STIX 2.1 framework. Use AI-assisted import of CTI reports to save countless analyst hours."
-            },
-            "Second": {
-              "Title": "Processing",
-              "Description": "Access powerful dashboard visualizations, knowledge hypergraphs, and playbooks to pivot across threat actors using timelines and ATT&CK mappings. Tailor your dashboards to meet your threat or incident management needs, and make AI your companion at every step."
-            },
-            "Third": {
-              "Title": "Output",
-              "Description": "Make threat intelligence flow through your entire security system. Share and disseminate intelligence across teams and tools with role-based access for timely action. Use OpenAEV—fully integrated with OpenCTI—to validate and improve your security posture."
-            }
-          }
-        }
-      },
-      "OpenAEVPlatformBreadcrumb": "OpenAEV Trial platform",
-      "OpenCTIPlatformBreadcrumb": "OpenCTI Trial platform",
-      "PageHeader": {
-        "Welcome": "Welcome to Filigran",
-        "Title": "Let's get you started with your {platformName} free trial!"
-      },
-      "Storage": {
-        "Title": "Important note about your trial environment's storage",
-        "SaaSFeaturesLink": "Enterprise Edition SaaS features",
-        "NoSLA": "<strong>The free trial environment does not include SLA.</strong> In the event of a cloud provider outage, recovery time is not guaranteed. We recommend not storing critical or irreplaceable data in your trial environment.",
-        "OpenCTIDescription": "The OpenCTI free trial provides users with a \"small\" SaaS instance, which includes all <link>Enterprise Edition SaaS features</link>, but with <strong>reduced computing power and storage (up to 40GB in intelligence data storage and 3GB in file storage).</strong> Ingesting large premium feeds with rich data sets during this trial could impact your storage quickly.",
-        "OpenAEVDescription": "The OpenAEV free trial provides users with a \"small\" instance, which includes all <link>Enterprise Edition SaaS features</link>, but with a reduced computing power and a limited storage of <strong>16GB</strong>."
+        "Link": "Learn more"
       },
       "XTMPlatform": {
         "Title": "Your eXtended Threat Management (XTM) product",
@@ -1716,8 +1643,6 @@
             "ProductsTitle": "Products included in this trial",
             "ProductsWarning": "Choose your trial bundle carefully.",
             "ProductsWarningDescription": "Once your trial starts, products cannot be added or changed, and no additional trials can be requested for the same organization.",
-            "OngoingTrialWarning": "You have {count, plural, one {an ongoing {products} trial} other {ongoing {products} trials}}. Requesting an XTM Platform trial will cancel {count, plural, one {your current trial} other {all your current trials}} and data will not be transferred.",
-            "OngoingTrialDescription": "When you choose a new trial bundle, products cannot be changed, and no additional trials can be requested for the same organization.",
             "UseCaseFor": "{product} use case",
             "Submit": "Request XTM Platform trial"
           },
@@ -1770,7 +1695,6 @@
         "Subtitle": "Get more out of your {platformName} product!",
         "Description": "Explore step-by-step guides, expert courses, and community feedback to solve real-world use cases and become a Filigran champion!"
       },
-      "GoToMyTrial": "Go to my trial",
       "InfoPersonalSpace": "You can’t start a trial in your personal space—please switch to your organization’s space",
       "ReachOutToSales": "Reach out to Sales",
       "ReachOutToSalesMessageLabel": "Message",
@@ -1778,16 +1702,11 @@
       "NeedSupport": "Need support",
       "ReachOutToSalesSuccessTitle": "Thank you!",
       "ReachOutToSalesSuccessMessage": "Thank you for reaching out, we'll get back to you shortly.",
-      "ReachOutToSalesDefaultMessage": "Type your message to request help",
       "Cancellation": {
         "Toast": {
-          "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new OpenCTI trials can’t be requested.",
-          "NewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully.",
-          "Admin": "The OpenCTI free trial was cancelled successfully."
+          "NoNewTrialPossible": "Thank you, your OpenCTI free trial was cancelled successfully. Please note that new OpenCTI trials can’t be requested."
         },
         "ConfirmationForm": {
-          "Title": "Cancel your OpenCTI free trial",
-          "NoNewTrialPossible": "Please note that new OpenCTI trials can’t be requested after this action.",
           "CancellationReason": "Cancellation reason",
           "CancellationReasonPlaceholder": "Select a reason",
           "CancellationReasonOther": "Other",
@@ -1795,8 +1714,7 @@
           "CancellationReasonRequired": "Please select a cancellation reason"
         },
         "Confirmation": {
-          "Title": "Trial Cancellation",
-          "Admin": "Are you sure you want to cancel OpenCTI free trial from {organizationName} ?"
+          "Title": "Trial Cancellation"
         }
       },
       "Form": {
@@ -1807,7 +1725,6 @@
         "JobTitlePlaceholder": "Select your job title",
         "ActivitySector": "Activity sector",
         "ActivitySectorPlaceholder": "Select your activity sector",
-        "UseCase": "Use case",
         "UseCasePlaceholder": "Select your use case",
         "Error": {
           "AcceptTerms": "Please accept the trial terms to continue",
@@ -1815,18 +1732,6 @@
         },
         "TermsAgreement": "I acknowledge that I have read, understood and agree to the <mssa>MSSA</mssa> trial terms and the <aiterms>AI terms</aiterms>",
         "FormRequested": "You have requested a free trial. You will receive an email as soon as the platform is ready!"
-      },
-      "Display": {
-        "New": "New",
-        "Requested": "Requested",
-        "opencti": {
-          "Title": "OpenCTI 30-days Free Trial",
-          "FreeTrialDescription": "Explore all OpenCTI Enterprise Edition functionalities to start operationalizing your threat intelligence end-to-end!"
-        },
-        "openaev": {
-          "Title": "OpenAEV 30-days Free Trial",
-          "FreeTrialDescription": "Explore OpenAEV to simulate real-life attack scenarios, evaluate your security posture, and improve cyber resilience - at a technical and human level."
-        }
       },
       "ManageUsers": {
         "Title": "Manage users",

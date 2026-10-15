@@ -20,14 +20,14 @@ export const ShareableResourceCardFooterVersion = ({
 }: ShareableResourceCardFooterVersionProps) => {
   return (
     <>
-      <div className="flex items-center gap-s min-w-0 overflow-hidden">
+      <div className="flex items-center gap-2 min-w-0 overflow-hidden">
         <ConnectorCompatibilityChip
           document={document}
           publicPath={publicPath}
         />
         <ShareableResourceCardSupportIcons document={document} />
       </div>
-      <div className="flex flex-row shrink-0 gap-xs">
+      <div className="flex flex-row shrink-0 gap-1">
         <ShareLinkButton
           documentId={document.id}
           url={shareLinkUrl}

@@ -95,7 +95,7 @@ export const OrganizationForm = ({
   return (
     <Form {...form}>
       <form
-        className="w-full space-y-xl"
+        className="w-full space-y-6"
         onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}

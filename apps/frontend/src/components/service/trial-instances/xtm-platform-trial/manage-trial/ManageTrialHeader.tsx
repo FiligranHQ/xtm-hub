@@ -89,27 +89,27 @@ export const ManageTrialHeader = ({
   );
 
   return (
-    <header className="flex flex-col gap-l">
-      <div className="flex flex-col gap-xs">
-        <p className="heading-sm w-fit bg-clip-text text-transparent bg-gradient-legacy-focus">
+    <header className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <p className="title-sm w-fit text-gradient-focus">
           {t('Service.Bundle.ManageTrial.Eyebrow')}
         </p>
-        <h1 className="heading-2xl">{t('Service.Bundle.ManageTrial.Title')}</h1>
-        <p className="text-content-body-base max-w-3xl">
+        <h1 className="title-2xl">{t('Service.Bundle.ManageTrial.Title')}</h1>
+        <p className="text-content-base max-w-3xl">
           {t('Service.Bundle.ManageTrial.Description')}
         </p>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-m">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Button
           priority="secondary"
-          className="gap-s border-elevation-border-default-layer-0"
+          className="gap-2 border-elevation-default"
           asChild>
           <Link href={backHref}>
             <ArrowUpwardIcon className="h-3 w-3 -rotate-90" />
             {t(backLabelKey)}
           </Link>
         </Button>
-        <div className="flex flex-wrap items-center gap-s">
+        <div className="flex flex-wrap items-center gap-2">
           {selectedUsers.length > 0 && (
             <TooltipProvider>
               <Tooltip>
@@ -157,14 +157,14 @@ export const ManageTrialHeader = ({
               <Button
                 priority="secondary"
                 disabled
-                className="border-elevation-border-default-layer-0">
+                className="border-elevation-default">
                 {t('Service.Bundle.ManageTrial.GroupAction')}
               </Button>
             </DisabledActionTooltip>
           ) : (
             <Button
               priority="secondary"
-              className="border-elevation-border-default-layer-0"
+              className="border-elevation-default"
               onClick={() => setIsEditUsersDialogOpen(true)}>
               {t('Service.Bundle.ManageTrial.GroupAction')}
             </Button>

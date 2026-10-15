@@ -86,7 +86,9 @@ const ClientSection = ({ params, fromDashboard }: ClientSectionProps) => {
     return (
       <>
         <BreadcrumbNav value={breadcrumbs} />
-        <div className="text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="text-sm text-feedback-error-primary">
+          {t('Utils.Error')}
+        </div>
       </>
     );
   }
@@ -96,7 +98,7 @@ const ClientSection = ({ params, fromDashboard }: ClientSectionProps) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <div className="flex flex-col gap-l">
+      <div className="flex flex-col gap-4">
         <ManageTrialHeader
           serviceInstanceId={decodedServiceInstanceId}
           products={products}

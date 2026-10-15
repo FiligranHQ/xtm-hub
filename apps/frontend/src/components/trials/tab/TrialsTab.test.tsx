@@ -1,12 +1,6 @@
 import TrialsTab from '@/components/trials/tab/TrialsTab';
-import {
-  BUNDLE_SCOPE,
-  TrialsScope,
-  TrialsTabType,
-  productScope,
-} from '@/components/trials/trials.const';
+import { TrialsTabType } from '@/components/trials/trials.const';
 import testRender from '@/utils/test/test-render';
-import { PlatformIdentifier } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -23,15 +17,9 @@ vi.mock('@/components/ui/data-table', () => ({
   },
   DataTableHeadBarOptions: () => <div>HeadBarOptions</div>,
 }));
-const cancelSpy = vi.fn();
-const reorderSpy = vi.fn();
 vi.mock('@graphql/generated', async (importOriginal) => ({
   ...(await importOriginal<object>()),
   useTrialsListQuery: () => ({ data: undefined }),
-  useTrialsAdminCancelDeploymentRequestMutation: () => ({ mutate: cancelSpy }),
-  useTrialsReorderDeploymentRequestInQueueMutation: () => ({
-    mutate: reorderSpy,
-  }),
 }));
 vi.mock('@graphql/deployment/deployment.keys', () => ({
   trialsKeys: {
@@ -40,49 +28,14 @@ vi.mock('@graphql/deployment/deployment.keys', () => ({
   },
 }));
 
-const columnsOf = (type: TrialsTabType, scope: TrialsScope = BUNDLE_SCOPE) => {
-  testRender(
-    <TrialsTab
-      type={type}
-      scope={scope}
-    />
-  );
+const columnsOf = (type: TrialsTabType) => {
+  testRender(<TrialsTab type={type} />);
   return renderedColumns;
 };
-
-const OPENCTI_SCOPE = productScope(PlatformIdentifier.Opencti);
 
 describe('TrialsTab', () => {
   beforeEach(() => {
     renderedColumns.splice(0, renderedColumns.length);
-  });
-
-  it('should call mutation and show toast on reorder', () => {
-    columnsOf(TrialsTabType.Waiting, OPENCTI_SCOPE);
-
-    reorderSpy();
-
-    expect(reorderSpy).toHaveBeenCalled();
-  });
-
-  it('should call mutation and show toast on cancel', () => {
-    columnsOf(TrialsTabType.Running, OPENCTI_SCOPE);
-
-    cancelSpy();
-
-    expect(cancelSpy).toHaveBeenCalled();
-  });
-
-  it('should never display a bundle status column', () => {
-    Object.values(TrialsTabType).forEach((type) => {
-      expect(columnsOf(type)).not.toContain('hub_status');
-    });
-  });
-
-  it('should display the status of a product trial', () => {
-    Object.values(TrialsTabType).forEach((type) => {
-      expect(columnsOf(type, OPENCTI_SCOPE)).toContain('hub_status');
-    });
   });
 
   it('should only prioritize bundles on the waiting tab', () => {
@@ -115,12 +68,6 @@ describe('TrialsTab', () => {
   it('should always display the products of the bundle', () => {
     Object.values(TrialsTabType).forEach((type) => {
       expect(columnsOf(type)).toContain('products');
-    });
-  });
-
-  it('should never display a products column on a product trial', () => {
-    Object.values(TrialsTabType).forEach((type) => {
-      expect(columnsOf(type, OPENCTI_SCOPE)).not.toContain('products');
     });
   });
 });

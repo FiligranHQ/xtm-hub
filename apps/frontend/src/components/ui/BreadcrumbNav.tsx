@@ -39,7 +39,7 @@ export const BreadcrumbNav = ({ value }: BreadcrumbProps) => {
       items={items}
       linkComponent={Link}
       label={t('DesignSystem.Breadcrumbs.Label')}
-      className="pb-s sm:pb-l"
+      className="pb-2 sm:pb-4"
     />
   );
 };

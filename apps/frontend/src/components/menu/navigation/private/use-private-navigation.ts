@@ -152,16 +152,6 @@ export const usePrivateNavigation = (): NavigationConfig => {
       restriction: [PortalCapability.ReadTrials],
     },
     {
-      href: `/${APP_PATH}/admin/opencti-trials`,
-      label: tMenuLinks('OpenCTITrial'),
-      restriction: [PortalCapability.ReadTrials],
-    },
-    {
-      href: `/${APP_PATH}/admin/openaev-trials`,
-      label: tMenuLinks('OpenAEVTrial'),
-      restriction: [PortalCapability.ReadTrials],
-    },
-    {
       href: `/${APP_PATH}/admin/csm-board`,
       label: tMenuLinks('CSMBoard'),
       restriction: [PortalCapability.ReadSaasMetrics],

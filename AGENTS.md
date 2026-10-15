@@ -49,8 +49,7 @@ already exist. The `typescript-eslint` version warning is non-blocking.
   `apps/frontend/graphql/generated.ts`, `apps/frontend/graphql/mocks.ts`, `apps/backend/src/__generated__/`,
   `apps/backend/src/model/kanel/`.
 - **Never hardcode versions in documentation** — reference `.nvmrc`, `packageManager` or the `catalog` block.
-- **Use `@filigran/design-system` first** for frontend UI; the legacy `@filigran/ui` copy only where it has no
-  equivalent yet. Details in [`design-system.md`](.claude/rules/design-system.md).
+- **Frontend UI** follows [`design-system.md`](.claude/rules/design-system.md).
 - **After any GraphQL change** (backend schema, Relay template or `apps/frontend/graphql/**` operation), regenerate
   and commit the derived files: what to run depends on what changed, see [`graphql.md`](.claude/rules/graphql.md).
 - **Before frontend `check-ts` on a fresh checkout**, run `yarn workspace @xtm-hub/frontend next typegen`, or you

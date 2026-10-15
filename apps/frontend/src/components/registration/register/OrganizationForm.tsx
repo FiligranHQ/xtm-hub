@@ -35,9 +35,9 @@ export const RegisterOrganizationForm = ({
 
   return (
     <div className="flex items-center justify-center">
-      <div className="flex flex-col justify-between gap-xl">
-        <div className="space-y-m">
-          <h1 className="txt-subtitle">
+      <div className="flex flex-col justify-between gap-6">
+        <div className="space-y-3">
+          <h1 className="title-sm">
             {t(`Register.OrganizationForm.Title`, {
               platformIdentifier: displayedIdentifier,
             })}
@@ -58,7 +58,7 @@ export const RegisterOrganizationForm = ({
             },
             organizationId: {
               fieldType: ({ field }) => (
-                <div className="flex flex-col gap-m">
+                <div className="flex flex-col gap-3">
                   <p className="text-sm font-medium leading-none">
                     {t(`Register.OrganizationForm.Description`)}
                     <span className="text-input-required"> *</span>
@@ -106,7 +106,7 @@ export const RegisterOrganizationForm = ({
               ),
             },
           }}>
-          <div className="flex justify-end gap-s">
+          <div className="flex justify-end gap-2">
             <Button
               priority="secondary"
               type="button"

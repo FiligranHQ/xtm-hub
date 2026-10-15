@@ -27,11 +27,9 @@ export const ServiceListFilterSection = ({
         return (
           <div
             key={filterKey}
-            className="w-full border-b border-border p-s last:border-b-0">
+            className="w-full border-b border-elevation-subtle p-2 last:border-b-0">
             {filter.title && (
-              <div className="content-body-compact-medium pb-xs">
-                {filter.title}
-              </div>
+              <div className="content-compact-medium pb-1">{filter.title}</div>
             )}
             {filter.node}
           </div>
@@ -43,11 +41,11 @@ export const ServiceListFilterSection = ({
           key={filterKey}
           type="multiple"
           defaultValue={index === 0 ? [filterKey] : []}
-          className="w-full border-b border-border last:border-b-0">
+          className="w-full border-b border-elevation-subtle last:border-b-0">
           <AccordionItem
             value={filterKey}
             className="border-0">
-            <AccordionTrigger className="p-2 hover:cursor-pointer content-body-compact-medium">
+            <AccordionTrigger className="p-2 hover:cursor-pointer content-compact-medium">
               {filter.title ?? filterKey}
             </AccordionTrigger>
             {/* pr-2 matches the trigger's 8px right padding so each count

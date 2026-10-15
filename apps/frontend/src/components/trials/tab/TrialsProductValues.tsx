@@ -26,7 +26,7 @@ export const TrialsProductValues = ({
   }
 
   return (
-    <div className="flex flex-col gap-xs">
+    <div className="flex flex-col gap-1">
       {valuedProducts.map((product) => {
         const value = valueOf(product);
         if (!value) {
@@ -38,8 +38,8 @@ export const TrialsProductValues = ({
             delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="flex items-center gap-xs cursor-help">
-                  <span className="text-text-default-secondary">
+                <span className="flex items-center gap-1 cursor-help">
+                  <span className="text-default-secondary">
                     {product.platform_identifier?.toUpperCase()}
                   </span>
                   {asLink ? (

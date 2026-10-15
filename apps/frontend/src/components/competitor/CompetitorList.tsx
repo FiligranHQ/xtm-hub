@@ -115,7 +115,7 @@ const CompetitorList = () => {
         id: 'actions',
         enableSorting: false,
         cell: ({ row }) => (
-          <div className="flex items-center justify-end gap-s">
+          <div className="flex items-center justify-end gap-2">
             <IconButton
               priority="tertiary"
               aria-label={t('CompetitorListPage.Edit')}
@@ -225,7 +225,7 @@ const CompetitorList = () => {
           },
         }}
         toolbar={
-          <div className="flex w-full items-center justify-end gap-s">
+          <div className="flex w-full items-center justify-end gap-2">
             <DataTableHeadBarOptions />
             <Button onClick={() => setOpenAdd(true)}>
               {t('CompetitorListPage.AddCompetitor')}

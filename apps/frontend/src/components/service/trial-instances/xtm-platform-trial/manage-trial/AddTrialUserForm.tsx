@@ -31,8 +31,8 @@ import { TrialUserFormSkeleton } from './TrialUserFormSkeleton';
 import { useTrialUserOptions } from './use-trial-user-options';
 
 const PickerWarning = ({ children }: { children: ReactNode }) => (
-  <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm">
-    <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
+  <div className="border border-solid border-alert-warning rounded text-feedback-warning-primary flex items-center gap-1 p-2 text-sm">
+    <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-1" />
     {children}
   </div>
 );

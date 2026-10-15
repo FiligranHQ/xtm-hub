@@ -8,15 +8,11 @@ import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/
 import { DeploymentRequestHubStatus } from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
 import { createMockEnvironment } from 'relay-test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const PLATFORM_VERSION = '6.8.1';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
-
-vi.mock('@/components/service/trial-instances/TrialCancelSheet', () => ({
-  TrialCancelSheet: () => null,
-}));
 
 let mockPlatformData: registeredPlatformByServiceInstanceId_fragment$data;
 
@@ -39,36 +35,7 @@ const renderDetails = (
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe('RegistrationDetails', () => {
-  describe('Cancel button in status row', () => {
-    it.each`
-      hubStatus                                  | shouldShow
-      ${DeploymentRequestHubStatus.Pending}      | ${true}
-      ${DeploymentRequestHubStatus.Active}       | ${true}
-      ${DeploymentRequestHubStatus.Provisioning} | ${true}
-      ${DeploymentRequestHubStatus.Queued}       | ${true}
-      ${DeploymentRequestHubStatus.Expired}      | ${false}
-      ${DeploymentRequestHubStatus.Cancelled}    | ${false}
-    `(
-      'should show Cancel=$shouldShow for status $hubStatus',
-      ({ hubStatus, shouldShow }) => {
-        renderDetails({
-          ...trialPlatform,
-          deployment_request: {
-            ...trialPlatform.deployment_request!,
-            hub_status: hubStatus,
-          },
-        });
-        const cancelButton = screen.queryByRole('button', {
-          name: /Utils.Cancel/i,
-        });
-        if (shouldShow) {
-          expect(cancelButton).toBeInTheDocument();
-        } else {
-          expect(cancelButton).not.toBeInTheDocument();
-        }
-      }
-    );
-
+  describe('Status row', () => {
     it('should not show status row when there is no deployment_request', () => {
       renderDetails(basePlatform);
       expect(
@@ -189,6 +156,41 @@ describe('RegistrationDetails', () => {
     });
   });
 
+  describe('Connection status colour', () => {
+    const NOW = '2025-03-20T12:00:00.000Z';
+
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'], now: new Date(NOW) });
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should render a recent check as connected, in the success colour', () => {
+      renderDetails({
+        ...basePlatform,
+        last_connectivity_check: '2025-03-10T12:00:00.000Z',
+      });
+
+      expect(
+        screen.getByText('Register.Details.ConnectionStatus.Connected')
+      ).toHaveClass('text-feedback-success-primary');
+    });
+
+    it('should render an old check as not connected, in the error colour', () => {
+      renderDetails({
+        ...basePlatform,
+        last_connectivity_check: '2024-12-01T12:00:00.000Z',
+      });
+
+      expect(
+        screen.getByText(/Register\.Details\.ConnectionStatus\.NotConnected\b/)
+          .parentElement
+      ).toHaveClass('text-feedback-error-primary');
+    });
+  });
+
   describe('Access row for trial', () => {
     it.each`
       myGroups                                   | expectedText
@@ -250,10 +252,10 @@ describe('RegistrationDetails', () => {
       });
 
       const noAccessEl = screen.getByText('RegistrationDetails.NoAccess');
-      expect(noAccessEl).toHaveClass('text-destructive');
+      expect(noAccessEl).toHaveClass('text-feedback-error-primary');
 
       const contactEl = screen.getByText('RegistrationDetails.NoAccessContact');
-      expect(contactEl).not.toHaveClass('text-destructive');
+      expect(contactEl).not.toHaveClass('text-feedback-error-primary');
     });
 
     it('should not render access row for non-trial', () => {

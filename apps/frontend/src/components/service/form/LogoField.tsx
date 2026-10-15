@@ -44,7 +44,7 @@ export const ServiceFormLogoField = ({
       <FormLabel>
         {t('Service.Form.LogoLabel')} ({t('Service.Form.LogoDisclaimer')})
       </FormLabel>
-      <div className="grid grid-cols-1 s:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3">
         {logo ? (
           <div
             style={{
@@ -54,8 +54,8 @@ export const ServiceFormLogoField = ({
               backgroundSize: 'cover',
             }}
             className="min-h-[15rem] border rounded relative">
-            <div className="flex flex-row items-center bg-elevation-background-layer-1 h-12 opacity-90">
-              <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-s mr-s flex-1 min-w-0">
+            <div className="flex flex-row items-center layer-1 bg-elevation-default h-12 opacity-90">
+              <div className="truncate overflow-hidden whitespace-nowrap text-ellipsis ml-2 mr-2 flex-1 min-w-0">
                 {(logo as ExistingFile)?.file_name ?? (logo as NewFile)?.name}
               </div>
               <IconButton
@@ -63,7 +63,7 @@ export const ServiceFormLogoField = ({
                 variant="destructive"
                 priority="secondary"
                 type="button"
-                className="ml-auto m-s"
+                className="m-2 ml-auto"
                 aria-label={t('Utils.Delete')}
                 icon={<DeleteIcon className="size-4" />}
                 onClick={() => {
@@ -73,7 +73,7 @@ export const ServiceFormLogoField = ({
             </div>
           </div>
         ) : (
-          <div className="w-24 p-m border border-light flex items-center justify-center">
+          <div className="w-24 p-3 border flex items-center justify-center">
             <EntityTypeOrFiligranLogo entityTypes={entityTypes} />
           </div>
         )}

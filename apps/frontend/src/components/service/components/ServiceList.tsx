@@ -69,14 +69,14 @@ const ServiceList = ({
   useStickyHeaderOffset(headerRef);
 
   return (
-    <div className="flex flex-col gap-xl">
+    <div className="flex flex-col gap-6">
       <HeroSectionLibrary
         {...heroSectionProps}
         showLibraryUpdate={userIsMarketingOrBypass}
       />
       <div
         ref={headerRef}
-        className="sticky top-0 py-m z-11 relative bg-gradient-background">
+        className="sticky top-0 py-3 z-11 relative bg-gradient-default">
         <ServiceListHeader
           search={search}
           onSearchChange={onSearchChange}
@@ -97,10 +97,10 @@ const ServiceList = ({
       </div>
       <div className="flex flex-row">
         <FilterSidebar filters={additionalFilters} />
-        <div className="grow shrink min-w-0 px-m pb-m flex flex-col gap-xl">
+        <div className="grow shrink min-w-0 px-3 pb-3 flex flex-col gap-6">
           {userCanUpdate && draft.length > 0 && (
             <>
-              <div className="txt-category">
+              <div className="title-xs">
                 {t(`${translationKey}.NonActive`)}:
               </div>
               <DocumentList
@@ -109,9 +109,7 @@ const ServiceList = ({
                 connectionId={connectionId}
               />
               {active.length > 0 && (
-                <div className="txt-category">
-                  {t(`${translationKey}.Active`)}:
-                </div>
+                <div className="title-xs">{t(`${translationKey}.Active`)}:</div>
               )}
             </>
           )}

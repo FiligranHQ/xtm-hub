@@ -18,12 +18,12 @@ export const TrialGuideResourceCard = ({ resourceCard }: ResourceCardProps) => {
       padding={8}>
       <CardContent
         clamp={0}
-        className="flex flex-col gap-s h-full">
-        <div className="flex gap-s items-center">
+        className="flex flex-col gap-2 h-full">
+        <div className="flex gap-2 items-center">
           <Icon className="size-6 shrink-0" />
-          <p className="heading-xs">{t(titleKey)}</p>
+          <p className="title-xs">{t(titleKey)}</p>
         </div>
-        <p className="text-content-body-compact grow">{t(descriptionKey)}</p>
+        <p className="text-content-compact grow">{t(descriptionKey)}</p>
         {url && (
           <div>
             <Button
@@ -34,7 +34,7 @@ export const TrialGuideResourceCard = ({ resourceCard }: ResourceCardProps) => {
                 target="_blank"
                 rel="noopener noreferrer">
                 {t('Service.TrialGuide.SeeMore')}
-                <OpenInNewIcon className="size-3 ml-m" />
+                <OpenInNewIcon className="size-3 ml-3" />
               </Link>
             </Button>
           </div>

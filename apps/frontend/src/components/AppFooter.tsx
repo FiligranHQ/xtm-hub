@@ -47,11 +47,11 @@ export const AppFooter = ({ className }: AppFooterProps) => {
   return (
     <footer
       className={cn(
-        'text-text-default-primary content-body-compact bg-elevation-bg-layer-0 pt-6 px-0',
+        'text-default-primary content-compact pt-6 px-0',
         className
       )}>
-      <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-l text-center">
-        <span className="text-content-body-compact-link">
+      <div className="items-center justify-between flex flex-col md:flex-row w-full px-4 py-2 gap-4 text-center">
+        <span className="text-content-compact-link">
           <Link
             href={FOOTER_LINKS.copyright}
             target="_blank"
@@ -63,7 +63,7 @@ export const AppFooter = ({ className }: AppFooterProps) => {
           </Link>{' '}
           {t('AllRightsReserved')}
         </span>
-        <ul className="flex flex-col md:flex-row gap-l text-content-body-compact-link">
+        <ul className="flex flex-col md:flex-row gap-4 text-content-compact-link">
           <li>
             <Link
               target="_blank"

@@ -133,21 +133,6 @@ describe('deploymentQuotaApp', () => {
       expect(await loadAvailability()).toBe(5);
     });
 
-    it('should give the bundle place back when a standalone trial is released', async () => {
-      const trial = await createRequest({
-        platform_identifier: PlatformIdentifier.Opencti,
-        hub_status: DeploymentRequestHubStatus.Cancelled,
-      });
-
-      const promoted = await DeploymentQuotaApp.releaseQuotaForRequest(
-        trial,
-        DeploymentRequestHubStatus.Active
-      );
-
-      expect(promoted).toBeUndefined();
-      expect(await loadAvailability()).toBe(6);
-    });
-
     it('should give the place back without promoting anyone when promotion is disabled', async () => {
       const queuedBundle = await createBundle(
         DeploymentRequestHubStatus.Queued,
@@ -244,26 +229,6 @@ describe('deploymentQuotaApp', () => {
         { hub_status: DeploymentRequestHubStatus.Queued }
       );
       expect(onRequestMoved).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not promote a queued standalone trial when the capacity is raised', async () => {
-      // Given
-      await setQuota({ capacity: 5, availability: 0 });
-      const queuedTrial = await createRequest({
-        platform_identifier: PlatformIdentifier.Opencti,
-        hub_status: DeploymentRequestHubStatus.Queued,
-      });
-
-      // When
-      const onRequestMoved = await applyBundleCapacity(6);
-
-      // Then
-      await TestHelper.deploymentRequest.assertProperties(
-        queuedTrial.id as DeploymentRequestId,
-        { hub_status: DeploymentRequestHubStatus.Queued }
-      );
-      expect(await loadAvailability()).toBe(1);
-      expect(onRequestMoved).not.toHaveBeenCalled();
     });
 
     it('should queue the last pending bundle and give its place back when the capacity is lowered', async () => {

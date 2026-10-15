@@ -1,16 +1,13 @@
 import { CONTRACT_LABEL_BY_CONTRACT } from '@/components/registration/PlatformIdentifierMapping';
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
-import { TrialCancelSheet } from '@/components/service/trial-instances/TrialCancelSheet';
 import { useTranslate } from '@/hooks/use-translate';
 import { isWithinLastMonths, useDateFormatter } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
-import { Button } from '@filigran/design-system';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   DeploymentRequestHubStatus,
   PlatformContract,
 } from '@graphql/generated';
-import { useState } from 'react';
 import { useFragment } from 'react-relay';
 
 interface RegistrationDetailsProps {
@@ -22,26 +19,12 @@ export const RegistrationDetails = ({
 }: RegistrationDetailsProps) => {
   const t = useTranslate();
   const formatDate = useDateFormatter();
-  const [openCancelSheet, setOpenCancelSheet] = useState(false);
 
   const platform =
     useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
       registeredPlatformByServiceInstanceIdFragment,
       registeredPlatform
     );
-
-  const isCancellable =
-    platform.deployment_request &&
-    ![
-      DeploymentRequestHubStatus.Expired,
-      DeploymentRequestHubStatus.Cancelled,
-    ].includes(
-      platform.deployment_request?.hub_status as DeploymentRequestHubStatus
-    );
-
-  const isCancellationDefinitive =
-    DeploymentRequestHubStatus.Active ===
-    platform.deployment_request?.hub_status;
 
   const isTrial = platform.contract === PlatformContract.Trial;
 
@@ -63,43 +46,34 @@ export const RegistrationDetails = ({
       DeploymentRequestHubStatus.Active;
 
   return (
-    <section className="flex justify-between p-xl">
-      <ul className="text-sm flex flex-col gap-l">
+    <section className="flex justify-between p-6">
+      <ul className="text-sm flex flex-col gap-4">
         {platform.title && (
           <li>
-            <span className="mr-xs text-default-secondary">
+            <span className="mr-1 text-default-secondary">
               {t('Register.Details.ProductName')}:
             </span>
             {platform.title}
           </li>
         )}
         <li>
-          <span className="mr-xs text-default-secondary">
+          <span className="mr-1 text-default-secondary">
             {t('Register.Details.ProductURL')}:
           </span>
           <span>{platform.url ? platform.url : '-'}</span>
         </li>
         {platform.deployment_request?.hub_status && (
           <li>
-            <span className="mr-xs text-default-secondary">
+            <span className="mr-1 text-default-secondary">
               {t('Register.Details.Status')}:
             </span>
             {formatTitleCase(platform.deployment_request?.hub_status)}
-            {isCancellable && (
-              <Button
-                priority="tertiary"
-                variant="destructive"
-                className="m-0 p-0 ml-4 h-full underline"
-                onClick={() => setOpenCancelSheet(true)}>
-                {t('Utils.Cancel')}
-              </Button>
-            )}
           </li>
         )}
         {isTrial ? (
           <>
             <li>
-              <span className="mr-xs text-default-secondary">
+              <span className="mr-1 text-default-secondary">
                 {t('Register.Details.StartDate')}:
               </span>
               {platform.subscription?.start_date &&
@@ -108,7 +82,7 @@ export const RegistrationDetails = ({
                 : '-'}
             </li>
             <li>
-              <span className="mr-xs text-default-secondary">
+              <span className="mr-1 text-default-secondary">
                 {t('Register.Details.EndDate')}:
               </span>
               {platform.subscription?.end_date
@@ -119,7 +93,7 @@ export const RegistrationDetails = ({
         ) : (
           <>
             <li>
-              <span className="mr-xs text-default-secondary">
+              <span className="mr-1 text-default-secondary">
                 {t('Register.Details.ConnectedOn')}:
               </span>
               {platform.subscription?.start_date
@@ -131,14 +105,14 @@ export const RegistrationDetails = ({
 
         {platform.deployment_request?.region && (
           <li>
-            <span className="mr-xs text-default-secondary">
+            <span className="mr-1 text-default-secondary">
               {t('Register.Details.Region')}:
             </span>
             {t(`Region.${platform.deployment_request.region.toUpperCase()}`)}
           </li>
         )}
         <li>
-          <span className="mr-xs text-default-secondary">
+          <span className="mr-1 text-default-secondary">
             {t('Register.Details.License')}:
           </span>
           {t(CONTRACT_LABEL_BY_CONTRACT[platform.contract])}
@@ -146,14 +120,14 @@ export const RegistrationDetails = ({
         {isLastConnectivityCheckDisplayed && (
           <>
             <li>
-              <span className="mr-xs text-default-secondary">
+              <span className="mr-1 text-default-secondary">
                 {t('Register.Details.ConnectionStatus.Title')}:
               </span>
               <span
                 className={
                   isConnectionStatusOk
-                    ? 'text-alert-success-primary'
-                    : 'text-destructive'
+                    ? 'text-feedback-success-primary'
+                    : 'text-feedback-error-primary'
                 }>
                 {isConnectionStatusOk ? (
                   t('Register.Details.ConnectionStatus.Connected')
@@ -171,7 +145,7 @@ export const RegistrationDetails = ({
               )}
             </li>
             <li>
-              <span className="mr-xs text-default-secondary">
+              <span className="mr-1 text-default-secondary">
                 {t('Register.Details.LastConnectionCheck')}:
               </span>
               {platform.last_connectivity_check
@@ -183,7 +157,7 @@ export const RegistrationDetails = ({
         {isTrialActive && (
           <li>
             <span>
-              <span className="mr-xs text-default-secondary">
+              <span className="mr-1 text-default-secondary">
                 {t('Register.Details.Access')}:
               </span>
               {userHasTrialAccess ? (
@@ -195,7 +169,7 @@ export const RegistrationDetails = ({
                 </span>
               ) : (
                 <span>
-                  <span className="text-destructive mr-xs">
+                  <span className="text-feedback-error-primary mr-1">
                     {t('RegistrationDetails.NoAccess')}
                   </span>
                   {t('RegistrationDetails.NoAccessContact', {
@@ -208,21 +182,12 @@ export const RegistrationDetails = ({
         )}
 
         <li>
-          <span className="mr-xs text-default-secondary">
+          <span className="mr-1 text-default-secondary">
             {t('Register.Details.PlatformVersion')}:
           </span>
           {platform.version || '-'}
         </li>
       </ul>
-
-      {platform.deployment_request && (
-        <TrialCancelSheet
-          deploymentRequestId={platform.deployment_request.id}
-          isCancellationDefinitive={isCancellationDefinitive}
-          open={openCancelSheet}
-          setOpen={setOpenCancelSheet}
-        />
-      )}
     </section>
   );
 };

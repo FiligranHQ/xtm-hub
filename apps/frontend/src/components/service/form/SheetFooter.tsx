@@ -12,7 +12,7 @@ export const ServiceFormSheetFooter = ({
   const t = useTranslate();
   return (
     <SheetFooter className="sm:justify-between pt-2">
-      <div className="ml-auto flex gap-s">
+      <div className="ml-auto flex gap-2">
         <Button
           priority="secondary"
           type="button"

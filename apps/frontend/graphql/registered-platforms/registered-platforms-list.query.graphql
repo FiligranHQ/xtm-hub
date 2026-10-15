@@ -8,7 +8,6 @@ query RegisteredPlatformsList($input: RegisteredPlatformsInput!) {
     version
     identifier
     deployment_request {
-      type
       parent_id
     }
     subscription {
