@@ -133,7 +133,6 @@ const privateNavigationPlatformTrialStatusResponse: PlatformTrialStatusQuery = {
     isBlacklisted: false,
     hub_status: null,
     end_date: null,
-    ongoingStandaloneTrials: [],
   },
 };
 

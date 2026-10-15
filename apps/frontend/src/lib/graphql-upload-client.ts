@@ -2,10 +2,11 @@ import { resolveGraphqlApiEndpoint } from '@/lib/graphql-client';
 import { throwOnGraphqlErrors } from '@/lib/graphql-fetch.utils';
 
 /**
- * Files to send, keyed by the name of the list variable they belong to.
- * `{ document: [file] }` fills the `$document: [Upload!]` variable.
+ * Files to send, keyed by the name of the variable they belong to.
+ * `{ document: [file] }` fills a `$document: [Upload!]` list variable and
+ * `{ document: file }` fills a `$document: Upload` single-file variable.
  */
-export type GraphqlUploads = Record<string, File[]>;
+export type GraphqlUploads = Record<string, File[] | File>;
 
 interface MultipartBody {
   operations: string;
@@ -28,6 +29,12 @@ export const buildMultipartBody = (
   const nulledVariables = { ...variables };
 
   Object.entries(uploads).forEach(([variableName, variableFiles]) => {
+    if (!Array.isArray(variableFiles)) {
+      map[String(files.length)] = [`variables.${variableName}`];
+      nulledVariables[variableName] = null;
+      files.push(variableFiles);
+      return;
+    }
     if (variableFiles.length === 0) return;
     nulledVariables[variableName] = variableFiles.map(() => null);
     variableFiles.forEach((file, fileIndex) => {
@@ -46,11 +53,16 @@ export const buildMultipartBody = (
 /**
  * graphql-request serialises every variable as JSON, so a File would reach the
  * API as an empty object. Mutations carrying an upload go through this
- * multipart request instead.
+ * multipart request instead. It takes the document and variables of any
+ * generated mutation, e.g. `requestGraphqlWithUploads<MyMutation,
+ * MyMutationVariables>(MyDocument, variables, { document: file })`.
  */
-export const requestGraphqlWithUploads = async <TData>(
+export const requestGraphqlWithUploads = async <
+  TData,
+  TVariables extends Record<string, unknown> = Record<string, unknown>,
+>(
   query: string,
-  variables: Record<string, unknown>,
+  variables: TVariables,
   uploads: GraphqlUploads
 ): Promise<TData> => {
   const { operations, map, files } = buildMultipartBody(

@@ -1,7 +1,6 @@
 import { ConnectedPlatform } from '@/components/connected-products/useConnectedPlatforms';
 import testRender from '@/utils/test/test-render';
 import {
-  DeploymentRequestDeploymentType,
   PlatformContract,
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
@@ -140,7 +139,6 @@ describe('ConnectedProductItem', () => {
         platform={buildPlatform({
           contract: PlatformContract.Trial,
           deployment_request: {
-            type: DeploymentRequestDeploymentType.Trial,
             parent_id: 'bundle-deployment-request-1',
           },
         })}

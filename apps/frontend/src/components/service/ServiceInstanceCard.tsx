@@ -3,19 +3,10 @@
 import { ResolvedServiceInstanceLink } from '@/components/service/service-instance-link.util';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import { cn } from '@/lib/utils';
-import { Button } from '@filigran/design-system';
 import { ArrowOutwardIcon, LogoFiligranIcon } from '@filigran/icon';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, useCallback, useEffect } from 'react';
-
-export type PlatformHoverAction = {
-  id: string;
-  label: string;
-  href?: string;
-  target?: string;
-  priority?: 'secondary';
-};
+import { ReactNode, useEffect } from 'react';
 
 export interface ServiceInstanceCardData {
   id: string;
@@ -23,18 +14,10 @@ export interface ServiceInstanceCardData {
   name: string;
   slug?: string;
   logoBackgroundImageUrl: string | null;
-  fullBackgroundImage?: boolean;
   illustrationDocumentUrl: string | null;
-  isCustomIllustrationDocument?: boolean;
-  card_background?: string | null;
-  displayedServiceStatus?: string;
   displayLinkArrow?: boolean;
-  disableCard?: boolean;
-  cardTitleOverride?: string;
   description?: string;
   url: string;
-  ordering: number;
-  hoverLinks?: PlatformHoverAction[];
 }
 
 interface ServiceInstanceCardProps {
@@ -55,52 +38,16 @@ const ServiceInstanceCard = ({
   useEffect(() => {
     reset();
   }, [reset]);
-  const renderHoverButton = useCallback((action: PlatformHoverAction) => {
-    if (!action.href) {
-      return null;
-    }
-
-    return (
-      <Button
-        key={action.id}
-        asChild
-        {...(action.priority ? { priority: action.priority } : {})}>
-        <Link
-          href={action.href}
-          prefetch={false}
-          target={action.target}>
-          {action.label}
-        </Link>
-      </Button>
-    );
-  }, []);
 
   return (
     <li className={cn('relative rounded flex', className)}>
-      {serviceInstance.disableCard && (
-        <div className="absolute inset-0 bg-elevation-default dark:bg-[var(--black-1000)]/60 z-10 rounded pointer-events-none" />
-      )}
-      {serviceInstance.hoverLinks && (
-        <div className="absolute inset-0 layer-1 bg-elevation-default dark:bg-[var(--black-1000)]/80 z-10 opacity-0 hover:opacity-100 flex">
-          <div className="flex flex-col gap-2 m-auto">
-            {serviceInstance.hoverLinks?.map(renderHoverButton)}
-          </div>
-        </div>
-      )}
       <div className="z-[2] flex-1 overflow-hidden relative group focus-within:ring-2 focus-within:ring-focus rounded flex flex-col">
-        <div
-          className={cn(
-            'flex relative justify-center items-center flex-col gap-2 overflow-hidden box-border px-2',
-            serviceInstance.card_background ?? 'bg-[var(--blue-900)]'
-          )}>
+        <div className="flex relative justify-center items-center flex-col gap-2 overflow-hidden box-border px-2 bg-[var(--blue-900)]">
           <LogoFiligranIcon className="absolute opacity-[0.03] z-1 size-60 rotate-45 -translate-x-24 -translate-y-12" />
           <div className="mt-2 flex items-center h-12 w-full">
             {serviceInstance.logoBackgroundImageUrl && (
               <div
-                className={cn(
-                  'h-12',
-                  serviceInstance.displayedServiceStatus ? 'w-2/3' : 'w-full'
-                )}
+                className="h-12 w-full"
                 style={{
                   backgroundImage: serviceInstance.logoBackgroundImageUrl,
                   backgroundSize: 'contain',
@@ -109,58 +56,23 @@ const ServiceInstanceCard = ({
                 }}
               />
             )}
-            {serviceInstance.displayedServiceStatus && (
-              <span className="px-2 py-1 ml-auto rounded from-[var(--blue-400)] to-[var(--turquoise-300)] bg-gradient-to-r border-none uppercase text-[11px]">
-                {serviceInstance.displayedServiceStatus}
-              </span>
-            )}
           </div>
-          <div
-            className={cn(
-              'relative w-full min-h-0 aspect-video rounded-t',
-              serviceInstance.fullBackgroundImage
-                ? 'overflow-visible'
-                : 'overflow-hidden'
-            )}>
-            {(serviceInstance.fullBackgroundImage && (
-              <>
-                <Image
-                  width="580"
-                  height="281"
-                  src={serviceInstance.illustrationDocumentUrl!}
-                  loading="lazy"
-                  alt={`Illustration of ${serviceInstance.name}`}
-                  className={
-                    !serviceInstance.isCustomIllustrationDocument
-                      ? 'absolute bottom-0 right-0 translate-y-1/4 translate-x-1/3 -rotate-45'
-                      : ''
-                  }
-                  unoptimized={!!serviceInstance.isCustomIllustrationDocument}
-                />
-                <h3
-                  className="text-2xl absolute bottom-0 -translate-y-10 left-0 w-full p-2 max-w-[80%]"
-                  style={{ textShadow: '1px 1px 1px #000' }}>
-                  {serviceInstance.name}
-                </h3>
-              </>
-            )) ||
-              (serviceInstance.illustrationDocumentUrl && (
-                <Image
-                  fill
-                  src={serviceInstance.illustrationDocumentUrl}
-                  objectPosition="top"
-                  objectFit="cover"
-                  alt={`Illustration of ${serviceInstance.name}`}
-                />
-              ))}
+          <div className="relative w-full min-h-0 aspect-video rounded-t overflow-hidden">
+            {serviceInstance.illustrationDocumentUrl && (
+              <Image
+                fill
+                src={serviceInstance.illustrationDocumentUrl}
+                objectPosition="top"
+                objectFit="cover"
+                alt={`Illustration of ${serviceInstance.name}`}
+              />
+            )}
           </div>
         </div>
         <div className="min-h-40 flex flex-col p-4 gap-4 flex-1 layer-1 bg-elevation-default group-hover:bg-elevation-hover">
           <div className="flex items-start min-h-12 w-full text-ellipsis overflow-hidden">
-            {rightAction || serviceInstance.hoverLinks ? (
-              <h2>
-                {serviceInstance.cardTitleOverride || serviceInstance.name}
-              </h2>
+            {rightAction ? (
+              <h2>{serviceInstance.name}</h2>
             ) : (
               <Link
                 href={href}
@@ -169,9 +81,7 @@ const ServiceInstanceCard = ({
                 rel={target === '_blank' ? 'noopener noreferrer' : undefined}
                 className="focus-visible:outline-none after:cursor-pointer after:content-[' '] after:absolute after:inset-0 z-0 aria-disabled:opacity-60 aria-disabled:after:hidden aria-disabled:cursor-auto"
                 aria-disabled={serviceInstance.isLinkDisabled}>
-                <h2>
-                  {serviceInstance.cardTitleOverride || serviceInstance.name}
-                </h2>
+                <h2>{serviceInstance.name}</h2>
               </Link>
             )}
 

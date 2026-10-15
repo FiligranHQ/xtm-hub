@@ -1,6 +1,6 @@
 import { RegisteredPlatformOverview } from '@/components/service/registration/RegisteredPlatformOverview';
 import { RegistrationLearnMore } from '@/components/service/registration/RegistrationLearnMore';
-import { PlatformIdentifier, ServiceInstanceTag } from '@graphql/generated';
+import { ServiceInstanceTag } from '@graphql/generated';
 
 export interface ServiceOpenAEVRegistrationPageProps {
   params: Promise<{ serviceInstanceId: string }>;
@@ -8,10 +8,7 @@ export interface ServiceOpenAEVRegistrationPageProps {
 const Page = ({ params }: ServiceOpenAEVRegistrationPageProps) => {
   return (
     <>
-      <RegisteredPlatformOverview
-        params={params}
-        platformIdentifier={PlatformIdentifier.Openaev}
-      />
+      <RegisteredPlatformOverview params={params} />
       <RegistrationLearnMore serviceInstanceTag={ServiceInstanceTag.OpenAev} />
     </>
   );

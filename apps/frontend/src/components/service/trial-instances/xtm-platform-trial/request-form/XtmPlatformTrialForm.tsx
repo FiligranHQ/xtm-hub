@@ -4,8 +4,6 @@ import {
   REGIONS_VALUES,
   USE_CASES_BY_PLATFORM_IDENTIFIER,
 } from '@/components/service/trial-instances/form-constants';
-import { buildOngoingTrialWarningParams } from '@/components/service/trial-instances/xtm-platform-trial/request-form/xtm-platform-trial-form.utils';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
   Form,
   FormControl,
@@ -29,9 +27,8 @@ import {
   PlatformIdentifier,
 } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocale } from 'next-intl';
 import Link from 'next/link';
-import { ReactNode, useContext, useMemo, useState } from 'react';
+import { ReactNode, useContext, useMemo } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -75,17 +72,12 @@ const SELECTABLE_PRODUCTS = [
 
 interface XtmPlatformTrialFormProps {
   handleSubmit: (values: z.infer<typeof xtmPlatformTrialFormSchema>) => void;
-  hasOngoingStandaloneTrials?: boolean;
-  ongoingStandaloneTrialProducts?: PlatformIdentifier[];
 }
 
 export const XtmPlatformTrialForm = ({
   handleSubmit,
-  hasOngoingStandaloneTrials = false,
-  ongoingStandaloneTrialProducts = [],
 }: XtmPlatformTrialFormProps) => {
   const t = useTranslate();
-  const locale = useLocale();
   const { me } = useContext(PortalContext);
 
   const renderMssaLink = (chunks: ReactNode) => (
@@ -112,17 +104,6 @@ export const XtmPlatformTrialForm = ({
       {chunks}
     </Link>
   );
-
-  const ongoingTrialWarningParams = buildOngoingTrialWarningParams(
-    ongoingStandaloneTrialProducts,
-    (platformIdentifier) => t(`PlatformIdentifier.${platformIdentifier}`),
-    locale
-  );
-
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [pendingValues, setPendingValues] = useState<z.infer<
-    typeof xtmPlatformTrialFormSchema
-  > | null>(null);
 
   const formSchema = useMemo(() => buildXtmPlatformTrialFormSchema(t), [t]);
 
@@ -177,23 +158,6 @@ export const XtmPlatformTrialForm = ({
     }
   };
 
-  const onSubmit = (values: z.infer<typeof xtmPlatformTrialFormSchema>) => {
-    if (hasOngoingStandaloneTrials) {
-      setPendingValues(values);
-      setIsConfirmOpen(true);
-      return;
-    }
-    handleSubmit(values);
-  };
-
-  const onConfirmOngoingTrial = () => {
-    if (pendingValues) {
-      handleSubmit(pendingValues);
-    }
-    setIsConfirmOpen(false);
-    setPendingValues(null);
-  };
-
   return (
     <div className="flex w-full flex-col gap-6 rounded layer-2 bg-elevation-default p-6">
       <div className="flex items-center gap-4">
@@ -206,42 +170,23 @@ export const XtmPlatformTrialForm = ({
       <Form {...form}>
         <form
           className="flex w-full flex-col gap-4"
-          onSubmit={form.handleSubmit(onSubmit)}>
+          onSubmit={form.handleSubmit(handleSubmit)}>
           <div className="flex flex-col gap-2 rounded bg-elevation-highlight p-4">
             <h3>{t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}</h3>
 
-            {hasOngoingStandaloneTrials ? (
-              <div className="flex items-start gap-1 rounded border border-solid border-alert-error p-2">
-                <WarningIcon className="size-4 mt-1 shrink-0 text-icon-error" />
-                <div className="flex flex-col gap-1">
-                  <span>
-                    {t(
-                      'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning',
-                      ongoingTrialWarningParams
-                    )}
-                  </span>
-                  <span>
-                    {t(
-                      'Service.Trials.XtmPlatform.Page.Form.OngoingTrialDescription'
-                    )}
-                  </span>
-                </div>
+            <div className="flex items-start gap-1 rounded border border-solid border-alert-alert p-2">
+              <WarningIcon className="size-4 mt-1 shrink-0 text-icon-alert" />
+              <div className="flex flex-col gap-1 content-compact">
+                <span>
+                  {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
+                </span>
+                <span>
+                  {t(
+                    'Service.Trials.XtmPlatform.Page.Form.ProductsWarningDescription'
+                  )}
+                </span>
               </div>
-            ) : (
-              <div className="flex items-start gap-1 rounded border border-solid border-alert-alert p-2">
-                <WarningIcon className="size-4 mt-1 shrink-0 text-icon-alert" />
-                <div className="flex flex-col gap-1 content-compact">
-                  <span>
-                    {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
-                  </span>
-                  <span>
-                    {t(
-                      'Service.Trials.XtmPlatform.Page.Form.ProductsWarningDescription'
-                    )}
-                  </span>
-                </div>
-              </div>
-            )}
+            </div>
 
             <div className="flex items-center gap-6">
               {SELECTABLE_PRODUCTS.map((platformIdentifier) => (
@@ -374,31 +319,6 @@ export const XtmPlatformTrialForm = ({
           </div>
         </form>
       </Form>
-
-      <ConfirmDialog
-        title=""
-        open={isConfirmOpen}
-        onOpenChange={setIsConfirmOpen}
-        confirmLabel={t('Utils.Confirm')}
-        destructive
-        onConfirm={onConfirmOngoingTrial}>
-        <div className="flex items-start gap-1 rounded border border-solid border-alert-error p-2">
-          <WarningIcon className="size-4 mt-1 shrink-0 text-icon-error" />
-          <div className="flex flex-col gap-1">
-            <span>
-              {t(
-                'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning',
-                ongoingTrialWarningParams
-              )}
-            </span>
-            <span>
-              {t(
-                'Service.Trials.XtmPlatform.Page.Form.OngoingTrialDescription'
-              )}
-            </span>
-          </div>
-        </div>
-      </ConfirmDialog>
     </div>
   );
 };
