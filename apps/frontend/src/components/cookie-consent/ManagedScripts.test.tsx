@@ -13,12 +13,14 @@ vi.mock('@/components/external/Hubspot', () => ({
   default: () => <div data-testid="hubspot-script" />,
 }));
 
+const NOW = new Date('2026-06-16T00:00:00.000Z');
+
 const renderManagedScripts = (services: Record<string, boolean>) =>
   testRender(
     <CookieConsentProvider
       initialConsent={{
         version: CONSENT_VERSION,
-        timestamp: new Date().toISOString(),
+        timestamp: NOW.toISOString(),
         services,
       }}>
       <ManagedScripts />

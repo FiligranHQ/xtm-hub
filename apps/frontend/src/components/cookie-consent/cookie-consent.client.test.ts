@@ -172,14 +172,14 @@ describe('cookie-consent.client', () => {
     });
 
     it.each`
-      hostname               | expectedDomain
-      ${'localhost'}         | ${undefined}
-      ${'filigran.io'}       | ${undefined}
-      ${'hub.filigran.io'}   | ${'.filigran.io'}
-      ${'a.hub.filigran.io'} | ${'.filigran.io'}
+      hostname               | expectedDomains
+      ${'localhost'}         | ${[]}
+      ${'filigran.io'}       | ${[]}
+      ${'hub.filigran.io'}   | ${['.filigran.io']}
+      ${'a.hub.filigran.io'} | ${['.filigran.io']}
     `(
-      'should expire the cookie on domain $expectedDomain when the hostname is $hostname',
-      ({ hostname, expectedDomain }) => {
+      'should expire the cookie on the domains $expectedDomains when the hostname is $hostname',
+      ({ hostname, expectedDomains }) => {
         // Given
         document.cookie = '_ga=1; path=/';
         stubLocation({ protocol: 'https:', hostname });
@@ -190,10 +190,15 @@ describe('cookie-consent.client', () => {
 
         // Then
         const writes = cookieSetter.mock.calls.map(([value]) => String(value));
+        const domainScopedWrites = writes.filter((write) =>
+          write.includes('domain=')
+        );
         expect(writes).toContain('_ga=; path=/; max-age=0');
-        expect(
-          writes.includes(`_ga=; path=/; max-age=0; domain=${expectedDomain}`)
-        ).toBe(expectedDomain !== undefined);
+        expect(domainScopedWrites).toEqual(
+          expectedDomains.map(
+            (domain: string) => `_ga=; path=/; max-age=0; domain=${domain}`
+          )
+        );
       }
     );
   });
