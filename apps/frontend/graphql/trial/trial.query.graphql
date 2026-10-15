@@ -4,6 +4,5 @@ query PlatformTrialStatus($organizationId: OrganizationId!) {
     isBlacklisted
     hub_status
     end_date
-    ongoingStandaloneTrials
   }
 }

@@ -1917,7 +1917,6 @@ export type PlatformTrialStatus = {
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: Maybe<DeploymentRequestHubStatus>;
   isBlacklisted: Scalars['Boolean']['output'];
-  ongoingStandaloneTrials: Array<PlatformIdentifier>;
 };
 
 export enum PortalCapability {
@@ -3860,7 +3859,7 @@ export type PlatformTrialStatusQueryVariables = Exact<{
 }>;
 
 
-export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', deploymentRequestId: any | null, isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null, ongoingStandaloneTrials: Array<PlatformIdentifier> } };
+export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', deploymentRequestId: any | null, isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null } };
 
 export type UseCaseAddMutationVariables = Exact<{
   input: AddUseCaseInput;
@@ -7121,7 +7120,6 @@ export const PlatformTrialStatusDocument = `
     isBlacklisted
     hub_status
     end_date
-    ongoingStandaloneTrials
   }
 }
     `;

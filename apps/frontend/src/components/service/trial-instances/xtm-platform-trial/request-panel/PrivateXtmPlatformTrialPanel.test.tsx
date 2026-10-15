@@ -13,7 +13,6 @@ import {
   PlatformIdentifier,
   XtmPlatformBundleDetailsFragment,
 } from '@graphql/generated';
-import { platformTrialKeys } from '@graphql/trial/trial.keys';
 import { QueryClient } from '@tanstack/react-query';
 import { screen } from '@testing-library/react';
 import { ReactNode } from 'react';
@@ -68,17 +67,11 @@ vi.mock(
   () => ({
     XtmPlatformTrialForm: ({
       handleSubmit,
-      hasOngoingStandaloneTrials,
     }: {
       handleSubmit: typeof capturedHandleSubmit;
-      hasOngoingStandaloneTrials?: boolean;
     }) => {
       capturedHandleSubmit = handleSubmit;
-      return (
-        <div data-testid="xtm-platform-trial-form">
-          {hasOngoingStandaloneTrials ? 'has-ongoing' : 'no-ongoing'}
-        </div>
-      );
+      return <div data-testid="xtm-platform-trial-form" />;
     },
     xtmPlatformTrialFormSchema: {},
   })
@@ -167,12 +160,7 @@ const buildBundle = (
   ...overrides,
 });
 
-const formView = (
-  hasOngoingStandaloneTrials = false
-): XtmPlatformTrialPanelView => ({
-  kind: 'form',
-  hasOngoingStandaloneTrials,
-});
+const formView: XtmPlatformTrialPanelView = { kind: 'form' };
 
 const statusView = (
   overrides: Partial<Extract<XtmPlatformTrialPanelView, { kind: 'status' }>>
@@ -205,8 +193,7 @@ describe('PrivateXtmPlatformTrialPanel', () => {
     testRender(
       <PrivateXtmPlatformTrialPanel
         bundle={null}
-        view={formView(false)}
-        ongoingStandaloneTrials={[]}
+        view={formView}
       />
     );
 
@@ -219,11 +206,6 @@ describe('PrivateXtmPlatformTrialPanel', () => {
     options.onSuccess();
 
     expect(invalidateQueries).toHaveBeenCalledWith({
-      queryKey: platformTrialKeys.platformTrialStatus({
-        organizationId: 'org-test-456',
-      }),
-    });
-    expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: xtmPlatformBundleKeys.all(),
     });
     expect(
@@ -234,24 +216,11 @@ describe('PrivateXtmPlatformTrialPanel', () => {
     );
   });
 
-  it('renders nothing while the view is not resolved yet', () => {
-    const { container } = testRender(
-      <PrivateXtmPlatformTrialPanel
-        bundle={null}
-        view={null}
-        ongoingStandaloneTrials={[]}
-      />
-    );
-
-    expect(container).toBeEmptyDOMElement();
-  });
-
   it('renders the personal space message when the view is personalSpace', () => {
     testRender(
       <PrivateXtmPlatformTrialPanel
         bundle={null}
         view={{ kind: 'personalSpace' }}
-        ongoingStandaloneTrials={[]}
       />
     );
 
@@ -265,7 +234,6 @@ describe('PrivateXtmPlatformTrialPanel', () => {
       <PrivateXtmPlatformTrialPanel
         bundle={null}
         view={{ kind: 'notAllowed' }}
-        ongoingStandaloneTrials={[]}
       />
     );
 
@@ -277,40 +245,22 @@ describe('PrivateXtmPlatformTrialPanel', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the form without the ongoing trial flag when there are no ongoing standalone trials', () => {
+  it('renders the form when the view is form', () => {
     testRender(
       <PrivateXtmPlatformTrialPanel
         bundle={null}
-        view={formView(false)}
-        ongoingStandaloneTrials={[]}
+        view={formView}
       />
     );
 
-    expect(screen.getByTestId('xtm-platform-trial-form')).toHaveTextContent(
-      'no-ongoing'
-    );
-  });
-
-  it('renders the form with the ongoing trial flag when there are ongoing standalone trials', () => {
-    testRender(
-      <PrivateXtmPlatformTrialPanel
-        bundle={null}
-        view={formView(true)}
-        ongoingStandaloneTrials={[PlatformIdentifier.Opencti]}
-      />
-    );
-
-    expect(screen.getByTestId('xtm-platform-trial-form')).toHaveTextContent(
-      'has-ongoing'
-    );
+    expect(screen.getByTestId('xtm-platform-trial-form')).toBeInTheDocument();
   });
 
   it('submits a bundle deployment request with only the entries that have a use case', () => {
     testRender(
       <PrivateXtmPlatformTrialPanel
         bundle={null}
-        view={formView(false)}
-        ongoingStandaloneTrials={[]}
+        view={formView}
       />
     );
 
@@ -354,7 +304,6 @@ describe('PrivateXtmPlatformTrialPanel', () => {
         <PrivateXtmPlatformTrialPanel
           bundle={buildBundle()}
           view={statusView({ stepIndex })}
-          ongoingStandaloneTrials={[]}
         />
       );
 
@@ -388,7 +337,6 @@ describe('PrivateXtmPlatformTrialPanel', () => {
           cancellation_date: '2025-02-10T00:00:00.000Z',
         })}
         view={statusView({ state, stepIndex: undefined })}
-        ongoingStandaloneTrials={[]}
       />
     );
 
@@ -432,7 +380,6 @@ describe('PrivateXtmPlatformTrialPanel', () => {
           ],
         })}
         view={statusView({ stepIndex: 0 })}
-        ongoingStandaloneTrials={[]}
       />
     );
 
@@ -446,7 +393,6 @@ describe('PrivateXtmPlatformTrialPanel', () => {
       <PrivateXtmPlatformTrialPanel
         bundle={buildBundle()}
         view={statusView({ stepIndex: 0 })}
-        ongoingStandaloneTrials={[]}
       />
     );
 
@@ -478,7 +424,6 @@ describe('PrivateXtmPlatformTrialPanel', () => {
             state,
             stepIndex: undefined,
           })}
-          ongoingStandaloneTrials={[]}
         />
       );
 
