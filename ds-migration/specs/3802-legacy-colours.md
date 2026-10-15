@@ -220,3 +220,9 @@ start to render (see To validate).
   `ManageTrialHeader:103,157,165` (aligned on `XtmRoadmap` in the epic-4-cleanup review; it pinned the layer-0
   border). `NavigationSections:141` sets the navigation active background, `EditionModeBanner` inverts its buttons.
   An adoption of `Navbar` and `Alert`, or the design team's answer on these overrides, would remove them.
+- Colours with no design system token, read as raw variables through arbitrary classes. Fixed artwork in both themes
+  (Decisions): `ServiceInstanceCard` (`--blue-900`), `EeBadge` (`--grayblue-1000`),
+  `MultipleImagesField`'s image scrim and `ThreadConferenceBanner` (`--black-1000`), the Thread voting banner
+  (`--white-1000`, `--white-500`). A text token as a background: `EditionModeBanner`'s inverted buttons
+  (`--text-negative-primary`, To validate). They skip the tokens-first rule until the design system ships a role for
+  a colour fixed across themes and for a background in the colour of text on brand (Kroustille's review of PR #3804).
