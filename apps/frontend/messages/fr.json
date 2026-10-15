@@ -941,7 +941,6 @@
         "NotConnected": "Connexion perdue",
         "NotConnectedDetails": "Vous devez à nouveau connecter votre produit."
       },
-      "Description": "Cliquez ici pour accéder à votre produit privé.",
       "ProductName": "Nom du produit",
       "Product": "Produit",
       "ProductURL": "URL du produit",
@@ -1508,10 +1507,6 @@
       "NoSubscribedServices": "Aucun service souscrit trouvé pour cette organisation."
     },
     "Organizations": "Organisations",
-    "RegisteredPlatforms": {
-      "PlatformDetails": "Détails du produit",
-      "GoToMyPlatform": "Accéder à mon produit"
-    },
     "SearchServices": "Rechercher un service...",
     "ServiceName": "Nom du service",
     "ShareableResources": {
@@ -1578,11 +1573,6 @@
     "SubscribeService": "Souscrire au service {serviceName}",
     "SubscribeSuccessful": "Vous avez souscrit au service. Vous pouvez maintenant le retrouver dans les services souscrits !",
     "Trials": {
-      "Active": "Votre essai gratuit d'OpenCTI est actif",
-      "Provisioning": "Votre essai gratuit d'OpenCTI est en cours de provisionnement.",
-      "Requested": "Votre essai gratuit d'OpenCTI a été demandé.",
-      "Expired": "Votre essai gratuit d'OpenCTI a expiré.",
-      "Cancelled": "Votre essai gratuit d'OpenCTI a été annulé.",
       "CancellationReason": {
         "value": "Les renseignements manquent d'informations exploitables pour nos besoins spécifiques",
         "compatibility": "Incompatible avec notre pile de sécurité existante",
@@ -1590,66 +1580,8 @@
         "legal-security": "L'équipe de sécurité interne ou l'équipe juridique a exigé une résiliation immédiate",
         "expertise": "Nous n'avons pas les analystes/expertises internes pour utiliser l'outil efficacement"
       },
-      "DaysRemaining": "{days, plural, =1 {# Jour restant} other {# Jours restants}}",
       "LearnMore": {
-        "Link": "En savoir plus",
-        "openaev": {
-          "WhatCanYouDo": {
-            "Title": "Que pouvez-vous faire avec votre essai OpenAEV ?",
-            "FirstParagraph": "Bénéficiez de 30 jours pour explorer toutes les fonctionnalités d'OpenAEV afin de simuler des attaques, d'évaluer vos défenses et d'améliorer votre posture de sécurité. Cela inclut toutes les fonctionnalités d'OpenAEV Enterprise Edition, y compris l'utilisation de vos agents EDR existants, la génération automatisée de scénarios et les conseils de remédiation alimentés par l'IA.",
-            "SecondParagraph": "Que vous souhaitiez simuler des séquences d'attaques, effectuer des exercices réalistes sur table, valider votre posture de sécurité ou rendre compte de votre cyber-résilience à vos dirigeants, vous pouvez tester toutes les fonctionnalités d'OpenAEV en fonction de vos besoins spécifiques.",
-            "Link": "Découvrez toutes les fonctionnalités d'OpenAEV Enterprise Edition"
-          },
-          "Blocks": {
-            "First": {
-              "Title": "Prioriser",
-              "Description": "Créez des simulations d'attaques offensives pour identifier les vulnérabilités et les chemins d'attaque exploitables, en tirant parti des renseignements sur les menaces d'OpenCTI et de la cartographie ATT&CK de MITRE pour hiérarchiser en fonction de vos PIR."
-            },
-            "Second": {
-              "Title": "Tester",
-              "Description": "Validez vos défenses en continu en effectuant des tests atomiques spécifiques, vos propres séquences d'attaque ou en important des scénarios préétablis. Lancez des exercices réalistes pour tester les réponses de vos équipes en utilisant l'EDR d'OpenAEV ou intégrez des collecteurs prédéfinis provenant des fournisseurs les plus courants."
-            },
-            "Third": {
-              "Title": "Corriger",
-              "Description": "Identifiez précisément les points à améliorer dans votre posture de sécurité grâce à des analyses détaillées, des recommandations de correction basées sur l’IA et les retours de votre équipe — puis bouclez le processus avec la création de scénarios assistée par l’IA."
-            }
-          }
-        },
-        "opencti": {
-          "WhatCanYouDo": {
-            "Title": "Que pouvez-vous faire avec votre essai OpenCTI ?",
-            "FirstParagraph": "Bénéficiez de 30 jours pour explorer toutes les fonctionnalités d'OpenCTI et enrichir vos informations sur les menaces. Cela inclut toutes les fonctionnalités d'OpenCTI Enterprise Edition telles que les playbooks automatisés, la possibilité de définir des exigences prioritaires en matière de renseignement (PIR), FINTEL, ainsi que l'importation de fichiers assistée par l'IA, la génération de rapports et la fonctionnalité de recherche NLP.",
-            "SecondParagraph": "Découvrez comment OpenCTI peut répondre à vos besoins spécifiques - qu'il s'agisse de la chasse aux menaces, de la réponse aux incidents ou de la gestion des cas - et s'intégrer à vos sources de données préférées pour que les renseignements sur les menaces puissent être exploités dans l'ensemble de votre système de sécurité.",
-            "Link": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition"
-          },
-          "Blocks": {
-            "First": {
-              "Title": "Ingestion",
-              "Description": "Consolidez et enrichissez les renseignements sur les menaces à partir de n'importe quel flux - commercial, open-source, interne - dans une plateforme centralisée, en tirant parti de plus de 300 intégrations et en vous appuyant sur le cadre STIX 2.1. Utilisez l'importation assistée par l'IA des rapports CTI pour économiser d'innombrables heures d'analyse."
-            },
-            "Second": {
-              "Title": "Traitement",
-              "Description": "Accédez à de puissantes visualisations de tableaux de bord, à des hypergraphes de connaissances et à des playbooks pour pivoter entre les acteurs de la menace à l'aide de chronologies et de correspondances ATT&CK. Adaptez vos tableaux de bord à vos besoins en matière de gestion des menaces ou des incidents, et faites de l'IA votre compagnon à chaque étape."
-            },
-            "Third": {
-              "Title": "Sortie",
-              "Description": "Faites circuler les renseignements sur les menaces dans l'ensemble de votre système de sécurité. Partagez et diffusez les renseignements entre les équipes et les outils avec un accès basé sur les rôles pour une action rapide. Utilisez OpenAEV, entièrement intégré à OpenCTI, pour valider et améliorer votre posture de sécurité."
-            }
-          }
-        }
-      },
-      "OpenAEVPlatformBreadcrumb": "Plateforme d'essai OpenAEV",
-      "OpenCTIPlatformBreadcrumb": "Plateforme d'essai OpenCTI",
-      "PageHeader": {
-        "Welcome": "Bienvenue chez Filigran",
-        "Title": "Démarrons votre essai gratuit de {platformName} !"
-      },
-      "Storage": {
-        "Title": "Note importante sur le stockage de votre environnement d'essai",
-        "SaaSFeaturesLink": "fonctionnalités Enterprise Edition SaaS",
-        "NoSLA": "<strong>L'environnement d'essai gratuit n'inclut pas de SLA.</strong> En cas de panne du fournisseur cloud, le temps de restauration n'est pas garanti. Nous recommandons de ne pas stocker de données critiques ou irremplaçables dans votre environnement d'essai.",
-        "OpenCTIDescription": "L'essai gratuit OpenCTI fournit aux utilisateurs une instance SaaS « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec <strong>une puissance de calcul et un stockage réduits (jusqu'à 40 Go de stockage de données de threat intelligence et 3 Go de stockage de fichiers).</strong> L'ingestion de gros flux premium avec des jeux de données riches peut rapidement saturer votre stockage.",
-        "OpenAEVDescription": "L'essai gratuit OpenAEV fournit aux utilisateurs une instance « small » incluant l'ensemble des <link>fonctionnalités Enterprise Edition SaaS</link>, mais avec une puissance de calcul réduite et un stockage limité à <strong>16 Go</strong>."
+        "Link": "En savoir plus"
       },
       "XTMPlatform": {
         "Title": "Votre produit eXtended Threat Management (XTM)",
@@ -1763,7 +1695,6 @@
         "Subtitle": "Tirez le meilleur de votre produit {platformName} !",
         "Description": "Explorez des guides pas-à-pas, des cours d'experts et les retours de la communauté pour résoudre des cas d'usage concrets et devenir un champion Filigran !"
       },
-      "GoToMyTrial": "Accéder à mon essai",
       "InfoPersonalSpace": "Vous ne pouvez pas commencer un essai dans votre espace personnel - veuillez passer à l'espace de votre organisation",
       "ReachOutToSales": "Contacter l'équipe commerciale",
       "ReachOutToSalesMessageLabel": "Message",
@@ -1771,15 +1702,11 @@
       "NeedSupport": "Besoin d'aide",
       "ReachOutToSalesSuccessTitle": "Merci !",
       "ReachOutToSalesSuccessMessage": "Merci de nous avoir contactés, nous vous répondrons dans les plus brefs délais.",
-      "ReachOutToSalesDefaultMessage": "Tapez votre message pour demander de l'aide",
       "Cancellation": {
         "Toast": {
-          "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI.",
-          "NewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès."
+          "NoNewTrialPossible": "Merci, votre essai gratuit d'OpenCTI a été annulé avec succès. Veuillez noter qu'il n'est pas possible de demander de nouveaux essais OpenCTI."
         },
         "ConfirmationForm": {
-          "Title": "Annuler votre essai gratuit d'OpenCTI",
-          "NoNewTrialPossible": "Veuillez noter que de nouveaux essais OpenCTI ne peuvent pas être demandés après cette action.",
           "CancellationReason": "Raison de l'annulation",
           "CancellationReasonPlaceholder": "Sélectionnez une raison",
           "CancellationReasonOther": "Autre",
@@ -1798,7 +1725,6 @@
         "JobTitlePlaceholder": "Sélectionnez votre fonction",
         "ActivitySector": "Secteur d'activité",
         "ActivitySectorPlaceholder": "Sélectionnez votre secteur d'activité",
-        "UseCase": "Cas d'utilisation",
         "UseCasePlaceholder": "Sélectionnez votre cas d'utilisation",
         "Error": {
           "AcceptTerms": "Veuillez accepter les conditions d'essai pour continuer",
@@ -1806,18 +1732,6 @@
         },
         "TermsAgreement": "Je reconnais avoir lu, compris et accepté les conditions d'essai du <mssa>MSSA</mssa> et les <aiterms>conditions d'utilisation de l'IA</aiterms>",
         "FormRequested": "Vous avez demandé un essai gratuit. Vous recevrez un e-mail dès que la plateforme sera prête !"
-      },
-      "Display": {
-        "New": "Nouveau",
-        "Requested": "Demandé",
-        "opencti": {
-          "Title": "Essai gratuit d'OpenCTI pendant 30 jours",
-          "FreeTrialDescription": "Découvrez toutes les fonctionnalités d'OpenCTI Enterprise Edition pour commencer à rendre opérationnelle votre veille sur les menaces de bout en bout !"
-        },
-        "openaev": {
-          "Title": "Essai gratuit d'OpenAEV pendant 30 jours",
-          "FreeTrialDescription": "Explorez OpenAEV pour simuler des scénarios d'attaque réels, évaluer votre posture de sécurité et améliorer votre cyber-résilience - au niveau technique et humain."
-        }
       },
       "ManageUsers": {
         "Title": "Gérer les utilisateurs",

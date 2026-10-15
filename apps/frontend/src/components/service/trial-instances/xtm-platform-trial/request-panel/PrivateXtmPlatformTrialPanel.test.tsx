@@ -6,7 +6,6 @@ import {
 import testRender from '@/utils/test/test-render';
 import { xtmPlatformBundleKeys } from '@graphql/deployment/deployment.keys';
 import {
-  DeploymentRequestDeploymentType,
   DeploymentRequestHubStatus,
   DeploymentRequestSource,
   DeploymentRequestUseCase,
@@ -131,16 +130,7 @@ vi.mock(
 vi.mock(
   '@/components/service/trial-instances/reach-sales/ReachSalesButton',
   () => ({
-    ReachSalesButton: ({
-      deploymentRequestType,
-    }: {
-      deploymentRequestType?: DeploymentRequestDeploymentType;
-    }) => (
-      <div
-        data-testid="reach-sales-button"
-        data-deployment-request-type={deploymentRequestType}
-      />
-    ),
+    ReachSalesButton: () => <div data-testid="reach-sales-button" />,
   })
 );
 
@@ -428,10 +418,6 @@ describe('PrivateXtmPlatformTrialPanel', () => {
       );
 
       expect(screen.getByTestId('reach-sales-button')).toBeInTheDocument();
-      expect(screen.getByTestId('reach-sales-button')).toHaveAttribute(
-        'data-deployment-request-type',
-        DeploymentRequestDeploymentType.Bundle
-      );
       expect(
         screen.queryByText(
           'Service.Trials.XtmPlatform.Page.Status.CancelTrialRequest'

@@ -1,16 +1,13 @@
 import { CONTRACT_LABEL_BY_CONTRACT } from '@/components/registration/PlatformIdentifierMapping';
 import { registeredPlatformByServiceInstanceIdFragment } from '@/components/registration/register/register.graphql';
-import { TrialCancelSheet } from '@/components/service/trial-instances/TrialCancelSheet';
 import { useTranslate } from '@/hooks/use-translate';
 import { isWithinLastMonths, useDateFormatter } from '@/utils/date';
 import { formatTitleCase } from '@/utils/format/case';
-import { Button } from '@filigran/design-system';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   DeploymentRequestHubStatus,
   PlatformContract,
 } from '@graphql/generated';
-import { useState } from 'react';
 import { useFragment } from 'react-relay';
 
 interface RegistrationDetailsProps {
@@ -22,26 +19,12 @@ export const RegistrationDetails = ({
 }: RegistrationDetailsProps) => {
   const t = useTranslate();
   const formatDate = useDateFormatter();
-  const [openCancelSheet, setOpenCancelSheet] = useState(false);
 
   const platform =
     useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
       registeredPlatformByServiceInstanceIdFragment,
       registeredPlatform
     );
-
-  const isCancellable =
-    platform.deployment_request &&
-    ![
-      DeploymentRequestHubStatus.Expired,
-      DeploymentRequestHubStatus.Cancelled,
-    ].includes(
-      platform.deployment_request?.hub_status as DeploymentRequestHubStatus
-    );
-
-  const isCancellationDefinitive =
-    DeploymentRequestHubStatus.Active ===
-    platform.deployment_request?.hub_status;
 
   const isTrial = platform.contract === PlatformContract.Trial;
 
@@ -85,15 +68,6 @@ export const RegistrationDetails = ({
               {t('Register.Details.Status')}:
             </span>
             {formatTitleCase(platform.deployment_request?.hub_status)}
-            {isCancellable && (
-              <Button
-                priority="tertiary"
-                variant="destructive"
-                className="m-0 p-0 ml-4 h-full underline"
-                onClick={() => setOpenCancelSheet(true)}>
-                {t('Utils.Cancel')}
-              </Button>
-            )}
           </li>
         )}
         {isTrial ? (
@@ -214,15 +188,6 @@ export const RegistrationDetails = ({
           {platform.version || '-'}
         </li>
       </ul>
-
-      {platform.deployment_request && (
-        <TrialCancelSheet
-          deploymentRequestId={platform.deployment_request.id}
-          isCancellationDefinitive={isCancellationDefinitive}
-          open={openCancelSheet}
-          setOpen={setOpenCancelSheet}
-        />
-      )}
     </section>
   );
 };

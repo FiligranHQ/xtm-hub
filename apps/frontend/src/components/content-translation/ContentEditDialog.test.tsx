@@ -19,12 +19,11 @@ vi.mock('@graphql/generated', async (importOriginal) => ({
 }));
 
 // A real committed message with a placeholder.
-const CONTENT_KEY = 'Service.Trials.PageHeader.Title';
-const EN_TEMPLATE =
-  "Let's get you started with your {platformName} free trial!";
-const PUBLISHED_EN = 'Start your {platformName} free trial!';
-const DRAFT_EN = 'Try {platformName} for free!';
-const EDITED_EN = 'Try {platformName} today!';
+const CONTENT_KEY = 'Service.ShareableResources.Deploy.DeployPlatform';
+const EN_TEMPLATE = 'Deploy in {platformName}';
+const PUBLISHED_EN = 'Deploy it in {platformName}';
+const DRAFT_EN = 'Deploy to {platformName}';
+const EDITED_EN = 'Deploy now in {platformName}';
 const SAVE_LABEL = 'EditableText.SaveDraft';
 const ORIGINAL_LABEL = 'EditableText.OriginalValue';
 
