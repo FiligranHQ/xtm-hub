@@ -73,7 +73,7 @@ const SignUp = ({ showLocalLogin = false }: { showLocalLogin?: boolean }) => {
   }, []);
 
   return (
-    <div className="flex flex-col md:flex-row md:h-screen w-screen overflow-y-auto md:overflow-hidden">
+    <div className="flex flex-col md:flex-row md:h-[calc(100dvh-var(--cookie-banner-height,0px))] w-screen overflow-y-auto md:overflow-hidden">
       <div className="layer-1 bg-elevation-default flex md:h-full md:w-2/5 flex-col pl-6 pr-0 py-6 md:overflow-hidden order-1">
         {/* Header */}
         <div className="shrink-0 flex justify-center pr-6">

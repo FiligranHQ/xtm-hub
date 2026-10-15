@@ -58,7 +58,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
 
   if (hasError) {
     return (
-      <div className="flex flex-col w-full h-screen">
+      <div className="flex flex-col w-full h-[calc(100dvh-var(--cookie-banner-height,0px))]">
         <ErrorPage>
           <p className="text-center">
             We&#39;re sorry, something went wrong
@@ -74,7 +74,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
   return (
     <RelayProvider>
       <PageLoader>
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-var(--cookie-banner-height,0px))]">
           <div className="w-1/3">
             <LogoXTMDark className="pb-6" />
 
