@@ -120,7 +120,8 @@ Typography only: no element, accessible name, role or translation changes.
   `title-xs` exactly; `txt-sub-content` is `content-compact` at a 150% line.
 - **A resource's short description is a paragraph, not a heading.** The public resource page and the public connector
   page rendered it as a bare `h2`, which the base `h2` would have made a bold 16px title. It becomes
-  `<p className="p-4 content-base">`, the body style (epic-4-cleanup review).
+  `<p className="p-4 content-base">`, the body style (epic-4-cleanup review). The "Overview" title above it moves from
+  `h3` to `h2`, so the outline keeps no gap under the page `h1`; its own classes keep its look (Copilot's review).
 - **A class that styles nothing goes.** `EpicItemFooter`'s type label carried `bold`, which no stylesheet defines; it
   is removed and the label keeps its `content-compact` rendering (epic-4-cleanup deferred review).
 - **The page ends above the cookie banner.** With the design system line heights the fixed banner grew a few pixels

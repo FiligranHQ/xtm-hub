@@ -305,9 +305,9 @@ const Page = async ({
       )}
       <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <div className="flex-[3_3_0%]">
-          <h3 className="py-2 title-xs uppercase truncate text-default-secondary">
+          <h2 className="py-2 title-xs uppercase truncate text-default-secondary">
             {t('PublicResourcePage.Overview')}
-          </h3>
+          </h2>
           <section className="rounded layer-1 bg-elevation-default">
             <p className="p-4 content-base">{document?.short_description}</p>
             <ResourceMarkdownRenderer
