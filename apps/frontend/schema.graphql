@@ -85,7 +85,7 @@ type Query {
   competitors(first: Int!, after: ID, orderBy: CompetitorOrdering!, orderMode: OrderingMode!): CompetitorConnection!
   deploymentRequests(first: Int!, after: ID, filters: [DeploymentRequestFilter!]): PlatformDeploymentRequestConnection!
   deploymentRequestsAvailable: [DeploymentAvailability!]!
-  deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String): DeploymentRequestConnection!
+  deploymentRequestsList(first: Int!, after: ID, filters: [DeploymentRequestFilter!], orderBy: DeploymentRequestOrdering!, orderMode: OrderingMode!, searchTerm: String, searchRegions: [DeploymentRequestPlatformRegion!]): DeploymentRequestConnection!
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
   xtmPlatformBundle: DeploymentRequest
   xtmonePlatformIntegrationStatus(serviceInstanceId: ServiceInstanceId!): XtmoneIntegrationStatus

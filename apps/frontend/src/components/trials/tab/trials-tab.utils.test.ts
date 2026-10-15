@@ -1,6 +1,7 @@
 import {
   buildTrialsFilters,
   formatCancellationReason,
+  matchSearchRegions,
   sortProducts,
 } from '@/components/trials/tab/trials-tab.utils';
 import { TrialsTabType } from '@/components/trials/trials.const';
@@ -8,6 +9,7 @@ import {
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
   DeploymentRequestHubStatus,
+  DeploymentRequestPlatformRegion,
   PlatformIdentifier,
   TrialsProductFragment,
 } from '@graphql/generated';
@@ -63,6 +65,70 @@ describe('manageTrialsUtils', () => {
 
       // Then
       expect(sorted).toEqual([opencti, openaev, xtmone]);
+    });
+  });
+
+  describe('matchSearchRegions', () => {
+    const regionLabels: Record<string, string> = {
+      'Region.EU_WEST': 'Europe West',
+      'Region.US_EAST': 'United States East',
+      'Region.APAC_AU': 'Australia',
+      'Region.APAC_SG': 'Singapore',
+    };
+    const regionT = (key: string): string => regionLabels[key] ?? key;
+
+    it.each`
+      term             | expected                                                                            | description
+      ${'Europe West'} | ${[DeploymentRequestPlatformRegion.EuWest]}                                         | ${'the full label'}
+      ${'europe'}      | ${[DeploymentRequestPlatformRegion.EuWest]}                                         | ${'part of the label, in another case'}
+      ${'  Europe  '}  | ${[DeploymentRequestPlatformRegion.EuWest]}                                         | ${'a label surrounded by spaces'}
+      ${'eu_west'}     | ${[DeploymentRequestPlatformRegion.EuWest]}                                         | ${'the raw code'}
+      ${'EU_WEST'}     | ${[DeploymentRequestPlatformRegion.EuWest]}                                         | ${'the raw code in upper case'}
+      ${'east'}        | ${[DeploymentRequestPlatformRegion.UsEast]}                                         | ${'a word shared by a label and a code'}
+      ${'apac'}        | ${[DeploymentRequestPlatformRegion.ApacAu, DeploymentRequestPlatformRegion.ApacSg]} | ${'the prefix of several codes'}
+    `(
+      'should match the regions of "$term" ($description)',
+      ({ term, expected }) => {
+        // When
+        const regions = matchSearchRegions(term, regionT);
+
+        // Then
+        expect(regions).toEqual(expect.arrayContaining(expected));
+        expect(regions).toHaveLength(expected.length);
+      }
+    );
+
+    it('should match a region by its label in the current locale', () => {
+      // Given
+      const frT = (key: string): string =>
+        key === 'Region.EU_WEST' ? 'Europe Ouest' : key;
+
+      // When
+      const regions = matchSearchRegions('ouest', frT);
+
+      // Then
+      expect(regions).toEqual([DeploymentRequestPlatformRegion.EuWest]);
+    });
+
+    it('should match no region when the term matches neither a label nor a code', () => {
+      // When
+      const regions = matchSearchRegions('john.doe@filigran.io', regionT);
+
+      // Then
+      expect(regions).toEqual([]);
+    });
+
+    it.each`
+      term     | description
+      ${null}  | ${'no term'}
+      ${''}    | ${'an empty term'}
+      ${'   '} | ${'a blank term'}
+    `('should match no region for $description', ({ term }) => {
+      // When
+      const regions = matchSearchRegions(term, regionT);
+
+      // Then
+      expect(regions).toEqual([]);
     });
   });
 
