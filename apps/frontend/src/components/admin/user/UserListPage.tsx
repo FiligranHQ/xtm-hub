@@ -75,7 +75,7 @@ const UserListPage = ({ organization }: UserListPageProps) => {
     <UserListContext.Provider value={{ connectionID, setConnectionId }}>
       <div className="flex justify-between">
         <h1>{t('UserListPage.Title')}</h1>
-        <div className="col-md-6 text-right">
+        <div className="text-right">
           {isAdminPath ? <AdminAddUser /> : <AddUser />}
         </div>
       </div>

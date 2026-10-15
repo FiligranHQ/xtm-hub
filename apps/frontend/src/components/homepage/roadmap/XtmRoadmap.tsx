@@ -111,7 +111,7 @@ const XtmRoadmap = async ({
                   className="max-md:w-5 max-md:h-5 max-sm:w-4 max-sm:h-4"
                 />
                 <span
-                  className={`text-m max-md:text-sm max-sm:text-xs whitespace-nowrap ${textClass}`}>
+                  className={`max-md:text-sm max-sm:text-xs whitespace-nowrap ${textClass}`}>
                   {t(labelKey)}
                 </span>
               </div>
