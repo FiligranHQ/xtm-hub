@@ -140,7 +140,7 @@ export const NavigationLinkMenu = ({
           variant="highlight"
           priority="secondary"
           tabIndex={-1}
-          className={open ? 'w-full px-2' : 'w-9 px-0'}>
+          className={cn('overflow-hidden', open ? 'w-full px-2' : 'w-9 px-0')}>
           {open ? (
             text
           ) : (

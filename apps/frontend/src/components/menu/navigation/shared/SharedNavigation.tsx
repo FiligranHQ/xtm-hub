@@ -10,6 +10,7 @@ import {
 } from '@/components/menu/navigation/shared/navigation.type';
 import { Accordion } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 interface SharedNavigationProps {
   open: boolean;
@@ -68,7 +69,11 @@ export const SharedNavigation = ({
         {bottomLinks.map((link) => (
           <li
             key={link.key}
-            className={link.highlight ? 'px-4 pt-s' : undefined}>
+            className={
+              link.highlight
+                ? cn('pt-s', open ? 'px-4' : 'flex justify-center')
+                : undefined
+            }>
             <NavigationLinkMenu
               open={open}
               href={link.href}
