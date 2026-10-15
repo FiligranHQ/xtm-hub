@@ -59,7 +59,7 @@ only the colour class changes. An element that renders only an icon or a logo (`
 | `bg-blue` (date dot), `bg-blue/5`, `bg-blue-800/5`, `bg-red-500` (unread dot), `bg-green-100 … dark:bg-turquoise-900` | `bg-filigran-brand-primary`, `bg-filigran-brand-primary-transparency-10` (both), `bg-feedback-error-primary`, `bg-feedback-success-secondary-transparency-30` (no `dark:` override) | 1 + test, 4, 1, 2 |
 | Fixed colours painted over fixed artwork: `bg-blue-900`, `from-blue to-turquoise-300` (`ServiceInstanceCard`), `bg-grayblue-1000` (`EeBadge`), `text-black-1000` (`ThreadConferenceBanner` CTA), `bg-black-1000`, `/90`, `/0` (`MultipleImagesField`), `dark:bg-black-1000`, `/60`, `/80` | the primitive of the same value: `bg-[var(--blue-900)]`, `from-[var(--blue-400)] to-[var(--turquoise-300)]`, `bg-[var(--grayblue-1000)]`, `text-[var(--black-1000)]`, `bg-[var(--black-1000)]` with the same modifiers and variants | 10 |
 | Classes no theme defines, rendering nothing: `hover:shadow-white` (`NavigationSections:175`, `navigation-styles:4`), `border-light` (`feature-voting-theme:141`, `[docSlug]/page:275`, `LogoField:76`), `bg-elevation-bg-layer-0` (`AppFooter:50`), `text-text-brand-primary` (`TrialsExternalLink:28`) | removed, see To validate | 8 |
-| `text-white`, `text-white/70` (Thread voting banner), rendering nothing | `text-[var(--white-1000)]`, `text-[var(--white-500)]` (Decisions) | 2 |
+| `text-white`, `text-white/70` (Thread voting banner), rendering nothing | `text-[var(--white-1000)]` on the container, `text-[var(--white-500)]` (Decisions) | 2 |
 | `globals.css`: `html { @apply bg-background }`, body `var(--gradient-background)` and `var(--color-text-default-primary)`, markdown `text-primary` and `text-muted-foreground`, `[data-content-editable]` `var(--color-primary)` ×2 and `var(--color-yellow-400)` ×2 | `@apply bg-elevation-default`, `var(--gradient-default)`, `var(--text-default-primary)`, `text-filigran-brand-primary`, `text-default-secondary`, `var(--color-filigran-brand-primary)`, `var(--color-feedback-alert-primary)` | 1 file |
 | `globals.css` runtime copies `--hover-background`, `--color-primary`, `--color-foreground`, `--color-destructive`, `--color-primary-foreground`, `--color-ds-bg` (`:root`) and `--hover-background` (dark) | deleted: nothing reads them once this item lands | 7 |
 | `SignUp.tsx`: `style={{ backgroundColor: 'var(--color-ds-bg-1)' }}`, scrollbar `var(--muted-foreground)` | `className` gains `bg-[var(--bg-elevation-default-layer-0)]`, the `style` goes; `var(--text-default-secondary)` | 2 |
@@ -155,8 +155,9 @@ start to render (see To validate).
   text on a dark gradient. The design system has no role for them, so they read its primitive of the same value.
 - **The Thread voting banner's text is white in both themes.** Its canvas is `#0A0A0A` in both themes, and its
   `text-white` and `text-white/70` never rendered (the design system resets `--color-*`), so the light theme drew
-  dark text on near-black. Its title takes `text-[var(--white-1000)]` and its description `text-[var(--white-500)]`,
-  the same 70% white, under the fixed-artwork rule above (epic-4-cleanup review).
+  dark text on near-black. The container takes `text-[var(--white-1000)]`, so the title and the campaign icon inherit
+  it, and the description `text-[var(--white-500)]`, the same 70% white, under the fixed-artwork rule above
+  (epic-4-cleanup review, then Copilot's review of the icon).
 - **Gradient text uses the utility made for it.** `text-gradient-focus` paints through `-webkit-text-fill-color`, so
   `bg-clip-text text-transparent` go with it; it also replaces `bg-gradient-legacy-focus` (`#0015a8 → #00bd94`), the
   same brand-to-tonic pair.

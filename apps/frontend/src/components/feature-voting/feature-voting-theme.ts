@@ -144,7 +144,7 @@ const DEFAULT_THEME: FeatureVotingTheme = {
 };
 
 const THREAD_THEME: FeatureVotingTheme = {
-  containerClassName: 'border-transparent',
+  containerClassName: 'border-transparent text-[var(--white-1000)]',
   containerStyle: {
     // Pixel mosaic over the Thread canvas, warmed up by a cyan/blue glow.
     backgroundColor: THREAD_BACKGROUND,
@@ -153,7 +153,7 @@ const THREAD_THEME: FeatureVotingTheme = {
     backgroundPosition: THREAD_BACKGROUND_POSITION,
     boxShadow: `inset 0 0 0 1px rgba(255, 255, 255, 0.1)`,
   },
-  titleClassName: 'font-semibold text-[var(--white-1000)]',
+  titleClassName: 'font-semibold',
   descriptionClassName: 'text-sm text-[var(--white-500)]',
 };
 
