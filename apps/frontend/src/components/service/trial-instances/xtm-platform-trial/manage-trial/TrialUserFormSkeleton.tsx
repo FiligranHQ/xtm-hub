@@ -72,39 +72,37 @@ export const TrialUserFormSkeleton = ({
   return (
     <Form {...form}>
       <form
-        className="flex flex-col gap-l"
+        className="flex flex-col gap-4"
         onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="userIds"
           render={({ field, fieldState }) => (
-            <div className="flex flex-col gap-s">
-              <div className="layer-2">
-                <AppCombobox
-                  multiple
-                  label={pickerLabel || pickerPlaceholder}
-                  labelPosition={pickerLabel ? 'top' : 'none'}
-                  placeholder={pickerPlaceholder}
-                  error={fieldState.error?.message}
-                  options={usersOptionIds.ids}
-                  value={field.value ?? []}
-                  onValueChange={(values) => {
-                    field.onChange(values);
-                    onUsersChange?.(values);
-                  }}
-                  onInputChange={
-                    onUsersInputChange
-                      ? (text, meta) => {
-                          if (meta.cause !== 'select') onUsersInputChange(text);
-                        }
-                      : undefined
-                  }
-                  filterOptions={
-                    onUsersInputChange ? (options) => options : undefined
-                  }
-                  getOptionLabel={usersOptionIds.getOptionLabel}
-                />
-              </div>
+            <div className="flex flex-col gap-2">
+              <AppCombobox
+                multiple
+                label={pickerLabel || pickerPlaceholder}
+                labelPosition={pickerLabel ? 'top' : 'none'}
+                placeholder={pickerPlaceholder}
+                error={fieldState.error?.message}
+                options={usersOptionIds.ids}
+                value={field.value ?? []}
+                onValueChange={(values) => {
+                  field.onChange(values);
+                  onUsersChange?.(values);
+                }}
+                onInputChange={
+                  onUsersInputChange
+                    ? (text, meta) => {
+                        if (meta.cause !== 'select') onUsersInputChange(text);
+                      }
+                    : undefined
+                }
+                filterOptions={
+                  onUsersInputChange ? (options) => options : undefined
+                }
+                getOptionLabel={usersOptionIds.getOptionLabel}
+              />
               {pickerNotice}
             </div>
           )}
@@ -121,7 +119,7 @@ export const TrialUserFormSkeleton = ({
           mixedRoleDefaults={mixedRoleDefaults}
         />
 
-        <div className="flex justify-end gap-s">
+        <div className="flex justify-end gap-2">
           <Button
             priority="secondary"
             type="button"

@@ -18,9 +18,9 @@ type PendingDraftsAction = 'publish' | 'discard';
 // The banner sits on the primary color: the default and secondary variants
 // would blend into it.
 const SOLID_BUTTON_CLASSES =
-  'bg-primary-foreground text-primary hover:bg-primary-foreground/90';
+  'bg-[var(--text-negative-primary)] text-filigran-brand-primary hover:bg-[var(--text-negative-primary)]/90';
 const OUTLINE_BUTTON_CLASSES =
-  'border-primary-foreground bg-transparent text-primary-foreground hover:bg-primary-foreground/10';
+  'border-[var(--text-negative-primary)] bg-transparent text-negative-primary hover:bg-[var(--text-negative-primary)]/10';
 
 export const EditionModeBanner = () => {
   const t = useTranslations();
@@ -60,7 +60,7 @@ export const EditionModeBanner = () => {
   };
 
   return (
-    <div className="bg-primary text-primary-foreground flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-2 text-sm">
+    <div className="bg-filigran-brand-primary text-negative-primary flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-2 text-sm">
       <span>
         {t(
           showEditableAreas
@@ -101,7 +101,7 @@ export const EditionModeBanner = () => {
       <Button
         priority="tertiary"
         disabled={isExiting}
-        className="h-auto p-0 normal-case text-sm text-primary-foreground underline underline-offset-2"
+        className="h-auto p-0 normal-case text-sm text-negative-primary underline underline-offset-2"
         onClick={exitEditMode}>
         {t('EditableText.EditionBannerExit')}
       </Button>

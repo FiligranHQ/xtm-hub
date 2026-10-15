@@ -44,7 +44,7 @@ export const UserDisplay = ({
     <span
       className={cn(
         'truncate',
-        !uploader && 'italic text-text-default-secondary',
+        !uploader && 'italic text-default-secondary',
         className
       )}>
       {displayedIdentity}

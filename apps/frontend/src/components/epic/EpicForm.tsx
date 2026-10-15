@@ -131,7 +131,7 @@ const EpicFieldLabel = ({
   return (
     <FormLabel
       required={required}
-      className="flex items-center gap-xs">
+      className="flex items-center gap-1">
       {t(labelKey)}
       {infoKey && (
         <TooltipProvider>
@@ -140,7 +140,7 @@ const EpicFieldLabel = ({
               <button
                 type="button"
                 aria-label={t(infoKey)}
-                className="text-muted-foreground">
+                className="text-default-secondary">
                 <InfoIcon className="size-4" />
               </button>
             </TooltipTrigger>
@@ -160,7 +160,7 @@ type CharacterLimitProps = {
 const CharacterCounter = ({ value, maxChars }: CharacterLimitProps) => {
   const t = useTranslate();
   return (
-    <p className="text-muted-foreground txt-sub-content ml-auto shrink-0">
+    <p className="text-default-secondary content-compact ml-auto shrink-0">
       {t('Epic.Form.CharacterCount', { count: value.length, maxChars })}
     </p>
   );
@@ -187,7 +187,7 @@ const EpicTextareaField = ({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-s">
+        <div className="flex flex-col gap-2">
           <Textarea
             label={t(labelKey)}
             required={required}
@@ -261,10 +261,10 @@ const EpicForm = ({
   return (
     <Form {...form}>
       <form
-        className="w-full space-y-l"
+        className="w-full space-y-4"
         noValidate
         onSubmit={form.handleSubmit(handleSubmit)}>
-        <div className="grid gap-l sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="products"
@@ -315,7 +315,7 @@ const EpicForm = ({
                 labelKey="Epic.Form.EditionType"
                 infoKey="Epic.Form.EditionTypeInfo"
               />
-              <div className="flex flex-wrap items-center gap-l">
+              <div className="flex flex-wrap items-center gap-4">
                 <FormControl>
                   <RadioGroup
                     orientation="horizontal"
@@ -356,7 +356,7 @@ const EpicForm = ({
           control={form.control}
           name="title"
           render={({ field, fieldState }) => (
-            <div className="flex flex-col gap-s">
+            <div className="flex flex-col gap-2">
               <Input
                 label={t('Epic.Form.Title')}
                 required
@@ -383,7 +383,7 @@ const EpicForm = ({
         />
 
         <Separator />
-        <p className="text-muted-foreground txt-category uppercase">
+        <p className="text-default-secondary title-xs uppercase">
           {t('Epic.Form.DetailsSection')}
         </p>
 
@@ -435,7 +435,7 @@ const EpicForm = ({
           )}
         />
 
-        <SheetFooter className="bg-elevation-background-layer-2 sticky bottom-0 -mx-xl gap-4 border-t px-xl py-3 sm:items-center sm:justify-between">
+        <SheetFooter className="bg-elevation-default sticky bottom-0 -mx-6 gap-4 border-t px-6 py-3 sm:items-center sm:justify-between">
           <FormField
             control={form.control}
             name="active"
@@ -448,7 +448,7 @@ const EpicForm = ({
               />
             )}
           />
-          <div className="flex gap-s">
+          <div className="flex gap-2">
             <Button
               priority="secondary"
               type="button"

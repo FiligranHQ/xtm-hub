@@ -40,7 +40,7 @@ export const ProfileFormPreferences = () => {
       </CardHeader>
       <CardContent
         clamp={0}
-        className="grid gap-l">
+        className="grid gap-4">
         <SelectField
           label={t('ProfilePage.Preferences.Theme')}
           placeholder={t('ThemeToggle.SetTheme')}

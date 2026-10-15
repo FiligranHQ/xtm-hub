@@ -197,10 +197,10 @@ const LogicalMultiSelectFormField = React.forwardRef<
       <div
         ref={ref}
         {...props}
-        className="flex flex-col gap-s rounded-xs border-0 p-0">
+        className="flex flex-col gap-2 rounded-xs border-0 p-0">
         <span className="sr-only">{optionLabel}</span>
         {flatOptions.length === 0 ? (
-          <span className="content-body-compact text-text-default-secondary">
+          <span className="content-compact text-default-secondary">
             {noResultString}
           </span>
         ) : (
@@ -211,7 +211,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
               return (
                 <label
                   key={option.value}
-                  className="flex items-center gap-s content-body-compact text-[13px] cursor-pointer">
+                  className="flex items-center gap-2 content-compact text-[13px] cursor-pointer">
                   <Checkbox
                     aria-label={option.label}
                     checked={indeterminate ? 'indeterminate' : checked}
@@ -223,7 +223,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
                     {option.label}
                   </span>
                   {facetCounts && (
-                    <span className="ml-auto shrink-0 rounded bg-elevation-surface-highlight-layer-0 px-1.5 content-body-compact text-text-default-secondary">
+                    <span className="ml-auto shrink-0 rounded layer-0 bg-elevation-highlight px-1.5 content-compact text-default-secondary">
                       {getFacetCount(facetCounts, option.value)}
                     </span>
                   )}
@@ -239,7 +239,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
             return (
               <label
                 key={`${option.parentValue}-${option.value}`}
-                className="flex items-center gap-s pl-m content-body-compact text-[13px] cursor-pointer">
+                className="flex items-center gap-2 pl-3 content-compact text-[13px] cursor-pointer">
                 <Checkbox
                   aria-label={option.label}
                   checked={isSelected}
@@ -253,7 +253,7 @@ const LogicalMultiSelectFormField = React.forwardRef<
                   {option.label}
                 </span>
                 {facetCounts && (
-                  <span className="ml-auto shrink-0 rounded bg-elevation-surface-highlight-layer-0 px-1.5 content-body-compact text-text-default-secondary">
+                  <span className="ml-auto shrink-0 rounded layer-0 bg-elevation-highlight px-1.5 content-compact text-default-secondary">
                     {getFacetCount(facetCounts, option.value)}
                   </span>
                 )}

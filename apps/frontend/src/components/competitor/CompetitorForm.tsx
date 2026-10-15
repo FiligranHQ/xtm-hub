@@ -97,7 +97,7 @@ const CompetitorForm = ({
         },
       }}>
       <SheetFooter className={'sm:justify-end pb-0'}>
-        <div className="flex gap-s">
+        <div className="flex gap-2">
           <Button
             priority="secondary"
             type="button"

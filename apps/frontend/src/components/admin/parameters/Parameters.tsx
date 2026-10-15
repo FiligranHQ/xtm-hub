@@ -14,7 +14,7 @@ export const Parameters = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3">
-      <Card className="w-1-3">
+      <Card>
         <CardHeader>
           <CardTitle as="h3">{t('App.Title')}</CardTitle>
         </CardHeader>

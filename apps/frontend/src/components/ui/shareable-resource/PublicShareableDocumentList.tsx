@@ -55,7 +55,7 @@ export const PublicShareableDocumentList = ({
       {displayMode === ServiceListDisplayMode.Tab ? (
         <ul
           className={
-            'grid grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))] gap-l'
+            'grid grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))] gap-4'
           }>
           {documents.map((document) => (
             <ShareableResourceCard

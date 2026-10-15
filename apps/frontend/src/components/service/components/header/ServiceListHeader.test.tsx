@@ -137,9 +137,9 @@ describe('ServiceListHeader', () => {
   );
 
   it.each`
-    initialDisplayMode             | expectedTabClass           | expectedListClass
-    ${ServiceListDisplayMode.Tab}  | ${'text-primary'}          | ${'text-muted-foreground'}
-    ${ServiceListDisplayMode.List} | ${'text-muted-foreground'} | ${'text-primary'}
+    initialDisplayMode             | expectedTabClass         | expectedListClass
+    ${ServiceListDisplayMode.Tab}  | ${'text-icon-highlight'} | ${'text-icon-subtle'}
+    ${ServiceListDisplayMode.List} | ${'text-icon-subtle'}    | ${'text-icon-highlight'}
   `(
     'applies selected color classes for mode=$initialDisplayMode',
     ({ initialDisplayMode, expectedTabClass, expectedListClass }) => {

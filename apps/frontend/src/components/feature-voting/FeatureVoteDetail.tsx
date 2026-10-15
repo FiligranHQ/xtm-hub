@@ -18,14 +18,14 @@ export const FeatureVoteDetail = ({
   isAuthenticated,
 }: FeatureVoteDetailProps) => {
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col gap-m">
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-3">
       <DialogTitle>{feature.title}</DialogTitle>
       <DialogDescription className="sr-only">
         {feature.short_description}
       </DialogDescription>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {feature.illustration_document_id && (
-          <div className="relative mb-m h-48 w-full">
+          <div className="relative mb-3 h-48 w-full">
             <Image
               src={`/document/images/${serviceInstanceId}/${feature.illustration_document_id}`}
               alt={feature.title}
@@ -37,14 +37,14 @@ export const FeatureVoteDetail = ({
         <MarkdownRenderer source={feature.description} />
       </div>
       <Separator />
-      <div className="flex flex-wrap items-center justify-between gap-m">
-        <div className="flex flex-wrap items-center gap-m">
-          <span className="flex items-center gap-s">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="flex items-center gap-2">
             {FiligranProductMapping[feature.product].logo}
             {FiligranProductMapping[feature.product].name}
           </span>
           {feature.use_cases.length > 0 && (
-            <div className="flex flex-wrap items-center gap-s">
+            <div className="flex flex-wrap items-center gap-2">
               {feature.use_cases.map((useCase) => (
                 <Chip
                   key={useCase.id}

@@ -85,7 +85,7 @@ export const DocumentActionsCell = ({ document }: DocumentActionsCellProps) => {
 
   return (
     <div
-      className="flex items-center gap-xs"
+      className="flex items-center gap-1"
       onClick={(event) => event.stopPropagation()}>
       <ShareLinkButton
         documentId={document.id}
@@ -97,7 +97,7 @@ export const DocumentActionsCell = ({ document }: DocumentActionsCellProps) => {
           size="sm"
           className="z-[2]"
           aria-label={t('Utils.OpenMenu')}
-          icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+          icon={<MoreVertIcon className="h-4 w-4 text-icon-highlight" />}>
           {userCanUpdate && (
             <IconActionsItem onClick={() => onClickOnUpdate()}>
               {t('MenuActions.Update')}

@@ -289,7 +289,7 @@ export const UserServiceForm = ({
   return (
     <Form {...(form as typeof extendedForm)}>
       <form
-        className="space-y-xl"
+        className="space-y-6"
         onSubmit={(e) => {
           e.preventDefault();
           userService?.id
@@ -321,9 +321,9 @@ export const UserServiceForm = ({
           </>
         )}
 
-        <div className="border border-primary rounded p-l">
+        <div className="border border-filigran-brand-primary rounded p-4">
           <FormLabel>{t('OrganizationInServiceAction.SelectCapa')}</FormLabel>
-          <p className="txt-sub-content italic">
+          <p className="content-compact italic">
             {t('InviteUserServiceForm.Description')}
           </p>
           {capabilitiesData.map((capability) => (

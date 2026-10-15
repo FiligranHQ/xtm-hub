@@ -55,10 +55,7 @@ describe('UserDisplay', () => {
 
       const deletedUserText = screen.getByText('DeletedUser');
       expect(deletedUserText).toBeInTheDocument();
-      expect(deletedUserText).toHaveClass(
-        'italic',
-        'text-text-default-secondary'
-      );
+      expect(deletedUserText).toHaveClass('italic', 'text-default-secondary');
     }
   );
 

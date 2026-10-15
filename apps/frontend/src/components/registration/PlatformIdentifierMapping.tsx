@@ -57,7 +57,7 @@ export const PlatformMetadataMapping: Record<
     darkTextLogo: xtmoneTextDarkLogo,
     docUrl: '',
     Icon: ({ className }) => <LogoXtmOneIcon className={className} />,
-    iconClassName: 'text-filigran-ia-main',
+    iconClassName: 'text-filigran-ia-primary',
   },
 };
 

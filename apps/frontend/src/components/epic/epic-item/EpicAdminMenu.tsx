@@ -50,14 +50,14 @@ export const EpicAdminMenu = ({
           <Chip
             label={t('Epic.Timeline.draft')}
             severity="medium"
-            className="mr-s"
+            className="mr-2"
           />
         )}
         <ShareLinkButton url={shareableUrl} />
         {(userCanDelete || userCanUpdate) && (
           <IconActions
             aria-label={t('Utils.OpenMenu')}
-            icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+            icon={<MoreVertIcon className="h-4 w-4 text-icon-highlight" />}>
             {userCanUpdate && (
               <IconActionsItem onClick={() => setUpdateEpic(epic)}>
                 {t('Utils.Update')}

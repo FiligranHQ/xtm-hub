@@ -40,13 +40,13 @@ const TrialsList = () => {
         <TabsContent
           key={type}
           value={type}
-          className="pt-l">
+          className="pt-4">
           <TrialsTab type={type} />
         </TabsContent>
       ))}
       <TabsContent
         value={QUOTAS_TAB}
-        className="pt-l">
+        className="pt-4">
         <TrialsTabQuotasPlatform />
       </TabsContent>
     </Tabs>

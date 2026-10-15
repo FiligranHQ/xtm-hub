@@ -19,16 +19,14 @@ export const SuggestedActionsChecklist = ({
     PlatformMetadataMapping[platformIdentifier];
 
   return (
-    <section className="mt-xl">
-      <div className="max-w-4xl mx-auto mb-xxl">
-        <div className="flex items-center gap-s mb-s">
+    <section className="mt-6">
+      <div className="max-w-4xl mx-auto mb-8">
+        <div className="flex items-center gap-2 mb-2">
           <Icon className={cn('w-8.5 h-8.5', iconClassName)} />
           <span className="text-logo">{name}</span>
         </div>
-        <h2 className="heading-lg">{t('Service.TrialGuide.ChecklistTitle')}</h2>
-        <p className="text-content-body-medium mt-s">
-          {t('Service.TrialGuide.ChecklistIntro')}
-        </p>
+        <h2 className="title-lg">{t('Service.TrialGuide.ChecklistTitle')}</h2>
+        <p className="mt-2">{t('Service.TrialGuide.ChecklistIntro')}</p>
       </div>
       <div className="max-w-4xl mx-auto">
         {checklistItems.map((item, index) => (

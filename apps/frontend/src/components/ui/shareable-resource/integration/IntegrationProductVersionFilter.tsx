@@ -85,7 +85,7 @@ export const IntegrationProductVersionFilter = ({
               <Link2
                 role="img"
                 aria-label={tooltip}
-                className="h-4 w-4 text-primary"
+                className="h-4 w-4 text-icon-highlight"
               />
             </span>
           </TooltipTrigger>

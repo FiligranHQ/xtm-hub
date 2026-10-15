@@ -86,7 +86,7 @@ const VotingRounds = () => {
           onClick={(event) => event.stopPropagation()}>
           <IconActions
             aria-label={t('Utils.OpenMenu')}
-            icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+            icon={<MoreVertIcon className="h-4 w-4 text-icon-highlight" />}>
             <IconActionsItem onClick={() => setRoundToEdit(row.original)}>
               {t('VotingRound.Actions.Edit')}
             </IconActionsItem>
@@ -98,7 +98,7 @@ const VotingRounds = () => {
 
   return (
     <>
-      <div className="mb-s flex justify-end">
+      <div className="mb-2 flex justify-end">
         <AddVotingRound
           copySources={rounds.map(({ id, name }) => ({ id, name }))}
         />
@@ -113,7 +113,7 @@ const VotingRounds = () => {
           router.push(`/${APP_PATH}/admin/voting-rounds/${original.id}`)
         }
         toolbar={
-          <div className="flex items-center justify-end gap-s">
+          <div className="flex items-center justify-end gap-2">
             <DataTableHeadBarOptions />
           </div>
         }

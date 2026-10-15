@@ -368,7 +368,7 @@ const TrialsTab = ({ type }: TrialsTabProps) => {
       data={requests}
       toolbar={
         <div>
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
             <SearchField
               className="w-full sm:w-1/3"
               aria-label={t('TrialsDashboard.Actions.SearchTrials')}
@@ -377,12 +377,12 @@ const TrialsTab = ({ type }: TrialsTabProps) => {
               onChange={searchHandlers.onChange}
               onClear={searchHandlers.onClear}
             />
-            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
               <DataTableHeadBarOptions />
             </div>
           </div>
-          <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm mt-4">
-            <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
+          <div className="border border-solid border-alert-warning rounded text-feedback-warning-primary flex items-center gap-1 p-2 text-sm mt-4">
+            <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-1" />
             {t('TrialsDashboard.WarningCancellation')}
           </div>
         </div>

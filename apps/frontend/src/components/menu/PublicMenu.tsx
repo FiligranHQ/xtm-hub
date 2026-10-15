@@ -23,7 +23,7 @@ const PublicMenu = ({ visibleServiceSlugs }: PublicMenuProps) => {
   return (
     <aside
       className={cn(
-        'max-md:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-gradient-background duration-300 ease-in-out',
+        'max-md:hidden z-20 sticky shrink-0 top-0 left-0 flex h-full flex-col overflow-y-auto overflow-x-hidden bg-gradient-default duration-300 ease-in-out',
         open ? 'w-48' : 'w-14'
       )}>
       <MenuLogo href={`/${locale}`} />

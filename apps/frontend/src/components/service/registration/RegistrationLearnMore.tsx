@@ -20,7 +20,7 @@ const Section = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <section className={cn('flex flex-col gap-xxl py-20', className)}>
+  <section className={cn('flex flex-col gap-8 py-20', className)}>
     {children}
   </section>
 );
@@ -48,17 +48,17 @@ export const RegistrationLearnMore = async ({
 
   return (
     <>
-      <Section className="bg-blue-800/5 px-xl">
+      <Section className="bg-filigran-brand-primary-transparency-10 px-6">
         <div className="text-center w-[70%] m-auto">
-          <h2 className="text-primary text-2xl mb-l">
+          <h2 className="text-filigran-brand-primary text-2xl mb-4">
             {t('Service.Trials.XTMPlatform.Title')}
           </h2>
           <p>{t('Service.Trials.XTMPlatform.Description', { platformName })}</p>
         </div>
-        <div className="flex flex-col lg:flex-row gap-xl">
-          <div className="flex flex-col gap-s basis-full">
-            <div className="rounded p-6 basis-full bg-elevation-background-layer-1">
-              <h3 className="mb-m flex gap-s">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex flex-col gap-2 basis-full">
+            <div className="rounded p-6 basis-full layer-1 bg-elevation-default">
+              <h3 className="mb-3 flex gap-2">
                 <Image
                   width="25"
                   height="25"
@@ -69,15 +69,15 @@ export const RegistrationLearnMore = async ({
                 />
                 {t('PlatformIdentifier.opencti')}
               </h3>
-              <p className="mb-s">
+              <p className="mb-2">
                 <strong>
                   {t('Service.Trials.XTMPlatform.OpenCTITagline')}
                 </strong>
               </p>
               <p>{t('Service.Trials.XTMPlatform.OpenCTIDescription')}</p>
             </div>
-            <div className="rounded p-6 basis-full bg-elevation-background-layer-1">
-              <h3 className="mb-m flex gap-s">
+            <div className="rounded p-6 basis-full layer-1 bg-elevation-default">
+              <h3 className="mb-3 flex gap-2">
                 <Image
                   width="25"
                   height="25"
@@ -88,7 +88,7 @@ export const RegistrationLearnMore = async ({
                 />
                 {t('PlatformIdentifier.openaev')}
               </h3>
-              <p className="mb-s">
+              <p className="mb-2">
                 <strong>
                   {t('Service.Trials.XTMPlatform.OpenAEVTagline')}
                 </strong>
@@ -113,8 +113,8 @@ export const RegistrationLearnMore = async ({
         </div>
       </Section>
       <Section>
-        <div className="flex flex-col lg:flex-row items-center gap-xl">
-          <div className="basis-full flex justify-between gap-l max-sm:flex-col">
+        <div className="flex flex-col lg:flex-row items-center gap-6">
+          <div className="basis-full flex justify-between gap-4 max-sm:flex-col">
             {services.map((service) => (
               <PublicServiceInstanceCard
                 key={service.id}
@@ -127,10 +127,10 @@ export const RegistrationLearnMore = async ({
             ))}
           </div>
           <div className="order-first text-sm lg:order-last basis-full">
-            <h2 className="text-primary text-2xl mb-l">
+            <h2 className="text-filigran-brand-primary text-2xl mb-4">
               {t('Service.Trials.QuickStart.Title')}
             </h2>
-            <p className="mb-l">
+            <p className="mb-4">
               {t('Service.Trials.QuickStart.Subtitle', { platformName })}
             </p>
             <p>{t('Service.Trials.QuickStart.Description')}</p>

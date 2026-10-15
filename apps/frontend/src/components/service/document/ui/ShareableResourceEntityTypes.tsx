@@ -32,7 +32,7 @@ export const ShareableResourceEntityTypes = ({
   }
 
   return (
-    <div className={cn('flex flex-wrap gap-s', className)}>
+    <div className={cn('flex flex-wrap gap-2', className)}>
       {entityTypes.map((entityType) => (
         <Chip
           key={entityType}

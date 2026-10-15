@@ -12,7 +12,7 @@ export const AccordionMeta: ComponentMeta = {
   sizes: [],
   examples: [
     '<Accordion type="single" collapsible><AccordionItem value="general"><AccordionTrigger>General</AccordionTrigger><AccordionContent>…</AccordionContent></AccordionItem></Accordion>',
-    '<Accordion type="multiple" defaultValue={["types"]}><AccordionItem value="types"><AccordionTrigger className="p-s">Types</AccordionTrigger><AccordionContent className="pb-s pr-s">…</AccordionContent></AccordionItem></Accordion>',
+    '<Accordion type="multiple" defaultValue={["types"]}><AccordionItem value="types"><AccordionTrigger className="p-2">Types</AccordionTrigger><AccordionContent className="pb-2 pr-2">…</AccordionContent></AccordionItem></Accordion>',
   ],
   props: {
     type: "'single' | 'multiple' (required, on Accordion) - whether one item or several can be open at once.",
@@ -25,7 +25,7 @@ export const AccordionMeta: ComponentMeta = {
     onValueChange:
       '(value: string | string[]) => void (optional, on Accordion) - called when an item opens or closes.',
     className:
-      'string (optional, on every part) - extra classes, merged last with tailwind-merge (a pr-0 replaces the trigger pr-2; on AccordionContent it reaches the inner div, where a pb-0 replaces pb-2 and the default pt-0 keeps a py-s off the top).',
+      'string (optional, on every part) - extra classes, merged last with tailwind-merge (a pr-0 replaces the trigger pr-2; on AccordionContent it reaches the inner div, where a pb-0 replaces pb-2 and a py-2 replaces both pb-2 and the default pt-0).',
     ref: 'React.Ref (optional) - forwarded to the item <div>, the trigger <button> and the content region <div>.',
   },
   accessibility: {

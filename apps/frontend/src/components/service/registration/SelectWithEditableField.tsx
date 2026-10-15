@@ -133,7 +133,7 @@ export const SelectWithEditableField = ({
   };
 
   return (
-    <div className="flex flex-col gap-s">
+    <div className="flex flex-col gap-2">
       <div>
         <Select
           value={selectedValue}

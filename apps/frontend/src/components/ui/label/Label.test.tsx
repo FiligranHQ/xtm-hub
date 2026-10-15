@@ -11,7 +11,7 @@ const ERROR_COLOUR_CLASS = 'text-input-error';
 const COMPACT_MEDIUM_SIZE_CLASS = 'text-content-compact-medium';
 const REQUIRED_COLOUR_CLASS = 'text-input-required';
 const LAYOUT_CLASS = 'block';
-const SPACING_CLASS = 'pb-s';
+const SPACING_CLASS = 'pb-2';
 const REQUIRED_STAR = '*';
 
 describe('Label', () => {

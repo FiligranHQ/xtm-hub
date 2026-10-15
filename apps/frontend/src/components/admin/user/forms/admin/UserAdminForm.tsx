@@ -71,7 +71,7 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-xl">
+        className="w-full space-y-6">
         <FormField
           control={form.control}
           name="email"
@@ -126,7 +126,7 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
 
         <CapabilityDescription />
 
-        <div className="flex items-center gap-m">
+        <div className="flex items-center gap-3">
           <Label>{t('UserForm.Organizations')}</Label>
           <AutocompleteOrganization
             selectedOrganizationCapabilities={form.getValues(
@@ -138,8 +138,8 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
 
         <div
           className={cn(
-            '!mt-m px-l py-s space-y-s',
-            fields.length > 0 && 'border bg-card rounded'
+            '!mt-3 px-4 py-2 space-y-2',
+            fields.length > 0 && 'layer-1 border bg-elevation-default rounded'
           )}>
           {fields.map((field, index) => {
             return (
@@ -149,7 +149,7 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
                 name={`organization_capabilities.${index}.capabilities`}
                 render={({ field: formField, fieldState }) => {
                   return (
-                    <div className="grid gap-m items-center grid-cols-[1fr_4fr_3rem]">
+                    <div className="grid gap-3 items-center grid-cols-[1fr_4fr_3rem]">
                       <Label>
                         {
                           userOrganization.find(
@@ -161,6 +161,8 @@ export const UserAdminForm = ({ handleSubmit }: UserAdminFormProps) => {
                         value={formField.value}
                         onChange={formField.onChange}
                         error={fieldState.error?.message}
+                        // The box is layer 1, where a layer-1 panel paints the input colour.
+                        contentClassName="layer-0"
                       />
                       <IconButton
                         type="button"

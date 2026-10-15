@@ -8,8 +8,8 @@ export const EditableTextDemoContent = () => {
   return (
     <div className="flex flex-col gap-4 py-8">
       <h1 className="text-2xl font-bold">{t('Title')}</h1>
-      <p className="text-muted-foreground">{t('Subtitle')}</p>
-      <p className="text-muted-foreground mt-4 text-sm">{t('Instructions')}</p>
+      <p className="text-default-secondary">{t('Subtitle')}</p>
+      <p className="text-default-secondary mt-4 text-sm">{t('Instructions')}</p>
     </div>
   );
 };

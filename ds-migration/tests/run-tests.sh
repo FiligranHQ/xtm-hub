@@ -115,6 +115,8 @@ if [[ "$prompt" == *"Sync fix mode"* ]]; then
 fi
 if [[ "$prompt" == *"Merge conflict mode"* ]]; then
   for f in $(git diff --name-only --diff-filter=U); do git show ":2:$f" > "$f"; done
+  # A resolution may need a file no side had.
+  echo "export const resolved = true;" > apps/frontend/src/resolution.ts
   echo '{"type":"result","structured_output":{"status":"DONE","summary":"Kept the migration and the change from main.","commit_subject":"","commit_body":""}}'; exit 0
 fi
 if [[ "$prompt" == *"Epic review mode"* ]]; then echo '{"type":"result","structured_output":{"findings":"Verdict: consistent."}}'; exit 0; fi
@@ -156,6 +158,8 @@ echo "not json"
 echo "export const v_$(echo "$slug" | tr - _) = 1;" > "apps/frontend/src/$slug.ts"
 if [[ " ${CLAUDE_E2E:-} " == *" $key "* ]]; then mkdir -p apps/e2e/tests/model && echo "// $slug locator" > "apps/e2e/tests/model/$slug.pageModel.ts"; fi
 if [[ " ${CLAUDE_E2E_SEEDS:-} " == *" $key "* ]]; then mkdir -p apps/e2e/seeds && echo "-- $slug" > "apps/e2e/seeds/$slug.sql"; fi
+# CLAUDE_SHARED: the build of these items changes the root lockfile, as a dependency removal does.
+if [[ " ${CLAUDE_SHARED:-} " == *" $key "* ]]; then echo "# $slug" >> yarn.lock; fi
 printf '\n## Deferred findings\n\n- found in review, on a bullet\n  that wraps\n' >> "ds-migration/specs/$key.md"
 echo "{\"type\":\"result\",\"structured_output\":{\"status\":\"DONE\",\"summary\":\"ok\",\"commit_subject\":\"invalid\",\"commit_body\":\"Migrate $slug.\\nCo-Authored-By: x <y@z>\"}}"
 EOF
@@ -285,6 +289,7 @@ check "frontend started from apps/frontend, its log kept" 'grep -q "starting the
 ds-migration/run.sh publish >"$SB/out.log" 2>&1
 check "publish refreshes the issues, pushes and waits for the checks" 'grep -q "^gh issue edit 3561 --body-file" "$SB/calls.log" && grep -q "^gh pr checks" "$SB/calls.log" && grep -q "published: the required checks of PR #9999 pass" "$SB/out.log"'
 check "done item ticked in the PR body" 'grep -q "^- \[x\] #3561 textarea: done" "$SB/pr-body.md"'
+check "an item main already shipped stays out of the PR body" '! grep -q "#3530" "$SB/pr-body.md"'
 check "item done only once the e2e aggregator passed" '[ "$(status_of 3561-textarea)" = done ] && [ "$(cat "$SB/checks-count")" -ge 5 ]'
 
 echo "D. required check fails, one CI fix, still failing: stop"
@@ -308,8 +313,11 @@ new_repo e "development_status:
   3553-radio: backlog"
 CLAUDE_SPEC_DIRTY=3561-textarea run --once
 check "code changed in spec mode: blocked before the build" '[ "$(status_of 3561-textarea)" = blocked ] && ! grep -q "Build mode for item 3561" "$SB/calls.log" && [ -z "$(git status --porcelain -- apps)" ]'
+# A human fixes the tooling while the item is blocked and tags the fix with its issue.
+echo "// fixed" >> ds-migration/screenshot.mjs && git add ds-migration/screenshot.mjs && git -c commit.gpgsign=false commit -qm "fix(frontend): fix the screenshot script (#3561)"
 run --once
 check "a rerun retries a failed item first" '[ "$(status_of 3561-textarea)" = done ] && grep -q "3561-textarea was blocked: retrying it" "$SB/out.log"'
+check "a tooling commit tagged with the item's issue is not its build" 'grep -q "Build mode for item 3561-textarea" "$SB/calls.log" && git log --format=%s | grep -qx "feat(frontend): migrate Textarea to @filigran/design-system (#3561)"'
 SCREENSHOT_FAIL=3568-switch run --once
 check "a screen that no longer renders blocks the item" '[ "$(status_of 3568-switch)" = blocked ] && ! git log --format=%s | grep -q "Switch"'
 run --once
@@ -376,6 +384,7 @@ git clone -q "$SB/remote.git" "$SB/other"
 (cd "$SB/other" && printf "import { Textarea } from '@filigran/ui/legacy';\nexport const Form = () => <Textarea />;\n" >apps/frontend/src/Form.tsx && git add -A && git -c commit.gpgsign=false commit -qm "feat: change Form on main" && git push -q origin main)
 run --once
 check "a conflict with main at the start of an item is resolved by a session" '[ "$(status_of 3568-switch)" = done ] && grep -q "merge conflicts with main resolved" "$SB/out.log" && ! grep -q "^<<<<<<<" apps/frontend/src/Form.tsx && git log --merges --format=%s -1 | grep -q "origin/main"'
+check "the merge commit holds every file the conflict session wrote" 'git show --name-only --format= "$(git log --merges --format=%H -1)" | grep -qx apps/frontend/src/resolution.ts'
 touch "$SB/pr-conflict"
 run --once
 check "a PR that conflicts while waiting for checks merges main instead of waiting" '[ "$(status_of 3553-radio)" = done ] && grep -q "conflicted with main, which no check runs on: main merged" "$SB/out.log" && [ -f apps/frontend/src/late.ts ]'
@@ -456,6 +465,19 @@ mkdir -p "$(git rev-parse --git-dir)/ds-migration/run.lock" && echo $$ >"$(git r
 ds-migration/run.sh feedback >"$SB/out.log" 2>&1
 check "feedback during a run is triage only" 'grep -q "run.sh is running (pid $$): triage only" "$SB/calls.log"'
 rm -rf "$(git rev-parse --git-dir)/ds-migration/run.lock"
+
+echo "Q. shared files change only in the cleanup item"
+new_repo q "development_status:
+  epic-1-primitives: backlog
+  3530-button: done
+  3561-textarea: backlog"
+CLAUDE_SHARED=3561-textarea run --once
+check "a shared file changed outside the cleanup item blocks it" '[ "$(status_of 3561-textarea)" = blocked ] && grep -q "Shared file changed outside the cleanup item: yarn.lock" "$(git rev-parse --git-dir)/ds-migration/3561-textarea-validate.log" && ! git log --format=%s | grep -q "(#3561)$"'
+new_repo q2 "development_status:
+  epic-4-cleanup: backlog
+  9003-remove-filigran-ui: backlog"
+CLAUDE_SHARED=9003-remove-filigran-ui run --once
+check "the cleanup item changes the root lockfile" '[ "$(status_of 9003-remove-filigran-ui)" = done ] && git show --stat --format= HEAD | grep -q "yarn.lock" && ! grep -q "Out of scope: yarn.lock" "$(git rev-parse --git-dir)/ds-migration/9003-remove-filigran-ui-validate.log"'
 
 echo "F. crash recovery and lock"
 new_repo f "development_status:

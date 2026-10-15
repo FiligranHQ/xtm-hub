@@ -75,7 +75,7 @@ const UserListPage = ({ organization }: UserListPageProps) => {
     <UserListContext.Provider value={{ connectionID, setConnectionId }}>
       <div className="flex justify-between">
         <h1>{t('UserListPage.Title')}</h1>
-        <div className="col-md-6 text-right">
+        <div className="text-right">
           {isAdminPath ? <AdminAddUser /> : <AddUser />}
         </div>
       </div>
@@ -99,12 +99,12 @@ const UserListPage = ({ organization }: UserListPageProps) => {
           </TabsList>
           <TabsContent
             value="users"
-            className="pt-l">
+            className="pt-4">
             <UserList organization={organization} />
           </TabsContent>
           <TabsContent
             value="pendingUsers"
-            className="pt-l">
+            className="pt-4">
             {organization && <PendingUserList organization={organization} />}
           </TabsContent>
         </Tabs>
