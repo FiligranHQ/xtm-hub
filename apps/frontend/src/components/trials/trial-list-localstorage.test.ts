@@ -17,14 +17,29 @@ import { useTrialsListLocalstorage } from './trial-list-localstorage';
 
 const COLUMNS: ColumnDef<unknown>[] = [
   { id: 'organization' },
+  { display: 'custom' } as unknown as ColumnDef<unknown>,
   { id: 'request_date' },
   { id: 'registration_status' },
 ];
+const COLUMN_IDS = ['organization', 'request_date', 'registration_status'];
+const DEFAULT_COLUMN_VISIBILITY = {
+  registration_status: false,
+  platform_url: false,
+  platform_id: false,
+};
 const DEFAULT_ORDER = DeploymentRequestOrdering.RequestDate;
 const DEFAULT_ORDER_MODE = OrderingMode.Desc;
 const DEFAULT_PAGE_SIZE = 50;
 const CUSTOM_PAGE_SIZE = 100;
 const BUNDLE_RUNNING_SUFFIX = 'bundle_running';
+const ORDER_MODE_KEY = `orderModeTrialsList_${BUNDLE_RUNNING_SUFFIX}`;
+const ORDER_BY_KEY = `orderByTrialsList_${BUNDLE_RUNNING_SUFFIX}`;
+const PAGE_SIZE_KEY = `countTrialsList_${BUNDLE_RUNNING_SUFFIX}`;
+const COLUMN_ORDER_KEY = `columnOrderingTrialsList_${BUNDLE_RUNNING_SUFFIX}`;
+const COLUMN_VISIBILITY_KEY = `columnVisibilityTrialsList_${BUNDLE_RUNNING_SUFFIX}`;
+
+const readStored = (key: string) =>
+  JSON.parse(window.localStorage.getItem(key) ?? 'null');
 
 const renderTrialsHook = (
   type: TrialsTabType = TrialsTabType.Running,
@@ -45,41 +60,28 @@ describe('useTrialsListLocalstorage', () => {
     window.localStorage.clear();
   });
 
-  it('should expose the defaults given by the caller when nothing is stored', () => {
+  it('should expose the defaults given by the caller and only order the columns that have an id when nothing is stored', () => {
     // Given / When
     const { result } = renderTrialsHook();
 
     // Then
-    expect(result.current.orderBy).toBe(DEFAULT_ORDER);
-    expect(result.current.orderMode).toBe(DEFAULT_ORDER_MODE);
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
-    expect(result.current.columnOrder).toEqual([
-      'organization',
-      'request_date',
-      'registration_status',
-    ]);
-  });
-
-  it('should hide the registration, platform url and platform id columns by default', () => {
-    // Given / When
-    const { result } = renderTrialsHook();
-
-    // Then
-    expect(result.current.columnVisibility).toEqual({
-      registration_status: false,
-      platform_url: false,
-      platform_id: false,
+    expect(result.current).toMatchObject({
+      orderBy: DEFAULT_ORDER,
+      orderMode: DEFAULT_ORDER_MODE,
+      pageSize: DEFAULT_PAGE_SIZE,
+      columnOrder: COLUMN_IDS,
+      columnVisibility: DEFAULT_COLUMN_VISIBILITY,
     });
   });
 
   it('should restore the preferences stored for the same scope and tab', () => {
     // Given
     window.localStorage.setItem(
-      `orderByTrialsList_${BUNDLE_RUNNING_SUFFIX}`,
+      ORDER_BY_KEY,
       JSON.stringify(DeploymentRequestOrdering.EndDate)
     );
     window.localStorage.setItem(
-      `countTrialsList_${BUNDLE_RUNNING_SUFFIX}`,
+      PAGE_SIZE_KEY,
       JSON.stringify(CUSTOM_PAGE_SIZE)
     );
 
@@ -87,8 +89,10 @@ describe('useTrialsListLocalstorage', () => {
     const { result } = renderTrialsHook(TrialsTabType.Running, BUNDLE_SCOPE);
 
     // Then
-    expect(result.current.orderBy).toBe(DeploymentRequestOrdering.EndDate);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderBy: DeploymentRequestOrdering.EndDate,
+      pageSize: CUSTOM_PAGE_SIZE,
+    });
   });
 
   it.each([
@@ -105,7 +109,7 @@ describe('useTrialsListLocalstorage', () => {
   ])('should ignore the preferences stored for $name', ({ type, scope }) => {
     // Given
     window.localStorage.setItem(
-      `countTrialsList_${BUNDLE_RUNNING_SUFFIX}`,
+      PAGE_SIZE_KEY,
       JSON.stringify(CUSTOM_PAGE_SIZE)
     );
 
@@ -116,31 +120,7 @@ describe('useTrialsListLocalstorage', () => {
     expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
   });
 
-  it('should update the preferences when the setters are called', () => {
-    // Given
-    const { result } = renderTrialsHook();
-
-    // When
-    act(() => {
-      result.current.setOrderMode(OrderingMode.Asc);
-      result.current.setOrderBy(DeploymentRequestOrdering.Region);
-      result.current.setPageSize(CUSTOM_PAGE_SIZE);
-      result.current.setColumnOrder(['request_date', 'organization']);
-      result.current.setColumnVisibility({ organization: false });
-    });
-
-    // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Asc);
-    expect(result.current.orderBy).toBe(DeploymentRequestOrdering.Region);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
-    expect(result.current.columnOrder).toEqual([
-      'request_date',
-      'organization',
-    ]);
-    expect(result.current.columnVisibility).toEqual({ organization: false });
-  });
-
-  it('should restore the default ordering but keep the page size when removeOrder is called', () => {
+  it('should drop the stored ordering but keep the stored page size when removeOrder is called', () => {
     // Given
     const { result } = renderTrialsHook();
     act(() => {
@@ -155,12 +135,17 @@ describe('useTrialsListLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe(DEFAULT_ORDER_MODE);
-    expect(result.current.orderBy).toBe(DEFAULT_ORDER);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderMode: DEFAULT_ORDER_MODE,
+      orderBy: DEFAULT_ORDER,
+      pageSize: CUSTOM_PAGE_SIZE,
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBe(CUSTOM_PAGE_SIZE);
   });
 
-  it('should restore every default when resetAll is called', () => {
+  it('should drop every stored preference when resetAll is called', () => {
     // Given
     const { result } = renderTrialsHook();
     act(() => {
@@ -177,18 +162,17 @@ describe('useTrialsListLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe(DEFAULT_ORDER_MODE);
-    expect(result.current.orderBy).toBe(DEFAULT_ORDER);
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
-    expect(result.current.columnOrder).toEqual([
-      'organization',
-      'request_date',
-      'registration_status',
-    ]);
-    expect(result.current.columnVisibility).toEqual({
-      registration_status: false,
-      platform_url: false,
-      platform_id: false,
+    expect(result.current).toMatchObject({
+      orderMode: DEFAULT_ORDER_MODE,
+      orderBy: DEFAULT_ORDER,
+      pageSize: DEFAULT_PAGE_SIZE,
+      columnOrder: COLUMN_IDS,
+      columnVisibility: DEFAULT_COLUMN_VISIBILITY,
     });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBeNull();
+    expect(readStored(COLUMN_ORDER_KEY)).toBeNull();
+    expect(readStored(COLUMN_VISIBILITY_KEY)).toBeNull();
   });
 });

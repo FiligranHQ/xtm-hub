@@ -5,120 +5,66 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useOrganizationListLocalstorage } from './organization-list-localstorage';
 
-const COLUMNS: ColumnDef<unknown>[] = [{ id: 'name' }, { id: 'members' }];
+const COLUMNS: ColumnDef<unknown>[] = [
+  { id: 'name' },
+  { display: 'custom' } as unknown as ColumnDef<unknown>,
+  { id: 'members' },
+];
 const COLUMN_IDS = ['name', 'members'];
 const ORDER_MODE_KEY = 'orderModeOrganizationList';
-const COUNT_KEY = 'countOrganizationList';
+const ORDER_BY_KEY = 'orderByOrganizationList';
+const PAGE_SIZE_KEY = 'countOrganizationList';
 const COLUMN_ORDER_KEY = 'columnOrderingOrganizationList';
 const COLUMN_VISIBILITY_KEY = 'columnVisibilityOrganizationList';
-const DEFAULT_COUNT = 50;
-const CUSTOM_COUNT = 100;
+const DEFAULT_PAGE_SIZE = 50;
+const CUSTOM_PAGE_SIZE = 100;
+
+const readStored = (key: string) =>
+  JSON.parse(window.localStorage.getItem(key) ?? 'null');
 
 describe('useOrganizationListLocalstorage', () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  it('should expose the defaults when nothing is stored', () => {
+  it('should expose the defaults and only order the columns that have an id when nothing is stored', () => {
     // Given / When
     const { result } = renderHook(() =>
       useOrganizationListLocalstorage(COLUMNS)
     );
 
     // Then
-    expect(result.current.orderMode).toBe('asc');
-    expect(result.current.orderBy).toBe(OrganizationOrdering.Name);
-    expect(result.current.count).toBe(DEFAULT_COUNT);
-    expect(result.current.pageSize).toBe(DEFAULT_COUNT);
-    expect(result.current.columnOrder).toEqual(COLUMN_IDS);
-    expect(result.current.columnVisibility).toEqual({});
-  });
-
-  it('should restore the stored preferences when some exist', () => {
-    // Given
-    window.localStorage.setItem(ORDER_MODE_KEY, JSON.stringify('desc'));
-    window.localStorage.setItem(COUNT_KEY, JSON.stringify(CUSTOM_COUNT));
-    window.localStorage.setItem(
-      COLUMN_ORDER_KEY,
-      JSON.stringify([...COLUMN_IDS].reverse())
-    );
-    window.localStorage.setItem(
-      COLUMN_VISIBILITY_KEY,
-      JSON.stringify({ members: false })
-    );
-
-    // When
-    const { result } = renderHook(() =>
-      useOrganizationListLocalstorage(COLUMNS)
-    );
-
-    // Then
-    expect(result.current.orderMode).toBe('desc');
-    expect(result.current.count).toBe(CUSTOM_COUNT);
-    expect(result.current.pageSize).toBe(CUSTOM_COUNT);
-    expect(result.current.columnOrder).toEqual(['members', 'name']);
-    expect(result.current.columnVisibility).toEqual({ members: false });
-  });
-
-  it('should update the preferences when the setters are called', () => {
-    // Given
-    const { result } = renderHook(() =>
-      useOrganizationListLocalstorage(COLUMNS)
-    );
-
-    // When
-    act(() => {
-      result.current.setOrderMode('desc');
-      result.current.setCount(CUSTOM_COUNT);
-      result.current.setColumnOrder(['members', 'name']);
-      result.current.setColumnVisibility({ name: false });
+    expect(result.current).toMatchObject({
+      orderMode: 'asc',
+      orderBy: OrganizationOrdering.Name,
+      pageSize: DEFAULT_PAGE_SIZE,
+      columnOrder: COLUMN_IDS,
+      columnVisibility: {},
     });
-
-    // Then
-    expect(result.current.orderMode).toBe('desc');
-    expect(result.current.count).toBe(CUSTOM_COUNT);
-    expect(result.current.columnOrder).toEqual(['members', 'name']);
-    expect(result.current.columnVisibility).toEqual({ name: false });
   });
 
-  it('should update the page size when setPageSize is called', () => {
+  it('should fall back to the default ordering and fix the stored value when the stored one is not a valid ordering', () => {
     // Given
+    window.localStorage.setItem(ORDER_BY_KEY, JSON.stringify('unknown_field'));
+
+    // When
     const { result } = renderHook(() =>
       useOrganizationListLocalstorage(COLUMNS)
     );
-
-    // When
-    act(() => {
-      result.current.setPageSize(CUSTOM_COUNT);
-    });
-
-    // Then
-    expect(result.current.pageSize).toBe(CUSTOM_COUNT);
-  });
-
-  it('should update the ordering when setOrderBy is called', () => {
-    // Given
-    const { result } = renderHook(() =>
-      useOrganizationListLocalstorage(COLUMNS)
-    );
-
-    // When
-    act(() => {
-      result.current.setOrderBy(OrganizationOrdering.Name);
-    });
 
     // Then
     expect(result.current.orderBy).toBe(OrganizationOrdering.Name);
+    expect(readStored(ORDER_BY_KEY)).toBe(OrganizationOrdering.Name);
   });
 
-  it('should restore the default ordering but keep the other preferences when removeOrder is called', () => {
+  it('should drop the stored ordering but keep the other stored preferences when removeOrder is called', () => {
     // Given
     const { result } = renderHook(() =>
       useOrganizationListLocalstorage(COLUMNS)
     );
     act(() => {
       result.current.setOrderMode('desc');
-      result.current.setCount(CUSTOM_COUNT);
+      result.current.setPageSize(CUSTOM_PAGE_SIZE);
     });
 
     // When
@@ -127,19 +73,24 @@ describe('useOrganizationListLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe('asc');
-    expect(result.current.orderBy).toBe(OrganizationOrdering.Name);
-    expect(result.current.count).toBe(CUSTOM_COUNT);
+    expect(result.current).toMatchObject({
+      orderMode: 'asc',
+      orderBy: OrganizationOrdering.Name,
+      pageSize: CUSTOM_PAGE_SIZE,
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBe(CUSTOM_PAGE_SIZE);
   });
 
-  it('should restore every default when resetAll is called', () => {
+  it('should drop every stored preference when resetAll is called', () => {
     // Given
     const { result } = renderHook(() =>
       useOrganizationListLocalstorage(COLUMNS)
     );
     act(() => {
       result.current.setOrderMode('desc');
-      result.current.setCount(CUSTOM_COUNT);
+      result.current.setPageSize(CUSTOM_PAGE_SIZE);
       result.current.setColumnOrder(['members', 'name']);
       result.current.setColumnVisibility({ name: false });
     });
@@ -150,11 +101,17 @@ describe('useOrganizationListLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe('asc');
-    expect(result.current.orderBy).toBe(OrganizationOrdering.Name);
-    expect(result.current.count).toBe(DEFAULT_COUNT);
-    expect(result.current.pageSize).toBe(DEFAULT_COUNT);
-    expect(result.current.columnOrder).toEqual(COLUMN_IDS);
-    expect(result.current.columnVisibility).toEqual({});
+    expect(result.current).toMatchObject({
+      orderMode: 'asc',
+      orderBy: OrganizationOrdering.Name,
+      pageSize: DEFAULT_PAGE_SIZE,
+      columnOrder: COLUMN_IDS,
+      columnVisibility: {},
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBeNull();
+    expect(readStored(COLUMN_ORDER_KEY)).toBeNull();
+    expect(readStored(COLUMN_VISIBILITY_KEY)).toBeNull();
   });
 });

@@ -31,7 +31,7 @@ export const useTrialsListLocalstorage = <U>(
   );
   const [columnOrder, setColumnOrder, removeColumnOrder] = useLocalStorage(
     `columnOrderingTrialsList_${suffix}`,
-    columns.map((c) => c.id!)
+    columns.flatMap((column) => (column.id ? [column.id] : []))
   );
   const [columnVisibility, setColumnVisibility, removeColumnVisibility] =
     useLocalStorage<VisibilityState>(`columnVisibilityTrialsList_${suffix}`, {

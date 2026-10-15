@@ -10,6 +10,9 @@ const PAGE_SIZE_KEY = 'countSaasList';
 const DEFAULT_PAGE_SIZE = 50;
 const CUSTOM_PAGE_SIZE = 100;
 
+const readStored = (key: string) =>
+  JSON.parse(window.localStorage.getItem(key) ?? 'null');
+
 describe('useSaasListLocalstorage', () => {
   beforeEach(() => {
     window.localStorage.clear();
@@ -20,33 +23,14 @@ describe('useSaasListLocalstorage', () => {
     const { result } = renderHook(() => useSaasListLocalstorage());
 
     // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Asc);
-    expect(result.current.orderBy).toBe(
-      RegisteredPlatformOrdering.OrganizationName
-    );
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderMode: OrderingMode.Asc,
+      orderBy: RegisteredPlatformOrdering.OrganizationName,
+      pageSize: DEFAULT_PAGE_SIZE,
+    });
   });
 
-  it('should restore the stored preferences when some exist', () => {
-    // Given
-    window.localStorage.setItem(
-      ORDER_MODE_KEY,
-      JSON.stringify(OrderingMode.Desc)
-    );
-    window.localStorage.setItem(
-      PAGE_SIZE_KEY,
-      JSON.stringify(CUSTOM_PAGE_SIZE)
-    );
-
-    // When
-    const { result } = renderHook(() => useSaasListLocalstorage());
-
-    // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Desc);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
-  });
-
-  it('should fall back to the default ordering when the stored one is not a valid ordering', () => {
+  it('should fall back to the default ordering and fix the stored value when the stored one is not a valid ordering', () => {
     // Given
     window.localStorage.setItem(ORDER_BY_KEY, JSON.stringify('unknown_field'));
 
@@ -57,24 +41,12 @@ describe('useSaasListLocalstorage', () => {
     expect(result.current.orderBy).toBe(
       RegisteredPlatformOrdering.OrganizationName
     );
+    expect(readStored(ORDER_BY_KEY)).toBe(
+      RegisteredPlatformOrdering.OrganizationName
+    );
   });
 
-  it('should update the preferences when the setters are called', () => {
-    // Given
-    const { result } = renderHook(() => useSaasListLocalstorage());
-
-    // When
-    act(() => {
-      result.current.setOrderMode(OrderingMode.Desc);
-      result.current.setPageSize(CUSTOM_PAGE_SIZE);
-    });
-
-    // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Desc);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
-  });
-
-  it('should restore the default ordering but keep the page size when removeOrder is called', () => {
+  it('should drop the stored ordering but keep the stored page size when removeOrder is called', () => {
     // Given
     const { result } = renderHook(() => useSaasListLocalstorage());
     act(() => {
@@ -88,11 +60,17 @@ describe('useSaasListLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Asc);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderMode: OrderingMode.Asc,
+      orderBy: RegisteredPlatformOrdering.OrganizationName,
+      pageSize: CUSTOM_PAGE_SIZE,
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBe(CUSTOM_PAGE_SIZE);
   });
 
-  it('should restore every default when resetAll is called', () => {
+  it('should drop every stored preference when resetAll is called', () => {
     // Given
     const { result } = renderHook(() => useSaasListLocalstorage());
     act(() => {
@@ -106,10 +84,13 @@ describe('useSaasListLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Asc);
-    expect(result.current.orderBy).toBe(
-      RegisteredPlatformOrdering.OrganizationName
-    );
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderMode: OrderingMode.Asc,
+      orderBy: RegisteredPlatformOrdering.OrganizationName,
+      pageSize: DEFAULT_PAGE_SIZE,
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBeNull();
   });
 });

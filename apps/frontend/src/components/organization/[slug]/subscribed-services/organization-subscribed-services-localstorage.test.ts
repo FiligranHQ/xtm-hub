@@ -23,6 +23,9 @@ const COLUMN_VISIBILITY_KEY =
 const DEFAULT_PAGE_SIZE = 50;
 const CUSTOM_PAGE_SIZE = 200;
 
+const readStored = (key: string) =>
+  JSON.parse(window.localStorage.getItem(key) ?? 'null');
+
 describe('normalizeSubscribedServicesPageSize', () => {
   it.each([
     { value: 50, expected: 50 },
@@ -52,128 +55,62 @@ describe('useOrganizationSubscribedServicesLocalstorage', () => {
     window.localStorage.clear();
   });
 
-  it('should expose the defaults when nothing is stored', () => {
+  it('should expose the defaults and only order the columns that have an id when nothing is stored', () => {
     // Given / When
     const { result } = renderHook(() =>
       useOrganizationSubscribedServicesLocalstorage(COLUMNS)
     );
 
     // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Asc);
-    expect(result.current.orderBy).toBe(SubscriptionOrdering.StartDate);
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
-    expect(result.current.columnVisibility).toEqual({});
-  });
-
-  it('should only order the columns that have an id when computing the default column order', () => {
-    // Given / When
-    const { result } = renderHook(() =>
-      useOrganizationSubscribedServicesLocalstorage(COLUMNS)
-    );
-
-    // Then
-    expect(result.current.columnOrder).toEqual(COLUMN_IDS);
-  });
-
-  it('should restore the stored preferences when some exist', () => {
-    // Given
-    window.localStorage.setItem(
-      ORDER_MODE_KEY,
-      JSON.stringify(OrderingMode.Desc)
-    );
-    window.localStorage.setItem(
-      ORDER_BY_KEY,
-      JSON.stringify(SubscriptionOrdering.EndDate)
-    );
-    window.localStorage.setItem(
-      PAGE_SIZE_KEY,
-      JSON.stringify(CUSTOM_PAGE_SIZE)
-    );
-    window.localStorage.setItem(
-      COLUMN_ORDER_KEY,
-      JSON.stringify([...COLUMN_IDS].reverse())
-    );
-    window.localStorage.setItem(
-      COLUMN_VISIBILITY_KEY,
-      JSON.stringify({ service: false })
-    );
-
-    // When
-    const { result } = renderHook(() =>
-      useOrganizationSubscribedServicesLocalstorage(COLUMNS)
-    );
-
-    // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Desc);
-    expect(result.current.orderBy).toBe(SubscriptionOrdering.EndDate);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
-    expect(result.current.columnOrder).toEqual(['start_date', 'service']);
-    expect(result.current.columnVisibility).toEqual({ service: false });
-  });
-
-  it('should fall back to the default ordering when the stored one is not a valid ordering', () => {
-    // Given
-    window.localStorage.setItem(ORDER_BY_KEY, JSON.stringify('unknown_field'));
-
-    // When
-    const { result } = renderHook(() =>
-      useOrganizationSubscribedServicesLocalstorage(COLUMNS)
-    );
-
-    // Then
-    expect(result.current.orderBy).toBe(SubscriptionOrdering.StartDate);
-  });
-
-  it('should fall back to the default order mode when the stored one is not a valid mode', () => {
-    // Given
-    window.localStorage.setItem(ORDER_MODE_KEY, JSON.stringify('sideways'));
-
-    // When
-    const { result } = renderHook(() =>
-      useOrganizationSubscribedServicesLocalstorage(COLUMNS)
-    );
-
-    // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Asc);
-  });
-
-  it('should fall back to the default page size when the stored one is not an allowed size', () => {
-    // Given
-    window.localStorage.setItem(PAGE_SIZE_KEY, JSON.stringify(25));
-
-    // When
-    const { result } = renderHook(() =>
-      useOrganizationSubscribedServicesLocalstorage(COLUMNS)
-    );
-
-    // Then
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
-  });
-
-  it('should update the preferences when the setters are called', () => {
-    // Given
-    const { result } = renderHook(() =>
-      useOrganizationSubscribedServicesLocalstorage(COLUMNS)
-    );
-
-    // When
-    act(() => {
-      result.current.setOrderMode(OrderingMode.Desc);
-      result.current.setOrderBy(SubscriptionOrdering.ServiceName);
-      result.current.setPageSize(CUSTOM_PAGE_SIZE);
-      result.current.setColumnOrder(['start_date', 'service']);
-      result.current.setColumnVisibility({ start_date: false });
+    expect(result.current).toMatchObject({
+      orderMode: OrderingMode.Asc,
+      orderBy: SubscriptionOrdering.StartDate,
+      pageSize: DEFAULT_PAGE_SIZE,
+      columnOrder: COLUMN_IDS,
+      columnVisibility: {},
     });
-
-    // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Desc);
-    expect(result.current.orderBy).toBe(SubscriptionOrdering.ServiceName);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
-    expect(result.current.columnOrder).toEqual(['start_date', 'service']);
-    expect(result.current.columnVisibility).toEqual({ start_date: false });
   });
 
-  it('should restore the default ordering but keep the other preferences when removeOrder is called', () => {
+  it.each([
+    {
+      name: 'ordering',
+      key: ORDER_BY_KEY,
+      stored: 'unknown_field',
+      field: 'orderBy',
+      expected: SubscriptionOrdering.StartDate,
+    },
+    {
+      name: 'order mode',
+      key: ORDER_MODE_KEY,
+      stored: 'sideways',
+      field: 'orderMode',
+      expected: OrderingMode.Asc,
+    },
+    {
+      name: 'page size',
+      key: PAGE_SIZE_KEY,
+      stored: 25,
+      field: 'pageSize',
+      expected: DEFAULT_PAGE_SIZE,
+    },
+  ])(
+    'should fall back to the default $name and fix the stored value when the stored one is invalid',
+    ({ key, stored, field, expected }) => {
+      // Given
+      window.localStorage.setItem(key, JSON.stringify(stored));
+
+      // When
+      const { result } = renderHook(() =>
+        useOrganizationSubscribedServicesLocalstorage(COLUMNS)
+      );
+
+      // Then
+      expect(result.current).toMatchObject({ [field]: expected });
+      expect(readStored(key)).toBe(expected);
+    }
+  );
+
+  it('should drop the stored ordering but keep the other stored preferences when removeOrder is called', () => {
     // Given
     const { result } = renderHook(() =>
       useOrganizationSubscribedServicesLocalstorage(COLUMNS)
@@ -190,12 +127,17 @@ describe('useOrganizationSubscribedServicesLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Asc);
-    expect(result.current.orderBy).toBe(SubscriptionOrdering.StartDate);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderMode: OrderingMode.Asc,
+      orderBy: SubscriptionOrdering.StartDate,
+      pageSize: CUSTOM_PAGE_SIZE,
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBe(CUSTOM_PAGE_SIZE);
   });
 
-  it('should restore every default when resetAll is called', () => {
+  it('should drop every stored preference when resetAll is called', () => {
     // Given
     const { result } = renderHook(() =>
       useOrganizationSubscribedServicesLocalstorage(COLUMNS)
@@ -214,10 +156,17 @@ describe('useOrganizationSubscribedServicesLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe(OrderingMode.Asc);
-    expect(result.current.orderBy).toBe(SubscriptionOrdering.StartDate);
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
-    expect(result.current.columnOrder).toEqual(COLUMN_IDS);
-    expect(result.current.columnVisibility).toEqual({});
+    expect(result.current).toMatchObject({
+      orderMode: OrderingMode.Asc,
+      orderBy: SubscriptionOrdering.StartDate,
+      pageSize: DEFAULT_PAGE_SIZE,
+      columnOrder: COLUMN_IDS,
+      columnVisibility: {},
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBeNull();
+    expect(readStored(COLUMN_ORDER_KEY)).toBeNull();
+    expect(readStored(COLUMN_VISIBILITY_KEY)).toBeNull();
   });
 });

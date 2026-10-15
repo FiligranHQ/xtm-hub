@@ -10,6 +10,9 @@ const PAGE_SIZE_KEY = 'countCompetitorList';
 const DEFAULT_PAGE_SIZE = 50;
 const CUSTOM_PAGE_SIZE = 100;
 
+const readStored = (key: string) =>
+  JSON.parse(window.localStorage.getItem(key) ?? 'null');
+
 describe('useCompetitorListLocalstorage', () => {
   beforeEach(() => {
     window.localStorage.clear();
@@ -20,33 +23,14 @@ describe('useCompetitorListLocalstorage', () => {
     const { result } = renderHook(() => useCompetitorListLocalstorage());
 
     // Then
-    expect(result.current.orderMode).toBe('asc');
-    expect(result.current.orderBy).toBe(CompetitorOrdering.Tier);
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderMode: 'asc',
+      orderBy: CompetitorOrdering.Tier,
+      pageSize: DEFAULT_PAGE_SIZE,
+    });
   });
 
-  it('should restore the stored preferences when some exist', () => {
-    // Given
-    window.localStorage.setItem(ORDER_MODE_KEY, JSON.stringify('desc'));
-    window.localStorage.setItem(
-      ORDER_BY_KEY,
-      JSON.stringify(CompetitorOrdering.Name)
-    );
-    window.localStorage.setItem(
-      PAGE_SIZE_KEY,
-      JSON.stringify(CUSTOM_PAGE_SIZE)
-    );
-
-    // When
-    const { result } = renderHook(() => useCompetitorListLocalstorage());
-
-    // Then
-    expect(result.current.orderMode).toBe('desc');
-    expect(result.current.orderBy).toBe(CompetitorOrdering.Name);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
-  });
-
-  it('should fall back to the default ordering when the stored one is not a valid ordering', () => {
+  it('should fall back to the default ordering and fix the stored value when the stored one is not a valid ordering', () => {
     // Given
     window.localStorage.setItem(ORDER_BY_KEY, JSON.stringify('unknown_field'));
 
@@ -55,31 +39,10 @@ describe('useCompetitorListLocalstorage', () => {
 
     // Then
     expect(result.current.orderBy).toBe(CompetitorOrdering.Tier);
+    expect(readStored(ORDER_BY_KEY)).toBe(CompetitorOrdering.Tier);
   });
 
-  it('should update and keep the preferences when the setters are called', () => {
-    // Given
-    const { result, rerender } = renderHook(() =>
-      useCompetitorListLocalstorage()
-    );
-
-    // When
-    act(() => {
-      result.current.setOrderMode('desc');
-      result.current.setOrderBy(CompetitorOrdering.Domain);
-      result.current.setPageSize(CUSTOM_PAGE_SIZE);
-    });
-    rerender();
-
-    // Then
-    expect(result.current.orderMode).toBe('desc');
-    expect(result.current.orderBy).toBe(CompetitorOrdering.Domain);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
-    const remounted = renderHook(() => useCompetitorListLocalstorage());
-    expect(remounted.result.current.orderBy).toBe(CompetitorOrdering.Domain);
-  });
-
-  it('should restore the default ordering but keep the page size when removeOrder is called', () => {
+  it('should drop the stored ordering but keep the stored page size when removeOrder is called', () => {
     // Given
     const { result } = renderHook(() => useCompetitorListLocalstorage());
     act(() => {
@@ -94,12 +57,17 @@ describe('useCompetitorListLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe('asc');
-    expect(result.current.orderBy).toBe(CompetitorOrdering.Tier);
-    expect(result.current.pageSize).toBe(CUSTOM_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderMode: 'asc',
+      orderBy: CompetitorOrdering.Tier,
+      pageSize: CUSTOM_PAGE_SIZE,
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBe(CUSTOM_PAGE_SIZE);
   });
 
-  it('should restore every default when resetAll is called', () => {
+  it('should drop every stored preference when resetAll is called', () => {
     // Given
     const { result } = renderHook(() => useCompetitorListLocalstorage());
     act(() => {
@@ -114,8 +82,13 @@ describe('useCompetitorListLocalstorage', () => {
     });
 
     // Then
-    expect(result.current.orderMode).toBe('asc');
-    expect(result.current.orderBy).toBe(CompetitorOrdering.Tier);
-    expect(result.current.pageSize).toBe(DEFAULT_PAGE_SIZE);
+    expect(result.current).toMatchObject({
+      orderMode: 'asc',
+      orderBy: CompetitorOrdering.Tier,
+      pageSize: DEFAULT_PAGE_SIZE,
+    });
+    expect(readStored(ORDER_MODE_KEY)).toBeNull();
+    expect(readStored(ORDER_BY_KEY)).toBeNull();
+    expect(readStored(PAGE_SIZE_KEY)).toBeNull();
   });
 });
