@@ -1,7 +1,10 @@
 import {
+  DEPLOYABLE_PARAM,
   emptyFilters,
   INTEGRATION_TYPE_PARAM,
   LABEL_PARAM,
+  LICENSE_TYPE_PARAM,
+  PRODUCT_VERSION_PARAM,
   SOLUTION_CATEGORY_PARAM,
   VERIFIED_PARAM,
 } from '@/components/service/integrations/[serviceInstanceId]/integration-list-url-filters.utils';
@@ -10,9 +13,23 @@ import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-stora
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+const FILTER_PARAMS = [
+  INTEGRATION_TYPE_PARAM,
+  LABEL_PARAM,
+  DEPLOYABLE_PARAM,
+  VERIFIED_PARAM,
+  PRODUCT_VERSION_PARAM,
+  LICENSE_TYPE_PARAM,
+  SOLUTION_CATEGORY_PARAM,
+];
 const LABEL = 'siem';
-const CATEGORY = 'ti_ops';
-const STORED_LABELS_KEY = 'labelPrivateOpenCTIIntegrationFeedsList';
+const PRIVATE_LABELS_KEY = 'labelPrivateOpenCTIIntegrationFeedsList';
+
+const storageKeyOf = (param: string) =>
+  `${param}PrivateOpenCTIIntegrationFeedsList`;
+const selectionOf = (param: string) => ({ [`${param}-value`]: [] });
+const getStoredValue = (key: string) =>
+  JSON.parse(window.localStorage.getItem(key) ?? 'null');
 
 describe('useIntegrationListStorage', () => {
   beforeEach(() => {
@@ -34,48 +51,55 @@ describe('useIntegrationListStorage', () => {
     const { result } = renderHook(() => useIntegrationListStorage());
 
     // Then
-    expect(result.current.filters).toEqual(emptyFilters());
+    expect(result.current.filters).toMatchObject(emptyFilters());
   });
 
-  it('should expose the stored selections as filters', () => {
-    // Given
-    window.localStorage.setItem(
-      STORED_LABELS_KEY,
-      JSON.stringify({ [LABEL]: [] })
-    );
+  it.each(FILTER_PARAMS)(
+    'should expose the stored selection as the %s filter',
+    (param) => {
+      // Given
+      window.localStorage.setItem(
+        storageKeyOf(param),
+        JSON.stringify(selectionOf(param))
+      );
 
-    // When
-    const { result } = renderHook(() => useIntegrationListStorage());
+      // When
+      const { result } = renderHook(() => useIntegrationListStorage());
 
-    // Then
-    expect(result.current.filters).toEqual({
-      ...emptyFilters(),
-      [LABEL_PARAM]: { [LABEL]: [] },
-    });
-  });
-
-  it('should update the filters when setFilters is called', () => {
-    // Given
-    const { result } = renderHook(() => useIntegrationListStorage());
-
-    // When
-    act(() => {
-      result.current.setFilters({
+      // Then
+      expect(result.current.filters).toMatchObject({
         ...emptyFilters(),
-        [INTEGRATION_TYPE_PARAM]: { connector: [] },
-        [VERIFIED_PARAM]: { true: [] },
-        [SOLUTION_CATEGORY_PARAM]: { [CATEGORY]: [] },
+        [param]: selectionOf(param),
       });
-    });
+    }
+  );
 
-    // Then
-    expect(result.current.filters).toEqual({
-      ...emptyFilters(),
-      [INTEGRATION_TYPE_PARAM]: { connector: [] },
-      [VERIFIED_PARAM]: { true: [] },
-      [SOLUTION_CATEGORY_PARAM]: { [CATEGORY]: [] },
-    });
-  });
+  it.each(FILTER_PARAMS)(
+    'should store the %s filter only when setFilters is called with it',
+    (param) => {
+      // Given
+      const { result } = renderHook(() => useIntegrationListStorage());
+
+      // When
+      act(() => {
+        result.current.setFilters({
+          ...emptyFilters(),
+          [param]: selectionOf(param),
+        });
+      });
+
+      // Then
+      expect(result.current.filters).toMatchObject({
+        ...emptyFilters(),
+        [param]: selectionOf(param),
+      });
+      for (const otherParam of FILTER_PARAMS) {
+        expect(getStoredValue(storageKeyOf(otherParam))).toEqual(
+          otherParam === param ? selectionOf(param) : {}
+        );
+      }
+    }
+  );
 
   it('should replace the previous selections when setFilters is called again', () => {
     // Given
@@ -96,20 +120,22 @@ describe('useIntegrationListStorage', () => {
     });
 
     // Then
-    expect(result.current.filters).toEqual({
+    expect(result.current.filters).toMatchObject({
       ...emptyFilters(),
       [VERIFIED_PARAM]: { true: [] },
     });
+    expect(getStoredValue(PRIVATE_LABELS_KEY)).toEqual({});
   });
 
-  it('should empty the filters when resetAll is called', () => {
+  it('should empty the filters and clear the storage when resetAll is called', () => {
     // Given
     const { result } = renderHook(() => useIntegrationListStorage());
     act(() => {
-      result.current.setFilters({
-        ...emptyFilters(),
-        [LABEL_PARAM]: { [LABEL]: [] },
-      });
+      result.current.setFilters(
+        Object.fromEntries(
+          FILTER_PARAMS.map((param) => [param, selectionOf(param)])
+        ) as ReturnType<typeof emptyFilters>
+      );
     });
 
     // When
@@ -118,6 +144,9 @@ describe('useIntegrationListStorage', () => {
     });
 
     // Then
-    expect(result.current.filters).toEqual(emptyFilters());
+    expect(result.current.filters).toMatchObject(emptyFilters());
+    for (const param of FILTER_PARAMS) {
+      expect(window.localStorage.getItem(storageKeyOf(param))).toBeNull();
+    }
   });
 });

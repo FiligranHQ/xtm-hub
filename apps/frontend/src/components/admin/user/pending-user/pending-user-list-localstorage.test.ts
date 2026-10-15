@@ -5,7 +5,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 const ORDER_BY_KEY = 'orderByPendingUserList';
 const ORDER_MODE_KEY = 'orderModePendingUserList';
+const COLUMN_ORDER_KEY = 'columnOrderingPendingUserList';
+const COLUMN_VISIBILITY_KEY = 'columnVisibilityPendingUserList';
 const DEFAULT_PAGE_SIZE = 50;
+
+const getStoredValue = (key: string) =>
+  JSON.parse(window.localStorage.getItem(key) ?? 'null');
 
 describe('useUserListLocalstorage (pending users)', () => {
   beforeEach(() => {
@@ -39,11 +44,13 @@ describe('useUserListLocalstorage (pending users)', () => {
     const { result } = renderHook(() => useUserListLocalstorage());
 
     // Then
-    expect(result.current.orderBy).toBe(UserOrdering.InvitationDate);
-    expect(result.current.orderMode).toBe('desc');
+    expect(result.current).toMatchObject({
+      orderBy: UserOrdering.InvitationDate,
+      orderMode: 'desc',
+    });
   });
 
-  it('should update the exposed values when setters are called', () => {
+  it('should update the exposed and stored values when setters are called', () => {
     // Given
     const { result } = renderHook(() => useUserListLocalstorage());
 
@@ -62,9 +69,18 @@ describe('useUserListLocalstorage (pending users)', () => {
       columnOrder: ['email', 'invitation_date'],
       columnVisibility: { invitation_date: false },
     });
+    expect(getStoredValue(ORDER_BY_KEY)).toBe(UserOrdering.InvitationDate);
+    expect(getStoredValue(ORDER_MODE_KEY)).toBe('desc');
+    expect(getStoredValue(COLUMN_ORDER_KEY)).toEqual([
+      'email',
+      'invitation_date',
+    ]);
+    expect(getStoredValue(COLUMN_VISIBILITY_KEY)).toEqual({
+      invitation_date: false,
+    });
   });
 
-  it('should restore every default value when resetAll is called', () => {
+  it('should restore every default value and clear the storage when resetAll is called', () => {
     // Given
     const { result } = renderHook(() => useUserListLocalstorage());
     act(() => {
@@ -86,6 +102,10 @@ describe('useUserListLocalstorage (pending users)', () => {
       columnOrder: [],
       columnVisibility: {},
     });
+    expect(window.localStorage.getItem(ORDER_BY_KEY)).toBeNull();
+    expect(window.localStorage.getItem(ORDER_MODE_KEY)).toBeNull();
+    expect(window.localStorage.getItem(COLUMN_ORDER_KEY)).toBeNull();
+    expect(window.localStorage.getItem(COLUMN_VISIBILITY_KEY)).toBeNull();
   });
 
   it('should only restore the default ordering when removeOrder is called', () => {
@@ -108,5 +128,8 @@ describe('useUserListLocalstorage (pending users)', () => {
       orderMode: 'asc',
       columnOrder: ['email'],
     });
+    expect(window.localStorage.getItem(ORDER_BY_KEY)).toBeNull();
+    expect(window.localStorage.getItem(ORDER_MODE_KEY)).toBeNull();
+    expect(getStoredValue(COLUMN_ORDER_KEY)).toEqual(['email']);
   });
 });

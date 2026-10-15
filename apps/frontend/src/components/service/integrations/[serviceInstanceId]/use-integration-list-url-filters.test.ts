@@ -34,14 +34,7 @@ describe('useIntegrationListUrlFilters', () => {
 
   beforeEach(() => {
     vi.mocked(usePathname).mockReturnValue(PATHNAME);
-    vi.mocked(useRouter).mockReturnValue({
-      push: vi.fn(),
-      replace,
-      prefetch: vi.fn(),
-      back: vi.fn(),
-      forward: vi.fn(),
-      refresh: vi.fn(),
-    });
+    vi.mocked(useRouter).mockReturnValue({ ...useRouter(), replace });
     window.history.replaceState({}, '', PATHNAME);
   });
 

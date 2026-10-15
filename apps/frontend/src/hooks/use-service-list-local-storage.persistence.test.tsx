@@ -10,6 +10,25 @@ const LABEL = 'siem';
 const PRIVATE_LABELS_KEY = 'labelPrivateOpenCTIIntegrationFeedsList';
 const PUBLIC_LABELS_KEY = 'labelPublicOpenCTIIntegrationFeedsList';
 
+const RESET_KEY_PREFIXES = [
+  'pageSize',
+  'search',
+  'label',
+  'integrationType',
+  'productVersion',
+  'licenseType',
+  'solutionCategory',
+  'entityType',
+  'deployable',
+  'verified',
+  'orderBy',
+  'orderMode',
+  'displayMode',
+];
+const resetKeys = RESET_KEY_PREFIXES.map(
+  (prefix) => `${prefix}PrivateOpenCTIIntegrationFeedsList`
+);
+
 const renderStorage = () =>
   renderHook(() =>
     useServiceListLocalStorage(
@@ -71,12 +90,12 @@ describe('useServiceListLocalStorage persistence', () => {
     expect(result.current.labels).toEqual({ [LABEL]: [] });
   });
 
-  it('should empty the stored selections when resetAll is called', () => {
+  it('should remove every stored entry when resetAll is called', () => {
     // Given
+    for (const key of resetKeys) {
+      window.localStorage.setItem(key, JSON.stringify({ [LABEL]: [] }));
+    }
     const { result } = renderStorage();
-    act(() => {
-      result.current.setLabels({ [LABEL]: [] });
-    });
 
     // When
     act(() => {
@@ -85,5 +104,8 @@ describe('useServiceListLocalStorage persistence', () => {
 
     // Then
     expect(result.current.labels).toEqual({});
+    for (const key of resetKeys) {
+      expect(window.localStorage.getItem(key)).toBeNull();
+    }
   });
 });
