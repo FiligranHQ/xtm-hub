@@ -1,5 +1,7 @@
 import { canDeleteUserRow } from '@/components/admin/user/delete-user.utils';
 import { DeleteUser } from '@/components/admin/user/DeleteUser';
+import { AddUser } from '@/components/admin/user/forms/AddUser';
+import { AdminAddUser } from '@/components/admin/user/forms/admin/AdminAddUser';
 import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import {
@@ -628,7 +630,12 @@ const UserList = ({ organization }: UserListProps) => {
                 />
               )
             }
-            actions={<DataTableHeadBarOptions />}
+            actions={
+              <>
+                <DataTableHeadBarOptions />
+                {isAdminPath ? <AdminAddUser /> : <AddUser />}
+              </>
+            }
           />
         }
         tableState={{

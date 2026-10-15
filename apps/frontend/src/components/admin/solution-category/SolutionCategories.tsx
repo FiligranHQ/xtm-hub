@@ -146,9 +146,6 @@ const SolutionCategories = () => {
 
   return (
     <>
-      <div className="mb-2 flex justify-end">
-        <AddSolutionCategory />
-      </div>
       <DataTable
         columns={columns}
         data={solutionCategories}
@@ -175,7 +172,12 @@ const SolutionCategories = () => {
                 onProductChange={onProductChange}
               />
             }
-            actions={<DataTableHeadBarOptions />}
+            actions={
+              <>
+                <DataTableHeadBarOptions />
+                <AddSolutionCategory />
+              </>
+            }
           />
         }
       />

@@ -29,14 +29,6 @@ vi.mock('@/components/admin/user/pending-user/PendingUserList', () => ({
   ),
 }));
 
-vi.mock('@/components/admin/user/forms/AddUser', () => ({
-  AddUser: () => <div>AddUser</div>,
-}));
-
-vi.mock('@/components/admin/user/forms/admin/AdminAddUser', () => ({
-  AdminAddUser: () => <div>AdminAddUser</div>,
-}));
-
 vi.mock('@filigran/design-system', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@filigran/design-system')>()),
   Tabs: ({

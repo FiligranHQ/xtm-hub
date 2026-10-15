@@ -1,5 +1,3 @@
-import { AddUser } from '@/components/admin/user/forms/AddUser';
-import { AdminAddUser } from '@/components/admin/user/forms/admin/AdminAddUser';
 import PendingUserList from '@/components/admin/user/pending-user/PendingUserList';
 import {
   UserPendingListFragment,
@@ -73,12 +71,7 @@ const UserListPage = ({ organization }: UserListPageProps) => {
 
   return (
     <UserListContext.Provider value={{ connectionID, setConnectionId }}>
-      <div className="flex justify-between">
-        <h1>{t('UserListPage.Title')}</h1>
-        <div className="text-right">
-          {isAdminPath ? <AdminAddUser /> : <AddUser />}
-        </div>
-      </div>
+      <h1>{t('UserListPage.Title')}</h1>
       {isAdminPath ? (
         <div className="mt-4">
           <UserList organization={organization} />

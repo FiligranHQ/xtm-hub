@@ -6,7 +6,11 @@ import { VotableFeatureFormModel } from '@/components/admin/voting-round/Votable
 import { VotingRoundResults } from '@/components/admin/voting-round/VotingRoundResults';
 import { VotingRoundStatusActions } from '@/components/admin/voting-round/VotingRoundStatusActions';
 import { VotingRoundStatusBadge } from '@/components/admin/voting-round/VotingRoundStatusBadge';
-import { DataTable } from '@/components/ui/data-table';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  DataTableToolbar,
+} from '@/components/ui/data-table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
@@ -114,21 +118,28 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
       </div>
 
       <section className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">
-            {t('VotingRound.Feature.SectionTitle')}
-          </h2>
-          {round.status !== VotingRoundStatus.Closed && (
-            <AddVotableFeature
-              roundId={round.id}
-              serviceInstanceId={round.service_instance_id}
-            />
-          )}
-        </div>
+        <h2 className="text-xl font-semibold">
+          {t('VotingRound.Feature.SectionTitle')}
+        </h2>
         <DataTable
           columns={columns}
           data={features}
           {...getDataTableLabels(t)}
+          toolbar={
+            <DataTableToolbar
+              actions={
+                <>
+                  <DataTableHeadBarOptions />
+                  {round.status !== VotingRoundStatus.Closed && (
+                    <AddVotableFeature
+                      roundId={round.id}
+                      serviceInstanceId={round.service_instance_id}
+                    />
+                  )}
+                </>
+              }
+            />
+          }
           onClickRow={({ original }) =>
             setFeatureToEdit({
               id: original.id,

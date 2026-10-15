@@ -1,4 +1,5 @@
 import { UserFragment } from '@/components/admin/user/UserList';
+import { AddUser } from '@/components/admin/user/forms/AddUser';
 import { PendingUserAlreadyProcessedDialog } from '@/components/admin/user/pending-user/PendingUserAlreadyProcessedDialog';
 import { PendingUserConfirmDialog } from '@/components/admin/user/pending-user/PendingUserConfirmDialog';
 import { useUserListLocalstorage } from '@/components/admin/user/pending-user/pending-user-list-localstorage';
@@ -361,7 +362,12 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
                 onClear={searchHandlers.onClear}
               />
             }
-            actions={<DataTableHeadBarOptions />}
+            actions={
+              <>
+                <DataTableHeadBarOptions />
+                <AddUser />
+              </>
+            }
           />
         }
         tableState={{

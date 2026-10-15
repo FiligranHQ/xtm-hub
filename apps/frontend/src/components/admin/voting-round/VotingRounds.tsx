@@ -4,7 +4,11 @@ import AddVotingRound from '@/components/admin/voting-round/AddVotingRound';
 import EditVotingRound from '@/components/admin/voting-round/EditVotingRound';
 import { useRoadmapServiceInstances } from '@/components/admin/voting-round/use-roadmap-service-instances';
 import { VotingRoundStatusBadge } from '@/components/admin/voting-round/VotingRoundStatusBadge';
-import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  DataTableToolbar,
+} from '@/components/ui/data-table';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
@@ -98,11 +102,6 @@ const VotingRounds = () => {
 
   return (
     <>
-      <div className="mb-2 flex justify-end">
-        <AddVotingRound
-          copySources={rounds.map(({ id, name }) => ({ id, name }))}
-        />
-      </div>
       <DataTable
         columns={columns}
         data={rounds}
@@ -113,9 +112,16 @@ const VotingRounds = () => {
           router.push(`/${APP_PATH}/admin/voting-rounds/${original.id}`)
         }
         toolbar={
-          <div className="flex items-center justify-end gap-2">
-            <DataTableHeadBarOptions />
-          </div>
+          <DataTableToolbar
+            actions={
+              <>
+                <DataTableHeadBarOptions />
+                <AddVotingRound
+                  copySources={rounds.map(({ id, name }) => ({ id, name }))}
+                />
+              </>
+            }
+          />
         }
       />
       {roundToEdit && (
