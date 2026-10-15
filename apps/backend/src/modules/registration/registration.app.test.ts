@@ -440,6 +440,28 @@ describe('registration app', () => {
       expect(token).toBeDefined();
     });
 
+    it('should throw when the platform id is already registered by another organization', async () => {
+      // Given
+      const registeredPlatform = { ...platform, id: uuidv4() };
+      requestContext.set(requestContextRegistererUserSecondOrga);
+      await RegistrationApp.registerPlatform({
+        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+        platform: registeredPlatform,
+        identifier: PlatformIdentifier.Opencti,
+      });
+
+      // When
+      requestContext.set(requestContextSimpleUserFiligran2);
+      const call = RegistrationApp.registerPlatform({
+        organizationId: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+        platform: { ...registeredPlatform, tenantId: uuidv4() },
+        identifier: PlatformIdentifier.Opencti,
+      });
+
+      // Then
+      await expect(call).rejects.toThrow();
+    });
+
     describe('commercial model', () => {
       const registerNewPlatform = async () => {
         const newPlatform = { ...platform, id: uuidv4() };
