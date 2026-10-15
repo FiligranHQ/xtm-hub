@@ -44,3 +44,8 @@
 | [5491766465](https://github.com/XTM-Hub/xtm-hub/pull/3715#pullrequestreview-5491766465) | hervyt | Approval | answered | Approval with no remark |
 | [6126234379](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6126234379) | elisavaldegas | XTM Platform translated in French | follow-up | #3793 (same on main) |
 | [6127011513](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6127011513) | elisavaldegas | Connect product shows its raw key | fixed | 739aadbe6 |
+| [4271928090](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4271928090) | Copilot | Thread banner icon stays dark on near-black in light | fixed | 427e51078 |
+| [4271928001](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4271928001) | Copilot | Public resource page skips from h1 to h3 | fixed | 85d02e5bc |
+| [4271928205](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4271928205) | Copilot | Public connector page skips from h1 to h3 | fixed | 85d02e5bc |
+| [4271928293](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4271928293) | Copilot | AGENTS.md restates the design system rule | fixed | 399568d71 |
+| [5519335152](https://github.com/XTM-Hub/xtm-hub/pull/3804#pullrequestreview-5519335152) | Copilot | Review summary of the three findings above | answered | 427e51078, 85d02e5bc, 399568d71 |
