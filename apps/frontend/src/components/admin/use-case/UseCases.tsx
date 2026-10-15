@@ -1,6 +1,6 @@
 import AddUseCase from '@/components/admin/use-case/AddUseCase';
 import EditUseCase from '@/components/admin/use-case/EditUseCase';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable, DataTableToolbar } from '@/components/ui/data-table';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { getDataTableLabels } from '@/utils/design-system/data-table';
@@ -116,9 +116,8 @@ const UseCases = () => {
         }}
         onClickRow={({ original }) => setUseCaseEdit(original)}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <div />
-            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
+          <DataTableToolbar
+            filters={
               <Select
                 value={selectedProduct ?? 'all'}
                 onValueChange={(value) =>
@@ -128,7 +127,7 @@ const UseCases = () => {
                 }>
                 <SelectTrigger
                   aria-label={t('UseCaseListPage.Product')}
-                  className="w-45">
+                  className="w-full">
                   <SelectValue placeholder={t('UseCaseListPage.Product')} />
                 </SelectTrigger>
                 <SelectContent className="layer-1">
@@ -144,9 +143,9 @@ const UseCases = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <AddUseCase />
-            </div>
-          </div>
+            }
+            actions={<AddUseCase />}
+          />
         }
       />
       {useCaseEdit && (

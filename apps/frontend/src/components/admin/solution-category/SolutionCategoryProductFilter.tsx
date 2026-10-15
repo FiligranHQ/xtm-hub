@@ -27,7 +27,7 @@ const SolutionCategoryProductFilter = ({
       }>
       <SelectTrigger
         aria-label={t('SolutionCategory.ListPage.Product')}
-        className="w-full sm:w-45">
+        className="w-full">
         <SelectValue placeholder={t('SolutionCategory.ListPage.Product')} />
       </SelectTrigger>
       <SelectContent className="layer-1">

@@ -1,8 +1,10 @@
 export {
   DataTable,
   DataTableHeadBarOptions,
+  DataTableToolbar,
   type DataTableLabels,
   type DataTableProps,
+  type DataTableToolbarProps,
 } from './DataTable';
 export {
   useRowSelection,

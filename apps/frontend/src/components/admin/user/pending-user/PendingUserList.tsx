@@ -14,6 +14,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
   DataTable,
   DataTableHeadBarOptions,
+  DataTableToolbar,
   SelectionState,
   useRowSelection,
 } from '@/components/ui/data-table';
@@ -349,19 +350,19 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
           enableRowSelection: (row) => row.original.id !== me!.id,
         }}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <SearchField
-              className="w-full sm:w-1/3"
-              aria-label={t('UserActions.SearchUser')}
-              placeholder={t('UserActions.SearchUser')}
-              clearLabel={t('DesignSystem.SearchField.Clear')}
-              onChange={searchHandlers.onChange}
-              onClear={searchHandlers.onClear}
-            />
-            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
-              <DataTableHeadBarOptions />
-            </div>
-          </div>
+          <DataTableToolbar
+            search={
+              <SearchField
+                fullWidth
+                aria-label={t('UserActions.SearchUser')}
+                placeholder={t('UserActions.SearchUser')}
+                clearLabel={t('DesignSystem.SearchField.Clear')}
+                onChange={searchHandlers.onChange}
+                onClear={searchHandlers.onClear}
+              />
+            }
+            actions={<DataTableHeadBarOptions />}
+          />
         }
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),

@@ -6,7 +6,7 @@ import {
 } from '@graphql/generated';
 
 import { EditService } from '@/components/service/EditService';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable, DataTableToolbar } from '@/components/ui/data-table';
 import {
   IconActions,
   IconActionsItem,
@@ -142,28 +142,32 @@ const AdminServiceTab = ({ serviceData, refetch }: AdminServiceTabProps) => {
         {...getDataTableLabels(t)}
         data={serviceData}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <SearchField
-              className="w-full sm:w-1/3"
-              aria-label={t('Service.SearchServices')}
-              placeholder={t('Service.SearchServices')}
-              clearLabel={t('DesignSystem.SearchField.Clear')}
-              onChange={searchHandlers.onChange}
-              onClear={searchHandlers.onClear}
-            />
-            <AppCombobox<{ value: string; label: string }>
-              label={label}
-              labelPosition="none"
-              placeholder={label}
-              options={getServiceDefinitionData}
-              value={selectedValue ?? null}
-              onValueChange={(next) =>
-                handleIdentifierChange(next ?? undefined)
-              }
-              getOptionLabel={(option) => option.label}
-              isOptionEqualToValue={(a, b) => a.value === b.value}
-            />
-          </div>
+          <DataTableToolbar
+            search={
+              <SearchField
+                fullWidth
+                aria-label={t('Service.SearchServices')}
+                placeholder={t('Service.SearchServices')}
+                clearLabel={t('DesignSystem.SearchField.Clear')}
+                onChange={searchHandlers.onChange}
+                onClear={searchHandlers.onClear}
+              />
+            }
+            filters={
+              <AppCombobox<{ value: string; label: string }>
+                label={label}
+                labelPosition="none"
+                placeholder={label}
+                options={getServiceDefinitionData}
+                value={selectedValue ?? null}
+                onValueChange={(next) =>
+                  handleIdentifierChange(next ?? undefined)
+                }
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(a, b) => a.value === b.value}
+              />
+            }
+          />
         }
         tableOptions={{
           getSortedRowModel: getSortedRowModel(),
