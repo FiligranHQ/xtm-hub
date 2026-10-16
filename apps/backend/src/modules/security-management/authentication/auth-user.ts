@@ -9,6 +9,7 @@ import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
 import { AppLogsCategory, logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, ForbiddenErrorCode } from '../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
+import { startUserSession } from '../../../utils/session.util';
 import { isEmptyField } from '../../../utils/utils';
 import { ServiceGroupApp } from '../../deployment/group/service-group.app';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
@@ -121,11 +122,11 @@ export const authenticateUser = async (
     return;
   }
   const updatedUser = await UserDomain.updateUserAtLogin(logged);
-  req.session.user = updatedUser;
-
+  // The grant clears the pending status on the user, so the session snapshot
+  // is only written once it is done.
   await ServiceGroupApp.grantAccessAtLogin(updatedUser);
+  await startUserSession(req, updatedUser);
 
-  req.session.save();
   res.cookie('NEXT_LOCALE', logged.selected_language);
   return logged;
 };

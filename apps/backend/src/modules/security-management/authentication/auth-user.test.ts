@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TestHelper } from '../../../../tests/helper/test.helper';
 import { UserAccountStatus } from '../../../__generated__/resolvers-types';
 import portalConfig from '../../../config';
 import { UserId } from '../../../model/kanel/public/User';
@@ -34,10 +35,6 @@ const createTestUser = async () => {
   return { email, user };
 };
 
-const buildRequest = () =>
-  ({ session: { save: vi.fn() } }) as unknown as Parameters<
-    typeof authenticateUser
-  >[0];
 const buildResponse = () =>
   ({ cookie: vi.fn() }) as unknown as Parameters<typeof authenticateUser>[1];
 const asUserInfo = (email: string): UserInfo => ({
@@ -130,14 +127,14 @@ describe('authenticateUser', () => {
     }
   });
 
-  it('should update the session then delegate the access grant to ServiceGroupApp', async () => {
+  it('should delegate the access grant to ServiceGroupApp then write the user into the session', async () => {
     const testUser = await createTestUser();
     email = testUser.email;
     await UserDomain.updateUser(testUser.user.id, {
       status: UserAccountStatus.Waiting,
     });
 
-    const req = buildRequest();
+    const req = TestHelper.session.buildRequest();
     await authenticateUser(req, buildResponse(), asUserInfo(email));
 
     expect(req.session.user?.id).toBe(testUser.user.id);
@@ -154,13 +151,109 @@ describe('authenticateUser', () => {
     email = testUser.email;
     await UserDomain.updateUser(testUser.user.id, { disabled: true });
 
-    const req = buildRequest();
+    const req = TestHelper.session.buildRequest();
     await expect(
       authenticateUser(req, buildResponse(), asUserInfo(email))
     ).rejects.toThrow();
 
     expect(req.session.user).toBeUndefined();
     expect(ServiceGroupApp.grantAccessAtLogin).not.toHaveBeenCalled();
+  });
+
+  it('should sign the user into a new session id when the login succeeds', async () => {
+    // Given
+    const testUser = await createTestUser();
+    email = testUser.email;
+    const req = TestHelper.session.buildRequest();
+    const preLoginSessionId = req.sessionID;
+
+    // When
+    await authenticateUser(req, buildResponse(), asUserInfo(email));
+
+    // Then
+    expect(req.sessionID).not.toBe(preLoginSessionId);
+    expect(req.session).toMatchObject({ user: { id: testUser.user.id } });
+  });
+
+  it('should persist the new session before returning', async () => {
+    // Given
+    const testUser = await createTestUser();
+    email = testUser.email;
+    const req = TestHelper.session.buildRequest();
+
+    // When
+    await authenticateUser(req, buildResponse(), asUserInfo(email));
+
+    // Then
+    expect(req.session.save).toHaveBeenCalledOnce();
+  });
+
+  it('should forget a previously refused subject once the user is signed in', async () => {
+    // Given
+    const testUser = await createTestUser();
+    email = testUser.email;
+    const req = TestHelper.session.buildRequest({
+      unverifiedIdpSubject: UNVERIFIED_IDP_SUBJECT,
+    });
+
+    // When
+    await authenticateUser(req, buildResponse(), asUserInfo(email));
+
+    // Then
+    expect(req.session.unverifiedIdpSubject).toBeUndefined();
+  });
+
+  it('should keep the pre-login session when the user is disabled', async () => {
+    // Given
+    const testUser = await createTestUser();
+    email = testUser.email;
+    await UserDomain.updateUser(testUser.user.id, { disabled: true });
+    const req = TestHelper.session.buildRequest();
+    const preLoginSessionId = req.sessionID;
+
+    // When
+    await authenticateUser(req, buildResponse(), asUserInfo(email)).catch(
+      () => undefined
+    );
+
+    // Then
+    expect(req.sessionID).toBe(preLoginSessionId);
+  });
+
+  it('should keep the pre-login session when the user is unknown', async () => {
+    // Given
+    const req = TestHelper.session.buildRequest();
+    const preLoginSessionId = req.sessionID;
+
+    // When
+    const logged = await authenticateUser(
+      req,
+      buildResponse(),
+      asUserInfo(newEmail())
+    );
+
+    // Then
+    expect({ logged, sessionID: req.sessionID }).toEqual({
+      logged: undefined,
+      sessionID: preLoginSessionId,
+    });
+  });
+
+  it('should reject without signing the user in when the session cannot be regenerated', async () => {
+    // Given
+    const testUser = await createTestUser();
+    email = testUser.email;
+    const req = TestHelper.session.buildRequest(
+      {},
+      { regenerateError: new Error(REGENERATE_ERROR) }
+    );
+
+    // When
+    const signingIn = authenticateUser(req, buildResponse(), asUserInfo(email));
+
+    // Then
+    await expect(signingIn).rejects.toThrow(REGENERATE_ERROR);
+    expect(req.session.user).toBeUndefined();
   });
 });
 

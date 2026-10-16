@@ -17,6 +17,8 @@ export enum ForbiddenErrorCode {
   CantRemoveYourselfFromOrgaError = 'CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR',
   YouCanNotLogin = 'YOU_CAN_NOT_LOGIN',
   EmailNotVerified = 'EMAIL_NOT_VERIFIED',
+  IdpSubjectNotProvided = 'IDP_SUBJECT_NOT_PROVIDED',
+  IdpSubjectMismatch = 'IDP_SUBJECT_MISMATCH',
   PlatformTypeNotSupported = 'PLATFORM_TYPE_NOT_SUPPORTED',
   CantRequestFreeTrialInPersonalSpace = 'CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE',
   CantRequestFreeTrial = 'CANT_REQUEST_FREE_TRIAL',

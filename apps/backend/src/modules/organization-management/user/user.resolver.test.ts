@@ -210,11 +210,7 @@ describe('user mutation resolver', () => {
         password: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.PASSWORD,
       },
       {
-        req: {
-          session: {
-            user: {},
-          },
-        },
+        req: TestHelper.session.buildRequest(),
         res: {
           cookie: vi.fn(),
         },

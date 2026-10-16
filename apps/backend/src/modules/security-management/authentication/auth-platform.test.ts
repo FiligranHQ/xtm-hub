@@ -314,24 +314,49 @@ describe('initAuthPlatform', () => {
       expect(res.redirect).toHaveBeenCalledWith('/sign-up?error=login-failed');
     });
 
-    it('should forget a previously refused subject once the user is signed in', async () => {
+    it('should send the user to the sign-up page with the referer when the session cannot be started', async () => {
       // Given
       givenPassportOutcome(null, activeUser);
-      mocks.authenticateUser.mockResolvedValue(activeUser);
-      const req = buildRequest();
-      req.session.unverifiedIdpSubject = 'auth0|unverified-user';
+      mocks.authenticateUser.mockRejectedValue(new Error('store unavailable'));
+      const res = buildResponse();
 
       // When
-      await app.callbackHandler(req, buildResponse(), vi.fn());
+      await app.callbackHandler(
+        buildRequest({ referer: '/app' }),
+        res,
+        vi.fn()
+      );
 
       // Then
-      expect(req.session.unverifiedIdpSubject).toBeUndefined();
+      expect(res.redirect).toHaveBeenCalledWith(
+        '/sign-up?error=login-failed&redirect=L2FwcA%3D%3D'
+      );
     });
 
     it('should send a signed-in user back to the referer', async () => {
       // Given
       givenPassportOutcome(null, activeUser);
       mocks.authenticateUser.mockResolvedValue(activeUser);
+      const res = buildResponse();
+
+      // When
+      await app.callbackHandler(
+        buildRequest({ referer: '/app/settings' }),
+        res,
+        vi.fn()
+      );
+
+      // Then
+      expect(res.redirect).toHaveBeenCalledWith('/app/settings');
+    });
+
+    it('should send a signed-in user back to the referer of the session replaced at login', async () => {
+      // Given
+      givenPassportOutcome(null, activeUser);
+      mocks.authenticateUser.mockImplementation(async (req: Request) => {
+        req.session = { user: activeUser } as unknown as Request['session'];
+        return activeUser;
+      });
       const res = buildResponse();
 
       // When

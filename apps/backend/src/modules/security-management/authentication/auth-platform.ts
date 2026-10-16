@@ -119,10 +119,9 @@ export const initAuthPlatform = async (app: Express) => {
           )(req, res, next);
         });
 
+        // Signing in regenerates the session: `referer` was read beforehand.
         const logged = await authenticateUser(req, res, user);
-        if (logged) {
-          delete req.session.unverifiedIdpSubject;
-        } else {
+        if (!logged) {
           logApp.warn(
             'Signed-in user is missing or disabled',
             { provider },
