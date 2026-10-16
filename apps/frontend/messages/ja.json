@@ -799,6 +799,7 @@
     },
     "Actions": {
       "SearchTrials": "電子メール、組織、または地域で検索",
+      "SearchTrialsPlaceholder": "メール、組織、地域で検索",
       "MoveToTop": "トップへ戻る",
       "MoveUp": "上に移動",
       "CancelBundle": "バンドルトライアルをキャンセル"
