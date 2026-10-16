@@ -1,5 +1,7 @@
 import { canDeleteUserRow } from '@/components/admin/user/delete-user.utils';
 import { DeleteUser } from '@/components/admin/user/DeleteUser';
+import { AddUser } from '@/components/admin/user/forms/AddUser';
+import { AdminAddUser } from '@/components/admin/user/forms/admin/AdminAddUser';
 import { EditUser } from '@/components/admin/user/forms/UserUpdate';
 import { useUserListLocalstorage } from '@/components/admin/user/user-list-localstorage';
 import {
@@ -14,7 +16,11 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
-import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  DataTableToolbar,
+} from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -605,27 +611,32 @@ const UserList = ({ organization }: UserListProps) => {
         }}
         onClickRow={(row) => setUserEdit(row.original)}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <div className="flex w-full items-center gap-2 sm:w-auto">
+          <DataTableToolbar
+            search={
               <SearchField
-                className="w-full sm:w-55"
+                fullWidth
                 aria-label={t('UserActions.SearchUser')}
                 placeholder={t('UserActions.SearchUser')}
                 clearLabel={t('DesignSystem.SearchField.Clear')}
                 onChange={searchHandlers.onChange}
                 onClear={searchHandlers.onClear}
               />
-              {isAdminPath && (
+            }
+            filters={
+              isAdminPath && (
                 <UserOrganizationFilter
                   value={filter.organization}
                   onChange={handleOrganizationChange}
                 />
-              )}
-            </div>
-            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
-              <DataTableHeadBarOptions />
-            </div>
-          </div>
+              )
+            }
+            actions={
+              <>
+                <DataTableHeadBarOptions />
+                {isAdminPath ? <AdminAddUser /> : <AddUser />}
+              </>
+            }
+          />
         }
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),

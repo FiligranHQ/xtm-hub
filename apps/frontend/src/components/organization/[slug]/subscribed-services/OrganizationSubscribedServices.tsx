@@ -1,6 +1,10 @@
 'use client';
 
-import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  DataTableToolbar,
+} from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -231,19 +235,19 @@ const OrganizationSubscribedServicesSlug = ({
           rowCount: queryData?.subscriptions.totalCount ?? 0,
         }}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <SearchField
-              className="w-full sm:w-1/3"
-              aria-label={t('Service.SearchServices')}
-              placeholder={t('Service.SearchServices')}
-              clearLabel={t('DesignSystem.SearchField.Clear')}
-              onChange={searchHandlers.onChange}
-              onClear={searchHandlers.onClear}
-            />
-            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
-              <DataTableHeadBarOptions />
-            </div>
-          </div>
+          <DataTableToolbar
+            search={
+              <SearchField
+                fullWidth
+                aria-label={t('Service.SearchServices')}
+                placeholder={t('Service.SearchServices')}
+                clearLabel={t('DesignSystem.SearchField.Clear')}
+                onChange={searchHandlers.onChange}
+                onClear={searchHandlers.onClear}
+              />
+            }
+            actions={<DataTableHeadBarOptions />}
+          />
         }
       />
     </>

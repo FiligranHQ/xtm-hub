@@ -13,7 +13,11 @@ import {
   trialsRegionKey,
   TrialsTabType,
 } from '@/components/trials/trials.const';
-import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  DataTableToolbar,
+} from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -368,19 +372,19 @@ const TrialsTab = ({ type }: TrialsTabProps) => {
       data={requests}
       toolbar={
         <div>
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <SearchField
-              className="w-full sm:w-1/3"
-              aria-label={t('TrialsDashboard.Actions.SearchTrials')}
-              placeholder={t('TrialsDashboard.Actions.SearchTrials')}
-              clearLabel={t('DesignSystem.SearchField.Clear')}
-              onChange={searchHandlers.onChange}
-              onClear={searchHandlers.onClear}
-            />
-            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
-              <DataTableHeadBarOptions />
-            </div>
-          </div>
+          <DataTableToolbar
+            search={
+              <SearchField
+                fullWidth
+                aria-label={t('TrialsDashboard.Actions.SearchTrials')}
+                placeholder={t('TrialsDashboard.Actions.SearchTrials')}
+                clearLabel={t('DesignSystem.SearchField.Clear')}
+                onChange={searchHandlers.onChange}
+                onClear={searchHandlers.onClear}
+              />
+            }
+            actions={<DataTableHeadBarOptions />}
+          />
           <div className="border border-solid border-alert-warning rounded text-feedback-warning-primary flex items-center gap-1 p-2 text-sm mt-4">
             <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-1" />
             {t('TrialsDashboard.WarningCancellation')}
