@@ -229,14 +229,19 @@ describe('huntImportErrors', () => {
     platform
     ${'microsoft-defender'}
     ${'sentinelone'}
-  `('accepts a native query for the detection platform $platform', ({ platform }) => {
-    expect(
-      huntImportErrors({
-        ...validHunt,
-        native_queries: [{ platform, language: 'kql', query: 'DeviceEvents' }],
-      })
-    ).toEqual([]);
-  });
+  `(
+    'accepts a native query for the detection platform $platform',
+    ({ platform }) => {
+      expect(
+        huntImportErrors({
+          ...validHunt,
+          native_queries: [
+            { platform, language: 'kql', query: 'DeviceEvents' },
+          ],
+        })
+      ).toEqual([]);
+    }
+  );
 
   it('accepts a hunt without type, which OpenCTI imports as a telemetry hunt', () => {
     const { hunt_type: _huntType, ...untypedHunt } = validHunt;

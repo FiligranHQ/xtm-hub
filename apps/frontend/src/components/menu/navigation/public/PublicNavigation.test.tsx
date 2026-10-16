@@ -228,9 +228,9 @@ describe('PublicNavigation — open={true}', () => {
   });
 
   it.each`
-    state               | visibleServiceSlugs                                                | shown
+    state               | visibleServiceSlugs                                                  | shown
     ${'hidden'}         | ${ALL_SERVICE_SLUGS.filter((slug) => slug !== 'opencti-hunt-packs')} | ${false}
-    ${'once published'} | ${ALL_SERVICE_SLUGS}                                               | ${true}
+    ${'once published'} | ${ALL_SERVICE_SLUGS}                                                 | ${true}
   `(
     'shows the hunt packs library entry only when it is visible ($state)',
     async ({ visibleServiceSlugs, shown }) => {

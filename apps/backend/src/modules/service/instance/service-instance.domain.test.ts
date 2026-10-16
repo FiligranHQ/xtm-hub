@@ -1073,9 +1073,9 @@ describe('service instance domain', () => {
         await ServiceInstanceDomain.loadSeoServiceInstances();
       return {
         navigation: edges.some(({ node }) => node.id === libraryId),
-        route: !!(await ServiceInstanceDomain.loadAccessibleServiceInstanceBy(
-          { id: libraryId }
-        )),
+        route: !!(await ServiceInstanceDomain.loadAccessibleServiceInstanceBy({
+          id: libraryId,
+        })),
         publicSite: seoInstances.some(({ id }) => id === libraryId),
         publicRoute:
           !!(await ServiceInstanceDomain.loadSeoServiceInstanceBySlug(
