@@ -40,6 +40,8 @@ const createRankedBundle = async (
   return bundle;
 };
 
+const REGION_ONLY_SEARCH_TERM = 'europe';
+
 describe('deploymentRequestDomain', () => {
   beforeEach(async () => {
     await TestHelper.deploymentRequest.delete({});
@@ -221,6 +223,186 @@ describe('deploymentRequestDomain', () => {
 
       expect(result.totalCount).toBe('1');
       expect(result.edges[0]?.node?.id).toBe(openctiDeployment.id);
+    });
+    it('should return deployment request matched only by region when searchRegions contains its region', async () => {
+      // Given
+      const euWestDeployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { region: DeploymentRequestPlatformRegion.EuWest }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { region: DeploymentRequestPlatformRegion.UsEast }
+      );
+
+      // When
+      const result =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            searchTerm: REGION_ONLY_SEARCH_TERM,
+            searchRegions: [DeploymentRequestPlatformRegion.EuWest],
+          }
+        );
+
+      // Then
+      expect(result).toMatchObject({
+        totalCount: '1',
+        edges: [
+          {
+            node: {
+              id: euWestDeployment.id,
+              region: DeploymentRequestPlatformRegion.EuWest,
+            },
+          },
+        ],
+      });
+    });
+    it('should not return deployment request when its region is not in searchRegions and searchTerm does not match', async () => {
+      // Given
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { region: DeploymentRequestPlatformRegion.UsEast }
+      );
+
+      // When
+      const result =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            searchTerm: REGION_ONLY_SEARCH_TERM,
+            searchRegions: [
+              DeploymentRequestPlatformRegion.EuWest,
+              DeploymentRequestPlatformRegion.ApacSg,
+            ],
+          }
+        );
+
+      // Then
+      expect(result).toMatchObject({ totalCount: '0', edges: [] });
+    });
+    it('should return deployment requests matched by email or by region when both searchTerm and searchRegions match', async () => {
+      // Given
+      const emailMatchedDeployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          { region: DeploymentRequestPlatformRegion.UsEast, ordering: 1 }
+        );
+      const regionMatchedDeployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            region: DeploymentRequestPlatformRegion.EuWest,
+            user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+            ordering: 2,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          region: DeploymentRequestPlatformRegion.ApacAu,
+          user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+          ordering: 3,
+        }
+      );
+
+      // When
+      const result =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            searchTerm: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            searchRegions: [DeploymentRequestPlatformRegion.EuWest],
+          }
+        );
+
+      // Then
+      expect(result).toMatchObject({
+        totalCount: '2',
+        edges: [
+          { node: { id: emailMatchedDeployment.id } },
+          { node: { id: regionMatchedDeployment.id } },
+        ],
+      });
+    });
+    it('should not return deployment request with wrong hub_status even if its email or region matches the search', async () => {
+      // Given
+      const activeDeployment =
+        await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+          {
+            region: DeploymentRequestPlatformRegion.EuWest,
+            user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+            hub_status: DeploymentRequestHubStatus.Active,
+          }
+        );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          region: DeploymentRequestPlatformRegion.EuWest,
+          user_requester_id: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.ID,
+          hub_status: DeploymentRequestHubStatus.Expired,
+        }
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        {
+          region: DeploymentRequestPlatformRegion.UsEast,
+          hub_status: DeploymentRequestHubStatus.Expired,
+        }
+      );
+
+      // When
+      const result =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            searchTerm: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
+            searchRegions: [DeploymentRequestPlatformRegion.EuWest],
+            filters: [
+              {
+                key: DeploymentRequestFilterKey.HubStatus,
+                value: [DeploymentRequestHubStatus.Active],
+              },
+            ],
+          }
+        );
+
+      // Then
+      expect(result).toMatchObject({
+        totalCount: '1',
+        edges: [
+          {
+            node: {
+              id: activeDeployment.id,
+              hub_status: DeploymentRequestHubStatus.Active,
+            },
+          },
+        ],
+      });
+    });
+    it('should ignore searchRegions when searchTerm is not specified', async () => {
+      // Given
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { region: DeploymentRequestPlatformRegion.EuWest }
+      );
+      await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
+        { region: DeploymentRequestPlatformRegion.UsEast }
+      );
+
+      // When
+      const result =
+        await DeploymentRequestDomain.loadDeploymentRequests<DeploymentRequestConnection>(
+          {
+            first: 10,
+            orderBy: DeploymentRequestOrdering.Ordering,
+            orderMode: OrderingMode.Asc,
+            searchRegions: [DeploymentRequestPlatformRegion.EuWest],
+          }
+        );
+
+      // Then
+      expect(result).toMatchObject({ totalCount: '2' });
     });
     it('should return ordered deployment requests', async () => {
       const deployment1 =

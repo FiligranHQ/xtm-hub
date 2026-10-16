@@ -2078,6 +2078,7 @@ export type QueryDeploymentRequestsListArgs = {
   first: Scalars['Int']['input'];
   orderBy: DeploymentRequestOrdering;
   orderMode: OrderingMode;
+  searchRegions?: InputMaybe<Array<DeploymentRequestPlatformRegion>>;
   searchTerm?: InputMaybe<Scalars['String']['input']>;
 };
 

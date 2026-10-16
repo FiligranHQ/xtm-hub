@@ -133,6 +133,9 @@ export const DeploymentRequestDomain = {
           `Organization.name`,
           `%${opts.searchTerm}%`
         );
+        if (opts.searchRegions?.length) {
+          qb.orWhereIn('DeploymentRequest.region', opts.searchRegions);
+        }
       });
     }
 
