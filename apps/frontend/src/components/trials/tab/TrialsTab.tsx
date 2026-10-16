@@ -379,7 +379,9 @@ const TrialsTab = ({ type }: TrialsTabProps) => {
               <SearchField
                 fullWidth
                 aria-label={t('TrialsDashboard.Actions.SearchTrials')}
-                placeholder={t('TrialsDashboard.Actions.SearchTrials')}
+                placeholder={t(
+                  'TrialsDashboard.Actions.SearchTrialsPlaceholder'
+                )}
                 clearLabel={t('DesignSystem.SearchField.Clear')}
                 onChange={searchHandlers.onChange}
                 onClear={searchHandlers.onClear}
