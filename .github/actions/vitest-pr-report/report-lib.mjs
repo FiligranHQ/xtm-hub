@@ -1,10 +1,5 @@
-// Pure functions behind report.mjs: parse the pull request diff, find which tests it touches, render the report.
-// Kept free of I/O so report.test.mjs can drive them with fixtures.
-
 const MAX_FAILURE_LINES = 12;
-// `it(`, `test(`, `it.each(`, `test.skip(`... at the start of a line.
 const TEST_CALL = /^\s*(?:it|test)(?:\.\w+)*\s*[(`]/;
-// The title of a test written on one line: `it('title'`, `it.skip("title"`, or the `)('title'` of an `it.each` table.
 const TEST_TITLE = [
   /^\s*(?:it|test)(?:\.\w+)*\(\s*(['"`])((?:\\.|(?!\1).)*)\1/,
   /^\s*\]?\)\(\s*(['"`])((?:\\.|(?!\1).)*)\1/,
@@ -14,20 +9,12 @@ const STATUS_ICON = { passed: '✅', failed: '❌' };
 const statusIcon = (status) => STATUS_ICON[status] ?? '⏭️';
 export const escapeHtml = (text) =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-// eslint-disable-next-line no-control-regex
 const stripAnsi = (text) => text.replace(/\u001b\[[0-9;]*m/g, '');
 const formatCount = (count) => count.toLocaleString('en-US');
 const pluralize = (count, noun) =>
   `${formatCount(count)} ${noun}${count === 1 ? '' : 's'}`;
 const isBlankOrComment = (line) => /^\s*(\/\/.*|\/\*.*|\*.*)?$/.test(line ?? '');
 
-/**
- * Reads a `git diff --unified=0` output.
- * - changedLines: per file still present, the line numbers the diff adds or changes (new side).
- * - removedLines: per file, the content of the lines the diff removes (keyed by the new path when the file still
- *   exists).
- * - deletedFiles: the files the diff deletes.
- */
 export const parseDiff = (diff) => {
   const changedLines = new Map();
   const removedLines = new Map();
@@ -38,8 +25,6 @@ export const parseDiff = (diff) => {
   let hunk = null;
 
   const closeHunk = () => {
-    // A pure deletion touches the line it was removed after, unless what it removed is a whole test: that one is
-    // reported as removed, not as a change to its neighbor.
     if (hunk && hunk.count === 0 && newPath && !hunk.removed.some((line) => TEST_CALL.test(line))) {
       changedLines.get(newPath).add(Math.max(hunk.start, 1));
     }
@@ -96,7 +81,6 @@ export const parseDiff = (diff) => {
   return { changedLines, removedLines, deletedFiles };
 };
 
-// Index just past the bracket that closes the one at `index`, skipping strings, template literals and comments.
 const CLOSING = { '(': ')', '[': ']', '{': '}' };
 const skipQuoted = (source, index) => {
   const quote = source[index];
@@ -146,8 +130,6 @@ const skipGroup = (source, index) => {
   return source.length;
 };
 
-// Line where the test call starting on `startLine` ends: its arguments, plus the second call of `it.each(...)(...)`
-// and the table of `it.each\`...\``.
 const findCallEnd = (sourceLines, startLine) => {
   const source = sourceLines.join('\n');
   const lineOffset = sourceLines.slice(0, startLine - 1).join('\n').length + (startLine > 1 ? 1 : 0);
@@ -169,11 +151,6 @@ const findCallEnd = (sourceLines, startLine) => {
   return source.slice(0, consumed).split('\n').length;
 };
 
-/**
- * Line range of each test, keyed by the line Vitest reports for it (the line holding its title). A range covers the
- * whole call: from `it(` / `test(` (walking up from the title, since `it.each` tables sit between the two) to the
- * closing parenthesis.
- */
 export const findTestRanges = (sourceLines, titleLines) => {
   const sorted = [...new Set(titleLines.filter(Boolean))].sort((a, b) => a - b);
   const ranges = new Map();
@@ -192,11 +169,6 @@ export const findTestRanges = (sourceLines, titleLines) => {
   return ranges;
 };
 
-/**
- * Splits the changed lines of a test file between its tests. A line inside a test marks that test as changed; a line
- * outside every test (imports, mocks, hooks, describe blocks) is shared code: every test may be affected. Blank and
- * comment-only lines are ignored.
- */
 export const classifyChanges = (sourceLines, tests, changedLines) => {
   const ranges = findTestRanges(
     sourceLines,
@@ -222,8 +194,6 @@ export const classifyChanges = (sourceLines, tests, changedLines) => {
   };
 };
 
-// Titles of the tests whose title line the diff removes and that no longer appear in the file. Best effort: a title
-// built at runtime or split over several lines is not seen.
 export const findRemovedTitles = (removedLines, currentSource) => {
   const titles = removedLines.flatMap((line) => {
     for (const pattern of TEST_TITLE) {
@@ -244,7 +214,6 @@ const listFailures = (testFiles) =>
     const failures = testFile.tests
       .filter((test) => test.status === 'failed')
       .map((test) => ({ file: testFile.path, name: test.name, message: test.failureMessages.join('\n') }));
-    // A file that fails before running any test (import error, failing hook) has no failed test of its own.
     if (testFile.status === 'failed' && failures.length === 0) {
       failures.push({ file: testFile.path, name: 'Test file failed to run', message: testFile.message ?? '' });
     }
@@ -269,7 +238,6 @@ const renderTestFile = (testFile, { changedTests, sharedChanged }) => {
   const failed = testFile.status === 'failed' || testFile.tests.some((test) => test.status === 'failed');
   const renderTest = (test) =>
     `- ${statusIcon(test.status)} ${changed.has(test) ? '✏️ ' : ''}${escapeHtml(test.name)}`;
-  // Changed tests come first, with any failing one; the untouched ones are folded away.
   const shown = testFile.tests.filter((test) => changed.has(test) || test.status === 'failed');
   const others = testFile.tests.filter((test) => !shown.includes(test));
   const lines = [
@@ -310,11 +278,6 @@ const renderRemoved = (removedTitles, deletedFiles) => {
   return [...lines, ''].join('\n');
 };
 
-/**
- * Builds the report twice from the same data: the job summary keeps everything, the pull request comment shows at
- * most `maxFailures` failures and stops at a whole block before `maxLength` characters, so the changed tests are not
- * pushed out by a long list of failures and every <details> and code block stays closed.
- */
 export const buildReport = ({
   id,
   title,

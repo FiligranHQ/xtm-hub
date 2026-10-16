@@ -1,11 +1,3 @@
-// Builds the Vitest pull request report from the JSON reports of every shard: every failed test, and the tests of the
-// test files the pull request changes, with a ✏️ on the tests whose own code changed. Writes the full report to the
-// job summary and a shorter one for the pull request comment.
-//
-// Usage: node report.mjs --id <id> --title <title> --app-dir <apps/x> --reports <dir> --base <git ref>
-//   --summary-file <path> --comment-file <path> [--max-failures <n>] [--max-length <n>]
-// Vitest must run with `--reporter=json --includeTaskLocation` so each test carries its line number.
-
 import { execFileSync } from 'node:child_process';
 import {
   appendFileSync,
@@ -33,7 +25,6 @@ const { values: args } = parseArgs({
 });
 const appDir = args['app-dir'].replace(/\/$/, '');
 
-// Vitest writes absolute paths from inside the test container: keep the part from the app directory on.
 const toRepoPath = (absolutePath) => {
   const index = absolutePath.lastIndexOf(`/${appDir}/`);
   return index === -1 ? absolutePath : absolutePath.slice(index + 1);
@@ -63,7 +54,6 @@ const readTestFiles = () => {
     }));
 };
 
-// Only the test files matter: the rest of the app's diff can be large and is never read.
 const diff = execFileSync(
   'git',
   [

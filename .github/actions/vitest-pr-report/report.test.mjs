@@ -1,4 +1,3 @@
-// Run with: node --test .github/actions/vitest-pr-report/report.test.mjs
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
@@ -41,7 +40,6 @@ const TESTS = [
   { name: 'omit › keeps others', status: 'passed', line: 19, failureMessages: [] },
 ];
 
-// A diff that replaces each of `lines` in FILE, one hunk per line.
 const diffChanging = (lines, removed = []) =>
   [
     `diff --git a/${FILE} b/${FILE}`,
@@ -76,7 +74,6 @@ describe('classifyChanges', () => {
     assert.deepEqual(changedNames([20]), ['omit › keeps others']);
   });
 
-  // node:test has no it.each: the datasets below loop instead.
   for (const [label, line] of [
     ['an import', 1],
     ['a shared constant', 4],
@@ -207,7 +204,6 @@ describe('buildReport', () => {
   });
 
   describe('with many failures', () => {
-    // Failure messages from Testing Library can hold raw HTML, <details> included.
     const failing = {
       ...testFile,
       tests: Array.from({ length: 40 }, (_, index) => ({

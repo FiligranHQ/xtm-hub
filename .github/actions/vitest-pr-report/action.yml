@@ -37,7 +37,6 @@ runs:
         APP_DIR: ${{ inputs.app-dir }}
         REPORTS_DIR: ${{ runner.temp }}/vitest-${{ inputs.id }}-reports
         COMMENT_FILE: ${{ runner.temp }}/vitest-${{ inputs.id }}-comment.md
-      # GitHub rejects comments over 65,536 characters; the job summary keeps the full report.
       run: |
         node "${GITHUB_ACTION_PATH}/report.mjs" --id "$REPORT_ID" --title "$REPORT_TITLE" \
           --app-dir "$APP_DIR" --reports "$REPORTS_DIR" --base HEAD^1 \
@@ -45,14 +44,12 @@ runs:
           --max-failures 20 --max-length 60000
 
     - name: Comment on the pull request
-      # A pull request from a fork gets a read-only token: the job summary is all it gets.
       if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
       shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
         MARKER: '<!-- vitest-report:${{ inputs.id }} -->'
-        # Anyone can post a comment starting with the marker: only update the one the workflow posted.
         COMMENT_AUTHOR: 'github-actions[bot]'
         COMMENT_FILE: ${{ runner.temp }}/vitest-${{ inputs.id }}-comment.md
       run: |
