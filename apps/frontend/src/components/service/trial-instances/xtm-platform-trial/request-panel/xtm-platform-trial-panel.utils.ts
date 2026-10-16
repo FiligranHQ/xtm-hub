@@ -1,7 +1,4 @@
-import {
-  DeploymentRequestHubStatus,
-  PlatformIdentifier,
-} from '@graphql/generated';
+import { DeploymentRequestHubStatus } from '@graphql/generated';
 
 export enum XtmPlatformTrialStatusPanelState {
   RequestInProgress = 'request-in-progress',
@@ -18,7 +15,7 @@ export enum XtmPlatformTrialStatusPanelState {
 export type XtmPlatformTrialPanelView =
   | { kind: 'personalSpace' }
   | { kind: 'notAllowed' }
-  | { kind: 'form'; hasOngoingStandaloneTrials: boolean }
+  | { kind: 'form' }
   | {
       kind: 'status';
       state: XtmPlatformTrialStatusPanelState;
@@ -28,7 +25,6 @@ export type XtmPlatformTrialPanelView =
 interface DeriveXtmPlatformTrialPanelViewParams {
   isPersonalSpace: boolean;
   isAllowed: boolean;
-  ongoingStandaloneTrials: PlatformIdentifier[];
   hubStatus?: DeploymentRequestHubStatus | null;
 }
 
@@ -71,7 +67,6 @@ const getRequestInProgressStepIndex = (
 export const deriveXtmPlatformTrialPanelView = ({
   isPersonalSpace,
   isAllowed,
-  ongoingStandaloneTrials,
   hubStatus,
 }: DeriveXtmPlatformTrialPanelViewParams): XtmPlatformTrialPanelView => {
   if (isPersonalSpace) {
@@ -94,8 +89,5 @@ export const deriveXtmPlatformTrialPanelView = ({
       };
     }
   }
-  return {
-    kind: 'form',
-    hasOngoingStandaloneTrials: ongoingStandaloneTrials.length > 0,
-  };
+  return { kind: 'form' };
 };

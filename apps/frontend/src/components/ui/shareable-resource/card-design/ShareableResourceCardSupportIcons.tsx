@@ -22,7 +22,7 @@ export const ShareableResourceCardSupportIcons = ({
     !!document.verified;
 
   return (
-    <div className="flex gap-s">
+    <div className="flex gap-2">
       <ResourceStatusIcons
         deployable={deployable}
         verified={verified}

@@ -56,22 +56,13 @@ describe('private xtm-platform-trial page', () => {
   beforeEach(() => {
     mockUseXtmPlatformBundleQuery.mockReset();
     mockUseXtmPlatformTrialPanelView.mockReset();
-    mockUseXtmPlatformTrialPanelView.mockReturnValue({
-      view: null,
-      showLimitations: false,
-      ongoingStandaloneTrials: [],
-    });
+    mockUseXtmPlatformTrialPanelView.mockReturnValue({ kind: 'form' });
   });
 
   it('renders the breadcrumb and the private panel with limitations shown when there is no active bundle', async () => {
     mockUseXtmPlatformBundleQuery.mockReturnValue({
       data: { xtmPlatformBundle: null },
       isLoading: false,
-    });
-    mockUseXtmPlatformTrialPanelView.mockReturnValue({
-      view: { kind: 'form', hasOngoingStandaloneTrials: false },
-      showLimitations: true,
-      ongoingStandaloneTrials: [],
     });
 
     const element = await Page();
@@ -99,13 +90,9 @@ describe('private xtm-platform-trial page', () => {
       isLoading: false,
     });
     mockUseXtmPlatformTrialPanelView.mockReturnValue({
-      view: {
-        kind: 'status',
-        state: 'request-in-progress',
-        stepIndex: 0,
-      },
-      showLimitations: false,
-      ongoingStandaloneTrials: [],
+      kind: 'status',
+      state: 'request-in-progress',
+      stepIndex: 0,
     });
 
     const element = await Page();
@@ -114,6 +101,37 @@ describe('private xtm-platform-trial page', () => {
     expect(screen.getByTestId('private-panel')).toHaveTextContent('pending');
     expect(screen.queryByTestId('bundle-dashboard')).not.toBeInTheDocument();
   });
+
+  it.each([
+    { view: { kind: 'personalSpace' }, xtmPlatformBundle: null },
+    { view: { kind: 'notAllowed' }, xtmPlatformBundle: null },
+    {
+      view: { kind: 'status', state: 'request-in-progress', stepIndex: 0 },
+      xtmPlatformBundle: {
+        service_instance_id: 'bundle-instance-id',
+        hub_status: 'pending',
+      },
+    },
+  ])(
+    'should hide the limitations when the panel view is $view.kind',
+    async ({ view, xtmPlatformBundle }) => {
+      // Given
+      mockUseXtmPlatformBundleQuery.mockReturnValue({
+        data: { xtmPlatformBundle },
+        isLoading: false,
+      });
+      mockUseXtmPlatformTrialPanelView.mockReturnValue(view);
+
+      // When
+      const element = await Page();
+      render(element);
+
+      // Then
+      expect(
+        screen.queryByText('Service.Trials.XtmPlatform.Page.Limitations.Title')
+      ).not.toBeInTheDocument();
+    }
+  );
 
   it('renders the bundle dashboard instead of the private panel when an active bundle exists', async () => {
     mockUseXtmPlatformBundleQuery.mockReturnValue({

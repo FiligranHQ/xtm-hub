@@ -114,7 +114,7 @@ const VotableFeatureForm = ({
   return (
     <Form {...form}>
       <form
-        className="w-full space-y-l"
+        className="w-full space-y-4"
         onSubmit={form.handleSubmit(handleSubmit)}>
         <FormField
           control={form.control}
@@ -201,13 +201,13 @@ const VotableFeatureForm = ({
                     backgroundSize: 'cover',
                   }}
                   className="relative min-h-[10rem] rounded border">
-                  <div className="flex h-12 flex-row items-center justify-end bg-elevation-background-layer-1 opacity-90">
+                  <div className="flex h-12 flex-row items-center justify-end layer-1 bg-elevation-default opacity-90">
                     <IconButton
                       variant="destructive"
                       priority="secondary"
                       type="button"
                       aria-label={t('VotingRound.Feature.RemoveIllustration')}
-                      className="m-s"
+                      className="m-2"
                       icon={<DeleteIcon className="size-4" />}
                       onClick={() =>
                         form.setValue('remove_illustration', true, {
@@ -278,7 +278,7 @@ const VotableFeatureForm = ({
               {t('VotingRound.Dialog.DeleteFeature', { title: feature.title })}
             </ConfirmDialog>
           )}
-          <div className="flex gap-s">
+          <div className="flex gap-2">
             <Button
               priority="secondary"
               type="button"

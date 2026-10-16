@@ -128,12 +128,12 @@ if (args[0] === '--imports-only') {
   const changed = [...new Set([...committed, ...workingTree])].filter((p) => p && !RUNNER_FILES.includes(p));
   if (!changed.length) errors.push('No change to validate');
   for (const path of changed) {
-    if (!IN_SCOPE.some((prefix) => path.startsWith(prefix)) || path.startsWith('apps/e2e/tests/__screenshots__/')) {
+    if (SHARED.includes(path)) {
+      if (spec.kind !== 'cleanup') errors.push(`Shared file changed outside the cleanup item: ${path}`);
+    } else if (!IN_SCOPE.some((prefix) => path.startsWith(prefix)) || path.startsWith('apps/e2e/tests/__screenshots__/')) {
       errors.push(`Out of scope: ${path}`);
     } else if (GENERATED.includes(path)) {
       errors.push(`Generated file changed: ${path}`);
-    } else if (SHARED.includes(path) && spec.kind !== 'cleanup') {
-      errors.push(`Shared file changed outside the cleanup item: ${path}`);
     }
   }
 

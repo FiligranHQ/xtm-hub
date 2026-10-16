@@ -133,7 +133,6 @@ const privateNavigationPlatformTrialStatusResponse: PlatformTrialStatusQuery = {
     isBlacklisted: false,
     hub_status: null,
     end_date: null,
-    ongoingStandaloneTrials: [],
   },
 };
 
@@ -266,7 +265,9 @@ describe('PrivateNavigation component — open={true}', () => {
     const xtmPlatformLink = screen.getByRole('link', {
       name: 'XTMPlatform',
     });
-    expect(xtmPlatformLink.className).toContain('bg-primary/10');
+    expect(xtmPlatformLink).toHaveClass(
+      'bg-filigran-brand-primary-transparency-10'
+    );
   });
 
   it('renders nested MyProduct dropdown links for OpenCTI with tooltip url', async () => {

@@ -22,7 +22,7 @@ const LICENSES = ['Free', 'Commercial'] as const;
 const TAGS_KEY = 'tags';
 const TAGS = ['threat', 'intel'];
 const REQUIRED_STAR = '*';
-const FORM_CLASS = 'mt-l';
+const FORM_CLASS = 'mt-4';
 
 const stringsSchema = z.object({
   name: z.string(),

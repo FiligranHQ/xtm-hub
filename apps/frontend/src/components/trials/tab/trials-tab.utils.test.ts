@@ -1,14 +1,9 @@
 import {
-  STANDALONE_PARENT_ID_FILTER_VALUE,
   buildTrialsFilters,
   formatCancellationReason,
   sortProducts,
 } from '@/components/trials/tab/trials-tab.utils';
-import {
-  BUNDLE_SCOPE,
-  TrialsTabType,
-  productScope,
-} from '@/components/trials/trials.const';
+import { TrialsTabType } from '@/components/trials/trials.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestFilterKey,
@@ -24,7 +19,7 @@ describe('manageTrialsUtils', () => {
       'should only ask for bundles on the %s tab',
       (type) => {
         // When
-        const filters = buildTrialsFilters(type, BUNDLE_SCOPE);
+        const filters = buildTrialsFilters(type);
 
         // Then
         expect(filters).toContainEqual({
@@ -34,47 +29,9 @@ describe('manageTrialsUtils', () => {
       }
     );
 
-    it.each(Object.values(TrialsTabType))(
-      'should only ask for the scoped product trials on the %s tab',
-      (type) => {
-        // When
-        const filters = buildTrialsFilters(
-          type,
-          productScope(PlatformIdentifier.Opencti)
-        );
-
-        // Then
-        expect(filters).toContainEqual({
-          key: DeploymentRequestFilterKey.Type,
-          value: [DeploymentRequestDeploymentType.Trial],
-        });
-        expect(filters).toContainEqual({
-          key: DeploymentRequestFilterKey.PlatformIdentifier,
-          value: [PlatformIdentifier.Opencti],
-        });
-      }
-    );
-
-    it.each(Object.values(TrialsTabType))(
-      'should exclude the bundle children from the product scope on the %s tab',
-      (type) => {
-        // When
-        const filters = buildTrialsFilters(
-          type,
-          productScope(PlatformIdentifier.Opencti)
-        );
-
-        // Then
-        expect(filters).toContainEqual({
-          key: DeploymentRequestFilterKey.ParentId,
-          value: [STANDALONE_PARENT_ID_FILTER_VALUE],
-        });
-      }
-    );
-
     it('should restrict the waiting tab to queued requests', () => {
       // When
-      const filters = buildTrialsFilters(TrialsTabType.Waiting, BUNDLE_SCOPE);
+      const filters = buildTrialsFilters(TrialsTabType.Waiting);
 
       // Then
       expect(filters).toContainEqual({

@@ -43,15 +43,13 @@ export const TrialGuidePage = () => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <p className="heading-sm bg-clip-text text-transparent bg-gradient-legacy-focus w-fit mb-xs mt-xl">
+      <p className="title-sm text-gradient-focus w-fit mb-1 mt-6">
         {t('Service.TrialGuide.Eyebrow')}
       </p>
-      <div className="flex items-start justify-between gap-m flex-wrap mb-xl">
-        <div className="flex flex-col gap-xs">
-          <h1 className="heading-2xl">{t('Service.TrialGuide.Title')}</h1>
-          <p className="text-content-body-medium">
-            {t('Service.TrialGuide.Description')}
-          </p>
+      <div className="flex items-start justify-between gap-3 flex-wrap mb-6">
+        <div className="flex flex-col gap-1">
+          <h1 className="title-2xl">{t('Service.TrialGuide.Title')}</h1>
+          <p>{t('Service.TrialGuide.Description')}</p>
         </div>
         <SlackSupportButton />
       </div>
@@ -74,14 +72,14 @@ export const TrialGuidePage = () => {
             />
             <stop
               offset="100%"
-              style={{ stopColor: 'var(--color-filigran-ia-main)' }}
+              style={{ stopColor: 'var(--color-filigran-ia-primary)' }}
             />
           </linearGradient>
         </defs>
       </svg>
       <Tabs
         defaultValue={PlatformIdentifier.Opencti}
-        className="mt-l">
+        className="mt-4">
         <TabsList>
           {TRIAL_GUIDE_TABS.map((platformIdentifier) => {
             const { name, Icon } = PlatformMetadataMapping[platformIdentifier];
@@ -113,7 +111,7 @@ export const TrialGuidePage = () => {
             <TabsContent
               key={platformIdentifier}
               value={platformIdentifier}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-m mt-m">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3">
                 {resourceCards.map((resourceCard) => (
                   <TrialGuideResourceCard
                     key={resourceCard.id}

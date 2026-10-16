@@ -1,3 +1,4 @@
+import { PublicSubLink } from '@/components/menu/navigation/shared/NavigationLinks';
 import testRender from '@/utils/test/test-render';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -160,8 +161,10 @@ describe('PublicNavigation — open={true}', () => {
     const xtmPlatformLink = screen.getByRole('link', {
       name: /^Menu\.XTMPlatform$/,
     });
-    // Active class contains bg-primary/10
-    expect(xtmPlatformLink.className).toContain('bg-primary/10');
+    // Active class contains bg-filigran-brand-primary-transparency-10
+    expect(xtmPlatformLink).toHaveClass(
+      'bg-filigran-brand-primary-transparency-10'
+    );
   });
 
   it('does not apply active styles to links that do not match the current pathname', () => {
@@ -173,7 +176,9 @@ describe('PublicNavigation — open={true}', () => {
     const roadmapLink = screen.getByRole('link', {
       name: /Menu\.XTMRoadmap/,
     });
-    expect(roadmapLink.className).not.toContain('bg-primary/10');
+    expect(roadmapLink).not.toHaveClass(
+      'bg-filigran-brand-primary-transparency-10'
+    );
   });
 
   it('locale is injected into internal link hrefs', async () => {
@@ -299,5 +304,27 @@ describe('PublicNavigation — open={false}', () => {
     await waitFor(() => {
       expect(screen.queryByText('Menu.StartFreeTrial')).not.toBeInTheDocument();
     });
+  });
+});
+
+describe('PublicSubLink', () => {
+  it('paints the gradient on the label of a highlighted, inactive link, not on the link itself', () => {
+    // Given
+    vi.mocked(usePathname).mockReturnValue('/en');
+
+    // When
+    testRender(
+      <PublicSubLink
+        href="/en/highlighted"
+        label="Highlighted"
+        highlight
+      />
+    );
+
+    // Then
+    expect(screen.getByText('Highlighted')).toHaveClass('text-gradient-focus');
+    expect(screen.getByRole('link', { name: 'Highlighted' })).not.toHaveClass(
+      'text-gradient-focus'
+    );
   });
 });

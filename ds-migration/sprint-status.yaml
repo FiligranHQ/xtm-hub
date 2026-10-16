@@ -25,9 +25,9 @@ project: XTM Hub
 project_key: DS
 tracking_system: github-issues
 epic_issue: 3507
-branch: issue/3507
+branch: issue/3708
 base: main
-pull_request: 3715
+pull_request: 3804
 design_system: "@filigran/design-system@1.2.0"
 reference_pull_request: 3614
 # The checks main requires, as GitHub names them. run.sh waits for all of them on each push.
@@ -94,9 +94,13 @@ development_status:
   3706-form: done
   3707-auto-form: done
 
-  # Remove the legacy copy, its theme and aliases, forbid @filigran/ui imports
-  epic-4-cleanup: backlog
-  3708-remove-filigran-ui: backlog
+  # Move the app off the utilities the legacy theme generates, one family per item, then remove
+  # the legacy copy, its theme and aliases, and forbid @filigran/ui imports
+  epic-4-cleanup: done
+  3800-legacy-spacing: done
+  3801-legacy-typography: done
+  3802-legacy-colours: done
+  3708-remove-filigran-ui: done
 
 
 # An item starts only once every listed item, or epic, is done. Generated from the imports
@@ -107,7 +111,7 @@ dependencies:
   3701-tag-input: [3534-badge, 3545-combobox]
   3705-data-table: [3541-checkbox, 3558-menu, 3693-skeleton]
   3707-auto-form: [3541-checkbox, 3548-file-select, 3553-radio, 3556-input, 3561-textarea, 3566-select, 3568-switch, 3698-accordion, 3689-date-picker, 3706-form]
-  3708-remove-filigran-ui: [epic-1-primitives, epic-2-composites, epic-3-candidates]
+  3708-remove-filigran-ui: [epic-1-primitives, epic-2-composites, epic-3-candidates, 3800-legacy-spacing, 3801-legacy-typography, 3802-legacy-colours]
 
 # Issues an item also closes: the legacy file it migrates is all they cover.
 covers:

@@ -259,7 +259,7 @@ const Page = async ({
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
       <BreadcrumbNav value={breadcrumbValue} />
-      <div className="flex gap-s pb-l flex-col md:flex-row">
+      <div className="flex gap-2 pb-4 flex-col md:flex-row">
         {logo ? (
           <div className="w-24 shrink-0 rounded overflow-hidden">
             <Image
@@ -272,13 +272,13 @@ const Page = async ({
             />
           </div>
         ) : (
-          <div className="w-24 p-m border border-light shrink-0">
+          <div className="w-24 p-3 border shrink-0">
             <LogoFiligranIcon className="size-18" />
           </div>
         )}
         <div className="flex flex-col w-full justify-center">
           <div className="flex items-start">
-            <h1 className="whitespace-nowrap mb-s">{document.name}</h1>
+            <h1 className="whitespace-nowrap mb-2">{document.name}</h1>
             <RelayProvider>
               <PublicResourceActions
                 documentData={document}
@@ -303,16 +303,16 @@ const Page = async ({
           images={carouselImages}
         />
       )}
-      <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
+      <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <div className="flex-[3_3_0%]">
-          <h3 className="py-s txt-container-title truncate text-muted-foreground">
+          <h2 className="py-2 title-xs uppercase truncate text-default-secondary">
             {t('PublicResourcePage.Overview')}
-          </h3>
-          <section className="rounded bg-elevation-background-layer-1">
-            <h2 className="p-l">{document?.short_description}</h2>
+          </h2>
+          <section className="rounded layer-1 bg-elevation-default">
+            <p className="p-4 content-base">{document?.short_description}</p>
             <ResourceMarkdownRenderer
               source={document?.description ?? ''}
-              className="p-l"
+              className="p-4"
               filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
                 serviceInstance.service_definition.identifier
               )}

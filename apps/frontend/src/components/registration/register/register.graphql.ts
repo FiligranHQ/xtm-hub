@@ -81,9 +81,7 @@ export const registeredPlatformByServiceInstanceId = graphql`
     $input: RegisteredPlatformInput!
   ) {
     registeredPlatform(input: $input) {
-      platform_id
       title
-      contract
       ...registeredPlatformByServiceInstanceId_fragment
     }
   }
@@ -92,12 +90,15 @@ export const registeredPlatformByServiceInstanceId = graphql`
 export const registeredPlatformByServiceInstanceIdFragment = graphql`
   fragment registeredPlatformByServiceInstanceId_fragment on RegisteredPlatform {
     id
+    service_instance_id
     platform_id
     last_connectivity_check
+    commercial_model
     tenant_id
     title
     contract
     url
+    version
     identifier
     subscription {
       start_date
@@ -126,45 +127,12 @@ export const registeredPlatformByServiceInstanceIdFragment = graphql`
 export const registerRegisteredPlatformFragment = graphql`
   fragment registerRegisteredPlatformFragment on RegisteredPlatform {
     id
-    platform_id
-    tenant_id
-    tenant_name
     title
-    url
-    contract
-    identifier
-    illustration_document_id
-    deployment_request {
-      id
-      type
-      activity_sector
-      job_title
-      hub_status
-      counts_in_orga_quota
-    }
     subscription {
-      end_date
-      start_date
       service_instance {
         id
-        creation_status
         name
       }
     }
-  }
-`;
-
-export const registerRegisteredPlatformListFragment = graphql`
-  fragment registerRegisteredPlatformListFragment on Query
-  @refetchable(queryName: "RegisterRegisteredPlatformListQuery") {
-    registeredPlatforms(input: $input) {
-      ...registerRegisteredPlatformFragment @relay(mask: false, plural: true)
-    }
-  }
-`;
-
-export const RegisterRegisteredPlatformsQuery = graphql`
-  query registerRegisteredPlatformsQuery($input: RegisteredPlatformsInput!) {
-    ...registerRegisteredPlatformListFragment
   }
 `;

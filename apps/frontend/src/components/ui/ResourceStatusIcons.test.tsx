@@ -134,6 +134,13 @@ describe('ResourceStatusIcons', () => {
     );
   });
 
+  describe('without an iconClassName', () => {
+    it('paints the icon in the success colour', () => {
+      const { container } = testRender(<ResourceStatusIcons active />);
+      expect(container.querySelector('svg')).toHaveClass('text-icon-success');
+    });
+  });
+
   describe('with a custom iconClassName', () => {
     it('applies the custom class to the rendered icon', () => {
       const { container } = testRender(
@@ -154,7 +161,7 @@ describe('ResourceStatusIcons', () => {
         />
       );
       const icon = container.querySelector('svg');
-      expect(icon).not.toHaveClass('text-alert-success-primary');
+      expect(icon).not.toHaveClass('text-icon-success');
     });
   });
 

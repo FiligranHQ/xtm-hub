@@ -1,21 +1,15 @@
-import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { ServiceInstanceCardData } from '@/components/service/ServiceInstanceCard';
 import { useTranslate } from '@/hooks/use-translate';
-import { daysUntil } from '@/utils/date';
 import {
   APP_PATH,
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
 } from '@/utils/path/constant';
-import { buildPlatformHoverLinks, isTrial } from '@/utils/platform';
 import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
-import { registerRegisteredPlatformListFragment$data } from '@generated/registerRegisteredPlatformListFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceList_fragment$data } from '@generated/serviceList_fragment.graphql';
 import {
-  DeploymentRequestHubStatus,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
-  ServiceInstanceCreationStatus,
 } from '@graphql/generated';
 
 export const isExternalService = (
@@ -38,51 +32,6 @@ export const platformIdentifierMappedByShareableResourceType: Record<
   [ShareableResourceType.OPENCTI_PLAYBOOK]: PlatformIdentifier.Opencti,
 };
 
-export const isExpired = (endDate: Date | undefined | null): boolean => {
-  return endDate ? new Date(endDate) < new Date() : false;
-};
-
-export const getDisplayDays = (
-  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number]
-) => {
-  if (!isTrial(platform)) {
-    return undefined;
-  }
-
-  if (
-    !platform.subscription?.end_date ||
-    [
-      DeploymentRequestHubStatus.Expired,
-      DeploymentRequestHubStatus.Cancelled,
-    ].includes(
-      platform.deployment_request?.hub_status as DeploymentRequestHubStatus
-    )
-  ) {
-    return platform.deployment_request?.hub_status;
-  }
-
-  if (
-    platform.deployment_request?.hub_status ===
-    DeploymentRequestHubStatus.Queued
-  ) {
-    return 'Requested';
-  }
-  if (
-    platform.subscription?.service_instance?.creation_status ===
-    ServiceInstanceCreationStatus.Pending
-  ) {
-    return 'Provisioning';
-  }
-
-  const target = new Date(platform.subscription?.end_date);
-
-  const diffInDays = daysUntil(target);
-  if (diffInDays <= 0) {
-    return 'Expired';
-  }
-  return `${diffInDays} days remaining`;
-};
-
 const buildDocumentUrl = (
   serviceInstanceId: string,
   logoDocumentId: string | null | undefined
@@ -90,76 +39,6 @@ const buildDocumentUrl = (
   if (logoDocumentId)
     return `url(/document/images/${serviceInstanceId}/${logoDocumentId})`;
   return null;
-};
-
-const freeTrialStaticData = (
-  platformIdentifier: PlatformIdentifier,
-  t: ReturnType<typeof useTranslate>
-) => {
-  return {
-    description: t(
-      `Service.Trials.Display.${platformIdentifier}.FreeTrialDescription`
-    ),
-    name: t(`Service.Trials.Display.${platformIdentifier}.Title`),
-    logoBackgroundImageUrl: `url(/${platformIdentifier}_free-trial-logo.png)`,
-    illustrationDocumentUrl: `/opencti_free-trial-illustration.png`,
-    ordering: -2,
-  };
-};
-
-export const registeredPlatformToServiceInstanceCardData = (
-  platform: registerRegisteredPlatformListFragment$data['registeredPlatforms'][number],
-  t: ReturnType<typeof useTranslate>
-): ServiceInstanceCardData => {
-  const cardBackgroundByServiceMap: Partial<
-    Record<ServiceDefinitionIdentifier, string>
-  > = {
-    [ServiceDefinitionIdentifier.OpenctiRegistration]:
-      'bg-gradient-to-br from-[#05105A] via-[#095298] to-[#05105A]',
-    [ServiceDefinitionIdentifier.OpenaevRegistration]:
-      'bg-gradient-to-br from-[#0F1E38] via-[#0A6D6A] to-[#0F1E38]',
-  };
-  const platformIdentifier = platform.identifier as ServiceDefinitionIdentifier;
-  const commonValues = {
-    id: platform.id,
-    url: platform.url,
-    disableCard:
-      [
-        DeploymentRequestHubStatus.Expired,
-        DeploymentRequestHubStatus.Cancelled,
-      ].includes(
-        platform.deployment_request?.hub_status as DeploymentRequestHubStatus
-      ) || isExpired(platform.subscription?.end_date),
-    hoverLinks: buildPlatformHoverLinks(platform, t),
-  };
-  if (isTrial(platform)) {
-    return {
-      ...commonValues,
-      ...freeTrialStaticData(
-        ServiceDefinitionIdentifierToPlatformIdentifier[platformIdentifier] ??
-          PlatformIdentifier.Opencti,
-        t
-      ),
-      displayedServiceStatus: getDisplayDays(platform),
-    };
-  }
-
-  return {
-    ...commonValues,
-    name: platform.title,
-    description: t('Register.Details.Description'),
-    illustrationDocumentUrl: platform.illustration_document_id
-      ? `/document/visualize/${platform.id}/${platform.illustration_document_id}`
-      : `/${platformIdentifier}-private-platform-illustration.png`,
-    isCustomIllustrationDocument: !!platform.illustration_document_id,
-    logoBackgroundImageUrl: `url(/${platformIdentifier}-private-platform-logo.png)`,
-    fullBackgroundImage: true,
-    cardTitleOverride: platform.tenant_name
-      ? `${platform.title} - ${platform.tenant_name}`
-      : platform.title,
-    card_background: cardBackgroundByServiceMap[platformIdentifier] ?? null,
-    ordering: -1, // registered platforms are displayed at the first position, after free trials
-  };
 };
 
 const computeUrl = (
@@ -223,6 +102,5 @@ export const seoServiceInstanceToInstanceCardData = (
       instance.logo_document_id
     ),
     url: computeUrl(instance, true),
-    ordering: 0,
   };
 };

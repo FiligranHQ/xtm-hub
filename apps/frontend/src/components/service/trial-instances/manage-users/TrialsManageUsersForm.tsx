@@ -183,11 +183,11 @@ export const TrialsManageUsersForm = ({
   return (
     <Form {...form}>
       <form
-        className="w-full space-y-xl"
+        className="w-full space-y-6"
         onSubmit={form.handleSubmit(onSubmit)}>
         {groupFields}
         <SheetFooter>
-          <div className="flex gap-s">
+          <div className="flex gap-2">
             <Button
               priority="secondary"
               type="button"

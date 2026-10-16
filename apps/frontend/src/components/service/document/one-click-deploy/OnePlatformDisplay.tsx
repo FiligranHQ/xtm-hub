@@ -21,7 +21,7 @@ const OnePlatformDisplay = ({
 
   return (
     <>
-      <div className="space-y-m">
+      <div className="space-y-3">
         <DialogTitle>
           {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
             resourceName: documentData.name ?? '',
@@ -37,7 +37,7 @@ const OnePlatformDisplay = ({
           })}
         </p>
       </div>
-      <div className="flex justify-end gap-s">
+      <div className="flex justify-end gap-2">
         <Button
           priority="secondary"
           type="button"

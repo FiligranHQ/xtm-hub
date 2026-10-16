@@ -73,7 +73,7 @@ const ShareableResourceDetails = ({
       {!documentData.uploader_organization?.personal_space && (
         <div>
           <ShareableResourceDetailItem label="Organization">
-            <div className="mb-s flex items-center gap-s">
+            <div className="mb-2 flex items-center gap-2">
               <LogoFiligranIcon className="size-8" />
               {/*By default, if the organization is undefined, we display Filigran*/}
 
@@ -84,7 +84,7 @@ const ShareableResourceDetails = ({
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Author')}>
-        <div className="flex items-center gap-s whitespace-nowrap">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <UserDisplay uploader={documentData.uploader} />
         </div>
       </ShareableResourceDetailItem>
@@ -100,7 +100,7 @@ const ShareableResourceDetails = ({
         <>
           <ShareableResourceDetailItem
             label={t('Service.ShareableResources.Details.IntegrationType')}>
-            <div className="flex items-center gap-s">
+            <div className="flex items-center gap-2">
               <span>
                 {t(
                   `Service.OpenctiIntegrations.Type.${documentData.integration_type}`
@@ -113,7 +113,7 @@ const ShareableResourceDetails = ({
               label={t(
                 'Service.ShareableResources.Details.IntegrationSolutionCategory'
               )}>
-              <div className="flex items-center gap-s">
+              <div className="flex items-center gap-2">
                 <span>
                   {(
                     documentData.solution_categories as ReadonlyArray<{
@@ -132,7 +132,7 @@ const ShareableResourceDetails = ({
               label={t(
                 'Service.ShareableResources.Details.IntegrationLicenseType'
               )}>
-              <div className="flex items-center gap-s">
+              <div className="flex items-center gap-2">
                 <span>{documentData.license_type}</span>
               </div>
             </ShareableResourceDetailItem>

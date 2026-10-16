@@ -115,7 +115,7 @@ export const Profile = () => {
 
   return (
     <>
-      <section className="flex flex-col gap-xl m-auto w-full sm:w-10/12 md:w-8/12">
+      <section className="flex flex-col gap-6 m-auto w-full sm:w-10/12 md:w-8/12">
         <ProfileFormEdit onSubmit={handleSubmit} />
         <ProfileFormPreferences />
         <ProfileFormPicture onSubmit={handleUploadPicture} />

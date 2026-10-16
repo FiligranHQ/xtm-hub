@@ -4,10 +4,23 @@ query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
     identifier
     title
     contract
+    deployment_request {
+      parent_id
+    }
     subscription {
       start_date
       end_date
       service_instance_id
     }
+  }
+}
+
+query RegisteredSaasPlatformMetadata($input: RegisteredPlatformInput!) {
+  registeredSaasPlatformMetadata(input: $input) {
+    hostname
+    plan
+    start_date
+    end_date
+    region
   }
 }

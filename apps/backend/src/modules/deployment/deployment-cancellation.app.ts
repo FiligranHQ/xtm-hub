@@ -12,19 +12,13 @@ import { OrganizationDomain } from '../organization-management/organization/orga
 import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
-import {
-  DeploymentRequestDomain,
-  shouldDeleteDeploymentRequestAudience,
-} from './deployment.domain';
+import { DeploymentRequestDomain } from './deployment.domain';
 import { DeploymentHelper } from './deployment.helper';
 import { DeploymentQuotaApp } from './quota/deployment.quota.app';
 import {
   DeploymentQuotaDomain,
   quotaKeysOfRequest,
 } from './quota/deployment.quota.domain';
-
-export const BUNDLE_REQUEST_CANCELLATION_REASON =
-  'Other: Cancelled automatically when the XTM Platform trial was requested';
 
 export const DeploymentCancellationApp = {
   sendUpdateDeploymentTelemetryEvent: async (
@@ -161,27 +155,5 @@ export const DeploymentCancellationApp = {
         return updatedDeploymentRequest;
       }
     );
-  },
-
-  cancelOngoingStandaloneTrialsForBundle: async (
-    bundle: DeploymentRequestModel
-  ): Promise<void> => {
-    const standaloneTrials =
-      await DeploymentRequestDomain.loadOngoingStandaloneTrialsForOrganization(
-        bundle.organization_requester_id
-      );
-
-    for (const trial of standaloneTrials) {
-      await DeploymentCancellationApp.applyCancellationToDeploymentRequest({
-        deploymentRequest: trial,
-        userId: bundle.user_requester_id,
-        isAdmin: false,
-        cancellationReason: BUNDLE_REQUEST_CANCELLATION_REASON,
-      });
-
-      if (shouldDeleteDeploymentRequestAudience(trial)) {
-        await DeploymentRequestDomain.deleteDeploymentRequestAudience(trial);
-      }
-    }
   },
 };

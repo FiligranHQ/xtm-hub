@@ -1,5 +1,4 @@
 import EeBadge from '@/components/service/document/one-click-deploy/EeBadge';
-import { ReachSalesMutation } from '@/components/service/trial-instances/reach-sales.graphql';
 import { Form, FormField } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -11,18 +10,20 @@ import {
 } from '@/components/ui/sheet';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import {
   FiligranWebsiteUtmCampaign,
   withFiligranWebsiteUtm,
 } from '@/utils/filigran-website-utm';
 import { Button, Textarea } from '@filigran/design-system';
-import { reachSalesMutation as ReachSalesMutationType } from '@generated/reachSalesMutation.graphql';
-import { PlatformIdentifier } from '@graphql/generated';
+import {
+  PlatformIdentifier,
+  useReachSalesAboutPlatformMutation,
+} from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { useMutation } from 'react-relay';
 import { z } from 'zod';
 
 interface EeLearnMoreSheetProps {
@@ -66,8 +67,26 @@ const EeLearnMoreSheet = ({
     }
   }, [open, form]);
 
-  const [commitContactUs, isInFlight] =
-    useMutation<ReachSalesMutationType>(ReachSalesMutation);
+  const { mutate: commitContactUs, isPending: isInFlight } =
+    useReachSalesAboutPlatformMutation(portalGraphqlClient, {
+      onError: (error) => {
+        showSnackbar({
+          severity: 'error',
+          title: t('Utils.Error'),
+          description: t(
+            `Error.Server.${error instanceof Error ? error.message : 'UnknownError'}`
+          ),
+        });
+      },
+      onSuccess: () => {
+        showSnackbar({
+          severity: 'success',
+          title: t('Service.Trials.ReachOutToSalesSuccessTitle'),
+          description: t('Service.Trials.ReachOutToSalesSuccessMessage'),
+        });
+        setOpen(false);
+      },
+    });
 
   const message = useWatch({
     control: form.control,
@@ -76,26 +95,9 @@ const EeLearnMoreSheet = ({
 
   const handleSubmit = (values: z.infer<typeof interestFormSchema>) => {
     commitContactUs({
-      variables: {
-        message: values.message,
-        platformId: serviceInstanceId,
-        platformIdentifier,
-      },
-      onError(error) {
-        showSnackbar({
-          severity: 'error',
-          title: t('Utils.Error'),
-          description: t(`Error.Server.${error.message}`),
-        });
-      },
-      onCompleted() {
-        showSnackbar({
-          severity: 'success',
-          title: t('Service.Trials.ReachOutToSalesSuccessTitle'),
-          description: t('Service.Trials.ReachOutToSalesSuccessMessage'),
-        });
-        setOpen(false);
-      },
+      message: values.message,
+      platformId: serviceInstanceId,
+      platformIdentifier,
     });
   };
 
@@ -107,7 +109,7 @@ const EeLearnMoreSheet = ({
         side="right"
         closeLabel={t('Utils.Close')}>
         <SheetHeader>
-          <div className="flex items-center gap-s">
+          <div className="flex items-center gap-2">
             <SheetTitle>
               {t('Service.ShareableResources.Deploy.EELearnMore.Title')}
             </SheetTitle>
@@ -117,31 +119,31 @@ const EeLearnMoreSheet = ({
             {t('Service.ShareableResources.Deploy.EELearnMore.Subtitle')}
           </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col min-h-full pb-l">
-          <div className="flex flex-col gap-l">
+        <div className="flex flex-col min-h-full pb-4">
+          <div className="flex flex-col gap-4">
             <p className="text-sm font-semibold">
               {t('Service.ShareableResources.Deploy.EELearnMore.Heading')}
             </p>
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-default-secondary">
               {t(
                 'Service.ShareableResources.Deploy.EELearnMore.FirstParagraph'
               )}
             </p>
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-default-secondary">
               {t(
                 'Service.ShareableResources.Deploy.EELearnMore.SecondParagraph'
               )}
             </p>
           </div>
-          <div className="mt-auto flex flex-col gap-xl">
+          <div className="mt-auto flex flex-col gap-6">
             <Separator />
             <div className="flex flex-col">
-              <h3 className="text-sm font-semibold mb-s">
+              <h3 className="text-sm font-semibold mb-2">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionTitle'
                 )}
               </h3>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-default-secondary">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.EnterpriseEditionDescription'
                 )}
@@ -150,17 +152,17 @@ const EeLearnMoreSheet = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 href={EE_OPENCTI_LEARN_MORE_URL}
-                className="text-sm underline text-primary w-fit">
+                className="text-sm underline text-filigran-brand-primary w-fit">
                 {t('Service.ShareableResources.Deploy.EELearnMore.Link')}
               </Link>
             </div>
-            <div className="flex flex-col gap-s">
+            <div className="flex flex-col gap-2">
               <h3 className="text-sm font-semibold">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.InterestedTitle'
                 )}
               </h3>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-default-secondary">
                 {t(
                   'Service.ShareableResources.Deploy.EELearnMore.InterestedSubtitle'
                 )}
@@ -168,7 +170,7 @@ const EeLearnMoreSheet = ({
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
-                  className="flex flex-col gap-s">
+                  className="flex flex-col gap-2">
                   <FormField
                     control={form.control}
                     name="message"

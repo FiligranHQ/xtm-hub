@@ -126,12 +126,12 @@ export const ContentEditDialog = ({
         </DialogDescription>
 
         <DialogBody>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-default-secondary text-sm">
             {tCommon('EditableText.DraftHint')}
           </p>
           <Form {...form}>
             <form
-              className="flex flex-col gap-s"
+              className="flex flex-col gap-2"
               onSubmit={form.handleSubmit(handleSubmit)}>
               <Tabs defaultValue={currentLocale}>
                 <TabsList>
@@ -147,7 +147,7 @@ export const ContentEditDialog = ({
                   <TabsContent
                     key={locale}
                     value={locale}
-                    className="flex flex-col gap-s pt-l">
+                    className="flex flex-col gap-2 pt-4">
                     {isLoadingValues ? (
                       <Skeleton className="h-24 w-full" />
                     ) : (

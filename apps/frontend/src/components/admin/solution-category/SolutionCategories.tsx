@@ -80,7 +80,7 @@ const SolutionCategories = () => {
       header: t('SolutionCategory.ListPage.Product'),
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex flex-wrap gap-xs">
+        <div className="flex flex-wrap gap-1">
           {row.original.product.map((product) => (
             <Chip
               key={product}
@@ -142,7 +142,7 @@ const SolutionCategories = () => {
 
   return (
     <>
-      <div className="mb-s flex justify-end">
+      <div className="mb-2 flex justify-end">
         <AddSolutionCategory />
       </div>
       <DataTable
@@ -164,14 +164,14 @@ const SolutionCategories = () => {
         }}
         onClickRow={({ original }) => setSolutionCategoryEdit(original)}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
             <div className="w-full sm:w-1/3">
               <SolutionCategoryProductFilter
                 selectedProduct={selectedProduct}
                 onProductChange={onProductChange}
               />
             </div>
-            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
               <DataTableHeadBarOptions />
             </div>
           </div>

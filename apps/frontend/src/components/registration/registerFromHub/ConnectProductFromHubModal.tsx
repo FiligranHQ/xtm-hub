@@ -134,7 +134,7 @@ const ConnectProductFromHubModal = ({
       showFooter={!canManageOrganization}>
       {canManageOrganization ? (
         <>
-          <div className="text-content-body-compact whitespace-pre-line">
+          <div className="text-content-compact whitespace-pre-line">
             {t('Register.ConnectFromHub.MinimumVersionRequired', {
               openctiVersion: '7.260728.0',
               openaevVersion: '3.260729.0',

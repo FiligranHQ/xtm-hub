@@ -26,7 +26,7 @@ export const EpicItemCard = ({
       footer={
         <>
           <Separator />
-          <div className="mt-m">
+          <div className="mt-3">
             <EpicItemFooter epic={epic}>
               <EpicAdminMenu
                 epic={epic}

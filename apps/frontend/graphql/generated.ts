@@ -844,7 +844,7 @@ export type FacetBucket = {
 export enum FeatureFlag {
   DecouplingConnectors = 'DECOUPLING_CONNECTORS',
   Dummy = 'DUMMY',
-  TrialInvite = 'TRIAL_INVITE'
+  SaasMetrics = 'SAAS_METRICS'
 }
 
 export enum FiligranProduct {
@@ -1917,7 +1917,6 @@ export type PlatformTrialStatus = {
   end_date: Maybe<Scalars['Date']['output']>;
   hub_status: Maybe<DeploymentRequestHubStatus>;
   isBlacklisted: Scalars['Boolean']['output'];
-  ongoingStandaloneTrials: Array<PlatformIdentifier>;
 };
 
 export enum PortalCapability {
@@ -2004,6 +2003,7 @@ export type Query = {
    * contains it (case-insensitive) are considered.
    */
   registeredProductVersions: Array<RegisteredProductVersion>;
+  registeredSaasPlatformMetadata: Maybe<SaasPlatformMetadata>;
   rolePortals: Array<RolePortal>;
   saasPlatforms: RegisteredPlatformConnection;
   seoServiceInstance: SeoServiceInstance;
@@ -2240,6 +2240,11 @@ export type QueryRegisteredProductVersionsArgs = {
 };
 
 
+export type QueryRegisteredSaasPlatformMetadataArgs = {
+  input: RegisteredPlatformInput;
+};
+
+
 export type QuerySaasPlatformsArgs = {
   after: InputMaybe<Scalars['ID']['input']>;
   first: Scalars['Int']['input'];
@@ -2425,6 +2430,7 @@ export type RegisterPlatformInput = {
 
 export type RegisteredPlatform = Node & {
   __typename?: 'RegisteredPlatform';
+  commercial_model: Maybe<CommercialModel>;
   contract: PlatformContract;
   deployment_request: Maybe<DeploymentRequest>;
   id: Scalars['ID']['output'];
@@ -2537,6 +2543,15 @@ export type SsoGroupRolePortal = {
   __typename?: 'SSOGroupRolePortal';
   rolePortal: RolePortal;
   ssoGroup: Scalars['String']['output'];
+};
+
+export type SaasPlatformMetadata = {
+  __typename?: 'SaasPlatformMetadata';
+  end_date: Maybe<Scalars['Date']['output']>;
+  hostname: Maybe<Scalars['String']['output']>;
+  plan: Maybe<Scalars['String']['output']>;
+  region: Maybe<Scalars['String']['output']>;
+  start_date: Maybe<Scalars['Date']['output']>;
 };
 
 export type SendTelemetryMutation = {
@@ -3393,6 +3408,14 @@ export type TrialsAdminCancelDeploymentRequestMutationVariables = Exact<{
 
 export type TrialsAdminCancelDeploymentRequestMutation = { __typename?: 'Mutation', adminCancelDeploymentRequest: { __typename?: 'DeploymentRequest', id: string } | null };
 
+export type TrialsCancelDeploymentRequestMutationVariables = Exact<{
+  deploymentRequestId: Scalars['DeploymentRequestId']['input'];
+  cancellationReason: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type TrialsCancelDeploymentRequestMutation = { __typename?: 'Mutation', cancelDeploymentRequest: { __typename?: 'DeploymentRequest', id: string, region: DeploymentRequestPlatformRegion, type: DeploymentRequestDeploymentType, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, counts_in_orga_quota: boolean } | null };
+
 export type TrialsReorderDeploymentRequestInQueueMutationVariables = Exact<{
   input: ReorderDeploymentRequestInQueueInput;
 }>;
@@ -3409,7 +3432,7 @@ export type TrialsUpdateDeploymentQuotaCapacityMutation = { __typename?: 'Mutati
 
 export type TrialsProductFragment = { __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null };
 
-export type TrialsRowFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, organization_requester_id: any, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, platform_identifier: PlatformIdentifier | null, platform_id: string | null, platform_url: string | null, url: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null }> | null };
+export type TrialsRowFragment = { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null }> | null };
 
 export type TrialsQuotaFragment = { __typename?: 'DeploymentAvailability', id: string, region: DeploymentRequestPlatformRegion, availableCount: number, capacity: number };
 
@@ -3423,7 +3446,7 @@ export type TrialsListQueryVariables = Exact<{
 }>;
 
 
-export type TrialsListQuery = { __typename?: 'Query', deploymentRequestsList: { __typename?: 'DeploymentRequestConnection', totalCount: number, edges: Array<{ __typename?: 'DeploymentRequestEdge', node: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, organization_requester_id: any, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, platform_identifier: PlatformIdentifier | null, platform_id: string | null, platform_url: string | null, url: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null }> | null } }> } };
+export type TrialsListQuery = { __typename?: 'Query', deploymentRequestsList: { __typename?: 'DeploymentRequestConnection', totalCount: number, edges: Array<{ __typename?: 'DeploymentRequestEdge', node: { __typename?: 'DeploymentRequest', id: string, service_instance_id: any, ordering: number, hub_status: DeploymentRequestHubStatus, requester_email: string | null, organization_name: string | null, region: DeploymentRequestPlatformRegion, request_date: any, start_date: any | null, end_date: any | null, cancellation_date: any | null, cancellation_user_email: string | null, cancellation_reason: string | null, children: Array<{ __typename?: 'DeploymentRequest', id: string, platform_identifier: PlatformIdentifier | null, hub_status: DeploymentRequestHubStatus, platform_id: string | null, platform_url: string | null, url: string | null }> | null } }> } };
 
 export type TrialsQuotasQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3593,6 +3616,23 @@ export type MeOrganizationDomainsQueryVariables = Exact<{ [key: string]: never; 
 
 export type MeOrganizationDomainsQuery = { __typename?: 'Query', me: { __typename?: 'User', organizations: Array<{ __typename?: 'Organization', id: string, domains: Array<string> | null }> | null } | null };
 
+export type NewsFeedDeleteItemMutationVariables = Exact<{
+  id: Scalars['NewsFeedItemId']['input'];
+}>;
+
+
+export type NewsFeedDeleteItemMutation = { __typename?: 'Mutation', deleteNewsFeedItem: boolean };
+
+export type NewsFeedItemRowFragment = { __typename?: 'NewsFeedItem', id: string, title: string, type: NewsFeedItemType, creation_date: any, tags: Array<string>, is_deleted: boolean, metadata: Array<{ __typename?: 'NewsFeedItemMetadata', key: NewsFeedItemMetadataKey, value: string | null }> };
+
+export type NewsFeedListQueryVariables = Exact<{
+  count: Scalars['Int']['input'];
+  cursor: InputMaybe<Scalars['ID']['input']>;
+}>;
+
+
+export type NewsFeedListQuery = { __typename?: 'Query', newsFeedItems: { __typename?: 'NewsFeedItemConnection', totalCount: number, edges: Array<{ __typename?: 'NewsFeedItemEdge', node: { __typename?: 'NewsFeedItem', id: string, title: string, type: NewsFeedItemType, creation_date: any, tags: Array<string>, is_deleted: boolean, metadata: Array<{ __typename?: 'NewsFeedItemMetadata', key: NewsFeedItemMetadataKey, value: string | null }> } }> } };
+
 export type OrganizationSubscribedServicesBreadcrumbQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -3619,14 +3659,21 @@ export type RegisteredPlatformsListQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, platform_id: string, title: string, url: string, contract: PlatformContract, version: string | null, identifier: ServiceDefinitionIdentifier, deployment_request: { __typename?: 'DeploymentRequest', type: DeploymentRequestDeploymentType, parent_id: any | null } | null, subscription: { __typename?: 'SubscriptionModel', end_date: any | null, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string } } | null }> };
+export type RegisteredPlatformsListQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, platform_id: string, title: string, url: string, contract: PlatformContract, version: string | null, identifier: ServiceDefinitionIdentifier, deployment_request: { __typename?: 'DeploymentRequest', parent_id: any | null } | null, subscription: { __typename?: 'SubscriptionModel', end_date: any | null, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string } } | null }> };
 
 export type RegisteredPlatformsQueryVariables = Exact<{
   input: RegisteredPlatformsInput;
 }>;
 
 
-export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
+export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, deployment_request: { __typename?: 'DeploymentRequest', parent_id: any | null } | null, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
+
+export type RegisteredSaasPlatformMetadataQueryVariables = Exact<{
+  input: RegisteredPlatformInput;
+}>;
+
+
+export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null } | null };
 
 export type AddRolePortalMutationVariables = Exact<{
   input: AddRolePortalInput;
@@ -3815,12 +3862,29 @@ export type GiveDeploymentFeedbackMutationVariables = Exact<{
 
 export type GiveDeploymentFeedbackMutation = { __typename?: 'Mutation', giveDeploymentFeedback: { __typename?: 'Success', success: boolean } };
 
+export type ReachSalesMutationVariables = Exact<{
+  message: InputMaybe<Scalars['String']['input']>;
+  deploymentRequestType: InputMaybe<DeploymentRequestDeploymentType>;
+}>;
+
+
+export type ReachSalesMutation = { __typename?: 'Mutation', contactUs: { __typename?: 'Success', success: boolean } };
+
+export type ReachSalesAboutPlatformMutationVariables = Exact<{
+  message: InputMaybe<Scalars['String']['input']>;
+  platformId: InputMaybe<Scalars['ID']['input']>;
+  platformIdentifier: InputMaybe<PlatformIdentifier>;
+}>;
+
+
+export type ReachSalesAboutPlatformMutation = { __typename?: 'Mutation', contactUs: { __typename?: 'Success', success: boolean } };
+
 export type PlatformTrialStatusQueryVariables = Exact<{
   organizationId: Scalars['OrganizationId']['input'];
 }>;
 
 
-export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', deploymentRequestId: any | null, isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null, ongoingStandaloneTrials: Array<PlatformIdentifier> } };
+export type PlatformTrialStatusQuery = { __typename?: 'Query', platformTrialStatus: { __typename?: 'PlatformTrialStatus', deploymentRequestId: any | null, isBlacklisted: boolean, hub_status: DeploymentRequestHubStatus | null, end_date: any | null } };
 
 export type UseCaseAddMutationVariables = Exact<{
   input: AddUseCaseInput;
@@ -4004,7 +4068,6 @@ export const TrialsRowFragmentDoc = `
   hub_status
   requester_email
   organization_name
-  organization_requester_id
   region
   request_date
   start_date
@@ -4012,10 +4075,6 @@ export const TrialsRowFragmentDoc = `
   cancellation_date
   cancellation_user_email
   cancellation_reason
-  platform_identifier
-  platform_id
-  platform_url
-  url
   children {
     ...TrialsProduct
   }
@@ -4206,6 +4265,20 @@ export const VotableFeaturePublicFragmentDoc = `
   illustration_document_id
   position
   has_my_vote
+}
+    `;
+export const NewsFeedItemRowFragmentDoc = `
+    fragment NewsFeedItemRow on NewsFeedItem {
+  id
+  title
+  type
+  creation_date
+  tags
+  is_deleted
+  metadata {
+    key
+    value
+  }
 }
     `;
 export const OrganizationSubscribedServiceRowFragmentDoc = `
@@ -4609,6 +4682,43 @@ export const useTrialsAdminCancelDeploymentRequestMutation = <
 useTrialsAdminCancelDeploymentRequestMutation.getKey = () => ['TrialsAdminCancelDeploymentRequest'];
 useTrialsAdminCancelDeploymentRequestMutation.getRootKey = () => ['TrialsAdminCancelDeploymentRequest'] as const;
 useTrialsAdminCancelDeploymentRequestMutation.fetcher = (client: GraphQLClient, variables: TrialsAdminCancelDeploymentRequestMutationVariables, headers?: RequestInit['headers']) => fetcher<TrialsAdminCancelDeploymentRequestMutation, TrialsAdminCancelDeploymentRequestMutationVariables>(client, TrialsAdminCancelDeploymentRequestDocument, variables, headers);
+
+export const TrialsCancelDeploymentRequestDocument = `
+    mutation TrialsCancelDeploymentRequest($deploymentRequestId: DeploymentRequestId!, $cancellationReason: String) {
+  cancelDeploymentRequest(
+    deploymentRequestId: $deploymentRequestId
+    cancellationReason: $cancellationReason
+  ) {
+    id
+    region
+    type
+    platform_identifier
+    hub_status
+    counts_in_orga_quota
+  }
+}
+    `;
+
+export const useTrialsCancelDeploymentRequestMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<TrialsCancelDeploymentRequestMutation, TError, TrialsCancelDeploymentRequestMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<TrialsCancelDeploymentRequestMutation, TError, TrialsCancelDeploymentRequestMutationVariables, TContext>(
+      {
+    mutationKey: ['TrialsCancelDeploymentRequest'],
+    mutationFn: (variables?: TrialsCancelDeploymentRequestMutationVariables) => fetcher<TrialsCancelDeploymentRequestMutation, TrialsCancelDeploymentRequestMutationVariables>(client, TrialsCancelDeploymentRequestDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useTrialsCancelDeploymentRequestMutation.getKey = () => ['TrialsCancelDeploymentRequest'];
+useTrialsCancelDeploymentRequestMutation.getRootKey = () => ['TrialsCancelDeploymentRequest'] as const;
+useTrialsCancelDeploymentRequestMutation.fetcher = (client: GraphQLClient, variables: TrialsCancelDeploymentRequestMutationVariables, headers?: RequestInit['headers']) => fetcher<TrialsCancelDeploymentRequestMutation, TrialsCancelDeploymentRequestMutationVariables>(client, TrialsCancelDeploymentRequestDocument, variables, headers);
 
 export const TrialsReorderDeploymentRequestInQueueDocument = `
     mutation TrialsReorderDeploymentRequestInQueue($input: ReorderDeploymentRequestInQueueInput!) {
@@ -5614,6 +5724,91 @@ useInfiniteMeOrganizationDomainsQuery.getKey = (variables?: MeOrganizationDomain
 useInfiniteMeOrganizationDomainsQuery.getRootKey = () => ['MeOrganizationDomains.infinite'] as const;
 useMeOrganizationDomainsQuery.fetcher = (client: GraphQLClient, variables?: MeOrganizationDomainsQueryVariables, headers?: RequestInit['headers']) => fetcher<MeOrganizationDomainsQuery, MeOrganizationDomainsQueryVariables>(client, MeOrganizationDomainsDocument, variables, headers);
 
+export const NewsFeedDeleteItemDocument = `
+    mutation NewsFeedDeleteItem($id: NewsFeedItemId!) {
+  deleteNewsFeedItem(id: $id)
+}
+    `;
+
+export const useNewsFeedDeleteItemMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<NewsFeedDeleteItemMutation, TError, NewsFeedDeleteItemMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<NewsFeedDeleteItemMutation, TError, NewsFeedDeleteItemMutationVariables, TContext>(
+      {
+    mutationKey: ['NewsFeedDeleteItem'],
+    mutationFn: (variables?: NewsFeedDeleteItemMutationVariables) => fetcher<NewsFeedDeleteItemMutation, NewsFeedDeleteItemMutationVariables>(client, NewsFeedDeleteItemDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useNewsFeedDeleteItemMutation.getKey = () => ['NewsFeedDeleteItem'];
+useNewsFeedDeleteItemMutation.getRootKey = () => ['NewsFeedDeleteItem'] as const;
+useNewsFeedDeleteItemMutation.fetcher = (client: GraphQLClient, variables: NewsFeedDeleteItemMutationVariables, headers?: RequestInit['headers']) => fetcher<NewsFeedDeleteItemMutation, NewsFeedDeleteItemMutationVariables>(client, NewsFeedDeleteItemDocument, variables, headers);
+
+export const NewsFeedListDocument = `
+    query NewsFeedList($count: Int!, $cursor: ID) {
+  newsFeedItems(first: $count, after: $cursor) {
+    totalCount
+    edges {
+      node {
+        ...NewsFeedItemRow
+      }
+    }
+  }
+}
+    ${NewsFeedItemRowFragmentDoc}`;
+
+export const useNewsFeedListQuery = <
+      TData = NewsFeedListQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: NewsFeedListQueryVariables,
+      options?: Omit<UseQueryOptions<NewsFeedListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<NewsFeedListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<NewsFeedListQuery, TError, TData>(
+      {
+    queryKey: ['NewsFeedList', variables],
+    queryFn: fetcher<NewsFeedListQuery, NewsFeedListQueryVariables>(client, NewsFeedListDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useNewsFeedListQuery.getKey = (variables: NewsFeedListQueryVariables) => ['NewsFeedList', variables];
+useNewsFeedListQuery.getRootKey = () => ['NewsFeedList'] as const;
+export const useInfiniteNewsFeedListQuery = <
+      TData = InfiniteData<NewsFeedListQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: NewsFeedListQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<NewsFeedListQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<NewsFeedListQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<NewsFeedListQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['NewsFeedList.infinite', variables],
+      queryFn: (metaData) => fetcher<NewsFeedListQuery, NewsFeedListQueryVariables>(client, NewsFeedListDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteNewsFeedListQuery.getKey = (variables: NewsFeedListQueryVariables) => ['NewsFeedList.infinite', variables];
+useInfiniteNewsFeedListQuery.getRootKey = () => ['NewsFeedList.infinite'] as const;
+useNewsFeedListQuery.fetcher = (client: GraphQLClient, variables: NewsFeedListQueryVariables, headers?: RequestInit['headers']) => fetcher<NewsFeedListQuery, NewsFeedListQueryVariables>(client, NewsFeedListDocument, variables, headers);
+
 export const OrganizationSubscribedServicesBreadcrumbDocument = `
     query OrganizationSubscribedServicesBreadcrumb($id: ID!) {
   organization(id: $id) {
@@ -5750,7 +5945,6 @@ export const RegisteredPlatformsListDocument = `
     version
     identifier
     deployment_request {
-      type
       parent_id
     }
     subscription {
@@ -5817,6 +6011,9 @@ export const RegisteredPlatformsDocument = `
     identifier
     title
     contract
+    deployment_request {
+      parent_id
+    }
     subscription {
       start_date
       end_date
@@ -5870,6 +6067,63 @@ export const useInfiniteRegisteredPlatformsQuery = <
 useInfiniteRegisteredPlatformsQuery.getKey = (variables: RegisteredPlatformsQueryVariables) => ['RegisteredPlatforms.infinite', variables];
 useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.infinite'] as const;
 useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
+
+export const RegisteredSaasPlatformMetadataDocument = `
+    query RegisteredSaasPlatformMetadata($input: RegisteredPlatformInput!) {
+  registeredSaasPlatformMetadata(input: $input) {
+    hostname
+    plan
+    start_date
+    end_date
+    region
+  }
+}
+    `;
+
+export const useRegisteredSaasPlatformMetadataQuery = <
+      TData = RegisteredSaasPlatformMetadataQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredSaasPlatformMetadataQueryVariables,
+      options?: Omit<UseQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<RegisteredSaasPlatformMetadataQuery, TError, TData>(
+      {
+    queryKey: ['RegisteredSaasPlatformMetadata', variables],
+    queryFn: fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useRegisteredSaasPlatformMetadataQuery.getKey = (variables: RegisteredSaasPlatformMetadataQueryVariables) => ['RegisteredSaasPlatformMetadata', variables];
+useRegisteredSaasPlatformMetadataQuery.getRootKey = () => ['RegisteredSaasPlatformMetadata'] as const;
+export const useInfiniteRegisteredSaasPlatformMetadataQuery = <
+      TData = InfiniteData<RegisteredSaasPlatformMetadataQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredSaasPlatformMetadataQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<RegisteredSaasPlatformMetadataQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['RegisteredSaasPlatformMetadata.infinite', variables],
+      queryFn: (metaData) => fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteRegisteredSaasPlatformMetadataQuery.getKey = (variables: RegisteredSaasPlatformMetadataQueryVariables) => ['RegisteredSaasPlatformMetadata.infinite', variables];
+useInfiniteRegisteredSaasPlatformMetadataQuery.getRootKey = () => ['RegisteredSaasPlatformMetadata.infinite'] as const;
+useRegisteredSaasPlatformMetadataQuery.fetcher = (client: GraphQLClient, variables: RegisteredSaasPlatformMetadataQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, variables, headers);
 
 export const AddRolePortalDocument = `
     mutation AddRolePortal($input: AddRolePortalInput!) {
@@ -6923,6 +7177,68 @@ useGiveDeploymentFeedbackMutation.getKey = () => ['GiveDeploymentFeedback'];
 useGiveDeploymentFeedbackMutation.getRootKey = () => ['GiveDeploymentFeedback'] as const;
 useGiveDeploymentFeedbackMutation.fetcher = (client: GraphQLClient, variables: GiveDeploymentFeedbackMutationVariables, headers?: RequestInit['headers']) => fetcher<GiveDeploymentFeedbackMutation, GiveDeploymentFeedbackMutationVariables>(client, GiveDeploymentFeedbackDocument, variables, headers);
 
+export const ReachSalesDocument = `
+    mutation ReachSales($message: String, $deploymentRequestType: DeploymentRequestDeploymentType) {
+  contactUs(message: $message, deploymentRequestType: $deploymentRequestType) {
+    success
+  }
+}
+    `;
+
+export const useReachSalesMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<ReachSalesMutation, TError, ReachSalesMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<ReachSalesMutation, TError, ReachSalesMutationVariables, TContext>(
+      {
+    mutationKey: ['ReachSales'],
+    mutationFn: (variables?: ReachSalesMutationVariables) => fetcher<ReachSalesMutation, ReachSalesMutationVariables>(client, ReachSalesDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useReachSalesMutation.getKey = () => ['ReachSales'];
+useReachSalesMutation.getRootKey = () => ['ReachSales'] as const;
+useReachSalesMutation.fetcher = (client: GraphQLClient, variables?: ReachSalesMutationVariables, headers?: RequestInit['headers']) => fetcher<ReachSalesMutation, ReachSalesMutationVariables>(client, ReachSalesDocument, variables, headers);
+
+export const ReachSalesAboutPlatformDocument = `
+    mutation ReachSalesAboutPlatform($message: String, $platformId: ID, $platformIdentifier: PlatformIdentifier) {
+  contactUs(
+    message: $message
+    platformId: $platformId
+    platformIdentifier: $platformIdentifier
+  ) {
+    success
+  }
+}
+    `;
+
+export const useReachSalesAboutPlatformMutation = <
+      TError = unknown,
+      TContext = unknown
+    >(
+      client: GraphQLClient,
+      options?: UseMutationOptions<ReachSalesAboutPlatformMutation, TError, ReachSalesAboutPlatformMutationVariables, TContext>,
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useMutation<ReachSalesAboutPlatformMutation, TError, ReachSalesAboutPlatformMutationVariables, TContext>(
+      {
+    mutationKey: ['ReachSalesAboutPlatform'],
+    mutationFn: (variables?: ReachSalesAboutPlatformMutationVariables) => fetcher<ReachSalesAboutPlatformMutation, ReachSalesAboutPlatformMutationVariables>(client, ReachSalesAboutPlatformDocument, variables, headers)(),
+    ...options
+  }
+    )};
+
+useReachSalesAboutPlatformMutation.getKey = () => ['ReachSalesAboutPlatform'];
+useReachSalesAboutPlatformMutation.getRootKey = () => ['ReachSalesAboutPlatform'] as const;
+useReachSalesAboutPlatformMutation.fetcher = (client: GraphQLClient, variables?: ReachSalesAboutPlatformMutationVariables, headers?: RequestInit['headers']) => fetcher<ReachSalesAboutPlatformMutation, ReachSalesAboutPlatformMutationVariables>(client, ReachSalesAboutPlatformDocument, variables, headers);
+
 export const PlatformTrialStatusDocument = `
     query PlatformTrialStatus($organizationId: OrganizationId!) {
   platformTrialStatus(organizationId: $organizationId) {
@@ -6930,7 +7246,6 @@ export const PlatformTrialStatusDocument = `
     isBlacklisted
     hub_status
     end_date
-    ongoingStandaloneTrials
   }
 }
     `;

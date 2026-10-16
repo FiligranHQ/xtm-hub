@@ -28,22 +28,12 @@ export interface PlatformRegisteredModel {
   adminName: string;
   platformIdentifier: PlatformIdentifier;
 }
-export interface FreeTrialRegistered {
-  firstName: string;
-  platformUrl: string;
-  platformIdentifier: PlatformIdentifier;
-  globalServiceInstanceId: string;
-}
 export interface FreeTrialUserAddedModel {
   firstName: string;
   platformUrl: string;
   platformIdentifier: PlatformIdentifier;
   adminEmail: string;
   trialEndDate: string;
-}
-export interface FreeTrialGenericModel {
-  firstName: string;
-  platformIdentifier: PlatformIdentifier;
 }
 export interface FreeTrialBundleModel {
   firstName: string;
@@ -153,10 +143,6 @@ export type MailTemplates = {
   request_transfer_personal_space: RequestTransferPersonalSpaceMailModel;
   platform_registered: PlatformRegisteredModel;
   platform_unregistered: PlatformUnregisteredModel;
-  free_trial_registered: FreeTrialRegistered;
-  free_trial_provisioning: FreeTrialGenericModel;
-  free_trial_cancelled: FreeTrialGenericModel;
-  free_trial_expired: FreeTrialGenericModel;
   free_trial_bundle_requested: FreeTrialBundleModel;
   free_trial_bundle_provisioning: FreeTrialBundleModel;
   free_trial_bundle_active: FreeTrialBundleActiveModel;
@@ -195,18 +181,6 @@ export const templateSubjects: {
     `${
       PlatformIdentifierToString[params.platformIdentifier]
     } Platform Successfully Unregistered from XTM Hub – Integration is Deactivated`,
-  free_trial_registered: (params: FreeTrialGenericModel) =>
-    `Welcome to your ${
-      PlatformIdentifierToString[params.platformIdentifier]
-    } free trial!`,
-  free_trial_provisioning: (params: FreeTrialGenericModel) =>
-    `Your ${
-      PlatformIdentifierToString[params.platformIdentifier]
-    } Platform Is Being Provisioned`,
-  free_trial_cancelled: (params: FreeTrialGenericModel) =>
-    `Your ${PlatformIdentifierToString[params.platformIdentifier]} Trial Has Been Cancelled`,
-  free_trial_expired: (params: FreeTrialGenericModel) =>
-    `Your ${PlatformIdentifierToString[params.platformIdentifier]} Free Trial Has Expired`,
   free_trial_bundle_requested: () =>
     `Your ${BUNDLE_PLATFORM_NAME} Trial Request`,
   free_trial_bundle_provisioning: () =>

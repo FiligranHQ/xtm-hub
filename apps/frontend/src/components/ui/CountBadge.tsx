@@ -13,7 +13,7 @@ export const CountBadge = ({
   bgFadedClass,
   textClass,
   className,
-  fontClass = 'content-body-base-medium',
+  fontClass = 'content-base-medium',
 }: CountBadgeProps) => (
   <div
     className={cn(

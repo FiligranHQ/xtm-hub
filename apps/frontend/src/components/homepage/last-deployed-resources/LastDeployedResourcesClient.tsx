@@ -37,11 +37,9 @@ const LastDeployedResourcesClient = ({
 
   const resources = data?.lastDeployedOverview.resources ?? [];
   return (
-    <section className="w-full flex-1 min-w-0 flex flex-col gap-l">
-      <div className="flex items-center gap-m">
-        <h2 className="content-body-base text-text-default-primary">
-          {t('Title')}
-        </h2>
+    <section className="w-full flex-1 min-w-0 flex flex-col gap-4">
+      <div className="flex items-center gap-3">
+        <h2 className="content-base text-default-primary">{t('Title')}</h2>
         <Select
           value={selectedServiceInstanceId}
           onValueChange={setSelectedServiceInstanceId}>
@@ -60,7 +58,7 @@ const LastDeployedResourcesClient = ({
                 <SelectItem
                   key={platform.serviceInstanceId}
                   value={platform.serviceInstanceId}>
-                  <span className="flex min-w-0 items-center gap-s">
+                  <span className="flex min-w-0 items-center gap-2">
                     {Icon && <Icon className="size-4 shrink-0" />}
                     <span className="truncate">{platform.title}</span>
                   </span>
@@ -71,7 +69,7 @@ const LastDeployedResourcesClient = ({
         </Select>
       </div>
 
-      <ul className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-x-m gap-y-l items-center">
+      <ul className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-4 items-center">
         {resources.map((resource, index) => (
           <Fragment key={`${resource.document.id}-${index}`}>
             {index > 0 && (

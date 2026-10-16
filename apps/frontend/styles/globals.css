@@ -2,9 +2,8 @@
 @import 'tailwindcss';
 @import '@filigran/design-system/tokens/theme.css';
 @import '@filigran/design-system/styles/gradient-helpers.css';
-@import '../src/components/filigran-ui/theme.css';
-
-@reference '../src/components/filigran-ui/theme.css';
+/* The app skips the package's compiled stylesheet, which bundles these keyframes */
+@import '@filigran/design-system/styles/motion.css';
 
 @theme inline {
   --color-filigran-decoration: var(--color-filigran-decoration);
@@ -19,12 +18,6 @@
     var(--darkblue-700) 30%,
     transparent
   );
-  --hover-background: var(--color-gray-150);
-  --color-primary: var(--primary);
-  --color-foreground: var(--foreground);
-  --color-destructive: var(--destructive);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-ds-bg: var(--ds-bg-main);
 }
 
 .dark,
@@ -35,7 +28,6 @@ body[data-theme='Dark'] {
     var(--blue-500) 30%,
     transparent
   );
-  --hover-background: var(--color-filigran-brand-primary-transparency);
 }
 
 /* The design system declares the input tokens on :root only, which freezes them at layer 0:
@@ -49,7 +41,6 @@ body[data-theme='Dark'] {
   --bg-input-hover: var(--bg-elevation-hover);
 }
 
-@source '../src/components/filigran-ui/**/*.{ts,tsx}';
 /* Tailwind skips node_modules: scan the design-system bundle so its component classes get generated */
 @source '../../../node_modules/@filigran/design-system/dist/**/*.mjs';
 
@@ -59,19 +50,21 @@ body[data-theme='Dark'] {
 @layer base {
   html {
     font-size: 100%;
-    @apply bg-background;
+    @apply bg-elevation-default;
   }
 
   * {
-    @apply border-border;
+    letter-spacing: var(--tracking-normal);
+    @apply border-elevation-subtle;
   }
 
   body {
     font-family: var(--font-ibm-plex-sans), system-ui, sans-serif;
-    font-size: var(--text-content-body-base);
-    font-weight: var(--font-weight-content-body-base);
-    background: var(--gradient-background);
-    color: var(--color-text-default-primary);
+    font-size: var(--text-content-base);
+    font-weight: var(--font-weight-content-base);
+    background: var(--gradient-default);
+    color: var(--text-default-primary);
+    padding-bottom: var(--cookie-banner-height, 0px);
   }
 
   h1,
@@ -84,11 +77,11 @@ body[data-theme='Dark'] {
   }
 
   h1 {
-    @apply txt-title;
+    @apply title-2xl;
   }
 
   h2 {
-    @apply txt-subtitle;
+    @apply title-sm;
   }
 
   ol {
@@ -117,11 +110,11 @@ body[data-theme='Dark'] {
   word-wrap: break-word;
 
   h1 {
-    @apply border-border mt-6 mb-4 border-b pb-2 text-2xl font-semibold;
+    @apply border-elevation-subtle mt-6 mb-4 border-b pb-2 text-2xl font-semibold;
   }
 
   h2 {
-    @apply border-border mt-5 mb-3 border-b pb-2 text-xl font-semibold;
+    @apply border-elevation-subtle mt-5 mb-3 border-b pb-2 text-xl font-semibold;
   }
 
   h3 {
@@ -139,7 +132,7 @@ body[data-theme='Dark'] {
   }
 
   a {
-    @apply text-primary underline hover:no-underline;
+    @apply text-filigran-brand-primary underline hover:no-underline;
   }
 
   ul,
@@ -165,15 +158,15 @@ body[data-theme='Dark'] {
   }
 
   blockquote {
-    @apply border-border text-muted-foreground my-3 border-l-4 pl-4 italic;
+    @apply border-elevation-subtle text-default-secondary my-3 border-l-4 pl-4 italic;
   }
 
   code:not(pre code) {
-    @apply bg-muted rounded px-1.5 py-0.5 font-mono text-sm;
+    @apply bg-elevation-highlight rounded px-1.5 py-0.5 font-mono text-sm;
   }
 
   pre {
-    @apply bg-muted my-3 overflow-x-auto rounded-xs p-4;
+    @apply bg-elevation-highlight my-3 overflow-x-auto rounded-xs p-4;
   }
 
   pre code {
@@ -181,7 +174,7 @@ body[data-theme='Dark'] {
   }
 
   hr {
-    @apply border-border my-6 border-t;
+    @apply border-elevation-subtle my-6 border-t;
   }
 
   table {
@@ -190,11 +183,11 @@ body[data-theme='Dark'] {
 
   th,
   td {
-    @apply border-border border px-3 py-2 text-left;
+    @apply border-elevation-subtle border px-3 py-2 text-left;
   }
 
   th {
-    @apply bg-muted font-semibold;
+    @apply bg-elevation-heading font-semibold;
   }
 
   img {
@@ -210,6 +203,24 @@ body[data-theme='Dark'] {
   }
 }
 
+::-webkit-scrollbar {
+  width: 0.4rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 100vh;
+  border: 0.1rem solid var(--bg-elevation-default-layer-0);
+  background: var(--bg-elevation-default-layer-3);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* Allow fullsize textArea in MD editor (https://github.com/uiwjs/react-md-editor/issues/625) */
 .w-md-editor-text {
   min-height: 100% !important;
@@ -218,21 +229,22 @@ body[data-theme='Dark'] {
 /* In-context editing: an outline never changes the layout and follows its
    element when it scrolls, clips or hides. */
 [data-content-editable] {
-  outline: 1px dashed color-mix(in srgb, var(--color-primary) 50%, transparent);
+  outline: 1px dashed
+    color-mix(in srgb, var(--color-filigran-brand-primary) 50%, transparent);
   outline-offset: 1px;
   cursor: pointer;
 }
 
 [data-content-editable]:hover {
   outline-style: solid;
-  outline-color: var(--color-primary);
+  outline-color: var(--color-filigran-brand-primary);
 }
 
 [data-content-editable='overridden'],
 [data-content-editable='overridden']:hover {
-  outline-color: var(--color-yellow-400);
+  outline-color: var(--color-feedback-alert-primary);
 }
 
 [data-content-edit-badge='overridden'] svg {
-  color: var(--color-yellow-400);
+  color: var(--color-feedback-alert-primary);
 }

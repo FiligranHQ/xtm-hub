@@ -135,9 +135,9 @@ export const EpicList = ({
 
   return (
     <>
-      <div className="flex m-s">
+      <div className="flex m-2">
         <h1>{t('Epic.XTMRoadmap')}</h1>
-        <div className="ml-auto flex items-center justify-center gap-s">
+        <div className="ml-auto flex items-center justify-center gap-2">
           {userCanUpdate && (
             <EpicFormSheet
               open={openSheet}
@@ -181,8 +181,8 @@ export const EpicList = ({
         return (
           <div
             key={timeline.title}
-            className="mx-s flex items-stretch gap-m">
-            <div className="flex flex-col items-center self-stretch mt-xl">
+            className="mx-2 flex items-stretch gap-3">
+            <div className="flex flex-col items-center self-stretch mt-6">
               <CountBadge
                 count={timeline.epics.length}
                 bgFadedClass={timelineMetadata.bgFadedClass}
@@ -191,18 +191,18 @@ export const EpicList = ({
               <div
                 aria-hidden="true"
                 className={cn(
-                  'mt-s h-full w-px flex-1',
+                  'mt-2 h-full w-px flex-1',
                   timelineMetadata.barClass
                 )}
               />
             </div>
-            <div className="flex-1 mt-l">
+            <div className="flex-1 mt-4">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <p
                       className={cn(
-                        `m-s inline-block font-semibold`,
+                        `m-2 inline-block font-semibold`,
                         timelineMetadata.textClass
                       )}>
                       {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
@@ -217,7 +217,7 @@ export const EpicList = ({
               </TooltipProvider>
               <ul
                 className={
-                  'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-l'
+                  'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-4'
                 }>
                 {renderEpicItems(timeline.epics)}
               </ul>

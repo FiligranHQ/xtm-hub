@@ -48,7 +48,6 @@ app/                                Next.js App Router
   (application)/app/(admin)/admin/  Admin panel
   (application)/app/(user)/         Service pages, org management, profile
   (public)/                         Public marketing routes
-  (authentification)/auth/          Auth callbacks
   (embed)/                          Embeddable widgets
 src/components/                     Components by domain; `ui/` holds shared primitives
 src/hooks/                          useGranted, useDecodedParams, ...
@@ -73,13 +72,11 @@ Use them instead of deep relative paths.
 
 ## UI components
 
-`@filigran/design-system` is Filigran's design system and the target for all UI. `@filigran/ui` now resolves to a
-legacy copy in `src/components/filigran-ui/` that shrinks as components migrate. Which one to use, and how to rebuild
-what the design system lacks, is in [`design-system.md`](design-system.md).
+`@filigran/design-system` is Filigran's design system and the library for all UI. How to use it, and how to rebuild
+what it lacks, is in [`design-system.md`](design-system.md).
 
-- Icons: `@filigran/icon`
-- Styling: TailwindCSS 4, themed by `@filigran/design-system/tokens/theme.css` and the legacy
-  `src/components/filigran-ui/theme.css`, both imported in `styles/globals.css`
+- Icons: the design system's `<Icon name>` in new code; `@filigran/icon` remains in existing code until it migrates
+- Styling: TailwindCSS 4, themed by `@filigran/design-system/tokens/theme.css`, imported in `styles/globals.css`
 - Forms: `react-hook-form` + `zod` (v4)
 - Markdown: `@uiw/react-md-editor`
 

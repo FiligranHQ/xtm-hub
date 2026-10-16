@@ -43,9 +43,9 @@ export const PublicMobileMenuButton = ({
       <SheetContent
         side="left"
         closeLabel={t('Header.CloseMenu')}
-        className="bg-gradient-background">
-        <SheetHeader className="flex flex-row pl-4 bg-gradient-background border-elevation-border-strong">
-          <div className="flex items-center gap-s">
+        className="bg-gradient-default">
+        <SheetHeader className="flex flex-row pl-4 bg-gradient-default">
+          <div className="flex items-center gap-2">
             <Logo
               className="h-8 w-8"
               aria-hidden={true}

@@ -131,6 +131,7 @@ type Query {
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
+  registeredSaasPlatformMetadata(input: RegisteredPlatformInput!): SaasPlatformMetadata
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   saasPlatforms(first: Int!, after: ID, orderBy: RegisteredPlatformOrdering!, orderMode: OrderingMode!, searchTerm: String): RegisteredPlatformConnection!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
@@ -569,7 +570,6 @@ type PlatformTrialStatus {
   isBlacklisted: Boolean!
   hub_status: DeploymentRequestHubStatus
   end_date: Date
-  ongoingStandaloneTrials: [PlatformIdentifier!]!
 }
 
 enum DeploymentRequestOrdering {
@@ -1262,6 +1262,7 @@ type RegisteredPlatform implements Node {
   deployment_request: DeploymentRequest
   last_connectivity_check: Date
   status: PlatformConfigurationStatus
+  commercial_model: CommercialModel
   subscription: SubscriptionModel
   myGroups: [ServiceGroup!]
   organization: Organization
@@ -1414,6 +1415,14 @@ input RegisteredPlatformsInput {
 
 input RegisteredPlatformInput {
   service_instance_id: ServiceInstanceId!
+}
+
+type SaasPlatformMetadata {
+  hostname: String
+  plan: String
+  start_date: Date
+  end_date: Date
+  region: String
 }
 
 input AutoRegisterPlatformInput {
@@ -1656,7 +1665,7 @@ type ServiceInstanceSubscription {
 enum FeatureFlag {
   DUMMY
   DECOUPLING_CONNECTORS
-  TRIAL_INVITE
+  SAAS_METRICS
 }
 
 type PlatformProvider {

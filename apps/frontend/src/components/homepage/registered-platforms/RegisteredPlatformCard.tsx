@@ -69,15 +69,15 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
     <Card
       padding={16}
       className={cn(
-        'my-xs',
+        'my-1',
         platform.href &&
           'cursor-pointer hover:bg-elevation-hover hover:border-elevation-subtle'
       )}>
       <CardContent
         clamp={0}
-        className="flex flex-col gap-m">
-        <div className="flex gap-s items-center justify-between">
-          <div className="flex gap-s items-center min-w-0 flex-1">
+        className="flex flex-col gap-3">
+        <div className="flex gap-2 items-center justify-between">
+          <div className="flex gap-2 items-center min-w-0 flex-1">
             <Chip
               className="shrink-0"
               label={PlatformMetadataMapping[platform.platformIdentifier].name}
@@ -87,7 +87,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <p className="text-content-body-compact truncate min-w-0">
+                  <p className="text-content-compact truncate min-w-0">
                     {platform.title}
                   </p>
                 </TooltipTrigger>
@@ -95,14 +95,14 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <p className="text-content-body-compact shrink-0">
-            <span className="text-muted-foreground">
+          <p className="text-content-compact shrink-0">
+            <span className="text-default-secondary">
               {tRegisteredPlatformsCard('RegisteredOn')}
             </span>{' '}
             {registrationDate}
           </p>
         </div>
-        <div className="text-content-body-compact-medium flex gap-l items-center">
+        <div className="text-content-compact-medium flex gap-4 items-center">
           <Chip
             label={t(contractLabel)}
             severity={
@@ -111,7 +111,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
           />
           {platform.contract === PlatformContract.Trial &&
             platform.remainingTrialDays !== undefined && (
-              <div className="flex gap-s items-center text-content-body-compact text-text-default-secondary">
+              <div className="flex gap-2 items-center text-content-compact text-default-secondary">
                 {tRegisteredPlatformsCard.rich('DaysRemaining', {
                   days: platform.remainingTrialDays,
                   badge: (chunks) => (
@@ -132,7 +132,7 @@ const RegisteredPlatformCard = ({ platform }: RegisteredPlatformCardProps) => {
     <Link
       href={platform.href}
       prefetch={false}
-      className="block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      className="block rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus">
       {cardContent}
     </Link>
   ) : (

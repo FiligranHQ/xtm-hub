@@ -6,7 +6,6 @@ import { RegisteredPlatformsSection } from '@/components/homepage/registered-pla
 import MostDeployedResources from '@/components/homepage/resources/MostDeployedResources';
 import NewestResources from '@/components/homepage/resources/NewestResources';
 import PrivateHomepageRoadmapSection from '@/components/homepage/roadmap/PrivateHomepageRoadmapSection';
-import ThreadConferenceBanner from '@/components/homepage/ThreadConferenceBanner';
 import XtmPlatform from '@/components/homepage/xtm-platform/XtmPlatform';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
@@ -61,11 +60,11 @@ export const PrivateHomepage = async () => {
       {platformIdentifiers.length !== 0 && (
         <BreadcrumbNav value={breadcrumbValue} />
       )}
-      <div className="p-0 sm:p-xl flex flex-col gap-xl">
+      <div className="p-0 sm:p-6 flex flex-col gap-6">
         {platformIdentifiers.length === 0 ? (
           <XtmPlatform welcomeName={welcomeName} />
         ) : (
-          <div className="flex flex-col xl:flex-row gap-xl items-start">
+          <div className="flex flex-col xl:flex-row gap-6 items-start">
             <RegisteredPlatformsSection
               welcomeName={welcomeName}
               registeredPlatformsData={registeredPlatformsData}
@@ -75,7 +74,6 @@ export const PrivateHomepage = async () => {
             />
           </div>
         )}
-        <ThreadConferenceBanner />
         <PrivateHomepageRoadmapSection
           platformIdentifiers={platformIdentifiers}
         />
