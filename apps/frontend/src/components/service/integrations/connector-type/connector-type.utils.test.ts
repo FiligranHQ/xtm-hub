@@ -49,7 +49,9 @@ describe('connector-type.utils', () => {
     value                   | expected
     ${'splunk'}             | ${true}
     ${'microsoft-sentinel'} | ${true}
-    ${'internet'}           | ${true}
+    ${'microsoft-defender'} | ${true}
+    ${'sentinelone'}        | ${true}
+    ${'internet'}           | ${false}
     ${'qradar'}             | ${false}
     ${null}                 | ${false}
   `('isHuntPlatform($value) is $expected', ({ value, expected }) => {

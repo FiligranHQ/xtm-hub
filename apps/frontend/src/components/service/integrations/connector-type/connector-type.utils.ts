@@ -31,13 +31,14 @@ export const UNKNOWN_CONNECTOR_TYPE_ICON: IconName = 'box';
 export const HUNT_PLATFORMS = [
   'splunk',
   'microsoft-sentinel',
+  'microsoft-defender',
   'elastic-security',
   'crowdstrike-logscale',
   'google-secops',
   'opensearch',
   'clickhouse',
   's3-ocsf',
-  'internet',
+  'sentinelone',
 ] as const;
 
 export type HuntPlatform = (typeof HUNT_PLATFORMS)[number];
