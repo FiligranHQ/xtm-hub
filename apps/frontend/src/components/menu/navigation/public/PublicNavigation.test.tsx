@@ -11,7 +11,6 @@ const ALL_SERVICE_SLUGS = [
   'opencti-custom-views',
   'opencti-integrations',
   'opencti-playbooks',
-  'opencti-hunt-packs',
   'openaev-scenarios',
   'xtm-platform-roadmap',
 ];
@@ -82,7 +81,6 @@ describe('PublicNavigation — open={true}', () => {
 
     expect(screen.getByText('Menu.CustomDashboards')).toBeInTheDocument();
     expect(screen.getByText('Menu.Integrations')).toBeInTheDocument();
-    expect(screen.getByText('Menu.HuntPacks')).toBeInTheDocument();
     expect(screen.getByText('Menu.LiveDemo')).toBeInTheDocument();
     expect(screen.getByText('Menu.Documentation')).toBeInTheDocument();
   });

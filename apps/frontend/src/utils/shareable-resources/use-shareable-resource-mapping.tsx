@@ -42,8 +42,6 @@ export const useShareableResourceMapping = (
       ServiceListLocalStorageKey.OpenAEVScenarios,
     [ServiceSlug.OPEN_CTI_PLAYBOOKS]:
       ServiceListLocalStorageKey.OpenCTIPlaybooks,
-    [ServiceSlug.OPEN_CTI_HUNT_PACKS]:
-      ServiceListLocalStorageKey.OpenCTIHuntPacks,
   };
   const localStorageKey = localStorageKeyMapping[slug];
   const typeFeed: Record<ServiceSlug, ShareableResourceType> = {
@@ -55,7 +53,6 @@ export const useShareableResourceMapping = (
       ShareableResourceType.OPENCTI_CUSTOM_VIEW,
     [ServiceSlug.OPEN_AEV_SCENARIOS]: ShareableResourceType.OPENAEV_SCENARIO,
     [ServiceSlug.OPEN_CTI_PLAYBOOKS]: ShareableResourceType.OPENCTI_PLAYBOOK,
-    [ServiceSlug.OPEN_CTI_HUNT_PACKS]: ShareableResourceType.OPENCTI_HUNT_PACK,
   };
   const labelFilter = {
     title: t('GenericActions.FilterUseCasesLabel'),
@@ -139,9 +136,6 @@ export const useShareableResourceMapping = (
       [ServiceListFilterKey.Label]: labelFilter,
     },
     [ServiceSlug.OPEN_CTI_PLAYBOOKS]: {
-      [ServiceListFilterKey.Label]: labelFilter,
-    },
-    [ServiceSlug.OPEN_CTI_HUNT_PACKS]: {
       [ServiceListFilterKey.Label]: labelFilter,
     },
   };

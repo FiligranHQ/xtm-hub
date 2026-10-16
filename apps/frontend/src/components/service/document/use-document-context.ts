@@ -17,7 +17,6 @@ import { StreamForm } from '@/components/service/integrations/forms/StreamForm';
 import { TaxiiFeedForm } from '@/components/service/integrations/forms/TaxiiFeedForm';
 import { ThirdPartyIntegrationForm } from '@/components/service/integrations/forms/ThirdPartyIntegrationForm';
 import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
-import { OpenctiHuntPackForm } from '@/components/service/opencti-hunt-packs/[serviceInstanceId]/OpenctiHuntPackForm';
 import { OpenctiPlaybookForm } from '@/components/service/opencti-playbooks/[serviceInstanceId]/OpenctiPlaybookForm';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
@@ -247,7 +246,6 @@ export function useDocumentContext({
     const formMapping: Record<ShareableResourceType, () => ServiceForm> = {
       [ShareableResourceType.OPENAEV_SCENARIO]: () => OpenaevScenarioForm,
       [ShareableResourceType.OPENCTI_PLAYBOOK]: () => OpenctiPlaybookForm,
-      [ShareableResourceType.OPENCTI_HUNT_PACK]: () => OpenctiHuntPackForm,
       [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
         CustomDashboardForm,
       [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: () => CustomViewForm,
@@ -274,8 +272,6 @@ export function useDocumentContext({
     const translationKeyMapping: Record<ShareableResourceType, () => string> = {
       [ShareableResourceType.OPENAEV_SCENARIO]: () => 'Service.OpenAEVScenario',
       [ShareableResourceType.OPENCTI_PLAYBOOK]: () => 'Service.OpenCTIPlaybook',
-      [ShareableResourceType.OPENCTI_HUNT_PACK]: () =>
-        'Service.OpenCTIHuntPack',
       [ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD]: () =>
         'Service.OpenctiCustomDashboards',
       [ShareableResourceType.OPENCTI_CUSTOM_VIEW]: () =>

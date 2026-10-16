@@ -105,7 +105,6 @@ const DEPLOYABLE_RESOURCE_TYPES: string[] = [
   ShareableResourceType.OPENCTI_CUSTOM_VIEW,
   ShareableResourceType.OPENAEV_SCENARIO,
   ShareableResourceType.OPENCTI_PLAYBOOK,
-  ShareableResourceType.OPENCTI_HUNT_PACK,
 ];
 
 export const isResourceDeployable = (

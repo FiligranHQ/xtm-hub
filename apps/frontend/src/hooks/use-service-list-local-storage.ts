@@ -14,7 +14,6 @@ export enum ServiceListLocalStorageKey {
   OpenCTIIntegrationFeeds = 'OpenCTIIntegrationFeeds',
   OpenAEVScenarios = 'OpenAEVScenarios',
   OpenCTIPlaybooks = 'OpenCTIPlaybooks',
-  OpenCTIHuntPacks = 'OpenCTIHuntPacks',
 }
 
 const deserializeLogicalMultiSelectSelection = (

@@ -7,11 +7,8 @@ import { useRelayEnvironment } from 'react-relay';
 
 const AppError = ({
   error,
-  description,
 }: {
   error: Error & { digest?: string; componentStack?: string };
-  /** Names what failed, in place of the generic sentence. */
-  description?: string;
 }) => {
   const { settings } = useContext(SettingsContext);
   const isDevelopmentEnvSetting =
@@ -37,10 +34,7 @@ const AppError = ({
   return (
     <div>
       <h2>{t('Error.SomethingWentWrong')}</h2>
-      <p>
-        {description ??
-          (error.message ? displayedMessage : t('Error.AnErrorOccured'))}
-      </p>
+      <p>{error.message ? displayedMessage : t('Error.AnErrorOccured')}</p>
       {isDevelopmentEnvSetting && (
         <div>
           {t(`Error.Server.${error.message}`)}

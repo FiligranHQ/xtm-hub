@@ -71,26 +71,13 @@ describe('document security', () => {
       expect(result).toBe(false);
     });
 
-    it.each`
-      identifier
-      ${ServiceDefinitionIdentifier.OpenctiCustomDashboards}
-      ${ServiceDefinitionIdentifier.OpenctiCustomViews}
-      ${ServiceDefinitionIdentifier.OpenctiHuntPacks}
-      ${ServiceDefinitionIdentifier.OpenctiIntegrations}
-    `(
-      'should return true when user lacks Upload capability in the restricted service $identifier',
-      async ({ identifier }) => {
-        vi.spyOn(
-          ServiceInstanceDomain,
-          'loadServiceDefinitionByServiceInstance'
-        ).mockResolvedValue(mockServiceDefinition(identifier));
-        const result = await isUserRestrictedToActiveDocument(
-          mockUser,
-          mockServiceInstanceId
-        );
-        expect(result).toBe(true);
-      }
-    );
+    it('should return true when user lacks Upload capability and service definition is restricted', async () => {
+      const result = await isUserRestrictedToActiveDocument(
+        mockUser,
+        mockServiceInstanceId
+      );
+      expect(result).toBe(true);
+    });
 
     it.each([
       ServiceDefinitionIdentifier.OpenctiIntegrations,

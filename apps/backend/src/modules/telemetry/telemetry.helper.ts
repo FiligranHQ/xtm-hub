@@ -96,10 +96,6 @@ const ServiceIdentifierToEventService = new Map<
     ServiceDefinitionIdentifier.OpenctiCustomViews,
     TelemetryEventService.OPENCTI_CUSTOM_VIEWS_LIBRARY,
   ],
-  [
-    ServiceDefinitionIdentifier.OpenctiHuntPacks,
-    TelemetryEventService.OPENCTI_HUNT_PACKS_LIBRARY,
-  ],
 ]);
 
 export const TelemetryTargetProductMappedByPlatformIdentifier = new Map<

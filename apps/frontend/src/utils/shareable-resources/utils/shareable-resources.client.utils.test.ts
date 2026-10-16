@@ -65,16 +65,6 @@ describe('isResourceDeployable', () => {
     },
     {
       expected: true,
-      type: ShareableResourceType.OPENCTI_HUNT_PACK,
-      active: true,
-    },
-    {
-      expected: false,
-      type: ShareableResourceType.OPENCTI_HUNT_PACK,
-      active: false,
-    },
-    {
-      expected: true,
       type: ShareableResourceType.OPENCTI_INTEGRATION,
       active: true,
       integrationType: 'csv_feed',
