@@ -301,6 +301,48 @@ const DefaultToolbar = () => (
   </div>
 );
 
+export interface DataTableToolbarProps {
+  search?: ReactNode;
+  filters?: ReactNode;
+  extraControls?: ReactNode;
+  actions?: ReactNode;
+  className?: string;
+}
+
+const DataTableToolbar = ({
+  search,
+  filters,
+  extraControls,
+  actions,
+  className,
+}: DataTableToolbarProps) => {
+  const hasControls = Boolean(search || filters || extraControls);
+
+  return (
+    <div
+      className={cn(
+        'flex flex-col-reverse items-center justify-between gap-2 sm:flex-row sm:flex-wrap',
+        className
+      )}>
+      {hasControls && (
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+          {search && <div className="w-full sm:w-65">{search}</div>}
+          {filters && (
+            // contents: the filters stay flex items of the group, each sized here.
+            <div className="contents *:w-full sm:*:w-50">{filters}</div>
+          )}
+          {extraControls}
+        </div>
+      )}
+      {actions && (
+        <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:ml-auto sm:w-auto">
+          {actions}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const DataTableColumnMenu = <TData, TValue>({
   column,
 }: {
@@ -744,4 +786,4 @@ const DataTable = <TData extends { id: string }, TValue>({
   );
 };
 
-export { DataTable, DataTableHeadBarOptions };
+export { DataTable, DataTableHeadBarOptions, DataTableToolbar };

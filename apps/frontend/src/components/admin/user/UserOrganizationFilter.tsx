@@ -57,7 +57,6 @@ export const UserOrganizationFilter = ({
 
   return (
     <AppCombobox<OrganizationFilterOption>
-      className="w-[200px]"
       label={label}
       labelPosition="none"
       placeholder={label}

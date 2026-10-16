@@ -140,6 +140,14 @@ vi.mock('@/components/ui/handle-sorting.utils', () => ({
   transformSortingValueToParams: () => ({}),
 }));
 
+vi.mock('@/components/admin/user/forms/AddUser', () => ({
+  AddUser: () => <div>AddUser</div>,
+}));
+
+vi.mock('@/components/admin/user/forms/admin/AdminAddUser', () => ({
+  AdminAddUser: () => <div>AdminAddUser</div>,
+}));
+
 vi.mock('@/components/admin/user/UserOrganizationFilter', () => ({
   UserOrganizationFilter: () => <div>UserOrganizationFilter</div>,
 }));
@@ -274,6 +282,31 @@ describe('UserList', () => {
     mocks.settleResendInvite.mockReset();
     mocks.showSnackbar.mockReset();
   });
+
+  it.each([
+    {
+      path: 'the bypass admin path',
+      isAdminPath: true,
+      action: 'AdminAddUser',
+    },
+    {
+      path: 'the org-admin manage/user path',
+      isAdminPath: false,
+      action: 'AddUser',
+    },
+  ])(
+    'should put the add user action of $path in the toolbar',
+    ({ isAdminPath, action }) => {
+      // Given
+      mocks.isAdminPath = isAdminPath;
+
+      // When
+      renderUserList();
+
+      // Then
+      expect(screen.getByText(action)).toBeInTheDocument();
+    }
+  );
 
   it('should render the empty state when there are no users', () => {
     renderUserList();

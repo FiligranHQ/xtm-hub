@@ -62,6 +62,10 @@ vi.mock('react-relay', async (importOriginal) => ({
   useSubscription: (config: unknown) => mocks.useSubscription(config),
 }));
 
+vi.mock('@/components/admin/user/forms/AddUser', () => ({
+  AddUser: () => <div>AddUser</div>,
+}));
+
 vi.mock('@/components/ui/ConfirmDialog', () => ({
   ConfirmDialog: ({
     open,
@@ -109,7 +113,8 @@ vi.mock('usehooks-ts', async (importOriginal) => ({
     }),
 }));
 
-vi.mock('@/components/ui/data-table', () => ({
+vi.mock('@/components/ui/data-table', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/components/ui/data-table')>()),
   DataTable: ({
     columns,
     data,
@@ -180,6 +185,14 @@ describe('PendingUserList', () => {
     mocks.useSubscription.mockReset();
     mocks.refetch.mockReset();
     mocks.pendingUsers = pendingUsers;
+  });
+
+  it('should put the add user action in the toolbar', () => {
+    // When
+    testRender(<PendingUserList organization="org-1" />);
+
+    // Then
+    expect(screen.getByText('AddUser')).toBeInTheDocument();
   });
 
   it('should subscribe to pending user events with the list connection id', () => {

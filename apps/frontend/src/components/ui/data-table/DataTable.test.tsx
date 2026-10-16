@@ -10,6 +10,7 @@ import { act, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import {
   DataTable,
+  DataTableToolbar,
   type DataTableLabels,
   type DataTableProps,
 } from './DataTable';
@@ -48,6 +49,14 @@ const PAGE_SIZE = 50;
 const NEW_PAGE_SIZE = 100;
 const DISABLED_ROW_CLASS = 'opacity-50';
 const COLLAPSED_BAR_CLASS = 'h-0';
+const SEARCH_TEST_ID = 'search';
+const FIRST_FILTER_TEST_ID = 'first-filter';
+const SECOND_FILTER_TEST_ID = 'second-filter';
+const SWITCH_TEST_ID = 'switch';
+const ACTIONS_TEST_ID = 'actions';
+const SEARCH_TRACK_CLASSES = ['w-full', 'sm:w-65'];
+const FILTER_CLASSES = ['*:w-full', 'sm:*:w-50'];
+const SPACING_CLASS = 'pt-2';
 
 const DEFAULT_LABELS = {
   previousPage: 'Go to previous page',
@@ -816,5 +825,130 @@ describe('DataTable', () => {
         selectionState: { ...emptySelection(), selectedIds: new Set([BOB.id]) },
       });
     });
+  });
+});
+
+describe('DataTableToolbar', () => {
+  it('should put the search field in a 260px track', () => {
+    // Given
+    testRender(
+      <DataTableToolbar search={<input data-testid={SEARCH_TEST_ID} />} />
+    );
+
+    // When
+    const track = screen.getByTestId(SEARCH_TEST_ID).parentElement;
+
+    // Then
+    expect(track).toHaveClass(...SEARCH_TRACK_CLASSES);
+  });
+
+  it('should size each filter to 200px', () => {
+    // Given
+    testRender(
+      <DataTableToolbar
+        filters={
+          <>
+            <input data-testid={FIRST_FILTER_TEST_ID} />
+            <input data-testid={SECOND_FILTER_TEST_ID} />
+          </>
+        }
+      />
+    );
+
+    // When
+    const filters = screen.getByTestId(FIRST_FILTER_TEST_ID).parentElement;
+
+    // Then
+    expect(filters).toHaveClass(...FILTER_CLASSES);
+    expect(screen.getByTestId(SECOND_FILTER_TEST_ID).parentElement).toBe(
+      filters
+    );
+  });
+
+  it('should skip a filter that is not rendered', () => {
+    // Given
+    const showSecondFilter = false;
+    testRender(
+      <DataTableToolbar
+        search={<input data-testid={SEARCH_TEST_ID} />}
+        filters={
+          showSecondFilter && <input data-testid={SECOND_FILTER_TEST_ID} />
+        }
+      />
+    );
+
+    // When
+    const controls =
+      screen.getByTestId(SEARCH_TEST_ID).parentElement?.parentElement;
+
+    // Then
+    expect(controls?.children).toHaveLength(1);
+  });
+
+  it('should keep the extra controls at their natural width after the filters', () => {
+    // Given
+    testRender(
+      <DataTableToolbar
+        filters={<input data-testid={FIRST_FILTER_TEST_ID} />}
+        extraControls={<input data-testid={SWITCH_TEST_ID} />}
+      />
+    );
+
+    // When
+    const filters = screen.getByTestId(FIRST_FILTER_TEST_ID).parentElement;
+    const switchControl = screen.getByTestId(SWITCH_TEST_ID);
+
+    // Then
+    expect(switchControl.parentElement).toBe(filters?.parentElement);
+    expect(filters?.nextElementSibling).toBe(switchControl);
+  });
+
+  it('should render the actions after the controls', () => {
+    // Given
+    testRender(
+      <DataTableToolbar
+        search={<input data-testid={SEARCH_TEST_ID} />}
+        actions={<button data-testid={ACTIONS_TEST_ID} />}
+      />
+    );
+
+    // When
+    const controls =
+      screen.getByTestId(SEARCH_TEST_ID).parentElement?.parentElement;
+    const actions = screen.getByTestId(ACTIONS_TEST_ID).parentElement;
+
+    // Then
+    expect(controls?.nextElementSibling).toBe(actions);
+  });
+
+  it('should render only the actions when there is no control', () => {
+    // Given
+    testRender(
+      <DataTableToolbar actions={<button data-testid={ACTIONS_TEST_ID} />} />
+    );
+
+    // When
+    const row =
+      screen.getByTestId(ACTIONS_TEST_ID).parentElement?.parentElement;
+
+    // Then
+    expect(row?.children).toHaveLength(1);
+  });
+
+  it('should merge the caller className on the row', () => {
+    // Given
+    testRender(
+      <DataTableToolbar
+        className={SPACING_CLASS}
+        actions={<button data-testid={ACTIONS_TEST_ID} />}
+      />
+    );
+
+    // When
+    const row =
+      screen.getByTestId(ACTIONS_TEST_ID).parentElement?.parentElement;
+
+    // Then
+    expect(row).toHaveClass(SPACING_CLASS);
   });
 });

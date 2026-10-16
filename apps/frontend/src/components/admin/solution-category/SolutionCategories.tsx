@@ -2,7 +2,11 @@ import AddSolutionCategory from '@/components/admin/solution-category/AddSolutio
 import EditSolutionCategory from '@/components/admin/solution-category/EditSolutionCategory';
 import SolutionCategoryProductFilter from '@/components/admin/solution-category/SolutionCategoryProductFilter';
 import { useSolutionCategoryListLocalstorage } from '@/components/admin/solution-category/solution-category-list-localstorage';
-import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  DataTableToolbar,
+} from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -142,9 +146,6 @@ const SolutionCategories = () => {
 
   return (
     <>
-      <div className="mb-2 flex justify-end">
-        <AddSolutionCategory />
-      </div>
       <DataTable
         columns={columns}
         data={solutionCategories}
@@ -164,17 +165,20 @@ const SolutionCategories = () => {
         }}
         onClickRow={({ original }) => setSolutionCategoryEdit(original)}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <div className="w-full sm:w-1/3">
+          <DataTableToolbar
+            filters={
               <SolutionCategoryProductFilter
                 selectedProduct={selectedProduct}
                 onProductChange={onProductChange}
               />
-            </div>
-            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
-              <DataTableHeadBarOptions />
-            </div>
-          </div>
+            }
+            actions={
+              <>
+                <DataTableHeadBarOptions />
+                <AddSolutionCategory />
+              </>
+            }
+          />
         }
       />
       {solutionCategoryEdit && (

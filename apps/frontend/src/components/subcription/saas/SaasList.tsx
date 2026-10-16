@@ -6,7 +6,11 @@ import {
   getSaasPlatformProductName,
   getSaasPlatformServicePath,
 } from '@/components/subcription/saas/saas-list.utils';
-import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  DataTableToolbar,
+} from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -239,26 +243,26 @@ export const SaasList = () => {
           pagination,
         }}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <label
-              htmlFor="saas-platforms-search"
-              className="sr-only">
-              {t('CSMBoard.SearchOrganization')}
-            </label>
-            <div className="w-full sm:w-1/3">
-              <SearchField
-                id="saas-platforms-search"
-                fullWidth
-                placeholder={t('CSMBoard.SearchOrganization')}
-                clearLabel={t('CSMBoard.ClearSearch')}
-                onChange={onSearchChange}
-                onClear={onSearchClear}
-              />
-            </div>
-            <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
-              <DataTableHeadBarOptions />
-            </div>
-          </div>
+          <DataTableToolbar
+            search={
+              <>
+                <label
+                  htmlFor="saas-platforms-search"
+                  className="sr-only">
+                  {t('CSMBoard.SearchOrganization')}
+                </label>
+                <SearchField
+                  id="saas-platforms-search"
+                  fullWidth
+                  placeholder={t('CSMBoard.SearchOrganization')}
+                  clearLabel={t('CSMBoard.ClearSearch')}
+                  onChange={onSearchChange}
+                  onClear={onSearchClear}
+                />
+              </>
+            }
+            actions={<DataTableHeadBarOptions />}
+          />
         }
       />
     </>
