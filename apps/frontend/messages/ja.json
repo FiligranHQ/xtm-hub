@@ -799,7 +799,7 @@
       "BundleReordered": "バンドルの待ち行列の順序を変更しました。"
     },
     "Actions": {
-      "SearchTrials": "電子メールまたは組織で検索",
+      "SearchTrials": "電子メール、組織、または地域で検索",
       "MoveToTop": "トップへ戻る",
       "MoveUp": "上に移動",
       "CancelBundle": "バンドルトライアルをキャンセル"

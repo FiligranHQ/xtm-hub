@@ -2089,6 +2089,7 @@ export type QueryDeploymentRequestsListArgs = {
   first: Scalars['Int']['input'];
   orderBy: DeploymentRequestOrdering;
   orderMode: OrderingMode;
+  searchRegions: InputMaybe<Array<DeploymentRequestPlatformRegion>>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3447,6 +3448,7 @@ export type TrialsListQueryVariables = Exact<{
   orderMode: OrderingMode;
   filters: InputMaybe<Array<DeploymentRequestFilter> | DeploymentRequestFilter>;
   searchTerm: InputMaybe<Scalars['String']['input']>;
+  searchRegions: InputMaybe<Array<DeploymentRequestPlatformRegion> | DeploymentRequestPlatformRegion>;
 }>;
 
 
@@ -4785,7 +4787,7 @@ useTrialsUpdateDeploymentQuotaCapacityMutation.getRootKey = () => ['TrialsUpdate
 useTrialsUpdateDeploymentQuotaCapacityMutation.fetcher = (client: GraphQLClient, variables: TrialsUpdateDeploymentQuotaCapacityMutationVariables, headers?: RequestInit['headers']) => fetcher<TrialsUpdateDeploymentQuotaCapacityMutation, TrialsUpdateDeploymentQuotaCapacityMutationVariables>(client, TrialsUpdateDeploymentQuotaCapacityDocument, variables, headers);
 
 export const TrialsListDocument = `
-    query TrialsList($count: Int!, $cursor: ID, $orderBy: DeploymentRequestOrdering!, $orderMode: OrderingMode!, $filters: [DeploymentRequestFilter!], $searchTerm: String) {
+    query TrialsList($count: Int!, $cursor: ID, $orderBy: DeploymentRequestOrdering!, $orderMode: OrderingMode!, $filters: [DeploymentRequestFilter!], $searchTerm: String, $searchRegions: [DeploymentRequestPlatformRegion!]) {
   deploymentRequestsList(
     first: $count
     after: $cursor
@@ -4793,6 +4795,7 @@ export const TrialsListDocument = `
     orderMode: $orderMode
     filters: $filters
     searchTerm: $searchTerm
+    searchRegions: $searchRegions
   ) {
     totalCount
     edges {

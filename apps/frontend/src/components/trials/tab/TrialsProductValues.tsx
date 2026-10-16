@@ -26,7 +26,7 @@ export const TrialsProductValues = ({
   }
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 p-2">
       {valuedProducts.map((product) => {
         const value = valueOf(product);
         if (!value) {
