@@ -13,7 +13,7 @@ export const AutoFormMeta: ComponentMeta = {
   examples: [
     '<AutoForm formSchema={z.object({ name: z.string(), newsletter: z.boolean().optional(), role: z.enum(["Admin", "Member"]) })} fieldConfig={{ name: { label: t("Name") }, newsletter: { label: t("Newsletter") }, role: { label: t("Role"), inputProps: { placeholder: t("PickRole") } } }} onSubmit={(values) => save(values)}><Button type="submit">{t("Save")}</Button></AutoForm>',
     '<AutoForm formSchema={schema} values={{ license: entity?.license ?? "Free", tags: entity?.tags ?? [] }} fieldConfig={{ license: { label: t("License"), fieldType: "radio" }, tags: { label: t("Tags"), fieldType: ({ field }) => <TagsField {...field} /> } }} onSubmit={onSubmit} />',
-    '<AutoForm formSchema={schema} onValuesChange={(values) => setDraft(values)} className="mt-l">{({ isValid, isDirty }) => <Button type="submit" disabled={!isValid || !isDirty}>{t("Save")}</Button>}</AutoForm>',
+    '<AutoForm formSchema={schema} onValuesChange={(values) => setDraft(values)} className="mt-4">{({ isValid, isDirty }) => <Button type="submit" disabled={!isValid || !isDirty}>{t("Save")}</Button>}</AutoForm>',
   ],
   props: {
     formSchema:

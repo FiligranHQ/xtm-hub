@@ -47,8 +47,8 @@ const ChoosePlatformForm = ({
   );
 
   return (
-    <div className="flex flex-col h-full justify-between gap-m">
-      <div className="space-y-m">
+    <div className="flex flex-col h-full justify-between gap-3">
+      <div className="space-y-3">
         <h1>
           {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
             resourceName: documentData.name ?? '',
@@ -133,7 +133,7 @@ const ChoosePlatformForm = ({
             ),
           },
         }}>
-        <div className="flex justify-end gap-s">
+        <div className="flex justify-end gap-2">
           <Button
             type="button"
             priority="secondary"

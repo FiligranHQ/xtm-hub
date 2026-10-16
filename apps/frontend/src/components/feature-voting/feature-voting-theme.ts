@@ -138,13 +138,13 @@ export interface FeatureVotingTheme {
 }
 
 const DEFAULT_THEME: FeatureVotingTheme = {
-  containerClassName: 'border-light bg-elevation-background-layer-1',
+  containerClassName: 'layer-1 bg-elevation-default',
   titleClassName: 'font-semibold',
-  descriptionClassName: 'text-muted-foreground text-sm',
+  descriptionClassName: 'text-default-secondary text-sm',
 };
 
 const THREAD_THEME: FeatureVotingTheme = {
-  containerClassName: 'border-transparent text-white',
+  containerClassName: 'border-transparent text-[var(--white-1000)]',
   containerStyle: {
     // Pixel mosaic over the Thread canvas, warmed up by a cyan/blue glow.
     backgroundColor: THREAD_BACKGROUND,
@@ -153,8 +153,8 @@ const THREAD_THEME: FeatureVotingTheme = {
     backgroundPosition: THREAD_BACKGROUND_POSITION,
     boxShadow: `inset 0 0 0 1px rgba(255, 255, 255, 0.1)`,
   },
-  titleClassName: 'font-semibold text-white',
-  descriptionClassName: 'text-sm text-white/70',
+  titleClassName: 'font-semibold',
+  descriptionClassName: 'text-sm text-[var(--white-500)]',
 };
 
 const THEMES: Record<FeatureVotingThemeName, FeatureVotingTheme> = {

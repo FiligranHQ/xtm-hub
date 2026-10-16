@@ -191,7 +191,7 @@ export const LibraryUpdateMetadata = () => {
             <DialogTitle>{t('Metadata.SeoMetadata')}</DialogTitle>
             <DialogBody>
               <AutoForm
-                className="space-y-m"
+                className="space-y-3"
                 formSchema={libraryUpdateSchema}
                 values={existingSeoMetadataByLocale}
                 fieldConfig={libraryUpdateFieldConfig}

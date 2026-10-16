@@ -22,7 +22,7 @@ export const TestEnvBanner = () => {
             })}
             <Link
               href="https://hub.filigran.io/"
-              className="ml-xs underline">
+              className="ml-1 underline">
               {t('GoToProd')}
             </Link>
           </>

@@ -16,7 +16,7 @@ export const ShareableResourceCardTags = ({
   document,
 }: ShareableResourceCardTagsProps) => {
   return (
-    <div className="flex min-w-0 items-center gap-s">
+    <div className="flex min-w-0 items-center gap-2">
       {isIntegrationItem(document) && (
         <ShareableResourceTypeChip document={document} />
       )}

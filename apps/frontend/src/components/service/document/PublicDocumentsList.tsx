@@ -151,7 +151,7 @@ const PublicDocumentsList = ({
     <AppServiceListLocalStorageKeyContext localStorageKey={localStorageKey}>
       <div
         ref={headerRef}
-        className="sticky top-0 py-m z-15 relative bg-gradient-background">
+        className="sticky top-0 py-3 z-15 relative bg-gradient-default">
         <ServiceListHeader
           search={search}
           onSearchChange={setSearch}
@@ -183,7 +183,7 @@ const PublicDocumentsList = ({
       </div>
       <div className="flex flex-row">
         <FilterSidebar filters={filters} />
-        <div className="grow shrink min-w-0 px-m pb-m">
+        <div className="grow shrink min-w-0 px-3 pb-3">
           <PublicShareableResourceList
             displayMode={selectedDisplayMode}
             documents={documents}

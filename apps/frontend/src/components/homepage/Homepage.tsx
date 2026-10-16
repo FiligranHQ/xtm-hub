@@ -11,7 +11,7 @@ const Homepage = ({ paramsLocale }: HomepageProps) => {
   return (
     <div className="overflow-hidden">
       <BlueBlurDecoration />
-      <div className="flex flex-col gap-xxl">
+      <div className="flex flex-col gap-8">
         <XtmPlatform />
         <XtmRoadmap paramsLocale={paramsLocale} />
         <NewestResources paramsLocale={paramsLocale} />

@@ -35,7 +35,7 @@ legacy_files_to_delete: [apps/frontend/src/components/filigran-ui/components/ser
 
 ## Screens
 
-<!-- One to three screens where the component renders, the most visible first; none for cleanup.
+<!-- One to three screens where the component renders, the most visible first; none for remove-filigran-ui.
      Format in ds-migration/WORKFLOW.md, section Screenshots. -->
 
 ```json

@@ -25,11 +25,9 @@ const InfoRow = ({
   label: string;
   children: React.ReactNode;
 }) => (
-  <div className="flex items-center justify-between gap-s py-l">
-    <span className="text-content-body-base text-text-default-secondary">
-      {label}:
-    </span>
-    <span className="text-content-body-compact truncate">{children}</span>
+  <div className="flex items-center justify-between gap-2 py-4">
+    <span className="text-content-base text-default-secondary">{label}:</span>
+    <span className="text-content-compact truncate">{children}</span>
   </div>
 );
 
@@ -49,13 +47,13 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
       className="h-full">
       <CardContent
         clamp={0}
-        className="flex flex-col gap-m h-full">
-        <div className="flex items-center gap-xs min-w-0">
-          <span className="text-content-body-large-medium truncate">
+        className="flex flex-col gap-3 h-full">
+        <div className="flex items-center gap-1 min-w-0">
+          <span className="truncate">
             {t('XtmPlatformTrial.BundleInfo.Title')}
           </span>
         </div>
-        <div className="flex flex-col divide-y divide-elevation-border-subtle-layer-2">
+        <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle)]">
           <InfoRow label={t('XtmPlatformTrial.BundleInfo.OrganizationName')}>
             {bundle.organization_name ?? '-'}
           </InfoRow>
@@ -84,7 +82,7 @@ export const BundleInfoCard = ({ bundle, canManage }: BundleInfoCardProps) => {
           </InfoRow>
         </div>
         {canManage && (
-          <div className="flex flex-wrap items-center justify-end gap-s mt-auto">
+          <div className="flex flex-wrap items-center justify-end gap-2 mt-auto">
             <Button
               variant="destructive"
               priority="secondary"

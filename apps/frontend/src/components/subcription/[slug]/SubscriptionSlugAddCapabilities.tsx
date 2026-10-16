@@ -98,15 +98,15 @@ export const SubscriptionSlugAddCapabilities = ({
         </DialogTitle>
 
         <DialogBody>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-default-secondary">
             {t('Service.Management.AddUserServiceCapabilities.Description', {
               count: selectedUserServices.length,
             })}
           </p>
 
-          <div className="flex flex-col gap-s py-m">
+          <div className="flex flex-col gap-2 py-3">
             {availableCapabilities.length === 0 ? (
-              <p className="text-sm text-muted-foreground italic">
+              <p className="text-sm text-default-secondary italic">
                 {t('Service.Management.NoAvailableCapabilities')}
               </p>
             ) : (

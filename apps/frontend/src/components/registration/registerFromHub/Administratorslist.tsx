@@ -13,7 +13,7 @@ export const Administratorslist = ({ admins }: AdministratorslistProps) => {
   }
   return (
     <div className="space-y-1">
-      <div className="content-body-base">
+      <div className="content-base">
         {t('Register.ConnectFromHub.Administrators', {
           count: admins.usersWithCapabilitiesInOrganization?.length ?? 0,
         })}
@@ -22,7 +22,7 @@ export const Administratorslist = ({ admins }: AdministratorslistProps) => {
       {admins.usersWithCapabilitiesInOrganization?.map((user) => {
         return (
           <div
-            className="content-body-base"
+            className="content-base"
             key={user.id}>
             {user.email}
           </div>

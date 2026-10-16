@@ -43,7 +43,7 @@ export const UnregisterMissingCapability = ({
         })}
       </p>
       <p>{t(`Unregister.Error.Capability.AdminListTitle`)}</p>
-      <ul className="list-disc ml-l">
+      <ul className="list-disc ml-4">
         {usersWithCapabilitiesInOrganization.map((administrator) => (
           <li key={administrator.id}>
             {administrator.first_name} {administrator.last_name} -{' '}

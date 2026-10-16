@@ -39,7 +39,7 @@ export const FeatureVoteCard = ({
       }
       extra={
         feature.use_cases.length > 0 && (
-          <div className="flex flex-wrap items-center gap-s">
+          <div className="flex flex-wrap items-center gap-2">
             {feature.use_cases.map((useCase) => (
               <Chip
                 key={useCase.id}

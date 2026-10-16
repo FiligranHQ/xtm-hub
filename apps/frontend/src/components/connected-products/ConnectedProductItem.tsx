@@ -33,12 +33,12 @@ export const ConnectedProductItem = ({
   });
 
   return (
-    <div className="hover:cursor-default flex min-h-12 w-full items-center gap-m">
-      <div className="flex min-w-0 flex-1 items-center gap-s">
+    <div className="hover:cursor-default flex min-h-12 w-full items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         {platformMeta?.Icon && (
           <platformMeta.Icon className="h-6 w-6 shrink-0" />
         )}
-        <span className="content-body-base">
+        <span className="content-base">
           {platform.title ?? platformMeta?.name ?? platform.identifier}
         </span>
       </div>
@@ -51,11 +51,11 @@ export const ConnectedProductItem = ({
           severity="ee"
         />
       )}
-      <div className="flex w-16 items-center justify-end gap-xs">
+      <div className="flex w-16 items-center justify-end gap-1">
         {detailPath && (
           <IconButton
             priority="tertiary"
-            className="h-7 w-7 text-text-default-primary"
+            className="h-7 w-7 text-default-primary"
             aria-label={t('Header.ConnectedProducts.Details')}
             icon={<TextSnippetIcon className="h-4 w-4 shrink-0" />}
             asChild>
@@ -65,7 +65,7 @@ export const ConnectedProductItem = ({
         {platform.url && (
           <IconButton
             priority="tertiary"
-            className="h-7 w-7 text-text-default-primary"
+            className="h-7 w-7 text-default-primary"
             aria-label={t('Header.ConnectedProducts.GoToPlatform', {
               title:
                 platform.title ?? platformMeta?.name ?? platform.identifier,

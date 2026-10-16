@@ -16,7 +16,7 @@ env:
   PROJECT_NUMBER: 1
 jobs:
   manage-pr-and-issues:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       pr_number: ${{ steps.extract_issues.outputs.pr_number }}
       should_deploy: ${{ steps.check_feature_env.outputs.result }}

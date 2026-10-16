@@ -44,3 +44,12 @@
 | [5491766465](https://github.com/XTM-Hub/xtm-hub/pull/3715#pullrequestreview-5491766465) | hervyt | Approval | answered | Approval with no remark |
 | [6126234379](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6126234379) | elisavaldegas | XTM Platform translated in French | follow-up | #3793 (same on main) |
 | [6127011513](https://github.com/XTM-Hub/xtm-hub/pull/3715#issuecomment-6127011513) | elisavaldegas | Connect product shows its raw key | fixed | 739aadbe6 |
+| [4271928090](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4271928090) | Copilot | Thread banner icon stays dark on near-black in light | fixed | 427e51078 |
+| [4271928001](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4271928001) | Copilot | Public resource page skips from h1 to h3 | fixed | 85d02e5bc |
+| [4271928205](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4271928205) | Copilot | Public connector page skips from h1 to h3 | fixed | 85d02e5bc |
+| [4271928293](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4271928293) | Copilot | AGENTS.md restates the design system rule | fixed | 399568d71 |
+| [5519335152](https://github.com/XTM-Hub/xtm-hub/pull/3804#pullrequestreview-5519335152) | Copilot | Review summary of the three findings above | answered | 427e51078, 85d02e5bc, 399568d71 |
+| [4281572496](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4281572496) | Kroustille | Page scrollbar while the cookie banner shows, no ResizeObserver test | fixed | f32be2855; embed pages showing the banner: #3877 (same on main) |
+| [4281572481](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4281572481) | Kroustille | Dead legacy classes the lint rule misses | fixed | 1d627a618 |
+| [5531332293](https://github.com/XTM-Hub/xtm-hub/pull/3804#pullrequestreview-5531332293) | Kroustille | Raw palette variables; dead components.json and tailwind.config.ts | fixed | cbbcb60cc (files); aa1ee3e5f traces the variables under Deferred findings (fixed-artwork rule) |
+| [4281572504](https://github.com/XTM-Hub/xtm-hub/pull/3804#discussion_r4281572504) | Kroustille | Non-standard ::-webkit-scrollbar, narrow target | follow-up | #3876 (same on main) |

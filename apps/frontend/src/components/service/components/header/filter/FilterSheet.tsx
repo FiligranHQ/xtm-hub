@@ -32,8 +32,8 @@ export const FilterSheet = ({ filters }: FilterSheetProps) => {
         side="left"
         closeLabel={t('Utils.Close')}
         aria-describedby={undefined}
-        className="bg-gradient-background">
-        <SheetHeader className="bg-gradient-background">
+        className="bg-gradient-default">
+        <SheetHeader className="bg-gradient-default">
           <SheetTitle>{t('Service.List.Filters')}</SheetTitle>
         </SheetHeader>
         <ServiceListFilterSection filters={filters} />

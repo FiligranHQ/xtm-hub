@@ -39,20 +39,20 @@ export const DetailCard = ({
   return (
     <div
       onClick={handleCardClick}
-      className="group flex h-full flex-col overflow-hidden rounded bg-elevation-background-layer-1 hover:cursor-pointer">
+      className="group flex h-full flex-col overflow-hidden rounded layer-1 bg-elevation-default hover:cursor-pointer">
       {media}
-      <div className="flex flex-1 flex-col gap-m p-l group-hover:bg-hover">
-        <div className="flex flex-col gap-m">
+      <div className="flex flex-1 flex-col gap-3 p-4 group-hover:bg-elevation-hover">
+        <div className="flex flex-col gap-3">
           <h2 className="text-base font-semibold line-clamp-2">
             <button
               type="button"
               data-no-open-detail
               onClick={() => onOpenDetail()}
-              className="focus-visible:ring-primary text-left focus-visible:outline-none focus-visible:ring-2">
+              className="focus-visible:ring-focus text-left focus-visible:outline-none focus-visible:ring-2">
               {title}
             </button>
           </h2>
-          <p className="text-muted-foreground text-sm line-clamp-4 min-h-[5rem]">
+          <p className="text-default-secondary text-sm line-clamp-4 min-h-[5rem]">
             {description}
           </p>
           {extra}

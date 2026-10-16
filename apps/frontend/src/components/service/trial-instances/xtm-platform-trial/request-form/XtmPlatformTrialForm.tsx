@@ -78,14 +78,13 @@ export const XtmPlatformTrialForm = ({
   handleSubmit,
 }: XtmPlatformTrialFormProps) => {
   const t = useTranslate();
-  const selectLayerClassName = 'layer-2';
   const { me } = useContext(PortalContext);
 
   const renderMssaLink = (chunks: ReactNode) => (
     <Link
       target="_blank"
       rel="noopener noreferrer"
-      className="underline text-primary"
+      className="underline text-filigran-brand-primary"
       href={withFiligranWebsiteUtm('https://filigran.io/mssa', {
         campaign: FiligranWebsiteUtmCampaign.OTHER,
         content: 'trial_form_mssa',
@@ -97,7 +96,7 @@ export const XtmPlatformTrialForm = ({
     <Link
       target="_blank"
       rel="noopener noreferrer"
-      className="underline text-primary"
+      className="underline text-filigran-brand-primary"
       href={withFiligranWebsiteUtm('https://filigran.io/ai-terms', {
         campaign: FiligranWebsiteUtmCampaign.OTHER,
         content: 'trial_form_ai_terms',
@@ -160,26 +159,24 @@ export const XtmPlatformTrialForm = ({
   };
 
   return (
-    <div className="flex w-full flex-col gap-xl rounded bg-elevation-background-layer-2 p-xl">
-      <div className="flex items-center gap-l">
-        <span className="text-content-body-base text-muted-foreground">
+    <div className="flex w-full flex-col gap-6 rounded layer-2 bg-elevation-default p-6">
+      <div className="flex items-center gap-4">
+        <span className="text-content-base text-default-secondary">
           {t('Service.Trials.Form.AssociatedEmail')}
         </span>
-        <span className="txt-default-bold">{me?.email}</span>
+        <span>{me?.email}</span>
       </div>
 
       <Form {...form}>
         <form
-          className="flex w-full flex-col gap-l"
+          className="flex w-full flex-col gap-4"
           onSubmit={form.handleSubmit(handleSubmit)}>
-          <div className="flex flex-col gap-s rounded bg-hover p-l bg-elevation-background-layer-2">
-            <h3 className="txt-title-xs">
-              {t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}
-            </h3>
+          <div className="flex flex-col gap-2 rounded bg-elevation-highlight p-4">
+            <h3>{t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}</h3>
 
-            <div className="flex items-start gap-xs rounded border border-solid border-alert-alert-primary p-s">
-              <WarningIcon className="size-4 mt-1 shrink-0 text-alert-alert-primary" />
-              <div className="flex flex-col gap-xs content-body-compact">
+            <div className="flex items-start gap-1 rounded border border-solid border-alert-alert p-2">
+              <WarningIcon className="size-4 mt-1 shrink-0 text-icon-alert" />
+              <div className="flex flex-col gap-1 content-compact">
                 <span>
                   {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
                 </span>
@@ -191,7 +188,7 @@ export const XtmPlatformTrialForm = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-xl">
+            <div className="flex items-center gap-6">
               {SELECTABLE_PRODUCTS.map((platformIdentifier) => (
                 <Checkbox
                   key={platformIdentifier}
@@ -228,7 +225,6 @@ export const XtmPlatformTrialForm = ({
                 value={field.value}
                 onValueChange={field.onChange}
                 error={fieldState.error?.message}
-                triggerClassName={selectLayerClassName}
               />
             )}
           />
@@ -244,7 +240,6 @@ export const XtmPlatformTrialForm = ({
                 values={Object.values(DeploymentRequestJobTitle)}
                 translationNamespace="DeploymentRequestJobTitle"
                 error={fieldState.error?.message}
-                triggerClassName={selectLayerClassName}
               />
             )}
           />
@@ -260,7 +255,6 @@ export const XtmPlatformTrialForm = ({
                 values={Object.values(DeploymentRequestActivitySector)}
                 translationNamespace="DeploymentRequestActivitySector"
                 error={fieldState.error?.message}
-                triggerClassName={selectLayerClassName}
               />
             )}
           />
@@ -284,7 +278,6 @@ export const XtmPlatformTrialForm = ({
                   }
                   translationNamespace="DeploymentRequestUseCase"
                   error={fieldState.error?.message}
-                  triggerClassName={selectLayerClassName}
                 />
               )}
             />

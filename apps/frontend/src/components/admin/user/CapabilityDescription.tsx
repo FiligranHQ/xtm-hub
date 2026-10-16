@@ -43,9 +43,9 @@ export const CapabilityDescription = () => {
       </CardHeader>
       <CardContent
         clamp={0}
-        className="flex flex-col gap-s">
+        className="flex flex-col gap-2">
         <p>{t('CapabilityDescription.Description')}</p>
-        <ul className="grid grid-cols-[auto_1fr] gap-x-s gap-y-m text-xs">
+        <ul className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-3 text-xs">
           {capabilityList}
         </ul>
       </CardContent>

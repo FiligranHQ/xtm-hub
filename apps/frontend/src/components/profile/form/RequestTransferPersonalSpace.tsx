@@ -63,8 +63,8 @@ export const RequestTransferPersonalSpace = () => {
   };
   return (
     <>
-      <Separator className="my-s" />
-      <h2 className="text-destructive">{t('Utils.DangerZone')}</h2>
+      <Separator className="my-2" />
+      <h2 className="text-feedback-error-primary">{t('Utils.DangerZone')}</h2>
       <Card>
         <CardHeader>
           <CardTitle as="h3">
@@ -74,7 +74,7 @@ export const RequestTransferPersonalSpace = () => {
         <CardContent clamp={0}>
           {t('ProfilePage.PersonalSpace.TransferPersoSpaceExplanation')}
           <AutoForm
-            className="mt-xl"
+            className="mt-6"
             onSubmit={(values) => onSubmit(values)}
             formSchema={formSchema}
             fieldConfig={{
@@ -85,7 +85,7 @@ export const RequestTransferPersonalSpace = () => {
                 },
               },
             }}>
-            <div className="mt-xl flex justify-end">
+            <div className="mt-6 flex justify-end">
               <Button
                 variant="destructive"
                 aria-label={t('ProfilePage.PersonalSpace.TransferPersoSpace')}>

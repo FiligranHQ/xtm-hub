@@ -17,9 +17,9 @@ export const RegistrationLayout = ({
   const { displayedIdentifier } = useContext(RegistrationContext);
   const t = useTranslate();
   return (
-    <div className="h-full flex flex-col justify-between gap-xl">
-      <div className="flex flex-col gap-m">{children}</div>
-      <div className="flex justify-end gap-s">
+    <div className="h-full flex flex-col justify-between gap-6">
+      <div className="flex flex-col gap-3">{children}</div>
+      <div className="flex justify-end gap-2">
         {Boolean(cancel) && (
           <Button
             priority="secondary"

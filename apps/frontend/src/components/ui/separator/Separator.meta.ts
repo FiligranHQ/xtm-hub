@@ -11,7 +11,7 @@ export const SeparatorMeta: ComponentMeta = {
   variants: ['horizontal', 'vertical'],
   sizes: [],
   examples: [
-    '<Separator className="my-s" />',
+    '<Separator className="my-2" />',
     '<Separator orientation="vertical" className="h-6" />',
   ],
   props: {

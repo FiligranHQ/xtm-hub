@@ -43,7 +43,7 @@ export const EpicFilter = ({
   );
 
   return (
-    <div className="mx-s grid grid-cols-1 sm:grid-cols-3 gap-l items-center">
+    <div className="mx-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
       <div className="max-w-full sm:max-w-[100%]">
         <SearchField
           fullWidth

@@ -36,7 +36,7 @@ export const EditTranslationsButton = ({
         priority="tertiary"
         disabled={isPending || isExiting}
         className={cn(
-          'h-9 px-m w-full justify-start rounded-none text-foreground',
+          'h-9 px-3 w-full justify-start rounded-none text-default-primary',
           isEditMode && NAVIGATION_ACTIVE_CLASSES
         )}
         onClick={() => (isEditMode ? exitEditMode() : setEditMode(true))}>
@@ -44,14 +44,14 @@ export const EditTranslationsButton = ({
           <LanguageIcon
             className={cn(
               'h-6 w-6 p-1',
-              isEditMode ? 'text-primary' : 'text-text-default-secondary'
+              isEditMode ? 'text-icon-highlight' : 'text-icon-subtle'
             )}
           />
         </span>
         <span
           className={cn(
             'normal-case',
-            isEditMode ? 'text-primary' : 'text-text-default-primary',
+            isEditMode ? 'text-filigran-brand-primary' : 'text-default-primary',
             open ? 'ml-2' : 'sr-only'
           )}>
           {t(isEditMode ? 'MenuButtonExit' : 'MenuButton')}

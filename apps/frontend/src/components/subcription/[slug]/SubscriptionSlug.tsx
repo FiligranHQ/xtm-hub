@@ -257,7 +257,9 @@ const SubscriptionSlug = ({
               {canManageUserServices && (
                 <IconActions
                   aria-label={t('Utils.OpenMenu')}
-                  icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+                  icon={
+                    <MoreVertIcon className="h-4 w-4 text-icon-highlight" />
+                  }>
                   <IconActionsItem
                     onClick={() => setEditUserService(row.original)}>
                     {t('Utils.Update')}
@@ -282,8 +284,8 @@ const SubscriptionSlug = ({
   });
 
   const toolbar = (
-    <div className="flex justify-between flex-wrap gap-s pt-s">
-      <div className="flex gap-s flex-wrap ml-auto">
+    <div className="flex justify-between flex-wrap gap-2 pt-2">
+      <div className="flex gap-2 flex-wrap ml-auto">
         <SubscriptionSlugUserService
           connectionId={userServices.userServiceFromSubscription?.__id ?? ''}
           subscription={queryDataSubscription}

@@ -19,9 +19,9 @@ export const PlatformInformation = ({
   const isSaasMetricsEnabled = useIsFeatureEnabled(FeatureFlag.SaasMetrics);
 
   return (
-    <div className="my-m p-xl bg-elevation-background-layer-2">
+    <div className="my-3 layer-2 bg-elevation-default p-6">
       <h2>{t('Register.Details.PlatformInformation')}</h2>
-      <Separator className="m-m" />
+      <Separator className="m-3" />
       <div className="grid grid-cols-2">
         <RegistrationDetails registeredPlatform={registeredPlatform} />
         {isSaasMetricsEnabled && (

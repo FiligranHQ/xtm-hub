@@ -60,7 +60,7 @@ export const PublicResourceActions = ({
   });
 
   return (
-    <div className="flex items-center gap-s ml-auto">
+    <div className="flex items-center gap-2 ml-auto">
       <ShareLinkButton
         documentId={documentData.id}
         url={pageUrl}
@@ -76,7 +76,7 @@ export const PublicResourceActions = ({
                 <IconButton
                   asChild
                   priority="tertiary"
-                  className="z-[2] text-primary"
+                  className="z-[2]"
                   aria-label={t('Service.ShareableResources.Download')}
                   icon={<DownloadIcon className="h-4 w-4" />}>
                   <Link href={signupHref} />

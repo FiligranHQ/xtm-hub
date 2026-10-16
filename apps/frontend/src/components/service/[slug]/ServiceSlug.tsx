@@ -149,7 +149,7 @@ const ServiceSlug = ({
           <div className="flex items-center justify-end">
             <IconActions
               aria-label={t('Utils.OpenMenu')}
-              icon={<MoreVertIcon className="h-4 w-4 text-primary" />}>
+              icon={<MoreVertIcon className="h-4 w-4 text-icon-highlight" />}>
               <IconActionsLink
                 href={`/${APP_PATH}/admin/service/${row.id}/subscription`}>
                 {t('Service.Management.ManageUsers')}
@@ -173,8 +173,8 @@ const ServiceSlug = ({
   ];
 
   const toolbar = (
-    <div className="flex justify-between flex-wrap gap-s pt-s">
-      <div className="flex items-center gap-m ml-l">
+    <div className="flex justify-between flex-wrap gap-2 pt-2">
+      <div className="flex items-center gap-3 ml-4">
         <div className="flex-1 max-w-sm">
           <SearchField
             id="SearchTerm"
@@ -193,7 +193,7 @@ const ServiceSlug = ({
         />
       </div>
 
-      <div className="flex gap-s flex-wrap ml-auto">
+      <div className="flex gap-2 flex-wrap ml-auto">
         <ServiceSlugSubscription
           subscriptions={subscriptions}
           subscriptionToEdit={updateSubscription}
@@ -262,7 +262,7 @@ const ServiceSlug = ({
 
       <div>
         <ServiceSlugHeader serviceInstance={serviceInstance} />
-        <div className="border rounded bg-elevation-background-layer-1 p-m">
+        <div className="layer-1 border rounded bg-elevation-default p-3">
           <h2 className="">{t('Service.Management.Description') + ':'}</h2>
 
           <DataTable

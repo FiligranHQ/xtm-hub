@@ -44,7 +44,7 @@ const GuardCapacityComponent = ({
     if (displayError) {
       return (
         <>
-          <h2 className="txt-title">{t('Utils.Error')}</h2>
+          <h2 className="title-2xl">{t('Utils.Error')}</h2>
           {t('Error.YouAreNotAuthorized')}
         </>
       );
