@@ -26,18 +26,14 @@ describe('ShareableResourceHuntPackDetails', () => {
       />
     );
 
-    // Then every row is shown with translated labels, never raw slugs
+    // Then every row is shown with translated labels and the platforms with their product names, never raw slugs
     expect(
       screen.getByText('Service.ShareableResources.Details.Hunts')
     ).toBeInTheDocument();
     expect(
       screen.getByText('Service.ShareableResources.Details.HuntCount')
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Service.OpenctiIntegrations.HuntPlatform.microsoft-sentinel, Service.OpenctiIntegrations.HuntPlatform.splunk'
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText('Microsoft Sentinel, Splunk')).toBeInTheDocument();
     expect(screen.getByText('T1059.001')).toBeInTheDocument();
     expect(screen.getByText('T1071')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
