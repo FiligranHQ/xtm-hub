@@ -7,15 +7,15 @@ import {
   SectionSubLink,
 } from '@/components/menu/navigation/shared/navigation.type';
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@filigran/design-system';
-import { OpenInNewIcon } from '@filigran/icon';
 import {
+  Button,
+  buttonVariants,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@filigran/ui';
-import { GradientButton } from '@filigran/ui/servers';
+} from '@filigran/design-system';
+import { OpenInNewIcon } from '@filigran/icon';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ElementType, ReactNode } from 'react';
@@ -37,10 +37,7 @@ export const PublicSubLink = ({
     buttonVariants({
       priority: 'tertiary',
       className: cn(
-        'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case content-body-compact text-text-default-secondary text-xs',
-        highlight &&
-          !isActive &&
-          'bg-clip-text text-transparent bg-gradient-legacy-focus',
+        'flex items-center justify-between w-full h-9 pl-6 rounded-none normal-case content-compact text-default-secondary text-xs',
         !href && 'cursor-default pointer-events-none',
         className
       ),
@@ -50,14 +47,19 @@ export const PublicSubLink = ({
 
   const content = (
     <>
-      <span className="flex min-w-0 flex-1 items-center gap-xs">
+      <span className="flex min-w-0 flex-1 items-center gap-1">
         {external && <OpenInNewIcon className="h-3 w-3 shrink-0" />}
-        <span className={cn('truncate', !href && 'text-text-default-disabled')}>
+        <span
+          className={cn(
+            'truncate',
+            highlight && !isActive && 'text-gradient-focus',
+            !href && 'text-default-disabled'
+          )}>
           {label}
         </span>
       </span>
       {badge && (
-        <span className="inline-flex items-center shrink-0 text-content-caption bg-clip-text text-transparent bg-gradient-legacy-focus">
+        <span className="inline-flex items-center shrink-0 text-content-caption text-gradient-focus">
           {badge}
         </span>
       )}
@@ -73,14 +75,10 @@ export const PublicSubLink = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>{node}</TooltipTrigger>
-          <TooltipContent className="bg-ds-bg-4 dark:bg-ds-bg-4 rounded">
+          <TooltipContent>
             <div className="flex flex-col gap-0.5">
-              <span className="content-body-base text-text-default-primary">
-                {label}
-              </span>
-              <span className="content-body-base text-muted-foreground">
-                {tooltip}
-              </span>
+              <span>{label}</span>
+              <span className="text-default-secondary">{tooltip}</span>
             </div>
           </TooltipContent>
         </Tooltip>
@@ -104,7 +102,7 @@ export const PublicSubLink = ({
 };
 
 export const MenuItemIcon = ({ icon: Icon }: { icon: ElementType }) => (
-  <span className="text-text-default-secondary flex w-4 shrink-0 justify-center">
+  <span className="text-icon-subtle flex w-4 shrink-0 justify-center">
     <Icon
       aria-hidden={true}
       focusable={false}
@@ -140,13 +138,11 @@ export const NavigationLinkMenu = ({
         target={external ? '_blank' : undefined}
         rel={external ? 'noopener noreferrer' : undefined}
         className="block">
-        <GradientButton
-          className={cn(
-            'h-9 rounded text-content-button whitespace-nowrap bg-background dark:bg-none',
-            open ? 'w-full px-2' : 'w-9 px-0'
-          )}
-          textGradient={open}
-          tabIndex={-1}>
+        <Button
+          variant="highlight"
+          priority="secondary"
+          tabIndex={-1}
+          className={cn('overflow-hidden', open ? 'w-full px-2' : 'w-9 px-0')}>
           {open ? (
             text
           ) : (
@@ -156,7 +152,7 @@ export const NavigationLinkMenu = ({
               className="h-4 w-4 text-filigran-brand-primary"
             />
           )}
-        </GradientButton>
+        </Button>
       </Link>
     );
   }
@@ -170,7 +166,7 @@ export const NavigationLinkMenu = ({
         buttonVariants({
           priority: 'tertiary',
           className:
-            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-s content-body-compact text-text-default-secondary text-xs',
+            'h-9 w-full justify-start rounded-none normal-case pl-5 pr-2 content-compact text-default-secondary text-xs',
         }),
         currentPath === href
           ? NAVIGATION_ACTIVE_CLASSES

@@ -1,14 +1,12 @@
-import {
-  buildDocumentListColumns,
-  DOCUMENT_LIST_TABLE_CLASS_NAME,
-} from '@/components/service/components/DocumentListColumns';
+import { buildDocumentListColumns } from '@/components/service/components/DocumentListColumns';
 import { ServiceListDisplayMode } from '@/components/service/components/header/ServiceListHeader';
+import { DataTable } from '@/components/ui/data-table';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import ShareableResourceCard from '@/components/ui/shareable-resource/ShareableResourceCard';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import { useTranslate } from '@/hooks/use-translate';
+import { getDataTableLabels } from '@/utils/design-system/data-table';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { DataTable } from '@filigran/ui';
 import { publicDocumentListItemFragment$data } from '@generated/publicDocumentListItemFragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { useLocale } from 'next-intl';
@@ -57,7 +55,7 @@ export const PublicShareableDocumentList = ({
       {displayMode === ServiceListDisplayMode.Tab ? (
         <ul
           className={
-            'grid grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))] gap-l'
+            'grid grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))] gap-4'
           }>
           {documents.map((document) => (
             <ShareableResourceCard
@@ -71,19 +69,18 @@ export const PublicShareableDocumentList = ({
           ))}
         </ul>
       ) : (
-        <div className={DOCUMENT_LIST_TABLE_CLASS_NAME}>
-          <DataTable
-            columns={tableColumns}
-            data={documents}
-            toolbar={<></>}
-            onClickRow={(row) => {
-              save();
-              router.push(
-                `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`
-              );
-            }}
-          />
-        </div>
+        <DataTable
+          {...getDataTableLabels(t)}
+          columns={tableColumns}
+          data={documents}
+          toolbar={<></>}
+          onClickRow={(row) => {
+            save();
+            router.push(
+              `/${locale}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${serviceInstance.slug}/${row.original.slug}`
+            );
+          }}
+        />
       )}
     </>
   );

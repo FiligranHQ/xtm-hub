@@ -133,7 +133,6 @@ const privateNavigationPlatformTrialStatusResponse: PlatformTrialStatusQuery = {
     isBlacklisted: false,
     hub_status: null,
     end_date: null,
-    ongoingStandaloneTrials: [],
   },
 };
 
@@ -180,7 +179,7 @@ describe('PrivateNavigation component — open={true}', () => {
     expect(screen.getByText('Slack')).toBeInTheDocument();
 
     expect(
-      container.querySelectorAll('div.bg-elevation-border-strong')
+      container.querySelectorAll('div[data-orientation="horizontal"]')
     ).toHaveLength(1);
   });
 
@@ -207,7 +206,7 @@ describe('PrivateNavigation component — open={true}', () => {
     ).toBeTruthy();
     expect(usersLink).toHaveAttribute('href', `/${APP_PATH}/manage/user`);
     expect(
-      container.querySelectorAll('div.bg-elevation-border-strong')
+      container.querySelectorAll('div[data-orientation="horizontal"]')
     ).toHaveLength(2);
 
     await expandSection(user, 'Settings');
@@ -266,7 +265,9 @@ describe('PrivateNavigation component — open={true}', () => {
     const xtmPlatformLink = screen.getByRole('link', {
       name: 'XTMPlatform',
     });
-    expect(xtmPlatformLink.className).toContain('bg-primary/10');
+    expect(xtmPlatformLink).toHaveClass(
+      'bg-filigran-brand-primary-transparency-10'
+    );
   });
 
   it('renders nested MyProduct dropdown links for OpenCTI with tooltip url', async () => {

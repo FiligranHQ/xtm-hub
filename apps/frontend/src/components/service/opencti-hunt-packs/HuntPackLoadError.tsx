@@ -23,7 +23,7 @@ const HuntPackLoadError = ({
   return (
     <div
       role="alert"
-      className="flex flex-col items-start gap-m">
+      className="flex flex-col items-start gap-3">
       <AppError
         error={error instanceof Error ? error : new Error()}
         description={description}

@@ -1,6 +1,6 @@
 import { ServiceDefinitionIdentifierToPlatformIdentifier } from '@/components/registration/PlatformIdentifierMapping';
 import { daysUntil } from '@/utils/date';
-import { APP_PATH } from '@/utils/path/constant';
+import { registeredPlatformDetailPath } from '@/utils/path/registered-platform-detail-path';
 import {
   DocumentImageType,
   HomepageDocumentFragment,
@@ -63,8 +63,6 @@ export const mapRegisteredPlatformsToHomepageCards = (
       return [];
     }
 
-    const serviceInstanceId = platform.subscription?.service_instance_id;
-
     return [
       {
         id: platform.id,
@@ -76,9 +74,11 @@ export const mapRegisteredPlatformsToHomepageCards = (
           platform.contract === PlatformContract.Trial
             ? resolveRemainingTrialDays(platform.subscription?.end_date)
             : undefined,
-        href: serviceInstanceId
-          ? `/${APP_PATH}/service/${platform.identifier}/${serviceInstanceId}`
-          : undefined,
+        href: registeredPlatformDetailPath({
+          identifier: platform.identifier,
+          deploymentRequest: platform.deployment_request,
+          serviceInstanceId: platform.subscription?.service_instance_id,
+        }),
       },
     ];
   });

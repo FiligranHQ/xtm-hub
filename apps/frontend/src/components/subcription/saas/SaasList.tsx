@@ -6,6 +6,7 @@ import {
   getSaasPlatformProductName,
   getSaasPlatformServicePath,
 } from '@/components/subcription/saas/saas-list.utils';
+import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -17,15 +18,15 @@ import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { cn } from '@/lib/utils';
 import { DEBOUNCE_TIME } from '@/utils/constant';
-import { i18nKey } from '@/utils/datatable';
+import { getDataTableLabels } from '@/utils/design-system/data-table';
 import {
+  Chip,
   SearchField,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@filigran/design-system';
-import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
 import {
   OrderingMode,
   PortalCapability,
@@ -133,7 +134,7 @@ export const SaasList = () => {
       header: t('CSMBoard.Products'),
       enableSorting: false,
       cell: ({ row }) => (
-        <Badge>{getSaasPlatformProductName(row.original.identifier)}</Badge>
+        <Chip label={getSaasPlatformProductName(row.original.identifier)} />
       ),
     },
     {
@@ -145,7 +146,7 @@ export const SaasList = () => {
           row.original.identifier
         );
         return (
-          <span className="flex min-w-0 items-center gap-s">
+          <span className="flex min-w-0 items-center gap-2">
             {platformMetadata && (
               <platformMetadata.Icon
                 className={cn(
@@ -216,13 +217,15 @@ export const SaasList = () => {
   return (
     <>
       {isError && (
-        <div className="mb-s text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="mb-2 text-sm text-feedback-error-primary">
+          {t('Utils.Error')}
+        </div>
       )}
       <DataTable
         columns={columns}
         data={saasPlatforms}
         isLoading={isLoading}
-        i18nKey={i18nKey(t)}
+        {...getDataTableLabels(t)}
         onResetTable={resetAll}
         tableOptions={{
           onSortingChange,
@@ -236,7 +239,7 @@ export const SaasList = () => {
           pagination,
         }}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
             <label
               htmlFor="saas-platforms-search"
               className="sr-only">
@@ -252,7 +255,7 @@ export const SaasList = () => {
                 onClear={onSearchClear}
               />
             </div>
-            <div className="flex w-full items-center justify-end gap-s sm:w-auto">
+            <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
               <DataTableHeadBarOptions />
             </div>
           </div>

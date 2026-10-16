@@ -1,5 +1,6 @@
 import {
   PlatformConfigurationStatus,
+  PlatformContract,
   PlatformIdentifier,
   PlatformRegistrationConnectivityStatus,
   RefreshPlatformRegistrationConnectivityStatusAllTenantsInput,
@@ -89,16 +90,24 @@ const saveConfig = async ({
   platform_version,
   platform_url,
   tenant_name,
+  platform_contract,
 }: {
   platformConfiguration: PlatformConfiguration;
   platform_version: string;
   platform_url?: string;
   tenant_name?: string;
+  platform_contract?: PlatformContract;
 }): Promise<void> => {
+  const shouldUpdateContract =
+    RegistrationHelper.shouldUpdateContractFromRefresh(
+      platformConfiguration.platform_contract,
+      platform_contract
+    );
   const hasConfigChanged =
     platformConfiguration.platform_version !== platform_version ||
     (platform_url && platformConfiguration.platform_url !== platform_url) ||
-    (tenant_name && platformConfiguration.tenant_name !== tenant_name);
+    (tenant_name && platformConfiguration.tenant_name !== tenant_name) ||
+    shouldUpdateContract;
 
   if (hasConfigChanged) {
     await PlatformConfigurationDomain.updateConfiguration(
@@ -108,8 +117,18 @@ const saveConfig = async ({
         platform_version,
         ...(platform_url ? { platform_url } : {}),
         ...(tenant_name ? { tenant_name } : {}),
+        ...(shouldUpdateContract ? { platform_contract } : {}),
       }
     );
+    if (shouldUpdateContract) {
+      logApp.info('Platform contract updated from its connectivity refresh', {
+        service_instance_id: platformConfiguration.service_instance_id,
+        platform_id: platformConfiguration.platform_id,
+        tenant_id: platformConfiguration.tenant_id,
+        previous_contract: platformConfiguration.platform_contract,
+        platform_contract,
+      });
+    }
     return;
   }
   await PlatformConfigurationDomain.updateConfiguration(
@@ -128,6 +147,7 @@ const refreshConnectivityStatus = async ({
   tenant_id,
   tenant_name,
   platform_identifier,
+  platform_contract,
 }: {
   platform_id: string;
   token: string;
@@ -136,6 +156,7 @@ const refreshConnectivityStatus = async ({
   tenant_id?: string;
   tenant_name?: string;
   platform_identifier?: PlatformIdentifier;
+  platform_contract?: PlatformContract;
 }): Promise<{ status: PlatformRegistrationConnectivityStatus }> => {
   if (!isValidVersion(platform_version)) {
     throw new Error(ErrorCode.InvalidPlatformVersion);
@@ -180,6 +201,7 @@ const refreshConnectivityStatus = async ({
     platform_version,
     platform_url: url,
     tenant_name,
+    platform_contract,
   });
 
   return {
@@ -199,6 +221,7 @@ export const RegistrationConnectivityApp = {
       platform_version: input.platformVersion,
       platform_id: input.platformId,
       token: input.token,
+      platform_contract: input.platformContract ?? undefined,
     });
   },
 
@@ -213,6 +236,7 @@ export const RegistrationConnectivityApp = {
       url: input.url,
       tenant_id: input.tenantId,
       tenant_name: input.tenantName,
+      platform_contract: input.platformContract ?? undefined,
     });
   },
 
@@ -229,6 +253,7 @@ export const RegistrationConnectivityApp = {
           url: tenant.url,
           tenant_id: tenant.tenantId,
           tenant_name: tenant.tenantName,
+          platform_contract: input.platformContract ?? undefined,
         }).then(({ status }) => ({ tenantId: tenant.tenantId, status }))
       )
     );

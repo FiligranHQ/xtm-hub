@@ -4,26 +4,22 @@ import {
   REGIONS_VALUES,
   USE_CASES_BY_PLATFORM_IDENTIFIER,
 } from '@/components/service/trial-instances/form-constants';
-import { buildOngoingTrialWarningParams } from '@/components/service/trial-instances/xtm-platform-trial/request-form/xtm-platform-trial-form.utils';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
-import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
-import { useTranslate } from '@/hooks/use-translate';
-import { cn } from '@/lib/utils';
-import { Button } from '@filigran/design-system';
-import { WarningIcon } from '@filigran/icon';
 import {
-  Checkbox,
   Form,
+  FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@filigran/ui';
+} from '@/components/ui/form';
+import { SelectField } from '@/components/ui/SelectField';
+import { TranslatableEnumSelectField } from '@/components/ui/TranslatableEnumSelectField';
+import { useTranslate } from '@/hooks/use-translate';
+import {
+  FiligranWebsiteUtmCampaign,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
+import { Button, Checkbox } from '@filigran/design-system';
+import { WarningIcon } from '@filigran/icon';
 import {
   DeploymentRequestActivitySector,
   DeploymentRequestJobTitle,
@@ -31,9 +27,8 @@ import {
   PlatformIdentifier,
 } from '@graphql/generated';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocale } from 'next-intl';
 import Link from 'next/link';
-import { ReactNode, useContext, useMemo, useState } from 'react';
+import { ReactNode, useContext, useMemo } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -77,28 +72,23 @@ const SELECTABLE_PRODUCTS = [
 
 interface XtmPlatformTrialFormProps {
   handleSubmit: (values: z.infer<typeof xtmPlatformTrialFormSchema>) => void;
-  hasOngoingStandaloneTrials?: boolean;
-  ongoingStandaloneTrialProducts?: PlatformIdentifier[];
 }
 
 export const XtmPlatformTrialForm = ({
   handleSubmit,
-  hasOngoingStandaloneTrials = false,
-  ongoingStandaloneTrialProducts = [],
 }: XtmPlatformTrialFormProps) => {
   const t = useTranslate();
-  const locale = useLocale();
-  const selectLayerClassName = 'layer-2';
-  const selectTriggerClassName = cn(selectLayerClassName);
-  const selectContentClassName = cn(selectLayerClassName);
   const { me } = useContext(PortalContext);
 
   const renderMssaLink = (chunks: ReactNode) => (
     <Link
       target="_blank"
       rel="noopener noreferrer"
-      className="underline text-primary"
-      href="https://filigran.io/mssa">
+      className="underline text-filigran-brand-primary"
+      href={withFiligranWebsiteUtm('https://filigran.io/mssa', {
+        campaign: FiligranWebsiteUtmCampaign.OTHER,
+        content: 'trial_form_mssa',
+      })}>
       {chunks}
     </Link>
   );
@@ -106,22 +96,14 @@ export const XtmPlatformTrialForm = ({
     <Link
       target="_blank"
       rel="noopener noreferrer"
-      className="underline text-primary"
-      href="https://filigran.io/ai-terms">
+      className="underline text-filigran-brand-primary"
+      href={withFiligranWebsiteUtm('https://filigran.io/ai-terms', {
+        campaign: FiligranWebsiteUtmCampaign.OTHER,
+        content: 'trial_form_ai_terms',
+      })}>
       {chunks}
     </Link>
   );
-
-  const ongoingTrialWarningParams = buildOngoingTrialWarningParams(
-    ongoingStandaloneTrialProducts,
-    (platformIdentifier) => t(`PlatformIdentifier.${platformIdentifier}`),
-    locale
-  );
-
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [pendingValues, setPendingValues] = useState<z.infer<
-    typeof xtmPlatformTrialFormSchema
-  > | null>(null);
 
   const formSchema = useMemo(() => buildXtmPlatformTrialFormSchema(t), [t]);
 
@@ -176,152 +158,88 @@ export const XtmPlatformTrialForm = ({
     }
   };
 
-  const onSubmit = (values: z.infer<typeof xtmPlatformTrialFormSchema>) => {
-    if (hasOngoingStandaloneTrials) {
-      setPendingValues(values);
-      setIsConfirmOpen(true);
-      return;
-    }
-    handleSubmit(values);
-  };
-
-  const onConfirmOngoingTrial = () => {
-    if (pendingValues) {
-      handleSubmit(pendingValues);
-    }
-    setIsConfirmOpen(false);
-    setPendingValues(null);
-  };
-
   return (
-    <div className="flex w-full flex-col gap-xl rounded bg-elevation-background-layer-2 p-xl">
-      <div className="flex items-center gap-l">
-        <span className="text-content-body-base text-muted-foreground">
+    <div className="flex w-full flex-col gap-6 rounded layer-2 bg-elevation-default p-6">
+      <div className="flex items-center gap-4">
+        <span className="text-content-base text-default-secondary">
           {t('Service.Trials.Form.AssociatedEmail')}
         </span>
-        <span className="txt-default-bold">{me?.email}</span>
+        <span>{me?.email}</span>
       </div>
 
       <Form {...form}>
         <form
-          className="flex w-full flex-col gap-l"
-          onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-s rounded bg-hover p-l bg-elevation-background-layer-2">
-            <h3 className="txt-title-xs">
-              {t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}
-            </h3>
+          className="flex w-full flex-col gap-4"
+          onSubmit={form.handleSubmit(handleSubmit)}>
+          <div className="flex flex-col gap-2 rounded bg-elevation-highlight p-4">
+            <h3>{t('Service.Trials.XtmPlatform.Page.Form.ProductsTitle')}</h3>
 
-            {hasOngoingStandaloneTrials ? (
-              <div className="flex items-start gap-xs rounded border border-solid border-red p-s">
-                <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
-                <div className="flex flex-col gap-xs">
-                  <span>
-                    {t(
-                      'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning',
-                      ongoingTrialWarningParams
-                    )}
-                  </span>
-                  <span>
-                    {t(
-                      'Service.Trials.XtmPlatform.Page.Form.OngoingTrialDescription'
-                    )}
-                  </span>
-                </div>
+            <div className="flex items-start gap-1 rounded border border-solid border-alert-alert p-2">
+              <WarningIcon className="size-4 mt-1 shrink-0 text-icon-alert" />
+              <div className="flex flex-col gap-1 content-compact">
+                <span>
+                  {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
+                </span>
+                <span>
+                  {t(
+                    'Service.Trials.XtmPlatform.Page.Form.ProductsWarningDescription'
+                  )}
+                </span>
               </div>
-            ) : (
-              <div className="flex items-start gap-xs rounded border border-solid border-alert-alert-primary p-s">
-                <WarningIcon className="size-4 mt-1 shrink-0 text-alert-alert-primary" />
-                <div className="flex flex-col gap-xs content-body-compact">
-                  <span>
-                    {t('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')}
-                  </span>
-                  <span>
-                    {t(
-                      'Service.Trials.XtmPlatform.Page.Form.ProductsWarningDescription'
-                    )}
-                  </span>
-                </div>
-              </div>
-            )}
+            </div>
 
-            <div className="flex items-center gap-xl">
+            <div className="flex items-center gap-6">
               {SELECTABLE_PRODUCTS.map((platformIdentifier) => (
-                <div
+                <Checkbox
                   key={platformIdentifier}
-                  className="relative flex items-center gap-s">
-                  <Checkbox
-                    id={`product-${platformIdentifier}`}
-                    checked={products.includes(platformIdentifier)}
-                    onCheckedChange={(checked) =>
-                      toggleProduct(platformIdentifier, checked === true)
-                    }
-                  />
-                  <label
-                    htmlFor={`product-${platformIdentifier}`}
-                    className="txt-default cursor-pointer">
-                    {t(`PlatformIdentifier.${platformIdentifier}`)}
-                  </label>
-                </div>
+                  id={`product-${platformIdentifier}`}
+                  label={t(`PlatformIdentifier.${platformIdentifier}`)}
+                  checked={products.includes(platformIdentifier)}
+                  onCheckedChange={(checked) =>
+                    toggleProduct(platformIdentifier, checked === true)
+                  }
+                />
               ))}
 
-              <div className="relative flex items-center gap-s">
-                <Checkbox
-                  id="product-xtmone"
-                  checked
-                  disabled
-                />
-                <label
-                  htmlFor="product-xtmone"
-                  className="content-base tracking-[0.75px] text-muted-foreground">
-                  {t(`PlatformIdentifier.${PlatformIdentifier.Xtmone}`)}
-                </label>
-              </div>
+              <Checkbox
+                id="product-xtmone"
+                label={t(`PlatformIdentifier.${PlatformIdentifier.Xtmone}`)}
+                checked
+                disabled
+              />
             </div>
           </div>
 
           <FormField
             control={form.control}
             name="region"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {t('Service.Trials.Form.Region')}{' '}
-                  <span className="text-destructive">*</span>
-                </FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}>
-                  <SelectTrigger className={selectTriggerClassName}>
-                    <SelectValue
-                      placeholder={t('Service.Trials.Form.RegionPlaceholder')}
-                    />
-                  </SelectTrigger>
-                  <SelectContent className={selectContentClassName}>
-                    {REGIONS.map((region) => (
-                      <SelectItem
-                        key={region.value}
-                        value={region.value}>
-                        {t(`Region.${region.label}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage className="text-destructive" />
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <SelectField
+                label={t('Service.Trials.Form.Region')}
+                required
+                placeholder={t('Service.Trials.Form.RegionPlaceholder')}
+                options={REGIONS.map((region) => ({
+                  value: region.value,
+                  label: t(`Region.${region.label}`),
+                }))}
+                value={field.value}
+                onValueChange={field.onChange}
+                error={fieldState.error?.message}
+              />
             )}
           />
 
           <FormField
             control={form.control}
             name="job_title"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <TranslatableEnumSelectField
                 field={field}
                 label={t('Service.Trials.Form.JobTitle')}
                 placeholder={t('Service.Trials.Form.JobTitlePlaceholder')}
                 values={Object.values(DeploymentRequestJobTitle)}
                 translationNamespace="DeploymentRequestJobTitle"
-                selectClassName={selectLayerClassName}
+                error={fieldState.error?.message}
               />
             )}
           />
@@ -329,14 +247,14 @@ export const XtmPlatformTrialForm = ({
           <FormField
             control={form.control}
             name="activity_sector"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <TranslatableEnumSelectField
                 field={field}
                 label={t('Service.Trials.Form.ActivitySector')}
                 placeholder={t('Service.Trials.Form.ActivitySectorPlaceholder')}
                 values={Object.values(DeploymentRequestActivitySector)}
                 translationNamespace="DeploymentRequestActivitySector"
-                selectClassName={selectLayerClassName}
+                error={fieldState.error?.message}
               />
             )}
           />
@@ -346,7 +264,7 @@ export const XtmPlatformTrialForm = ({
               key={entry.id}
               control={form.control}
               name={`use_cases_by_product.${index}.use_case`}
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <TranslatableEnumSelectField
                   field={field}
                   label={t('Service.Trials.XtmPlatform.Page.Form.UseCaseFor', {
@@ -359,7 +277,7 @@ export const XtmPlatformTrialForm = ({
                     USE_CASES_BY_PLATFORM_IDENTIFIER[entry.platform_identifier]
                   }
                   translationNamespace="DeploymentRequestUseCase"
-                  selectClassName={selectLayerClassName}
+                  error={fieldState.error?.message}
                 />
               )}
             />
@@ -368,26 +286,26 @@ export const XtmPlatformTrialForm = ({
           <FormField
             control={form.control}
             name="acceptTerms"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
-                <div className="relative flex items-start gap-l">
+                <FormControl>
                   <Checkbox
                     id="acceptTerms"
-                    className="mt-1"
+                    label={
+                      <>
+                        {t.rich('Service.Trials.Form.TermsAgreement', {
+                          mssa: renderMssaLink,
+                          aiterms: renderAiTermsLink,
+                        })}{' '}
+                        <span className="text-input-required">*</span>
+                      </>
+                    }
+                    error={Boolean(fieldState.error)}
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
-                  <label
-                    htmlFor="acceptTerms"
-                    className="txt-default cursor-pointer text-muted-foreground">
-                    {t.rich('Service.Trials.Form.TermsAgreement', {
-                      mssa: renderMssaLink,
-                      aiterms: renderAiTermsLink,
-                    })}{' '}
-                    <span className="text-destructive">*</span>
-                  </label>
-                </div>
-                <FormMessage className="text-destructive" />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -401,31 +319,6 @@ export const XtmPlatformTrialForm = ({
           </div>
         </form>
       </Form>
-
-      <AlertDialogComponent
-        AlertTitle=""
-        isOpen={isConfirmOpen}
-        onOpenChange={setIsConfirmOpen}
-        actionButtonText={t('Utils.Confirm')}
-        variantName="destructive"
-        onClickContinue={onConfirmOngoingTrial}>
-        <div className="flex items-start gap-xs rounded border border-solid border-red p-s">
-          <WarningIcon className="size-4 mt-1 shrink-0 text-destructive" />
-          <div className="flex flex-col gap-xs">
-            <span>
-              {t(
-                'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning',
-                ongoingTrialWarningParams
-              )}
-            </span>
-            <span>
-              {t(
-                'Service.Trials.XtmPlatform.Page.Form.OngoingTrialDescription'
-              )}
-            </span>
-          </div>
-        </div>
-      </AlertDialogComponent>
     </div>
   );
 };

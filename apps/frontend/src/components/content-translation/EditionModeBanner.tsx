@@ -1,14 +1,14 @@
 'use client';
 
-import { DraftsConfirmDialog } from '@/components/content-translation/DraftsConfirmDialog';
 import { ExitEditModeDialog } from '@/components/content-translation/ExitEditModeDialog';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useEditMode } from '@/context/edit-mode-context';
 import { useContentTranslationDrafts } from '@/hooks/use-content-translation-drafts';
 import { useExitEditMode } from '@/hooks/use-exit-edit-mode';
 import { cn } from '@/lib/utils';
 import { Button } from '@filigran/design-system';
 import { EditIcon } from '@filigran/icon';
-import { toast } from '@filigran/ui';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -18,9 +18,9 @@ type PendingDraftsAction = 'publish' | 'discard';
 // The banner sits on the primary color: the default and secondary variants
 // would blend into it.
 const SOLID_BUTTON_CLASSES =
-  'bg-primary-foreground text-primary hover:bg-primary-foreground/90';
+  'bg-[var(--text-negative-primary)] text-filigran-brand-primary hover:bg-[var(--text-negative-primary)]/90';
 const OUTLINE_BUTTON_CLASSES =
-  'border-primary-foreground bg-transparent text-primary-foreground hover:bg-primary-foreground/10';
+  'border-[var(--text-negative-primary)] bg-transparent text-negative-primary hover:bg-[var(--text-negative-primary)]/10';
 
 export const EditionModeBanner = () => {
   const t = useTranslations();
@@ -49,7 +49,7 @@ export const EditionModeBanner = () => {
     action()
       .then(() => router.refresh())
       .catch(() => {
-        toast({ variant: 'destructive', title: t('Utils.Error') });
+        showSnackbar({ severity: 'error', title: t('Utils.Error') });
       });
   };
 
@@ -60,7 +60,7 @@ export const EditionModeBanner = () => {
   };
 
   return (
-    <div className="bg-primary text-primary-foreground flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-2 text-sm">
+    <div className="bg-filigran-brand-primary text-negative-primary flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-2 text-sm">
       <span>
         {t(
           showEditableAreas
@@ -101,12 +101,12 @@ export const EditionModeBanner = () => {
       <Button
         priority="tertiary"
         disabled={isExiting}
-        className="h-auto p-0 normal-case text-sm text-primary-foreground underline underline-offset-2"
+        className="h-auto p-0 normal-case text-sm text-negative-primary underline underline-offset-2"
         onClick={exitEditMode}>
         {t('EditableText.EditionBannerExit')}
       </Button>
 
-      <DraftsConfirmDialog
+      <ConfirmDialog
         open={confirmedAction === 'publish'}
         onOpenChange={closeConfirmation}
         title={t('EditableText.PublishConfirmTitle', {
@@ -114,9 +114,11 @@ export const EditionModeBanner = () => {
         })}
         description={t('EditableText.PublishConfirmDescription')}
         confirmLabel={t('EditableText.Publish')}
+        cancelLabel={t('Utils.Cancel')}
         onConfirm={() => settleDrafts(publishDrafts)}
+        className="z-[110]"
       />
-      <DraftsConfirmDialog
+      <ConfirmDialog
         open={confirmedAction === 'discard'}
         onOpenChange={closeConfirmation}
         title={t('EditableText.DiscardConfirmTitle', {
@@ -124,8 +126,10 @@ export const EditionModeBanner = () => {
         })}
         description={t('EditableText.DiscardConfirmDescription')}
         confirmLabel={t('EditableText.Discard')}
-        isDestructive
+        cancelLabel={t('Utils.Cancel')}
+        destructive
         onConfirm={() => settleDrafts(discardDrafts)}
+        className="z-[110]"
       />
       <ExitEditModeDialog {...exitDialogProps} />
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
+import { FormField, FormItem } from '@/components/ui/form';
 import { useTranslate } from '@/hooks/use-translate';
-import { FormControl, FormField, FormItem, FormLabel } from '@filigran/ui';
 import { PlatformIdentifier } from '@graphql/generated';
 import { Control } from 'react-hook-form';
 import {
@@ -26,7 +26,7 @@ export const TrialUserRolePanelFields = ({
 }: TrialUserRolePanelFieldsProps) => {
   const t = useTranslate();
   return (
-    <div className="flex flex-col md:flex-row gap-l mt-l">
+    <div className="flex flex-col md:flex-row gap-4 mt-4">
       {bundleRolePanels.map(({ platform, roles, defaultRole }) => {
         const fieldName: RoleFormField = `${platform}Role`;
         const namespace = `Service.Bundle.ManageTrial.Roles.${platform}`;
@@ -53,28 +53,24 @@ export const TrialUserRolePanelFields = ({
                 value = untouchedRoleDefault ?? noAccessFallback;
               }
               return (
-                <FormItem className="gap-m md:flex-1">
-                  <FormLabel className="content-body-compact-medium text-text-default-secondary">
-                    {title}
-                  </FormLabel>
-                  <FormControl>
-                    <RoleSelect
-                      value={value ?? ''}
-                      onValueChange={(value) => {
-                        field.onChange(
-                          value === NO_ROLE_VALUE ? undefined : value
-                        );
-                        field.onBlur(); // mark field as touched (Radix doesn't fire blur on select)
-                      }}
-                      roles={roles}
-                      namespace={namespace}
-                      isOptional={isOptional}
-                      placeholder={isUntouchedAndMixed ? title : undefined}
-                      triggerClassName="layer-2 bg-input-default hover:bg-input-hover"
-                    />
-                  </FormControl>
+                <FormItem className="gap-3 md:flex-1">
+                  <RoleSelect
+                    label={title}
+                    value={value ?? ''}
+                    onValueChange={(value) => {
+                      field.onChange(
+                        value === NO_ROLE_VALUE ? undefined : value
+                      );
+                      field.onBlur(); // mark field as touched (Radix doesn't fire blur on select)
+                    }}
+                    roles={roles}
+                    namespace={namespace}
+                    isOptional={isOptional}
+                    placeholder={isUntouchedAndMixed ? title : undefined}
+                    triggerClassName="w-full"
+                  />
                   {isUntouchedAndMixed && (
-                    <p className="text-content-body-compact text-text-default-secondary">
+                    <p className="text-content-compact text-default-secondary">
                       {t(
                         'Service.Bundle.ManageTrial.EditUsersDialog.MixedRoles'
                       )}

@@ -1,14 +1,10 @@
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import { FeatureVoteButton } from '@/components/feature-voting/FeatureVoteButton';
-import MarkdownRendererWithTheme from '@/components/ui/MarkdownRendererWithTheme';
-import { DialogDescription, DialogTitle } from '@filigran/ui';
-import { Separator } from '@filigran/ui/clients';
-import { Badge } from '@filigran/ui/servers';
+import { MarkdownRenderer } from '@/components/ui/markdown-renderer';
+import { Separator } from '@/components/ui/separator';
+import { Chip, DialogDescription, DialogTitle } from '@filigran/design-system';
 import { VotableFeaturePublicFragment } from '@graphql/generated';
 import Image from 'next/image';
-
-const BADGE_CLASS =
-  'border-0 content-body-compact-medium bg-feedback-info-secondary-transparency';
 
 interface FeatureVoteDetailProps {
   feature: VotableFeaturePublicFragment;
@@ -22,14 +18,14 @@ export const FeatureVoteDetail = ({
   isAuthenticated,
 }: FeatureVoteDetailProps) => {
   return (
-    <div className="p-l bg-elevation-background-layer-1 markdown-content flex h-full min-h-0 flex-1 flex-col gap-m">
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-3">
       <DialogTitle>{feature.title}</DialogTitle>
       <DialogDescription className="sr-only">
         {feature.short_description}
       </DialogDescription>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {feature.illustration_document_id && (
-          <div className="relative mb-m h-48 w-full">
+          <div className="relative mb-3 h-48 w-full">
             <Image
               src={`/document/images/${serviceInstanceId}/${feature.illustration_document_id}`}
               alt={feature.title}
@@ -38,23 +34,22 @@ export const FeatureVoteDetail = ({
             />
           </div>
         )}
-        <MarkdownRendererWithTheme source={feature.description} />
+        <MarkdownRenderer source={feature.description} />
       </div>
       <Separator />
-      <div className="flex flex-wrap items-center justify-between gap-m">
-        <div className="flex flex-wrap items-center gap-m">
-          <span className="flex items-center gap-s">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="flex items-center gap-2">
             {FiligranProductMapping[feature.product].logo}
             {FiligranProductMapping[feature.product].name}
           </span>
           {feature.use_cases.length > 0 && (
-            <div className="flex flex-wrap items-center gap-s">
+            <div className="flex flex-wrap items-center gap-2">
               {feature.use_cases.map((useCase) => (
-                <Badge
+                <Chip
                   key={useCase.id}
-                  className={BADGE_CLASS}>
-                  {useCase.name}
-                </Badge>
+                  label={useCase.name}
+                />
               ))}
             </div>
           )}

@@ -23,6 +23,7 @@ const INTEGRATION_TYPE_VALUE = 'connector';
 const FACET_COUNT = 4;
 const LARGE_TOTAL_COUNT = 144;
 const FILTERED_TOTAL_COUNT = 4;
+const FILTERS_BUTTON_LABEL = 'Service.List.Filters';
 const EMPTY_FACETS = {
   documentFacets: {
     integration_type: [],
@@ -107,11 +108,10 @@ vi.mock('@/hooks/use-scroll-position', () => ({
   default: testState.useScrollPosition,
 }));
 
-vi.mock('@/utils/debounce', () => ({
-  debounceHandleInput:
-    (callback: (value: string) => void) =>
-    (event: { target: { value: string } }) =>
-      callback(event.target.value),
+vi.mock('usehooks-ts', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('usehooks-ts')>()),
+  useDebounceCallback: (callback: (value: string) => void) =>
+    Object.assign((value: string) => callback(value), { cancel: () => {} }),
 }));
 
 vi.mock('react-relay', async (importOriginal) => {
@@ -334,6 +334,22 @@ describe('PublicDocumentsList', () => {
     expect(testState.setDisplayMode).toHaveBeenCalledWith(
       ServiceListDisplayMode.Tab
     );
+  });
+
+  it('should open the filters sheet when the filters button is clicked', async () => {
+    // Given
+    mockEmptyFacetQuery();
+    const { user } = testRender(buildElement());
+
+    // When
+    await user.click(
+      screen.getByRole('button', { name: FILTERS_BUTTON_LABEL })
+    );
+
+    // Then
+    expect(
+      screen.getByRole('dialog', { name: FILTERS_BUTTON_LABEL })
+    ).toBeInTheDocument();
   });
 
   it('should refetch with an encoded cursor when pagination moves to the next page', async () => {

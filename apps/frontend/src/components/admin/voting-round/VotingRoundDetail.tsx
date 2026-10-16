@@ -6,11 +6,12 @@ import { VotableFeatureFormModel } from '@/components/admin/voting-round/Votable
 import { VotingRoundResults } from '@/components/admin/voting-round/VotingRoundResults';
 import { VotingRoundStatusActions } from '@/components/admin/voting-round/VotingRoundStatusActions';
 import { VotingRoundStatusBadge } from '@/components/admin/voting-round/VotingRoundStatusBadge';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
+import { DataTable } from '@/components/ui/data-table';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { i18nKey } from '@/utils/datatable';
-import { Badge, DataTable, Skeleton } from '@filigran/ui';
+import { getDataTableLabels } from '@/utils/design-system/data-table';
+import { Chip } from '@filigran/design-system';
 import {
   useVotingRoundDetailQuery,
   VotableFeatureAdminRowFragment,
@@ -50,9 +51,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
       accessorKey: 'product',
       id: 'product',
       header: t('VotingRound.Feature.Product'),
-      cell: ({ row }) => (
-        <Badge variant="outline">{row.original.product.toUpperCase()}</Badge>
-      ),
+      cell: ({ row }) => <Chip label={row.original.product.toUpperCase()} />,
     },
     {
       accessorKey: 'title',
@@ -65,13 +64,12 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
       header: t('Service.Form.UseCasesLabel'),
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex flex-wrap gap-xs">
+        <div className="flex flex-wrap gap-1">
           {row.original.use_cases.map((useCase) => (
-            <Badge
+            <Chip
               key={useCase.id}
-              variant="outline">
-              {useCase.name}
-            </Badge>
+              label={useCase.name}
+            />
           ))}
         </div>
       ),
@@ -92,19 +90,19 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
   }
 
   if (!round) {
-    return <p className="text-muted-foreground">{t('Utils.NotFound')}</p>;
+    return <p className="text-default-secondary">{t('Utils.NotFound')}</p>;
   }
 
   return (
-    <div className="flex flex-col gap-xl">
-      <div className="flex flex-wrap items-center justify-between gap-m">
-        <div className="flex flex-col gap-xs">
-          <div className="flex items-center gap-s">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
             <h1 className="text-2xl font-semibold">{round.name}</h1>
             <VotingRoundStatusBadge status={round.status} />
           </div>
           {round.description && (
-            <p className="text-muted-foreground">{round.description}</p>
+            <p className="text-default-secondary">{round.description}</p>
           )}
         </div>
         <VotingRoundStatusActions
@@ -115,7 +113,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
         />
       </div>
 
-      <section className="flex flex-col gap-m">
+      <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">
             {t('VotingRound.Feature.SectionTitle')}
@@ -130,7 +128,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
         <DataTable
           columns={columns}
           data={features}
-          i18nKey={i18nKey(t)}
+          {...getDataTableLabels(t)}
           onClickRow={({ original }) =>
             setFeatureToEdit({
               id: original.id,
@@ -154,9 +152,7 @@ export const VotingRoundDetail = ({ roundId }: { roundId: string }) => {
           feature={featureToEdit}
           serviceInstanceId={round.service_instance_id}
           open={!!featureToEdit}
-          onClose={() =>
-            useExecuteAfterAnimation(() => setFeatureToEdit(undefined))
-          }
+          onClose={() => setFeatureToEdit(undefined)}
         />
       )}
     </div>

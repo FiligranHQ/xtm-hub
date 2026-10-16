@@ -5,21 +5,14 @@ import { UserSlugEditMutation } from '@/components/admin/user/user.graphql';
 import { getUserListContext } from '@/components/admin/user/UserListPage';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { CapabilityMultiSelect } from '@/components/ui/capability/MultiSelect';
+import { Form, FormField } from '@/components/ui/form';
+import { SheetFooter } from '@/components/ui/sheet';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
+import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import useAdminPath from '@/hooks/use-admin-path';
 import { useTranslate } from '@/hooks/use-translate';
 import { isEmpty } from '@/lib/utils';
 import { Button } from '@filigran/design-system';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  SheetFooter,
-  toast,
-} from '@filigran/ui';
 import { UserList_fragment$data } from '@generated/UserList_fragment.graphql';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useContext } from 'react';
@@ -69,15 +62,16 @@ export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
         userListConnections: [connectionID ?? ''],
       },
       onCompleted: () => {
-        toast({
+        showSnackbar({
+          severity: 'success',
           title: t('Utils.Success'),
           description: t('UserActions.UserUpdated', { email: user.email }),
         });
         callback();
       },
       onError: (error) => {
-        toast({
-          variant: 'destructive',
+        showSnackbar({
+          severity: 'error',
           title: t('Utils.Error'),
           description: t(`Error.Server.${error.message}`),
         });
@@ -92,28 +86,24 @@ export const UserUpdateForm = ({ user, callback }: UserUpdateFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full space-y-xl">
+        className="w-full space-y-6">
         <CapabilityDescription />
         <FormField
           control={form.control}
           name="capabilities"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('UserForm.OrganizationCapabilities')}</FormLabel>
-              <FormControl>
-                <CapabilityMultiSelect
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <CapabilityMultiSelect
+              label={t('UserForm.OrganizationCapabilities')}
+              value={field.value}
+              onChange={field.onChange}
+              error={fieldState.error?.message}
+            />
           )}
         />
 
         <SheetFooter className="justify-between sm:justify-between pb-0">
           <RemoveUserFromOrga user={user} />
-          <div className="flex gap-s">
+          <div className="flex gap-2">
             <Button
               priority="secondary"
               type="button"

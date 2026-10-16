@@ -15,15 +15,15 @@ export const ChecklistItem = ({ index, item }: ChecklistItemProps) => {
   const { titleKey, descriptionKey, exampleKey, readMoreUrl } = item;
 
   return (
-    <div className="flex gap-m py-m border-b border-elevation-border-subtle-layer-2 last:border-b-0">
-      <div className="flex flex-col gap-s">
-        <div className="flex gap-s items-center">
-          <div className="shrink-0 size-6 flex items-center justify-center border rounded border-filigran-brand-primary heading-sm">
+    <div className="flex gap-3 py-3 border-b border-[var(--border-elevation-subtle-layer-2)] last:border-b-0">
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2 items-center">
+          <div className="shrink-0 size-6 flex items-center justify-center border rounded border-filigran-brand-primary title-sm">
             {index}
           </div>
-          <p className="heading-sm">{t(titleKey)}</p>
+          <p className="title-sm">{t(titleKey)}</p>
         </div>
-        <p className="content-body-compact">
+        <p className="content-compact">
           {t.rich(descriptionKey, { strong: renderStrong })}{' '}
           {readMoreUrl && (
             <Link
@@ -36,8 +36,8 @@ export const ChecklistItem = ({ index, item }: ChecklistItemProps) => {
           )}
         </p>
         {exampleKey && (
-          <div className="rounded p-s bg-elevation-background-layer-1 border border-elevation-border-subtle-layer-1">
-            <p className="content-body-compact">{t(exampleKey)}</p>
+          <div className="rounded p-2 layer-1 bg-elevation-default border border-elevation-subtle">
+            <p className="content-compact">{t(exampleKey)}</p>
           </div>
         )}
       </div>

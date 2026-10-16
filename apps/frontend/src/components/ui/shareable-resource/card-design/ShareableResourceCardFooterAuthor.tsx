@@ -18,9 +18,9 @@ export const ShareableResourceCardFooterAuthor = ({
 }: ShareableResourceCardFooterAuthorProps) => {
   return (
     <>
-      <div className="flex min-w-0 flex-1 items-center gap-s">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         {shouldDisplayAuthor && (
-          <div className="flex min-w-0 items-center gap-s whitespace-nowrap">
+          <div className="flex min-w-0 items-center gap-2 whitespace-nowrap">
             <UserDisplay
               uploader={document.uploader}
               pictureClassName="size-6"
@@ -29,7 +29,7 @@ export const ShareableResourceCardFooterAuthor = ({
           </div>
         )}
       </div>
-      <div className="flex flex-row shrink-0">
+      <div className="flex flex-row shrink-0 gap-1">
         <ShareLinkButton
           documentId={document.id}
           url={shareLinkUrl}

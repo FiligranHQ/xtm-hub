@@ -5,10 +5,10 @@ import { ManageTrialHeader } from '@/components/service/trial-instances/xtm-plat
 import { ManageTrialRoleDescriptions } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialRoleDescriptions';
 import { ManageTrialTable } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialTable';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { SelectionState } from '@/components/ui/data-table';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { ADMIN_MANAGE_TRIALS_PATH, APP_PATH } from '@/utils/path/constant';
-import { SelectionState } from '@filigran/ui';
 import {
   useBundleProductsQuery,
   useBundleUserServiceGroupsQuery,
@@ -86,7 +86,9 @@ const ClientSection = ({ params, fromDashboard }: ClientSectionProps) => {
     return (
       <>
         <BreadcrumbNav value={breadcrumbs} />
-        <div className="text-sm text-destructive">{t('Utils.Error')}</div>
+        <div className="text-sm text-feedback-error-primary">
+          {t('Utils.Error')}
+        </div>
       </>
     );
   }
@@ -96,7 +98,7 @@ const ClientSection = ({ params, fromDashboard }: ClientSectionProps) => {
   return (
     <>
       <BreadcrumbNav value={breadcrumbs} />
-      <div className="flex flex-col gap-l">
+      <div className="flex flex-col gap-4">
         <ManageTrialHeader
           serviceInstanceId={decodedServiceInstanceId}
           products={products}

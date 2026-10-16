@@ -142,9 +142,9 @@ describe('HomepageResourceCard', () => {
         <HomepageResourceCard {...buildProps({ footerTags: [] })} />
       );
 
-      // The footer div should be present but contain no badges
-      const footerBadges = container.querySelectorAll('.pl-m.pb-m > *');
-      expect(footerBadges).toHaveLength(0);
+      const footer = container.querySelector('.pl-3.pb-3');
+      expect(footer).toBeInTheDocument();
+      expect(footer).toBeEmptyDOMElement();
     });
   });
 

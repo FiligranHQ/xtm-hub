@@ -1,15 +1,13 @@
 'use client';
 
 import { PortalContext } from '@/components/me/AppPortalContext';
+import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import useGranted from '@/hooks/use-granted';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { CheckIndeterminateIcon } from '@filigran/icon';
-import { toast } from '@filigran/ui';
 import {
-  FeatureFlag,
   OrganizationCapability,
   PlatformIdentifier,
   ServiceGroupName,
@@ -33,8 +31,8 @@ import { TrialUserFormSkeleton } from './TrialUserFormSkeleton';
 import { useTrialUserOptions } from './use-trial-user-options';
 
 const PickerWarning = ({ children }: { children: ReactNode }) => (
-  <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm">
-    <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
+  <div className="border border-solid border-alert-warning rounded text-feedback-warning-primary flex items-center gap-1 p-2 text-sm">
+    <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-1" />
     {children}
   </div>
 );
@@ -55,7 +53,6 @@ export const AddTrialUserForm = ({
   const t = useTranslate();
   const queryClient = useQueryClient();
   const { me } = useContext(PortalContext);
-  const isTrialInviteEnabled = useIsFeatureEnabled(FeatureFlag.TrialInvite);
   const isAdminByPass = useAdminByPass();
   const canAdministrateOrganization = useGranted(
     OrganizationCapability.AdministrateOrganization
@@ -99,7 +96,6 @@ export const AddTrialUserForm = ({
   } = useTrialUserOptions({
     organizationId: me?.selected_organization_id,
     bundleUsers,
-    isTrialInviteEnabled,
     canInviteUsers: canManageUsers,
     canInviteOutsideOrganizationDomains: !!isAdminByPass,
   });
@@ -122,14 +118,14 @@ export const AddTrialUserForm = ({
         if (input.emails?.length) {
           queryClient.invalidateQueries({ queryKey: usersKeys.all() });
         }
-        toast({ title: t('Utils.Success') });
+        showSnackbar({ severity: 'success', title: t('Utils.Success') });
         onCompleted();
       },
       onError: (error: unknown) => {
         const errorMessage =
           error instanceof Error ? error.message : 'UnknownError';
-        toast({
-          variant: 'destructive',
+        showSnackbar({
+          severity: 'error',
           title: t('Utils.Error'),
           description: <>{t(`Error.Server.${errorMessage}`)}</>,
         });
@@ -162,7 +158,7 @@ export const AddTrialUserForm = ({
       )}
       pickerNotice={
         <>
-          {isTrialInviteEnabled && !canManageUsers && (
+          {!canManageUsers && (
             <PickerWarning>
               {t(
                 'Service.Bundle.ManageTrial.AddUserDialog.NoPermissionToInvite'

@@ -2,9 +2,9 @@
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
 import { XtmoneStatusState } from '@/components/service/trial-instances/xtm-platform-trial/active-bundle/useXtmoneIntegrationStatus';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslate } from '@/hooks/use-translate';
 import { CheckCircleIcon, CircleCloseIcon } from '@filigran/icon';
-import { Skeleton } from '@filigran/ui';
 import {
   PlatformIdentifier,
   XtmoneIntegrationStatusEntryFragment,
@@ -31,7 +31,7 @@ const StatusIcon = ({
 
   if (unavailable || !entry) {
     return (
-      <span className="text-content-body-compact text-text-default-secondary">
+      <span className="text-content-compact text-default-secondary">
         {t('XtmPlatformTrial.Products.StatusUnavailable')}
       </span>
     );
@@ -61,8 +61,8 @@ const StatusRow = ({
   isLoading: boolean;
   unavailable: boolean;
 }) => (
-  <div className="flex items-center justify-between gap-s px-s py-l">
-    <span className="text-content-body-base text-text-default-secondary shrink-0 whitespace-nowrap">
+  <div className="flex items-center justify-between gap-2 px-2 py-4">
+    <span className="text-content-base text-default-secondary shrink-0 whitespace-nowrap">
       {label}
     </span>
     <StatusIcon
@@ -81,7 +81,7 @@ export const XtmoneConnectionStatus = ({
   const unavailable = !hasUrl || isError || !data;
 
   return (
-    <div className="flex flex-col divide-y divide-elevation-border-subtle-layer-1 overflow-hidden rounded border border-elevation-border-subtle-layer-1">
+    <div className="flex flex-col divide-y divide-[var(--border-elevation-subtle)] overflow-hidden rounded border border-elevation-subtle">
       <StatusRow
         label={`${t('XtmPlatformTrial.Products.Connection', {
           productName: PlatformMetadataMapping[PlatformIdentifier.Opencti].name,

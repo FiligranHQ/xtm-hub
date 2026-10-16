@@ -2,7 +2,10 @@ import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
 import { ShareableResourceTypeChip } from '@/components/ui/shareable-resource/ShareableResourceTypeChip';
-import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isIntegrationItem,
+  PublicDocumentData,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 
 interface ShareableResourceCardTagsProps {
@@ -13,8 +16,10 @@ export const ShareableResourceCardTags = ({
   document,
 }: ShareableResourceCardTagsProps) => {
   return (
-    <div className="flex min-w-0 items-center gap-s">
-      <ShareableResourceTypeChip document={document} />
+    <div className="flex min-w-0 items-center gap-2">
+      {isIntegrationItem(document) && (
+        <ShareableResourceTypeChip document={document} />
+      )}
       <BadgeOverflowCounter
         variant="chip"
         formatLabel={false}

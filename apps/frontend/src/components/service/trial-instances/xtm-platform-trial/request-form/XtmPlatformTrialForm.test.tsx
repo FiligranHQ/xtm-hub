@@ -4,14 +4,22 @@ import {
   xtmPlatformTrialFormSchema,
 } from '@/components/service/trial-instances/xtm-platform-trial/request-form/XtmPlatformTrialForm';
 import testRender from '@/utils/test/test-render';
-import { screen } from '@testing-library/react';
+import { PlatformIdentifier } from '@graphql/generated';
+import { screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
-vi.mock('@filigran/ui', async () => {
-  const actual =
-    await vi.importActual<typeof import('@filigran/ui')>('@filigran/ui');
+vi.mock('@filigran/design-system', async () => {
+  const React = await import('react');
+  const actual = await vi.importActual<
+    typeof import('@filigran/design-system')
+  >('@filigran/design-system');
+
+  const SelectContext = React.createContext<{
+    value: string;
+    onValueChange: (nextValue: string) => void;
+  } | null>(null);
 
   return {
     ...actual,
@@ -24,13 +32,20 @@ vi.mock('@filigran/ui', async () => {
       onValueChange: (nextValue: string) => void;
       children: ReactNode;
     }) => (
-      <select
-        value={value}
-        onChange={(event) => onValueChange(event.target.value)}>
+      <SelectContext.Provider value={{ value, onValueChange }}>
         {children}
-      </select>
+      </SelectContext.Provider>
     ),
-    SelectContent: ({ children }: { children: ReactNode }) => children,
+    SelectContent: ({ children }: { children: ReactNode }) => {
+      const context = React.useContext(SelectContext);
+      return (
+        <select
+          value={context?.value}
+          onChange={(event) => context?.onValueChange(event.target.value)}>
+          {children}
+        </select>
+      );
+    },
     SelectItem: ({
       value,
       children,
@@ -38,41 +53,31 @@ vi.mock('@filigran/ui', async () => {
       value: string;
       children: ReactNode;
     }) => <option value={value}>{children}</option>,
-    SelectTrigger: ({ children }: { children: ReactNode }) => children,
-    SelectValue: () => null,
+    SelectTrigger: () => null,
   };
 });
 
+const EMPTY_SELECTS_SUBMISSION = {
+  use_cases_by_product: [{ platform_identifier: PlatformIdentifier.Opencti }],
+};
+
+const getSchemaErrorMessage = (fieldPath: string) => {
+  const message = xtmPlatformTrialFormSchema
+    .safeParse(EMPTY_SELECTS_SUBMISSION)
+    .error?.issues.find((issue) => issue.path.join('.') === fieldPath)?.message;
+  if (!message) {
+    throw new Error(`The schema raises no issue at ${fieldPath}`);
+  }
+  return message;
+};
+
 describe('XtmPlatformTrialForm', () => {
-  it('renders the products warning by default', () => {
+  it('renders the products warning', () => {
     testRender(<XtmPlatformTrialForm handleSubmit={vi.fn()} />);
 
     expect(
       screen.getByText('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')
     ).toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning'
-      )
-    ).not.toBeInTheDocument();
-  });
-
-  it('renders the ongoing trial warning when hasOngoingStandaloneTrials is true', () => {
-    testRender(
-      <XtmPlatformTrialForm
-        handleSubmit={vi.fn()}
-        hasOngoingStandaloneTrials
-      />
-    );
-
-    expect(
-      screen.getByText(
-        'Service.Trials.XtmPlatform.Page.Form.OngoingTrialWarning'
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByText('Service.Trials.XtmPlatform.Page.Form.ProductsWarning')
-    ).not.toBeInTheDocument();
   });
 
   it('renders OpenCTI and OpenAEV checked and XTM One always checked and disabled', () => {
@@ -191,95 +196,51 @@ describe('XtmPlatformTrialForm', () => {
     expect(submittedValues.region).toBe(REGIONS_VALUES[0]);
   });
 
-  const fillAndSubmitForm = async (
-    user: ReturnType<typeof testRender>['user']
-  ) => {
-    const selects = screen.getAllByRole('combobox');
-    const [
-      regionSelect,
-      jobTitleSelect,
-      activitySectorSelect,
-      ...useCaseSelects
-    ] = selects;
-
-    await user.selectOptions(regionSelect, REGIONS_VALUES[0]);
-    await user.selectOptions(
-      jobTitleSelect,
-      (jobTitleSelect as HTMLSelectElement).options[1].value
+  it('marks the terms checkbox invalid when submitted without accepting the terms', async () => {
+    const { user } = testRender(
+      <XtmPlatformTrialForm handleSubmit={vi.fn()} />
     );
-    await user.selectOptions(
-      activitySectorSelect,
-      (activitySectorSelect as HTMLSelectElement).options[1].value
-    );
-    for (const select of useCaseSelects) {
-      const options = (select as HTMLSelectElement).options;
-      await user.selectOptions(select, options[1].value);
-    }
-
-    await user.click(document.getElementById('acceptTerms') as HTMLElement);
 
     await user.click(
       screen.getByRole('button', {
         name: 'Service.Trials.XtmPlatform.Page.Form.Submit',
       })
     );
-  };
 
-  it('opens the confirmation dialog instead of submitting directly when hasOngoingStandaloneTrials is true', async () => {
-    const handleSubmit = vi.fn();
-    const { user } = testRender(
-      <XtmPlatformTrialForm
-        handleSubmit={handleSubmit}
-        hasOngoingStandaloneTrials
-      />
+    await waitFor(() =>
+      expect(document.getElementById('acceptTerms')).toHaveAttribute(
+        'aria-invalid',
+        'true'
+      )
     );
-
-    await fillAndSubmitForm(user);
-
-    expect(handleSubmit).not.toHaveBeenCalled();
-    expect(
-      screen.getByText('Service.Trials.XtmPlatform.Page.Form.Submit')
-    ).toBeInTheDocument();
-    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
   });
 
-  it('closes the confirmation dialog without submitting when Cancel is clicked', async () => {
-    const handleSubmit = vi.fn();
-    const { user } = testRender(
-      <XtmPlatformTrialForm
-        handleSubmit={handleSubmit}
-        hasOngoingStandaloneTrials
-      />
-    );
+  it.each([
+    'region',
+    'job_title',
+    'activity_sector',
+    'use_cases_by_product.0.use_case',
+  ])(
+    'should show the %s validation message when the form is submitted with the selects empty',
+    async (fieldPath) => {
+      // Given
+      const expectedMessage = getSchemaErrorMessage(fieldPath);
+      const { user } = testRender(
+        <XtmPlatformTrialForm handleSubmit={vi.fn()} />
+      );
 
-    await fillAndSubmitForm(user);
-    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+      // When
+      await user.click(
+        screen.getByRole('button', {
+          name: 'Service.Trials.XtmPlatform.Page.Form.Submit',
+        })
+      );
 
-    await user.click(screen.getByRole('button', { name: 'Utils.Cancel' }));
-
-    expect(handleSubmit).not.toHaveBeenCalled();
-    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
-  });
-
-  it('submits the pending values and closes the dialog when Confirm is clicked', async () => {
-    const handleSubmit = vi.fn();
-    const { user } = testRender(
-      <XtmPlatformTrialForm
-        handleSubmit={handleSubmit}
-        hasOngoingStandaloneTrials
-      />
-    );
-
-    await fillAndSubmitForm(user);
-    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: 'Utils.Confirm' }));
-
-    expect(handleSubmit).toHaveBeenCalledTimes(1);
-    const submittedValues = handleSubmit.mock.calls[0]?.[0] as z.infer<
-      typeof xtmPlatformTrialFormSchema
-    >;
-    expect(submittedValues.acceptTerms).toBe(true);
-    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
-  });
+      // Then
+      // Both use case selects show the same message, hence findAll.
+      expect(
+        (await screen.findAllByText(expectedMessage))[0]
+      ).toBeInTheDocument();
+    }
+  );
 });

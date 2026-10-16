@@ -10,18 +10,22 @@ import { screen } from '@testing-library/react';
 import { ComponentProps } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
+const FILTERS_BUTTON_LABEL = 'Service.List.Filters';
+
 const testState = vi.hoisted(() => ({
   useServiceListLocalStorage: vi.fn(),
   setOrderBy: vi.fn(),
   setOrderMode: vi.fn(),
   setDisplayMode: vi.fn(),
+  cancelDebouncedSearch: vi.fn(),
 }));
 
-vi.mock('@/utils/debounce', () => ({
-  debounceHandleInput:
-    (callback: (value: string) => void) =>
-    (event: { target: { value: string } }) =>
-      callback(event.target.value),
+vi.mock('usehooks-ts', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('usehooks-ts')>()),
+  useDebounceCallback: (callback: (value: string) => void) =>
+    Object.assign((value: string) => callback(value), {
+      cancel: testState.cancelDebouncedSearch,
+    }),
 }));
 
 vi.mock('@/hooks/use-service-list-local-storage', async (importOriginal) => ({
@@ -89,6 +93,29 @@ describe('ServiceListHeader', () => {
     expect(onSearchChange).toHaveBeenLastCalledWith('opencti');
   });
 
+  it('should call onSearchChange with an empty value when clearing the search', async () => {
+    // Given
+    testState.useServiceListLocalStorage.mockReturnValue(
+      buildLocalStorageState()
+    );
+    const onSearchChange = vi.fn();
+    const { user } = renderHeader({ onSearchChange });
+    await user.type(
+      screen.getByPlaceholderText('GenericActions.Search'),
+      'opencti'
+    );
+    testState.cancelDebouncedSearch.mockClear();
+
+    // When
+    await user.click(
+      screen.getByRole('button', { name: 'DesignSystem.SearchField.Clear' })
+    );
+
+    // Then
+    expect(testState.cancelDebouncedSearch).toHaveBeenCalledOnce();
+    expect(onSearchChange).toHaveBeenLastCalledWith('');
+  });
+
   it.each`
     initialDisplayMode             | clickedLabel               | expectedMode
     ${ServiceListDisplayMode.List} | ${'Service.List.ViewTab'}  | ${ServiceListDisplayMode.Tab}
@@ -110,9 +137,9 @@ describe('ServiceListHeader', () => {
   );
 
   it.each`
-    initialDisplayMode             | expectedTabClass           | expectedListClass
-    ${ServiceListDisplayMode.Tab}  | ${'text-primary'}          | ${'text-muted-foreground'}
-    ${ServiceListDisplayMode.List} | ${'text-muted-foreground'} | ${'text-primary'}
+    initialDisplayMode             | expectedTabClass         | expectedListClass
+    ${ServiceListDisplayMode.Tab}  | ${'text-icon-highlight'} | ${'text-icon-subtle'}
+    ${ServiceListDisplayMode.List} | ${'text-icon-subtle'}    | ${'text-icon-highlight'}
   `(
     'applies selected color classes for mode=$initialDisplayMode',
     ({ initialDisplayMode, expectedTabClass, expectedListClass }) => {
@@ -145,5 +172,20 @@ describe('ServiceListHeader', () => {
     );
 
     expect(testState.setOrderMode).toHaveBeenCalledWith(OrderingMode.Desc);
+  });
+
+  it('should not render the filters button when no filters are given', () => {
+    // Given
+    testState.useServiceListLocalStorage.mockReturnValue(
+      buildLocalStorageState()
+    );
+
+    // When
+    renderHeader();
+
+    // Then
+    expect(
+      screen.queryByRole('button', { name: FILTERS_BUTTON_LABEL })
+    ).not.toBeInTheDocument();
   });
 });

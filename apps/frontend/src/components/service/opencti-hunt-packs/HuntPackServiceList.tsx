@@ -7,6 +7,7 @@ import {
   useHuntPackDocumentContext,
 } from '@/components/service/opencti-hunt-packs/hunt-pack-documents';
 import { PaginationControls } from '@/components/ui/pagination/PaginationControls';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useDocumentFacetCounts } from '@/hooks/use-document-facet-counts';
 import { useLogicalFiltersFromStorage } from '@/hooks/use-logical-filters-from-storage';
 import {
@@ -22,7 +23,6 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
-import { Skeleton } from '@filigran/ui';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   LogicalFilterInput,
@@ -146,7 +146,7 @@ const HuntPackServiceList = ({
       <ul
         aria-busy="true"
         aria-label={t('Utils.Loading')}
-        className="grid grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))] gap-l px-m pb-m">
+        className="grid grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))] gap-4 px-3 pb-3">
         {Array.from({ length: SKELETON_CARD_COUNT }, (_, index) => (
           <li key={index}>
             <Skeleton className="rounded h-[300px] sm:h-[348px]" />

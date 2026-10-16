@@ -28,7 +28,7 @@ describe('ThreadConferenceBanner', () => {
       name: 'ThreadConference.AriaLabel',
     });
     const threadLogo = screen.getByRole('img', {
-      name: 'XTM Hub logo',
+      name: 'ThreadConference.ImageAlt',
     });
     const conferenceDate = screen.getByText('ThreadConference.Date');
     const conferenceCta = screen.getByText('ThreadConference.Cta');
@@ -36,7 +36,7 @@ describe('ThreadConferenceBanner', () => {
 
     expect(bannerLink).toHaveAttribute(
       'href',
-      'https://filigran.io/thread?form_origin=xtmhub'
+      'https://filigran.io/thread?form_origin=xtmhub&utm_source=xtm_hub&utm_medium=referral&utm_campaign=home_banner&utm_content=thread'
     );
     expect(threadLogo).toHaveAttribute('src', '/thread-logo.svg');
     expect(conferenceDate).toHaveClass('inline-flex', 'w-fit', 'rounded-full');
@@ -48,7 +48,12 @@ describe('ThreadConferenceBanner', () => {
       'rounded-full',
       'sm:w-fit'
     );
-    expect(dateDot).toHaveClass('h-2', 'w-2', 'rounded-full', 'bg-blue');
+    expect(dateDot).toHaveClass(
+      'h-2',
+      'w-2',
+      'rounded-full',
+      'bg-filigran-brand-primary'
+    );
     expect(threadLogo.closest('a')).toBe(bannerLink);
   });
 });

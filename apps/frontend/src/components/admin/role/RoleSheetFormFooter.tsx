@@ -1,7 +1,7 @@
+import { SheetFooter } from '@/components/ui/sheet';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { useTranslate } from '@/hooks/use-translate';
 import { Button } from '@filigran/design-system';
-import { SheetFooter } from '@filigran/ui';
 import { useEffect } from 'react';
 
 const RoleSheetFormFooter = ({ isDirty }: { isDirty: boolean }) => {
@@ -17,7 +17,7 @@ const RoleSheetFormFooter = ({ isDirty }: { isDirty: boolean }) => {
 
   return (
     <SheetFooter className="pt-2">
-      <div className="flex gap-s">
+      <div className="flex gap-2">
         <Button
           type="button"
           priority="secondary"

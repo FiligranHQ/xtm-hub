@@ -78,7 +78,7 @@ const ShareableResourceCard = ({
           description={document.short_description}
         />
         {connectorType && (
-          <span className="shrink-0 text-sm text-muted-foreground">
+          <span className="shrink-0 text-sm text-default-secondary">
             <ConnectorTypeLabel connectorType={connectorType} />
           </span>
         )}

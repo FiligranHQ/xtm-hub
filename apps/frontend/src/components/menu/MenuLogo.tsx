@@ -7,7 +7,7 @@ interface MenuLogoProps {
 
 export const MenuLogo = ({ href }: MenuLogoProps) => {
   return (
-    <div className="flex z-10 shrink-0 sticky top-0 h-16 items-center px-m">
+    <div className="flex z-10 shrink-0 sticky top-0 h-16 items-center px-3">
       <Link
         href={href}
         aria-label="XTM Hub by Filigran"

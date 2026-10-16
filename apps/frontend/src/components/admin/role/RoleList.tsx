@@ -25,12 +25,12 @@ const RoleList = () => {
         </TabsList>
         <TabsContent
           value="capabilities"
-          className="pt-l">
+          className="pt-4">
           <RolePortalCapabilitiesList />
         </TabsContent>
         <TabsContent
           value="ssoGroups"
-          className="pt-l">
+          className="pt-4">
           <SsoGroupRolePortalList />
         </TabsContent>
       </Tabs>

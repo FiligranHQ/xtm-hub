@@ -9,8 +9,8 @@ import {
   PUBLIC_CYBERSECURITY_SOLUTIONS_PATH,
   XTM_PLATFORM_ROADMAP_SLUG,
 } from '@/utils/path/constant';
+import { Button } from '@filigran/design-system';
 import { CampaignIcon } from '@filigran/icon';
-import { GradientButton } from '@filigran/ui/servers';
 import { featureVotingKeys } from '@graphql/feature-voting/feature-voting.keys';
 import {
   ServiceDefinitionIdentifier,
@@ -61,11 +61,11 @@ export const FeatureVotingCallout = ({
 
   return (
     <div
-      className={`mx-s mt-s mb-l flex flex-wrap items-center justify-between gap-m rounded border p-m ${theme.containerClassName}`}
+      className={`mx-2 mt-2 mb-4 flex flex-wrap items-center justify-between gap-3 rounded border p-3 ${theme.containerClassName}`}
       style={theme.containerStyle}>
-      <div className="flex items-start gap-m">
-        <CampaignIcon className="mt-xs size-5 shrink-0" />
-        <div className="flex flex-col gap-xs">
+      <div className="flex items-start gap-3">
+        <CampaignIcon className="mt-1 size-5 shrink-0" />
+        <div className="flex flex-col gap-1">
           <p className={theme.titleClassName}>
             {t('FeatureVoting.CalloutTitle')}
           </p>
@@ -74,20 +74,12 @@ export const FeatureVotingCallout = ({
           </p>
         </div>
       </div>
-      {/* asChild keeps the link itself as the only interactive element, so the
-          gradient has to be applied by hand rather than through textGradient. */}
-      <GradientButton
+      <Button
         asChild
-        textGradient={false}
-        gradientFrom={theme.gradientFrom}
-        gradientTo={theme.gradientTo}
-        gradientBg={theme.gradientBg}>
-        <Link href={href}>
-          <span className="bg-gradient-to-r from-[var(--gradient-from)] to-[var(--gradient-to)] bg-clip-text text-transparent">
-            {t('FeatureVoting.CalloutButton')}
-          </span>
-        </Link>
-      </GradientButton>
+        variant="highlight"
+        priority="secondary">
+        <Link href={href}>{t('FeatureVoting.CalloutButton')}</Link>
+      </Button>
     </div>
   );
 };

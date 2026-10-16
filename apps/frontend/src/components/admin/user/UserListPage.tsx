@@ -10,7 +10,12 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import { notificationPendingUserQueryFilters } from '@/components/notification/NotificationButton';
 import useAdminPath from '@/hooks/use-admin-path';
 import { useTranslate } from '@/hooks/use-translate';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@filigran/ui';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@filigran/design-system';
 import { userPendingList_users$key } from '@generated/userPendingList_users.graphql';
 import { userPendingListQuery } from '@generated/userPendingListQuery.graphql';
 import { useSearchParams } from 'next/navigation';
@@ -70,7 +75,7 @@ const UserListPage = ({ organization }: UserListPageProps) => {
     <UserListContext.Provider value={{ connectionID, setConnectionId }}>
       <div className="flex justify-between">
         <h1>{t('UserListPage.Title')}</h1>
-        <div className="col-md-6 text-right">
+        <div className="text-right">
           {isAdminPath ? <AdminAddUser /> : <AddUser />}
         </div>
       </div>
@@ -79,9 +84,7 @@ const UserListPage = ({ organization }: UserListPageProps) => {
           <UserList organization={organization} />
         </div>
       ) : (
-        <Tabs
-          defaultValue={selectedTab}
-          className="">
+        <Tabs defaultValue={selectedTab}>
           <TabsList>
             <TabsTrigger value="users">
               {t('UserListPage.TabTitle')}
@@ -94,10 +97,14 @@ const UserListPage = ({ organization }: UserListPageProps) => {
               })}
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="users">
+          <TabsContent
+            value="users"
+            className="pt-4">
             <UserList organization={organization} />
           </TabsContent>
-          <TabsContent value="pendingUsers">
+          <TabsContent
+            value="pendingUsers"
+            className="pt-4">
             {organization && <PendingUserList organization={organization} />}
           </TabsContent>
         </Tabs>

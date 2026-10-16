@@ -6,12 +6,6 @@ import {
 } from '@/components/ui/BreadcrumbNav';
 import { useTranslate } from '@/hooks/use-translate';
 import { DownloadIcon } from '@filigran/icon';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@filigran/ui/clients';
 
 import { HuntPackDeployRequirement } from '@/components/service/document/hunt-pack/HuntPackDeployRequirement';
 import OneClickDeploy from '@/components/service/document/one-click-deploy/OneClickDeploy';
@@ -26,6 +20,7 @@ import BadgeOverflowCounter, {
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import useDecodedParams from '@/hooks/use-decoded-params';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
 import { EntityTypeOrFiligranLogo } from '@/utils/shareable-resources/entity-type';
 import { isHuntPackResource } from '@/utils/shareable-resources/shareable-resources.types';
@@ -33,7 +28,14 @@ import {
   isResourceDeployable,
   isResourceDownloadable,
 } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { Button, IconButton } from '@filigran/design-system';
+import {
+  Button,
+  IconButton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/design-system';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
@@ -64,6 +66,7 @@ const ShareableResourceSlug = ({
   );
   const incrementDownloadNumber = () =>
     setDocumentDownloadNumber((prev) => prev + 1);
+  const downloadUrl = `/document/get/${serviceInstanceId}/${documentData.id}?attach=1`;
 
   const shouldShowOneClickDeployComponent = useMemo(
     () => isResourceDeployable(documentData),
@@ -85,7 +88,7 @@ const ShareableResourceSlug = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <div className="flex gap-s pb-l flex-col md:flex-row">
+      <div className="flex gap-2 pb-4 flex-col md:flex-row">
         {logo ? (
           <div className="w-24 shrink-0 rounded overflow-hidden">
             <Image
@@ -98,7 +101,7 @@ const ShareableResourceSlug = ({
             />
           </div>
         ) : (
-          <div className="w-24 p-m shrink-0 flex items-center justify-center">
+          <div className="w-24 p-3 shrink-0 flex items-center justify-center">
             <EntityTypeOrFiligranLogo
               entityTypes={getEntityTypes(documentData)}
             />
@@ -106,8 +109,8 @@ const ShareableResourceSlug = ({
         )}
         <div className="flex flex-col justify-center w-full">
           <div className="flex items-start ">
-            <h1 className="whitespace-nowrap mb-s">{documentData.name}</h1>
-            <div className="flex gap-s ml-auto">
+            <h1 className="whitespace-nowrap mb-2">{documentData.name}</h1>
+            <div className="flex gap-2 ml-auto">
               <ShareLinkButton
                 documentId={documentData.id}
                 url={`${settings!.base_url_front}/${PUBLIC_CYBERSECURITY_SOLUTIONS_PATH}/${documentData?.service_instance?.slug}/${documentData?.slug}`}
@@ -121,17 +124,18 @@ const ShareableResourceSlug = ({
                         disableHoverableContent={true}>
                         <TooltipTrigger asChild>
                           <IconButton
+                            asChild
                             priority="tertiary"
-                            onClick={() => {
-                              incrementDownloadNumber();
-                              window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                            }}
-                            className="z-[2] text-primary"
+                            className="z-[2]"
                             aria-label={t(
                               'Service.ShareableResources.Download'
                             )}
-                            icon={<DownloadIcon className="h-4 w-4" />}
-                          />
+                            icon={<DownloadIcon className="h-4 w-4" />}>
+                            <a
+                              href={downloadUrl}
+                              onClick={incrementDownloadNumber}
+                            />
+                          </IconButton>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>{t('Service.ShareableResources.Download')}</p>
@@ -145,12 +149,12 @@ const ShareableResourceSlug = ({
                 <>
                   {updateActions}
                   {isResourceDownloadable(documentData) && (
-                    <Button
-                      onClick={() => {
-                        incrementDownloadNumber();
-                        window.location.href = `/document/get/${serviceInstanceId}/${documentData?.id}?attach=1`;
-                      }}>
-                      {t('Utils.Download')}
+                    <Button asChild>
+                      <a
+                        href={downloadUrl}
+                        onClick={incrementDownloadNumber}>
+                        {t('Utils.Download')}
+                      </a>
                     </Button>
                   )}
                 </>
@@ -176,16 +180,22 @@ const ShareableResourceSlug = ({
         images={carouselImages}
       />
       {children}
-      <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
+      <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
+          serviceDefinitionIdentifier={
+            serviceInstance.service_definition?.identifier
+          }
         />
         {documentData && (
-          <div className="flex flex-col justify-start gap-s flex-1">
+          <div className="flex flex-col justify-start gap-2 flex-1">
             <ShareableResourceDetails
               documentData={documentData}
               downloadNumber={documentDownloadNumber}
+              filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+                serviceInstance.service_definition?.identifier
+              )}
             />
             {shouldShowOneClickDeployComponent && requiredProductVersion && (
               <HuntPackDeployRequirement

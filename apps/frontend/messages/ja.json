@@ -7,7 +7,7 @@
     "Collapse": "折りたたむ",
     "CollapseSidebar": "サイドバーを折りたたむ",
     "MadeBy": "制作：",
-    "Title": "XTMハブ"
+    "Title": "XTM Hub"
   },
   "Badge": {
     "Disabled": "お断りします",
@@ -16,12 +16,12 @@
   },
   "CapabilityDescription": {
     "Capabilities": {
-      "ADMINISTRATE_ORGANIZATION": "組織内のすべての能力アクションを許可する",
+      "ADMINISTRATE_ORGANIZATION": "組織内のすべての権限を付与する",
       "MANAGE_ACCESS": "この組織に他のユーザーを招待できる",
-      "MANAGE_PLATFORM_REGISTRATION": "製品の接続と切断を行う機能",
+      "MANAGE_PLATFORM_REGISTRATION": "製品の接続と切断、およびトライアルの開始・キャンセル・管理を行う機能",
       "MANAGE_SUBSCRIPTION": "組織を管理し、サービスに登録する機能"
     },
-    "Description": "フィリグランのユーザーに特定の機能を追加できる",
+    "Description": "Filigran のユーザーに特定の機能を追加できる",
     "Title": "利用可能な機能"
   },
   "CSMBoard": {
@@ -70,8 +70,8 @@
     }
   },
   "Contracts": {
-    "CE": "コミュニティ版",
-    "EE": "エンタープライズ版",
+    "CE": "Community Edition",
+    "EE": "Enterprise Edition",
     "TRIAL": "無料トライアル"
   },
   "XtmPlatformTrial": {
@@ -106,28 +106,13 @@
       "Description": "このトライアルをキャンセルしてもよろしいですか？",
       "Warning": "一度キャンセルすると、新しいトライアルを再申請できなくなります"
     },
-    "Title": "XTMプラットフォームトライアルへようこそ",
+    "Title": "XTM Platform トライアルへようこそ",
     "Subtitle": "トライアルに必要なすべてがここにあります。トライアルの詳細と残り時間、製品への直接アクセス、そしてサポートが必要なときや質問があるときにFiligranチームに直接連絡できます。",
     "Guide": {
-      "Title": "XTMプラットフォームトライアルガイド",
-      "Content": "私たちが構築しているもの、次に登場するもの、そしてXTMプラットフォームが目指す方向をご覧ください。完全な透明性。驚きはありません。",
+      "Title": "XTM Platform トライアルガイド",
+      "Content": "私たちが構築しているもの、次に登場するもの、そしてXTM Platform が目指す方向をご覧ください。完全な透明性。驚きはありません。",
       "SeeMore": "詳細を見る"
     }
-  },
-  "Datatable": {
-    "Asc": "として",
-    "ClearSelection": "選択を解除",
-    "ColumnOptions": "列のオプション",
-    "Columns": "列",
-    "Desc": "Des",
-    "GoFirstPage": "最初のページへ",
-    "GoLastPage": "最後のページへ",
-    "GoNextPage": "次のページへ",
-    "GoPreviousPage": "前のページへ",
-    "Hide": "隠す",
-    "ManageColumnsVisibility": "列の表示管理",
-    "ResetTable": "表のリセット",
-    "RowsPerPage": "ページあたりの行数"
   },
   "DeploymentRequestUseCase": {
     "threat_profiling_cti": "脅威プロファイリング（CTI）",
@@ -214,7 +199,7 @@
     }
   },
   "Epic": {
-    "XTMRoadmap": "XTMスイートロードマップ",
+    "XTMRoadmap": "XTM Platform ロードマップ",
     "AllProducts": "すべての製品",
     "ShowFinished": "表示終了",
     "FilterByProduct": "製品で絞り込む",
@@ -242,7 +227,7 @@
       "ExpectedValue": "期待される価値",
       "EditionType": "エディション・タイプ",
       "FiligranProduct": "製品名",
-      "FiligranProductPlaceholder": "オープンCTI",
+      "FiligranProductPlaceholder": "OpenCTI",
       "SlackLink": "Slackリンク",
       "SlackLinkPlaceholder": "チャンネルを選択するか、Slackリンクを貼り付けてください",
       "Timeline": "タイムライン",
@@ -278,7 +263,7 @@
       "CreateEpicButton": "エピックを作成",
       "UpdateEpicButton": "エピックを更新"
     },
-    "JoinCommunity": "フィリグランコミュニティの輪に入る"
+    "JoinCommunity": "Filigran コミュニティの輪に入る"
   },
   "FeatureVoting": {
     "Title": "今後の機能に投票",
@@ -313,6 +298,7 @@
       "CANT_DELETE_BUILTIN_USER": "この組み込みユーザーは削除できません",
       "CANT_DELETE_YOURSELF": "自分のアカウントを削除することはできません",
       "CANT_REMOVE_LAST_ADMINISTRATOR": "組織の最後の管理者を削除することはできない",
+      "CANT_REMOVE_USER_FROM_PERSONAL_SPACE": "パーソナルスペースからユーザーを削除することはできません",
       "CANT_REMOVE_YOURSELF_FROM_ORGA_ERROR": "組織から自分自身を削除することはできない",
       "CANT_REQUEST_FREE_TRIAL": "無料トライアルのリクエストはできない",
       "CANT_REQUEST_FREE_TRIAL_IN_PERSONAL_SPACE": "個人的なスペースで無料体験を申し込むことはできない",
@@ -407,6 +393,7 @@
       "ORGANIZATION_SAME_DOMAIN_EXISTS": "同じドメインの組織が既に存在する",
       "ORGANIZATION_SAME_NAME_EXISTS": "同じ名前の組織がすでに存在する",
       "ORGANIZATIONS_DOES_NOT_MATCH_SELECTED_ORGANIZATION": "こんなことは許されない",
+      "PENDING_USER_NOT_FOUND": "このユーザーには組織への参加リクエストがありません",
       "PLATFORM_CONFIGURATION_NOT_FOUND": "プラットフォーム設定が見つかりません",
       "PLATFORM_NOT_REGISTERED": "製品が接続されていません",
       "PLATFORM_TYPE_NOT_SUPPORTED": "プラットフォームがサポートされていない",
@@ -482,7 +469,7 @@
       "GoToPlatform": "{title} に移動",
       "Details": "詳細",
       "Documentation": "ドキュメント",
-      "ConnectPlatform": "{platformName} を接続",
+      "ConnectProduct": "製品を接続",
       "Trial": "トライアル",
       "EE": "EE"
     }
@@ -503,8 +490,7 @@
     "RegisteredPlatformsCard": {
       "RegisteredOn": "on",
       "Contract": "契約",
-      "Remaining": "残り",
-      "DaysRemaining": "{days, plural, =1 {#日} other {#日}}"
+      "DaysRemaining": "残り<badge>{days, plural, =1 {#日} other {#日}}</badge>"
     }
   },
   "PublicHomePage": {
@@ -513,12 +499,12 @@
       "LabelWithName": "ようこそ {name}",
       "ConnectedProducts": "{count, plural, one {コネクテッド製品} other {コネクテッド製品}}",
       "Title": "XTM Platformの機能拡張とスケールアップ",
-      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM プラットフォームでの体験をさらに充実させることができます。"
+      "Description": "OpenCTI または OpenAEV を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM Platform での体験をさらに充実させることができます。"
     },
     "XtmRoadmap": {
       "Title": "XTM Platform Roadmap",
       "TitleWithProduct": "{product} Roadmap",
-      "Description": "開発中の機能や今後のリリース予定、XTM プラットフォームの今後の方向性をご紹介します。",
+      "Description": "開発中の機能や今後のリリース予定、XTM Platform の今後の方向性をご紹介します。",
       "SeeMore": "詳細を見る",
       "ImageAlt": "XTM Platformロードマップの宇宙イラスト",
       "Next": "次のリリース予定",
@@ -635,7 +621,7 @@
     "LoginWithLocal": "ローカルでログイン",
     "MadeBy": "制作",
     "WelcomeTitle": "XTM Hubへようこそ",
-    "WelcomeSubtitle": "XTMプラットフォームを拡張・スケール"
+    "WelcomeSubtitle": "XTM Platform を拡張・スケール"
   },
   "MenuActions": {
     "Continue": "続けてください",
@@ -645,8 +631,8 @@
     "Update": "更新する"
   },
   "Menu": {
-    "XTMPlatform": "XTMプラットフォーム",
-    "XTMPlatformTrial": "XTMプラットフォームトライアル",
+    "XTMPlatform": "XTM Platform",
+    "XTMPlatformTrial": "XTM Platform トライアル",
     "CustomDashboards": "カスタムダッシュボード",
     "CustomViews": "カスタムビュー",
     "Integrations": "連携機能",
@@ -655,7 +641,7 @@
     "LiveDemo": "ライブデモ",
     "Documentation": "ドキュメント",
     "Scenarios": "ユースケース",
-    "XTMRoadmap": "XTMプラットフォームのロードマップ",
+    "XTMRoadmap": "XTM Platform ロードマップ",
     "FeatureVoting": "機能への投票",
     "FiligranAcademy": "Filigran Academy",
     "Blog": "ブログ",
@@ -678,8 +664,6 @@
     "Settings": "設定",
     "SettingsLabel": "設定メニュー",
     "Users": "ユーザー",
-    "OpenCTITrial": "OpenCTI トライアル",
-    "OpenAEVTrial": "OpenAEVトライアル",
     "Competitor": "競技者",
     "NewsFeed": "ニュースフィード",
     "VotingRound": "機能への投票",
@@ -708,7 +692,7 @@
     "Description": "XTM Hubは、リソースへのアクセス、Filigran製品の活用の最適化、そしてコミュニティの活性化を図るための中核となるプラットフォームです。",
     "ShortTitle": "XTM Hub | サイバー脅威インテリジェンス・プラットフォーム",
     "ShortDescription": "XTM HubはFiligranのサイバーセキュリティ・ソリューションへのゲートウェイです。",
-    "SiteName": "XTMハブ by フィリグラン",
+    "SiteName": "XTM Hub by Filigran",
     "ServiceFallbackDescription": "脅威インテリジェンスと保護を強化するサイバーセキュリティソリューションをご覧ください。",
     "DocumentFallbackDescriptionDashboard": "脅威インテリジェンスとモニタリングを強化するこのサイバーセキュリティダッシュボードをご覧ください。",
     "DocumentFallbackDescriptionIntegration": "脅威インテリジェンスとモニタリングを強化するこのサイバーセキュリティ統合をご覧ください。",
@@ -796,7 +780,6 @@
       "StartDate": "開始日",
       "EndDate": "終了日",
       "RemainingDays": "残り日数",
-      "Status": "状況",
       "Region": "地域",
       "PlatformId": "プラットフォームID",
       "PlatformUrl": "プラットフォームURL",
@@ -819,7 +802,6 @@
       "Quotas": "ノルマ"
     },
     "Toast": {
-      "TrialsReordered": "トライアルリクエストの並び替え",
       "BundleCancelled": "バンドルトライアルをキャンセルしました。",
       "BundleReordered": "バンドルの待ち行列の順序を変更しました。"
     },
@@ -827,8 +809,7 @@
       "SearchTrials": "電子メールまたは組織で検索",
       "MoveToTop": "トップへ戻る",
       "MoveUp": "上に移動",
-      "CancelBundle": "バンドルトライアルをキャンセル",
-      "CancelTrial": "トライアルをキャンセルする"
+      "CancelBundle": "バンドルトライアルをキャンセル"
     },
     "UpdateQuotasForm": {
       "QuotasUpdated": "クォータは正常に更新されました",
@@ -903,8 +884,8 @@
   },
   "PlatformIdentifier": {
     "openaev": "OpenAEV",
-    "opencti": "オープンCTI",
-    "xtmhub": "XTM ハブ",
+    "opencti": "OpenCTI",
+    "xtmhub": "XTM Hub",
     "xtmone": "XTM One"
   },
   "ProfilePage": {
@@ -968,7 +949,6 @@
         "NotConnected": "接続が切れた",
         "NotConnectedDetails": "プラットフォームを再登録してください。"
       },
-      "Description": "プライベート・プラットフォームへのアクセスはこちらをクリックしてください。",
       "ProductName": "製品名",
       "Product": "製品",
       "ProductURL": "商品URL",
@@ -980,7 +960,20 @@
       "Status": "ステータス",
       "PrivatePlatform": "プライベート・プラットフォーム",
       "LastConnectionCheck": "最終接続チェック",
-      "Access": "アクセス"
+      "Access": "アクセス",
+      "PlatformInformation": "プラットフォーム情報",
+      "PlatformVersion": "プラットフォームのバージョン"
+    },
+    "Metrics": {
+      "Metadata": {
+        "Hostname": "ホスト名",
+        "CopyHostname": "ホスト名をコピー",
+        "SubscribedPlan": "契約プラン",
+        "Contract": "契約",
+        "RegionalArea": "リージョン",
+        "DaysLeft": "{days, plural, =1 {残り#日} other {残り#日}}",
+        "Unavailable": "現在、この情報はご利用いただけません。"
+      }
     },
     "Error": {
       "Capability": {
@@ -1092,7 +1085,7 @@
       "opencti_playbooks": "OpenCTIプレイブック",
       "opencti_hunt_packs": "OpenCTIハントパック",
       "opencti_registration": "OpenCTI 登録",
-      "xtm_platform_bundle": "XTMプラットフォームトライアル",
+      "xtm_platform_bundle": "XTM Platform トライアル",
       "xtm_platform_roadmap": "XTM Platform ロードマップ",
       "xtmone_registration": "XTM One 登録"
     },
@@ -1193,11 +1186,11 @@
     },
     "LibraryHero": {
       "Eyebrow": "Filigran のリソース",
-      "DefaultDescription": "OpenCTI または OpenAEV 製品を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM 製品をより一層ご活用いただけます。"
+      "DefaultDescription": "OpenCTI または OpenAEV 製品を接続すれば、構築済みコンテンツをワンクリックで展開し、製品ニュースフィードで常に最新情報を把握し、無料トライアルを開始できるなど、XTM Platform をより一層ご活用いただけます。"
     },
     "Connectors": {
       "DataImport": "データインポート",
-      "Description": "フィリグランチームが共有するOpenCTIコネクタの数々をご覧ください。",
+      "Description": "Filigran チームが共有するOpenCTIコネクタの数々をご覧ください。",
       "ImproveIntegrationPrefix": "この統合を改善したい場合は、こちらをご確認ください",
       "GithubRepositoryLink": "github リポジトリへのリンク",
       "IntegrationDocumentationAndCode": "統合ドキュメントとコード",
@@ -1212,6 +1205,7 @@
       "UnavailableDeployments": "このコネクタは自動デプロイでは使用できません。"
     },
     "CreationStatus": "作成ステータス",
+    "FilterByService": "サービスで絞り込む",
     "Form": {
       "AddImage": "画像を追加",
       "Author": "作成者",
@@ -1226,21 +1220,19 @@
       "DescriptionLabel": "説明",
       "DescriptionPlaceholder": "これは {documentType} を説明するための段落です。",
       "DescriptionUpdateJSONFile": "あなたは新しいjsonファイルをアップロードしようとしています。前のjsonファイルは削除されます。続行しますか？",
-      "DropDocuments": "ここにドキュメントをドロップしてください。",
       "ExistingJSONFile": "既存のJSONファイル {file_name}",
       "GithubUrlLabel": "Githubリンク (url)",
       "Illustration": "イラスト",
-      "LogoDisclaimer": "フィリグランのロゴはデフォルトで使用",
+      "LogoDisclaimer": "Filigran のロゴはデフォルトで使用",
       "ImagesDisclaimer": "画像はアップロードされたリソースの詳細ページにカルーセルとして追加・表示されます。",
       "ImageLabel": "画像",
       "LogoLabel": "ロゴ",
       "ManagerSupportedLabel": "マネージャー",
       "ManageAccessCapabilityLabel": "アクセス管理: ユーザーは所属組織の他ユーザーをこのサービスに招待できます",
-      "MinimumDeployableVersionLabel": "{platform} ハブのバージョンからデプロイ可能",
+      "MinimumDeployableVersionLabel": "{platform} Hub のバージョンからデプロイ可能",
       "MinimumDeployableVersionPlaceholder": "1.0.0",
       "NameLabel": "名前",
       "NamePlaceholder": "{documentType} 名前",
-      "NoImage": "画像なし",
       "PlaybookSupportedLabel": "対応プレイブック",
       "ProductVersionLabel": "{platform} 互換バージョン",
       "ProductVersionPlaceholder": "1.0.0",
@@ -1258,7 +1250,6 @@
       "SolutionCategoriesPlaceholder": "解答カテゴリを追加",
       "SubscriptionLinkLabel": "購読リンク (url)",
       "UpdateJSONFile": "JSONファイルの更新",
-      "UploadImage": "新しい画像のアップロード",
       "UploadLogo": "新しいロゴのアップロード",
       "UrlPlaceholder": "http://www.example.com",
       "UseCasesLabel": "使用例",
@@ -1500,6 +1491,7 @@
     "List": {
       "ViewTab": "タブ表示を選択",
       "ViewList": "リスト表示を選択",
+      "Filters": "フィルター",
       "Tab": {
         "Name": "名前",
         "Description": "説明",
@@ -1570,17 +1562,13 @@
       "NoSubscribedServices": "この組織に契約済みサービスはありません。"
     },
     "Organizations": "組織",
-    "RegisteredPlatforms": {
-      "PlatformDetails": "製品の詳細",
-      "GoToMyPlatform": "私の製品へ"
-    },
     "SearchServices": "検索サービス...",
     "ServiceName": "サービス名",
     "ShareableResources": {
       "Copied": "URLをコピーしました！貼り付けて共有できます。",
       "Deploy": {
         "DeployDescriptionNoPlatform": "接続済みの {platformIdentifier} 製品がありません。",
-        "DeployDescriptionNoPlatformIllustration": "XTMハブ接続のイラスト",
+        "DeployDescriptionNoPlatformIllustration": "XTM Hub 接続のイラスト",
         "DeployDescriptionNoPlatformThen": "リソースを配置するには、まず {platformIdentifier} 製品を接続する必要があります。\n\n接続手順\n1. {platformIdentifier} の管理者であることを確認するか、管理者にお問い合わせください。\n2. {platformIdentifier} 製品にログインし、設定 > Filigran Experience に移動します。\n3. 以下のスクリーンショットのように、\"Register\" ボタンをクリックして接続を完了します。",
         "DeployDescriptionOnePlatform": "{platformName} 製品に配置しますか？",
         "DeployPlatform": "{platformName} にデプロイしますか？",
@@ -1591,7 +1579,7 @@
         "DeployHuntPackIncompatibleVersion": "このハントパックをデプロイするには、{platformTitle} を OpenCTI {version} 以降に更新してください。",
         "EE": {
           "Tag": "EE",
-          "HoverTitle": "エンタープライズ版で利用可能",
+          "HoverTitle": "Enterprise Edition で利用可能",
           "HoverSubtitle": "クリックして詳細を見る",
           "PlatformRequiresEE": "プラットフォーム \"{platformTitle}\" は Community Edition です。プレイブックをワンクリックでデプロイするには、OpenCTIのEnterprise Editionが必要です。"
         },
@@ -1599,9 +1587,9 @@
           "Title": "ワンクリックデプロイ",
           "Subtitle": "OpenCTI Enterprise Edition で利用可能",
           "Heading": "ワンクリックでプレイブックを OpenCTI インスタンスに直接デプロイ",
-          "FirstParagraph": "ワンクリックデプロイにより、XTMハブからOpenCTIプラットフォームにプレイブックを即座に直接プッシュできます。手動での設定やファイル操作は必要ありません。",
+          "FirstParagraph": "ワンクリックデプロイにより、XTM Hub からOpenCTIプラットフォームにプレイブックを即座に直接プッシュできます。手動での設定やファイル操作は必要ありません。",
           "SecondParagraph": "プレイブックを選択し、デプロイをクリックすると、数秒以内にインスタンスで実行する準備が整います。",
-          "EnterpriseEditionTitle": "OpenCTI エンタープライズ版 (EE)",
+          "EnterpriseEditionTitle": "OpenCTI Enterprise Edition (EE)",
           "EnterpriseEditionDescription": "OpenCTI Enterprise Editionは、脅威インテリジェンス運用の高度化を目指す企業向けに、高度な機能、エンタープライズグレードの拡張性、専用サポートを提供します。",
           "Link": "詳細はこちら",
           "InterestedTitle": "もっと知りたいですか？",
@@ -1617,7 +1605,7 @@
         "Downloads": "ダウンロード",
         "LastUpdatedAt": "最終更新日",
         "Overview": "概要",
-        "MinimumDeployableVersion": "{platform} ハブバージョンからデプロイ可能",
+        "MinimumDeployableVersion": "{platform} Hub のバージョンからデプロイ可能",
         "ProductVersion": "{platform} 互換バージョン",
         "Shares": "シェア",
         "ContributorContact": "貢献者の連絡先",
@@ -1650,11 +1638,6 @@
     "SubscribeService": "{serviceName} サービスを購読する",
     "SubscribeSuccessful": "サービスへの登録が完了しました。これで登録したサービスにこのサービスが表示されます。",
     "Trials": {
-      "Active": "OpenCTI 無料トライアルは有効です",
-      "Provisioning": "OpenCTI 無料トライアルは現在プロビジョニング中です。",
-      "Requested": "OpenCTI 無料トライアルがリクエストされました。",
-      "Expired": "OpenCTI 無料トライアルは終了しました。",
-      "Cancelled": "OpenCTI 無料トライアルはキャンセルされました。",
       "CancellationReason": {
         "value": "インテリジェンスには、当社の特定のニーズに対する実用的な洞察が欠けています。",
         "compatibility": "既存のセキュリティ・スタックと互換性がない",
@@ -1662,72 +1645,8 @@
         "legal-security": "社内のセキュリティ・チームまたは法務チームが早急な終結を要求した",
         "expertise": "ツールを効果的に利用するためのアナリストや専門家が社内にいない"
       },
-      "DaysRemaining": "{days, plural, =1 {# 日残り} other {# 日残り}}",
-      "Header": {
-        "ActiveTrial": "アクティブトライアル",
-        "ActiveTrialCount": "{count} 件のアクティブトライアル{count, plural, one {} other {s}}",
-        "DaysRemaining": "残りの日",
-        "OpenInNewTab": "{title} を新しいタブで開く"
-      },
       "LearnMore": {
-        "Link": "もっと詳しく",
-        "openaev": {
-          "WhatCanYouDo": {
-            "Title": "OpenAEVトライアルで何ができる？",
-            "FirstParagraph": "攻撃をシミュレートし、防御を評価し、セキュリティ態勢を改善するために、OpenAEV のすべての機能を 30 日間お試しいただけます。これには、既存の EDR エージェントの使用、自動シナリオ生成、AI を活用した修復ガイダンスなど、OpenAEV SaaS ベースの Enterprise Edition のすべての機能が含まれます。",
-            "SecondParagraph": "攻撃シーケンスのシミュレーション、現実的な卓上演習、セキュリティ態勢の検証、リーダーシップへのサイバー回復力の報告など、特定のニーズに合わせてOpenAEVのすべての機能をテストできます。",
-            "Link": "OpenAEV Enterprise Editionのすべての機能を見る"
-          },
-          "Blocks": {
-            "First": {
-              "Title": "優先順位付け",
-              "Description": "OpenCTI脅威インテリジェンスとMITRE ATT&CKマッピングを活用して、攻撃シミュレーションを構築し、脆弱性と悪用可能な攻撃経路を特定します。"
-            },
-            "Second": {
-              "Title": "テスト",
-              "Description": "アトミックテスト、カスタム攻撃シーケンス、または事前にパッケージ化されたシナリオにより、防御を継続的に検証します。OpenAEVのネイティブEDRまたは主要ベンダーとの事前統合を使用して、卓上演習を実行し、チームの対応をテストします。"
-            },
-            "Third": {
-              "Title": "修正",
-              "Description": "ドリルダウン分析、AI を活用した改善ガイダンス、チームのフィードバックにより、セキュリティ態勢の改善箇所を特定します。"
-            }
-          }
-        },
-        "opencti": {
-          "WhatCanYouDo": {
-            "Title": "OpenCTI トライアルで何ができますか？",
-            "FirstParagraph": "OpenCTIの全機能を30日間お試しいただき、脅威インテリジェンスを強化してください。これには、自動化されたプレイブック、優先情報要件（PIR）の設定機能、FINTEL、AIを活用したファイルのインポート、レポート作成、NLP検索機能など、OpenCTI Enterprise Editionの全機能が含まれます。",
-            "SecondParagraph": "OpenCTIが、脅威ハンティング、インシデントレスポンス、ケース管理など、特定のニーズをどのようにサポートし、好みのデータソースと統合して、実用的な脅威インテリジェンスをセキュリティスタック全体に流すことができるかをご覧ください。",
-            "Link": "OpenCTI Enterprise Editionの全機能をご覧ください。"
-          },
-          "Blocks": {
-            "First": {
-              "Title": "取り込み",
-              "Description": "商用、オープンソース、社内など、あらゆるフィードからの脅威インテリジェンスを一元化されたプラットフォームに統合し、充実させます。AIが支援するCTIレポートのインポートにより、アナリストの作業時間を大幅に削減します。"
-            },
-            "Second": {
-              "Title": "処理",
-              "Description": "強力なダッシュボードの可視化、ナレッジ・ハイパーグラフ、プレイブックにアクセスし、タイムラインと ATT&CK マッピングを使用して脅威アクター間でピボットします。脅威やインシデントの管理ニーズに合わせてダッシュボードをカスタマイズし、あらゆるステップでAIを活用できます。"
-            },
-            "Third": {
-              "Title": "出力",
-              "Description": "脅威インテリジェンスをセキュリティ・システム全体に浸透させます。チームやツール間でインテリジェンスを共有・拡散し、役割ベースのアクセス権でタイムリーなアクションを実現します。OpenCTI と完全に統合された OpenAEV を使用して、セキュリティ態勢を検証し、改善します。"
-            }
-          }
-        }
-      },
-      "OpenAEVPlatformBreadcrumb": "OpenAEV トライアルプラットフォーム",
-      "OpenCTIPlatformBreadcrumb": "OpenCTI トライアルプラットフォーム",
-      "PageHeader": {
-        "Welcome": "Filigran へようこそ",
-        "Title": "{platformName} の無料トライアルを始めましょう!"
-      },
-      "Storage": {
-        "Title": "トライアル環境のストレージに関する重要なお知らせ",
-        "SaaSFeaturesLink": "Enterprise Edition SaaS 機能",
-        "NoSLA": "<strong>無料トライアル環境には SLA は含まれません。</strong> クラウドプロバイダーの障害が発生した場合、復旧時間は保証されません。トライアル環境には重要なデータや代替不可能なデータを保存しないことを推奨します。",
-        "OpenCTIDescription": "OpenCTI 無料トライアルでは、すべての <link>Enterprise Edition SaaS 機能</link> を含む「small」SaaS インスタンスをユーザーに提供しますが、<strong>計算能力とストレージは制限されます (インテリジェンスデータストレージは最大 40GB、ファイルストレージは 3GB)。</strong> このトライアル中に豊富なデータセットを含む大規模なプレミアムフィードを取り込むと、ストレージがすぐに使い切られる可能性があります。",
-        "OpenAEVDescription": "OpenAEV 無料トライアルでは、すべての <link>Enterprise Edition SaaS 機能</link> を含む「small」インスタンスをユーザーに提供しますが、計算能力は低減され、ストレージは <strong>16GB</strong> に制限されます。"
+        "Link": "もっと詳しく"
       },
       "XTMPlatform": {
         "Title": "あなたの eXtended Threat Management (XTM) スイート",
@@ -1789,8 +1708,6 @@
             "ProductsTitle": "このトライアルに含まれる製品",
             "ProductsWarning": "トライアルバンドルは慎重にお選びください。",
             "ProductsWarningDescription": "トライアルが開始されると、製品の追加や変更はできなくなり、また、同じ組織に対して追加のトライアルを申請することもできません。",
-            "OngoingTrialWarning": "{count, plural, one {{products}の進行中のトライアルがあります} other {{products}の進行中のトライアルが複数あります}}。XTM Platform トライアルを申請すると、{count, plural, one {現在のトライアル} other {現在のすべてのトライアル}}はキャンセルされ、データは引き継がれません。",
-            "OngoingTrialDescription": "新しいトライアル構成を選択した後は製品を変更できず、同じ組織で追加のトライアルを申請することもできません。",
             "UseCaseFor": "{product} のユースケース",
             "Submit": "XTM Platform トライアルを申請"
           },
@@ -1799,9 +1716,9 @@
             "Description": "Filigran アカウントを作成するか、既存のアカウントでログインしてください。"
           },
           "NotAdmin": {
-            "Title": "トライアルを申請するには組織の管理者である必要があります。",
-            "Description": "所属企業の組織管理者にお問い合わせください",
-            "AdminListTitle": "{count, plural, =1 {管理者} other {管理者}}"
+            "Title": "トライアルを開始するには「Manage platform registration」権限が必要です。",
+            "Description": "組織の管理者にこの権限の付与を依頼してください。",
+            "AdminListTitle": "{count, plural, =1 {この権限を持つメンバー} other {この権限を持つメンバー}}"
           },
           "PersonalSpace": {
             "Title": "個人スペースではトライアルをご利用いただけません"
@@ -1843,7 +1760,6 @@
         "Subtitle": "{platformName} 製品を最大限に活用しましょう",
         "Description": "ステップバイステップのガイド、エキスパートのコース、コミュニティのフィードバックを活用して、実際のユースケースを解決し、Filigran チャンピオンになりましょう!"
       },
-      "GoToMyTrial": "私のトライアルへ",
       "InfoPersonalSpace": "個人のスペースではトライアルを開始できません。組織のスペースに移動してください。",
       "ReachOutToSales": "営業に連絡する",
       "ReachOutToSalesMessageLabel": "メッセージ",
@@ -1851,16 +1767,11 @@
       "NeedSupport": "サポート希望",
       "ReachOutToSalesSuccessTitle": "ありがとうございます",
       "ReachOutToSalesSuccessMessage": "折り返しご連絡いたします。",
-      "ReachOutToSalesDefaultMessage": "メッセージを入力してください。",
       "Cancellation": {
         "Toast": {
-          "NoNewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。新規のOpenCTIトライアルはリクエストできませんのでご注意ください。",
-          "NewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。",
-          "Admin": "OpenCTI 無料トライアルは正常にキャンセルされました。"
+          "NoNewTrialPossible": "OpenCTI無料トライアルは正常にキャンセルされました。新規のOpenCTIトライアルはリクエストできませんのでご注意ください。"
         },
         "ConfirmationForm": {
-          "Title": "OpenCTI 無料トライアルをキャンセルする",
-          "NoNewTrialPossible": "この操作の後、新しい OpenCTI トライアルをリクエストすることはできませんのでご注意ください。",
           "CancellationReason": "キャンセル理由",
           "CancellationReasonPlaceholder": "理由を選択してください",
           "CancellationReasonOther": "その他",
@@ -1868,8 +1779,7 @@
           "CancellationReasonRequired": "キャンセル理由を選択してください"
         },
         "Confirmation": {
-          "Title": "体験キャンセル",
-          "Admin": "本当に {organizationName} からの OpenCTI 無料トライアルをキャンセルしますか？"
+          "Title": "体験キャンセル"
         }
       },
       "Form": {
@@ -1880,7 +1790,6 @@
         "JobTitlePlaceholder": "役職を選択してください",
         "ActivitySector": "活動分野",
         "ActivitySectorPlaceholder": "業種を選択してください",
-        "UseCase": "用途",
         "UseCasePlaceholder": "ユースケースを選択してください",
         "Error": {
           "AcceptTerms": "続行するには試用条件に同意してください",
@@ -1889,18 +1798,6 @@
         "TermsAgreement": "<mssa>MSSA</mssa>および<aiterms>AI利用規約</aiterms>の試用条件を読み、理解し、同意します。",
         "FormRequested": "無料トライアルを申し込みました。プラットフォームの準備が整い次第、Eメールをお送りします！"
       },
-      "Display": {
-        "New": "新しい",
-        "Requested": "リクエスト",
-        "opencti": {
-          "Title": "OpenCTI 30日間無料トライアル",
-          "FreeTrialDescription": "OpenCTI Enterprise Editionの全機能をお試しいただき、脅威インテリジェンスのエンドツーエンドの運用を開始してください！"
-        },
-        "openaev": {
-          "Title": "OpenAEV 30日間無料トライアル",
-          "FreeTrialDescription": "OpenAEV を使って、実際の攻撃シナリオをシミュレートし、セキュリティ態勢を評価し、サイバー耐性を向上させましょう。"
-        }
-      },
       "ManageUsers": {
         "Title": "ユーザーを管理する",
         "Email": "Eメール"
@@ -1908,12 +1805,12 @@
     },
     "TrialGuide": {
       "Breadcrumb": {
-        "TrialPlatform": "XTMプラットフォームのトライアル",
-        "TrialGuide": "XTMプラットフォーム トライアルガイド"
+        "TrialPlatform": "XTM Platform トライアル",
+        "TrialGuide": "XTM Platform トライアルガイド"
       },
-      "Eyebrow": "XTMプラットフォーム トライアルガイド",
+      "Eyebrow": "XTM Platform トライアルガイド",
       "Title": "主なリソース",
-      "Description": "この簡単なガイドでは、XTMプラットフォームのトライアルを最大限に活用するための役立つリソースをご紹介します。",
+      "Description": "この簡単なガイドでは、XTM Platform のトライアルを最大限に活用するための役立つリソースをご紹介します。",
       "SeeMore": "詳細を見る",
       "ReadMore": "詳細を読む",
       "ChecklistTitle": "推奨アクションチェックリスト",
@@ -1940,7 +1837,7 @@
         "ChecklistItems": {
           "ActivateFeeds": {
             "Title": "さらに1～2つのフィードを有効にする",
-            "Description": "左側のメニューにある <strong>統合</strong> に移動します。すでにいくつかのコネクタがデプロイされています。<strong>利用可能</strong>タブをクリックしてください。ワンクリックでデプロイできるコネクタが他にも数多くあることがわかります。左側のメニューを一番下までスクロールし、ライセンスの種類で<strong>無料</strong>を選択します。まだ有効化されていないものをいくつかデプロイしてください。<strong>もっと見る</strong>をクリックすると、ワンクリックデプロイに対応していないものも含め、OpenCTIライブラリのすべての統合を確認できます。"
+            "Description": "左側のメニューにある <strong>インテグレーション</strong> に移動します。すでにいくつかのコネクタがデプロイされています。<strong>利用可能</strong>タブをクリックしてください。ワンクリックでデプロイできるコネクタが他にも数多くあることがわかります。左側のメニューを一番下までスクロールし、ライセンスの種類で<strong>無料</strong>を選択します。まだ有効化されていないものをいくつかデプロイしてください。<strong>もっと見る</strong>をクリックすると、ワンクリックデプロイに対応していないものも含め、OpenCTIライブラリのすべての統合を確認できます。"
           },
           "ConfigurePir": {
             "Title": "優先インテリジェンス要件（PIR）の設定",
@@ -1948,15 +1845,15 @@
           },
           "FollowGraph": {
             "Title": "レポートを開いてインタラクティブなグラフを探索する",
-            "Description": "<strong>分析 → レポート</strong>に移動します。レポートをクリックし、<strong>ナレッジ</strong>タブに移動します。右側のツールバーで<strong>グラフビュー</strong>が選択されていることを確認します。ズームインします。次に、グラフ内のオブジェクトをクリックします。オブジェクトの詳細が右側の列に表示されます。特定のオブジェクトの関係性を確認するには、それを横に移動します。<strong>タイムラインビュー</strong>をクリックすると、データポイントが時間の経過とともにどのように変化したかを確認できます。MITRE ATT&CKへのマッピングについては、<strong>戦術マトリックスビュー</strong>をクリックしてください。"
+            "Description": "<strong>分析 → レポート</strong>に移動します。レポートをクリックし、<strong>ナレッジ</strong>タブに移動します。右側のツールバーで<strong>グラフ表示</strong>が選択されていることを確認します。ズームインします。次に、グラフ内のオブジェクトをクリックします。オブジェクトの詳細が右側の列に表示されます。特定のオブジェクトの関係性を確認するには、それを横に移動します。<strong>タイムライン ビュー</strong>をクリックすると、データポイントが時間の経過とともにどのように変化したかを確認できます。MITRE ATT&CKへのマッピングについては、<strong>戦術マトリックスの表示</strong>をクリックしてください。"
           },
           "CreateCase": {
             "Title": "検出されたインジケーターからケースを作成する",
-            "Description": "<strong>ケース → インシデント対応 → インシデント対応の作成</strong> に移動し、組み込みテンプレートを使用してケースを作成し、先ほど扱ったインジケーターやレポートを添付します。その後、優先度と重大度を割り当て、担当者を指定し、是正措置を追跡するための関連タスクを追加します。 ケースは基となるエンティティとリンクされたままになるため、新たに相関するインテリジェンスがあれば、その文脈に合わせて自動的に表示される点にご注目ください。"
+            "Description": "<strong>事例 → インシデント対応 → ケース インシデントの作成</strong> に移動し、組み込みテンプレートを使用してケースを作成し、先ほど扱ったインジケーターやレポートを添付します。その後、優先度と重大度を割り当て、担当者を指定し、是正措置を追跡するための関連タスクを追加します。 ケースは基となるエンティティとリンクされたままになるため、新たに相関するインテリジェンスがあれば、その文脈に合わせて自動的に表示される点にご注目ください。"
           },
           "CreateFintelReport": {
             "Title": "FINTELレポートの作成",
-            "Description": "<strong>分析 → レポート → レポートの作成</strong> に移動します。 調査してきた脅威アクター、マルウェア、またはキャンペーンに関する分析を要約した「Finished Intelligence（FINTEL）」レポートの下書きを作成します。その際、すでに取り込んだエンティティ、インジケーター、および関係性を参照してください。裏付けとなる観測データを添付し、関連する侵入セットやTTPをグラフから直接リンクさせます。"
+            "Description": "<strong>分析 → レポート → レポートを作成</strong> に移動します。 調査してきた脅威アクター、マルウェア、またはキャンペーンに関する分析を要約した「Finished Intelligence（FINTEL）」レポートの下書きを作成します。その際、すでに取り込んだエンティティ、インジケーター、および関係性を参照してください。裏付けとなる観測データを添付し、関連する侵入セットやTTPをグラフから直接リンクさせます。"
           },
           "BuildDashboardWidget": {
             "Title": "カスタムダッシュボードウィジェットの作成",
@@ -1964,15 +1861,15 @@
           },
           "ConnectSecurityStack": {
             "Title": "セキュリティスタックへの接続",
-            "Description": "<strong>統合</strong>に移動します。<strong>さらに表示</strong>をクリックします。 すでに運用しているツール（SIEM、EDR、ファイアウォール、TIP、またはSOAR）をいくつか選択し、OpenCTIに接続します。接続が完了したら、コネクタのダッシュボードを監視してデータが正常に流れていることを確認し、新たにプッシュされたインジケーターが下流のツールに表示されることを確認します。"
+            "Description": "<strong>インテグレーション</strong>に移動します。<strong>もっと見る</strong>をクリックします。 すでに運用しているツール（SIEM、EDR、ファイアウォール、TIP、またはSOAR）をいくつか選択し、OpenCTIに接続します。接続が完了したら、コネクタのダッシュボードを監視してデータが正常に流れていることを確認し、新たにプッシュされたインジケーターが下流のツールに表示されることを確認します。"
           },
           "CreateNoCodePlaybook": {
             "Title": "ノーコードのプレイブックを作成する",
-            "Description": "<strong>データ → 処理</strong>に移動します。 <strong>プレイブックの作成</strong>をクリックします。ビジュアルなドラッグ＆ドロップビルダーを使用して、トリガー、フィルター、アクションを連結します。例えば、新しいインジケーターの自動エンリッチメント、信頼度の高いレポートをケースへ昇格、または一致した観測値をコネクタへ直接プッシュするなどのアクションが可能です。 または、<strong>Hubからインポート</strong>をクリックして、あらかじめ作成されたプレイブックを選択することもできます。"
+            "Description": "<strong>データ → 処理</strong>に移動します。 <strong>プレイブックを作成する</strong>をクリックします。ビジュアルなドラッグ＆ドロップビルダーを使用して、トリガー、フィルター、アクションを連結します。例えば、新しいインジケーターの自動エンリッチメント、信頼度の高いレポートをケースへ昇格、または一致した観測値をコネクタへ直接プッシュするなどのアクションが可能です。 または、<strong>Hubからインポート</strong>をクリックして、あらかじめ作成されたプレイブックを選択することもできます。"
           },
           "CheckSecurityCoverage": {
             "Title": "OpenAEVでセキュリティカバレッジを確認する",
-            "Description": "<strong>設定 → 統合</strong>の下でOpenAEVインスタンスをリンクし、OpenAEV内で<strong>シナリオ → 作成</strong>に移動して、OpenCTIで調査中の脅威アクターのATT&CK手法に基づいてシナリオを構築します。 各 TTP をインジェクションとして追加し、標的となる資産を割り当てた後、<strong>実行</strong>をクリックして、制御された環境でシミュレーションを実行します。"
+            "Description": "<strong>設定 → インテグレーション</strong>の下でOpenAEVインスタンスをリンクし、OpenAEV内で<strong>シナリオ → 作成</strong>に移動して、OpenCTIで調査中の脅威アクターのATT&CK手法に基づいてシナリオを構築します。 各 TTP をインジェクションとして追加し、標的となる資産を割り当てた後、<strong>実行</strong>をクリックして、制御された環境でシミュレーションを実行します。"
           },
           "EnableAgent": {
             "Title": "XTM One でエージェントを有効にする",
@@ -2075,7 +1972,6 @@
       }
     },
     "FileForm": {
-      "DropDocuments": "ここにドキュメントをドロップする",
       "NoDocument": "選択した文書がありません。",
       "SelectDocument": "ドキュメントを選択"
     },
@@ -2096,13 +1992,13 @@
     "Bundle": {
       "ManageTrial": {
         "Breadcrumb": {
-          "BundleName": "XTM トライアルプラットフォーム",
+          "BundleName": "XTM Platform トライアル",
           "ManageUsers": "ユーザーを管理"
         },
         "Title": "XTM Platform トライアルでチームを管理",
         "Eyebrow": "XTM Platform 無料トライアル",
         "Description": "XTM Platform のトライアル期間中、チームを簡単に管理し、共同作業を行いましょう。メンバーを招待し、役割と権限を割り当てて、全員がプラットフォームに適切なレベルでアクセスできるようにします。",
-        "BackButton": "XTM トライアルプラットフォームに戻る",
+        "BackButton": "XTM Platform トライアルに戻る",
         "BackToDashboardButton": "ダッシュボードに戻る",
         "GroupAction": "グループアクション",
         "GroupActionDisabledTooltip": "グループアクションを適用するには、リストからユーザーを選択する必要があります",
@@ -2204,9 +2100,6 @@
   "ServiceName": {
     "custom_dashboards": "カスタムダッシュボード"
   },
-  "SelectUsers": {
-    "ClearAllSelections": "すべての選択をクリア"
-  },
   "Sort Asc": "ソート",
   "Sort Desc": "降順ソート",
   "SortControls": {
@@ -2240,7 +2133,7 @@
     "Description": "本当に {platformName} 製品を切断しますか？切断すると、{productName} で再度接続プロセスを行う必要があります。",
     "Confirm": {
       "Description": "切断を続行しますか？",
-      "Title": "ハブ上の {name} 組織から {platformIdentifier} 製品を切断しようとしています。"
+      "Title": "Hub 上の {name} 組織から {platformIdentifier} 製品を切断しようとしています。"
     },
     "Error": {
       "Capability": {
@@ -2263,7 +2156,7 @@
     "OpenCTI": {
       "Confirm": {
         "Description": "切断を続行しますか？",
-        "Title": "ハブ上の {name} 組織から OpenCTI 製品を切断しようとしています。"
+        "Title": "Hub 上の {name} 組織から OpenCTI 製品を切断しようとしています。"
       },
       "Error": {
         "Capability": {
@@ -2401,6 +2294,63 @@
     "AutomaticDeploy": "自動配備",
     "And": "そして",
     "Or": "または"
+  },
+  "DesignSystem": {
+    "Breadcrumbs": {
+      "Label": "パンくずリスト"
+    },
+    "Carousel": {
+      "GoToSlide": "スライド {slide} へ移動",
+      "Next": "次のスライド",
+      "Previous": "前のスライド"
+    },
+    "Combobox": {
+      "SelectedValues": "選択された値",
+      "ToggleOptions": "選択肢の表示を切り替え"
+    },
+    "DataTable": {
+      "ClearSelection": "選択を解除",
+      "ColumnOptions": "列のオプション",
+      "Columns": "列",
+      "HideColumn": "隠す",
+      "ManageColumns": "列の表示管理",
+      "NextPage": "次のページへ",
+      "PreviousPage": "前のページへ",
+      "ResetTable": "表のリセット",
+      "RowsPerPage": "ページあたりの行数",
+      "SelectAll": "すべて選択",
+      "SelectedCount": "{count} 件選択",
+      "SelectRow": "行を選択",
+      "SortAscending": "昇順",
+      "SortDescending": "降順"
+    },
+    "DatePicker": {
+      "Calendar": "カレンダー",
+      "FieldCalendar": "{label}のカレンダー",
+      "Clear": "日付をクリア",
+      "Confirm": "確定",
+      "Hours": "時",
+      "Minutes": "分",
+      "Month": "月",
+      "NextMonth": "次の月",
+      "OpenCalendar": "カレンダーを開く",
+      "Period": "午前/午後",
+      "PreviousMonth": "前の月",
+      "Seconds": "秒",
+      "Year": "年"
+    },
+    "FileSelect": {
+      "Clear": "すべてのファイルを削除",
+      "FileRejected": "{fileName}は追加されませんでした（{reason, select, accept {サポートされていない形式} other {サイズ上限超過}}）。",
+      "FilesRejected": "{count}件のファイルは追加されませんでした（サポートされていない形式またはサイズ上限超過）。",
+      "Loading": "読み込み中",
+      "Placeholder": "ファイルが選択されていません。",
+      "RemoveFile": "{fileName}を削除",
+      "Trigger": "ファイルを選択"
+    },
+    "SearchField": {
+      "Clear": "検索をクリア"
+    }
   },
   "Platform": {
     "Update": "更新する",

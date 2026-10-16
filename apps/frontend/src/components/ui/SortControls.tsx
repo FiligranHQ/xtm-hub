@@ -1,14 +1,14 @@
 import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
-import { IconButton } from '@filigran/design-system';
-import { ArrowDownwardIcon, ArrowUpwardIcon } from '@filigran/icon';
 import {
+  IconButton,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@filigran/ui';
+} from '@filigran/design-system';
+import { ArrowDownwardIcon, ArrowUpwardIcon } from '@filigran/icon';
 import { OrderingMode } from '@graphql/generated';
 
 interface SortControlsProps {
@@ -31,17 +31,17 @@ export const SortControls = ({
   const t = useTranslate();
 
   return (
-    <div className={cn(className, 'flex gap-s items-center')}>
+    <div className={cn(className, 'flex gap-2 items-center')}>
       <span className="whitespace-nowrap text-sm">
         {t('SortControls.SortBy')}
       </span>
       <Select
         onValueChange={onOrderByChange}
         defaultValue={selectedOrderBy}>
-        <SelectTrigger>
+        <SelectTrigger aria-label={t('SortControls.SortBy')}>
           <SelectValue placeholder={t('SortControls.SortBy')} />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="layer-1">
           {orderByOptions.map((option) => (
             <SelectItem
               key={option.value}

@@ -1,26 +1,24 @@
 'use client';
-import { TrialsManageUsersDialog } from '@/components/service/trial-instances/manage-users/TrialsManageUsersDialog';
 import {
   buildTrialsFilters,
   formatCancellationReason,
   sortProducts,
 } from '@/components/trials/tab/trials-tab.utils';
-import { TrialsExternalLink } from '@/components/trials/tab/TrialsExternalLink';
 import { TrialsProducts } from '@/components/trials/tab/TrialsProducts';
 import { TrialsProductValues } from '@/components/trials/tab/TrialsProductValues';
+import { TrialsRowActions } from '@/components/trials/tab/TrialsRowActions';
 import { useTrialsListLocalstorage } from '@/components/trials/trial-list-localstorage';
 import {
   TRIALS_TAB_CONFIG,
   trialsRegionKey,
-  TrialsScope,
   TrialsTabType,
 } from '@/components/trials/trials.const';
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
 } from '@/components/ui/handle-sorting.utils';
-import { SearchInput } from '@/components/ui/SearchInput';
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import {
   useAdminByPass,
   useUserHasPortalCapability,
@@ -28,53 +26,31 @@ import {
 import { useTablePagination } from '@/hooks/use-table-pagination';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { DEBOUNCE_TIME } from '@/utils/constant';
-import { i18nKey } from '@/utils/datatable';
 import { daysUntil, useDateFormatter } from '@/utils/date';
-import { xtmPlatformTrialManageUsersFromDashboardPath } from '@/utils/path/constant';
-import { IconButton } from '@filigran/design-system';
+import { getDataTableLabels } from '@/utils/design-system/data-table';
 import {
-  ArrowShapeUpIcon,
-  ArrowShapeUpStackIcon,
-  CheckIndeterminateIcon,
-  CloseIcon,
-  GroupIcon,
-} from '@filigran/icon';
-import {
-  DataTable,
-  DataTableHeadBarOptions,
-  toast,
+  SearchField,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@filigran/ui';
+} from '@filigran/design-system';
+import { CheckIndeterminateIcon } from '@filigran/icon';
 import { trialsKeys } from '@graphql/deployment/deployment.keys';
 import {
-  DeploymentRequestHubStatus,
   DeploymentRequestOrdering,
   OrderingMode,
   PortalCapability,
-  ReorderDeploymentRequestInQueueDirection,
   TrialsProductFragment,
   TrialsRowFragment,
-  useTrialsAdminCancelDeploymentRequestMutation,
   useTrialsListQuery,
-  useTrialsReorderDeploymentRequestInQueueMutation,
 } from '@graphql/generated';
-import { useQueryClient } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import Link from 'next/link';
 import { ReactNode, useMemo, useState } from 'react';
-import { useDebounceCallback } from 'usehooks-ts';
 
 type TrialsColumn = ColumnDef<TrialsRowFragment>;
 type TrialsCellProps = { row: { original: TrialsRowFragment } };
 type Translate = (key: string) => string;
-type TrialsProductValue = Pick<
-  TrialsProductFragment,
-  'platform_id' | 'platform_url' | 'url'
->;
 
 const dateColumn = (
   id: 'request_date' | 'start_date' | 'end_date' | 'cancellation_date',
@@ -96,55 +72,36 @@ const dateColumn = (
 const productColumn = (
   id: 'platform_id' | 'platform_url' | 'registration_status',
   header: string,
-  scope: TrialsScope,
-  valueOf: (product: TrialsProductValue) => string | null | undefined,
+  valueOf: (product: TrialsProductFragment) => string | null | undefined,
   asLink = false
 ): TrialsColumn => ({
-  accessorKey: id,
   id,
   enableSorting: false,
   header,
-  cell: ({ row }: TrialsCellProps) => {
-    if (scope.kind === 'bundle') {
-      return (
-        <TrialsProductValues
-          products={row.original.children ?? []}
-          valueOf={valueOf}
-          asLink={asLink}
-        />
-      );
-    }
-    const value = valueOf(row.original);
-    if (asLink) {
-      return (
-        <TrialsExternalLink
-          url={value}
-          className="truncate"
-        />
-      );
-    }
-    return <span className="truncate">{value || '-'}</span>;
-  },
+  cell: ({ row }: TrialsCellProps) => (
+    <TrialsProductValues
+      products={row.original.children ?? []}
+      valueOf={valueOf}
+      asLink={asLink}
+    />
+  ),
 });
 
-const productColumns = (scope: TrialsScope, t: Translate): TrialsColumn[] => [
+const productColumns = (t: Translate): TrialsColumn[] => [
   productColumn(
     'platform_id',
     t('TrialsDashboard.Columns.PlatformId'),
-    scope,
     (product) => product.platform_id
   ),
   productColumn(
     'platform_url',
     t('TrialsDashboard.Columns.PlatformUrl'),
-    scope,
     (product) => product.platform_url ?? product.url,
     true
   ),
   productColumn(
     'registration_status',
     t('TrialsDashboard.Columns.RegistrationStatus'),
-    scope,
     (product) =>
       t(
         product.platform_id
@@ -154,202 +111,8 @@ const productColumns = (scope: TrialsScope, t: Translate): TrialsColumn[] => [
   ),
 ];
 
-interface TrialsRowActionsProps {
-  request: TrialsRowFragment;
-  type: TrialsTabType;
-  scope: TrialsScope;
-}
-
-const TrialsRowActions = ({ request, type, scope }: TrialsRowActionsProps) => {
-  const t = useTranslate();
-  const queryClient = useQueryClient();
-  const isAdminByPass = useAdminByPass();
-  const userHasModifyTrialCapa = useUserHasPortalCapability([
-    PortalCapability.ModifyTrials,
-  ]);
-  const canModifyTrial = isAdminByPass || userHasModifyTrialCapa;
-
-  const isBundle = scope.kind === 'bundle';
-
-  const invalidateTrials = () =>
-    queryClient.invalidateQueries({ queryKey: trialsKeys.all() });
-
-  const onError = (error: unknown) => {
-    const errorMessage =
-      error instanceof Error ? error.message : 'UnknownError';
-    toast({
-      variant: 'destructive',
-      title: t('Utils.Error'),
-      description: <>{t(`Error.Server.${errorMessage}`)}</>,
-    });
-  };
-
-  const { mutate: cancelRequest } =
-    useTrialsAdminCancelDeploymentRequestMutation(portalGraphqlClient, {
-      onSuccess: async () => {
-        await invalidateTrials();
-        toast({
-          title: t('Utils.Success'),
-          description: t(
-            isBundle
-              ? 'TrialsDashboard.Toast.BundleCancelled'
-              : 'Service.Trials.Cancellation.Toast.Admin'
-          ),
-        });
-      },
-      onError,
-    });
-
-  const { mutate: reorderRequest } =
-    useTrialsReorderDeploymentRequestInQueueMutation(portalGraphqlClient, {
-      onSuccess: async () => {
-        await invalidateTrials();
-        toast({
-          title: t('Utils.Success'),
-          description: t(
-            isBundle
-              ? 'TrialsDashboard.Toast.BundleReordered'
-              : 'TrialsDashboard.Toast.TrialsReordered'
-          ),
-        });
-      },
-      onError,
-    });
-
-  const isCancellable =
-    canModifyTrial &&
-    (type === TrialsTabType.Running || type === TrialsTabType.Waiting);
-  const isReorderable = canModifyTrial && type === TrialsTabType.Waiting;
-  const canManageUsers =
-    type === TrialsTabType.Running &&
-    isAdminByPass &&
-    request.hub_status === DeploymentRequestHubStatus.Active;
-
-  return (
-    <>
-      {isCancellable && (
-        <AlertDialogComponent
-          AlertTitle={t('Service.Trials.Cancellation.Confirmation.Title')}
-          actionButtonText={t('MenuActions.Delete')}
-          triggerElement={
-            <IconButton
-              variant="destructive"
-              priority="tertiary"
-              className="border m-1"
-              aria-label={t(
-                isBundle
-                  ? 'TrialsDashboard.Actions.CancelBundle'
-                  : 'TrialsDashboard.Actions.CancelTrial'
-              )}
-              icon={<CloseIcon className="h-4 w-4" />}
-            />
-          }
-          onClickContinue={() =>
-            cancelRequest({ deploymentRequestId: request.id })
-          }>
-          {t(
-            isBundle
-              ? 'TrialsDashboard.Cancellation.Confirmation'
-              : 'Service.Trials.Cancellation.Confirmation.Admin',
-            { organizationName: request.organization_name ?? '' }
-          )}
-        </AlertDialogComponent>
-      )}
-      {isReorderable && (
-        <>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <IconButton
-                  priority="tertiary"
-                  className="border m-1"
-                  aria-label={t('TrialsDashboard.Actions.MoveToTop')}
-                  icon={<ArrowShapeUpStackIcon className="h-4 w-4" />}
-                  onClick={() =>
-                    reorderRequest({
-                      input: {
-                        id: request.id,
-                        direction: ReorderDeploymentRequestInQueueDirection.Top,
-                      },
-                    })
-                  }
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                {t('TrialsDashboard.Actions.MoveToTop')}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <IconButton
-                  priority="tertiary"
-                  className="border m-1"
-                  aria-label={t('TrialsDashboard.Actions.MoveUp')}
-                  icon={<ArrowShapeUpIcon className="h-4 w-4" />}
-                  onClick={() =>
-                    reorderRequest({
-                      input: {
-                        id: request.id,
-                        direction: ReorderDeploymentRequestInQueueDirection.Up,
-                      },
-                    })
-                  }
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                {t('TrialsDashboard.Actions.MoveUp')}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </>
-      )}
-      {canManageUsers && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {isBundle ? (
-                <IconButton
-                  asChild
-                  priority="tertiary"
-                  className="border m-1"
-                  aria-label={t('Service.Trials.ManageUsers.Title')}
-                  icon={<GroupIcon className="h-4 w-4" />}>
-                  <Link
-                    href={xtmPlatformTrialManageUsersFromDashboardPath(
-                      request.service_instance_id
-                    )}
-                  />
-                </IconButton>
-              ) : (
-                <TrialsManageUsersDialog
-                  serviceInstanceId={request.service_instance_id}
-                  organizationId={request.organization_requester_id}
-                  trigger={
-                    <IconButton
-                      priority="tertiary"
-                      className="border m-1"
-                      aria-label={t('Service.Trials.ManageUsers.Title')}
-                      icon={<GroupIcon className="h-4 w-4" />}
-                    />
-                  }
-                />
-              )}
-            </TooltipTrigger>
-            <TooltipContent>
-              {t('Service.Trials.ManageUsers.Title')}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-    </>
-  );
-};
-
 const buildTrialsColumns = (
   type: TrialsTabType,
-  scope: TrialsScope,
   t: Translate,
   formatDate: ReturnType<typeof useDateFormatter>,
   isReorderTrialsAllowed: boolean,
@@ -377,20 +140,16 @@ const buildTrialsColumns = (
     enableSorting: !isReorderTrialsAllowed,
     header: t('TrialsDashboard.Columns.Organization'),
   },
-  ...(scope.kind === 'bundle'
-    ? [
-        {
-          accessorKey: 'children',
-          id: 'products',
-          enableSorting: false,
-          size: 200,
-          header: t('TrialsDashboard.Columns.Products'),
-          cell: ({ row }: TrialsCellProps) => (
-            <TrialsProducts products={row.original.children ?? []} />
-          ),
-        },
-      ]
-    : []),
+  {
+    accessorKey: 'children',
+    id: 'products',
+    enableSorting: false,
+    size: 200,
+    header: t('TrialsDashboard.Columns.Products'),
+    cell: ({ row }: TrialsCellProps) => (
+      <TrialsProducts products={row.original.children ?? []} />
+    ),
+  },
   ...(type === TrialsTabType.Waiting
     ? [
         dateColumn(
@@ -431,16 +190,6 @@ const buildTrialsColumns = (
         },
       ]
     : []),
-  ...(scope.kind === 'product'
-    ? [
-        {
-          accessorKey: 'hub_status',
-          id: 'hub_status',
-          enableSorting: !isReorderTrialsAllowed,
-          header: t('TrialsDashboard.Columns.Status'),
-        },
-      ]
-    : []),
   {
     accessorKey: 'region',
     id: 'region',
@@ -452,7 +201,7 @@ const buildTrialsColumns = (
       </span>
     ),
   },
-  ...productColumns(scope, t),
+  ...productColumns(t),
   ...(type === TrialsTabType.Cancelled
     ? [
         dateColumn(
@@ -484,7 +233,7 @@ const buildTrialsColumns = (
                   <TooltipTrigger asChild>
                     <span className="truncate">{reason}</span>
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-md">{reason}</TooltipContent>
+                  <TooltipContent>{reason}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             );
@@ -510,19 +259,18 @@ const buildTrialsColumns = (
 
 interface TrialsTabProps {
   type: TrialsTabType;
-  scope: TrialsScope;
 }
 
-const TrialsTab = ({ type, scope }: TrialsTabProps) => {
+const TrialsTab = ({ type }: TrialsTabProps) => {
   const t = useTranslate();
   const formatDate = useDateFormatter();
-  const isAdminByPass = useAdminByPass();
+  const isAdminByPass = Boolean(useAdminByPass());
   const userHasModifyTrialCapa = useUserHasPortalCapability([
     PortalCapability.ModifyTrials,
   ]);
-  const isReorderTrialsAllowed = Boolean(
-    type === TrialsTabType.Waiting && (isAdminByPass || userHasModifyTrialCapa)
-  );
+  const canModifyTrials = Boolean(isAdminByPass || userHasModifyTrialCapa);
+  const isReorderTrialsAllowed =
+    type === TrialsTabType.Waiting && canModifyTrials;
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const { defaultOrder, defaultOrderMode } = TRIALS_TAB_CONFIG[type];
 
@@ -530,7 +278,6 @@ const TrialsTab = ({ type, scope }: TrialsTabProps) => {
     () =>
       buildTrialsColumns(
         type,
-        scope,
         t,
         formatDate,
         isReorderTrialsAllowed,
@@ -538,11 +285,19 @@ const TrialsTab = ({ type, scope }: TrialsTabProps) => {
           <TrialsRowActions
             request={request}
             type={type}
-            scope={scope}
+            canModifyTrials={canModifyTrials}
+            isAdminByPass={isAdminByPass}
           />
         )
       ),
-    [type, scope, t, formatDate, isReorderTrialsAllowed]
+    [
+      type,
+      t,
+      formatDate,
+      isReorderTrialsAllowed,
+      canModifyTrials,
+      isAdminByPass,
+    ]
   );
 
   const {
@@ -558,13 +313,7 @@ const TrialsTab = ({ type, scope }: TrialsTabProps) => {
     columnVisibility,
     setColumnVisibility,
     resetAll,
-  } = useTrialsListLocalstorage(
-    columns,
-    type,
-    scope,
-    defaultOrder,
-    defaultOrderMode
-  );
+  } = useTrialsListLocalstorage(columns, type, defaultOrder, defaultOrderMode);
 
   const { pagination, cursor, onPaginationChange } = useTablePagination({
     pageSize,
@@ -578,9 +327,9 @@ const TrialsTab = ({ type, scope }: TrialsTabProps) => {
       orderBy,
       orderMode,
       searchTerm,
-      filters: buildTrialsFilters(type, scope),
+      filters: buildTrialsFilters(type),
     }),
-    [pagination.pageSize, cursor, orderBy, orderMode, searchTerm, type, scope]
+    [pagination.pageSize, cursor, orderBy, orderMode, searchTerm, type]
   );
 
   const { data } = useTrialsListQuery(portalGraphqlClient, variables, {
@@ -608,10 +357,10 @@ const TrialsTab = ({ type, scope }: TrialsTabProps) => {
     });
   };
 
-  const debounceHandleInput = useDebounceCallback(
-    (event) => setSearchTerm(event.target.value || null),
-    DEBOUNCE_TIME
-  );
+  const searchHandlers = useDebouncedSearch({
+    apply: (term) => setSearchTerm(term || null),
+    appliedTerm: searchTerm,
+  });
 
   return (
     <DataTable
@@ -619,24 +368,21 @@ const TrialsTab = ({ type, scope }: TrialsTabProps) => {
       data={requests}
       toolbar={
         <div>
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
-            <label
-              htmlFor="trials-search"
-              className="sr-only">
-              {t('TrialsDashboard.Actions.SearchTrials')}
-            </label>
-            <SearchInput
-              id="trials-search"
-              containerClass="w-full sm:w-1/3"
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
+            <SearchField
+              className="w-full sm:w-1/3"
+              aria-label={t('TrialsDashboard.Actions.SearchTrials')}
               placeholder={t('TrialsDashboard.Actions.SearchTrials')}
-              onChange={debounceHandleInput}
+              clearLabel={t('DesignSystem.SearchField.Clear')}
+              onChange={searchHandlers.onChange}
+              onClear={searchHandlers.onClear}
             />
-            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
               <DataTableHeadBarOptions />
             </div>
           </div>
-          <div className="border border-solid border-orange rounded text-feedback-warning-primary flex items-center gap-xs p-s text-sm mt-4">
-            <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-xs" />
+          <div className="border border-solid border-alert-warning rounded text-feedback-warning-primary flex items-center gap-1 p-2 text-sm mt-4">
+            <CheckIndeterminateIcon className="shrink-0 h-4 w-4 mr-1" />
             {t('TrialsDashboard.WarningCancellation')}
           </div>
         </div>
@@ -651,7 +397,7 @@ const TrialsTab = ({ type, scope }: TrialsTabProps) => {
         onColumnOrderChange: setColumnOrder,
         onColumnVisibilityChange: setColumnVisibility,
       }}
-      i18nKey={i18nKey(t)}
+      {...getDataTableLabels(t)}
       tableState={{
         sorting: mapToSortingTableValue(orderBy, orderMode),
         pagination,

@@ -1,14 +1,8 @@
 import { RegistrationContext } from '@/components/registration/Context';
+import { AutoForm } from '@/components/ui/auto-form';
+import { FormControl, FormItem, FormMessage } from '@/components/ui/form';
 import { useTranslate } from '@/hooks/use-translate';
-import { Button } from '@filigran/design-system';
-import { AutoForm } from '@filigran/ui';
-import {
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@filigran/ui/clients';
-import { Input } from '@filigran/ui/servers';
+import { Button, Radio, RadioGroup } from '@filigran/design-system';
 import { organizationListUserOrganizationsQuery$data } from '@generated/organizationListUserOrganizationsQuery.graphql';
 import { useContext } from 'react';
 import { z } from 'zod';
@@ -41,9 +35,9 @@ export const RegisterOrganizationForm = ({
 
   return (
     <div className="flex items-center justify-center">
-      <div className="flex flex-col justify-between gap-xl">
-        <div className="space-y-m">
-          <h1 className="txt-subtitle">
+      <div className="flex flex-col justify-between gap-6">
+        <div className="space-y-3">
+          <h1 className="title-sm">
             {t(`Register.OrganizationForm.Title`, {
               platformIdentifier: displayedIdentifier,
             })}
@@ -61,69 +55,58 @@ export const RegisterOrganizationForm = ({
           fieldConfig={{
             platformName: {
               label: t('Register.OrganizationForm.PlatformNameLabel'),
-              inputProps: {
-                className: 'bg-grayblue-700 border-none',
-              },
             },
             organizationId: {
               fieldType: ({ field }) => (
-                <div className="flex flex-col gap-m">
+                <div className="flex flex-col gap-3">
                   <p className="text-sm font-medium leading-none">
                     {t(`Register.OrganizationForm.Description`)}
-                    <span className="text-destructive"> *</span>
+                    <span className="text-input-required"> *</span>
                   </p>
-                  <div className="flex flex-col gap-2">
-                    {organizations.map((organization) => {
-                      const isPersonal = organization.personal_space;
-                      const typeLabelKey = isPersonal
-                        ? 'Register.OrganizationForm.PersonalWorkspace'
-                        : 'Register.OrganizationForm.OrganizationalWorkspace';
-                      const descriptionKey = isPersonal
-                        ? 'Register.OrganizationForm.PersonalDescription'
-                        : 'Register.OrganizationForm.OrganizationalDescription';
-                      return (
-                        <FormItem
-                          key={organization.id}
-                          className="flex flex-col">
-                          <div className="flex items-center flex-row gap-2">
-                            <FormControl>
-                              <Input
-                                className="w-auto h-4 w-4 accent-primary shrink-0"
-                                aria-labelledby={`register-form-organization-${organization.id}`}
-                                type="radio"
-                                onChange={() => {
-                                  field.onChange(organization.id);
-                                }}
-                                checked={field.value === organization.id}
-                                value={organization.name}
-                              />
-                            </FormControl>
-
-                            <FormLabel
-                              id={`register-form-organization-${organization.id}`}
-                              className="!mt-0">
-                              {organization.name} ({t(typeLabelKey)})
-                              {!isPersonal && (
-                                <span className="italic">
-                                  {' - '}
-                                  {t('Register.OrganizationForm.Recommended')}
-                                </span>
-                              )}
-                            </FormLabel>
-                          </div>
-                          <p className="text-sm text-muted-foreground pl-6">
-                            {t(descriptionKey)}
-                          </p>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    })}
-                  </div>
+                  <FormItem>
+                    <FormControl>
+                      <RadioGroup
+                        aria-label={t('Register.OrganizationForm.Description')}
+                        value={field.value}
+                        onValueChange={field.onChange}>
+                        {organizations.map((organization) => {
+                          const isPersonal = organization.personal_space;
+                          const typeLabelKey = isPersonal
+                            ? 'Register.OrganizationForm.PersonalWorkspace'
+                            : 'Register.OrganizationForm.OrganizationalWorkspace';
+                          const descriptionKey = isPersonal
+                            ? 'Register.OrganizationForm.PersonalDescription'
+                            : 'Register.OrganizationForm.OrganizationalDescription';
+                          return (
+                            <Radio
+                              key={organization.id}
+                              value={organization.id}
+                              label={
+                                <>
+                                  {organization.name} ({t(typeLabelKey)})
+                                  {!isPersonal && (
+                                    <span className="italic">
+                                      {' - '}
+                                      {t(
+                                        'Register.OrganizationForm.Recommended'
+                                      )}
+                                    </span>
+                                  )}
+                                </>
+                              }
+                              description={t(descriptionKey)}
+                            />
+                          );
+                        })}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 </div>
               ),
             },
           }}>
-          <div className="flex justify-end gap-s">
+          <div className="flex justify-end gap-2">
             <Button
               priority="secondary"
               type="button"

@@ -1,15 +1,15 @@
 'use client';
 
 import PublicNavigation from '@/components/menu/navigation/public/PublicNavigation';
-import { useTranslate } from '@/hooks/use-translate';
-import { MenuIcon } from '@filigran/icon';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@filigran/ui/clients';
+} from '@/components/ui/sheet';
+import { useTranslate } from '@/hooks/use-translate';
+import { MenuIcon } from '@filigran/icon';
 import Logo from '@public/logo.svg';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -43,9 +43,9 @@ export const PublicMobileMenuButton = ({
       <SheetContent
         side="left"
         closeLabel={t('Header.CloseMenu')}
-        className="bg-gradient-background">
-        <SheetHeader className="flex flex-row pl-l bg-gradient-background border-elevation-border-strong">
-          <div className="flex items-center gap-s">
+        className="bg-gradient-default">
+        <SheetHeader className="flex flex-row pl-4 bg-gradient-default">
+          <div className="flex items-center gap-2">
             <Logo
               className="h-8 w-8"
               aria-hidden={true}

@@ -38,9 +38,6 @@ If you do not have the required capability, contact your organization's administ
 > ⚠️ Choose your trial bundle carefully. Once your trial starts, products cannot be added or changed,
 > and no additional trial can be requested for the same organization.
 
-If your organization already has an ongoing OpenCTI or OpenAEV trial, requesting an XTM Platform Trial
-cancels it, and its data is not transferred to the new products.
-
 If Filigran does not have enough capacity to host the trial in the requested region, your request is
 placed on a waiting list and starts as soon as a slot becomes available.
 
@@ -115,15 +112,20 @@ Administrators can then grant access to other members of the organization.
 
 1. Open the XTM Platform Trial page.
 2. Click **Manage users**.
-3. Click **Add trial user**, select a user from your organization, and assign a role for each product
-   of the bundle.
+3. Click **Add trial user**, select a user, and assign a role for each product of the bundle.
 
-Users can be selected only among the existing users of your organization. Use **Group action** to edit
-the roles of several users at once, or to remove users from the trial — removed users lose access to
-all the products of the bundle.
+You can add any user of your organization. If the person does not have an account yet, type their email
+address to invite them: it must belong to one of your organization's domains, and inviting requires the
+**ADMINISTRATE ORGANIZATION** or **MANAGE ACCESS** [capability](manage-organization.md#available-capabilities).
+Users who have not activated their account yet are shown as **Invited** or **Expired**.
 
-Newly added users receive a welcome email and can log in using the same credentials as their XTM Hub
-account.
+Users who already have an account receive a welcome email and can log in with their XTM Hub credentials
+right away. Invited users first receive an email to create their Filigran account, and get access to the
+trial once their password is set. An invitation expires after **5 days**: adding an expired user to the
+trial sends them a new one.
+
+Use **Group action** to edit the roles of several users at once, or to remove users from the trial —
+removed users lose access to all the products of the bundle.
 
 ![Manage trial users illustration](../assets/images/xtm-platform-trial-manage-users.png)
 

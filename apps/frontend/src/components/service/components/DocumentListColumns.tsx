@@ -17,9 +17,6 @@ import { IntegrationType } from '@graphql/generated';
 import { ColumnDef } from '@tanstack/react-table';
 import { ReactNode } from 'react';
 
-export const DOCUMENT_LIST_TABLE_CLASS_NAME =
-  '[&_th]:bg-transparent [&_th]:content-compact-bold';
-
 type DocumentListItem =
   documentItem_fragment$data | publicDocumentListItemFragment$data;
 

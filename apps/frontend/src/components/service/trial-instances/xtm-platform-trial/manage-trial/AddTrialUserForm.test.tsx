@@ -1,5 +1,4 @@
 import { AddTrialUserForm } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/AddTrialUserForm';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import { mockGraphqlQuery } from '@/utils/test/msw/graphql-api';
 import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';
@@ -24,15 +23,14 @@ import {
   mockUserConnection,
   mockUserEdge,
 } from '@graphql/mocks';
-import { screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { graphql, HttpResponse } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const toastMock = vi.hoisted(() => vi.fn());
+const showSnackbarMock = vi.hoisted(() => vi.fn());
 
-vi.mock('@filigran/ui', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@filigran/ui')>()),
-  toast: toastMock,
+vi.mock('@/components/ui/snackbar/snackbar-store', () => ({
+  showSnackbar: showSnackbarMock,
 }));
 
 const GQL_OPERATION_BUNDLE_USER_SERVICE_GROUPS = 'BundleUserServiceGroups';
@@ -45,15 +43,24 @@ const bundleUserServiceGroupsResponse: BundleUserServiceGroupsQuery = {
   bundleUserServiceGroups: [],
 };
 
+// mockUser defaults status to Expired; null = active user, labelled by plain email
 const usersResponse: UsersQuery = {
   __typename: 'Query',
   users: mockUserConnection({
     edges: [
       mockUserEdge({
-        node: mockUser({ id: 'user-1', email: 'user1@filigran.io' }),
+        node: mockUser({
+          id: 'user-1',
+          email: 'user1@filigran.io',
+          status: null,
+        }),
       }),
       mockUserEdge({
-        node: mockUser({ id: 'user-2', email: 'user2@filigran.io' }),
+        node: mockUser({
+          id: 'user-2',
+          email: 'user2@filigran.io',
+          status: null,
+        }),
       }),
     ],
   }),
@@ -72,25 +79,25 @@ const setupQueryMocks = () => {
   );
 };
 
+const EMAIL_PLACEHOLDER =
+  'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder';
+
+const getEmailCombobox = () =>
+  screen.getByRole('combobox', { name: EMAIL_PLACEHOLDER });
+
+const findEmailCombobox = () =>
+  screen.findByRole('combobox', { name: EMAIL_PLACEHOLDER });
+
 const openEmailDropdown = async (user: { click: (el: Element) => unknown }) => {
-  await user.click(
-    screen.getByText(
-      'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-    )
-  );
+  await user.click(getEmailCombobox());
 };
 
-// Role selects are not directly labelled (the FormLabel's `for` does not
-// resolve to the Select's underlying button), so we scope the query to the
-// FormItem containing the label text to find its associated combobox.
-const getRoleCombobox = (title: string) => {
-  const label = screen.getByText(title, { selector: 'label' });
-  return within(label.parentElement as HTMLElement).getByRole('combobox');
-};
+const getRoleCombobox = (title: string) =>
+  screen.getByRole('combobox', { name: title });
 
 describe('AddTrialUserForm', () => {
   beforeEach(() => {
-    toastMock.mockReset();
+    showSnackbarMock.mockReset();
   });
 
   it('renders the email field', async () => {
@@ -105,11 +112,7 @@ describe('AddTrialUserForm', () => {
       />
     );
 
-    expect(
-      await screen.findByText(
-        'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-      )
-    ).toBeInTheDocument();
+    expect(await findEmailCombobox()).toBeInTheDocument();
   });
 
   it('excludes users who already have access to this trial from the email dropdown', async () => {
@@ -140,9 +143,7 @@ describe('AddTrialUserForm', () => {
       />
     );
 
-    await screen.findByText(
-      'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-    );
+    await findEmailCombobox();
 
     await openEmailDropdown(user);
 
@@ -179,9 +180,7 @@ describe('AddTrialUserForm', () => {
       />
     );
 
-    await screen.findByText(
-      'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-    );
+    await findEmailCombobox();
 
     await openEmailDropdown(user);
     await user.click(await screen.findByText('user1@filigran.io'));
@@ -233,17 +232,15 @@ describe('AddTrialUserForm', () => {
       />
     );
 
-    await screen.findByText(
-      'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-    );
+    await findEmailCombobox();
 
     await openEmailDropdown(user);
     await user.click(await screen.findByText('user1@filigran.io'));
     await user.click(screen.getByRole('button', { name: 'Utils.Confirm' }));
 
     await waitFor(() => {
-      expect(toastMock).toHaveBeenCalledWith({
-        variant: 'destructive',
+      expect(showSnackbarMock).toHaveBeenCalledWith({
+        severity: 'error',
         title: 'Utils.Error',
         description: <>{'Error.Server.UNKNOWN_ERROR'}</>,
       });
@@ -251,8 +248,6 @@ describe('AddTrialUserForm', () => {
     expect(onCompleted).not.toHaveBeenCalled();
   });
 });
-
-const SEARCH_PLACEHOLDER = 'Search...';
 
 const organizationUsers: User[] = [
   mockUser({ id: 'user-1', email: 'active@filigran.io', status: null }),
@@ -339,10 +334,9 @@ const renderForm = (
     { me }
   );
 
-describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
+describe('AddTrialUserForm user search and invitations', () => {
   beforeEach(() => {
-    toastMock.mockReset();
-    vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
+    showSnackbarMock.mockReset();
   });
 
   it('appends the invitation status to the users who are not active yet', async () => {
@@ -369,10 +363,7 @@ describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
     const { user } = renderForm();
 
     await openEmailDropdown(user);
-    await user.type(
-      screen.getByPlaceholderText(SEARCH_PLACEHOLDER),
-      'new@filigran.io'
-    );
+    await user.type(getEmailCombobox(), 'new@filigran.io');
 
     expect(
       await screen.findByText(
@@ -392,7 +383,7 @@ describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
 
     await openEmailDropdown(user);
     await screen.findByText(/waiting@filigran.io/);
-    await user.type(screen.getByPlaceholderText(SEARCH_PLACEHOLDER), typed);
+    await user.type(getEmailCombobox(), typed);
 
     await waitFor(() => {
       expect(searchedTerms).toContain(typed);
@@ -421,10 +412,7 @@ describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
 
     await openEmailDropdown(user);
     await user.click(await screen.findByText('active@filigran.io'));
-    await user.type(
-      screen.getByPlaceholderText(SEARCH_PLACEHOLDER),
-      'new@filigran.io'
-    );
+    await user.type(getEmailCombobox(), 'new@filigran.io');
     await user.click(
       await screen.findByText(
         'Service.Bundle.ManageTrial.AddUserDialog.InviteEmail'
@@ -456,10 +444,7 @@ describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
     const { user } = renderForm(userManagerMe, onCompleted);
 
     await openEmailDropdown(user);
-    await user.type(
-      screen.getByPlaceholderText(SEARCH_PLACEHOLDER),
-      'new@filigran.io'
-    );
+    await user.type(getEmailCombobox(), 'new@filigran.io');
     await user.click(
       await screen.findByText(
         'Service.Bundle.ManageTrial.AddUserDialog.InviteEmail'
@@ -468,8 +453,8 @@ describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
     await user.click(screen.getByRole('button', { name: 'Utils.Confirm' }));
 
     await waitFor(() => {
-      expect(toastMock).toHaveBeenCalledWith({
-        variant: 'destructive',
+      expect(showSnackbarMock).toHaveBeenCalledWith({
+        severity: 'error',
         title: 'Utils.Error',
         description: <>{'Error.Server.USER_DISABLED'}</>,
       });
@@ -485,10 +470,7 @@ describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
     });
 
     await openEmailDropdown(user);
-    await user.type(
-      screen.getByPlaceholderText(SEARCH_PLACEHOLDER),
-      OUTSIDE_EMAIL
-    );
+    await user.type(getEmailCombobox(), OUTSIDE_EMAIL);
 
     expect(
       await screen.findByText(
@@ -509,10 +491,7 @@ describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
 
     await openEmailDropdown(user);
     await screen.findByText('active@filigran.io');
-    await user.type(
-      screen.getByPlaceholderText(SEARCH_PLACEHOLDER),
-      'new@filigran.io'
-    );
+    await user.type(getEmailCombobox(), 'new@filigran.io');
 
     await waitFor(() => {
       expect(searchedTerms).toContain('new@filigran.io');
@@ -559,43 +538,12 @@ describe('AddTrialUserForm with the TRIAL_INVITE feature flag', () => {
     setupSearchableQueryMocks();
     renderForm();
 
-    await screen.findByText(
-      'Service.Bundle.ManageTrial.AddUserDialog.EmailPlaceholder'
-    );
+    await findEmailCombobox();
 
     expect(
       screen.queryByText(
         'Service.Bundle.ManageTrial.AddUserDialog.NoPermissionToInvite'
       )
     ).not.toBeInTheDocument();
-  });
-});
-
-describe('AddTrialUserForm without the TRIAL_INVITE feature flag', () => {
-  beforeEach(() => {
-    vi.mocked(useIsFeatureEnabled).mockReturnValue(false);
-  });
-
-  it('keeps plain labels, no warning, no server search and no invite', async () => {
-    const { searchedTerms } = setupSearchableQueryMocks();
-    const { user } = renderForm(platformRegistrationManagerMe);
-
-    await openEmailDropdown(user);
-    expect(await screen.findByText('waiting@filigran.io')).toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        'Service.Bundle.ManageTrial.AddUserDialog.NoPermissionToInvite'
-      )
-    ).not.toBeInTheDocument();
-
-    await user.type(
-      screen.getByPlaceholderText(SEARCH_PLACEHOLDER),
-      'new@filigran.io'
-    );
-
-    expect(
-      screen.queryByText('Service.Bundle.ManageTrial.AddUserDialog.InviteEmail')
-    ).not.toBeInTheDocument();
-    expect(searchedTerms.every((searchTerm) => !searchTerm)).toBe(true);
   });
 });

@@ -3,6 +3,7 @@
 import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
 import { useTranslate } from '@/hooks/use-translate';
+import { FiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { PublicDocumentData } from '@/utils/shareable-resources/shareable-resources.types';
 import { docHasMetadata } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
@@ -16,6 +17,7 @@ interface ShareableResourceDetailMetadataItemProps {
   translationKey: string;
   translationMetadata?: Record<string, string | number | Date>;
   variant?: Variant;
+  filigranWebsiteUtm?: FiligranWebsiteUtm;
 }
 
 export const ShareableResourceDetailMetadataItem = ({
@@ -24,6 +26,7 @@ export const ShareableResourceDetailMetadataItem = ({
   translationKey,
   translationMetadata,
   variant = 'text',
+  filigranWebsiteUtm,
 }: ShareableResourceDetailMetadataItemProps) => {
   const t = useTranslate();
   const content = useMemo(() => {
@@ -34,12 +37,17 @@ export const ShareableResourceDetailMetadataItem = ({
     const value = documentData[metadataKey] as string;
 
     const mapping: Record<Variant, ReactNode> = {
-      link: <ShareableResourceDetailsLink url={value} />,
+      link: (
+        <ShareableResourceDetailsLink
+          url={value}
+          filigranWebsiteUtm={filigranWebsiteUtm}
+        />
+      ),
       text: <span>{value}</span>,
     };
 
     return mapping[variant];
-  }, [variant, documentData, metadataKey]);
+  }, [variant, documentData, metadataKey, filigranWebsiteUtm]);
 
   if (!content) {
     return null;

@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.0",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
@@ -29,7 +29,7 @@
     "graphql": "catalog:",
     "graphql-tag": "2.12.7",
     "monocart-reporter": "catalog:",
-    "playwright-ctrf-json-reporter": "0.1.0",
+    "playwright-ctrf-json-reporter": "0.2.0",
     "prettier": "catalog:",
     "typescript-eslint": "catalog:"
   },

@@ -8,20 +8,20 @@ import HeaderOrganizationSwitcher from '@/components/menu/organization-switcher/
 import { NotificationButton } from '@/components/notification/NotificationButton';
 import { DisplayLogo } from '@/components/ui/DisplayLogo';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import { cn } from '@/lib/utils';
-import { APP_PATH } from '@/utils/path/constant';
-
-import { useTranslate } from '@/hooks/use-translate';
-import { MenuIcon } from '@filigran/icon';
+import { Avatar } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 import {
-  Avatar,
-  Separator,
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@filigran/ui/clients';
+} from '@/components/ui/sheet';
+import { cn } from '@/lib/utils';
+import { APP_PATH } from '@/utils/path/constant';
+
+import { useTranslate } from '@/hooks/use-translate';
+import { MenuIcon } from '@filigran/icon';
 import Link from 'next/link';
 
 import { OrganizationCapability } from '@graphql/generated';
@@ -74,33 +74,30 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
 
   const headerContent = (
     <>
-      <div className="mobile:hidden flex items-center gap-s">
+      <div className="mobile:hidden flex items-center gap-2">
         <DisplayLogo
           className={cn(
-            'text-primary mr-2 h-full py-l',
+            'text-icon-highlight mr-2 h-full py-4',
             displayLogo ? '' : 'hidden'
           )}
         />
         <HeaderOrganizationSwitcher />
       </div>
 
-      <DisplayLogo className="text-primary mr-2 h-full py-l sm:hidden" />
+      <DisplayLogo className="text-icon-highlight mr-2 h-full py-4 sm:hidden" />
 
-      <div className="flex items-center gap-s">
-        <div className="mobile:hidden flex items-center gap-s">
+      <div className="flex items-center gap-2">
+        <div className="mobile:hidden flex items-center gap-2">
           <ConnectedProductsDropdown />
         </div>
         {canManageUser && <NotificationButton />}
         <div className="mobile:hidden flex items-center">
           <IconActions
-            className="rounded-full"
+            aria-label={t('MenuUser.ToggleUser')}
             icon={
-              <>
-                <div className="my-auto [&_img]:object-cover size-6 text-primary [&_span]:bg-transparent">
-                  <Avatar src={me?.picture || undefined} />
-                </div>
-                <span className="sr-only">{t('MenuUser.ToggleUser')}</span>
-              </>
+              <div className="my-auto size-6">
+                <Avatar src={me?.picture || undefined} />
+              </div>
             }>
             <IconActionsItem asChild>
               <Link href={`/${APP_PATH}/profile`}>{t('MenuUser.Profile')}</Link>
@@ -110,7 +107,7 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
             </IconActionsItem>
           </IconActions>
         </div>
-        <div className="flex gap-xs items-center sm:hidden">
+        <div className="flex gap-1 items-center sm:hidden">
           <Sheet
             open={open}
             onOpenChange={setOpen}>
@@ -126,10 +123,11 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
             </SheetTrigger>
             <SheetContent
               side="left"
-              className="bg-gradient-background">
-              <SheetHeader className="flex flex-row justify-between pl-l bg-gradient-background">
-                <div className="flex items-center gap-s">
-                  <DisplayLogo className="text-primary h-8" />
+              closeLabel={t('Header.CloseMenu')}
+              className="bg-gradient-default">
+              <SheetHeader className="flex flex-row justify-between pl-4 bg-gradient-default">
+                <div className="flex items-center gap-2">
+                  <DisplayLogo className="text-icon-highlight h-8" />
                   <SheetTitle className="sr-only">
                     {t('Header.BrandName')}
                   </SheetTitle>
@@ -138,19 +136,19 @@ const HeaderComponent = ({ displayLogo }: HeaderComponentProps) => {
               <div className="flex flex-col h-full">
                 <div>
                   <PrivateNavigation open={true} />
-                  <Separator className="my-s" />
-                  <div className="flex flex-col gap-m pl-5">
+                  <Separator className="my-2" />
+                  <div className="flex flex-col gap-3 pl-5">
                     <HeaderOrganizationSwitcher fitContainer />
                   </div>
                 </div>
-                <div className="mt-auto pt-l pb-xl flex flex-col text-center">
+                <div className="mt-auto pt-4 pb-6 flex flex-col text-center">
                   <Link href={`/${APP_PATH}/profile`}>
-                    <div className="w-full p-2 hover:bg-hover rounded">
+                    <div className="w-full p-2 hover:bg-elevation-hover rounded">
                       {t('MenuUser.Profile')}
                     </div>
                   </Link>
                   <div
-                    className="p-2 hover:bg-hover rounded cursor-pointer"
+                    className="p-2 hover:bg-elevation-hover rounded cursor-pointer"
                     onClick={handleLogout}>
                     {t('LoginPage.Logout')}
                   </div>

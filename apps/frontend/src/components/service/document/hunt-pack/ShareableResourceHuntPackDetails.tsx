@@ -53,10 +53,10 @@ export const ShareableResourceHuntPackDetails = ({
       {techniques.length > 0 && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.AttackTechniques')}>
-          <div className="flex flex-col items-start gap-s">
+          <div className="flex flex-col items-start gap-2">
             <ul
               id={techniquesId}
-              className="flex flex-wrap gap-xs">
+              className="flex flex-wrap gap-1">
               {visibleTechniques.map((technique) => (
                 <li key={technique}>
                   <Chip label={technique} />

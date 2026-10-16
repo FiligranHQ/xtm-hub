@@ -2,9 +2,9 @@
 
 import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProductMapping';
 import { VOTING_PRODUCTS } from '@/components/feature-voting/feature-voting.const';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { Skeleton } from '@filigran/ui';
 import {
   useVotingRoundRankingQuery,
   VotableFeatureAdminRowFragment,
@@ -44,45 +44,45 @@ export const VotingRoundResults = ({ roundId }: { roundId: string }) => {
   })).filter((section) => section.ranked.length > 0);
 
   return (
-    <section className="flex flex-col gap-m">
+    <section className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between">
         <h2 className="text-xl font-semibold">
           {t('VotingRound.Results.Title')}
         </h2>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-default-secondary text-sm">
           {t('VotingRound.Results.TotalVoters', {
             count: results.total_voters,
           })}
         </p>
       </div>
       {sections.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
+        <p className="text-default-secondary text-sm">
           {t('VotingRound.Results.Empty')}
         </p>
       ) : (
         sections.map(({ product, ranked }) => (
           <div
             key={product}
-            className="flex flex-col gap-s">
-            <div className="flex items-center gap-s">
+            className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
               {FiligranProductMapping[product].logo}
               <h3 className="font-semibold">
                 {FiligranProductMapping[product].name}
               </h3>
             </div>
-            <ol className="flex flex-col gap-xs">
+            <ol className="flex flex-col gap-1">
               {ranked.map((result, index) => (
                 <li
                   key={result.feature.id}
-                  className="flex items-center gap-m rounded bg-elevation-background-layer-1 p-s">
-                  <span className="w-6 text-center text-muted-foreground">
+                  className="flex items-center gap-3 rounded layer-1 bg-elevation-default p-2">
+                  <span className="w-6 text-center text-default-secondary">
                     {index + 1}
                   </span>
                   <span className="flex-1 truncate">
                     {result.feature.title}
                   </span>
                   {!result.feature.active && (
-                    <span className="text-muted-foreground text-xs">
+                    <span className="text-default-secondary text-xs">
                       {t('VotingRound.Results.InactiveFeature')}
                     </span>
                   )}

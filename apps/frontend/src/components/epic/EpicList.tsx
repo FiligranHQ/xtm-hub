@@ -10,22 +10,21 @@ import {
 import { FeatureVotingCallout } from '@/components/feature-voting/FeatureVotingCallout';
 import { PortalContext } from '@/components/me/AppPortalContext';
 import { CountBadge } from '@/components/ui/CountBadge';
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import useServiceCapability, {
   useServiceCapabilityWithSubscriptionId,
 } from '@/hooks/use-service-capability';
 import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
-import { DEBOUNCE_TIME } from '@/utils/constant';
 import { APP_PATH } from '@/utils/path/constant';
-import { Button } from '@filigran/design-system';
 import {
+  Button,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@filigran/ui';
-import { Separator } from '@filigran/ui/clients';
+} from '@filigran/design-system';
 import { epic_fragment$data } from '@generated/epic_fragment.graphql';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
@@ -36,7 +35,6 @@ import {
 } from '@graphql/generated';
 import Link from 'next/link';
 import { useCallback, useContext, useMemo, useState } from 'react';
-import { useDebounceCallback } from 'usehooks-ts';
 
 interface EpicListProps {
   epics: epic_fragment$data[];
@@ -133,20 +131,13 @@ export const EpicList = ({
     [userCanUpdate, userCanDelete]
   );
 
-  const handleInputChange = (inputValue: string) => {
-    onSearch(inputValue);
-  };
-
-  const debounceHandleInput = useDebounceCallback(
-    (e) => handleInputChange(e.target.value),
-    DEBOUNCE_TIME
-  );
+  const searchHandlers = useDebouncedSearch({ apply: onSearch });
 
   return (
     <>
-      <div className="flex m-s">
+      <div className="flex m-2">
         <h1>{t('Epic.XTMRoadmap')}</h1>
-        <div className="ml-auto flex items-center justify-center gap-s">
+        <div className="ml-auto flex items-center justify-center gap-2">
           {userCanUpdate && (
             <EpicFormSheet
               open={openSheet}
@@ -172,7 +163,8 @@ export const EpicList = ({
         countsByProduct={countsByProduct}
         showFinished={showFinished}
         onShowFinishedChange={setShowFinished}
-        debounceHandleInput={debounceHandleInput}
+        debounceHandleInput={searchHandlers.onChange}
+        onSearchClear={searchHandlers.onClear}
       />
       {sections.map((timeline) => {
         if (
@@ -189,25 +181,28 @@ export const EpicList = ({
         return (
           <div
             key={timeline.title}
-            className="mx-s flex items-stretch gap-m">
-            <div className="flex flex-col items-center self-stretch mt-xl">
+            className="mx-2 flex items-stretch gap-3">
+            <div className="flex flex-col items-center self-stretch mt-6">
               <CountBadge
                 count={timeline.epics.length}
                 bgFadedClass={timelineMetadata.bgFadedClass}
                 textClass={timelineMetadata.textClass}
               />
-              <Separator
-                orientation="vertical"
-                className={cn(`mt-s flex-1 w-px`, timelineMetadata.barClass)}
+              <div
+                aria-hidden="true"
+                className={cn(
+                  'mt-2 h-full w-px flex-1',
+                  timelineMetadata.barClass
+                )}
               />
             </div>
-            <div className="flex-1 mt-l">
+            <div className="flex-1 mt-4">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <p
                       className={cn(
-                        `m-s inline-block font-semibold`,
+                        `m-2 inline-block font-semibold`,
                         timelineMetadata.textClass
                       )}>
                       {t(`Epic.Timeline.${timeline.title.toLowerCase()}`)}
@@ -222,7 +217,7 @@ export const EpicList = ({
               </TooltipProvider>
               <ul
                 className={
-                  'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-l'
+                  'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-4'
                 }>
                 {renderEpicItems(timeline.epics)}
               </ul>

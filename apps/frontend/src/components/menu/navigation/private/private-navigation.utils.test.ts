@@ -1,6 +1,5 @@
 import { APP_PATH } from '@/utils/path/constant';
 import {
-  DeploymentRequestDeploymentType,
   PlatformIdentifier,
   RegisteredPlatformsListQuery,
   ServiceDefinitionIdentifier,
@@ -64,27 +63,25 @@ const createRegisteredPlatform = ({
   identifier,
   url = null,
   serviceInstanceId,
-  deploymentType,
-  deploymentParentId = null,
+  deploymentParentId,
 }: {
   title: string;
   identifier: ServiceDefinitionIdentifier;
   url?: string | null;
   serviceInstanceId?: string;
-  deploymentType?: DeploymentRequestDeploymentType;
   deploymentParentId?: string | null;
 }): RegisteredPlatform => ({
   __typename: 'RegisteredPlatform',
   title,
   identifier,
   url,
-  deployment_request: deploymentType
-    ? {
-        __typename: 'DeploymentRequest',
-        parent_id: deploymentParentId,
-        type: deploymentType,
-      }
-    : null,
+  deployment_request:
+    deploymentParentId !== undefined
+      ? {
+          __typename: 'DeploymentRequest',
+          parent_id: deploymentParentId,
+        }
+      : null,
   subscription: serviceInstanceId
     ? {
         __typename: 'SubscriptionModel',
@@ -228,38 +225,6 @@ describe('getPrivateNavigationRegisteredPlatformsByIdentifier', () => {
     ).toEqual([]);
   });
 
-  it('excludes platforms that belong to a bundle deployment request', () => {
-    const queryData = buildRegisteredPlatformsQuery({
-      registeredPlatforms: [
-        createRegisteredPlatform({
-          title: 'OpenCTI Trial Platform',
-          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-          serviceInstanceId: 'service-instance-opencti-trial',
-          deploymentType: DeploymentRequestDeploymentType.Trial,
-        }),
-        createRegisteredPlatform({
-          title: 'OpenCTI Bundle Platform',
-          identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
-          serviceInstanceId: 'service-instance-opencti-bundle',
-          deploymentType: DeploymentRequestDeploymentType.Bundle,
-        }),
-      ],
-    });
-
-    expect(
-      getPrivateNavigationRegisteredPlatformsByIdentifier(
-        queryData,
-        PlatformIdentifier.Opencti
-      )
-    ).toEqual([
-      {
-        serviceInstanceId: 'service-instance-opencti-trial',
-        title: 'OpenCTI Trial Platform',
-        url: undefined,
-      },
-    ]);
-  });
-
   it('excludes trial platforms that have a parent deployment request id', () => {
     const queryData = buildRegisteredPlatformsQuery({
       registeredPlatforms: [
@@ -267,13 +232,12 @@ describe('getPrivateNavigationRegisteredPlatformsByIdentifier', () => {
           title: 'OpenCTI Standalone Trial',
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
           serviceInstanceId: 'service-instance-opencti-standalone',
-          deploymentType: DeploymentRequestDeploymentType.Trial,
+          deploymentParentId: null,
         }),
         createRegisteredPlatform({
           title: 'OpenCTI Child Trial',
           identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
           serviceInstanceId: 'service-instance-opencti-child',
-          deploymentType: DeploymentRequestDeploymentType.Trial,
           deploymentParentId: 'deployment-request-bundle-parent-id',
         }),
       ],

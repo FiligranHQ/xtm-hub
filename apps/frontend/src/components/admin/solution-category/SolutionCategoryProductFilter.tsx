@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@filigran/ui';
+} from '@filigran/design-system';
 import { FiligranProduct } from '@graphql/generated';
 
 const SolutionCategoryProductFilter = ({
@@ -25,10 +25,12 @@ const SolutionCategoryProductFilter = ({
           value === 'all' ? undefined : (value as FiligranProduct)
         )
       }>
-      <SelectTrigger className="w-full sm:w-45">
+      <SelectTrigger
+        aria-label={t('SolutionCategory.ListPage.Product')}
+        className="w-full sm:w-45">
         <SelectValue placeholder={t('SolutionCategory.ListPage.Product')} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="layer-1">
         <SelectItem value="all">
           {t('SolutionCategory.ListPage.AllProducts')}
         </SelectItem>

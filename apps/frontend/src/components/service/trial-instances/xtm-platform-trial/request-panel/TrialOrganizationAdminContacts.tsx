@@ -42,7 +42,7 @@ export const TrialOrganizationAdminContacts = ({
 
   return (
     <div className="space-y-1">
-      <div className="content-body-base">
+      <div className="content-base">
         {t('Service.Trials.XtmPlatform.Page.NotAdmin.AdminListTitle', {
           count: administrators.length,
         })}
@@ -50,7 +50,7 @@ export const TrialOrganizationAdminContacts = ({
       </div>
       {administrators.map((administrator) => (
         <div
-          className="content-body-base"
+          className="content-base"
           key={administrator.id}>
           {administrator.email}
         </div>

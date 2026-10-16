@@ -4,10 +4,10 @@ import { FiligranProductMapping } from '@/components/epic/epic-item/FiligranProd
 import { VOTING_PRODUCTS } from '@/components/feature-voting/feature-voting.const';
 import { FeatureVotingItem } from '@/components/feature-voting/FeatureVotingItem';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useFeatureVote } from '@/hooks/use-feature-vote';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { Skeleton } from '@filigran/ui';
 import { featureVotingKeys } from '@graphql/feature-voting/feature-voting.keys';
 import {
   useCurrentVotingRoundQuery,
@@ -100,37 +100,37 @@ export const FeatureVotingList = ({
       <BreadcrumbNav value={breadcrumbValue} />
       {isLoading && <Skeleton className="w-full inset-1/2" />}
       {!isLoading && !round && (
-        <div className="flex flex-col gap-s">
+        <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold">{t('FeatureVoting.Title')}</h1>
-          <p className="text-muted-foreground">
+          <p className="text-default-secondary">
             {t('FeatureVoting.NoOpenRound')}
           </p>
         </div>
       )}
       {!isLoading && round && (
-        <div className="flex flex-col gap-xl">
-          <div className="flex flex-col gap-s">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
             <h1 className="text-2xl font-semibold">
               {t('FeatureVoting.Title')}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-default-secondary">
               {round.description ?? t('FeatureVoting.Description')}
             </p>
           </div>
           {sections.map(({ product, features: productFeatures }) => (
             <section
               key={product}
-              className="flex flex-col gap-m">
-              <div className="flex items-center gap-s">
+              className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
                 {FiligranProductMapping[product].logo}
                 <h2 className="text-xl font-semibold">
                   {FiligranProductMapping[product].name}
                 </h2>
               </div>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-default-secondary text-sm">
                 {t('FeatureVoting.OneVotePerProduct')}
               </p>
-              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-l">
+              <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {productFeatures.map((feature) => (
                   <FeatureVotingItem
                     key={feature.id}

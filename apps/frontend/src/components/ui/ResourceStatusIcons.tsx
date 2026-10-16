@@ -3,17 +3,17 @@
 import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@filigran/design-system';
+import {
   CampaignIcon,
   LogoFiligranIcon,
   MotionPlayIcon,
   ThreatActorGroupIcon,
 } from '@filigran/icon';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@filigran/ui/clients';
 import type { ReactNode } from 'react';
 
 export interface ResourceStatusIconsProps {
@@ -24,7 +24,7 @@ export interface ResourceStatusIconsProps {
   iconClassName?: string;
 }
 
-const ICON_CLASS = 'h-6 w-6 shrink-0 text-alert-success-primary';
+const ICON_CLASS = 'h-6 w-6 shrink-0 text-icon-success';
 
 interface StatusIconProps {
   label: string;

@@ -8,6 +8,7 @@ import EeLearnMoreSheet from '@/components/service/document/one-click-deploy/EeL
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/OnePlatformDisplay';
 import { useIncompatibleVersionMessage } from '@/components/service/document/one-click-deploy/use-deploy-resource-title';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
+import { DisabledActionTooltip } from '@/components/ui/DisabledActionTooltip';
 import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
 import { useRegisteredPlatforms } from '@/hooks/use-registered-platforms';
 import { useTranslate } from '@/hooks/use-translate';
@@ -21,14 +22,7 @@ import {
   isConnectorResource,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { Button } from '@filigran/design-system';
-import { AlertDialog, AlertDialogContent } from '@filigran/ui';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@filigran/ui/clients';
+import { Button, Dialog, DialogContent } from '@filigran/design-system';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { OneClickDeployMutation as OneClickDeployMutationType } from '@generated/OneClickDeployMutation.graphql';
 import { useCallback, useMemo, useState } from 'react';
@@ -213,27 +207,21 @@ const OneClickDeploy = ({
   );
 
   const container = isDeploymentDisabled ? (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipContent>
-          {isConnectorResource(documentData)
-            ? t('Service.Connectors.Incompatible', {
-                platformToBeUpdated,
-                count: incompatiblePlatformsCount,
-                version: requiredProductVersion ?? '',
-              })
-            : incompatibleVersionMessage(
-                platformToBeUpdated,
-                requiredProductVersion ?? ''
-              )}
-        </TooltipContent>
-        <TooltipTrigger
-          className="w-fit"
-          style={{ cursor: 'unset' }}>
-          {buttonWithBadge}
-        </TooltipTrigger>
-      </Tooltip>
-    </TooltipProvider>
+    <DisabledActionTooltip
+      reason={
+        isConnectorResource(documentData)
+          ? t('Service.Connectors.Incompatible', {
+              platformToBeUpdated,
+              count: incompatiblePlatformsCount,
+              version: requiredProductVersion ?? '',
+            })
+          : incompatibleVersionMessage(
+              platformToBeUpdated,
+              requiredProductVersion ?? ''
+            )
+      }>
+      {buttonWithBadge}
+    </DisabledActionTooltip>
   ) : (
     buttonWithBadge
   );
@@ -241,13 +229,17 @@ const OneClickDeploy = ({
   return (
     <>
       {container}
-      <AlertDialog
+      <Dialog
         open={isOpen}
         onOpenChange={setIsOpen}>
-        <AlertDialogContent className="max-w-3xl w-full">
+        <DialogContent
+          size="lg"
+          role="alertdialog"
+          onInteractOutside={(e) => e.preventDefault()}
+          hideCloseButton>
           {alertContent}
-        </AlertDialogContent>
-      </AlertDialog>
+        </DialogContent>
+      </Dialog>
       <EeLearnMoreSheet
         open={isEeSheetOpen}
         setOpen={setIsEeSheetOpen}

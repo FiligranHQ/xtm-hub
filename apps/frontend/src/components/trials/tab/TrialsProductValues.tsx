@@ -5,7 +5,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@filigran/ui';
+} from '@filigran/design-system';
 import { TrialsProductFragment } from '@graphql/generated';
 
 interface TrialsProductValuesProps {
@@ -26,7 +26,7 @@ export const TrialsProductValues = ({
   }
 
   return (
-    <div className="flex flex-col gap-xs">
+    <div className="flex flex-col gap-1">
       {valuedProducts.map((product) => {
         const value = valueOf(product);
         if (!value) {
@@ -38,8 +38,8 @@ export const TrialsProductValues = ({
             delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="flex items-center gap-xs cursor-help">
-                  <span className="text-text-default-secondary">
+                <span className="flex items-center gap-1 cursor-help">
+                  <span className="text-default-secondary">
                     {product.platform_identifier?.toUpperCase()}
                   </span>
                   {asLink ? (
@@ -52,7 +52,7 @@ export const TrialsProductValues = ({
                   )}
                 </span>
               </TooltipTrigger>
-              <TooltipContent className="max-w-md">{value}</TooltipContent>
+              <TooltipContent>{value}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         );

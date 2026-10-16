@@ -14,6 +14,7 @@ import { UserDisplay } from '@/components/ui/UserDisplay';
 import { useTranslate } from '@/hooks/use-translate';
 import { roundToNearest } from '@/lib/utils';
 import { useDateFormatter } from '@/utils/date';
+import { FiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { platformIdentifierMappedByShareableResourceType } from '@/utils/services';
 import {
   isHuntPackResource,
@@ -32,6 +33,7 @@ import { DocumentMetadataKeyCode, IntegrationType } from '@graphql/generated';
 interface ShareableResourceDetailsProps {
   documentData: documentItem_fragment$data | PublicDocumentDetailsData;
   downloadNumber?: number | null;
+  filigranWebsiteUtm?: FiligranWebsiteUtm;
 }
 
 const CSV_FEED_DOCUMENTATION =
@@ -50,6 +52,7 @@ const DOCUMENTATION_URLS: Partial<Record<IntegrationType, string>> = {
 const ShareableResourceDetails = ({
   documentData,
   downloadNumber,
+  filigranWebsiteUtm,
 }: ShareableResourceDetailsProps) => {
   const t = useTranslate();
   const formatDate = useDateFormatter();
@@ -72,7 +75,7 @@ const ShareableResourceDetails = ({
       {!documentData.uploader_organization?.personal_space && (
         <div>
           <ShareableResourceDetailItem label="Organization">
-            <div className="mb-s flex items-center gap-s">
+            <div className="mb-2 flex items-center gap-2">
               <LogoFiligranIcon className="size-8" />
               {/*By default, if the organization is undefined, we display Filigran*/}
 
@@ -83,7 +86,7 @@ const ShareableResourceDetails = ({
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.Author')}>
-        <div className="flex items-center gap-s whitespace-nowrap">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <UserDisplay uploader={documentData.uploader} />
         </div>
       </ShareableResourceDetailItem>
@@ -99,7 +102,7 @@ const ShareableResourceDetails = ({
         <>
           <ShareableResourceDetailItem
             label={t('Service.ShareableResources.Details.IntegrationType')}>
-            <div className="flex items-center gap-s">
+            <div className="flex items-center gap-2">
               <span>
                 {t(
                   `Service.OpenctiIntegrations.Type.${documentData.integration_type}`
@@ -112,7 +115,7 @@ const ShareableResourceDetails = ({
               label={t(
                 'Service.ShareableResources.Details.IntegrationSolutionCategory'
               )}>
-              <div className="flex items-center gap-s">
+              <div className="flex items-center gap-2">
                 <span>
                   {(
                     documentData.solution_categories as ReadonlyArray<{
@@ -131,7 +134,7 @@ const ShareableResourceDetails = ({
               label={t(
                 'Service.ShareableResources.Details.IntegrationLicenseType'
               )}>
-              <div className="flex items-center gap-s">
+              <div className="flex items-center gap-2">
                 <span>{documentData.license_type}</span>
               </div>
             </ShareableResourceDetailItem>
@@ -146,6 +149,7 @@ const ShareableResourceDetails = ({
         metadataKey={DocumentMetadataKeyCode.FeedUrl}
         translationKey="FeedURL"
         variant="link"
+        filigranWebsiteUtm={filigranWebsiteUtm}
       />
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.LastUpdatedAt')}>
@@ -161,12 +165,14 @@ const ShareableResourceDetails = ({
         metadataKey={DocumentMetadataKeyCode.VendorUrl}
         translationKey="VendorURL"
         variant="link"
+        filigranWebsiteUtm={filigranWebsiteUtm}
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
         metadataKey={DocumentMetadataKeyCode.GithubUrl}
         translationKey="GithubURL"
         variant="link"
+        filigranWebsiteUtm={filigranWebsiteUtm}
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
@@ -178,7 +184,10 @@ const ShareableResourceDetails = ({
       {documentationUrl && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
-          <ShareableResourceDetailsLink url={documentationUrl} />
+          <ShareableResourceDetailsLink
+            url={documentationUrl}
+            filigranWebsiteUtm={filigranWebsiteUtm}
+          />
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailMetadataItem
@@ -186,18 +195,21 @@ const ShareableResourceDetails = ({
         metadataKey={DocumentMetadataKeyCode.DatasheetUrl}
         translationKey="DatasheetURL"
         variant="link"
+        filigranWebsiteUtm={filigranWebsiteUtm}
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
         metadataKey={DocumentMetadataKeyCode.BlogpostUrl}
         translationKey="BlogpostURL"
         variant="link"
+        filigranWebsiteUtm={filigranWebsiteUtm}
       />
       <ShareableResourceDetailMetadataItem
         documentData={documentData}
         metadataKey={DocumentMetadataKeyCode.DemoUrl}
         translationKey="DemoURL"
         variant="link"
+        filigranWebsiteUtm={filigranWebsiteUtm}
       />
       {isResourceDownloadable(documentData) && (
         <ShareableResourceDetailItem

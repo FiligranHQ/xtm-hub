@@ -174,16 +174,6 @@ describe('renderEmail', () => {
   });
 
   describe('{{#if}} tests', () => {
-    it('should render text conditionally for free trials', async () => {
-      const html = await renderEmail('free_trial_registered', {
-        firstName: 'User',
-        platformUrl: 'http://myTestPlatform',
-        platformIdentifier: PlatformIdentifier.Openaev,
-        globalServiceInstanceId: 'test-global-service-instance-id',
-      });
-
-      expect(html).not.toContain('OpenCTI');
-    });
     it('should render the bundle admin mail without leaking undefined', async () => {
       const html = await renderEmail('admin_saas_bundle_requested', {
         organizationName: 'myorga',
@@ -320,29 +310,6 @@ describe('renderEmail', () => {
     });
   });
 
-  describe('product free trials', () => {
-    it('should keep the support wording of the cancellation mail', async () => {
-      const html = await renderEmail('free_trial_cancelled', {
-        firstName: 'User',
-        platformIdentifier: PlatformIdentifier.Opencti,
-      });
-
-      expect(html.replace(/\s+/g, ' ')).toContain(
-        'If you have any questions or require support, don’t hesitate to reach out at'
-      );
-    });
-
-    it('should keep the trial data retention wording of the expiration mail', async () => {
-      const html = await renderEmail('free_trial_expired', {
-        firstName: 'User',
-        platformIdentifier: PlatformIdentifier.Opencti,
-      });
-
-      expect(html).toContain(
-        '(Please note that your free trial data will be saved for 7 days.)'
-      );
-    });
-  });
   describe('edge cases', () => {
     it('should handle empty string values gracefully', async () => {
       const html = await renderEmail('organization_pending_user_digest', {
@@ -758,17 +725,6 @@ describe('bundle trial subjects', () => {
     );
     expect(templateSubjects.free_trial_bundle_expired(params)).toBe(
       'Your XTM Platform Trial Has Expired'
-    );
-  });
-
-  it('should keep the product wording outside of bundles', () => {
-    const params = {
-      firstName: 'User',
-      platformIdentifier: PlatformIdentifier.Opencti,
-    };
-
-    expect(templateSubjects.free_trial_expired(params)).toBe(
-      'Your OpenCTI Free Trial Has Expired'
     );
   });
 });

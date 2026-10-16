@@ -2,18 +2,18 @@ import AddSolutionCategory from '@/components/admin/solution-category/AddSolutio
 import EditSolutionCategory from '@/components/admin/solution-category/EditSolutionCategory';
 import SolutionCategoryProductFilter from '@/components/admin/solution-category/SolutionCategoryProductFilter';
 import { useSolutionCategoryListLocalstorage } from '@/components/admin/solution-category/solution-category-list-localstorage';
+import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
   OrderingMode as SortingOrderingMode,
 } from '@/components/ui/handle-sorting.utils';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
 import { useTablePagination } from '@/hooks/use-table-pagination';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { i18nKey } from '@/utils/datatable';
+import { getDataTableLabels } from '@/utils/design-system/data-table';
 import { formatName } from '@/utils/format/name';
-import { Badge, DataTable, DataTableHeadBarOptions } from '@filigran/ui';
+import { Chip } from '@filigran/design-system';
 import {
   FiligranProduct,
   OrderingMode,
@@ -80,13 +80,12 @@ const SolutionCategories = () => {
       header: t('SolutionCategory.ListPage.Product'),
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex flex-wrap gap-xs">
+        <div className="flex flex-wrap gap-1">
           {row.original.product.map((product) => (
-            <Badge
+            <Chip
               key={product}
-              variant="outline">
-              {product.toUpperCase()}
-            </Badge>
+              label={product.toUpperCase()}
+            />
           ))}
         </div>
       ),
@@ -143,14 +142,14 @@ const SolutionCategories = () => {
 
   return (
     <>
-      <div className="mb-s flex justify-end">
+      <div className="mb-2 flex justify-end">
         <AddSolutionCategory />
       </div>
       <DataTable
         columns={columns}
         data={solutionCategories}
         isLoading={isLoading}
-        i18nKey={i18nKey(t)}
+        {...getDataTableLabels(t)}
         onResetTable={resetAll}
         tableOptions={{
           onSortingChange,
@@ -165,14 +164,14 @@ const SolutionCategories = () => {
         }}
         onClickRow={({ original }) => setSolutionCategoryEdit(original)}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
             <div className="w-full sm:w-1/3">
               <SolutionCategoryProductFilter
                 selectedProduct={selectedProduct}
                 onProductChange={onProductChange}
               />
             </div>
-            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
               <DataTableHeadBarOptions />
             </div>
           </div>
@@ -182,9 +181,7 @@ const SolutionCategories = () => {
         <EditSolutionCategory
           solutionCategory={solutionCategoryEdit}
           open={!!solutionCategoryEdit}
-          onClose={() =>
-            useExecuteAfterAnimation(() => setSolutionCategoryEdit(undefined))
-          }
+          onClose={() => setSolutionCategoryEdit(undefined)}
         />
       )}
     </>

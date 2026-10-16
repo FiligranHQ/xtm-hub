@@ -15,9 +15,11 @@ import ShareableResourceCarousel from '@/components/service/document/ui/Shareabl
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
+import { DisabledActionTooltip } from '@/components/ui/DisabledActionTooltip';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { cn } from '@/lib/utils';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { getPlatformIdentifier } from '@/utils/platform';
 import { Button } from '@filigran/design-system';
 import {
@@ -26,7 +28,6 @@ import {
   MotionPlayIcon,
   ThreatActorGroupIcon,
 } from '@filigran/icon';
-import { SimpleTooltip } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import Image from 'next/image';
@@ -61,7 +62,7 @@ const ShareableResourceConnectorSlug = ({
   return (
     <>
       <BreadcrumbNav value={breadcrumbValue} />
-      <div className="flex gap-s flex-col md:flex-row">
+      <div className="flex gap-2 flex-col md:flex-row">
         {!!logo && (
           <div className="w-24 shrink-0 rounded overflow-hidden">
             <Image
@@ -75,36 +76,36 @@ const ShareableResourceConnectorSlug = ({
           </div>
         )}
         <div className="flex flex-col flex-1 justify-center">
-          <div className="flex items-center gap-s flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <h1 className="whitespace-nowrap">{documentData.name}</h1>
             {documentData.manager_supported && (
-              <div className="flex items-center gap-s py-xs px-l font-semibold bg-green-100 text-alert-success-primary dark:bg-turquoise-900 rounded">
-                <MotionPlayIcon className="h-5 w-5 shrink-0 mr-xs" />
+              <div className="flex items-center gap-2 py-1 px-4 font-semibold bg-feedback-success-secondary-transparency-30 text-feedback-success-primary rounded">
+                <MotionPlayIcon className="h-5 w-5 shrink-0 mr-1" />
                 {t('Utils.AutomaticDeploy')}
               </div>
             )}
 
             <div
               className={cn(
-                'flex items-center gap-s py-xs px-l font-semibold rounded text-text-default-primary',
+                'flex items-center gap-2 py-1 px-4 font-semibold rounded text-default-primary',
                 documentData.verified
                   ? 'bg-[rgba(15,188,255,0.21)]'
-                  : 'bg-feedback-neutral-secondary-transparency'
+                  : 'bg-feedback-neutral-secondary-transparency-30'
               )}>
               {documentData.verified ? (
                 <>
-                  <LogoFiligranIcon className="h-5 w-5 shrink-0 mr-xs text-text-default-primary" />
+                  <LogoFiligranIcon className="h-5 w-5 shrink-0 mr-1 text-icon-default" />
                   {t('Service.ShareableResources.Details.SupportedByFiligran')}
                 </>
               ) : (
                 <>
-                  <ThreatActorGroupIcon className="h-5 w-5 shrink-0 mr-xs text-feedback-neutral-primary" />
+                  <ThreatActorGroupIcon className="h-5 w-5 shrink-0 mr-1 text-feedback-neutral-primary" />
                   {t('Service.ShareableResources.Details.SupportedByCommunity')}
                 </>
               )}
             </div>
 
-            <div className="ml-auto flex gap-s">
+            <div className="ml-auto flex gap-2">
               <ShareLinkButton
                 documentId={documentData.id}
                 url={shareUrl}
@@ -121,8 +122,8 @@ const ShareableResourceConnectorSlug = ({
                   }
                 />
               ) : (
-                <SimpleTooltip
-                  title={t('Service.Connectors.UnavailableDeployments')}>
+                <DisabledActionTooltip
+                  reason={t('Service.Connectors.UnavailableDeployments')}>
                   <Button disabled={true}>
                     {t('Service.ShareableResources.Deploy.DeployPlatform', {
                       platformName:
@@ -130,11 +131,11 @@ const ShareableResourceConnectorSlug = ({
                         'OpenCTI',
                     })}
                   </Button>
-                </SimpleTooltip>
+                </DisabledActionTooltip>
               )}
             </div>
           </div>
-          <div className="w-full mt-s mb-xs">
+          <div className="w-full mt-2 mb-1">
             <BadgeOverflowCounter
               formatLabel={false}
               badges={documentData.use_cases as BadgeOverflow[]}
@@ -148,8 +149,8 @@ const ShareableResourceConnectorSlug = ({
         className="mt-4"
       />
       {documentData.verified && (
-        <div className="border border-solid border-blue rounded flex items-center gap-xs p-s text-sm mt-4">
-          <InfoIcon className="shrink-0 h-4 w-4 mr-xs text-primary" />
+        <div className="border border-solid border-alert-info rounded flex items-center gap-1 p-2 text-sm mt-4">
+          <InfoIcon className="shrink-0 h-4 w-4 mr-1 text-icon-info" />
           {t('Service.Connectors.ImproveIntegrationPrefix')}
           <Link
             href={manifest_url}
@@ -159,13 +160,19 @@ const ShareableResourceConnectorSlug = ({
           </Link>
         </div>
       )}
-      <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
+      <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <ShareableResourceDescription
           shortDescription={documentData?.short_description ?? ''}
           longDescription={documentData?.description ?? ''}
+          serviceDefinitionIdentifier={
+            serviceInstance.service_definition?.identifier
+          }
         />
         <ShareableResourceConnectorPrivateDetails
           connectorDetails={{ ...documentData, name: documentData.name ?? '' }}
+          filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+            serviceInstance.service_definition?.identifier
+          )}
         />
       </div>
     </>

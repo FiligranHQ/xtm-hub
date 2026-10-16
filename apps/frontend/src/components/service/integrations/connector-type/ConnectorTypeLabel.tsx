@@ -14,7 +14,7 @@ export const ConnectorTypeLabel = ({
   const { connectorTypeLabel } = useConnectorTypeLabels();
 
   return (
-    <span className="inline-flex items-center gap-s">
+    <span className="inline-flex items-center gap-2">
       <Icon
         name={getConnectorTypeIcon(connectorType)}
         size={16}

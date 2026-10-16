@@ -2,15 +2,16 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import { ServiceFormJsonFileField } from '@/components/service/form/JsonFileField';
 import { ServiceFormSheetFooter } from '@/components/service/form/SheetFooter';
 import { useServiceFormFields } from '@/components/service/form/UseServiceFormFields';
+import { AutoForm } from '@/components/ui/auto-form';
 import { useDialogContext } from '@/components/ui/SheetWithPreventingDialog';
 import { useTranslate } from '@/hooks/use-translate';
 import {
   fileListCheck,
+  JSON_FILE_ACCEPT,
   optionalFileListCheck,
   transformToFileList,
 } from '@/utils/documents';
 import { semanticVersionRegex, validLtsVersionRegex } from '@/utils/versioning';
-import { AutoForm } from '@filigran/ui';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { DocumentImageType } from '@graphql/generated';
 import { useContext, useMemo } from 'react';
@@ -160,12 +161,9 @@ export const OpenctiHuntPackForm = ({
         document: isCreation
           ? {
               label: t('Service.OpenCTIHuntPack.Form.SelectHuntPackFile'),
-              description: t(
-                'Service.OpenCTIHuntPack.Form.SelectHuntPackFileDescription'
-              ),
               fieldType: 'file',
               inputProps: {
-                allowedTypes: 'application/json',
+                accept: JSON_FILE_ACCEPT,
               },
             }
           : {

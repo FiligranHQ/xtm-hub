@@ -28,7 +28,7 @@ concurrency:
 jobs:
   check-docs-changes:
     name: Check documentation changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       changed: ${{ steps.check.outputs.changed }}
       tag: ${{ steps.check.outputs.tag }}
@@ -85,7 +85,7 @@ jobs:
     name: Build and deploy documentation
     needs: check-docs-changes
     if: needs.check-docs-changes.outputs.changed == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

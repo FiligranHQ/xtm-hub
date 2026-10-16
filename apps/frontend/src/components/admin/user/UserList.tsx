@@ -14,39 +14,31 @@ import { PortalContext } from '@/components/me/AppPortalContext';
 import BadgeOverflowCounter, {
   BadgeOverflow,
 } from '@/components/ui/BadgeOverflowCounter';
+import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
   transformSortingValueToParams,
 } from '@/components/ui/handle-sorting.utils';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import { SearchInput } from '@/components/ui/SearchInput';
+import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import useAdminPath from '@/hooks/use-admin-path';
-import { useExecuteAfterAnimation } from '@/hooks/use-execute-after-animation';
-import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { useAdminByPass } from '@/hooks/use-portal-capability';
 import { useTablePagination } from '@/hooks/use-table-pagination';
 import { useTranslate } from '@/hooks/use-translate';
 import { useUsersList } from '@/hooks/use-users-list';
 import { portalGraphqlClient } from '@/lib/graphql-client';
-import { DEBOUNCE_TIME } from '@/utils/constant';
-import { i18nKey } from '@/utils/datatable';
 import { useDateFormatter } from '@/utils/date';
-import { Button } from '@filigran/design-system';
+import { getDataTableLabels } from '@/utils/design-system/data-table';
+import { Button, Chip, SearchField } from '@filigran/design-system';
 import { MoreVertIcon } from '@filigran/icon';
-import {
-  Badge,
-  DataTable,
-  DataTableHeadBarOptions,
-  useToast,
-} from '@filigran/ui';
 import {
   UserList_fragment$data,
   UserList_fragment$key,
 } from '@generated/UserList_fragment.graphql';
 import { UserListQuery$variables } from '@generated/UserListQuery.graphql';
 import {
-  FeatureFlag,
   UserAccountStatus,
   useUserAdminResendInviteMutation,
   useUserResendInviteMutation,
@@ -61,7 +53,6 @@ import {
   useState,
 } from 'react';
 import { graphql, readInlineData, useSubscription } from 'react-relay';
-import { useDebounceCallback } from 'usehooks-ts';
 
 // Configuration or Preloader Query
 export const UserListQuery = graphql`
@@ -150,10 +141,8 @@ const UserList = ({ organization }: UserListProps) => {
   const isAdminPath = useAdminPath();
   const canDeleteUser = useAdminByPass();
   const hasActionsColumn = isAdminPath && canDeleteUser;
-  const isTrialInviteEnabled = useIsFeatureEnabled(FeatureFlag.TrialInvite);
-  const hasResendButtonColumn = !isAdminPath && isTrialInviteEnabled;
+  const hasResendButtonColumn = !isAdminPath;
   const { me } = useContext(PortalContext);
-  const { toast } = useToast();
   const [userEdit, setUserEdit] = useState<UserList_fragment$data | undefined>(
     undefined
   );
@@ -179,7 +168,8 @@ const UserList = ({ organization }: UserListProps) => {
 
   const resendInviteMutationOptions = {
     onSuccess: () => {
-      toast({
+      showSnackbar({
+        severity: 'success',
         title: t('Utils.Success'),
         description: t('UserListPage.ResendInviteSuccess'),
       });
@@ -188,8 +178,8 @@ const UserList = ({ organization }: UserListProps) => {
     onError: (error: unknown) => {
       const errorMessage =
         error instanceof Error ? error.message : 'UnknownError';
-      toast({
-        variant: 'destructive',
+      showSnackbar({
+        severity: 'error',
         title: t('Utils.Error'),
         description: t(`Error.Server.${errorMessage}`),
       });
@@ -227,7 +217,7 @@ const UserList = ({ organization }: UserListProps) => {
   const userListSubscription = graphql`
     subscription UserListSubscription(
       $connections: [ID!]!
-      $organizationId: ID
+      $organizationId: ID!
     ) {
       User(organizationId: $organizationId) {
         add @appendNode(connections: $connections, edgeTypeName: "UserEdge") {
@@ -237,15 +227,37 @@ const UserList = ({ organization }: UserListProps) => {
     }
   `;
 
+  const adminUserListSubscription = graphql`
+    subscription UserListAdminSubscription($connections: [ID!]!) {
+      AdminUser {
+        add @appendNode(connections: $connections, edgeTypeName: "UserEdge") {
+          ...UserList_fragment
+        }
+      }
+    }
+  `;
+
   const userListSubscriptionConfig = useMemo(
-    () => ({
-      variables: {
-        connections: [connectionID],
-        organizationId: isAdminPath ? undefined : organization,
-      },
-      subscription: userListSubscription,
-    }),
-    [connectionID, isAdminPath, organization, userListSubscription]
+    () =>
+      isAdminPath
+        ? {
+            variables: { connections: [connectionID] },
+            subscription: adminUserListSubscription,
+          }
+        : {
+            variables: {
+              connections: [connectionID],
+              organizationId: organization,
+            },
+            subscription: userListSubscription,
+          },
+    [
+      adminUserListSubscription,
+      connectionID,
+      isAdminPath,
+      organization,
+      userListSubscription,
+    ]
   );
   useSubscription(userListSubscriptionConfig);
 
@@ -284,10 +296,15 @@ const UserList = ({ organization }: UserListProps) => {
               enableSorting: false,
               cell: ({ row }: { row: Row<UserList_fragment$data> }) => {
                 return (
-                  <div className="flex gap-xs">
+                  <div className="flex gap-1">
                     {row.original.organization_capabilities?.map(
                       ({ id, organization: { name, personal_space } }) =>
-                        !personal_space ? <Badge key={id}>{name}</Badge> : null
+                        !personal_space ? (
+                          <Chip
+                            key={id}
+                            label={name}
+                          />
+                        ) : null
                     )}
                   </div>
                 );
@@ -310,10 +327,11 @@ const UserList = ({ organization }: UserListProps) => {
                 row: { original: UserList_fragment$data };
               }) => {
                 return (
-                  <div className="flex gap-xs">
-                    <Badge variant={disabled ? 'destructive' : 'secondary'}>
-                      {t(disabled ? 'Badge.Disabled' : 'Badge.Enabled')}
-                    </Badge>
+                  <div className="flex gap-1">
+                    <Chip
+                      label={t(disabled ? 'Badge.Disabled' : 'Badge.Enabled')}
+                      severity={disabled ? 'critical' : 'low'}
+                    />
                   </div>
                 );
               },
@@ -365,60 +383,54 @@ const UserList = ({ organization }: UserListProps) => {
               },
             },
           ]),
-      ...(isTrialInviteEnabled
-        ? [
-            {
-              accessorKey: 'status',
-              id: 'invitation_status',
-              header: t('UserListPage.InvitationStatus'),
-              enableSorting: false,
-              cell: ({
-                row: {
-                  original: { status },
-                },
-              }: {
-                row: { original: UserList_fragment$data };
-              }) => {
-                if (
-                  status === UserAccountStatus.Waiting ||
-                  status === UserAccountStatus.Invited
-                ) {
-                  return (
-                    <Badge variant="warning">
-                      {t('UserListPage.InvitationPending')}
-                    </Badge>
-                  );
-                }
-                if (status === UserAccountStatus.Expired) {
-                  return (
-                    <Badge variant="destructive">
-                      {t('UserListPage.InvitationExpired')}
-                    </Badge>
-                  );
-                }
-                return null;
-              },
-            },
-            {
-              accessorKey: 'invitation_date',
-              id: 'invitation_date',
-              header: t('UserListPage.InvitationDate'),
-              cell: ({
-                row,
-              }: {
-                row: { original: UserList_fragment$data };
-              }) => {
-                return (
-                  <span className="truncate">
-                    {row.original.invitation_date
-                      ? formatDate(row.original.invitation_date, 'DATE_FULL')
-                      : '-'}
-                  </span>
-                );
-              },
-            },
-          ]
-        : []),
+      {
+        accessorKey: 'status',
+        id: 'invitation_status',
+        header: t('UserListPage.InvitationStatus'),
+        enableSorting: false,
+        cell: ({
+          row: {
+            original: { status },
+          },
+        }: {
+          row: { original: UserList_fragment$data };
+        }) => {
+          if (
+            status === UserAccountStatus.Waiting ||
+            status === UserAccountStatus.Invited
+          ) {
+            return (
+              <Chip
+                label={t('UserListPage.InvitationPending')}
+                severity="medium"
+              />
+            );
+          }
+          if (status === UserAccountStatus.Expired) {
+            return (
+              <Chip
+                label={t('UserListPage.InvitationExpired')}
+                severity="critical"
+              />
+            );
+          }
+          return null;
+        },
+      },
+      {
+        accessorKey: 'invitation_date',
+        id: 'invitation_date',
+        header: t('UserListPage.InvitationDate'),
+        cell: ({ row }: { row: { original: UserList_fragment$data } }) => {
+          return (
+            <span className="truncate">
+              {row.original.invitation_date
+                ? formatDate(row.original.invitation_date, 'DATE_FULL')
+                : '-'}
+            </span>
+          );
+        },
+      },
       ...(hasResendButtonColumn
         ? [
             {
@@ -456,18 +468,15 @@ const UserList = ({ organization }: UserListProps) => {
               enableResizing: false,
               cell: ({ row }: { row: Row<UserList_fragment$data> }) => {
                 const canDelete = canDeleteUserRow(row.original.id, me?.id);
-                const showResendInvite =
-                  isTrialInviteEnabled && canResendInvite(row.original.status);
+                const showResendInvite = canResendInvite(row.original.status);
                 return (
                   <div
                     className="flex items-center justify-end"
                     onClick={(event) => event.stopPropagation()}>
                     <IconActions
+                      aria-label={t('Utils.OpenMenu')}
                       icon={
-                        <>
-                          <MoreVertIcon className="h-4 w-4 text-primary" />
-                          <span className="sr-only">{t('Utils.OpenMenu')}</span>
-                        </>
+                        <MoreVertIcon className="h-4 w-4 text-icon-highlight" />
                       }>
                       {showResendInvite && (
                         <IconActionsItem
@@ -497,7 +506,6 @@ const UserList = ({ organization }: UserListProps) => {
       handleResendInvite,
       isAdminPath,
       isResendingInvite,
-      isTrialInviteEnabled,
       me?.id,
       me?.selected_organization_id,
       t,
@@ -573,17 +581,17 @@ const UserList = ({ organization }: UserListProps) => {
     });
   };
 
-  const debounceHandleInput = useDebounceCallback(
-    (e) => handleInputChange(e.target.value),
-    DEBOUNCE_TIME
-  );
+  const searchHandlers = useDebouncedSearch({
+    apply: handleInputChange,
+    appliedTerm: filter.search,
+  });
 
   return (
     <>
       <DataTable
         columns={columns}
         data={userData}
-        i18nKey={i18nKey(t)}
+        {...getDataTableLabels(t)}
         onResetTable={resetAll}
         tableOptions={{
           onSortingChange: onSortingChange,
@@ -597,12 +605,15 @@ const UserList = ({ organization }: UserListProps) => {
         }}
         onClickRow={(row) => setUserEdit(row.original)}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-s sm:flex-row">
-            <div className="flex w-full items-center gap-s sm:w-auto">
-              <SearchInput
-                containerClass="w-full sm:w-auto"
+          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
+            <div className="flex w-full items-center gap-2 sm:w-auto">
+              <SearchField
+                className="w-full sm:w-55"
+                aria-label={t('UserActions.SearchUser')}
                 placeholder={t('UserActions.SearchUser')}
-                onChange={debounceHandleInput}
+                clearLabel={t('DesignSystem.SearchField.Clear')}
+                onChange={searchHandlers.onChange}
+                onClear={searchHandlers.onClear}
               />
               {isAdminPath && (
                 <UserOrganizationFilter
@@ -611,7 +622,7 @@ const UserList = ({ organization }: UserListProps) => {
                 />
               )}
             </div>
-            <div className="flex w-full items-center justify-between gap-s sm:w-auto">
+            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
               <DataTableHeadBarOptions />
             </div>
           </div>
@@ -627,7 +638,7 @@ const UserList = ({ organization }: UserListProps) => {
         }}
       />
       {data.users.totalCount === 0 && (
-        <p className="mt-4 text-center text-sm text-muted-foreground">
+        <p className="mt-4 text-center text-sm text-default-secondary">
           {t('UserListPage.NoUsers')}
         </p>
       )}
@@ -636,9 +647,7 @@ const UserList = ({ organization }: UserListProps) => {
           user={userEdit}
           key={userEdit?.id}
           defaultStateOpen={!!userEdit}
-          onCloseSheet={() =>
-            useExecuteAfterAnimation(() => setUserEdit(undefined))
-          }
+          onCloseSheet={() => setUserEdit(undefined)}
         />
       )}
       {userToDelete && (

@@ -1,18 +1,20 @@
 'use client';
 
-import { AlertDialogComponent } from '@/components/ui/AlertDialog';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { DisabledActionTooltip } from '@/components/ui/DisabledActionTooltip';
+import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { XTM_PLATFORM_TRIAL_PATH } from '@/utils/path/constant';
-import { Button, IconButton } from '@filigran/design-system';
-import { ArrowUpwardIcon, DeleteIcon } from '@filigran/icon';
 import {
+  Button,
+  IconButton,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  toast,
-} from '@filigran/ui';
+} from '@filigran/design-system';
+import { ArrowUpwardIcon, DeleteIcon } from '@filigran/icon';
 import {
   BundleUserServiceGroupsQuery,
   PlatformIdentifier,
@@ -66,15 +68,15 @@ export const ManageTrialHeader = ({
               ),
             }
         );
-        toast({ title: t('Utils.Success') });
+        showSnackbar({ severity: 'success', title: t('Utils.Success') });
         setIsBulkDeleting(false);
         onUsersRemoved();
       },
       onError: (error: unknown) => {
         const errorMessage =
           error instanceof Error ? error.message : 'UnknownError';
-        toast({
-          variant: 'destructive',
+        showSnackbar({
+          severity: 'error',
           title: t('Utils.Error'),
           description: <>{t(`Error.Server.${errorMessage}`)}</>,
         });
@@ -87,38 +89,36 @@ export const ManageTrialHeader = ({
   );
 
   return (
-    <header className="flex flex-col gap-l">
-      <div className="flex flex-col gap-xs">
-        <p className="heading-sm w-fit bg-clip-text text-transparent bg-gradient-legacy-focus">
+    <header className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <p className="title-sm w-fit text-gradient-focus">
           {t('Service.Bundle.ManageTrial.Eyebrow')}
         </p>
-        <h1 className="heading-2xl">{t('Service.Bundle.ManageTrial.Title')}</h1>
-        <p className="text-content-body-base max-w-3xl">
+        <h1 className="title-2xl">{t('Service.Bundle.ManageTrial.Title')}</h1>
+        <p className="text-content-base max-w-3xl">
           {t('Service.Bundle.ManageTrial.Description')}
         </p>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-m">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Button
           priority="secondary"
-          className="gap-s border-elevation-border-default-layer-0"
+          className="gap-2 border-elevation-default"
           asChild>
           <Link href={backHref}>
             <ArrowUpwardIcon className="h-3 w-3 -rotate-90" />
             {t(backLabelKey)}
           </Link>
         </Button>
-        <div className="flex flex-wrap items-center gap-s">
+        <div className="flex flex-wrap items-center gap-2">
           {selectedUsers.length > 0 && (
             <TooltipProvider>
               <Tooltip>
-                <AlertDialogComponent
-                  AlertTitle={t(
-                    'Service.Bundle.ManageTrial.BulkDeleteDialog.Title'
-                  )}
-                  actionButtonText={t('Utils.Delete')}
-                  variantName="destructive"
-                  continueButtonDisabled={isBulkDeleting}
-                  triggerElement={
+                <ConfirmDialog
+                  title={t('Service.Bundle.ManageTrial.BulkDeleteDialog.Title')}
+                  confirmLabel={t('Utils.Delete')}
+                  destructive
+                  confirmDisabled={isBulkDeleting}
+                  trigger={
                     <TooltipTrigger asChild>
                       <IconButton
                         type="button"
@@ -129,7 +129,7 @@ export const ManageTrialHeader = ({
                       />
                     </TooltipTrigger>
                   }
-                  onClickContinue={() => {
+                  onConfirm={() => {
                     setIsBulkDeleting(true);
                     removeUsersFromBundleGroups({
                       serviceInstanceId,
@@ -142,38 +142,29 @@ export const ManageTrialHeader = ({
                         ? `${visible} ${t('Service.Bundle.ManageTrial.BulkDeleteDialog.MoreEmails', { count: hiddenCount })}`
                         : visible,
                   })}
-                </AlertDialogComponent>
-                <TooltipContent className="bg-elevation-border-subtle-layer-0 dark:bg-elevation-border-subtle-layer-0 text-text-default-primary">
+                </ConfirmDialog>
+                <TooltipContent>
                   {t('Service.Bundle.ManageTrial.BulkDeleteTooltip')}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
           {selectedUsers.length === 0 ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger
-                  asChild
-                  className="w-fit"
-                  style={{ cursor: 'unset' }}>
-                  <div>
-                    <Button
-                      priority="secondary"
-                      disabled
-                      className="border-elevation-border-default-layer-0">
-                      {t('Service.Bundle.ManageTrial.GroupAction')}
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent className="bg-elevation-border-subtle-layer-0 dark:bg-elevation-border-subtle-layer-0 text-text-default-primary">
-                  {t('Service.Bundle.ManageTrial.GroupActionDisabledTooltip')}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <DisabledActionTooltip
+              reason={t(
+                'Service.Bundle.ManageTrial.GroupActionDisabledTooltip'
+              )}>
+              <Button
+                priority="secondary"
+                disabled
+                className="border-elevation-default">
+                {t('Service.Bundle.ManageTrial.GroupAction')}
+              </Button>
+            </DisabledActionTooltip>
           ) : (
             <Button
               priority="secondary"
-              className="border-elevation-border-default-layer-0"
+              className="border-elevation-default"
               onClick={() => setIsEditUsersDialogOpen(true)}>
               {t('Service.Bundle.ManageTrial.GroupAction')}
             </Button>

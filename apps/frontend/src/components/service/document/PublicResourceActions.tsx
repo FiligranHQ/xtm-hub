@@ -1,6 +1,7 @@
 'use client';
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { DisabledActionTooltip } from '@/components/ui/DisabledActionTooltip';
 import { ShareLinkButton } from '@/components/ui/share-link/ShareLinkButton';
 import { useTranslate } from '@/hooks/use-translate';
 import { isValueInEnum } from '@/utils/is-value-in-enum';
@@ -16,16 +17,15 @@ import {
   isResourceDeployable,
   isResourceDownloadable,
 } from '@/utils/shareable-resources/utils/shareable-resources.client.utils';
-import { DownloadIcon } from '@filigran/icon';
-import { SimpleTooltip } from '@filigran/ui';
 import {
+  Button,
+  IconButton,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@filigran/ui/clients';
-
-import { Button, IconButton } from '@filigran/design-system';
+} from '@filigran/design-system';
+import { DownloadIcon } from '@filigran/icon';
 import Link from 'next/link';
 
 interface PublicResourceActionsProps {
@@ -60,7 +60,7 @@ export const PublicResourceActions = ({
   });
 
   return (
-    <div className="flex items-center gap-s ml-auto">
+    <div className="flex items-center gap-2 ml-auto">
       <ShareLinkButton
         documentId={documentData.id}
         url={pageUrl}
@@ -76,7 +76,7 @@ export const PublicResourceActions = ({
                 <IconButton
                   asChild
                   priority="tertiary"
-                  className="z-[2] text-primary"
+                  className="z-[2]"
                   aria-label={t('Service.ShareableResources.Download')}
                   icon={<DownloadIcon className="h-4 w-4" />}>
                   <Link href={signupHref} />
@@ -102,9 +102,10 @@ export const PublicResourceActions = ({
             <Link href={signupHref}>{deployLabel}</Link>
           </Button>
         ) : (
-          <SimpleTooltip title={t('Service.Connectors.UnavailableDeployments')}>
+          <DisabledActionTooltip
+            reason={t('Service.Connectors.UnavailableDeployments')}>
             <Button disabled={true}>{deployLabel}</Button>
-          </SimpleTooltip>
+          </DisabledActionTooltip>
         ))}
     </div>
   );

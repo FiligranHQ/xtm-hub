@@ -1,5 +1,6 @@
 import ShareableResourceConnectorSlugPublic from '@/components/service/document/connector/ShareableResourceConnectorSlugPublic';
 import { PublicResourceActions } from '@/components/service/document/PublicResourceActions';
+import ResourceMarkdownRenderer from '@/components/service/document/ResourceMarkdownRenderer';
 import ShareableResourceDetails from '@/components/service/document/ShareableResouceDetails';
 import ShareableResourceCarousel from '@/components/service/document/ui/ShareableResourceCarouselView';
 import BadgeOverflowCounter, {
@@ -11,6 +12,7 @@ import { RelayProvider } from '@/relay/relay-provider';
 import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
 import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { filterDocumentImages, findDocumentLogo } from '@/utils/documents';
+import { getResourcePageFiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { formatPersonNames } from '@/utils/format/name';
 import {
   buildFiligranOrganizationJsonLd,
@@ -26,7 +28,6 @@ import {
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
-import { MarkdownRenderer } from '@filigran/ui/clients';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
   seoServiceInstanceQuery,
@@ -260,7 +261,7 @@ const Page = async ({
         dangerouslySetInnerHTML={{ __html: stringifyJsonLd(jsonLd) }}
       />
       <BreadcrumbNav value={breadcrumbValue} />
-      <div className="flex gap-s pb-l flex-col md:flex-row">
+      <div className="flex gap-2 pb-4 flex-col md:flex-row">
         {logo ? (
           <div className="w-24 shrink-0 rounded overflow-hidden">
             <Image
@@ -273,13 +274,13 @@ const Page = async ({
             />
           </div>
         ) : (
-          <div className="w-24 p-m border border-light shrink-0">
+          <div className="w-24 p-3 border shrink-0">
             <LogoFiligranIcon className="size-18" />
           </div>
         )}
         <div className="flex flex-col w-full justify-center">
           <div className="flex items-start">
-            <h1 className="whitespace-nowrap mb-s">{document.name}</h1>
+            <h1 className="whitespace-nowrap mb-2">{document.name}</h1>
             <RelayProvider>
               <PublicResourceActions
                 documentData={document}
@@ -304,17 +305,19 @@ const Page = async ({
           images={carouselImages}
         />
       )}
-      <div className="flex flex-col-reverse lg:flex-row w-full mt-l gap-xl">
+      <div className="flex flex-col-reverse lg:flex-row w-full mt-4 gap-6">
         <div className="flex-[3_3_0%]">
-          <h3 className="py-s txt-container-title truncate text-muted-foreground">
+          <h2 className="py-2 title-xs uppercase truncate text-default-secondary">
             {t('PublicResourcePage.Overview')}
-          </h3>
-          <section className="rounded bg-elevation-background-layer-1">
-            <h2 className="p-l">{document?.short_description}</h2>
-            <MarkdownRenderer
+          </h2>
+          <section className="rounded layer-1 bg-elevation-default">
+            <p className="p-4 content-base">{document?.short_description}</p>
+            <ResourceMarkdownRenderer
               source={document?.description ?? ''}
-              colorMode="dark"
-              className="p-l !bg-elevation-background-layer-1 markdown-content"
+              className="p-4"
+              filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+                serviceInstance.service_definition.identifier
+              )}
             />
           </section>
         </div>
@@ -322,6 +325,9 @@ const Page = async ({
           <ShareableResourceDetails
             documentData={document}
             downloadNumber={document.download_number}
+            filigranWebsiteUtm={getResourcePageFiligranWebsiteUtm(
+              serviceInstance.service_definition.identifier
+            )}
           />
         )}
       </div>

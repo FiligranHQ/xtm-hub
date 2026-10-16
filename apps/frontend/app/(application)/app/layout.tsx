@@ -72,7 +72,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
   return (
     <RelayProvider>
       <ReactQueryProvider>
-        <div className="flex min-h-screen">
+        <div className="flex min-h-[calc(100dvh-var(--cookie-banner-height,0px))]">
           <PageLoader>
             <EditModeProvider
               canEditContent={hasContentEditCapability(me)}

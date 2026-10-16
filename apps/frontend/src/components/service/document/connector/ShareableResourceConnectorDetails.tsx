@@ -8,6 +8,10 @@ import { ConnectorTypeLabel } from '@/components/service/integrations/connector-
 import { useConnectorTypeLabels } from '@/components/service/integrations/connector-type/use-connector-type-labels';
 import { useTranslate } from '@/hooks/use-translate';
 import { roundToNearest } from '@/lib/utils';
+import {
+  FiligranWebsiteUtm,
+  withFiligranWebsiteUtm,
+} from '@/utils/filigran-website-utm';
 import { Button } from '@filigran/design-system';
 import { LogoGitIcon, OpenInNewIcon } from '@filigran/icon';
 import { PlatformIdentifier } from '@graphql/generated';
@@ -32,6 +36,7 @@ export interface ShareableResourceConnectorDetailsProps {
     hunt_platform?: string | null;
   };
   compatibilityItem?: React.ReactNode;
+  filigranWebsiteUtm?: FiligranWebsiteUtm;
 }
 
 const CONNECTOR_DOCUMENTATION =
@@ -39,6 +44,7 @@ const CONNECTOR_DOCUMENTATION =
 export const ShareableResourceConnectorDetails = ({
   connectorDetails,
   compatibilityItem,
+  filigranWebsiteUtm,
 }: ShareableResourceConnectorDetailsProps) => {
   const t = useTranslate();
   const { huntPlatformLabel } = useConnectorTypeLabels();
@@ -56,7 +62,7 @@ export const ShareableResourceConnectorDetails = ({
             <Link
               href={connectorDetails.source_code}
               target="_blank">
-              <LogoGitIcon className="h-4 w-4 mr-s" />
+              <LogoGitIcon className="h-4 w-4 mr-2" />
               {connectorDetails.name}
             </Link>
           </Button>
@@ -70,10 +76,17 @@ export const ShareableResourceConnectorDetails = ({
             priority="tertiary"
             asChild>
             <Link
-              href={connectorDetails.subscription_link}
+              href={
+                filigranWebsiteUtm
+                  ? withFiligranWebsiteUtm(
+                      connectorDetails.subscription_link,
+                      filigranWebsiteUtm
+                    )
+                  : connectorDetails.subscription_link
+              }
               rel="noopener noreferrer"
               target="_blank">
-              <OpenInNewIcon className="h-4 w-4 mr-s" />
+              <OpenInNewIcon className="h-4 w-4 mr-2" />
               {t('Service.Connectors.VendorContact')}
             </Link>
           </Button>
@@ -82,7 +95,7 @@ export const ShareableResourceConnectorDetails = ({
       {connectorDetails.integration_type && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.IntegrationType')}>
-          <div className="flex items-center gap-s">
+          <div className="flex items-center gap-2">
             <span>
               {t(
                 `Service.OpenctiIntegrations.Type.${connectorDetails.integration_type}`
@@ -126,25 +139,37 @@ export const ShareableResourceConnectorDetails = ({
       )}
       <ShareableResourceDetailItem
         label={t('Service.ShareableResources.Details.OpenCTIDocumentation')}>
-        <ShareableResourceDetailsLink url={CONNECTOR_DOCUMENTATION} />
+        <ShareableResourceDetailsLink
+          url={CONNECTOR_DOCUMENTATION}
+          filigranWebsiteUtm={filigranWebsiteUtm}
+        />
       </ShareableResourceDetailItem>
 
       {connectorDetails?.datasheet_url && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.DatasheetURL')}>
-          <ShareableResourceDetailsLink url={connectorDetails.datasheet_url} />
+          <ShareableResourceDetailsLink
+            url={connectorDetails.datasheet_url}
+            filigranWebsiteUtm={filigranWebsiteUtm}
+          />
         </ShareableResourceDetailItem>
       )}
       {connectorDetails?.blogpost_url && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.BlogpostURL')}>
-          <ShareableResourceDetailsLink url={connectorDetails.blogpost_url} />
+          <ShareableResourceDetailsLink
+            url={connectorDetails.blogpost_url}
+            filigranWebsiteUtm={filigranWebsiteUtm}
+          />
         </ShareableResourceDetailItem>
       )}
       {connectorDetails?.demo_url && (
         <ShareableResourceDetailItem
           label={t('Service.ShareableResources.Details.DemoURL')}>
-          <ShareableResourceDetailsLink url={connectorDetails.demo_url} />
+          <ShareableResourceDetailsLink
+            url={connectorDetails.demo_url}
+            filigranWebsiteUtm={filigranWebsiteUtm}
+          />
         </ShareableResourceDetailItem>
       )}
       <ShareableResourceDetailItem

@@ -1,12 +1,13 @@
+import { FilterSheet } from '@/components/service/components/header/filter/FilterSheet';
 import { useServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
-import { SearchInput } from '@/components/ui/SearchInput';
+import { Separator } from '@/components/ui/separator';
 import { SortControls } from '@/components/ui/SortControls';
+import { useDebouncedSearch } from '@/hooks/use-debounced-search';
 import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-storage';
 import { useTranslate } from '@/hooks/use-translate';
 import { cn } from '@/lib/utils';
-import { debounceHandleInput } from '@/utils/debounce';
+import { SearchField } from '@filigran/design-system';
 import { CalendarViewMonthIcon, ListViewIcon } from '@filigran/icon';
-import { Separator } from '@filigran/ui/clients';
 import { DocumentOrdering } from '@graphql/generated';
 import React from 'react';
 
@@ -42,8 +43,10 @@ interface ServiceListHeaderProps {
   onSearchChange: (v: string) => void;
   paginationControls?: React.ReactNode;
   actions?: React.ReactNode;
+  exportAction?: React.ReactNode;
   className?: string;
   onDisplayModeChange?: (mode: ServiceListDisplayMode) => void;
+  filters?: ServiceListFilterMap;
 }
 
 export const ServiceListHeader = ({
@@ -51,8 +54,10 @@ export const ServiceListHeader = ({
   onSearchChange,
   paginationControls,
   actions,
+  exportAction,
   className,
   onDisplayModeChange,
+  filters,
 }: ServiceListHeaderProps) => {
   const t = useTranslate();
 
@@ -79,12 +84,20 @@ export const ServiceListHeader = ({
     label: t(`DocumentOrdering.${value}`),
   }));
 
+  const searchHandlers = useDebouncedSearch({
+    apply: onSearchChange,
+    appliedTerm: search,
+  });
+
   const searchInput = (
-    <SearchInput
-      containerClass="max-sm:w-full sm:w-[20rem]"
+    <SearchField
+      className="max-sm:w-full sm:w-[20rem]"
+      aria-label={t('GenericActions.Search')}
       placeholder={t('GenericActions.Search')}
+      clearLabel={t('DesignSystem.SearchField.Clear')}
       defaultValue={search}
-      onChange={debounceHandleInput(onSearchChange)}
+      onChange={searchHandlers.onChange}
+      onClear={searchHandlers.onClear}
     />
   );
 
@@ -100,18 +113,19 @@ export const ServiceListHeader = ({
   );
 
   return (
-    <div className={cn('flex flex-col justify-between gap-m', className)}>
-      <div className="flex flex-col gap-m sm:flex-row sm:justify-between sm:gap-s">
-        <div className="flex flex-col gap-m flex-1 min-w-0 sm:flex-row sm:items-start sm:justify-between sm:gap-s">
-          <div className="flex gap-s flex-wrap items-center min-w-0">
+    <div className={cn('flex flex-col justify-between gap-3', className)}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:gap-2">
+        <div className="flex flex-col gap-3 flex-1 min-w-0 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
+          <div className="flex gap-2 flex-wrap items-center min-w-0">
             {searchInput}
-            <div className="flex gap-s items-center min-w-0">
+            <div className="flex gap-2 items-center min-w-0">
               {sortControls}
+              {filters && <FilterSheet filters={filters} />}
             </div>
           </div>
           <div
             className={cn(
-              'flex items-center gap-s max-sm:w-full',
+              'flex items-center gap-2 max-sm:w-full',
               paginationControls
                 ? 'max-sm:justify-between sm:ml-auto'
                 : 'ml-auto'
@@ -121,7 +135,7 @@ export const ServiceListHeader = ({
                 {paginationControls}
               </div>
             )}
-            <div className="p-s border hover:cursor-pointer flex items-center align-middle gap-s">
+            <div className="p-2 border hover:cursor-pointer flex items-center align-middle gap-2">
               <button
                 type="button"
                 onClick={() =>
@@ -134,14 +148,14 @@ export const ServiceListHeader = ({
                   className={cn(
                     'h-5 w-5',
                     storedDisplayMode === ServiceListDisplayMode.Tab
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
+                      ? 'text-icon-highlight'
+                      : 'text-icon-subtle'
                   )}
                 />
               </button>
               <Separator
                 orientation="vertical"
-                className="h-5 w-px bg-border"
+                className="h-5"
               />
               <button
                 type="button"
@@ -155,17 +169,18 @@ export const ServiceListHeader = ({
                   className={cn(
                     'h-4 w-4',
                     storedDisplayMode === ServiceListDisplayMode.List
-                      ? 'text-primary'
-                      : 'text-muted-foreground'
+                      ? 'text-icon-highlight'
+                      : 'text-icon-subtle'
                   )}
                 />
               </button>
             </div>
+            {exportAction}
           </div>
         </div>
 
         {actions && (
-          <div className="flex gap-s max-sm:order-first max-sm:w-full max-sm:[&>*]:flex-1 max-sm:[&>*>*]:flex-1">
+          <div className="flex gap-2 max-sm:order-first max-sm:w-full max-sm:[&>*]:flex-1 max-sm:[&>*>*]:flex-1">
             {actions}
           </div>
         )}

@@ -1,3 +1,4 @@
+import { XTM_PLATFORM_TRIAL_PATH } from '@/utils/path/constant';
 import {
   DocumentImageType,
   PlatformContract,
@@ -100,6 +101,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
         title: 'OpenAEV Trial Platform',
         contract: PlatformContract.Trial,
+        deployment_request: { parent_id: 'bundle-1' },
         subscription: {
           start_date: '2025-12-15T00:00:00.000Z',
           end_date: '2026-01-03T00:00:00.000Z',
@@ -125,7 +127,7 @@ describe('mapRegisteredPlatformsToHomepageCards', () => {
         registrationDate: '2025-12-15T00:00:00.000Z',
         contract: PlatformContract.Trial,
         remainingTrialDays: 2,
-        href: '/app/service/openaev_registration/instance-2',
+        href: XTM_PLATFORM_TRIAL_PATH,
       },
     ]);
   });
