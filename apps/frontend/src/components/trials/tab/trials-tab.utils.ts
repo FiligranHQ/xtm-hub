@@ -2,11 +2,13 @@ import {
   TRIALS_PRODUCT_ORDER,
   TRIALS_TAB_CONFIG,
   TrialsTabType,
+  trialsRegionKey,
 } from '@/components/trials/trials.const';
 import {
   DeploymentRequestDeploymentType,
   DeploymentRequestFilter,
   DeploymentRequestFilterKey,
+  DeploymentRequestPlatformRegion,
   TrialsProductFragment,
 } from '@graphql/generated';
 
@@ -34,6 +36,25 @@ export const buildTrialsFilters = (
     value: TRIALS_TAB_CONFIG[type].statuses,
   },
 ];
+
+/**
+ * The regions a search term points at, so the trials list can match a region
+ * by its displayed label ("Europe") or by its raw code ("eu_west").
+ */
+export const matchSearchRegions = (
+  term: string | null,
+  t: (key: string) => string
+): DeploymentRequestPlatformRegion[] => {
+  const needle = term?.trim().toLowerCase();
+  if (!needle) {
+    return [];
+  }
+  return Object.values(DeploymentRequestPlatformRegion).filter(
+    (region) =>
+      region.toLowerCase().includes(needle) ||
+      t(trialsRegionKey(region)).toLowerCase().includes(needle)
+  );
+};
 
 /**
  * Format a cancellation reason for display in the trials dashboard.

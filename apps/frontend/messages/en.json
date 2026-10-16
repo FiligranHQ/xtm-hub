@@ -806,7 +806,7 @@
       "BundleReordered": "The bundle has been reordered in the queue."
     },
     "Actions": {
-      "SearchTrials": "Search by email or organization",
+      "SearchTrials": "Search by email, organization or region",
       "MoveToTop": "Move to top",
       "MoveUp": "Move up",
       "CancelBundle": "Cancel the bundle trial"

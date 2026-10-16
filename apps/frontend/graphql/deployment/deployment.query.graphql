@@ -40,6 +40,7 @@ query TrialsList(
   $orderMode: OrderingMode!
   $filters: [DeploymentRequestFilter!]
   $searchTerm: String
+  $searchRegions: [DeploymentRequestPlatformRegion!]
 ) {
   deploymentRequestsList(
     first: $count
@@ -48,6 +49,7 @@ query TrialsList(
     orderMode: $orderMode
     filters: $filters
     searchTerm: $searchTerm
+    searchRegions: $searchRegions
   ) {
     totalCount
     edges {

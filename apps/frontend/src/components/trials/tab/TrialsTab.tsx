@@ -2,6 +2,7 @@
 import {
   buildTrialsFilters,
   formatCancellationReason,
+  matchSearchRegions,
   sortProducts,
 } from '@/components/trials/tab/trials-tab.utils';
 import { TrialsProducts } from '@/components/trials/tab/TrialsProducts';
@@ -331,9 +332,10 @@ const TrialsTab = ({ type }: TrialsTabProps) => {
       orderBy,
       orderMode,
       searchTerm,
+      searchRegions: matchSearchRegions(searchTerm, t),
       filters: buildTrialsFilters(type),
     }),
-    [pagination.pageSize, cursor, orderBy, orderMode, searchTerm, type]
+    [pagination.pageSize, cursor, orderBy, orderMode, searchTerm, t, type]
   );
 
   const { data } = useTrialsListQuery(portalGraphqlClient, variables, {

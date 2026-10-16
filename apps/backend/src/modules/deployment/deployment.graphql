@@ -311,6 +311,7 @@ extend type Query {
     orderBy: DeploymentRequestOrdering!
     orderMode: OrderingMode!
     searchTerm: String
+    searchRegions: [DeploymentRequestPlatformRegion!]
   ): DeploymentRequestConnection! @auth(portalCapa: [BYPASS, READ_TRIALS])
   platformTrialStatus(organizationId: OrganizationId!): PlatformTrialStatus!
     @auth
