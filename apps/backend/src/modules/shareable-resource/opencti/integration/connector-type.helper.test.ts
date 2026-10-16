@@ -124,7 +124,7 @@ describe('connectorTypeHelper.resolveHuntPlatform', () => {
     ${'no config schema'}            | ${'INTERNAL_HUNT'}   | ${null}
     ${'an invalid config schema'}    | ${'INTERNAL_HUNT'}   | ${'{not json'}
     ${'a schema without scope'}      | ${'INTERNAL_HUNT'}   | ${JSON.stringify({ properties: {} })}
-    ${'a scope listing platforms'}   | ${'INTERNAL_HUNT'}   | ${huntConfigSchema(['splunk', 'internet'])}
+    ${'a scope listing platforms'}   | ${'INTERNAL_HUNT'}   | ${huntConfigSchema(['splunk', 'sentinelone'])}
     ${'a scope that is not a slug'}  | ${'INTERNAL_HUNT'}   | ${huntConfigSchema('splunk; drop')}
     ${'a non-string scope'}          | ${'INTERNAL_HUNT'}   | ${huntConfigSchema(42)}
   `('returns null for $case', ({ imageType, configSchema }) => {

@@ -1318,17 +1318,6 @@
         "INTERNAL_ANALYSIS": "Analyse interne",
         "INTERNAL_HUNT": "Chasse interne",
         "STREAM": "Stream"
-      },
-      "HuntPlatform": {
-        "splunk": "Splunk",
-        "microsoft-sentinel": "Microsoft Sentinel",
-        "elastic-security": "Elastic Security",
-        "crowdstrike-logscale": "CrowdStrike Falcon LogScale",
-        "google-secops": "Google Security Operations",
-        "opensearch": "OpenSearch",
-        "clickhouse": "ClickHouse",
-        "s3-ocsf": "Lac de données OCSF sur Amazon S3",
-        "internet": "Services de scan d'Internet"
       }
     },
     "CsvFeed": {

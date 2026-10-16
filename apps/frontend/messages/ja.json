@@ -1318,17 +1318,6 @@
         "INTERNAL_ANALYSIS": "内部分析",
         "INTERNAL_HUNT": "内部ハント",
         "STREAM": "ストリーム"
-      },
-      "HuntPlatform": {
-        "splunk": "Splunk",
-        "microsoft-sentinel": "Microsoft Sentinel",
-        "elastic-security": "Elastic Security",
-        "crowdstrike-logscale": "CrowdStrike Falcon LogScale",
-        "google-secops": "Google Security Operations",
-        "opensearch": "OpenSearch",
-        "clickhouse": "ClickHouse",
-        "s3-ocsf": "Amazon S3 上の OCSF データレイク",
-        "internet": "インターネットスキャンサービス"
       }
     },
     "CsvFeed": {

@@ -67,9 +67,7 @@ describe('ShareableResourceConnectorDetails', () => {
     expect(
       screen.getByText('Service.ShareableResources.Details.HuntedPlatform')
     ).toBeInTheDocument();
-    expect(
-      screen.getByText('Service.OpenctiIntegrations.HuntPlatform.splunk')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Splunk')).toBeInTheDocument();
   });
 
   it('should not display connector type rows when the catalog does not know the type', () => {

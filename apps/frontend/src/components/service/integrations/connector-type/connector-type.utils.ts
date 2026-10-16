@@ -31,16 +31,31 @@ export const UNKNOWN_CONNECTOR_TYPE_ICON: IconName = 'box';
 export const HUNT_PLATFORMS = [
   'splunk',
   'microsoft-sentinel',
+  'microsoft-defender',
   'elastic-security',
   'crowdstrike-logscale',
   'google-secops',
   'opensearch',
   'clickhouse',
   's3-ocsf',
-  'internet',
+  'sentinelone',
 ] as const;
 
 export type HuntPlatform = (typeof HUNT_PLATFORMS)[number];
+
+/** Product names, untranslated and identical to the OpenCTI hunt screens. */
+export const HUNT_PLATFORM_NAMES: Record<HuntPlatform, string> = {
+  splunk: 'Splunk',
+  'microsoft-sentinel': 'Microsoft Sentinel',
+  'microsoft-defender': 'Microsoft Defender XDR',
+  'elastic-security': 'Elastic Security',
+  'crowdstrike-logscale': 'CrowdStrike Falcon LogScale',
+  'google-secops': 'Google SecOps',
+  opensearch: 'OpenSearch',
+  clickhouse: 'ClickHouse',
+  's3-ocsf': 'Amazon S3 (OCSF)',
+  sentinelone: 'SentinelOne Singularity',
+};
 
 export const isConnectorType = (
   value: string | null | undefined
@@ -51,6 +66,11 @@ export const isHuntPlatform = (
   value: string | null | undefined
 ): value is HuntPlatform =>
   !!value && (HUNT_PLATFORMS as readonly string[]).includes(value);
+
+export const getHuntPlatformName = (huntPlatform: string): string =>
+  isHuntPlatform(huntPlatform)
+    ? HUNT_PLATFORM_NAMES[huntPlatform]
+    : humanizeIdentifier(huntPlatform);
 
 export const getConnectorTypeIcon = (connectorType: string): IconName =>
   isConnectorType(connectorType)
