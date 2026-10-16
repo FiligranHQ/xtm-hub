@@ -29,6 +29,7 @@ const AutoFormFile = ({
       <FileSelect
         {...getFileSelectLabels(t)}
         label={fieldConfigItem?.label || label}
+        helperText={fieldConfigItem?.helperText}
         required={isRequired}
         error={error?.message}
         {...(rest as FileSelectProps)}

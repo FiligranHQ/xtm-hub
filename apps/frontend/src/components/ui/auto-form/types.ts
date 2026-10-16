@@ -6,6 +6,8 @@ export type FieldConfigItem = {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement> &
     React.TextareaHTMLAttributes<HTMLTextAreaElement>;
   label?: string;
+  /** Help text below the field, for the field types that render one. */
+  helperText?: string;
   fieldType?:
     | keyof typeof INPUT_COMPONENTS
     | ((props: AutoFormInputComponentProps) => React.ReactElement | null);

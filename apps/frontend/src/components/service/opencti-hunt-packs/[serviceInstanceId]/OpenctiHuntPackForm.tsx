@@ -161,6 +161,9 @@ export const OpenctiHuntPackForm = ({
         document: isCreation
           ? {
               label: t('Service.OpenCTIHuntPack.Form.SelectHuntPackFile'),
+              helperText: t(
+                'Service.OpenCTIHuntPack.Form.SelectHuntPackFileDescription'
+              ),
               fieldType: 'file',
               inputProps: {
                 accept: JSON_FILE_ACCEPT,

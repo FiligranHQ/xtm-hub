@@ -1467,7 +1467,7 @@
       "Active": "公開",
       "Form": {
         "SelectHuntPackFile": "ハントパックファイル",
-        "SelectHuntPackFileDescription": "OpenCTI からエクスポートしたハントパック（1〜200 件のハントを含む STIX 2.1 バンドル）。ハント数、ATT&CK テクニック、ハント対象プラットフォームはファイルから読み取られます。"
+        "SelectHuntPackFileDescription": "OpenCTI からエクスポートしたハントパック（1〜200 件のテレメトリハントを含む STIX 2.1 バンドル）。ハント数、ATT&CK テクニック、ハント対象プラットフォームはファイルから読み取られます。"
       },
       "LoadError": {
         "Library": "ハントパックを読み込めませんでした。",

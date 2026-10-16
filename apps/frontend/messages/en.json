@@ -1467,7 +1467,7 @@
       "Active": "Published",
       "Form": {
         "SelectHuntPackFile": "Hunt pack file",
-        "SelectHuntPackFileDescription": "A hunt pack exported from OpenCTI (STIX 2.1 bundle of 1 to 200 hunts). The hunt count, ATT&CK techniques and hunted platforms are read from the file."
+        "SelectHuntPackFileDescription": "A hunt pack exported from OpenCTI (STIX 2.1 bundle of 1 to 200 telemetry hunts). The hunt count, ATT&CK techniques and hunted platforms are read from the file."
       },
       "LoadError": {
         "Library": "The hunt packs could not be loaded.",

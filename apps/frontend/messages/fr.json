@@ -1467,7 +1467,7 @@
       "Active": "Publié",
       "Form": {
         "SelectHuntPackFile": "Fichier du pack de chasse",
-        "SelectHuntPackFileDescription": "Un pack de chasse exporté d'OpenCTI (bundle STIX 2.1 de 1 à 200 chasses). Le nombre de chasses, les techniques ATT&CK et les plateformes de chasse sont lus dans le fichier."
+        "SelectHuntPackFileDescription": "Un pack de chasse exporté d'OpenCTI (bundle STIX 2.1 de 1 à 200 chasses de télémétrie). Le nombre de chasses, les techniques ATT&CK et les plateformes de chasse sont lus dans le fichier."
       },
       "LoadError": {
         "Library": "Les packs de chasse n'ont pas pu être chargés.",
