@@ -18,6 +18,7 @@ import {
   contextRegistererUserSecondOrga,
   contextSimpleUserSecondOrga,
   requestContextSimpleUserSecondOrga,
+  SERVICES,
   TEST_ORGANIZATIONS,
 } from '../../../../tests/tests.const';
 import {
@@ -93,6 +94,17 @@ describe('service Instance app', () => {
       await expect(
         ServiceInstanceApp.loadServiceInstance(serviceInstance.id)
       ).rejects.toThrow(ErrorCode.ServiceInstanceNotPublic);
+    });
+
+    it('should throw not found for a library hidden until its first published resource', async () => {
+      serviceInstance = await TestHelper.serviceInstance.create({
+        public: true,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_HUNT_PACKS.ID,
+      });
+
+      await expect(
+        ServiceInstanceApp.loadServiceInstance(serviceInstance.id)
+      ).rejects.toThrow(ErrorCode.ServiceInstanceNotFound);
     });
 
     it('should throw not found for an unknown service instance', async () => {

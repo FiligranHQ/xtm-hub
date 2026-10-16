@@ -28,9 +28,10 @@ export const ServiceInstanceApp = {
       { id: serviceInstanceId }
     );
     if (!service) {
-      const existingService = await ServiceInstanceDomain.loadServiceInstanceBy(
-        { id: serviceInstanceId }
-      );
+      const existingService =
+        await ServiceInstanceDomain.loadListedServiceInstanceBy({
+          id: serviceInstanceId,
+        });
       throw new Error(
         existingService
           ? ErrorCode.ServiceInstanceNotPublic

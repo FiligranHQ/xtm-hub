@@ -397,6 +397,16 @@ export const ServiceInstanceDomain = {
       .first();
   },
 
+  loadListedServiceInstanceBy: async (
+    field: ServiceInstanceMutator
+  ): Promise<ServiceInstance | undefined> => {
+    return db<ServiceInstance>('ServiceInstance')
+      .where(field)
+      .tap(restrictServiceInstanceToListed)
+      .select('ServiceInstance.*')
+      .first();
+  },
+
   loadServiceInstancesByIds: async (
     ids: ServiceInstanceId[]
   ): Promise<ServiceInstance[]> => {
