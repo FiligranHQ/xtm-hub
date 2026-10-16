@@ -25,6 +25,8 @@ const serviceInstancesHandler = mockGraphqlQuery({
 });
 
 const GQL_OPERATION_VOTING_ROUNDS_LIST = 'VotingRoundsList';
+const ADD_ROUND_LABEL = 'VotingRound.Actions.Add';
+const NEXT_PAGE_LABEL = 'DesignSystem.DataTable.NextPage';
 
 const votingRoundsResponse: VotingRoundsListQuery = {
   votingRounds: [
@@ -81,6 +83,29 @@ describe('VotingRounds', () => {
     ).toBeInTheDocument();
     expect(await screen.findByText('3')).toBeInTheDocument();
     expect(await screen.findByText('0')).toBeInTheDocument();
+  });
+
+  it('should put the add voting round action after the pagination, above the table', async () => {
+    // Given
+    mockRounds();
+
+    // When
+    testRender(<VotingRounds />);
+    await screen.findByText('Feature vote #1');
+
+    // Then
+    const addButton = screen.getByRole('button', { name: ADD_ROUND_LABEL });
+    const nextPageButton = screen.getByRole('button', {
+      name: NEXT_PAGE_LABEL,
+    });
+    expect(
+      nextPageButton.compareDocumentPosition(addButton) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      addButton.compareDocumentPosition(screen.getByRole('table')) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
   });
 
   it('should navigate to the round detail when clicking a row', async () => {

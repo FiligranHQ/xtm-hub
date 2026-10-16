@@ -1,4 +1,5 @@
 import { UserFragment } from '@/components/admin/user/UserList';
+import { AddUser } from '@/components/admin/user/forms/AddUser';
 import { PendingUserAlreadyProcessedDialog } from '@/components/admin/user/pending-user/PendingUserAlreadyProcessedDialog';
 import { PendingUserConfirmDialog } from '@/components/admin/user/pending-user/PendingUserConfirmDialog';
 import { useUserListLocalstorage } from '@/components/admin/user/pending-user/pending-user-list-localstorage';
@@ -14,6 +15,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
   DataTable,
   DataTableHeadBarOptions,
+  DataTableToolbar,
   SelectionState,
   useRowSelection,
 } from '@/components/ui/data-table';
@@ -349,19 +351,24 @@ const PendingUserList = ({ organization }: PendingUserListProps) => {
           enableRowSelection: (row) => row.original.id !== me!.id,
         }}
         toolbar={
-          <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-            <SearchField
-              className="w-full sm:w-1/3"
-              aria-label={t('UserActions.SearchUser')}
-              placeholder={t('UserActions.SearchUser')}
-              clearLabel={t('DesignSystem.SearchField.Clear')}
-              onChange={searchHandlers.onChange}
-              onClear={searchHandlers.onClear}
-            />
-            <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
-              <DataTableHeadBarOptions />
-            </div>
-          </div>
+          <DataTableToolbar
+            search={
+              <SearchField
+                fullWidth
+                aria-label={t('UserActions.SearchUser')}
+                placeholder={t('UserActions.SearchUser')}
+                clearLabel={t('DesignSystem.SearchField.Clear')}
+                onChange={searchHandlers.onChange}
+                onClear={searchHandlers.onClear}
+              />
+            }
+            actions={
+              <>
+                <DataTableHeadBarOptions />
+                <AddUser />
+              </>
+            }
+          />
         }
         tableState={{
           sorting: mapToSortingTableValue(orderBy, orderMode),

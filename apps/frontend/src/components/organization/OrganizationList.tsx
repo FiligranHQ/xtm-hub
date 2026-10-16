@@ -7,7 +7,11 @@ import { EditOrganization } from '@/components/organization/EditOrganization';
 import { getOrganizations } from '@/components/organization/Organization.service';
 import { useOrganizationListLocalstorage } from '@/components/organization/organization-list-localstorage';
 import { IconActions, IconActionsItem } from '@/components/ui/IconActions';
-import { DataTable, DataTableHeadBarOptions } from '@/components/ui/data-table';
+import {
+  DataTable,
+  DataTableHeadBarOptions,
+  DataTableToolbar,
+} from '@/components/ui/data-table';
 import {
   handleSortingChange,
   mapToSortingTableValue,
@@ -176,26 +180,30 @@ const OrganizationList = () => {
           columns={columns}
           data={organizationDataTable}
           toolbar={
-            <div className="flex flex-col-reverse items-center justify-between gap-2 sm:flex-row">
-              <SearchField
-                className="w-full sm:w-1/3"
-                aria-label={t(
-                  'OrganizationActions.SearchOrganizationWithEmail'
-                )}
-                placeholder={t(
-                  'OrganizationActions.SearchOrganizationWithEmail'
-                )}
-                clearLabel={t('DesignSystem.SearchField.Clear')}
-                onChange={searchHandlers.onChange}
-                onClear={searchHandlers.onClear}
-              />
-              <div className="flex w-full items-center justify-between gap-2 sm:w-auto">
-                <DataTableHeadBarOptions />
-                <CreateOrganization
-                  connectionId={organizationsData.organizations.__id}
+            <DataTableToolbar
+              search={
+                <SearchField
+                  fullWidth
+                  aria-label={t(
+                    'OrganizationActions.SearchOrganizationWithEmail'
+                  )}
+                  placeholder={t(
+                    'OrganizationActions.SearchOrganizationWithEmail'
+                  )}
+                  clearLabel={t('DesignSystem.SearchField.Clear')}
+                  onChange={searchHandlers.onChange}
+                  onClear={searchHandlers.onClear}
                 />
-              </div>
-            </div>
+              }
+              actions={
+                <>
+                  <DataTableHeadBarOptions />
+                  <CreateOrganization
+                    connectionId={organizationsData.organizations.__id}
+                  />
+                </>
+              }
+            />
           }
           onResetTable={resetAll}
           tableOptions={{

@@ -41,7 +41,8 @@ vi.mock('usehooks-ts', async (importOriginal) => {
   };
 });
 
-vi.mock('@/components/ui/data-table', () => ({
+vi.mock('@/components/ui/data-table', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/components/ui/data-table')>()),
   DataTableHeadBarOptions: () => <div>DataTableHeadBarOptions</div>,
   DataTable: ({
     data,

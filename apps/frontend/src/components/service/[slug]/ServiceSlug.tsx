@@ -13,6 +13,7 @@ import {
 import {
   DataTable,
   DataTableHeadBarOptions,
+  DataTableToolbar,
   SelectionState,
 } from '@/components/ui/data-table';
 import {
@@ -173,41 +174,43 @@ const ServiceSlug = ({
   ];
 
   const toolbar = (
-    <div className="flex justify-between flex-wrap gap-2 pt-2">
-      <div className="flex items-center gap-3 ml-4">
-        <div className="flex-1 max-w-sm">
-          <SearchField
-            id="SearchTerm"
-            fullWidth
-            aria-label={t('Service.Management.SearchOrganization')}
-            placeholder={t('Service.Management.SearchOrganization')}
-            clearLabel={t('DesignSystem.SearchField.Clear')}
-            onChange={searchHandlers.onChange}
-            onClear={searchHandlers.onClear}
+    <DataTableToolbar
+      className="pt-2"
+      search={
+        <SearchField
+          id="SearchTerm"
+          fullWidth
+          aria-label={t('Service.Management.SearchOrganization')}
+          placeholder={t('Service.Management.SearchOrganization')}
+          clearLabel={t('DesignSystem.SearchField.Clear')}
+          onChange={searchHandlers.onChange}
+          onClear={searchHandlers.onClear}
+        />
+      }
+      actions={
+        <>
+          <ServiceSlugSubscription
+            subscriptions={subscriptions}
+            subscriptionToEdit={updateSubscription}
+            serviceInstance={serviceInstance}
+            subscriptionConnectionId={subscriptionConnectionId}
+            openEdit={openEdit}
+            setOpenEdit={(open) => {
+              setOpenEdit(open);
+              if (!open) setUpdateSubscription(undefined);
+            }}
           />
-        </div>
+          <DataTableHeadBarOptions />
+        </>
+      }
+      extraControls={
         <Switch
           label={t('Service.Management.ShowPersonalSpaces')}
           checked={shouldDisplayPersonalSpaces}
           onCheckedChange={(value) => setShouldDisplayPersonalSpaces(value)}
         />
-      </div>
-
-      <div className="flex gap-2 flex-wrap ml-auto">
-        <ServiceSlugSubscription
-          subscriptions={subscriptions}
-          subscriptionToEdit={updateSubscription}
-          serviceInstance={serviceInstance}
-          subscriptionConnectionId={subscriptionConnectionId}
-          openEdit={openEdit}
-          setOpenEdit={(open) => {
-            setOpenEdit(open);
-            if (!open) setUpdateSubscription(undefined);
-          }}
-        />
-        <DataTableHeadBarOptions />
-      </div>
-    </div>
+      }
+    />
   );
 
   const filteredAndSortedData = useMemo(() => {
