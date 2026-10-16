@@ -29,7 +29,7 @@ export const EpicItemDetailed = ({ epic }: EpicItemDetailedProps) => {
     <div className="flex h-full min-h-0 flex-1 flex-col">
       <h2 className="pr-8">{epic.title}</h2>
       <p className="text-default-secondary text-sm">{epic.short_description}</p>
-      <Separator className="my-2" />
+      <Separator className="my-4" />
       <div className="min-h-0 flex-1 overflow-y-auto">
         {epic.description && <MarkdownRenderer source={epic.description} />}
         {sections.map(({ labelKey, source }) => (
@@ -39,10 +39,10 @@ export const EpicItemDetailed = ({ epic }: EpicItemDetailedProps) => {
           </section>
         ))}
       </div>
-      <Separator />
+      <Separator className="my-4" />
       <div className="markdown-content">
         <EpicItemFooter epic={epic}>
-          <p className="flex min-h-9 flex-wrap items-center gap-1">
+          <div className="ml-auto flex min-h-9 flex-wrap items-center gap-1">
             <Link
               href={slackLink}
               target="_blank"
@@ -51,7 +51,7 @@ export const EpicItemDetailed = ({ epic }: EpicItemDetailedProps) => {
                 {t('Epic.JoinCommunity')}
               </span>
             </Link>
-          </p>
+          </div>
         </EpicItemFooter>
       </div>
     </div>
