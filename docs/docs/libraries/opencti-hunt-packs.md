@@ -13,6 +13,9 @@ All users can browse the library on XTM Hub free of charge, with or without auth
 of each hunt pack before deploying it. Manual hunts and hunt pack imports are part of the OpenCTI Community Edition;
 scheduled and standing hunts are Enterprise Edition features of OpenCTI.
 
+The library appears in the navigation and on the public site as soon as it holds a published hunt pack. Until then,
+only XTM Hub administrators see it, to publish the first pack.
+
 Every value shown about the content of a pack is read from the pack file when it is uploaded, never typed by hand:
 
 - **Hunts**: the number of hunts in the pack.

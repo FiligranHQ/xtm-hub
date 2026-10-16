@@ -107,6 +107,9 @@ export const SERVICES = {
     OPENCTI_REGISTRATION: {
       ID: '5f769173-5ace-4ef3-b04f-2c95609c5b59' as ServiceDefinitionId,
     },
+    OPENCTI_HUNT_PACKS: {
+      ID: '5b3f8f6e-2d0c-4a8e-9f7b-1c2d3e4f5a61' as ServiceDefinitionId,
+    },
   },
   INSTANCES: {
     INTEGRATIONS: {

@@ -29,6 +29,7 @@ import { UserId } from '../../../model/kanel/public/User';
 import { isUserAdminPlatform } from '../../../security/access';
 import {
   restrictServiceInstanceToAccessible,
+  restrictServiceInstanceToListed,
   restrictServiceInstanceToPublic,
 } from '../../../security/restriction/service-instance';
 import { buildTupleFilter } from '../../../utils/batch-query.util';
@@ -243,6 +244,7 @@ export const ServiceInstanceDomain = {
       db<ServiceInstance>('ServiceInstance').modify((queryBuilder) => {
         if (!showEveryServiceInstance) {
           restrictServiceInstanceToAccessible(queryBuilder);
+          restrictServiceInstanceToListed(queryBuilder);
         }
       })
     );
@@ -390,6 +392,7 @@ export const ServiceInstanceDomain = {
     return db<ServiceInstance>('ServiceInstance')
       .where(field)
       .tap(restrictServiceInstanceToAccessible)
+      .tap(restrictServiceInstanceToListed)
       .select('ServiceInstance.*')
       .first();
   },
@@ -486,6 +489,7 @@ export const ServiceInstanceDomain = {
         dbRaw('json_agg("Service_Link") AS links')
       )
       .where('ServiceInstance.public', '=', true)
+      .tap(restrictServiceInstanceToListed)
       .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
       .orderBy('ServiceInstance.ordering', 'asc');
   },
@@ -530,6 +534,7 @@ export const ServiceInstanceDomain = {
       )
       .where('ServiceInstance.slug', '=', slug)
       .tap(restrictServiceInstanceToPublic)
+      .tap(restrictServiceInstanceToListed)
       .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
       .first();
   },

@@ -1055,4 +1055,108 @@ describe('service instance domain', () => {
       expect(bySlug).toBeUndefined();
     });
   });
+
+  describe('library listed once published', () => {
+    const libraryId = uuidv4() as ServiceInstanceId;
+    const librarySlug = 'listed-once-published';
+
+    const visibility = async () => {
+      const { edges } = await ServiceInstanceDomain.loadServiceInstances({
+        first: 100,
+        after: null,
+        orderBy: 'ordering',
+        orderMode: 'asc',
+        searchTerm: null,
+        filters: null,
+      });
+      const seoInstances =
+        await ServiceInstanceDomain.loadSeoServiceInstances();
+      return {
+        navigation: edges.some(({ node }) => node.id === libraryId),
+        route: !!(await ServiceInstanceDomain.loadAccessibleServiceInstanceBy(
+          { id: libraryId }
+        )),
+        publicSite: seoInstances.some(({ id }) => id === libraryId),
+        publicRoute:
+          !!(await ServiceInstanceDomain.loadSeoServiceInstanceBySlug(
+            librarySlug
+          )),
+      };
+    };
+    const hidden = {
+      navigation: false,
+      route: false,
+      publicSite: false,
+      publicRoute: false,
+    };
+    const listed = {
+      navigation: true,
+      route: true,
+      publicSite: true,
+      publicRoute: true,
+    };
+
+    beforeAll(async () => {
+      await TestHelper.serviceInstance.create({
+        id: libraryId,
+        name: 'listed once published',
+        slug: librarySlug,
+        public: true,
+        service_definition_id: SERVICES.DEFINITIONS.OPENCTI_HUNT_PACKS.ID,
+      });
+    });
+
+    afterEach(async () => {
+      await TestHelper.document.delete({ service_instance_id: libraryId });
+    });
+
+    afterAll(async () => {
+      await TestHelper.serviceInstance.delete({ id: libraryId });
+    });
+
+    it('should hide the library from users and visitors while it holds no resource', async () => {
+      requestContext.set(requestContextRegistererUserSecondOrga);
+      expect(await visibility()).toEqual(hidden);
+
+      requestContext.set({});
+      expect(await visibility()).toEqual(hidden);
+    });
+
+    it('should keep the library hidden while its resources are unpublished or attached to another one', async () => {
+      const draft = await TestHelper.document.create({
+        service_instance_id: libraryId,
+        active: false,
+      });
+      const image = await TestHelper.document.create({
+        service_instance_id: libraryId,
+        active: true,
+      });
+      await TestHelper.documentChildren.create({
+        parent_document_id: draft.id,
+        child_document_id: image.id,
+      });
+      requestContext.set(requestContextRegistererUserSecondOrga);
+
+      expect(await visibility()).toEqual(hidden);
+    });
+
+    it('should list the library to users and visitors as soon as one resource is published', async () => {
+      await TestHelper.document.create({
+        service_instance_id: libraryId,
+        active: true,
+      });
+
+      requestContext.set(requestContextRegistererUserSecondOrga);
+      expect(await visibility()).toEqual(listed);
+
+      requestContext.set({});
+      expect(await visibility()).toEqual(listed);
+    });
+
+    it('should list the library to a platform administrator before its first resource is published', async () => {
+      requestContext.set(requestContextAdminUser);
+
+      expect(await visibility()).toEqual(listed);
+    });
+  });
 });

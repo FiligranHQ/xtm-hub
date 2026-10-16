@@ -342,6 +342,39 @@ describe('usePrivateNavigation', () => {
     });
   });
 
+  it('lists the hunt packs library in the OpenCTI section once the service list returns it', () => {
+    const huntPacksHref = '/app/service/opencti_hunt_packs/hunt-packs-id';
+    vi.mocked(getPrivateNavigationServiceHrefs).mockReturnValue(
+      new Map<ServiceDefinitionIdentifier, string>([
+        [ServiceDefinitionIdentifier.OpenctiHuntPacks, huntPacksHref],
+      ])
+    );
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    expect(
+      getSection(result.current.sections, 'opencti')?.links
+    ).toContainEqual({ href: huntPacksHref, label: 'HuntPacks' });
+  });
+
+  it('leaves the hunt packs library out of the OpenCTI section while the service list hides it', () => {
+    vi.mocked(getPrivateNavigationServiceHrefs).mockReturnValue(
+      new Map<ServiceDefinitionIdentifier, string>()
+    );
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    expect(
+      getSection(result.current.sections, 'opencti')?.links.map(
+        ({ label }) => label
+      )
+    ).not.toContain('HuntPacks');
+  });
+
   it('does not render roadmap bottom link when roadmap service href is missing', () => {
     vi.mocked(getPrivateNavigationServiceHrefs).mockReturnValue(
       new Map<ServiceDefinitionIdentifier, string>()
