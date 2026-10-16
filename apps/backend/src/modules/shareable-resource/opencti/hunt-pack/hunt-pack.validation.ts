@@ -22,17 +22,21 @@ const CONDITION_KEYWORDS = new Set([
   'all',
   'any',
 ]);
-const HUNT_TYPES = ['telemetry', 'infrastructure'];
+// A pack holds telemetry hunts only, and OpenCTI reads a hunt without a type
+// as a telemetry hunt. Infrastructure packs come with the infrastructure hunts.
+const HUNT_TYPES = ['telemetry'];
+// The detection platforms an internal hunt Connector queries
 const HUNT_PLATFORMS = [
   'splunk',
   'microsoft-sentinel',
+  'microsoft-defender',
   'elastic-security',
   'crowdstrike-logscale',
   'google-secops',
   'opensearch',
   'clickhouse',
   's3-ocsf',
-  'internet',
+  'sentinelone',
 ];
 const NATIVE_QUERY_MAX_LENGTH = 65536;
 const NATIVE_QUERY_LANGUAGE_MAX_LENGTH = 64;
@@ -310,7 +314,9 @@ const nativeQueryErrors = (nativeQueries: unknown): string[] => {
     }
     const platform = trimmedText(item.platform);
     if (!HUNT_PLATFORMS.includes(platform)) {
-      errors.push(`${label}: the platform is not a hunted platform of OpenCTI`);
+      errors.push(
+        `${label}: the platform is not a detection platform OpenCTI hunts on`
+      );
       return;
     }
     if (platforms.has(platform)) {
@@ -342,7 +348,7 @@ export const huntImportErrors = (hunt: Record<string, unknown>): string[] => {
     isPresent(hunt.hunt_type) &&
     !HUNT_TYPES.includes(String(hunt.hunt_type))
   ) {
-    errors.push('the hunt type is neither telemetry nor infrastructure');
+    errors.push('the hunt type is not telemetry, the only type a pack holds');
   }
   if (isPresent(hunt.sigma_rule)) {
     if (typeof hunt.sigma_rule !== 'string') {

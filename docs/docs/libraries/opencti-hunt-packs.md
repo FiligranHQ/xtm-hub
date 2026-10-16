@@ -76,10 +76,11 @@ Users allowed to upload to the library publish packs from the library page with 
 2. Upload the exported file. The XTM Hub accepts a STIX 2.1 bundle of 1 to 200 hunts of at most 20 MB, the format OpenCTI exports
    and imports, and rejects any other file with an explanation, including a bundle with a hunt that has no STIX
    identifier or does not declare `spec_version` 2.1. It also runs the checks of the OpenCTI import on every hunt: a name, a valid Sigma rule when the
-   hunt has one, native queries for hunted platforms OpenCTI supports
+   hunt has one, native queries for the detection platforms the internal hunt Connectors query
    (one per platform, each with a language and a query), a schedule that is manual, standing or a cron expression
    firing at most every 15 minutes, and a time window, escalation threshold and result limit within the OpenCTI
-   defaults. A pack OpenCTI would refuse is never published.
+   defaults. A pack OpenCTI would refuse is never published. A pack holds telemetry hunts only: a hunt of another
+   type is refused, and infrastructure packs come with the infrastructure hunts.
 3. Describe the pack: what it covers, the log sources its hunts need, and how to triage a hit. The hunt count,
    the hunted platforms and the ATT&CK techniques are filled in from the file.
 4. Set the OpenCTI version the pack requires. The XTM Hub never accepts a version older than 7.261003.0, the first

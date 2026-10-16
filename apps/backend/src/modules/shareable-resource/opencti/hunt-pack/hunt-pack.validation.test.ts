@@ -226,16 +226,36 @@ describe('huntImportErrors', () => {
   });
 
   it.each`
+    platform
+    ${'microsoft-defender'}
+    ${'sentinelone'}
+  `('accepts a native query for the detection platform $platform', ({ platform }) => {
+    expect(
+      huntImportErrors({
+        ...validHunt,
+        native_queries: [{ platform, language: 'kql', query: 'DeviceEvents' }],
+      })
+    ).toEqual([]);
+  });
+
+  it('accepts a hunt without type, which OpenCTI imports as a telemetry hunt', () => {
+    const { hunt_type: _huntType, ...untypedHunt } = validHunt;
+
+    expect(huntImportErrors(untypedHunt)).toEqual([]);
+  });
+
+  it.each`
     case                             | nativeQueries                                                                                                 | error
     ${'a missing language'}          | ${[{ platform: 'splunk', query: 'index=main' }]}                                                              | ${'a language'}
     ${'a missing query'}             | ${[{ platform: 'splunk', language: 'spl' }]}                                                                  | ${'a query'}
     ${'an oversized query'}          | ${[{ platform: 'splunk', language: 'spl', query: 'x'.repeat(65537) }]}                                        | ${'a query'}
     ${'an oversized language'}       | ${[{ platform: 'splunk', language: 'x'.repeat(65), query: 'index=main' }]}                                    | ${'a language'}
     ${'an oversized pipeline'}       | ${[{ platform: 'splunk', language: 'spl', query: 'index=main', pipeline: 'x'.repeat(257) }]}                  | ${'pipeline'}
-    ${'an unsupported platform'}     | ${[{ platform: 'Splunk', language: 'spl', query: 'index=main' }]}                                             | ${'not a hunted platform'}
+    ${'an unsupported platform'}     | ${[{ platform: 'Splunk', language: 'spl', query: 'index=main' }]}                                             | ${'not a detection platform'}
+    ${'the internet platform'}       | ${[{ platform: 'internet', language: 'shodan', query: 'port:3389' }]}                                         | ${'not a detection platform'}
     ${'a duplicated platform'}       | ${[{ platform: 'splunk', language: 'spl', query: 'a' }, { platform: 'splunk', language: 'spl', query: 'b' }]} | ${'already has a native query'}
     ${'an item that is no query'}    | ${['not json']}                                                                                               | ${'not an object'}
-    ${'more queries than platforms'} | ${Array.from({ length: 10 }, () => 'not parsed')}                                                             | ${'at most 9 native queries'}
+    ${'more queries than platforms'} | ${Array.from({ length: 11 }, () => 'not parsed')}                                                             | ${'at most 10 native queries'}
   `('refuses native queries with $case', ({ nativeQueries, error }) => {
     expect(
       huntImportErrors({ ...validHunt, native_queries: nativeQueries }).join(
@@ -247,7 +267,9 @@ describe('huntImportErrors', () => {
   it.each`
     case                         | change                                 | error
     ${'no name'}                 | ${{ name: '  ' }}                      | ${'no name'}
-    ${'an unknown hunt type'}    | ${{ hunt_type: 'endpoint' }}           | ${'neither telemetry nor infrastructure'}
+    ${'an unknown hunt type'}    | ${{ hunt_type: 'endpoint' }}           | ${'not telemetry'}
+    ${'an infrastructure type'}  | ${{ hunt_type: 'infrastructure' }}     | ${'not telemetry'}
+    ${'an indicators type'}      | ${{ hunt_type: 'indicators' }}         | ${'not telemetry'}
     ${'a Sigma rule not a text'} | ${{ sigma_rule: { title: 'T' } }}      | ${'not a text'}
     ${'an invalid Sigma rule'}   | ${{ sigma_rule: 'title: T' }}          | ${'must have a logsource'}
     ${'an invalid schedule'}     | ${{ hunt_schedule: '99 99 99 99 99' }} | ${'out of range'}
