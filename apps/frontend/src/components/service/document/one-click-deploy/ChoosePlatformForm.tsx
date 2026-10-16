@@ -1,18 +1,13 @@
+import {
+  useDeployResourceTitle,
+  useIncompatibleVersionMessage,
+} from '@/components/service/document/one-click-deploy/use-deploy-resource-title';
 import { AutoForm } from '@/components/ui/auto-form';
 import { FormControl, FormItem, FormMessage } from '@/components/ui/form';
 import { useTranslate } from '@/hooks/use-translate';
 import { isEeCapableContract } from '@/utils/platform';
-import { SHAREABLE_RESOURCE_TYPE_NAME_MAPPING } from '@/utils/shareable-resources/shareable-resources.types';
 import { doesVersionSatisfy } from '@/utils/versioning';
-import {
-  Button,
-  Radio,
-  RadioGroup,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@filigran/design-system';
+import { Button, Radio, RadioGroup } from '@filigran/design-system';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { useRegisteredPlatformsFragment$data } from '@generated/useRegisteredPlatformsFragment.graphql';
 import { z } from 'zod';
@@ -41,6 +36,9 @@ const ChoosePlatformForm = ({
   requiresEe,
 }: ChoosePlatformFormProps) => {
   const t = useTranslate();
+  const title = useDeployResourceTitle(documentData);
+  const incompatibleVersionMessage =
+    useIncompatibleVersionMessage(documentData);
   const deployQuestion = t(
     'Service.ShareableResources.Deploy.DeployQuestionTag',
     { platformType: translatedPlatformIdentifier }
@@ -49,15 +47,7 @@ const ChoosePlatformForm = ({
   return (
     <div className="flex flex-col h-full justify-between gap-3">
       <div className="space-y-3">
-        <h1>
-          {t('Service.ShareableResources.Deploy.DeployResourceDescription', {
-            resourceName: documentData.name ?? '',
-            resourceType:
-              SHAREABLE_RESOURCE_TYPE_NAME_MAPPING[
-                documentData.type as keyof typeof SHAREABLE_RESOURCE_TYPE_NAME_MAPPING
-              ],
-          })}
-        </h1>
+        <h1>{title}</h1>
         <p>{deployQuestion}</p>
       </div>
       <AutoForm
@@ -84,49 +74,27 @@ const ChoosePlatformForm = ({
                       const isEeBlocked =
                         requiresEe && !isEeCapableContract(platform.contract);
                       const isDisabled = !isPlatformCompatible || isEeBlocked;
+                      const reason = isEeBlocked
+                        ? t(
+                            'Service.ShareableResources.Deploy.EE.PlatformRequiresEE',
+                            { platformTitle: platform.title }
+                          )
+                        : !isPlatformCompatible
+                          ? incompatibleVersionMessage(
+                              platform.title,
+                              requiredProductVersion ?? ''
+                            )
+                          : undefined;
 
-                      const radio = (
+                      return (
                         <Radio
                           key={platform.id}
                           id={platform.id}
                           value={platform.url}
                           disabled={isDisabled}
                           label={platform.title}
+                          description={reason}
                         />
-                      );
-
-                      if (!isDisabled) {
-                        return radio;
-                      }
-
-                      return (
-                        <TooltipProvider key={platform.id}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span
-                                className="flex"
-                                tabIndex={0}>
-                                {radio}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>
-                                {isEeBlocked
-                                  ? t(
-                                      'Service.ShareableResources.Deploy.EE.PlatformRequiresEE',
-                                      { platformTitle: platform.title }
-                                    )
-                                  : t(
-                                      'Service.ShareableResources.Deploy.DeployIncompatibleVersion',
-                                      {
-                                        platformTitle: platform.title,
-                                        version: requiredProductVersion ?? '',
-                                      }
-                                    )}
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
                       );
                     })}
                   </RadioGroup>
