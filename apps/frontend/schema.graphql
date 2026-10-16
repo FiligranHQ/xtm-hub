@@ -1614,6 +1614,12 @@ type ServiceInstance implements Node {
   logo_document_id: DocumentId
   illustration_document_id: DocumentId
   ordering: Int!
+
+  """
+  True while a library listed once it holds a published resource holds none:
+  only platform administrators see it then.
+  """
+  hidden_until_published: Boolean!
 }
 
 type ServiceInstanceEdge {

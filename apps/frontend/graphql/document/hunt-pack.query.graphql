@@ -65,6 +65,13 @@ query HuntPackDocument(
   }
 }
 
+query HuntPackLibraryVisibility($serviceInstanceId: ServiceInstanceId!) {
+  serviceInstanceById(service_instance_id: $serviceInstanceId) {
+    id
+    hidden_until_published
+  }
+}
+
 query HuntPackDocuments(
   $count: Int!
   $cursor: ID

@@ -2,14 +2,18 @@ import HuntPackServiceList from '@/components/service/opencti-hunt-packs/HuntPac
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import testRender from '@/utils/test/test-render';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
-import { useHuntPackDocumentsQuery } from '@graphql/generated';
+import {
+  useHuntPackDocumentsQuery,
+  useHuntPackLibraryVisibilityQuery,
+} from '@graphql/generated';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@graphql/generated', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@graphql/generated')>()),
   useHuntPackDocumentsQuery: vi.fn(),
+  useHuntPackLibraryVisibilityQuery: vi.fn(),
 }));
 
 vi.mock(
@@ -41,12 +45,15 @@ vi.mock('@/components/service/components/ServiceList', () => ({
     active,
     draft,
     paginationControls,
+    notice,
   }: {
     active: { id: string; name: string }[];
     draft: { id: string; name: string }[];
     paginationControls: React.ReactNode;
+    notice: React.ReactNode;
   }) => (
     <div>
+      {notice}
       <ul data-testid="active">
         {active.map(({ id, name }) => (
           <li key={id}>{name}</li>
@@ -73,6 +80,27 @@ const mockQuery = (result: Record<string, unknown>) =>
       result as unknown as ReturnType<typeof useHuntPackDocumentsQuery>
     );
 
+const mockVisibility = (hiddenUntilPublished: boolean) =>
+  vi.mocked(useHuntPackLibraryVisibilityQuery).mockReturnValue({
+    data: {
+      serviceInstanceById: {
+        id: 'service-1',
+        hidden_until_published: hiddenUntilPublished,
+      },
+    },
+  } as unknown as ReturnType<typeof useHuntPackLibraryVisibilityQuery>);
+
+const listedDocuments = {
+  data: {
+    documents: {
+      totalCount: 1,
+      edges: [{ node: { id: 'pack-1', name: 'Draft pack', active: false } }],
+    },
+  },
+  isPending: false,
+  isError: false,
+};
+
 const renderList = () =>
   testRender(
     <HuntPackServiceList
@@ -83,6 +111,40 @@ const renderList = () =>
   );
 
 describe('HuntPackServiceList', () => {
+  beforeEach(() => {
+    mockVisibility(false);
+  });
+
+  it('tells the administrator that only administrators see the library while no pack is published', () => {
+    mockQuery(listedDocuments);
+    mockVisibility(true);
+
+    renderList();
+
+    expect(useHuntPackLibraryVisibilityQuery).toHaveBeenCalledWith(
+      portalGraphqlClient,
+      { serviceInstanceId: 'service-1' }
+    );
+    expect(
+      screen.getByText('Service.OpenCTIHuntPack.HiddenUntilPublished.Title')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Service.OpenCTIHuntPack.HiddenUntilPublished.Description'
+      )
+    ).toBeInTheDocument();
+  });
+
+  it('says nothing about the visibility once a pack is published', () => {
+    mockQuery(listedDocuments);
+
+    renderList();
+
+    expect(
+      screen.queryByText('Service.OpenCTIHuntPack.HiddenUntilPublished.Title')
+    ).not.toBeInTheDocument();
+  });
+
   it('lists the active and draft hunt packs read with React Query', () => {
     mockQuery({
       data: {

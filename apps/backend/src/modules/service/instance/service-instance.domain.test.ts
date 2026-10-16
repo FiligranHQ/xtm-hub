@@ -1158,5 +1158,45 @@ describe('service instance domain', () => {
 
       expect(await visibility()).toEqual(listed);
     });
+
+    it('should report the library hidden to a platform administrator until one resource is published', async () => {
+      requestContext.set(requestContextAdminUser);
+      await TestHelper.document.create({
+        service_instance_id: libraryId,
+        active: false,
+      });
+
+      expect(
+        await ServiceInstanceDomain.isServiceInstanceHiddenUntilPublished(
+          libraryId
+        )
+      ).toBe(true);
+
+      await TestHelper.document.create({
+        service_instance_id: libraryId,
+        active: true,
+      });
+
+      expect(
+        await ServiceInstanceDomain.isServiceInstanceHiddenUntilPublished(
+          libraryId
+        )
+      ).toBe(false);
+    });
+
+    it('should never report hidden a service listed without a published resource', async () => {
+      requestContext.set(requestContextAdminUser);
+      const service = await TestHelper.serviceInstance.create({
+        public: true,
+      });
+
+      expect(
+        await ServiceInstanceDomain.isServiceInstanceHiddenUntilPublished(
+          service.id
+        )
+      ).toBe(false);
+
+      await TestHelper.serviceInstance.delete({ id: service.id });
+    });
   });
 });

@@ -2674,6 +2674,11 @@ export type ServiceInstance = Node & {
   capabilities: Array<Maybe<Scalars['String']['output']>>;
   creation_status?: Maybe<ServiceInstanceCreationStatus>;
   description?: Maybe<Scalars['String']['output']>;
+  /**
+   * True while a library listed once it holds a published resource holds none:
+   * only platform administrators see it then.
+   */
+  hidden_until_published: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   illustration_document_id?: Maybe<Scalars['DocumentId']['output']>;
   links?: Maybe<Array<Maybe<ServiceLink>>>;
@@ -5061,6 +5066,7 @@ export type ServiceInstanceResolvers<ContextType = PortalContext, ParentType ext
   capabilities?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
   creation_status?: Resolver<Maybe<ResolversTypes['ServiceInstanceCreationStatus']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hidden_until_published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   illustration_document_id?: Resolver<Maybe<ResolversTypes['DocumentId']>, ParentType, ContextType>;
   links?: Resolver<Maybe<Array<Maybe<ResolversTypes['ServiceLink']>>>, ParentType, ContextType>;

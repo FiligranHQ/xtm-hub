@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const HUNT_PACK_DOCUMENTS_QUERY_KEY = ['HuntPackDocuments'];
 const HUNT_PACK_DOCUMENT_QUERY_KEY = ['HuntPackDocument'];
+const HUNT_PACK_LIBRARY_VISIBILITY_QUERY_KEY = ['HuntPackLibraryVisibility'];
 const DOCUMENT_FACETS_QUERY_KEY = ['DocumentFacets'];
 
 /**
@@ -22,8 +23,9 @@ export const toDocumentItem = (
 
 /**
  * The shared create, update and delete handlers of the hunt packs library,
- * followed by a refresh of the hunt pack queries and of the facet counts. A
- * deletion leaves the details query alone: its page navigates away.
+ * followed by a refresh of the hunt pack queries, of the library visibility
+ * and of the facet counts. A deletion leaves the details query alone: its page
+ * navigates away.
  */
 export const useHuntPackDocumentContext = (
   serviceInstance: serviceInstance_fragment$data
@@ -43,6 +45,7 @@ export const useHuntPackDocumentContext = (
       refresh([
         HUNT_PACK_DOCUMENTS_QUERY_KEY,
         HUNT_PACK_DOCUMENT_QUERY_KEY,
+        HUNT_PACK_LIBRARY_VISIBILITY_QUERY_KEY,
         DOCUMENT_FACETS_QUERY_KEY,
       ]);
       onSuccess(serviceName);
@@ -62,7 +65,11 @@ export const useHuntPackDocumentContext = (
       ),
     handleDeleteSheet: (document, onCompleted) =>
       context.handleDeleteSheet(document, () => {
-        refresh([HUNT_PACK_DOCUMENTS_QUERY_KEY, DOCUMENT_FACETS_QUERY_KEY]);
+        refresh([
+          HUNT_PACK_DOCUMENTS_QUERY_KEY,
+          HUNT_PACK_LIBRARY_VISIBILITY_QUERY_KEY,
+          DOCUMENT_FACETS_QUERY_KEY,
+        ]);
         onCompleted();
       }),
   };

@@ -76,7 +76,7 @@ describe('useHuntPackDocumentContext', () => {
     ${'create'}
     ${'update'}
   `(
-    'refreshes the hunt pack queries and the facet counts after a $action',
+    'refreshes the hunt pack queries, the library visibility and the facet counts after a $action',
     async ({ action }: { action: string }) => {
       const onSuccess = vi.fn();
       const context = renderContext();
@@ -100,12 +100,13 @@ describe('useHuntPackDocumentContext', () => {
       expect(invalidatedKeys()).toEqual([
         ['HuntPackDocuments'],
         ['HuntPackDocument'],
+        ['HuntPackLibraryVisibility'],
         ['DocumentFacets'],
       ]);
     }
   );
 
-  it('refreshes the lists and the facet counts after a deletion, not the deleted pack', async () => {
+  it('refreshes the lists, the library visibility and the facet counts after a deletion, not the deleted pack', async () => {
     const onCompleted = vi.fn();
     const context = renderContext();
 
@@ -114,6 +115,7 @@ describe('useHuntPackDocumentContext', () => {
     expect(onCompleted).toHaveBeenCalled();
     expect(invalidatedKeys()).toEqual([
       ['HuntPackDocuments'],
+      ['HuntPackLibraryVisibility'],
       ['DocumentFacets'],
     ]);
   });

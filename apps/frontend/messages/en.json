@@ -360,7 +360,7 @@
       "HUNT_PACK_INVALID_BUNDLE": "This file is not a hunt pack: export a STIX 2.1 bundle of hunts from OpenCTI and upload it again.",
       "HUNT_PACK_EMPTY": "This hunt pack contains no hunt: export at least one hunt from OpenCTI.",
       "HUNT_PACK_TOO_LARGE": "This hunt pack contains more than 200 hunts: split it into several packs.",
-      "HUNT_PACK_INVALID_HUNT": "A hunt of this pack cannot be published: check that every hunt is a telemetry hunt with a name, a valid Sigma rule, native queries for the detection platforms OpenCTI hunts on (one per platform, each with a language and a query), a valid schedule and limits within the OpenCTI defaults.",
+      "HUNT_PACK_INVALID_HUNT": "A hunt of this pack cannot be published: check that every hunt is a detection rule hunt (Sigma or native query), with a name, a valid Sigma rule, native queries for the detection platforms OpenCTI hunts on (one per platform, each with a language and a query), a valid schedule and limits within the OpenCTI defaults.",
       "HUNT_PACK_FILE_TOO_LARGE": "This hunt pack is larger than 20 MB, the most an OpenCTI import accepts: split it into several packs.",
       "CONNECTOR_TYPE_NOT_RECOGNIZED": "The connector type of this manifest is not recognized. Use one of the OpenCTI connector types listed in the documentation.",
       "INVALID_ACTION_SIZE": "An unknown error occurred",
@@ -1467,11 +1467,15 @@
       "Active": "Published",
       "Form": {
         "SelectHuntPackFile": "Hunt pack file",
-        "SelectHuntPackFileDescription": "A hunt pack exported from OpenCTI (STIX 2.1 bundle of 1 to 200 telemetry hunts). The hunt count, ATT&CK techniques and hunted platforms are read from the file."
+        "SelectHuntPackFileDescription": "A hunt pack exported from OpenCTI (STIX 2.1 bundle of 1 to 200 detection rule hunts, Sigma or native queries). The hunt count, ATT&CK techniques and hunted platforms are read from the file."
       },
       "LoadError": {
         "Library": "The hunt packs could not be loaded.",
         "Document": "This hunt pack could not be loaded."
+      },
+      "HiddenUntilPublished": {
+        "Title": "Only administrators see this library",
+        "Description": "It stays hidden from users and from the public site until a hunt pack is published."
       }
     },
     "Description": "Description",

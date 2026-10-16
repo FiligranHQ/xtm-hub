@@ -49,16 +49,13 @@ export const restrictServiceInstanceToAccessible = (qb: KnexQueryBuilder) =>
   });
 
 /**
- * Hides a library listed once published while it holds no active resource.
- * Platform administrators still reach it, as they publish its first resource.
+ * Hides a library listed once published while it holds no active resource,
+ * for every user, platform administrators included.
  */
-export const restrictServiceInstanceToListed = (qb: KnexQueryBuilder) => {
-  const user = requestContext.get()?.user;
-  if (user && isUserAdminPlatform(user)) {
-    return qb;
-  }
-
-  return qb.where(function () {
+export const restrictServiceInstanceToListedForEveryone = (
+  qb: KnexQueryBuilder
+) =>
+  qb.where(function () {
     this.whereNotExists(function () {
       this.select(dbRaw('1'))
         .from('ServiceDefinition as listingDefinition')
@@ -88,4 +85,16 @@ export const restrictServiceInstanceToListed = (qb: KnexQueryBuilder) => {
         });
     });
   });
+
+/**
+ * Hides a library listed once published while it holds no active resource.
+ * Platform administrators still reach it, as they publish its first resource.
+ */
+export const restrictServiceInstanceToListed = (qb: KnexQueryBuilder) => {
+  const user = requestContext.get()?.user;
+  if (user && isUserAdminPlatform(user)) {
+    return qb;
+  }
+
+  return restrictServiceInstanceToListedForEveryone(qb);
 };

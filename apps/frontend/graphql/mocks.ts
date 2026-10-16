@@ -1901,6 +1901,7 @@ export const mockServiceInstance = (overrides?: Partial<ServiceInstance>, _relat
         capabilities: overrides && overrides.hasOwnProperty('capabilities') ? overrides.capabilities! : ['supra'],
         creation_status: overrides && overrides.hasOwnProperty('creation_status') ? overrides.creation_status! : ServiceInstanceCreationStatus.Created,
         description: overrides && overrides.hasOwnProperty('description') ? overrides.description! : 'sunt',
+        hidden_until_published: overrides && overrides.hasOwnProperty('hidden_until_published') ? overrides.hidden_until_published! : false,
         id: overrides && overrides.hasOwnProperty('id') ? overrides.id! : 'a5526fb2-d70b-4de8-b75e-e1fca8a27604',
         illustration_document_id: overrides && overrides.hasOwnProperty('illustration_document_id') ? overrides.illustration_document_id! : 'tamquam',
         links: overrides && overrides.hasOwnProperty('links') ? overrides.links! : [relationshipsToOmit.has('ServiceLink') ? {} as ServiceLink : mockServiceLink({}, relationshipsToOmit)],

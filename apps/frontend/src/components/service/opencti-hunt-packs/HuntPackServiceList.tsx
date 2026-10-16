@@ -23,10 +23,12 @@ import {
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
+import { Alert } from '@filigran/design-system';
 import { serviceInstance_fragment$data } from '@generated/serviceInstance_fragment.graphql';
 import {
   LogicalFilterInput,
   useHuntPackDocumentsQuery,
+  useHuntPackLibraryVisibilityQuery,
 } from '@graphql/generated';
 import { keepPreviousData } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
@@ -108,6 +110,10 @@ const HuntPackServiceList = ({
       },
       { placeholderData: keepPreviousData }
     );
+  const { data: visibility } = useHuntPackLibraryVisibilityQuery(
+    portalGraphqlClient,
+    { serviceInstanceId: serviceInstance.id }
+  );
 
   const [active, draft] = useMemo(() => {
     const documents = (data?.documents.edges ?? []).map(({ node }) =>
@@ -175,6 +181,17 @@ const HuntPackServiceList = ({
           search={search}
           onSearchChange={onSearchChange}
           additionalFilters={filters}
+          notice={
+            visibility?.serviceInstanceById?.hidden_until_published && (
+              <Alert
+                severity="info"
+                title={t('Service.OpenCTIHuntPack.HiddenUntilPublished.Title')}
+                description={t(
+                  'Service.OpenCTIHuntPack.HiddenUntilPublished.Description'
+                )}
+              />
+            )
+          }
           paginationControls={
             <PaginationControls
               totalCount={data.documents.totalCount}

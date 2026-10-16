@@ -14,7 +14,7 @@ of each hunt pack before deploying it. Manual hunts and hunt pack imports are pa
 scheduled and standing hunts are Enterprise Edition features of OpenCTI.
 
 The library appears in the navigation and on the public site as soon as it holds a published hunt pack. Until then,
-only XTM Hub administrators see it, to publish the first pack.
+only XTM Hub administrators see it, to publish the first pack, and the library page tells them so.
 
 Every value shown about the content of a pack is read from the pack file when it is uploaded, never typed by hand:
 
@@ -82,8 +82,9 @@ Users allowed to upload to the library publish packs from the library page with 
    hunt has one, native queries for the detection platforms the internal hunt Connectors query
    (one per platform, each with a language and a query), a schedule that is manual, standing or a cron expression
    firing at most every 15 minutes, and a time window, escalation threshold and result limit within the OpenCTI
-   defaults. A pack OpenCTI would refuse is never published. A pack holds telemetry hunts only: a hunt of another
-   type is refused, and infrastructure packs come with the infrastructure hunts.
+   defaults. A pack OpenCTI would refuse is never published. A pack holds detection rule hunts (Sigma or native
+   query) only: indicator hunts and hunts of any other type are refused, and infrastructure packs come with the
+   infrastructure hunts.
 3. Describe the pack: what it covers, the log sources its hunts need, and how to triage a hit. The hunt count,
    the hunted platforms and the ATT&CK techniques are filled in from the file.
 4. Set the OpenCTI version the pack requires. The XTM Hub never accepts a version older than 7.261003.0, the first

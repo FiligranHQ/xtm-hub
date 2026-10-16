@@ -32,6 +32,8 @@ export interface ServiceListProps {
   additionalFilters: ServiceListFilterMap;
   connectionId?: string;
   paginationControls?: React.ReactNode;
+  /** Shown above the resources, next to the filters. */
+  notice?: React.ReactNode;
 }
 
 const ServiceList = ({
@@ -42,6 +44,7 @@ const ServiceList = ({
   additionalFilters,
   connectionId,
   paginationControls,
+  notice,
 }: ServiceListProps) => {
   const t = useTranslate();
   const { translationKey, serviceInstance, type } = useServiceContext();
@@ -98,6 +101,7 @@ const ServiceList = ({
       <div className="flex flex-row">
         <FilterSidebar filters={additionalFilters} />
         <div className="grow shrink min-w-0 px-3 pb-3 flex flex-col gap-6">
+          {notice}
           {userCanUpdate && draft.length > 0 && (
             <>
               <div className="title-xs">

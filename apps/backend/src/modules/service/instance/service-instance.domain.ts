@@ -30,6 +30,7 @@ import { isUserAdminPlatform } from '../../../security/access';
 import {
   restrictServiceInstanceToAccessible,
   restrictServiceInstanceToListed,
+  restrictServiceInstanceToListedForEveryone,
   restrictServiceInstanceToPublic,
 } from '../../../security/restriction/service-instance';
 import { buildTupleFilter } from '../../../utils/batch-query.util';
@@ -405,6 +406,17 @@ export const ServiceInstanceDomain = {
       .tap(restrictServiceInstanceToListed)
       .select('ServiceInstance.*')
       .first();
+  },
+
+  isServiceInstanceHiddenUntilPublished: async (
+    id: ServiceInstanceId
+  ): Promise<boolean> => {
+    const listed = await db<ServiceInstance>('ServiceInstance')
+      .where('ServiceInstance.id', id)
+      .tap(restrictServiceInstanceToListedForEveryone)
+      .select('ServiceInstance.id')
+      .first();
+    return !listed;
   },
 
   loadServiceInstancesByIds: async (
