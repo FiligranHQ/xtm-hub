@@ -2110,13 +2110,6 @@
     "Light": "明るい",
     "SetTheme": "セットテーマ"
   },
-  "ThreadConference": {
-    "Description": "世界的な脅威インテリジェンスおよびサイバー防衛コミュニティによる年次集会――インテリジェンス、リスク管理、そして実践が一堂に会する場。",
-    "Date": "2026年10月15日 | パリ",
-    "ImageAlt": "Thread Conference バナー",
-    "Cta": "詳細はこちら",
-    "AriaLabel": "Thread Conferenceに参加しませんか？詳細はこちらをご覧ください。"
-  },
   "UnexpectedErrorDialog": {
     "Description": "再度ログインをお試しください。それでも問題が解決しない場合は、お問い合わせください。",
     "Title": "予期せぬことが起こりました。"
