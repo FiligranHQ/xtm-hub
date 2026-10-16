@@ -9,6 +9,7 @@ import {
   it,
   vi,
 } from 'vitest';
+import { database } from '../../../knexfile';
 import { TestHelper } from '../../../tests/helper/test.helper';
 import {
   requestContextSimpleUserFiligran2,
@@ -42,6 +43,9 @@ import {
   CUSTOM_DASHBOARD_METADATA_KEYS,
   OPENCTI_CUSTOM_DASHBOARD_DOCUMENT_TYPE,
 } from '../shareable-resource/opencti/custom-dashboard/custom-dashboard.model';
+import { IngestManifestDomain } from '../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.domain';
+import { ManifestInformation } from '../shareable-resource/opencti/integration/ingest-manifest/ingest-manifest.model';
+import sampleExtractedManifest from '../shareable-resource/opencti/integration/ingest-manifest/test/sample-extracted-manifest.json';
 import {
   OPENCTI_INTEGRATION_DOCUMENT_TYPE,
   ThirdPartyIntegration,
@@ -784,6 +788,300 @@ describe('documentApp', () => {
         manager_supported: true,
         playbook_supported: false,
         product_version: '2.0.0',
+      });
+    });
+
+    describe('connector metadata written by catalog ingestion', () => {
+      const connectorFormMetadata = [
+        {
+          key: DocumentMetadataKeyCode.IntegrationType,
+          value: IntegrationType.Connector,
+        },
+        { key: DocumentMetadataKeyCode.ProductVersion, value: '1.0.0' },
+        { key: DocumentMetadataKeyCode.Verified, value: 'true' },
+        { key: DocumentMetadataKeyCode.ManagerSupported, value: 'true' },
+        { key: DocumentMetadataKeyCode.PlaybookSupported, value: 'false' },
+        {
+          key: DocumentMetadataKeyCode.ContainerImage,
+          value: 'opencti/connector-splunk-hunt',
+        },
+        { key: DocumentMetadataKeyCode.SourceCode, value: 'source_code_value' },
+      ];
+
+      const loadValue = (documentId: Document['id'], key: string) =>
+        DocumentMetadataDomain.loadMetadataValueByKey(documentId, key);
+
+      it('keeps the connector type and the hunt floor when the connector form is saved', async () => {
+        // Given
+        const ingested = await DocumentApp.createDocument({
+          input: { ...documentData, slug: `hunt-edit-${uuidv4()}` },
+          metadata: [
+            ...connectorFormMetadata,
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersion,
+              value: '7.261003.0',
+            },
+            { key: DocumentMetadataKeyCode.ImageType, value: 'INTERNAL_HUNT' },
+          ],
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        });
+
+        // When
+        const result = await DocumentApp.updateDocument({
+          parentDocumentId: ingested.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: [
+            ...connectorFormMetadata,
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersion,
+              value: '7.260900.0',
+            },
+            {
+              key: DocumentMetadataKeyCode.DatasheetUrl,
+              value: 'https://example.com/datasheet',
+            },
+          ],
+          input: documentUpdateData,
+          existingImageIds: [],
+        });
+
+        // Then
+        expect(
+          await loadValue(result.id, DocumentMetadataKeyCode.ImageType)
+        ).toBe('INTERNAL_HUNT');
+        expect(
+          await loadValue(
+            result.id,
+            DocumentMetadataKeyCode.MinimumDeployableVersion
+          )
+        ).toBe('7.261003.0');
+        expect(
+          await loadValue(result.id, DocumentMetadataKeyCode.DatasheetUrl)
+        ).toBe('https://example.com/datasheet');
+      });
+
+      it('keeps the hunt type and its floor when an edit submits another connector type and a lower minimum', async () => {
+        // Given
+        const ingested = await DocumentApp.createDocument({
+          input: { ...documentData, slug: `hunt-type-edit-${uuidv4()}` },
+          metadata: [
+            ...connectorFormMetadata,
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersion,
+              value: '7.261003.0',
+            },
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+              value: '007.261003.000',
+            },
+            { key: DocumentMetadataKeyCode.ImageType, value: 'INTERNAL_HUNT' },
+          ],
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        });
+
+        // When
+        const result = await DocumentApp.updateDocument({
+          parentDocumentId: ingested.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: [
+            ...connectorFormMetadata,
+            {
+              key: DocumentMetadataKeyCode.ImageType,
+              value: 'EXTERNAL_IMPORT',
+            },
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersion,
+              value: '7.260900.0',
+            },
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+              value: '007.260900.000',
+            },
+          ],
+          input: documentUpdateData,
+          existingImageIds: [],
+        });
+
+        // Then
+        expect(
+          await loadValue(result.id, DocumentMetadataKeyCode.ImageType)
+        ).toBe('INTERNAL_HUNT');
+        expect(
+          await loadValue(
+            result.id,
+            DocumentMetadataKeyCode.MinimumDeployableVersion
+          )
+        ).toBe('7.261003.0');
+        expect(
+          await loadValue(
+            result.id,
+            DocumentMetadataKeyCode.MinimumDeployableVersionPadded
+          )
+        ).toBe('007.261003.000');
+      });
+
+      it('keeps the manifest fragment metadata and realigns the padded minimum version', async () => {
+        // Given
+        const ingested = await DocumentApp.createDocument({
+          input: { ...documentData, slug: `fragment-edit-${uuidv4()}` },
+          metadata: [
+            ...connectorFormMetadata,
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersion,
+              value: '6.8.0',
+            },
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersionPadded,
+              value: '006.000008.000',
+            },
+            {
+              key: DocumentMetadataKeyCode.ImageType,
+              value: 'EXTERNAL_IMPORT',
+            },
+            {
+              key: DocumentMetadataKeyCode.ConfigSchema,
+              value: '{"properties":{}}',
+            },
+            {
+              key: DocumentMetadataKeyCode.ManifestFragmentId,
+              value: 'fragment-id',
+            },
+          ],
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        });
+
+        // When
+        const result = await DocumentApp.updateDocument({
+          parentDocumentId: ingested.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: [
+            ...connectorFormMetadata,
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersion,
+              value: '6.9.0',
+            },
+          ],
+          input: documentUpdateData,
+          existingImageIds: [],
+        });
+
+        // Then
+        expect(
+          await loadValue(result.id, DocumentMetadataKeyCode.ImageType)
+        ).toBe('EXTERNAL_IMPORT');
+        expect(
+          await loadValue(result.id, DocumentMetadataKeyCode.ConfigSchema)
+        ).toBe('{"properties":{}}');
+        expect(
+          await loadValue(result.id, DocumentMetadataKeyCode.ManifestFragmentId)
+        ).toBe('fragment-id');
+        expect(
+          await loadValue(
+            result.id,
+            DocumentMetadataKeyCode.MinimumDeployableVersion
+          )
+        ).toBe('6.9.0');
+        expect(
+          await loadValue(
+            result.id,
+            DocumentMetadataKeyCode.MinimumDeployableVersionPadded
+          )
+        ).toBe('006.000009.000');
+      });
+
+      it('keeps the connector type of an ingestion that runs while the connector form is saved', async () => {
+        // Given an external import connector, and a connector form save held
+        // right before its write
+        const slug = `interleaved-edit-${uuidv4()}`;
+        const ingested = await DocumentApp.createDocument({
+          input: { ...documentData, slug },
+          metadata: [
+            ...connectorFormMetadata,
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersion,
+              value: '7.260900.0',
+            },
+            {
+              key: DocumentMetadataKeyCode.ImageType,
+              value: 'EXTERNAL_IMPORT',
+            },
+          ],
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+        });
+        const writeDocument = DocumentDomain.updateDocument;
+        let reachWrite = () => {};
+        let releaseWrite = () => {};
+        const writeReached = new Promise<void>((resolve) => {
+          reachWrite = resolve;
+        });
+        const writeReleased = new Promise<void>((resolve) => {
+          releaseWrite = resolve;
+        });
+        vi.spyOn(DocumentDomain, 'updateDocument').mockImplementationOnce(
+          async (...args) => {
+            reachWrite();
+            await writeReleased;
+            return writeDocument(...args);
+          }
+        );
+        const save = DocumentApp.updateDocument({
+          parentDocumentId: ingested.id,
+          serviceInstanceId: SERVICES.INSTANCES.INTEGRATIONS.ID,
+          metadata: [
+            ...connectorFormMetadata,
+            {
+              key: DocumentMetadataKeyCode.MinimumDeployableVersion,
+              value: '7.260900.0',
+            },
+          ],
+          input: documentUpdateData,
+          existingImageIds: [],
+        });
+        await writeReached;
+
+        // When the catalog ingestion turns it into a hunt connector meanwhile
+        const ingestion = IngestManifestDomain.upsertConnectors([
+          {
+            ...(sampleExtractedManifest[0] as ManifestInformation),
+            slug,
+            image_type: 'INTERNAL_HUNT',
+            manager_supported: true,
+            minimum_deployable_version: undefined,
+            use_cases: [],
+            solution_categories: [],
+          },
+        ]);
+        let ingestionSettled = false;
+        const settle = () => {
+          ingestionSettled = true;
+        };
+        ingestion.then(settle, settle);
+        const countAwaitedLocks = async (): Promise<number> => {
+          const { rows } = await database.raw(
+            'SELECT count(*)::int AS count FROM pg_locks WHERE NOT granted'
+          );
+          return rows[0].count;
+        };
+        // Polled without timers: an earlier test of this file installs fake timers
+        const ingestionFinishedOrWaitsForLock = async () => {
+          while (!ingestionSettled) {
+            if ((await countAwaitedLocks()) > 0) return;
+          }
+        };
+        await ingestionFinishedOrWaitsForLock();
+        releaseWrite();
+        await Promise.all([save, ingestion]);
+
+        // Then the save did not restore the type and minimum it read before
+        expect(
+          await loadValue(ingested.id, DocumentMetadataKeyCode.ImageType)
+        ).toBe('INTERNAL_HUNT');
+        expect(
+          await loadValue(
+            ingested.id,
+            DocumentMetadataKeyCode.MinimumDeployableVersion
+          )
+        ).toBe('7.261003.0');
       });
     });
 

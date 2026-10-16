@@ -357,6 +357,7 @@
       "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du nombre de partages",
       "INTEGRATION_TYPE_NOT_MANAGEABLE": "Ce type d'intégration n'est pas gérable.",
       "INTEGRATION_TYPE_NOT_RECOGNIZED": "Ce type d'intégration n'est pas reconnu",
+      "CONNECTOR_TYPE_NOT_RECOGNIZED": "Le type de connecteur de ce manifeste n'est pas reconnu. Utilisez l'un des types de connecteurs OpenCTI listés dans la documentation.",
       "INVALID_ACTION_SIZE": "Une erreur inconnue s'est produite",
       "INVALID_CONTENT_TRANSLATION_KEY": "Clé de contenu invalide",
       "INVALID_EMAIL": "L'email doit être dans un format valide.",
@@ -1193,7 +1194,7 @@
       "VisitVendor": "Consultez la page du fournisseur pour en savoir plus et le contacter",
       "CompatibleWith": "Cette version du connecteur est compatible avec {compatiblePlatforms}.",
       "PartiallyCompatible": "Cette version du connecteur est compatible avec {compatiblePlatforms}, mais {incompatiblePlatforms} {count, plural, =1 {doit être mis à jour} other {doivent être mis à jour}}.",
-      "Incompatible": "{platformToBeUpdated} {count, plural, =1 {doit} other {doivent}} être mis à jour pour déployer ce connecteur.",
+      "Incompatible": "Mettez à jour {platformToBeUpdated} vers OpenCTI {version} ou une version ultérieure pour déployer ce connecteur.",
       "UnavailableDeployments": "Ce connecteur n'est pas disponible pour le déploiement automatique."
     },
     "CreationStatus": "Statut de la création",
@@ -1262,6 +1263,10 @@
           "Label": "Type d'intégration",
           "Placeholder": "Type d'intégration..."
         },
+        "ConnectorType": {
+          "Label": "Type de connecteur",
+          "Placeholder": "Type de connecteur..."
+        },
         "ManagerSupported": {
           "Label": "Type de déploiement",
           "Placeholder": "Type de déploiement...",
@@ -1297,6 +1302,15 @@
         "taxii_feed": "Flux TAXII",
         "stream": "Flux OpenCTI",
         "third_party_integration": "Intégrations tierces"
+      },
+      "ConnectorType": {
+        "EXTERNAL_IMPORT": "Importation externe",
+        "INTERNAL_ENRICHMENT": "Enrichissement interne",
+        "INTERNAL_IMPORT_FILE": "Importation interne de fichier",
+        "INTERNAL_EXPORT_FILE": "Exportation interne de fichier",
+        "INTERNAL_ANALYSIS": "Analyse interne",
+        "INTERNAL_HUNT": "Chasse interne",
+        "STREAM": "Stream"
       }
     },
     "CsvFeed": {
@@ -1520,7 +1534,7 @@
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
         "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
-        "DeployIncompatibleVersion": "La ressource ne peut pas être déployée sur votre plateforme OpenCTI \"{platformTitle}\" car la version de la plateforme n'est plus compatible avec cette ressource. Vous devrez mettre à jour la plateforme ou utiliser une version de ressource compatible avant de continuer.",
+        "DeployIncompatibleVersion": "Mettez à jour {platformTitle} vers OpenCTI {version} ou une version ultérieure pour déployer cette ressource.",
         "EE": {
           "Tag": "EE",
           "HoverTitle": "Disponible dans l'Enterprise Edition",
@@ -1554,6 +1568,8 @@
         "Shares": "Partages",
         "ContributorContact": "Contact du contributeur",
         "IntegrationType": "Type",
+        "ConnectorType": "Type de connecteur",
+        "HuntedPlatform": "Plateforme de chasse",
         "IntegrationSolutionCategory": "Catégorie de solution",
         "IntegrationLicenseType": "Type de licence",
         "GithubURL": "URL Github",

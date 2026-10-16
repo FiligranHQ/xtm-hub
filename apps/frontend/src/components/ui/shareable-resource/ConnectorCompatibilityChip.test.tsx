@@ -132,7 +132,7 @@ describe('ConnectorCompatibilityChip', () => {
     status            | expectedIcon      | expectedTooltip
     ${'compatible'}   | ${'circle-check'} | ${`Service.Connectors.CompatibleWith:${JSON.stringify({ compatiblePlatforms: COMPATIBLE_PLATFORMS })}`}
     ${'partial'}      | ${'circle-alert'} | ${`Service.Connectors.PartiallyCompatible:${JSON.stringify({ compatiblePlatforms: COMPATIBLE_PLATFORMS, incompatiblePlatforms: INCOMPATIBLE_PLATFORMS, count: INCOMPATIBLE_COUNT })}`}
-    ${'incompatible'} | ${'circle-x'}     | ${`Service.Connectors.Incompatible:${JSON.stringify({ platformToBeUpdated: INCOMPATIBLE_PLATFORMS, count: INCOMPATIBLE_COUNT })}`}
+    ${'incompatible'} | ${'circle-x'}     | ${`Service.Connectors.Incompatible:${JSON.stringify({ platformToBeUpdated: INCOMPATIBLE_PLATFORMS, count: INCOMPATIBLE_COUNT, version: PRODUCT_VERSION })}`}
   `(
     'should show the $expectedIcon icon and name the platforms in the tooltip when the connector is $status',
     ({

@@ -23,6 +23,7 @@ enum FilterKey {
   entity_type
   license_type
   solution_category
+  connector_type
 }
 
 enum Locale {

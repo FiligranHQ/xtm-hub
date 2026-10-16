@@ -1,10 +1,12 @@
 'use client';
+import { ConnectorTypeLabel } from '@/components/service/integrations/connector-type/ConnectorTypeLabel';
 import { ShareableResourceCardDescription } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardDescription';
 import { ShareableResourceCardFooterAuthor } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterAuthor';
 import { ShareableResourceCardFooterVersion } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardFooterVersions';
 import { ShareableResourceCardHeader } from '@/components/ui/shareable-resource/card-design/ShareableResourceCardHeader';
 import useScrollPosition from '@/hooks/use-scroll-position';
 import {
+  isConnectorResource,
   PublicDocumentData,
   ShareableResourceType,
 } from '@/utils/shareable-resources/shareable-resources.types';
@@ -53,6 +55,9 @@ const ShareableResourceCard = ({
     docHasMetadata(document, DocumentMetadataKeyCode.IntegrationType) &&
     !!document.integration_type &&
     FOOTER_VERSIONS_INTEGRATION_TYPES.includes(document.integration_type);
+  const connectorType = isConnectorResource(document)
+    ? document.connector_type
+    : null;
 
   return (
     <Paper
@@ -72,6 +77,11 @@ const ShareableResourceCard = ({
         <ShareableResourceCardDescription
           description={document.short_description}
         />
+        {connectorType && (
+          <span className="shrink-0 content-compact text-default-secondary">
+            <ConnectorTypeLabel connectorType={connectorType} />
+          </span>
+        )}
       </Link>
       <div className="flex items-center justify-between gap-1 px-6 py-4 mt-auto layer-2 bg-elevation-default border-t border-elevation-subtle-soft">
         {isConnector ? (
