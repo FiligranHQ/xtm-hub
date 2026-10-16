@@ -807,6 +807,7 @@
     },
     "Actions": {
       "SearchTrials": "Search by email, organization or region",
+      "SearchTrialsPlaceholder": "Email, organization or region",
       "MoveToTop": "Move to top",
       "MoveUp": "Move up",
       "CancelBundle": "Cancel the bundle trial"

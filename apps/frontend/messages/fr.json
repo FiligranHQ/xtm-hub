@@ -806,7 +806,8 @@
       "BundleReordered": "Le bundle a été repositionné dans la file d'attente."
     },
     "Actions": {
-      "SearchTrials": "Recherche par email, organisation ou région",
+      "SearchTrials": "Rechercher par email, organisation ou région",
+      "SearchTrialsPlaceholder": "Email, organisation ou région",
       "MoveToTop": "Placer en tête",
       "MoveUp": "Remonter",
       "CancelBundle": "Annuler l'essai bundle"
