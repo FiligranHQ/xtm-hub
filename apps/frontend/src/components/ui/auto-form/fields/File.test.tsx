@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
 const FIELD_LABEL = 'JSON file';
+const FIELD_HELPER_TEXT = 'A dashboard exported from OpenCTI.';
 const SUBMIT_LABEL = 'Submit';
 const JSON_FILE_NAME = 'dashboard.json';
 
@@ -24,6 +25,7 @@ const TestForm = ({
     fieldConfig={{
       document: {
         label: FIELD_LABEL,
+        helperText: FIELD_HELPER_TEXT,
         fieldType: 'file',
         inputProps: { accept: JSON_FILE_ACCEPT },
       },
@@ -33,6 +35,12 @@ const TestForm = ({
 );
 
 describe('AutoFormFile', () => {
+  it('should show the helper text of the field below it', () => {
+    testRender(<TestForm onSubmit={vi.fn()} />);
+
+    expect(screen.getByText(FIELD_HELPER_TEXT)).toBeInTheDocument();
+  });
+
   it('should accept a JSON file whose browser MIME type is empty', async () => {
     // Given
     const onSubmit = vi.fn();

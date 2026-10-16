@@ -11,6 +11,7 @@ const ALL_SERVICE_SLUGS = [
   'opencti-custom-views',
   'opencti-integrations',
   'opencti-playbooks',
+  'opencti-hunt-packs',
   'openaev-scenarios',
   'xtm-platform-roadmap',
 ];
@@ -81,6 +82,7 @@ describe('PublicNavigation — open={true}', () => {
 
     expect(screen.getByText('Menu.CustomDashboards')).toBeInTheDocument();
     expect(screen.getByText('Menu.Integrations')).toBeInTheDocument();
+    expect(screen.getByText('Menu.HuntPacks')).toBeInTheDocument();
     expect(screen.getByText('Menu.LiveDemo')).toBeInTheDocument();
     expect(screen.getByText('Menu.Documentation')).toBeInTheDocument();
   });
@@ -224,6 +226,22 @@ describe('PublicNavigation — open={true}', () => {
     expect(screen.getByText('Menu.CustomDashboards')).toBeInTheDocument();
     expect(screen.getByText('Menu.Integrations')).toBeInTheDocument();
   });
+
+  it.each`
+    state               | visibleServiceSlugs                                                  | shown
+    ${'hidden'}         | ${ALL_SERVICE_SLUGS.filter((slug) => slug !== 'opencti-hunt-packs')} | ${false}
+    ${'once published'} | ${ALL_SERVICE_SLUGS}                                                 | ${true}
+  `(
+    'shows the hunt packs library entry only when it is visible ($state)',
+    async ({ visibleServiceSlugs, shown }) => {
+      const user = userEvent.setup();
+      renderPublicNavigation(true, visibleServiceSlugs);
+
+      await expandSection(user, 'OpenCTI');
+
+      expect(!!screen.queryByText('Menu.HuntPacks')).toBe(shown);
+    }
+  );
 
   it('keeps non-service entries when no service is visible', async () => {
     const user = userEvent.setup();

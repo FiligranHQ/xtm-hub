@@ -1,6 +1,7 @@
 'use client';
 
 import { PlatformMetadataMapping } from '@/components/registration/PlatformIdentifierMapping';
+import { ShareableResourceHuntPackDetails } from '@/components/service/document/hunt-pack/ShareableResourceHuntPackDetails';
 import { ShareableResourceDetailsLink } from '@/components/service/document/ShareableResourceDetailsLink';
 import { ShareableResourceBasicInformation } from '@/components/service/document/ui/ShareableResourceBasicInformation';
 import { ShareableResourceDetailItem } from '@/components/service/document/ui/ShareableResourceDetailItem';
@@ -16,6 +17,7 @@ import { useDateFormatter } from '@/utils/date';
 import { FiligranWebsiteUtm } from '@/utils/filigran-website-utm';
 import { platformIdentifierMappedByShareableResourceType } from '@/utils/services';
 import {
+  isHuntPackResource,
   isIntegrationItem,
   PublicDocumentDetailsData,
   ShareableResourceType,
@@ -138,6 +140,9 @@ const ShareableResourceDetails = ({
             </ShareableResourceDetailItem>
           )}
         </>
+      )}
+      {isHuntPackResource(documentData) && (
+        <ShareableResourceHuntPackDetails huntPack={documentData} />
       )}
       <ShareableResourceDetailMetadataItem
         documentData={documentData}

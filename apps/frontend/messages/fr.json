@@ -357,6 +357,11 @@
       "INCREMENT_SHARE_NUMBER": "Une erreur s'est produite lors de l'incrémentation du nombre de partages",
       "INTEGRATION_TYPE_NOT_MANAGEABLE": "Ce type d'intégration n'est pas gérable.",
       "INTEGRATION_TYPE_NOT_RECOGNIZED": "Ce type d'intégration n'est pas reconnu",
+      "HUNT_PACK_INVALID_BUNDLE": "Ce fichier n'est pas un pack de chasse : exportez un bundle STIX 2.1 de chasses depuis OpenCTI et téléversez-le à nouveau.",
+      "HUNT_PACK_EMPTY": "Ce pack de chasse ne contient aucune chasse : exportez au moins une chasse depuis OpenCTI.",
+      "HUNT_PACK_TOO_LARGE": "Ce pack de chasse contient plus de 200 chasses : répartissez-les dans plusieurs packs.",
+      "HUNT_PACK_INVALID_HUNT": "Une chasse de ce pack ne peut pas être publiée : vérifiez que chaque chasse est une chasse par règle de détection (Sigma ou requête native), avec un nom, une règle Sigma valide, des requêtes natives pour les plateformes de détection sur lesquelles OpenCTI chasse (une par plateforme, chacune avec un langage et une requête), une planification valide et des limites dans les valeurs par défaut d'OpenCTI.",
+      "HUNT_PACK_FILE_TOO_LARGE": "Ce pack de chasse dépasse 20 Mo, la taille maximale acceptée par un import OpenCTI : répartissez-le dans plusieurs packs.",
       "CONNECTOR_TYPE_NOT_RECOGNIZED": "Le type de connecteur de ce manifeste n'est pas reconnu. Utilisez l'un des types de connecteurs OpenCTI listés dans la documentation.",
       "INVALID_ACTION_SIZE": "Une erreur inconnue s'est produite",
       "INVALID_CONTENT_TRANSLATION_KEY": "Clé de contenu invalide",
@@ -438,6 +443,7 @@
       "VOTABLE_FEATURE_MUTATION_ERROR": "Une erreur est survenue lors de l'enregistrement de la fonctionnalité"
     },
     "SomethingWentWrong": "Une erreur est survenue",
+    "TryAgain": "Réessayer",
     "YouAreNotAuthorized": "Vous n'êtes pas autorisé à accéder à cette page."
   },
   "GenericActions": {
@@ -631,6 +637,7 @@
     "CustomViews": "Vues personnalisées",
     "Integrations": "Intégrations",
     "Playbooks": "Playbooks",
+    "HuntPacks": "Packs de chasse",
     "LiveDemo": "Démonstration en direct",
     "Documentation": "Documentation",
     "Scenarios": "Scénarios",
@@ -1077,6 +1084,7 @@
       "opencti_custom_views": "OpenCTI Custom Views",
       "opencti_integrations": "OpenCTI Integrations",
       "opencti_playbooks": "OpenCTI Playbooks",
+      "opencti_hunt_packs": "OpenCTI Hunt Packs",
       "opencti_registration": "OpenCTI Registration",
       "xtm_platform_bundle": "XTM Platform Trial",
       "xtm_platform_roadmap": "XTM Platform Roadmap",
@@ -1445,6 +1453,32 @@
       "NonActive": "Brouillon",
       "Active": "Publié"
     },
+    "OpenCTIHuntPack": {
+      "Actions": {
+        "Added": "Le pack de chasse {name} a été ajouté avec succès",
+        "Deleted": "Le pack de chasse {name} a été supprimé avec succès",
+        "Updated": "Le pack de chasse {name} a été modifié avec succès",
+        "Share": "Partager le pack de chasse"
+      },
+      "AddService": "Ajouter un nouveau pack de chasse",
+      "UpdateService": "Mettre à jour le pack de chasse {name}",
+      "DeleteService": "Supprimer le pack de chasse {name}",
+      "SureDeleteService": "Êtes-vous sûr de vouloir supprimer le pack de chasse {name}?",
+      "NonActive": "Brouillon",
+      "Active": "Publié",
+      "Form": {
+        "SelectHuntPackFile": "Fichier du pack de chasse",
+        "SelectHuntPackFileDescription": "Un pack de chasse exporté d'OpenCTI (bundle STIX 2.1 de 1 à 200 chasses par règle de détection, Sigma ou requêtes natives). Le nombre de chasses, les techniques ATT&CK et les plateformes de chasse sont lus dans le fichier."
+      },
+      "LoadError": {
+        "Library": "Les packs de chasse n'ont pas pu être chargés.",
+        "Document": "Ce pack de chasse n'a pas pu être chargé."
+      },
+      "HiddenUntilPublished": {
+        "Title": "Seuls les administrateurs voient cette bibliothèque",
+        "Description": "Elle reste masquée pour les utilisateurs et sur le site public jusqu'à la publication d'un pack de chasse."
+      }
+    },
     "Description": "Description",
     "GoTo": "Aller au service",
     "GoToAdminLabel": "Administrer",
@@ -1534,7 +1568,9 @@
         "DeployPlatform": "Déployer dans {platformName}",
         "DeployQuestionTag": "Sur quelle plateforme {platformType} voulez-vous le déployer ?",
         "DeployResourceDescription": "Vous êtes sur le point de déployer le {resourceType} {resourceName}.",
+        "DeployHuntPackDescription": "Vous êtes sur le point de déployer le pack de chasse « {resourceName} » dans OpenCTI.",
         "DeployIncompatibleVersion": "Mettez à jour {platformTitle} vers OpenCTI {version} ou une version ultérieure pour déployer cette ressource.",
+        "DeployHuntPackIncompatibleVersion": "Mettez à jour {platformTitle} vers OpenCTI {version} ou une version ultérieure pour déployer ce pack de chasse.",
         "EE": {
           "Tag": "EE",
           "HoverTitle": "Disponible dans l'Enterprise Edition",
@@ -1570,6 +1606,12 @@
         "IntegrationType": "Type",
         "ConnectorType": "Type de connecteur",
         "HuntedPlatform": "Plateforme de chasse",
+        "Hunts": "Chasses",
+        "HuntCount": "{count, plural, one {# chasse} other {# chasses}}",
+        "AttackTechniques": "Techniques ATT&CK",
+        "HuntedPlatforms": "Plateformes de chasse",
+        "MoreItems": "et {count} de plus",
+        "ShowFewerItems": "Afficher moins",
         "IntegrationSolutionCategory": "Catégorie de solution",
         "IntegrationLicenseType": "Type de licence",
         "GithubURL": "URL Github",

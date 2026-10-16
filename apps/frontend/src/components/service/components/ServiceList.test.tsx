@@ -193,6 +193,21 @@ describe('ServiceList', () => {
     expect(screen.queryByText('Draft document')).toBeNull();
   });
 
+  it('renders the notice of the library above its resources', () => {
+    testRender(
+      <ServiceList
+        active={[]}
+        draft={[]}
+        search=""
+        onSearchChange={vi.fn()}
+        additionalFilters={{}}
+        notice={<p>Library notice</p>}
+      />
+    );
+
+    expect(screen.getByText('Library notice')).toBeInTheDocument();
+  });
+
   it('should render every active resource in a single list when they have different types', () => {
     const active = [
       {

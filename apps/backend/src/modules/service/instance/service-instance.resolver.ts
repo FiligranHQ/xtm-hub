@@ -54,6 +54,10 @@ const resolvers: Resolvers = {
           serviceInstanceId: id as ServiceInstanceId,
         })
       ),
+    hidden_until_published: ({ id }) =>
+      ServiceInstanceDomain.isServiceInstanceHiddenUntilPublished(
+        id as ServiceInstanceId
+      ),
   },
   Query: {
     serviceInstances: async (_, opt) => {

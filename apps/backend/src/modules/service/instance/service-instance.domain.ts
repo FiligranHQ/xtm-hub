@@ -29,6 +29,8 @@ import { UserId } from '../../../model/kanel/public/User';
 import { isUserAdminPlatform } from '../../../security/access';
 import {
   restrictServiceInstanceToAccessible,
+  restrictServiceInstanceToListed,
+  restrictServiceInstanceToListedForEveryone,
   restrictServiceInstanceToPublic,
 } from '../../../security/restriction/service-instance';
 import { buildTupleFilter } from '../../../utils/batch-query.util';
@@ -243,6 +245,7 @@ export const ServiceInstanceDomain = {
       db<ServiceInstance>('ServiceInstance').modify((queryBuilder) => {
         if (!showEveryServiceInstance) {
           restrictServiceInstanceToAccessible(queryBuilder);
+          restrictServiceInstanceToListed(queryBuilder);
         }
       })
     );
@@ -390,8 +393,30 @@ export const ServiceInstanceDomain = {
     return db<ServiceInstance>('ServiceInstance')
       .where(field)
       .tap(restrictServiceInstanceToAccessible)
+      .tap(restrictServiceInstanceToListed)
       .select('ServiceInstance.*')
       .first();
+  },
+
+  loadListedServiceInstanceBy: async (
+    field: ServiceInstanceMutator
+  ): Promise<ServiceInstance | undefined> => {
+    return db<ServiceInstance>('ServiceInstance')
+      .where(field)
+      .tap(restrictServiceInstanceToListed)
+      .select('ServiceInstance.*')
+      .first();
+  },
+
+  isServiceInstanceHiddenUntilPublished: async (
+    id: ServiceInstanceId
+  ): Promise<boolean> => {
+    const listed = await db<ServiceInstance>('ServiceInstance')
+      .where('ServiceInstance.id', id)
+      .tap(restrictServiceInstanceToListedForEveryone)
+      .select('ServiceInstance.id')
+      .first();
+    return !listed;
   },
 
   loadServiceInstancesByIds: async (
@@ -486,6 +511,7 @@ export const ServiceInstanceDomain = {
         dbRaw('json_agg("Service_Link") AS links')
       )
       .where('ServiceInstance.public', '=', true)
+      .tap(restrictServiceInstanceToListed)
       .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
       .orderBy('ServiceInstance.ordering', 'asc');
   },
@@ -530,6 +556,7 @@ export const ServiceInstanceDomain = {
       )
       .where('ServiceInstance.slug', '=', slug)
       .tap(restrictServiceInstanceToPublic)
+      .tap(restrictServiceInstanceToListed)
       .groupBy('ServiceInstance.id', 'ServiceDefinition.id')
       .first();
   },

@@ -107,6 +107,9 @@ export const SERVICES = {
     OPENCTI_REGISTRATION: {
       ID: '5f769173-5ace-4ef3-b04f-2c95609c5b59' as ServiceDefinitionId,
     },
+    OPENCTI_HUNT_PACKS: {
+      ID: '5b3f8f6e-2d0c-4a8e-9f7b-1c2d3e4f5a61' as ServiceDefinitionId,
+    },
   },
   INSTANCES: {
     INTEGRATIONS: {
@@ -136,6 +139,10 @@ export const SERVICES = {
     CUSTOM_VIEWS: {
       ID: '9785fa07-309f-47ab-bcc0-c0c3447f7e29' as ServiceInstanceId,
       SLUG: 'opencti-custom-views',
+    },
+    HUNT_PACKS: {
+      ID: 'b7a1c2d3-4e5f-4a6b-8c7d-9e0f1a2b3c4d' as ServiceInstanceId,
+      SLUG: 'opencti-hunt-packs',
     },
     EPIC: {
       ID: '3260f536-49b8-4c6f-8e87-61c8be1ae103' as ServiceInstanceId,

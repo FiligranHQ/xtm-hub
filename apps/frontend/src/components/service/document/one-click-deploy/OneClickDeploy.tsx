@@ -6,6 +6,7 @@ import ChoosePlatformForm from '@/components/service/document/one-click-deploy/C
 import EeBadge from '@/components/service/document/one-click-deploy/EeBadge';
 import EeLearnMoreSheet from '@/components/service/document/one-click-deploy/EeLearnMoreSheet';
 import OnePlatformDisplay from '@/components/service/document/one-click-deploy/OnePlatformDisplay';
+import { useIncompatibleVersionMessage } from '@/components/service/document/one-click-deploy/use-deploy-resource-title';
 import { useOneClickDeployTab } from '@/components/service/document/one-click-deploy/UseOneClickDeployTab';
 import { DisabledActionTooltip } from '@/components/ui/DisabledActionTooltip';
 import { useBuildCompatibilityTranslationKey } from '@/hooks/use-build-compatibility-translation-key';
@@ -17,7 +18,10 @@ import {
   isEeCapableContract,
   requiresEnterpriseEdition,
 } from '@/utils/platform';
-import { ShareableResourceType } from '@/utils/shareable-resources/shareable-resources.types';
+import {
+  isConnectorResource,
+  ShareableResourceType,
+} from '@/utils/shareable-resources/shareable-resources.types';
 import { Button, Dialog, DialogContent } from '@filigran/design-system';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { OneClickDeployMutation as OneClickDeployMutationType } from '@generated/OneClickDeployMutation.graphql';
@@ -64,6 +68,8 @@ const OneClickDeploy = ({
       platforms,
       requiredProductVersion,
     });
+  const incompatibleVersionMessage =
+    useIncompatibleVersionMessage(documentData);
 
   const requiresEe =
     documentData.type === ShareableResourceType.OPENCTI_PLAYBOOK ||
@@ -161,7 +167,9 @@ const OneClickDeploy = ({
 
   const isDeploymentDisabled = useMemo(() => {
     return (
-      !eeBlocked && platforms.length === 1 && incompatiblePlatformsCount === 1
+      !eeBlocked &&
+      platforms.length > 0 &&
+      incompatiblePlatformsCount === platforms.length
     );
   }, [eeBlocked, platforms, incompatiblePlatformsCount]);
 
@@ -200,11 +208,18 @@ const OneClickDeploy = ({
 
   const container = isDeploymentDisabled ? (
     <DisabledActionTooltip
-      reason={t('Service.Connectors.Incompatible', {
-        platformToBeUpdated,
-        count: incompatiblePlatformsCount,
-        version: requiredProductVersion ?? '',
-      })}>
+      reason={
+        isConnectorResource(documentData)
+          ? t('Service.Connectors.Incompatible', {
+              platformToBeUpdated,
+              count: incompatiblePlatformsCount,
+              version: requiredProductVersion ?? '',
+            })
+          : incompatibleVersionMessage(
+              platformToBeUpdated,
+              requiredProductVersion ?? ''
+            )
+      }>
       {buttonWithBadge}
     </DisabledActionTooltip>
   ) : (
