@@ -2,7 +2,8 @@ name: 'Vitest pull request report'
 description: >
   Turns the Vitest JSON reports of every shard into one report focused on the pull request (totals, failed tests, tests
   of the changed test files), writes it to the job summary and keeps one pull request comment up to date with it.
-  Needs a checkout with the parent commit (fetch-depth 2) and `pull-requests: write` to comment.
+  Needs a checkout with the parent commit (fetch-depth 2) and `pull-requests: write` to comment. Comments with the
+  workflow's own token, so only a comment authored by github-actions[bot] is ever updated.
 inputs:
   id:
     description: 'Identifier of the suite, used for the artifact pattern and to find the comment to update.'
@@ -12,11 +13,6 @@ inputs:
     required: true
   app-dir:
     description: 'Workspace the tests belong to, relative to the repository root (e.g. apps/frontend).'
-    required: true
-  github-token:
-    description: >
-      The workflow's GITHUB_TOKEN, used to post the pull request comment. Only a comment authored by
-      github-actions[bot] is ever updated.
     required: true
 runs:
   using: 'composite'
@@ -41,29 +37,29 @@ runs:
         APP_DIR: ${{ inputs.app-dir }}
         REPORTS_DIR: ${{ runner.temp }}/vitest-${{ inputs.id }}-reports
         COMMENT_FILE: ${{ runner.temp }}/vitest-${{ inputs.id }}-comment.md
+      # GitHub rejects comments over 65,536 characters; the job summary keeps the full report.
       run: |
-        report() {
-          node "${GITHUB_ACTION_PATH}/report.mjs" --id "$REPORT_ID" --title "$REPORT_TITLE" \
-            --app-dir "$APP_DIR" --reports "$REPORTS_DIR" --base HEAD^1 "$@"
-        }
-        report >> "$GITHUB_STEP_SUMMARY"
-        # GitHub rejects comments over 65,536 characters.
-        report --max-length 60000 > "$COMMENT_FILE"
+        node "${GITHUB_ACTION_PATH}/report.mjs" --id "$REPORT_ID" --title "$REPORT_TITLE" \
+          --app-dir "$APP_DIR" --reports "$REPORTS_DIR" --base HEAD^1 \
+          --summary-file "$GITHUB_STEP_SUMMARY" --comment-file "$COMMENT_FILE" \
+          --max-failures 20 --max-length 60000
 
     - name: Comment on the pull request
       # A pull request from a fork gets a read-only token: the job summary is all it gets.
       if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
       shell: bash
       env:
-        GH_TOKEN: ${{ inputs.github-token }}
+        GH_TOKEN: ${{ github.token }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
         MARKER: '<!-- vitest-report:${{ inputs.id }} -->'
         # Anyone can post a comment starting with the marker: only update the one the workflow posted.
         COMMENT_AUTHOR: 'github-actions[bot]'
         COMMENT_FILE: ${{ runner.temp }}/vitest-${{ inputs.id }}-comment.md
       run: |
-        comment_id=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
-          --jq ".[] | select(.user.login == \"${COMMENT_AUTHOR}\" and (.body | startswith(\"${MARKER}\"))) | .id" | head -n 1)
+        comment_ids=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
+          | jq -r --arg marker "$MARKER" --arg author "$COMMENT_AUTHOR" \
+            '.[] | select(.user.login == $author and (.body | startswith($marker))) | .id')
+        comment_id=${comment_ids%%$'\n'*}
         if [ -n "$comment_id" ]; then
           gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" -F "body=@${COMMENT_FILE}" > /dev/null
         else

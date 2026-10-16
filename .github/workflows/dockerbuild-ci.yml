@@ -10,6 +10,7 @@ on:
       - "main"
     paths:
       - "apps/**"
+      - ".github/actions/**"
       - ".github/workflows/dockerbuild-ci.yml"
       - "package.json"
       - "yarn.lock"
@@ -40,6 +41,7 @@ jobs:
           filters: |
             code:
               - "apps/**"
+              - ".github/actions/**"
               - ".github/workflows/dockerbuild-ci.yml"
               - "package.json"
               - "yarn.lock"
@@ -77,6 +79,11 @@ jobs:
       - name: Run lint
         working-directory: ${{ matrix.working-directory }}
         run: yarn lint
+
+      # The Vitest report script lives outside the workspaces: run its fixture tests once, on the backend leg.
+      - name: Test the Vitest report script
+        if: matrix.label == 'backend'
+        run: node --test .github/actions/vitest-pr-report/report.test.mjs
 
       - name: Check formatting
         working-directory: ${{ matrix.working-directory }}
@@ -348,7 +355,8 @@ jobs:
         with:
           name: vitest-frontend-report-shard-${{ matrix.shard }}
           path: test-reports/
-          retention-days: 30
+          retention-days: 7
+          overwrite: true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
@@ -416,7 +424,8 @@ jobs:
         with:
           name: vitest-backend-report-shard-${{ matrix.shard }}
           path: test-reports/
-          retention-days: 30
+          retention-days: 7
+          overwrite: true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
@@ -490,11 +499,12 @@ jobs:
       - name: Publish test report
         if: always() && needs.run-front-unit-tests-shards.result != 'skipped'
         uses: ./.github/actions/vitest-pr-report
+        # The report is for reviewers: the shards above already carry the real pass/fail result.
+        continue-on-error: true
         with:
           id: frontend
           title: Frontend unit tests
           app-dir: apps/frontend
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   run-api-unit-tests:
     needs: run-api-unit-tests-shards
@@ -520,11 +530,12 @@ jobs:
       - name: Publish test report
         if: always() && needs.run-api-unit-tests-shards.result != 'skipped'
         uses: ./.github/actions/vitest-pr-report
+        # The report is for reviewers: the shards above already carry the real pass/fail result.
+        continue-on-error: true
         with:
           id: backend
           title: Backend unit and integration tests
           app-dir: apps/backend
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-feature-branch:
     needs: build-images-tests
