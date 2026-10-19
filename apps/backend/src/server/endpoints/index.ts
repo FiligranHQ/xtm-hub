@@ -1,4 +1,6 @@
 import { Express } from 'express';
+import { FeatureFlag } from '../../__generated__/resolvers-types';
+import { isFeatureEnabled } from '../../utils/feature-flag.util';
 import { documentDownloadEndpoint } from './document/document-download-endpoint';
 import { documentVisualizeEndpoint } from './document/document-visualize-endpoint';
 import { healthEndpoint } from './health/health-endpoint';
@@ -13,9 +15,11 @@ import { versionsMatrixEndpoint } from './versions-matrix/versions-matrix-endpoi
 export const registerEndpoints = (app: Express) => {
   healthEndpoint(app);
   userPictureEndpoint(app);
-  manifestEndpoint(app);
+  if (isFeatureEnabled(FeatureFlag.DecouplingConnectors)) {
+    manifestEndpoint(app);
+    versionsMatrixEndpoint(app);
+  }
   productVersionEndpoint(app);
-  versionsMatrixEndpoint(app);
   // Implemented as routes, not GraphQL resolvers: a resolver can't attach a file to the response.
   documentDownloadEndpoint(app);
   documentVisualizeEndpoint(app);
