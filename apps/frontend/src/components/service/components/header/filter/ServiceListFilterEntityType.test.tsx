@@ -1,23 +1,28 @@
 import { ServiceListFilterEntityType } from '@/components/service/components/header/filter/ServiceListFilterEntityType';
 import { AppServiceListLocalStorageKeyContext } from '@/components/service/components/ServiceListLocalStorageKeyContext';
-import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-storage';
-import testRender from '@/utils/test/test-render';
-import { screen } from '@testing-library/react';
+import {
+  ServiceListLocalStorageKey,
+  useServiceListLocalStorage,
+} from '@/hooks/use-service-list-local-storage';
+import testRender, { testRenderHook } from '@/utils/test/test-render';
+import { act, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-const CAMPAIGN_ID = 'Campaign';
-const CAMPAIGN_NAME = 'Campaign';
 const ATTACK_PATTERN_ID = 'Attack-Pattern';
 const ATTACK_PATTERN_NAME = 'Attack Pattern';
-const ENTITY_TYPES_STORAGE_KEY = 'entityTypePrivateOpenCTIIntegrationFeedsList';
+const INTRUSION_SET_ID = 'Intrusion-Set';
+const INTRUSION_SET_NAME = 'Intrusion Set';
+const LOCAL_STORAGE_KEY = ServiceListLocalStorageKey.OpenCTIIntegrationFeeds;
 
 const renderFilter = () =>
   testRender(
-    <AppServiceListLocalStorageKeyContext
-      localStorageKey={ServiceListLocalStorageKey.OpenCTIIntegrationFeeds}>
+    <AppServiceListLocalStorageKeyContext localStorageKey={LOCAL_STORAGE_KEY}>
       <ServiceListFilterEntityType />
     </AppServiceListLocalStorageKeyContext>
   );
+
+const renderStoredFilters = () =>
+  testRenderHook(() => useServiceListLocalStorage(LOCAL_STORAGE_KEY));
 
 describe('ServiceListFilterEntityType', () => {
   beforeEach(() => {
@@ -26,10 +31,8 @@ describe('ServiceListFilterEntityType', () => {
 
   it('should pre-check the entity types when they are already stored in the list filters', () => {
     // Given
-    localStorage.setItem(
-      ENTITY_TYPES_STORAGE_KEY,
-      JSON.stringify({ [ATTACK_PATTERN_ID]: [] })
-    );
+    const { result } = renderStoredFilters();
+    act(() => result.current.setEntityTypes({ [ATTACK_PATTERN_ID]: [] }));
 
     // When
     renderFilter();
@@ -45,11 +48,13 @@ describe('ServiceListFilterEntityType', () => {
     const { user } = renderFilter();
 
     // When
-    await user.click(screen.getByRole('checkbox', { name: CAMPAIGN_NAME }));
+    await user.click(
+      screen.getByRole('checkbox', { name: INTRUSION_SET_NAME })
+    );
 
     // Then
-    expect(JSON.parse(localStorage.getItem(ENTITY_TYPES_STORAGE_KEY)!)).toEqual(
-      { [CAMPAIGN_ID]: [] }
-    );
+    expect(renderStoredFilters().result.current.entityTypes).toEqual({
+      [INTRUSION_SET_ID]: [],
+    });
   });
 });

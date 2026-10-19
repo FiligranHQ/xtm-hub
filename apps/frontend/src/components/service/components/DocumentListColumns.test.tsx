@@ -1,7 +1,12 @@
 import testRender from '@/utils/test/test-render';
 import { documentItem_fragment$data } from '@generated/documentItem_fragment.graphql';
 import { IntegrationType } from '@graphql/generated';
-import { CellContext, HeaderContext } from '@tanstack/react-table';
+import {
+  CellContext,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { describe, expect, it } from 'vitest';
 import { buildDocumentListColumns } from './DocumentListColumns';
 
@@ -37,18 +42,20 @@ const renderCell = (columnId: string, document: documentItem_fragment$data) => {
   );
 };
 
-const renderHeader = (columnId: string) => {
-  const header = buildDocumentListColumns({
-    documents: [CONNECTOR],
-    t,
-    renderActions: () => null,
-  }).find((column) => column.id === columnId)?.header;
-  if (typeof header !== 'function') {
-    throw new Error(`column ${columnId} has no header renderer`);
-  }
-  return testRender(
-    <>{header({} as HeaderContext<documentItem_fragment$data, unknown>)}</>
-  );
+const ColumnHeader = ({ columnId }: { columnId: string }) => {
+  const table = useReactTable({
+    columns: buildDocumentListColumns({
+      documents: [CONNECTOR],
+      t,
+      renderActions: () => null,
+    }),
+    data: [CONNECTOR],
+    getCoreRowModel: getCoreRowModel(),
+  });
+  const header = table.getFlatHeaders().find(({ id }) => id === columnId);
+  return header
+    ? flexRender(header.column.columnDef.header, header.getContext())
+    : null;
 };
 
 describe('buildDocumentListColumns', () => {
@@ -118,7 +125,7 @@ describe('buildDocumentListColumns', () => {
 
   it('should keep the full compatibility label as a tooltip on its header when the list holds connectors', () => {
     // Given / When
-    const { getByText } = renderHeader('compatibility');
+    const { getByText } = testRender(<ColumnHeader columnId="compatibility" />);
 
     // Then
     expect(getByText(COMPATIBILITY_LABEL)).toHaveAttribute(

@@ -38,11 +38,33 @@ const buildServiceContext = (overrides = {}) => ({
     id: 'service-1',
     capabilities: [],
   },
-  translationKey: 'Service.OpenctiCustomDashboards',
+  translationKey: DASHBOARDS_TRANSLATION_KEY,
   type: ShareableResourceType.OPENCTI_CUSTOM_DASHBOARD,
   setIntegrationType: mockSetIntegrationType,
   ...overrides,
 });
+
+const buildIntegrationsServiceContext = () =>
+  buildServiceContext({
+    serviceInstance: {
+      id: 'service-1',
+      capabilities: [ServiceRestriction.Upload],
+    },
+    translationKey: INTEGRATIONS_TRANSLATION_KEY,
+    type: ShareableResourceType.OPENCTI_INTEGRATION,
+    ServiceForm: () => null,
+  });
+
+const openIntegrationTypesMenu = async () => {
+  mockUseServiceContext.mockReturnValue(buildIntegrationsServiceContext());
+  const rendered = testRender(<ServiceListHeaderButtons />);
+  await rendered.user.click(
+    rendered.getByRole('button', {
+      name: `${INTEGRATIONS_TRANSLATION_KEY}.AddService`,
+    })
+  );
+  return rendered;
+};
 
 describe('ServiceListHeaderButtons', () => {
   beforeEach(() => {
@@ -154,7 +176,6 @@ describe('ServiceListHeaderButtons', () => {
           id: 'service-1',
           capabilities: [ServiceRestriction.Upload],
         },
-        translationKey: DASHBOARDS_TRANSLATION_KEY,
         ServiceForm: () => null,
       })
     );
@@ -175,27 +196,11 @@ describe('ServiceListHeaderButtons', () => {
     ).toBeInTheDocument();
   });
 
-  it('should select the integration type and open the add sheet when the user picks a type to add', async () => {
+  it('should select the integration type when the user picks a type to add', async () => {
     // Given
-    mockUseServiceContext.mockReturnValue(
-      buildServiceContext({
-        serviceInstance: {
-          id: 'service-1',
-          capabilities: [ServiceRestriction.Upload],
-        },
-        translationKey: INTEGRATIONS_TRANSLATION_KEY,
-        type: ShareableResourceType.OPENCTI_INTEGRATION,
-        ServiceForm: () => null,
-      })
-    );
-    const { user, getByRole } = testRender(<ServiceListHeaderButtons />);
+    const { user, getByRole } = await openIntegrationTypesMenu();
 
     // When
-    await user.click(
-      getByRole('button', {
-        name: `${INTEGRATIONS_TRANSLATION_KEY}.AddService`,
-      })
-    );
     await user.click(
       getByRole('menuitem', {
         name: `${INTEGRATIONS_TRANSLATION_KEY}.Type.${IntegrationType.TaxiiFeed}`,
@@ -206,6 +211,20 @@ describe('ServiceListHeaderButtons', () => {
     expect(mockSetIntegrationType).toHaveBeenCalledWith(
       IntegrationType.TaxiiFeed
     );
+  });
+
+  it('should open the add sheet when the user picks a type to add', async () => {
+    // Given
+    const { user, getByRole } = await openIntegrationTypesMenu();
+
+    // When
+    await user.click(
+      getByRole('menuitem', {
+        name: `${INTEGRATIONS_TRANSLATION_KEY}.Type.${IntegrationType.TaxiiFeed}`,
+      })
+    );
+
+    // Then
     expect(
       getByRole('dialog', {
         name: `${INTEGRATIONS_TRANSLATION_KEY}.AddService`,
