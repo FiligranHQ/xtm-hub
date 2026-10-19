@@ -1,0 +1,17 @@
+{
+  "environment": "prerelease",
+  "login_settings": [
+    {
+      "name": "Login with Filigran",
+      "type": "SSO",
+      "provider": "oidc"
+    }
+  ],
+  "auth0_sync": {
+    "enabled": true
+  },
+  "base_url_front": "https://hub.prerelease.filigran.io",
+  "saas_manager": {
+    "url": "https://saasmanager.filigran.io"
+  }
+}

@@ -342,8 +342,8 @@ export const UserOrganizationApp = {
       logApp.info('Pending user digest email disabled.');
       return;
     }
-    // Prerelease runs NODE_ENV=production on a copy of production data, so
-    // the flag alone would email real customers from a test environment.
+    // Environments restored from production data must never email real
+    // customers, whatever their enabled_emails flags say.
     if (portalConfig.environment !== 'production') {
       logApp.info(
         `Pending user digest email skipped: not sent outside production (environment: ${portalConfig.environment}).`
