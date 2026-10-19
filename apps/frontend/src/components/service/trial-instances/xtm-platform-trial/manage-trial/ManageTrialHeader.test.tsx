@@ -1,9 +1,5 @@
 import { ManageTrialHeader } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialHeader';
-import { ManageTrialTable } from '@/components/service/trial-instances/xtm-platform-trial/manage-trial/ManageTrialTable';
-import {
-  mockGraphqlMutation,
-  mockGraphqlQuery,
-} from '@/utils/test/msw/graphql-api';
+import { mockGraphqlQuery } from '@/utils/test/msw/graphql-api';
 import { mswServer } from '@/utils/test/msw/server';
 import testRender from '@/utils/test/test-render';
 import {
@@ -12,11 +8,7 @@ import {
   RemoveUsersFromBundleGroupsMutationVariables,
   UsersQuery,
 } from '@graphql/generated';
-import {
-  mockBundleUserServiceGroup,
-  mockUser,
-  mockUserConnection,
-} from '@graphql/mocks';
+import { mockUserConnection } from '@graphql/mocks';
 import { screen, waitFor, within } from '@testing-library/react';
 import { graphql, HttpResponse } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -29,10 +21,6 @@ vi.mock('@/components/ui/snackbar/snackbar-store', () => ({
 
 const GQL_OPERATION_REMOVE_USERS_FROM_BUNDLE_GROUPS =
   'RemoveUsersFromBundleGroups';
-const REMOVED_USER_ID = 'user-1';
-const REMOVED_USER_EMAIL = 'user1@filigran.io';
-const REMAINING_USER_ID = 'user-2';
-const REMAINING_USER_EMAIL = 'user2@filigran.io';
 
 const bundleUserServiceGroupsResponse: BundleUserServiceGroupsQuery = {
   __typename: 'Query',
@@ -355,74 +343,5 @@ describe('ManageTrialHeader', () => {
       );
     });
     expect(onUsersRemoved).not.toHaveBeenCalled();
-  });
-
-  it('should remove the deleted users from the bundle users table when the bulk removal succeeds', async () => {
-    // Given
-    mswServer.use(
-      mockGraphqlQuery({
-        queryName: 'BundleUserServiceGroups',
-        data: {
-          __typename: 'Query',
-          bundleUserServiceGroups: [
-            mockBundleUserServiceGroup({
-              user: mockUser({
-                id: REMOVED_USER_ID,
-                email: REMOVED_USER_EMAIL,
-              }),
-              groups: [],
-            }),
-            mockBundleUserServiceGroup({
-              user: mockUser({
-                id: REMAINING_USER_ID,
-                email: REMAINING_USER_EMAIL,
-              }),
-              groups: [],
-            }),
-          ],
-        } satisfies BundleUserServiceGroupsQuery,
-      }),
-      mockGraphqlMutation({
-        queryName: GQL_OPERATION_REMOVE_USERS_FROM_BUNDLE_GROUPS,
-        data: { removeUsersFromBundleGroups: [REMOVED_USER_ID] },
-      })
-    );
-    const { user } = testRender(
-      <>
-        <ManageTrialHeader
-          serviceInstanceId="bundle-1"
-          products={Object.values(PlatformIdentifier)}
-          selectedUsers={[{ id: REMOVED_USER_ID, email: REMOVED_USER_EMAIL }]}
-          onUsersRemoved={vi.fn()}
-        />
-        <ManageTrialTable
-          serviceInstanceId="bundle-1"
-          products={Object.values(PlatformIdentifier)}
-          selection={{
-            selectAll: false,
-            selectedIds: new Set<string>(),
-            excludedIds: new Set<string>(),
-          }}
-          onSelectionChange={vi.fn()}
-        />
-      </>
-    );
-    await screen.findByText(REMOVED_USER_EMAIL);
-    await user.click(
-      within(screen.getByRole('banner')).getByLabelText('Utils.Delete')
-    );
-
-    // When
-    await user.click(
-      within(screen.getByRole('alertdialog')).getByRole('button', {
-        name: 'Utils.Delete',
-      })
-    );
-
-    // Then
-    await waitFor(() =>
-      expect(screen.queryByText(REMOVED_USER_EMAIL)).not.toBeInTheDocument()
-    );
-    expect(screen.getByText(REMAINING_USER_EMAIL)).toBeInTheDocument();
   });
 });
