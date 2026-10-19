@@ -1,3 +1,4 @@
+import { getUrlOrigin } from '@/utils/external-url';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UseExternalTabProps {
@@ -24,6 +25,7 @@ const useExternalTab = ({
   preventUnload,
 }: UseExternalTabProps): UseExternalTabReturn => {
   const tabRef = useRef<WindowProxy | null>(null);
+  const tabOriginRef = useRef<string | null>(null);
   const [isTabOpen, setIsTabOpen] = useState(false);
   const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
     event.preventDefault();
@@ -31,12 +33,14 @@ const useExternalTab = ({
   };
   const openTab = useCallback(() => {
     setIsTabOpen(true);
+    tabOriginRef.current = getUrlOrigin(url);
     tabRef.current = window.open(url, tabName);
   }, [url, tabName]);
 
   const closeTab = useCallback(() => {
     tabRef.current?.close();
     tabRef.current = null;
+    tabOriginRef.current = null;
     setIsTabOpen(false);
   }, []);
 
@@ -45,14 +49,26 @@ const useExternalTab = ({
   }, []);
 
   const postMessage = (message: Record<string, unknown>) => {
-    tabRef.current?.postMessage(message, '*');
+    if (!tabOriginRef.current) {
+      return;
+    }
+    tabRef.current?.postMessage(message, tabOriginRef.current);
   };
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.source === tabRef.current && onMessage) {
-        onMessage(event);
+      if (!tabRef.current || event.source !== tabRef.current) {
+        return;
       }
+      if (!tabOriginRef.current || event.origin !== tabOriginRef.current) {
+        if (event.data?.action) {
+          console.warn(
+            `XTM Hub: message ignored, it comes from "${event.origin}" but the opened platform origin is "${tabOriginRef.current}"`
+          );
+        }
+        return;
+      }
+      onMessage?.(event);
     };
     if (isTabOpen) {
       window.addEventListener('message', handleMessage);

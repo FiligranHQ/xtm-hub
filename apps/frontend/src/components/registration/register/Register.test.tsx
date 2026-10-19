@@ -98,12 +98,14 @@ vi.mock('@/components/registration/register/OrganizationForm', () => ({
   ),
 }));
 
+const PLATFORM_ORIGIN = 'https://opencti.example.com';
+
 const mockQueryRef = {} as PreloadedQuery<registerIsPlatformRegisteredQuery>;
 const mockPlatform: PlatformInput = {
-  url: 'https://opencti.example.com',
+  url: `${PLATFORM_ORIGIN}/dashboard`,
 };
 
-const renderRegister = () =>
+const renderRegister = (platform: PlatformInput = mockPlatform) =>
   testRender(
     <RegistrationContext.Provider
       value={{
@@ -113,7 +115,7 @@ const renderRegister = () =>
       }}>
       <Register
         queryRef={mockQueryRef}
-        platform={mockPlatform}
+        platform={platform}
       />
     </RegistrationContext.Provider>
   );
@@ -170,7 +172,58 @@ describe('Register', () => {
     });
     const { user } = renderRegister();
     await user.click(screen.getByRole('button', { name: 'mock-cancel' }));
-    expect(postMessage).toHaveBeenCalledWith({ action: 'cancel' }, '*');
+    expect(postMessage).toHaveBeenCalledWith(
+      { action: 'cancel' },
+      PLATFORM_ORIGIN
+    );
+  });
+
+  it('should not post the cancel message when the platform url is invalid', async () => {
+    // Given
+    testState.isPlatformRegistered = {
+      status: PlatformRegistrationStatus.NeverRegistered,
+      platformTitle: null,
+      organization: null,
+    } as registerIsPlatformRegisteredFragment$data;
+    const postMessage = vi.fn();
+    Object.defineProperty(window, 'opener', {
+      value: { postMessage },
+      writable: true,
+    });
+    const { user } = renderRegister({ url: 'not a url' });
+
+    // When
+    await user.click(screen.getByRole('button', { name: 'mock-cancel' }));
+
+    // Then
+    expect(postMessage).not.toHaveBeenCalled();
+  });
+
+  it('should not post the register message when the platform url is invalid', async () => {
+    // Given
+    testState.isPlatformRegistered = {
+      status: PlatformRegistrationStatus.NeverRegistered,
+      platformTitle: null,
+      organization: null,
+    } as registerIsPlatformRegisteredFragment$data;
+    testState.mutationMode = 'success';
+    const postMessage = vi.fn();
+    Object.defineProperty(window, 'opener', {
+      value: { postMessage },
+      writable: true,
+    });
+    const { user } = renderRegister({ url: 'not a url' });
+
+    // When
+    await user.click(screen.getByRole('button', { name: 'mock-confirm' }));
+
+    // Then
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: 'Register.Succeeded.Title' })
+      ).toBeInTheDocument();
+    });
+    expect(postMessage).not.toHaveBeenCalled();
   });
 
   it('renders the "too much organization" screen when unregistered with more than two organizations', async () => {
@@ -227,7 +280,7 @@ describe('Register', () => {
     await waitFor(() => {
       expect(postMessage).toHaveBeenCalledWith(
         { action: 'register', token: 'my-token' },
-        '*'
+        PLATFORM_ORIGIN
       );
     });
   });
@@ -257,7 +310,7 @@ describe('Register', () => {
     await waitFor(() => {
       expect(postMessage).toHaveBeenCalledWith(
         { action: 'register', token: testState.token },
-        '*'
+        PLATFORM_ORIGIN
       );
     });
     expect(
@@ -332,7 +385,10 @@ describe('Register', () => {
     });
     expect(screen.getByTestId('missing-capability')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'mock-cancel' }));
-    expect(postMessage).toHaveBeenCalledWith({ action: 'cancel' }, '*');
+    expect(postMessage).toHaveBeenCalledWith(
+      { action: 'cancel' },
+      PLATFORM_ORIGIN
+    );
   });
 
   it('renders a loader as a fallback for any other status', () => {

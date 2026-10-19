@@ -24,3 +24,16 @@ export const toExternalHref = (
     return null;
   }
 };
+
+export const getUrlOrigin = (url: string | null | undefined): string | null => {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (!SAFE_PROTOCOLS.includes(parsed.protocol)) {
+      return null;
+    }
+    return parsed.origin;
+  } catch {
+    return null;
+  }
+};

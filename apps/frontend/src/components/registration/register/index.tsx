@@ -8,6 +8,7 @@ import { RegisterStateSucceeded } from '@/components/registration/register/Succe
 import { RegisterStateTooManyOrganizations } from '@/components/registration/register/TooManyOrganizations';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
+import { getUrlOrigin } from '@/utils/external-url';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
@@ -117,9 +118,24 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   const hasPostedMessageRef = useRef(false);
   const hasAutoRegisteredRef = useRef(false);
 
+  const platformOrigin = useMemo(
+    () => getUrlOrigin(platform.url),
+    [platform.url]
+  );
+
+  const postMessageToPlatform = useCallback(
+    (message: Record<string, unknown>) => {
+      if (!platformOrigin) {
+        return;
+      }
+      window.opener?.postMessage(message, platformOrigin);
+    },
+    [platformOrigin]
+  );
+
   const cancel = useCallback(() => {
-    window.opener?.postMessage({ action: 'cancel' }, '*');
-  }, []);
+    postMessageToPlatform({ action: 'cancel' });
+  }, [postMessageToPlatform]);
 
   const register = useCallback(
     (organizationId: string, platformName: string = platform.title) => {
@@ -161,16 +177,13 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   useLayoutEffect(() => {
     if (registerDataResponse?.token && !hasPostedMessageRef.current) {
       hasPostedMessageRef.current = true;
-      window.opener?.postMessage(
-        {
-          action: 'register',
-          token: registerDataResponse.token,
-        },
-        '*'
-      );
+      postMessageToPlatform({
+        action: 'register',
+        token: registerDataResponse.token,
+      });
       dispatch({ type: 'SET_SUCCEEDED' });
     }
-  }, [registerDataResponse?.token]);
+  }, [registerDataResponse?.token, postMessageToPlatform]);
 
   useLayoutEffect(() => {
     const shouldAutoRegister =
