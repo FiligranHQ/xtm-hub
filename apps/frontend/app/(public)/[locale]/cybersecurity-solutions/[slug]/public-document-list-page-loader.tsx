@@ -10,12 +10,12 @@ import { useServiceListLocalStorage } from '@/hooks/use-service-list-local-stora
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { useShareableResourceMapping } from '@/utils/shareable-resources/use-shareable-resource-mapping';
 import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import { SeoServiceInstanceItemFragment } from '@graphql/generated';
 import { useEffect } from 'react';
 import { useQueryLoader } from 'react-relay';
 
 interface PublicDocumentListPageLoaderProps {
-  serviceInstance: seoServiceInstanceFragment$data;
+  serviceInstance: SeoServiceInstanceItemFragment;
   baseUrl: string;
 }
 

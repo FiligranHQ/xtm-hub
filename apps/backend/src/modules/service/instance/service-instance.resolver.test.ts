@@ -296,7 +296,11 @@ describe('seo service instance GraphQL query', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    await expect(call).rejects.toMatchObject({ name: ErrorType.NotFound });
+    // The public SEO pages turn this exact message into a 404.
+    await expect(call).rejects.toMatchObject({
+      name: ErrorType.NotFound,
+      message: ErrorCode.ServiceNotFound,
+    });
   });
 
   it('should map to ForbiddenAccess for ServiceNotManageable error', async () => {

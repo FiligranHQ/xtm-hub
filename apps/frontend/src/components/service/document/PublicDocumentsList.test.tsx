@@ -4,8 +4,11 @@ import { ServiceListLocalStorageKey } from '@/hooks/use-service-list-local-stora
 import { buildSignupRedirect, decodeSafeRedirect } from '@/utils/redirect';
 import testRender from '@/utils/test/test-render';
 import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import { DocumentOrdering, OrderingMode } from '@graphql/generated';
+import {
+  DocumentOrdering,
+  OrderingMode,
+  SeoServiceInstanceItemFragment,
+} from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { useRouter } from 'next/navigation';
@@ -129,7 +132,7 @@ describe('PublicDocumentsList', () => {
   const serviceInstance = {
     id: SERVICE_INSTANCE_ID,
     slug: SERVICE_INSTANCE_SLUG,
-  } as Partial<seoServiceInstanceFragment$data>;
+  } as Partial<SeoServiceInstanceItemFragment>;
   const queryRef = {} as PreloadedQuery<publicDocumentsQuery>;
 
   const buildElement = () => (
@@ -474,7 +477,7 @@ describe('PublicDocumentsList', () => {
     const integrationsServiceInstance = {
       id: SERVICE_INSTANCE_ID,
       slug: OPENCTI_INTEGRATIONS_SLUG,
-    } as Partial<seoServiceInstanceFragment$data>;
+    } as Partial<SeoServiceInstanceItemFragment>;
     const { user } = testRender(
       <PublicDocumentsList
         queryRef={queryRef}
@@ -529,7 +532,7 @@ describe('PublicDocumentsList', () => {
     const integrationsServiceInstance = {
       id: SERVICE_INSTANCE_ID_WITH_PLUS,
       slug: OPENCTI_INTEGRATIONS_SLUG,
-    } as Partial<seoServiceInstanceFragment$data>;
+    } as Partial<SeoServiceInstanceItemFragment>;
     const { user } = testRender(
       <PublicDocumentsList
         queryRef={queryRef}
