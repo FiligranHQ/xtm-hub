@@ -1,62 +1,123 @@
 import { XtmoneStatusState } from '@/components/service/trial-instances/xtm-platform-trial/active-bundle/useXtmoneIntegrationStatus';
 import { XtmoneConnectionStatus } from '@/components/service/trial-instances/xtm-platform-trial/active-bundle/XtmoneConnectionStatus';
 import testRender from '@/utils/test/test-render';
-import { XtmoneIntegrationStatusFragment } from '@graphql/generated';
-import { screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import {
+  XtmoneIntegrationStatusEntryFragment,
+  XtmoneIntegrationStatusFragment,
+} from '@graphql/generated';
+import { screen, within } from '@testing-library/react';
+import { useTranslations } from 'next-intl';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const LAST_CHECKED_AT = '2026-07-30T12:31:53+00:00';
+const OPENCTI_ROW_LABEL =
+  'XtmPlatformTrial.Products.Connection:{"productName":"OpenCTI"}:';
+const OPENAEV_ROW_LABEL =
+  'XtmPlatformTrial.Products.Connection:{"productName":"OpenAEV"}:';
 const STATUS_ACTIVE = 'XtmPlatformTrial.Products.StatusActive';
 const STATUS_NOT_CONNECTED = 'XtmPlatformTrial.Products.StatusNotConnected';
 const STATUS_UNAVAILABLE = 'XtmPlatformTrial.Products.StatusUnavailable';
 
-const buildIntegrationStatus = (
+const buildEntry = (
   connected: boolean
-): XtmoneIntegrationStatusFragment => ({
-  opencti: {
-    status: connected ? 'connected' : 'disconnected',
-    connected,
-    last_checked_at: LAST_CHECKED_AT,
-  },
-  openaev: {
-    status: connected ? 'connected' : 'disconnected',
-    connected,
-    last_checked_at: LAST_CHECKED_AT,
-  },
-  linked: connected,
+): XtmoneIntegrationStatusEntryFragment => ({
+  status: connected ? 'connected' : 'disconnected',
+  connected,
+  last_checked_at: LAST_CHECKED_AT,
+});
+
+const buildIntegrationStatus = ({
+  openctiConnected,
+  openaevConnected,
+}: {
+  openctiConnected: boolean;
+  openaevConnected: boolean;
+}): XtmoneIntegrationStatusFragment => ({
+  opencti: buildEntry(openctiConnected),
+  openaev: buildEntry(openaevConnected),
+  linked: true,
   last_checked_at: LAST_CHECKED_AT,
 });
 
 const buildStatus = (
   overrides: Partial<XtmoneStatusState> = {}
 ): XtmoneStatusState => ({
-  data: buildIntegrationStatus(true),
+  data: buildIntegrationStatus({
+    openctiConnected: true,
+    openaevConnected: true,
+  }),
   isLoading: false,
   isError: false,
   hasUrl: true,
   ...overrides,
 });
 
+const getProductRow = (rowLabel: string) =>
+  within(screen.getByText(rowLabel).parentElement!);
+
 describe('XtmoneConnectionStatus', () => {
+  beforeEach(() => {
+    vi.mocked(useTranslations).mockReturnValue((key, values) =>
+      values ? `${key}:${JSON.stringify(values)}` : key
+    );
+  });
+
   it.each([
     {
       context: 'both products are connected to XTM One',
-      status: buildStatus(),
-      expectedLabel: STATUS_ACTIVE,
+      openctiConnected: true,
+      openaevConnected: true,
+      expectedOpenctiStatus: STATUS_ACTIVE,
+      expectedOpenaevStatus: STATUS_ACTIVE,
     },
     {
       context: 'both products are disconnected from XTM One',
-      status: buildStatus({ data: buildIntegrationStatus(false) }),
-      expectedLabel: STATUS_NOT_CONNECTED,
+      openctiConnected: false,
+      openaevConnected: false,
+      expectedOpenctiStatus: STATUS_NOT_CONNECTED,
+      expectedOpenaevStatus: STATUS_NOT_CONNECTED,
+    },
+    {
+      context: 'only OpenCTI is connected to XTM One',
+      openctiConnected: true,
+      openaevConnected: false,
+      expectedOpenctiStatus: STATUS_ACTIVE,
+      expectedOpenaevStatus: STATUS_NOT_CONNECTED,
+    },
+    {
+      context: 'only OpenAEV is connected to XTM One',
+      openctiConnected: false,
+      openaevConnected: true,
+      expectedOpenctiStatus: STATUS_NOT_CONNECTED,
+      expectedOpenaevStatus: STATUS_ACTIVE,
     },
   ])(
-    'should show the $expectedLabel icon on each product row when $context',
-    ({ status, expectedLabel }) => {
+    'should show the connection status of each product on its own row when $context',
+    ({
+      openctiConnected,
+      openaevConnected,
+      expectedOpenctiStatus,
+      expectedOpenaevStatus,
+    }) => {
       // Given / When
-      testRender(<XtmoneConnectionStatus status={status} />);
+      testRender(
+        <XtmoneConnectionStatus
+          status={buildStatus({
+            data: buildIntegrationStatus({
+              openctiConnected,
+              openaevConnected,
+            }),
+          })}
+        />
+      );
 
       // Then
-      expect(screen.getAllByLabelText(expectedLabel)).toHaveLength(2);
+      expect(
+        getProductRow(OPENCTI_ROW_LABEL).getByLabelText(expectedOpenctiStatus)
+      ).toBeInTheDocument();
+      expect(
+        getProductRow(OPENAEV_ROW_LABEL).getByLabelText(expectedOpenaevStatus)
+      ).toBeInTheDocument();
     }
   );
 
@@ -84,7 +145,7 @@ describe('XtmoneConnectionStatus', () => {
     }
   );
 
-  it('should show no connection status when the status is loading', () => {
+  it('should show the product rows without any connection status when the status is loading', () => {
     // Given / When
     testRender(
       <XtmoneConnectionStatus
@@ -93,6 +154,8 @@ describe('XtmoneConnectionStatus', () => {
     );
 
     // Then
+    expect(screen.getByText(OPENCTI_ROW_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(OPENAEV_ROW_LABEL)).toBeInTheDocument();
     expect(screen.queryByLabelText(STATUS_ACTIVE)).not.toBeInTheDocument();
     expect(
       screen.queryByLabelText(STATUS_NOT_CONNECTED)

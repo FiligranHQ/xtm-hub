@@ -26,8 +26,7 @@ const graphqlMocks = vi.hoisted(() => ({
     getRootKey: vi.fn(() => ['PlatformTrialStatus']),
   }),
   giveDeploymentFeedback: vi.fn(),
-  giveDeploymentFeedbackOptions: undefined as
-    GiveDeploymentFeedbackOptions | undefined,
+  useGiveDeploymentFeedbackMutation: vi.fn(),
 }));
 
 const showSnackbarMock = vi.hoisted(() => vi.fn());
@@ -42,13 +41,8 @@ vi.mock('@graphql/generated', async (importOriginal) => {
   return {
     ...actual,
     usePlatformTrialStatusQuery: graphqlMocks.usePlatformTrialStatusQuery,
-    useGiveDeploymentFeedbackMutation: (
-      _client: unknown,
-      options?: GiveDeploymentFeedbackOptions
-    ) => {
-      graphqlMocks.giveDeploymentFeedbackOptions = options;
-      return { mutate: graphqlMocks.giveDeploymentFeedback };
-    },
+    useGiveDeploymentFeedbackMutation:
+      graphqlMocks.useGiveDeploymentFeedbackMutation,
   };
 });
 
@@ -91,6 +85,9 @@ describe('PrivateXtmPlatformTrialBanner', () => {
   beforeEach(() => {
     graphqlMocks.usePlatformTrialStatusQuery.mockReset();
     graphqlMocks.giveDeploymentFeedback.mockReset();
+    graphqlMocks.useGiveDeploymentFeedbackMutation.mockReturnValue({
+      mutate: graphqlMocks.giveDeploymentFeedback,
+    });
   });
 
   it('should render nothing while the query is loading', () => {
@@ -323,13 +320,15 @@ describe('PrivateXtmPlatformTrialBanner', () => {
 
     it('should show an error toast when the feedback cannot be sent', async () => {
       // Given
-      graphqlMocks.giveDeploymentFeedback.mockImplementation(
-        (variables: GiveDeploymentFeedbackMutationVariables) =>
-          graphqlMocks.giveDeploymentFeedbackOptions?.onError?.(
-            new Error('UNKNOWN_ERROR'),
-            variables,
-            undefined
-          )
+      graphqlMocks.useGiveDeploymentFeedbackMutation.mockImplementation(
+        (_client: unknown, options?: GiveDeploymentFeedbackOptions) => ({
+          mutate: (variables: GiveDeploymentFeedbackMutationVariables) =>
+            options?.onError?.(
+              new Error('UNKNOWN_ERROR'),
+              variables,
+              undefined
+            ),
+        })
       );
       const { getByRole, user } = testRender(
         <PrivateXtmPlatformTrialBanner />,

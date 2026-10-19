@@ -2,15 +2,23 @@ import { BundleGuideCard } from '@/components/service/trial-instances/xtm-platfo
 import { XTM_PLATFORM_TRIAL_GUIDE_PATH } from '@/utils/path/constant';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { useTranslations } from 'next-intl';
+import { describe, expect, it, vi } from 'vitest';
+
+const SEE_MORE_LABEL = 'XtmPlatformTrial.Guide.SeeMore';
 
 describe('BundleGuideCard', () => {
-  it('should link to the XTM Platform trial guide when the card is displayed', () => {
-    // Given / When
+  it('should link to the XTM Platform trial guide when the user follows the see more button', () => {
+    // Given
+    vi.mocked(useTranslations).mockImplementation(
+      (namespace) => (key) => `${namespace}.${key}`
+    );
+
+    // When
     testRender(<BundleGuideCard />);
 
     // Then
-    expect(screen.getByRole('link', { name: 'SeeMore' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: SEE_MORE_LABEL })).toHaveAttribute(
       'href',
       XTM_PLATFORM_TRIAL_GUIDE_PATH
     );

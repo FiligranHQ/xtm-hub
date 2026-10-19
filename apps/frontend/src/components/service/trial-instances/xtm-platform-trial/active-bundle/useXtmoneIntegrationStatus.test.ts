@@ -1,9 +1,6 @@
 import { useXtmoneIntegrationStatus } from '@/components/service/trial-instances/xtm-platform-trial/active-bundle/useXtmoneIntegrationStatus';
 import { testRenderHook } from '@/utils/test/test-render';
-import {
-  XtmoneIntegrationStatusFragment,
-  XtmonePlatformIntegrationStatusQuery,
-} from '@graphql/generated';
+import { XtmoneIntegrationStatusFragment } from '@graphql/generated';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const SERVICE_INSTANCE_ID = 'xtmone-service-instance-1';
@@ -25,7 +22,6 @@ const INTEGRATION_STATUS: XtmoneIntegrationStatusFragment = {
 };
 
 const graphqlMocks = vi.hoisted(() => ({
-  queryResponse: undefined as XtmonePlatformIntegrationStatusQuery | undefined,
   useXtmonePlatformIntegrationStatusQuery: vi.fn(),
 }));
 
@@ -41,16 +37,11 @@ vi.mock('@/lib/graphql-client', () => ({
 
 describe('useXtmoneIntegrationStatus', () => {
   beforeEach(() => {
-    graphqlMocks.queryResponse = {
-      xtmonePlatformIntegrationStatus: INTEGRATION_STATUS,
-    };
-    graphqlMocks.useXtmonePlatformIntegrationStatusQuery.mockImplementation(
-      (_client: unknown, _variables: unknown, { enabled }) => ({
-        data: enabled ? graphqlMocks.queryResponse : undefined,
-        isLoading: false,
-        isError: false,
-      })
-    );
+    graphqlMocks.useXtmonePlatformIntegrationStatusQuery.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: false,
+    });
   });
 
   it.each([
@@ -68,7 +59,11 @@ describe('useXtmoneIntegrationStatus', () => {
     'should return the status found in the query response when $context',
     ({ queryResponse, expectedStatus }) => {
       // Given
-      graphqlMocks.queryResponse = queryResponse;
+      graphqlMocks.useXtmonePlatformIntegrationStatusQuery.mockReturnValue({
+        data: queryResponse,
+        isLoading: false,
+        isError: false,
+      });
 
       // When
       const { result } = testRenderHook(() =>
@@ -80,16 +75,34 @@ describe('useXtmoneIntegrationStatus', () => {
     }
   );
 
+  it('should query the status of the service instance when its id is known', () => {
+    // Given / When
+    testRenderHook(() => useXtmoneIntegrationStatus(SERVICE_INSTANCE_ID));
+
+    // Then
+    expect(
+      graphqlMocks.useXtmonePlatformIntegrationStatusQuery
+    ).toHaveBeenCalledWith(
+      expect.anything(),
+      { serviceInstanceId: SERVICE_INSTANCE_ID },
+      expect.objectContaining({ enabled: true })
+    );
+  });
+
   it.each([null, undefined, ''])(
-    'should return no status when the service instance id is %o',
+    'should not query the status when the service instance id is %o',
     (serviceInstanceId) => {
       // Given / When
-      const { result } = testRenderHook(() =>
-        useXtmoneIntegrationStatus(serviceInstanceId)
-      );
+      testRenderHook(() => useXtmoneIntegrationStatus(serviceInstanceId));
 
       // Then
-      expect(result.current.data).toBeUndefined();
+      expect(
+        graphqlMocks.useXtmonePlatformIntegrationStatusQuery
+      ).toHaveBeenCalledWith(
+        expect.anything(),
+        { serviceInstanceId: '' },
+        expect.objectContaining({ enabled: false })
+      );
     }
   );
 });
