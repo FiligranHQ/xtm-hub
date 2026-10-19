@@ -74,4 +74,46 @@ describe('errorLoggingPlugin', () => {
       AppLogsCategory.GRAPHQL
     );
   });
+
+  it.each([
+    [
+      'a secret argument literal',
+      'mutation { login(email: "user@example.com", password: "credential-value") { id } }',
+      {},
+    ],
+    [
+      'a renamed secret variable',
+      'mutation Login($p: String) { login(email: "user@example.com", password: $p) { id } }',
+      { p: 'credential-value' },
+    ],
+  ])(
+    'never logs the credential of %s in the request and error logs',
+    async (_, query, variables) => {
+      // Given
+      const infoSpy = vi.spyOn(logApp, 'info').mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logApp, 'error').mockImplementation(() => {});
+      const requestContext = {
+        request: { operationName: 'Login', query },
+        contextValue: { req: { body: { variables } } },
+      } as unknown as GraphQLRequestContext<Context>;
+      const listener =
+        await errorLoggingPlugin().requestDidStart!(requestContext);
+
+      // When
+      await listener!.didEncounterErrors!({
+        ...requestContext,
+        errors: [{ message: 'Invalid credentials', originalError: null }],
+      } as unknown as Parameters<
+        NonNullable<typeof listener.didEncounterErrors>
+      >[0]);
+
+      // Then
+      expect(JSON.stringify(infoSpy.mock.calls)).not.toContain(
+        'credential-value'
+      );
+      expect(JSON.stringify(errorSpy.mock.calls)).not.toContain(
+        'credential-value'
+      );
+    }
+  );
 });
