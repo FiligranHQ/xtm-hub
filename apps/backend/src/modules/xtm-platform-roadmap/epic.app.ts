@@ -134,6 +134,12 @@ export const EpicApp = {
       );
       return;
     }
+    if (portalConfig.environment !== 'production') {
+      logApp.info(
+        `Public roadmap monthly reminder email skipped: not sent outside production (environment: ${portalConfig.environment}).`
+      );
+      return;
+    }
     if (!isRoadmapReminderDay(new Date())) {
       return;
     }

@@ -1,4 +1,5 @@
 {
+  "environment": "APP_ENVIRONMENT",
   "port": "APP_PORT",
   "admin": {
     "email": "ADMIN_EMAIL",

@@ -23,15 +23,19 @@ import { EpicApp } from './epic.app';
 
 describe('epicApp.sendPublicRoadmapMonthlyReminder', () => {
   let originalFlag: boolean;
+  let originalEnvironment: string;
 
   beforeEach(() => {
     originalFlag = portalConfig.enabled_emails.public_roadmap_monthly_reminder;
+    originalEnvironment = portalConfig.environment;
     portalConfig.enabled_emails.public_roadmap_monthly_reminder = true;
+    portalConfig.environment = 'production';
     mailServiceMock.sendMail.mockClear();
   });
 
   afterEach(() => {
     portalConfig.enabled_emails.public_roadmap_monthly_reminder = originalFlag;
+    portalConfig.environment = originalEnvironment;
   });
 
   it('sends the reminder to the PMs with a link resolved from the roadmap instance', async () => {
@@ -57,4 +61,15 @@ describe('epicApp.sendPublicRoadmapMonthlyReminder', () => {
 
     expect(mailServiceMock.sendMail).not.toHaveBeenCalled();
   });
+
+  it.each(['prerelease', 'staging', 'development'])(
+    'does not send outside production even when enabled (environment: %s)',
+    async (environment) => {
+      portalConfig.environment = environment;
+
+      await EpicApp.sendPublicRoadmapMonthlyReminder();
+
+      expect(mailServiceMock.sendMail).not.toHaveBeenCalled();
+    }
+  );
 });

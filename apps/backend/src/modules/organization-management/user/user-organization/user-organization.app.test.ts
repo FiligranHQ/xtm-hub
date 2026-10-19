@@ -31,13 +31,17 @@ import { UserOrganizationDomain } from './user-organization.domain';
 describe('usersOrganizationApp', () => {
   describe('sendPendingUsersDigest', () => {
     let originalEnabledEmails: typeof portalConfig.enabled_emails;
+    let originalEnvironment: typeof portalConfig.environment;
 
     beforeEach(async () => {
       originalEnabledEmails = portalConfig.enabled_emails;
+      originalEnvironment = portalConfig.environment;
+      portalConfig.environment = 'production';
     });
 
     afterEach(async () => {
       portalConfig.enabled_emails = originalEnabledEmails;
+      portalConfig.environment = originalEnvironment;
     });
 
     const expectedPendingUserLink = (
@@ -300,6 +304,31 @@ describe('usersOrganizationApp', () => {
 
       expect(sendMailSpy).not.toHaveBeenCalled();
     });
+
+    it.each(['prerelease', 'staging', 'development'])(
+      'should not send any mail outside production even when enabled (environment: %s)',
+      async (environment) => {
+        // Given
+        portalConfig.enabled_emails = {
+          ...originalEnabledEmails,
+          pending_user_digest: true,
+        };
+        portalConfig.environment = environment;
+        mockLoadOrganizationsWithPendingUsers([
+          {
+            id: uuidv4() as UserId,
+            email: 'user1@test.com',
+          } as User,
+        ]);
+        const sendMailSpy = vi.spyOn(MailService, 'sendMail');
+
+        // When
+        await UserOrganizationApp.sendPendingUsersDigest();
+
+        // Then
+        expect(sendMailSpy).not.toHaveBeenCalled();
+      }
+    );
 
     it('should not send mail if user is already in organization and remove from pending list', async () => {
       portalConfig.enabled_emails = {
