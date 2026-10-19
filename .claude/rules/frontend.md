@@ -118,7 +118,16 @@ Existing Relay pages: see
 [`graphql.md`](graphql.md#relay-conventions-existing-pages-only) for the file convention
 and regeneration command.
 
-Server-side fetches go through `src/relay/server-portal-api-fetch.ts`, which forwards Next.js cookies.
+Server-side fetches:
+
+- Public operations use `serverGraphqlFetch` (`src/lib/server-graphql-fetch.ts`). It sends no cookie and honours the
+  Next.js data cache (`cache`, `next.revalidate`), so the cached response is shared by every visitor.
+- Operations behind `@auth` use `getAuthenticatedGraphqlClient()` (`src/lib/graphql-client.ts`). It forwards the
+  visitor's cookies and bypasses the data cache, so a response that belongs to one user is never cached.
+- Wrap the call in `redirectToSignupOnUnauthenticated` (`src/lib/server-unauthenticated-redirect.ts`) to send an
+  anonymous visitor to the signup page instead of throwing.
+- Existing Relay pages still go through `src/relay/server-portal-api-fetch.ts`, which forwards cookies and redirects on
+  its own.
 
 ## Logging
 
