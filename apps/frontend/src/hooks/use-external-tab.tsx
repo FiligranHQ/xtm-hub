@@ -1,7 +1,7 @@
-import { portalGraphqlClient } from '@/lib/graphql-client';
+import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import { getUrlOrigin } from '@/utils/external-url';
-import { useFrontendErrorLogMutation } from '@graphql/generated';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRelayEnvironment } from 'react-relay';
 
 interface UseExternalTabProps {
   url: string;
@@ -29,8 +29,7 @@ const useExternalTab = ({
   const tabRef = useRef<WindowProxy | null>(null);
   const tabOriginRef = useRef<string | null>(null);
   const [isTabOpen, setIsTabOpen] = useState(false);
-  const { mutate: logFrontendError } =
-    useFrontendErrorLogMutation(portalGraphqlClient);
+  const environment = useRelayEnvironment();
   const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
     event.preventDefault();
     return null;
@@ -66,9 +65,10 @@ const useExternalTab = ({
       }
       if (!tabOriginRef.current || event.origin !== tabOriginRef.current) {
         if (event.data?.action) {
-          logFrontendError({
-            message: `XTM Hub: message ignored, it comes from "${event.origin}" but the opened platform origin is "${tabOriginRef.current}"`,
-          });
+          logFrontendError(
+            environment,
+            `XTM Hub: message ignored, it comes from "${event.origin}" but the opened platform origin is "${tabOriginRef.current}"`
+          );
         }
         return;
       }
@@ -103,7 +103,7 @@ const useExternalTab = ({
     onClosingTab,
     onMessage,
     preventUnload,
-    logFrontendError,
+    environment,
   ]);
 
   return {

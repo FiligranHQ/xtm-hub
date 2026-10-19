@@ -1,3 +1,0 @@
-mutation FrontendErrorLog($message: String!) {
-  frontendErrorLog(message: $message)
-}

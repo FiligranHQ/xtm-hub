@@ -1,11 +1,12 @@
+import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import useExternalTab from '@/hooks/use-external-tab';
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { logFrontendError } = vi.hoisted(() => ({ logFrontendError: vi.fn() }));
+const relayEnvironment = vi.hoisted(() => ({}));
 
-vi.mock('@graphql/generated', () => ({
-  useFrontendErrorLogMutation: () => ({ mutate: logFrontendError }),
+vi.mock('react-relay', () => ({
+  useRelayEnvironment: () => relayEnvironment,
 }));
 
 const TAB_ORIGIN = 'https://opencti.example.com';
@@ -111,12 +112,14 @@ describe('useExternalTab', () => {
 
     // Then
     expect(onMessage).not.toHaveBeenCalled();
-    expect(logFrontendError).toHaveBeenCalledExactlyOnceWith({
-      message: expect.stringContaining(`"${OTHER_ORIGIN}"`),
-    });
-    expect(logFrontendError).not.toHaveBeenCalledWith({
-      message: expect.stringContaining(MESSAGE.token),
-    });
+    expect(logFrontendError).toHaveBeenCalledExactlyOnceWith(
+      relayEnvironment,
+      expect.stringContaining(`"${OTHER_ORIGIN}"`)
+    );
+    expect(logFrontendError).not.toHaveBeenCalledWith(
+      relayEnvironment,
+      expect.stringContaining(MESSAGE.token)
+    );
   });
 
   it('should silently ignore a message without action from the tab with another origin', () => {
