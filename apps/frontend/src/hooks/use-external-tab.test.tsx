@@ -2,6 +2,12 @@ import useExternalTab from '@/hooks/use-external-tab';
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+const { logFrontendError } = vi.hoisted(() => ({ logFrontendError: vi.fn() }));
+
+vi.mock('@graphql/generated', () => ({
+  useFrontendErrorLogMutation: () => ({ mutate: logFrontendError }),
+}));
+
 const TAB_ORIGIN = 'https://opencti.example.com';
 const TAB_URL = `${TAB_ORIGIN}/dashboard/xtm-hub/deploy/instance-id/document-id`;
 const OTHER_ORIGIN = 'https://other.example.com';
@@ -41,6 +47,7 @@ describe('useExternalTab', () => {
   let tab: Window;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.useFakeTimers();
     tab = createWindow();
     vi.spyOn(window, 'open').mockReturnValue(tab);
@@ -94,9 +101,8 @@ describe('useExternalTab', () => {
     );
   });
 
-  it('should log and ignore the message when it comes from the tab with another origin', () => {
+  it('should log to the backend and ignore the message when it comes from the tab with another origin', () => {
     // Given
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const onMessage = vi.fn();
     renderExternalTab(TAB_URL, onMessage);
 
@@ -105,17 +111,16 @@ describe('useExternalTab', () => {
 
     // Then
     expect(onMessage).not.toHaveBeenCalled();
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining(`"${OTHER_ORIGIN}"`)
-    );
-    expect(warn).not.toHaveBeenCalledWith(
-      expect.stringContaining(MESSAGE.token)
-    );
+    expect(logFrontendError).toHaveBeenCalledExactlyOnceWith({
+      message: expect.stringContaining(`"${OTHER_ORIGIN}"`),
+    });
+    expect(logFrontendError).not.toHaveBeenCalledWith({
+      message: expect.stringContaining(MESSAGE.token),
+    });
   });
 
   it('should silently ignore a message without action from the tab with another origin', () => {
     // Given
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const onMessage = vi.fn();
     renderExternalTab(TAB_URL, onMessage);
 
@@ -124,7 +129,7 @@ describe('useExternalTab', () => {
 
     // Then
     expect(onMessage).not.toHaveBeenCalled();
-    expect(warn).not.toHaveBeenCalled();
+    expect(logFrontendError).not.toHaveBeenCalled();
   });
 
   it('should ignore the message when it comes from another window with the opened url origin', () => {
