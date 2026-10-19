@@ -24,6 +24,41 @@ query ServiceInstancesList(
   }
 }
 
+fragment SeoServiceInstanceItem on SeoServiceInstance {
+  id
+  name
+  slug
+  description
+  logo_document_id
+  illustration_document_id
+  service_definition {
+    identifier
+  }
+  tags
+  links {
+    url
+    name
+  }
+}
+
+query SeoServiceInstances {
+  seoServiceInstances {
+    ...SeoServiceInstanceItem
+  }
+}
+
+query SeoServiceInstanceBySlug($slug: String!) {
+  seoServiceInstance(slug: $slug) {
+    ...SeoServiceInstanceItem
+  }
+}
+
+query ServiceInstanceLinksByTags($tags: [ServiceInstanceTag!]!) {
+  serviceInstanceLinksByTags(tags: $tags) {
+    ...SeoServiceInstanceItem
+  }
+}
+
 query ServiceInstanceSeoMetadataById($service_instance_id: ServiceInstanceId!) {
   seoServiceInstanceMetadata(service_instance_id: $service_instance_id) {
     service_instance_id
