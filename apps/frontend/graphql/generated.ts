@@ -1664,15 +1664,33 @@ export type NewsFeedItemMetadata = {
 };
 
 export enum NewsFeedItemMetadataKey {
+  BlogPostSlug = 'blog_post_slug',
   DocumentId = 'document_id',
   UrlPath = 'url_path'
 }
 
 export enum NewsFeedItemType {
+  BlogPost = 'BLOG_POST',
   ResourceCustomDashboard = 'RESOURCE_CUSTOM_DASHBOARD',
   ResourceCustomView = 'RESOURCE_CUSTOM_VIEW',
   ResourceIntegration = 'RESOURCE_INTEGRATION',
   ResourcePlaybook = 'RESOURCE_PLAYBOOK'
+}
+
+export type NewsFeedRedirectInput = {
+  platform_id: InputMaybe<Scalars['String']['input']>;
+  platform_identifier: InputMaybe<PlatformIdentifier>;
+  resource_id: InputMaybe<Scalars['DocumentId']['input']>;
+  service_identifier: ServiceDefinitionIdentifier;
+  utm_content: InputMaybe<NewsFeedUtmContent>;
+};
+
+export enum NewsFeedUtmContent {
+  CustomDashboard = 'custom_dashboard',
+  CustomView = 'custom_view',
+  Integration = 'integration',
+  Other = 'other',
+  Playbook = 'playbook'
 }
 
 export type Node = {
@@ -2557,7 +2575,13 @@ export type SaasPlatformMetadata = {
 
 export type SendTelemetryMutation = {
   __typename?: 'SendTelemetryMutation';
+  newsFeedRedirect: Maybe<TelemetryResponse>;
   oneClickDeploy: Maybe<TelemetryResponse>;
+};
+
+
+export type SendTelemetryMutationNewsFeedRedirectArgs = {
+  input: NewsFeedRedirectInput;
 };
 
 
