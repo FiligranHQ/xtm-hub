@@ -32,8 +32,6 @@ export default interface PlatformConfiguration {
   status: PlatformConfigurationStatus;
 
   commercial_model: CommercialModel;
-
-  deactivation_reason: string | null;
 }
 
 /** Represents the initializer for the table public.PlatformConfiguration */
@@ -63,8 +61,6 @@ export interface PlatformConfigurationInitializer {
   status?: PlatformConfigurationStatus;
 
   commercial_model?: CommercialModel;
-
-  deactivation_reason?: string | null;
 }
 
 /** Represents the mutator for the table public.PlatformConfiguration */
@@ -94,6 +90,4 @@ export interface PlatformConfigurationMutator {
   status?: PlatformConfigurationStatus;
 
   commercial_model?: CommercialModel;
-
-  deactivation_reason?: string | null;
 }

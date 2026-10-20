@@ -552,10 +552,7 @@ export const RegistrationApp = {
 
     await PlatformConfigurationDomain.updateConfiguration(
       platformConfiguration.service_instance_id,
-      {
-        status: PlatformConfigurationStatus.Inactive,
-        deactivation_reason: null,
-      }
+      { status: PlatformConfigurationStatus.Inactive }
     );
 
     const users = await UserDomain.loadUsersByCapabilitiesInOrganization(

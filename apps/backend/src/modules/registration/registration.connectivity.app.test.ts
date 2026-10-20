@@ -12,10 +12,7 @@ import {
 } from '../../__generated__/resolvers-types';
 import { requestContext } from '../../context/request.context';
 import { BadRequestErrorCode, ErrorCode } from '../../utils/error/error.code';
-import {
-  PlatformConfigurationDomain,
-  PlatformDeactivationReason,
-} from './platform-configuration/platform-configuration.domain';
+import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
 import { RegistrationApp } from './registration.app';
 import { RegistrationConnectivityApp } from './registration.connectivity.app';
 
@@ -479,48 +476,53 @@ describe('registration connectivity app', () => {
       });
     });
 
-    it('should keep the stored url when the refresh sends an invalid one', async () => {
-      // Given
-      const platformId = uuidv4();
-      const tenantId = uuidv4();
-      const tenantName = 'My tenant';
-      const token = await RegistrationApp.registerPlatform({
-        organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
-        platform: {
-          id: platformId,
-          url: 'http://example.com/tenant',
-          contract: PlatformContract.Ee,
-          title: 'Fake title',
-          version: '2.4.0',
-          tenantId,
-          tenantName,
-        },
-        identifier: PlatformIdentifier.Openaev,
-      });
-
-      // When
-      const result =
-        await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
-          {
-            platformId,
-            token,
-            platformVersion: '2.4.0',
-            url: 'not a url',
+    it.each(['not a url', 'javascript:alert(1)', 'file:///etc/passwd'])(
+      'should keep the stored url when the refresh sends the invalid url %s',
+      async (invalidUrl) => {
+        // Given
+        const platformId = uuidv4();
+        const tenantId = uuidv4();
+        const tenantName = 'My tenant';
+        const token = await RegistrationApp.registerPlatform({
+          organizationId: TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID,
+          platform: {
+            id: platformId,
+            url: 'http://example.com/tenant',
+            contract: PlatformContract.Ee,
+            title: 'Fake title',
+            version: '2.4.0',
             tenantId,
             tenantName,
-            platformIdentifier: PlatformIdentifier.Openaev,
-          }
-        );
+          },
+          identifier: PlatformIdentifier.Openaev,
+        });
 
-      // Then
-      expect(result.status).toBe(PlatformRegistrationConnectivityStatus.Active);
-      const config =
-        await PlatformConfigurationDomain.loadConfigurationByPlatform(
-          platformId,
-          { tenantId }
+        // When
+        const result =
+          await RegistrationConnectivityApp.refreshPlatformRegistrationConnectivityStatusSingleTenant(
+            {
+              platformId,
+              token,
+              platformVersion: '2.4.0',
+              url: invalidUrl,
+              tenantId,
+              tenantName,
+              platformIdentifier: PlatformIdentifier.Openaev,
+            }
+          );
+
+        // Then
+        expect(result.status).toBe(
+          PlatformRegistrationConnectivityStatus.Active
         );
-      expect(config?.platform_url).toBe('http://example.com/tenant');
-    });
+        const config =
+          await PlatformConfigurationDomain.loadConfigurationByPlatform(
+            platformId,
+            { tenantId }
+          );
+        expect(config?.platform_url).toBe('http://example.com/tenant');
+      }
+    );
 
     it('should update the contract of the refreshed tenant only when the platform sends a new contract', async () => {
       // Given
@@ -924,7 +926,7 @@ describe('registration connectivity app', () => {
       expect(config?.status).toBe(PlatformConfigurationStatus.Active);
     });
 
-    it('should record why an omitted tenant was deactivated and reactivate it at its next valid refresh', async () => {
+    it('should keep an omitted tenant inactive when a later refresh lists it again', async () => {
       // Given
       const platformId = uuidv4();
       const listedTenantId = uuidv4();
@@ -941,10 +943,6 @@ describe('registration connectivity app', () => {
       await refreshAllTenants(platformId, [
         { tenantId: listedTenantId, token: listedToken },
       ]);
-      const deactivatedConfig = await loadTenantConfiguration(
-        platformId,
-        omittedTenantId
-      );
 
       // When
       const result = await refreshAllTenants(platformId, [
@@ -953,46 +951,16 @@ describe('registration connectivity app', () => {
       ]);
 
       // Then
-      expect(deactivatedConfig).toMatchObject({
-        status: PlatformConfigurationStatus.Inactive,
-        deactivation_reason: PlatformDeactivationReason.OmittedByPlatform,
-      });
       expect(result.statuses).toEqual(
         expect.arrayContaining([
           {
             tenantId: omittedTenantId,
-            status: PlatformRegistrationConnectivityStatus.Active,
+            status: PlatformRegistrationConnectivityStatus.Inactive,
           },
         ])
       );
-      const reactivatedConfig = await loadTenantConfiguration(
-        platformId,
-        omittedTenantId
-      );
-      expect(reactivatedConfig).toMatchObject({
-        status: PlatformConfigurationStatus.Active,
-        deactivation_reason: null,
-      });
-    });
-
-    it('should keep a tenant deactivated without a reason inactive at its next refresh', async () => {
-      // Given
-      const platformId = uuidv4();
-      const tenantId = uuidv4();
-      const token = await registerOpenaevTenant(platformId, tenantId);
-      const config = await loadTenantConfiguration(platformId, tenantId);
-      await PlatformConfigurationDomain.updateConfiguration(
-        config!.service_instance_id,
-        { status: PlatformConfigurationStatus.Inactive }
-      );
-
-      // When
-      const result = await refreshAllTenants(platformId, [{ tenantId, token }]);
-
-      // Then
-      expect(result.statuses).toEqual([
-        { tenantId, status: PlatformRegistrationConnectivityStatus.Inactive },
-      ]);
+      const config = await loadTenantConfiguration(platformId, omittedTenantId);
+      expect(config?.status).toBe(PlatformConfigurationStatus.Inactive);
     });
 
     it('should update the contract of every refreshed tenant when the platform sends a new contract', async () => {

@@ -18,13 +18,16 @@ import { formatRawObject } from '../../../utils/query-raw.util';
 import type { PlatformConfigurationInput } from '../registration.domain';
 import { platformIdentifierMappedByServiceDefinitionIdentifier } from '../registration.mapping';
 
+// A platform URL is stored and rendered as a link: only web schemes, never javascript: or file:.
+export const PlatformUrlSchema = z.url({ protocol: /^https?$/ });
+
 const PlatformConfigurationValidationSchema = z
   .object({
     registerer_id: z.uuid(),
     platform_id: z.uuid(),
     tenant_id: z.string().min(1).optional(),
     tenant_name: z.string().min(1).optional(),
-    platform_url: z.url(),
+    platform_url: PlatformUrlSchema,
     platform_title: z.string().min(1),
     platform_version: z.string().min(1).optional(),
     platform_contract: z.enum(PlatformContract),
@@ -32,12 +35,6 @@ const PlatformConfigurationValidationSchema = z
     token: z.uuid(),
   })
   .strict();
-
-// Why a platform configuration was deactivated, when it was not by an explicit unregistration.
-export const PlatformDeactivationReason = {
-  // The platform no longer listed the tenant in its all-tenants connectivity refresh.
-  OmittedByPlatform: 'OMITTED_BY_PLATFORM',
-} as const;
 
 export type FullPlatformConfiguration = {
   platformConfiguration: PlatformConfiguration;

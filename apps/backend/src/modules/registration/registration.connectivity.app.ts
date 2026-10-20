@@ -1,4 +1,3 @@
-import z from 'zod';
 import {
   PlatformConfigurationStatus,
   PlatformContract,
@@ -17,7 +16,7 @@ import { RequiredPlatformVersions } from '../../utils/required-platform-version'
 import { doesVersionSatisfy, isValidVersion } from '../../utils/versioning';
 import {
   PlatformConfigurationDomain,
-  PlatformDeactivationReason,
+  PlatformUrlSchema,
 } from './platform-configuration/platform-configuration.domain';
 import { RegistrationHelper } from './registration.helper';
 
@@ -30,7 +29,7 @@ interface RefreshOutcome {
 }
 
 const isValidPlatformUrl = (url: string): boolean =>
-  z.url().safeParse(url).success;
+  PlatformUrlSchema.safeParse(url).success;
 
 // Only a legacy OpenAEV registration, made before tenants were required, can move to a tenant. The platform type
 // comes from the stored registration, never from the request.
@@ -170,25 +169,6 @@ const saveConfig = async ({
   );
 };
 
-// A tenant deactivated because its platform stopped listing it comes back at its next valid refresh. A tenant an
-// admin unregistered has no deactivation reason, so it stays inactive.
-const reactivateIfOmittedByPlatform = async (
-  platformConfiguration: PlatformConfiguration
-): Promise<PlatformConfigurationStatus> => {
-  if (
-    platformConfiguration.status !== PlatformConfigurationStatus.Inactive ||
-    platformConfiguration.deactivation_reason !==
-      PlatformDeactivationReason.OmittedByPlatform
-  ) {
-    return platformConfiguration.status;
-  }
-  await PlatformConfigurationDomain.updateConfiguration(
-    platformConfiguration.service_instance_id,
-    { status: PlatformConfigurationStatus.Active, deactivation_reason: null }
-  );
-  return PlatformConfigurationStatus.Active;
-};
-
 const refreshConnectivityStatus = async ({
   platform_id,
   token,
@@ -256,11 +236,9 @@ const refreshConnectivityStatus = async ({
     platform_contract,
   });
 
-  const status = await reactivateIfOmittedByPlatform(platformConfiguration);
-
   return {
     status:
-      status === PlatformConfigurationStatus.Active
+      platformConfiguration.status === PlatformConfigurationStatus.Active
         ? PlatformRegistrationConnectivityStatus.Active
         : PlatformRegistrationConnectivityStatus.Inactive,
     isTokenValid: true,
@@ -363,10 +341,7 @@ export const RegistrationConnectivityApp = {
       staleConfigurations.map((config) =>
         PlatformConfigurationDomain.updateConfiguration(
           config.service_instance_id,
-          {
-            status: PlatformConfigurationStatus.Inactive,
-            deactivation_reason: PlatformDeactivationReason.OmittedByPlatform,
-          }
+          { status: PlatformConfigurationStatus.Inactive }
         ).catch((error) => {
           logApp.error(
             `Failed to deactivate stale configuration for service instance ${config.service_instance_id}`,
