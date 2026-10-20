@@ -23,14 +23,17 @@ describe('Parameters', () => {
     expect(screen.getByText(APP_VERSION)).toBeInTheDocument();
   });
 
-  it('should display a development version when the application version is not defined', () => {
-    // Given
-    vi.stubEnv('NEXT_PUBLIC_APP_VERSION', '');
+  it.each(['', undefined])(
+    'should display a development version when the application version is %j',
+    (appVersion) => {
+      // Given
+      vi.stubEnv('NEXT_PUBLIC_APP_VERSION', appVersion);
 
-    // When
-    testRender(<Parameters />);
+      // When
+      testRender(<Parameters />);
 
-    // Then
-    expect(screen.getByText(DEFAULT_VERSION)).toBeInTheDocument();
-  });
+      // Then
+      expect(screen.getByText(DEFAULT_VERSION)).toBeInTheDocument();
+    }
+  );
 });

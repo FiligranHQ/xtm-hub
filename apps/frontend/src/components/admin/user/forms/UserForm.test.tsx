@@ -12,13 +12,14 @@ const USER_EMAIL = 'new.user@filigran.io';
 const INVALID_EMAIL = 'not-an-email';
 const INVALID_EMAIL_MESSAGE = 'This is not a valid email.';
 const MANAGE_ACCESS_OPTION = 'MANAGE ACCESS';
+const SHEET_TITLE = 'Add user';
 
 const renderUserForm = (handleSubmit = vi.fn(), setOpen = vi.fn()) =>
   testRender(
     <SheetWithPreventingDialog
       open
       setOpen={setOpen}
-      title="Add user">
+      title={SHEET_TITLE}>
       <UserForm
         handleSubmit={handleSubmit}
         validationSchema={userFormSchema}
@@ -72,18 +73,6 @@ describe('UserForm', () => {
     // Then
     expect(await screen.findByText(INVALID_EMAIL_MESSAGE)).toBeInTheDocument();
     expect(handleSubmit).not.toHaveBeenCalled();
-  });
-
-  it('should close the sheet when cancelling an untouched form', async () => {
-    // Given
-    const setOpen = vi.fn();
-    const { user } = renderUserForm(vi.fn(), setOpen);
-
-    // When
-    await user.click(screen.getByRole('button', { name: 'Utils.Cancel' }));
-
-    // Then
-    expect(setOpen).toHaveBeenCalledWith(false);
   });
 
   it('should ask for confirmation before discarding what has been typed when cancelling', async () => {

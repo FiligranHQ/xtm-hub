@@ -1,4 +1,5 @@
 import { CapabilityDescription } from '@/components/admin/user/CapabilityDescription';
+import { mockTranslations } from '@/utils/test/mock-translations';
 import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import { useTranslations } from 'next-intl';
@@ -15,12 +16,11 @@ const DOCUMENTED_KEYS = [
 ];
 
 const documentOnly = (documentedKeys: string[]) =>
-  vi.mocked(useTranslations).mockReturnValue(
-    Object.assign((key: string) => key, {
-      has: (key: string) => documentedKeys.includes(key),
-      rich: (key: string) => key,
-    }) as unknown as ReturnType<typeof useTranslations>
-  );
+  vi
+    .mocked(useTranslations)
+    .mockReturnValue(
+      mockTranslations({ has: (key) => documentedKeys.includes(key) })
+    );
 
 describe('CapabilityDescription', () => {
   it('should explain what the capabilities are for', () => {

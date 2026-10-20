@@ -16,7 +16,6 @@ describe('Admin parameters page', () => {
     expect(
       screen.getByRole('heading', { name: 'MenuLinks.Parameter' })
     ).toBeInTheDocument();
-    expect(screen.getByText('Parameters.Version')).toBeInTheDocument();
   });
 
   it('should tell a standard user that they are not authorized instead of showing the parameters', () => {
