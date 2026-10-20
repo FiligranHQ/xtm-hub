@@ -2,7 +2,7 @@ import SignUp from '@/components/signup/SignUp';
 import testRender from '@/utils/test/test-render';
 import { fireEvent, screen } from '@testing-library/react';
 import { useSearchParams } from 'next/navigation';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const { svgComponent } = vi.hoisted(() => ({
   svgComponent: async (label: string) => {
@@ -27,6 +27,8 @@ const HUBSPOT_SCRIPT_SELECTOR = 'script[src*="hsforms.net"]';
 const HUBSPOT_FORM_CONTAINER_ID = 'hubspot-form';
 const EMAIL_FIELD_LABEL = 'Email';
 const EMAIL_VALUE = 'jane@filigran.io';
+const COUNTRY_FIELD_LABEL = 'Country';
+const COUNTRY_VALUE = 'France';
 const REDIRECT_PARAM = '/app/service/opencti?tab=1';
 
 type HubspotWindow = Window & {
@@ -44,20 +46,28 @@ const givenRedirectParam = (redirect: string | null) => {
 };
 
 // Stands in for the HubSpot embed script: when it "loads", it draws a form
-// with one text field inside the container it is given.
-const givenHubspotRendersAnEmailField = () => {
+// with the given field markup inside the container it is given.
+const givenHubspotRenders = (fieldMarkup: string) => {
   (window as HubspotWindow).hbspt = {
     forms: {
       create: ({ target }) => {
         const container = document.querySelector(target);
         container?.insertAdjacentHTML(
           'beforeend',
-          `<div class="field"><input aria-label="${EMAIL_FIELD_LABEL}" /></div>`
+          `<div class="field">${fieldMarkup}</div>`
         );
       },
     },
   };
 };
+
+const givenHubspotRendersAnEmailField = () =>
+  givenHubspotRenders(`<input aria-label="${EMAIL_FIELD_LABEL}" />`);
+
+const givenHubspotRendersACountryField = () =>
+  givenHubspotRenders(
+    `<select aria-label="${COUNTRY_FIELD_LABEL}"><option value=""></option><option value="${COUNTRY_VALUE}">${COUNTRY_VALUE}</option></select>`
+  );
 
 const whenHubspotScriptLoads = () => {
   const script = document.querySelector(HUBSPOT_SCRIPT_SELECTOR);
@@ -65,6 +75,10 @@ const whenHubspotScriptLoads = () => {
 };
 
 describe('SignUp', () => {
+  afterEach(() => {
+    delete (window as HubspotWindow).hbspt;
+  });
+
   it('should present the sign up page to a new visitor', () => {
     // Given / When
     testRender(<SignUp />);
@@ -79,13 +93,16 @@ describe('SignUp', () => {
     ).toBeInTheDocument();
   });
 
-  it.each`
-    redirect          | expectedHref
-    ${null}           | ${'/auth/oidc'}
-    ${REDIRECT_PARAM} | ${`/auth/oidc?redirect=${encodeURIComponent(REDIRECT_PARAM)}`}
-  `(
-    'should send an existing user to single sign-on with redirect "$redirect" kept',
-    ({ redirect, expectedHref }) => {
+  it.each([
+    ['without redirect', null, '/auth/oidc'],
+    [
+      'with the redirect kept',
+      REDIRECT_PARAM,
+      `/auth/oidc?redirect=${encodeURIComponent(REDIRECT_PARAM)}`,
+    ],
+  ])(
+    'should send an existing user to single sign-on %s',
+    (_title, redirect, expectedHref) => {
       // Given
       givenRedirectParam(redirect);
 
@@ -110,13 +127,16 @@ describe('SignUp', () => {
     ).not.toBeInTheDocument();
   });
 
-  it.each`
-    redirect          | expectedHref
-    ${null}           | ${'/login'}
-    ${REDIRECT_PARAM} | ${`/login?redirect=${encodeURIComponent(REDIRECT_PARAM)}`}
-  `(
-    'should offer the local login with redirect "$redirect" kept when it is enabled',
-    ({ redirect, expectedHref }) => {
+  it.each([
+    ['without redirect', null, '/login'],
+    [
+      'with the redirect kept',
+      REDIRECT_PARAM,
+      `/login?redirect=${encodeURIComponent(REDIRECT_PARAM)}`,
+    ],
+  ])(
+    'should offer the local login %s when it is enabled',
+    (_title, redirect, expectedHref) => {
       // Given
       givenRedirectParam(redirect);
 
@@ -148,7 +168,6 @@ describe('SignUp', () => {
 
   it('should not break the page when the HubSpot script loads without exposing its form builder', () => {
     // Given
-    delete (window as HubspotWindow).hbspt;
     testRender(<SignUp />);
 
     // When
@@ -175,6 +194,27 @@ describe('SignUp', () => {
 
     // When
     fireEvent.input(emailField, { target: { value: '' } });
+
+    // Then
+    expect(fieldWrapper).not.toHaveClass('has-value');
+  });
+
+  it('should flag a select field as filled when the visitor picks an option and unflag it once cleared', () => {
+    // Given
+    givenHubspotRendersACountryField();
+    testRender(<SignUp />);
+    whenHubspotScriptLoads();
+    const countryField = screen.getByLabelText(COUNTRY_FIELD_LABEL);
+    const fieldWrapper = countryField.closest('.field');
+
+    // When
+    fireEvent.change(countryField, { target: { value: COUNTRY_VALUE } });
+
+    // Then
+    expect(fieldWrapper).toHaveClass('has-value');
+
+    // When
+    fireEvent.change(countryField, { target: { value: '' } });
 
     // Then
     expect(fieldWrapper).not.toHaveClass('has-value');

@@ -8,7 +8,9 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 const CONNECT_PRODUCT_BUTTON = 'Header.ConnectedProducts.ConnectProduct';
 const CONNECT_DIALOG_TITLE = 'Register.ConnectFromHub.ConnectProduct';
-const PERMISSION_DIALOG_TITLE = 'Register.ConnectFromHub.PermissionRequired';
+const ALLOWED_CAPABILITIES = [
+  OrganizationCapability.ManagePlatformRegistration,
+];
 
 describe('ConnectProductButton', () => {
   beforeEach(() => {
@@ -31,14 +33,10 @@ describe('ConnectProductButton', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('should let a user allowed to manage platforms start connecting a product when clicking the button', async () => {
+  it('should open the connection dialog when clicking the button', async () => {
     // Given
     const { user } = testRender(<ConnectProductButton />, {
-      me: {
-        selected_org_capabilities: [
-          OrganizationCapability.ManagePlatformRegistration,
-        ],
-      },
+      me: { selected_org_capabilities: ALLOWED_CAPABILITIES },
     });
 
     // When
@@ -52,10 +50,10 @@ describe('ConnectProductButton', () => {
     ).toBeInTheDocument();
   });
 
-  it('should tell a user without permission to contact an administrator when clicking the button', async () => {
+  it('should not mention a connected product in the dialog opened from the button', async () => {
     // Given
     const { user } = testRender(<ConnectProductButton />, {
-      me: { selected_org_capabilities: [] },
+      me: { selected_org_capabilities: ALLOWED_CAPABILITIES },
     });
 
     // When
@@ -64,8 +62,14 @@ describe('ConnectProductButton', () => {
     );
 
     // Then
-    expect(
-      await screen.findByRole('dialog', { name: PERMISSION_DIALOG_TITLE })
-    ).toBeInTheDocument();
+    const dialog = await screen.findByRole('dialog', {
+      name: CONNECT_DIALOG_TITLE,
+    });
+    expect(dialog).not.toHaveTextContent(
+      'Register.ConnectFromHub.ConnectedProductSentence'
+    );
+    expect(dialog).toHaveTextContent(
+      'Register.ConnectFromHub.RedirectionMessage'
+    );
   });
 });

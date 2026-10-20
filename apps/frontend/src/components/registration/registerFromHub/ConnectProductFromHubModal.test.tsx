@@ -1,8 +1,12 @@
-import { PortalContext } from '@/components/me/AppPortalContext';
+import {
+  generatePortalContext,
+  PortalContext,
+} from '@/components/me/AppPortalContext';
 import ConnectProductFromHubModal, {
   ConnectProductOrigin,
 } from '@/components/registration/registerFromHub/ConnectProductFromHubModal';
 import testRender from '@/utils/test/test-render';
+import { OrganizationCapability } from '@graphql/generated';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { useRouter } from 'next/navigation';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -24,6 +28,8 @@ vi.mock('@graphql/generated', async (importOriginal) => ({
     mockUseUsersWithCapabilitiesInOrganizationQuery,
 }));
 
+const EMAIL_SUBJECT = 'Request to connect a product to XTM Hub';
+
 describe('ConnectProductFromHubModal', () => {
   const onOpenChange = vi.fn();
 
@@ -34,8 +40,8 @@ describe('ConnectProductFromHubModal', () => {
     mockUseUsersWithCapabilitiesInOrganizationQuery.mockReturnValue({
       data: {
         usersWithCapabilitiesInOrganization: [
-          { email: 'admin1@example.com' },
-          { email: 'admin2@example.com' },
+          { id: 'admin-1', email: 'admin1@example.com' },
+          { id: 'admin-2', email: 'admin2@example.com' },
         ],
       },
     });
@@ -190,9 +196,13 @@ describe('ConnectProductFromHubModal', () => {
   });
 
   it('should explain that a connected product is needed when an allowed user opens it from the library', () => {
-    mockUseGranted.mockReturnValueOnce(true).mockReturnValueOnce(false);
+    // Given
+    mockUseGranted.mockImplementation(
+      (capability) =>
+        capability === OrganizationCapability.ManagePlatformRegistration
+    );
 
-    // Given / When
+    // When
     testRender(
       <ConnectProductFromHubModal
         isOpen={true}
@@ -214,17 +224,13 @@ describe('ConnectProductFromHubModal', () => {
     // Given
     const push = vi.fn();
     vi.mocked(useRouter).mockReturnValue({
+      ...vi.mocked(useRouter)(),
       push,
-      replace: vi.fn(),
-      prefetch: vi.fn(),
-      back: vi.fn(),
-      forward: vi.fn(),
-      refresh: vi.fn(),
     });
 
     // When
     testRender(
-      <PortalContext.Provider value={{ me: null }}>
+      <PortalContext.Provider value={generatePortalContext(null)}>
         <ConnectProductFromHubModal
           isOpen={true}
           onOpenChange={onOpenChange}
@@ -273,7 +279,7 @@ describe('ConnectProductFromHubModal', () => {
       mockUseUsersWithCapabilitiesInOrganizationQuery.mockReturnValue({
         data: {
           usersWithCapabilitiesInOrganization: [
-            { email: 'admin1@example.com' },
+            { id: 'admin-1', email: 'admin1@example.com' },
           ],
         },
       });
@@ -298,5 +304,64 @@ describe('ConnectProductFromHubModal', () => {
       expect(location.href).toMatch(/^mailto:admin1@example\.com\?/);
       expect(location.href).not.toContain('cc=');
     });
+
+    it('should prefill the subject and the body of the email', async () => {
+      // Given
+      const location = { href: '' };
+      vi.stubGlobal('location', location);
+      const { user } = testRender(
+        <ConnectProductFromHubModal
+          isOpen={true}
+          onOpenChange={onOpenChange}
+          origin={ConnectProductOrigin.homepage}
+        />
+      );
+
+      // When
+      await user.click(
+        screen.getByRole('button', {
+          name: 'Register.ConnectFromHub.ReachAdmin',
+        })
+      );
+
+      // Then
+      const email = new URL(location.href);
+      expect(email.searchParams.get('subject')).toBe(EMAIL_SUBJECT);
+      expect(email.searchParams.get('body')).toContain(
+        'connect our Filigran product to XTM Hub'
+      );
+    });
+
+    it.each([
+      [
+        'there is no administrator',
+        { usersWithCapabilitiesInOrganization: [] },
+      ],
+      ['the administrators are not loaded yet', undefined],
+    ])(
+      'should not let the user reach out when %s',
+      (_title, administrators) => {
+        // Given
+        mockUseUsersWithCapabilitiesInOrganizationQuery.mockReturnValue({
+          data: administrators,
+        });
+
+        // When
+        testRender(
+          <ConnectProductFromHubModal
+            isOpen={true}
+            onOpenChange={onOpenChange}
+            origin={ConnectProductOrigin.homepage}
+          />
+        );
+
+        // Then
+        expect(
+          screen.getByRole('button', {
+            name: 'Register.ConnectFromHub.ReachAdmin',
+          })
+        ).toBeDisabled();
+      }
+    );
   });
 });

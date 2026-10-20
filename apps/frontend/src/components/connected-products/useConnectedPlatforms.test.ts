@@ -13,11 +13,6 @@ const ACTIVE_PLATFORM = mockRegisteredPlatform({
   title: 'Active OpenCTI',
   identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
 });
-const INACTIVE_PLATFORM = mockRegisteredPlatform({
-  id: 'platform-inactive',
-  title: 'Inactive OpenAEV',
-  identifier: ServiceDefinitionIdentifier.OpenaevRegistration,
-});
 
 describe('useConnectedPlatforms', () => {
   it('should be loading with no platform until the platforms are received', async () => {
@@ -36,33 +31,32 @@ describe('useConnectedPlatforms', () => {
     expect(result.current.isLoading).toBe(true);
     expect(result.current.connectedPlatforms).toEqual([]);
     await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.connectedPlatforms).toEqual([ACTIVE_PLATFORM]);
   });
 
-  it('should only expose the active platforms', async () => {
+  it('should request only the active platforms', async () => {
     // Given
+    let requestedInput: unknown;
     mswServer.use(
-      graphql.query('RegisteredPlatformsList', ({ variables }) =>
-        HttpResponse.json({
-          data: {
-            registeredPlatforms: variables.input.onlyActive
-              ? [ACTIVE_PLATFORM]
-              : [ACTIVE_PLATFORM, INACTIVE_PLATFORM],
-          },
-        })
-      )
+      graphql.query('RegisteredPlatformsList', ({ variables }) => {
+        requestedInput = variables.input;
+        return HttpResponse.json({
+          data: { registeredPlatforms: [ACTIVE_PLATFORM] },
+        });
+      })
     );
 
     // When
     const { result } = testRenderHook(() => useConnectedPlatforms());
 
     // Then
-    await waitFor(() =>
-      expect(result.current.connectedPlatforms).toHaveLength(1)
-    );
-    expect(result.current.connectedPlatforms[0].title).toBe(
-      ACTIVE_PLATFORM.title
-    );
-    expect(result.current.isError).toBe(false);
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(requestedInput).toEqual({
+      onlyActive: true,
+      identifier: null,
+      onlyTrial: null,
+      hasDeployedResources: null,
+    });
   });
 
   it('should expose no platform when none is connected', async () => {

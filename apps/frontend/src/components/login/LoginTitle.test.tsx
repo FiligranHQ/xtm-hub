@@ -3,19 +3,12 @@ import testRender from '@/utils/test/test-render';
 import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-const { XTM_HUB_LOGO_LABEL } = vi.hoisted(() => ({
-  XTM_HUB_LOGO_LABEL: 'XTM Hub logo',
-}));
-
 // The SVG-to-component transform is a build step that Vitest does not run.
 vi.mock('@public/logo_xtm_hub_dark.svg', async () => {
   const React = await import('react');
   return {
-    default: () =>
-      React.createElement('svg', {
-        role: 'img',
-        'aria-label': XTM_HUB_LOGO_LABEL,
-      }),
+    default: (props: Record<string, unknown>) =>
+      React.createElement('svg', props),
   };
 });
 
@@ -30,13 +23,13 @@ describe('LoginTitle', () => {
     ).toBeInTheDocument();
   });
 
-  it('should show the XTM Hub logo', () => {
+  it('should describe the XTM Hub logo to assistive technologies', () => {
     // Given / When
     testRender(<LoginTitle />);
 
     // Then
     expect(
-      screen.getByRole('img', { name: XTM_HUB_LOGO_LABEL })
+      screen.getByRole('img', { name: 'LoginPage.Logo' })
     ).toBeInTheDocument();
   });
 });
