@@ -8,7 +8,6 @@ import { RegisterStateSucceeded } from '@/components/registration/register/Succe
 import { RegisterStateTooManyOrganizations } from '@/components/registration/register/TooManyOrganizations';
 import { showSnackbar } from '@/components/ui/snackbar/snackbar-store';
 import { useTranslate } from '@/hooks/use-translate';
-import { getUrlOrigin } from '@/utils/external-url';
 import OrganizationListUserOrganizationsQueryGraphql, {
   organizationListUserOrganizationsQuery,
 } from '@generated/organizationListUserOrganizationsQuery.graphql';
@@ -45,6 +44,7 @@ import {
 
 interface RegisterProps {
   platform: PlatformInput;
+  platformOrigin: string;
   queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
 }
 
@@ -84,7 +84,11 @@ const initialState: State = {
   registerFragmentRef: null,
 };
 
-export const Register = ({ queryRef, platform }: RegisterProps) => {
+export const Register = ({
+  queryRef,
+  platform,
+  platformOrigin,
+}: RegisterProps) => {
   const t = useTranslate();
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -118,16 +122,8 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   const hasPostedMessageRef = useRef(false);
   const hasAutoRegisteredRef = useRef(false);
 
-  const platformOrigin = useMemo(
-    () => getUrlOrigin(platform.url),
-    [platform.url]
-  );
-
   const postMessageToPlatform = useCallback(
     (message: Record<string, unknown>) => {
-      if (!platformOrigin) {
-        return;
-      }
       window.opener?.postMessage(message, platformOrigin);
     },
     [platformOrigin]

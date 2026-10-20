@@ -33,15 +33,24 @@ const dispatchMessage = (
 
 const renderExternalTab = (
   url: string,
-  onMessage: (event: MessageEvent) => void = vi.fn()
+  onMessage: (event: MessageEvent) => void = vi.fn(),
+  onClosingTab?: () => void
 ) => {
-  const { result } = renderHook(() =>
-    useExternalTab({ url, tabName: TAB_NAME, onMessage, preventUnload: false })
+  const hook = renderHook(
+    ({ onMessage }) =>
+      useExternalTab({
+        url,
+        tabName: TAB_NAME,
+        onMessage,
+        onClosingTab,
+        preventUnload: false,
+      }),
+    { initialProps: { onMessage } }
   );
   act(() => {
-    result.current.openTab();
+    hook.result.current.openTab();
   });
-  return result;
+  return hook;
 };
 
 describe('useExternalTab', () => {
@@ -65,7 +74,7 @@ describe('useExternalTab', () => {
     const tabPostMessage = vi
       .spyOn(tab, 'postMessage')
       .mockImplementation(() => undefined);
-    const result = renderExternalTab(TAB_URL);
+    const { result } = renderExternalTab(TAB_URL);
 
     // When
     result.current.postMessage(MESSAGE);
@@ -79,7 +88,7 @@ describe('useExternalTab', () => {
     const tabPostMessage = vi
       .spyOn(tab, 'postMessage')
       .mockImplementation(() => undefined);
-    const result = renderExternalTab('/dashboard/xtm-hub');
+    const { result } = renderExternalTab('/dashboard/xtm-hub');
 
     // When
     result.current.postMessage(MESSAGE);
@@ -146,5 +155,80 @@ describe('useExternalTab', () => {
 
     // Then
     expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it('should ignore the message from the tab when the opened url has no valid origin', () => {
+    // Given
+    const onMessage = vi.fn();
+    renderExternalTab('/dashboard/xtm-hub', onMessage);
+
+    // When
+    dispatchMessage(tab, TAB_ORIGIN);
+
+    // Then
+    expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it('should keep the same postMessage between renders', () => {
+    // Given
+    const { result, rerender } = renderExternalTab(TAB_URL);
+    const firstPostMessage = result.current.postMessage;
+
+    // When
+    rerender({ onMessage: vi.fn() });
+
+    // Then
+    expect(result.current.postMessage).toBe(firstPostMessage);
+  });
+
+  it('should call the latest onMessage without subscribing the listener again', () => {
+    // Given
+    const addEventListener = vi.spyOn(window, 'addEventListener');
+    const firstOnMessage = vi.fn();
+    const latestOnMessage = vi.fn();
+    const { rerender } = renderExternalTab(TAB_URL, firstOnMessage);
+    const subscriptionCount = addEventListener.mock.calls.filter(
+      ([type]) => type === 'message'
+    ).length;
+
+    // When
+    rerender({ onMessage: latestOnMessage });
+    dispatchMessage(tab, TAB_ORIGIN);
+
+    // Then
+    expect(
+      addEventListener.mock.calls.filter(([type]) => type === 'message')
+    ).toHaveLength(subscriptionCount);
+    expect(firstOnMessage).not.toHaveBeenCalled();
+    expect(latestOnMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('should stop watching the tab once unmounted', () => {
+    // Given
+    const onClosingTab = vi.fn();
+    const { unmount } = renderExternalTab(TAB_URL, vi.fn(), onClosingTab);
+    unmount();
+
+    // When
+    Object.defineProperty(tab, 'closed', { value: true, configurable: true });
+    vi.advanceTimersByTime(1000);
+
+    // Then
+    expect(onClosingTab).not.toHaveBeenCalled();
+  });
+
+  it('should call onClosingTab once when the opened tab is closed', () => {
+    // Given
+    const onClosingTab = vi.fn();
+    renderExternalTab(TAB_URL, vi.fn(), onClosingTab);
+
+    // When
+    Object.defineProperty(tab, 'closed', { value: true, configurable: true });
+    act(() => {
+      vi.advanceTimersByTime(1500);
+    });
+
+    // Then
+    expect(onClosingTab).toHaveBeenCalledTimes(1);
   });
 });

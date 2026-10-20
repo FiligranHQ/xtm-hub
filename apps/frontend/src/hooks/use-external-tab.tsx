@@ -51,12 +51,18 @@ const useExternalTab = ({
     tabRef.current?.focus();
   }, []);
 
-  const postMessage = (message: Record<string, unknown>) => {
+  const postMessage = useCallback((message: Record<string, unknown>) => {
     if (!tabOriginRef.current) {
       return;
     }
     tabRef.current?.postMessage(message, tabOriginRef.current);
-  };
+  }, []);
+
+  // A ref, so that a new onMessage on each render of the caller does not re-subscribe the listener.
+  const onMessageRef = useRef(onMessage);
+  useEffect(() => {
+    onMessageRef.current = onMessage;
+  }, [onMessage]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -72,14 +78,15 @@ const useExternalTab = ({
         }
         return;
       }
-      onMessage?.(event);
+      onMessageRef.current?.(event);
     };
+    let checkInterval: ReturnType<typeof setInterval> | undefined;
     if (isTabOpen) {
       window.addEventListener('message', handleMessage);
       if (preventUnload) {
         window.addEventListener('beforeunload', beforeUnloadHandler);
       }
-      const checkInterval = setInterval(() => {
+      checkInterval = setInterval(() => {
         if (tabRef.current?.closed) {
           if (onClosingTab) {
             onClosingTab();
@@ -91,20 +98,14 @@ const useExternalTab = ({
     }
 
     return () => {
+      clearInterval(checkInterval);
       window.removeEventListener('message', handleMessage);
 
       if (preventUnload) {
         window.removeEventListener('beforeunload', beforeUnloadHandler);
       }
     };
-  }, [
-    isTabOpen,
-    closeTab,
-    onClosingTab,
-    onMessage,
-    preventUnload,
-    environment,
-  ]);
+  }, [isTabOpen, closeTab, onClosingTab, preventUnload, environment]);
 
   return {
     isTabOpen,

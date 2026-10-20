@@ -99,13 +99,14 @@ vi.mock('@/components/registration/register/OrganizationForm', () => ({
 }));
 
 const PLATFORM_ORIGIN = 'https://opencti.example.com';
+const OTHER_ORIGIN = 'https://other.example.com';
 
 const mockQueryRef = {} as PreloadedQuery<registerIsPlatformRegisteredQuery>;
 const mockPlatform: PlatformInput = {
   url: `${PLATFORM_ORIGIN}/dashboard`,
 };
 
-const renderRegister = (platform: PlatformInput = mockPlatform) =>
+const renderRegister = (platformOrigin: string = PLATFORM_ORIGIN) =>
   testRender(
     <RegistrationContext.Provider
       value={{
@@ -115,7 +116,8 @@ const renderRegister = (platform: PlatformInput = mockPlatform) =>
       }}>
       <Register
         queryRef={mockQueryRef}
-        platform={platform}
+        platform={mockPlatform}
+        platformOrigin={platformOrigin}
       />
     </RegistrationContext.Provider>
   );
@@ -178,52 +180,35 @@ describe('Register', () => {
     );
   });
 
-  it('should not post the cancel message when the platform url is invalid', async () => {
+  it('should post the register message to the given platform origin whatever the opener is', async () => {
     // Given
+    // The page cannot know where its opener really is: the origin comes from the platform_url
+    // query parameter. A page opening XTM Hub with its own origin as platform_url gets the token;
+    // the browser only stops the message when the opener is no longer on that origin.
     testState.isPlatformRegistered = {
       status: PlatformRegistrationStatus.NeverRegistered,
       platformTitle: null,
       organization: null,
     } as registerIsPlatformRegisteredFragment$data;
+    testState.token = 'my-token';
     const postMessage = vi.fn();
     Object.defineProperty(window, 'opener', {
       value: { postMessage },
       writable: true,
     });
-    const { user } = renderRegister({ url: 'not a url' });
-
-    // When
-    await user.click(screen.getByRole('button', { name: 'mock-cancel' }));
-
-    // Then
-    expect(postMessage).not.toHaveBeenCalled();
-  });
-
-  it('should not post the register message when the platform url is invalid', async () => {
-    // Given
-    testState.isPlatformRegistered = {
-      status: PlatformRegistrationStatus.NeverRegistered,
-      platformTitle: null,
-      organization: null,
-    } as registerIsPlatformRegisteredFragment$data;
-    testState.mutationMode = 'success';
-    const postMessage = vi.fn();
-    Object.defineProperty(window, 'opener', {
-      value: { postMessage },
-      writable: true,
-    });
-    const { user } = renderRegister({ url: 'not a url' });
+    const { user } = renderRegister(OTHER_ORIGIN);
 
     // When
     await user.click(screen.getByRole('button', { name: 'mock-confirm' }));
 
     // Then
     await waitFor(() => {
-      expect(
-        screen.getByRole('heading', { name: 'Register.Succeeded.Title' })
-      ).toBeInTheDocument();
+      expect(postMessage).toHaveBeenCalledWith(
+        { action: 'register', token: 'my-token' },
+        OTHER_ORIGIN
+      );
     });
-    expect(postMessage).not.toHaveBeenCalled();
+    expect(postMessage).toHaveBeenCalledTimes(1);
   });
 
   it('renders the "too much organization" screen when unregistered with more than two organizations', async () => {
