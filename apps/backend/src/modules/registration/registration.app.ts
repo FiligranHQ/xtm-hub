@@ -778,6 +778,8 @@ export const mapDomainRegisteredPlatformToGraphQL = (
       'OpenCTI - Free Trial Platform',
     [ServiceDefinitionIdentifier.OpenaevRegistration]:
       'OpenAEV - Free Trial Platform',
+    [ServiceDefinitionIdentifier.XtmoneRegistration]:
+      'XTM One - Free Trial Platform',
   };
 
   const defaultTitle =

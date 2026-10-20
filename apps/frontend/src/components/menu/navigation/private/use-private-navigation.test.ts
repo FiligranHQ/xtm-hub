@@ -520,6 +520,38 @@ describe('usePrivateNavigation', () => {
     });
   });
 
+  it('links XTM One registered platforms directly to their instance in a new tab', () => {
+    vi.mocked(getPrivateNavigationRegisteredPlatformsByIdentifier)
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce([])
+      .mockReturnValueOnce([
+        {
+          serviceInstanceId: 'xtmone-service-instance-id',
+          title: 'XTM One Production Platform',
+          url: 'https://xtmone.example.com',
+        },
+      ]);
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    const xtmOneSection = getSection(result.current.sections, 'xtm-one');
+
+    expect(xtmOneSection?.links[0]).toEqual({
+      label: 'MyProduct',
+      badge: '1',
+      subLinks: [
+        {
+          label: 'XTM One Production Platform',
+          href: 'https://xtmone.example.com',
+          external: true,
+          tooltip: 'https://xtmone.example.com',
+        },
+      ],
+    });
+  });
+
   it('uses plural MyProduct label when more than one platform is linked', () => {
     vi.mocked(getPrivateNavigationRegisteredPlatformsByIdentifier)
       .mockReturnValueOnce([
