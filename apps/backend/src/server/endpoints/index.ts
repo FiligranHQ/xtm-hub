@@ -7,6 +7,7 @@ import { manifestEndpoint } from './manifest/manifest-endpoint';
 import { newsFeedRedirectEndpoint } from './news-feed-redirect/news-feed-redirect-endpoint';
 import { productVersionEndpoint } from './product-version/product-version-endpoint';
 import { userPictureEndpoint } from './user-picture/user-picture-endpoint';
+import { verificationEmailEndpoint } from './verification-email/verification-email-endpoint';
 import { versionsMatrixEndpoint } from './versions-matrix/versions-matrix-endpoint';
 
 // Single wiring point for every REST endpoint — add new ones here.
@@ -21,4 +22,5 @@ export const registerEndpoints = (app: Express) => {
   documentDownloadEndpoint(app);
   documentVisualizeEndpoint(app);
   integrationCsvExportEndpoint(app);
+  verificationEmailEndpoint(app);
 };
