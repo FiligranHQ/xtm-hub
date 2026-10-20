@@ -56,7 +56,7 @@ Both are fire and forget: a telemetry failure never changes the redirect. The IP
 | Field                 | External redirect                                                               | Resource redirect                                                  |
 | :-------------------- | :------------------------------------------------------------------------------ | :----------------------------------------------------------------- |
 | `news_feed_item_id`   | The item clicked.                                                               | Not set (the link carries no item id).                             |
-| `news_feed_item_type` | Item type, e.g. `BLOG_POST`.                                                    | Not set.                                                           |
+| `news_feed_item_type` | Item type in lowercase, e.g. `blog-post`.                                       | Not set.                                                           |
 | `destination_host`    | `filigran.io` (or `github.com` for releases, later).                            | Not set.                                                           |
 | `platform_id`         | The platform UUID of the query, when valid. Never forwarded to the destination. | The platform UUID of the query, when valid.                        |
 | `service`             | Not set.                                                                        | The service (`TelemetryEventService`).                             |

@@ -14,12 +14,12 @@ import { esDbClient } from '../../thirdparty/elasticsearch/client';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
 import { TELEMETRY_QUEUES } from '../../thirdparty/pgboss/telemetry.jobs';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
 import { loadInstanceIdentity } from './telemetry-snapshot.domain';
 import { resetHubIdentityCacheForTests, TelemetryApp } from './telemetry.app';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetryNewsFeedItemType,
   TelemetryOrganizationType,
   TelemetrySource,
   TelemetryTargetProduct,
@@ -697,7 +697,7 @@ describe('telemetryApp', () => {
         expect(sendTelemetryEventSpy.mock.calls[0]![0]).toMatchObject({
           event_type: TelemetryEventType.NEWS_FEED_REDIRECT,
           news_feed_item_id: NEWS_FEED_ITEM_ID,
-          news_feed_item_type: NewsFeedItemType.BlogPost,
+          news_feed_item_type: TelemetryNewsFeedItemType.BLOG_POST,
           destination_host: 'filigran.io',
           platform_id: PLATFORM_ID,
           ...LOGGED_IN_IDENTITY,
@@ -778,7 +778,7 @@ describe('telemetryApp', () => {
             user: undefined,
             ...externalRedirect,
           })
-        ).resolves.toBeUndefined();
+        ).resolves.toBe(false);
         expect(logErrorSpy).toHaveBeenCalledOnce();
       });
     });
@@ -850,19 +850,41 @@ describe('telemetryApp', () => {
         });
       });
 
-      it('should refuse a service that has no telemetry mapping and send no event', async () => {
-        // When / Then
-        await expect(
-          TelemetryApp.sendResourceNewsFeedRedirectEvent({
-            user: LOGGED_IN_USER,
-            input: {
-              ...resourceRedirect,
-              service_identifier:
-                ServiceDefinitionIdentifier.OpenctiRegistration,
-            },
-          })
-        ).rejects.toThrow(ErrorCode.ServiceNotFound);
+      it('should ignore a service that has no telemetry mapping, without throwing nor logging an error', async () => {
+        // Given
+        const logErrorSpy = vi.spyOn(logApp, 'error');
+
+        // When
+        const sent = await TelemetryApp.sendResourceNewsFeedRedirectEvent({
+          user: LOGGED_IN_USER,
+          input: {
+            ...resourceRedirect,
+            service_identifier: ServiceDefinitionIdentifier.OpenctiRegistration,
+          },
+        });
+
+        // Then
+        expect(sent).toBe(false);
         expect(sendTelemetryEventSpy).not.toHaveBeenCalled();
+        expect(logErrorSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not throw when sending the event fails', async () => {
+        // Given
+        const logErrorSpy = vi
+          .spyOn(logApp, 'error')
+          .mockImplementation(() => undefined);
+        sendTelemetryEventSpy.mockRejectedValue(new Error('telemetry down'));
+
+        // When
+        const sent = await TelemetryApp.sendResourceNewsFeedRedirectEvent({
+          user: LOGGED_IN_USER,
+          input: resourceRedirect,
+        });
+
+        // Then
+        expect(sent).toBe(false);
+        expect(logErrorSpy).toHaveBeenCalledOnce();
       });
     });
   });

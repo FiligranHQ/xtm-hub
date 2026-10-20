@@ -25,7 +25,10 @@ import {
 } from '../../../__generated__/resolvers-types';
 import { NewsFeedDomain } from '../../../modules/news-feed/news-feed.domain';
 import { TelemetryApp } from '../../../modules/telemetry/telemetry.app';
-import { TelemetryOrganizationType } from '../../../modules/telemetry/telemetry.const';
+import {
+  TelemetryNewsFeedItemType,
+  TelemetryOrganizationType,
+} from '../../../modules/telemetry/telemetry.const';
 import { TelemetryEventType } from '../../../modules/telemetry/telemetry.types';
 import { logApp } from '../../../utils/app-logger.util';
 import { newsFeedRedirectEndpoint } from './news-feed-redirect-endpoint';
@@ -332,7 +335,7 @@ describe('news feed redirect endpoint', () => {
       expect(sendTelemetryEvent.mock.calls[0]![0]).toMatchObject({
         event_type: TelemetryEventType.NEWS_FEED_REDIRECT,
         news_feed_item_id: item.id,
-        news_feed_item_type: NewsFeedItemType.BlogPost,
+        news_feed_item_type: TelemetryNewsFeedItemType.BLOG_POST,
         destination_host: 'filigran.io',
         platform_id: PLATFORM_ID,
         organization_type: TelemetryOrganizationType.PUBLIC,

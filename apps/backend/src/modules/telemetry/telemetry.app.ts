@@ -60,6 +60,33 @@ const loadLoggedInIdentity = async (
   }
 };
 
+type NewsFeedRedirectEventData = Parameters<
+  typeof TelemetryHelper.buildNewsFeedRedirectEvent
+>[2];
+
+// Never throws: an unexpected failure is logged and reported as not sent
+const sendNewsFeedRedirectEvent = async (
+  user: Pick<UserLoadUserBy, 'id' | 'selected_organization_id'> | undefined,
+  data: NewsFeedRedirectEventData
+): Promise<boolean> => {
+  try {
+    const { organization, userId } = await loadLoggedInIdentity(user);
+    const event = TelemetryHelper.buildNewsFeedRedirectEvent(
+      organization,
+      userId,
+      data
+    );
+    await TelemetryApp.sendTelemetryEvent(event);
+    return true;
+  } catch (error) {
+    logApp.error('Unable to send the news feed redirect event', {
+      error,
+      newsFeedItemId: data.news_feed_item_id,
+    });
+    return false;
+  }
+};
+
 const toOneClickDeploymentInitializer = (
   event: OneClickDeployEvent
 ): OneClickDeploymentInitializer => ({
@@ -261,7 +288,9 @@ export const TelemetryApp = {
     }
   },
 
-  // Fire and forget: never throws, so callers must not await it on the response path
+  // Both news feed redirect methods are best-effort analytics with the same contract: they never throw and return
+  // whether the event was handed over to the telemetry pipeline. The external one is fire and forget, so callers
+  // must not await it on the response path.
   async sendExternalNewsFeedRedirectEvent({
     user,
     newsFeedItemId,
@@ -274,54 +303,40 @@ export const TelemetryApp = {
     newsFeedItemType: NewsFeedItemType;
     destinationHost: string;
     platformId: unknown;
-  }): Promise<void> {
-    try {
-      const { organization, userId } = await loadLoggedInIdentity(user);
-      const event = TelemetryHelper.buildNewsFeedRedirectEvent(
-        organization,
-        userId,
-        {
-          news_feed_item_id: newsFeedItemId,
-          news_feed_item_type: newsFeedItemType,
-          destination_host: destinationHost,
-          platform_id: parsePlatformId(
-            typeof platformId === 'string' ? platformId : undefined
-          ),
-        }
-      );
-      await TelemetryApp.sendTelemetryEvent(event);
-    } catch (error) {
-      logApp.error('Unable to send the external news feed redirect event', {
-        error,
-        newsFeedItemId,
-      });
-    }
+  }): Promise<boolean> {
+    return sendNewsFeedRedirectEvent(user, {
+      news_feed_item_id: newsFeedItemId,
+      news_feed_item_type: newsFeedItemType,
+      destination_host: destinationHost,
+      platform_id: parsePlatformId(
+        typeof platformId === 'string' ? platformId : undefined
+      ),
+    });
   },
 
-  // The input comes from the query string of a link: it is validated, and the event is best-effort analytics
+  // The input comes from the query string of a link: it is validated, and a service without telemetry is ignored
+  // (debug only, since anyone logged in can send one) rather than reported as an error
   async sendResourceNewsFeedRedirectEvent({
     user,
     input,
   }: {
     user: Pick<UserLoadUserBy, 'id' | 'selected_organization_id'>;
     input: NewsFeedRedirectInput;
-  }): Promise<void> {
+  }): Promise<boolean> {
     if (!TelemetryHelper.shouldSendEventForService(input.service_identifier)) {
-      throw new Error(ErrorCode.ServiceNotFound);
+      logApp.debug(
+        'Ignored a news feed redirect event for a service without telemetry',
+        { service: input.service_identifier }
+      );
+      return false;
     }
 
-    const { organization, userId } = await loadLoggedInIdentity(user);
-    const event = TelemetryHelper.buildNewsFeedRedirectEvent(
-      organization,
-      userId,
-      {
-        service: input.service_identifier,
-        resource_id: input.resource_id ?? undefined,
-        platform_id: parsePlatformId(input.platform_id),
-        platform_identifier: input.platform_identifier ?? undefined,
-        utm_content: input.utm_content ?? undefined,
-      }
-    );
-    await TelemetryApp.sendTelemetryEvent(event);
+    return sendNewsFeedRedirectEvent(user, {
+      service: input.service_identifier,
+      resource_id: input.resource_id ?? undefined,
+      platform_id: parsePlatformId(input.platform_id),
+      platform_identifier: input.platform_identifier ?? undefined,
+      utm_content: input.utm_content ?? undefined,
+    });
   },
 };

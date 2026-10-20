@@ -1,6 +1,7 @@
 import {
   NewsFeedItemMetadataKey,
   NewsFeedItemType,
+  NewsFeedUtmContent,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
@@ -41,7 +42,7 @@ export const NEWS_FEED_INTERNAL_METADATA_KEYS: NewsFeedItemMetadataKey[] = [
 export const NEWS_FEED_UTM_MEDIUM = 'newsfeed';
 export const NEWS_FEED_UTM_CAMPAIGN_FALLBACK = 'hub_resources';
 export const NEWS_FEED_UTM_CAMPAIGN_BLOG_POST = 'blog_posts';
-export const NEWS_FEED_UTM_CONTENT_FALLBACK = 'other';
+export const NEWS_FEED_UTM_CONTENT_FALLBACK = NewsFeedUtmContent.Other;
 
 // The Hub resource types fall back to hub_resources: a blog post is not a Hub resource
 export const newsFeedUtmCampaignMapping: Partial<
@@ -50,13 +51,16 @@ export const newsFeedUtmCampaignMapping: Partial<
   [NewsFeedItemType.BlogPost]: NEWS_FEED_UTM_CAMPAIGN_BLOG_POST,
 };
 
+// Typed with the GraphQL NewsFeedUtmContent enum: a value the schema does not know is a compile error, instead of a
+// news_feed_redirect event that silently loses its utm_content
 export const newsFeedUtmContentMapping: Partial<
-  Record<NewsFeedItemType, string>
+  Record<NewsFeedItemType, NewsFeedUtmContent>
 > = {
-  [NewsFeedItemType.ResourceCustomDashboard]: 'custom_dashboard',
-  [NewsFeedItemType.ResourceCustomView]: 'custom_view',
-  [NewsFeedItemType.ResourceIntegration]: 'integration',
-  [NewsFeedItemType.ResourcePlaybook]: 'playbook',
+  [NewsFeedItemType.ResourceCustomDashboard]:
+    NewsFeedUtmContent.CustomDashboard,
+  [NewsFeedItemType.ResourceCustomView]: NewsFeedUtmContent.CustomView,
+  [NewsFeedItemType.ResourceIntegration]: NewsFeedUtmContent.Integration,
+  [NewsFeedItemType.ResourcePlaybook]: NewsFeedUtmContent.Playbook,
 };
 
 // Public route that redirects to the external destination of an item. The relative url_path given to OpenCTI

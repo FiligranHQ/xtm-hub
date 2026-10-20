@@ -28,14 +28,19 @@ import Document, { DocumentId } from '../../model/kanel/public/Document';
 import { OrganizationId } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
+import { NewsFeedDestinationRegistry } from '../news-feed/news-feed-redirect.helper';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetryNewsFeedItemType,
   TelemetryOrganizationType,
   TelemetrySource,
   TelemetryTargetProduct,
 } from './telemetry.const';
-import { TelemetryHelper } from './telemetry.helper';
+import {
+  NewsFeedItemTypeToTelemetryNewsFeedItemType,
+  TelemetryHelper,
+} from './telemetry.helper';
 import { TelemetryEventType } from './telemetry.types';
 
 const CURRENT_USER = TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2;
@@ -1006,6 +1011,25 @@ describe('telemetryHelper', () => {
         ...PROFESSIONAL_BASE_EVENT,
         event_type: TelemetryEventType.NEWS_FEED_REDIRECT,
         ...EXTERNAL_REDIRECT_DATA,
+        news_feed_item_type: TelemetryNewsFeedItemType.BLOG_POST,
+      });
+    });
+
+    it('should map every item type that has an external destination to a telemetry value', () => {
+      // Then
+      Object.keys(NewsFeedDestinationRegistry).forEach((type) => {
+        expect(
+          NewsFeedItemTypeToTelemetryNewsFeedItemType.has(
+            type as NewsFeedItemType
+          )
+        ).toBe(true);
+      });
+    });
+
+    it('should store the item type in lowercase, like the other enum-like fields', () => {
+      // Then
+      Object.values(TelemetryNewsFeedItemType).forEach((value) => {
+        expect(value).toMatch(/^[a-z]+(?:-[a-z]+)*$/);
       });
     });
 

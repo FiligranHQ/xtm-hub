@@ -14,7 +14,6 @@ import {
 import { DocumentId } from '../../model/kanel/public/Document';
 import { UserId } from '../../model/kanel/public/User';
 import { logApp } from '../../utils/app-logger.util';
-import { ErrorCode } from '../../utils/error/error.code';
 import { TelemetryApp } from './telemetry.app';
 import {
   TelemetryEventService,
@@ -172,12 +171,12 @@ describe('news feed redirect GraphQL mutation', () => {
     });
   });
 
-  it('should return result false with the error message and send no event for a service without telemetry', async () => {
+  it('should return result false and send no event for a service without telemetry', async () => {
     // Given
     const sendTelemetryEvent = vi
       .spyOn(TelemetryApp, 'sendTelemetryEvent')
       .mockResolvedValue(undefined);
-    vi.spyOn(logApp, 'error').mockImplementation(() => undefined);
+    const logError = vi.spyOn(logApp, 'error');
 
     // When
     const result = await callNewsFeedRedirect({
@@ -188,8 +187,9 @@ describe('news feed redirect GraphQL mutation', () => {
     // Then
     expect(result).toMatchObject({
       result: false,
-      message: ErrorCode.ServiceNotFound,
+      message: 'The news feed redirect event was not sent',
     });
     expect(sendTelemetryEvent).not.toHaveBeenCalled();
+    expect(logError).not.toHaveBeenCalled();
   });
 });

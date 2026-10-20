@@ -6,13 +6,13 @@ import {
   DeploymentRequestPlatformRegion,
   DeploymentRequestUseCase,
   HasRepliedSatisfaction,
-  NewsFeedItemType,
   ServiceGroupName,
 } from '../../__generated__/resolvers-types';
 import { DeploymentRequestId } from '../../model/kanel/public/DeploymentRequest';
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetryNewsFeedItemType,
   TelemetryOrganizationType,
   TelemetrySource,
   TelemetryTargetProduct,
@@ -140,7 +140,7 @@ export interface OneClickDeployEvent extends BaseTelemetryEvent {
 export interface NewsFeedRedirectEvent extends BaseTelemetryEvent {
   event_type: TelemetryEventType.NEWS_FEED_REDIRECT;
   news_feed_item_id?: string;
-  news_feed_item_type?: NewsFeedItemType;
+  news_feed_item_type?: TelemetryNewsFeedItemType;
   destination_host?: string;
   platform_id?: string;
   service?: TelemetryEventService;

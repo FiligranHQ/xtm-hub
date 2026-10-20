@@ -19,6 +19,7 @@ import { ServiceInstanceDomain } from '../service/instance/service-instance.doma
 import {
   TelemetryEventService,
   TelemetryEventServiceType,
+  TelemetryNewsFeedItemType,
   TelemetryOrganizationType,
   TelemetrySource,
   TelemetryTargetProduct,
@@ -99,6 +100,12 @@ const ServiceIdentifierToEventService = new Map<
     TelemetryEventService.OPENCTI_CUSTOM_VIEWS_LIBRARY,
   ],
 ]);
+
+// One entry per news feed item type that can be clicked through the external redirect
+export const NewsFeedItemTypeToTelemetryNewsFeedItemType = new Map<
+  NewsFeedItemType,
+  TelemetryNewsFeedItemType
+>([[NewsFeedItemType.BlogPost, TelemetryNewsFeedItemType.BLOG_POST]]);
 
 export const TelemetryTargetProductMappedByPlatformIdentifier = new Map<
   PlatformIdentifier,
@@ -376,12 +383,19 @@ export const TelemetryHelper = {
     timestamp?: Date
   ): NewsFeedRedirectEvent => {
     const baseEvent = buildBaseEvent(organization, user_id, timestamp);
-    const { service, platform_identifier, ...fields } = data;
+    const { service, platform_identifier, news_feed_item_type, ...fields } =
+      data;
 
     return {
       event_type: TelemetryEventType.NEWS_FEED_REDIRECT,
       ...baseEvent,
       ...fields,
+      ...(news_feed_item_type !== undefined && {
+        news_feed_item_type: getOrThrow(
+          NewsFeedItemTypeToTelemetryNewsFeedItemType,
+          news_feed_item_type
+        ),
+      }),
       ...(service !== undefined && {
         service: getOrThrow(ServiceIdentifierToEventService, service),
       }),
