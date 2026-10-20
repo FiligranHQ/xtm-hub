@@ -12,6 +12,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const DASHBOARDS_TRANSLATION_KEY = 'Service.OpenctiCustomDashboards';
 const INTEGRATIONS_TRANSLATION_KEY = 'Service.OpenctiIntegrations';
+const SERVICE_INSTANCE_ID = 'service-1';
+const SUBSCRIPTION_ID = 'subscription-1';
 
 const { mockUseServiceContext, mockSetIntegrationType } = vi.hoisted(() => ({
   mockUseServiceContext: vi.fn(),
@@ -35,7 +37,7 @@ vi.mock('@/hooks/use-service-capability', () => ({
 
 const buildServiceContext = (overrides = {}) => ({
   serviceInstance: {
-    id: 'service-1',
+    id: SERVICE_INSTANCE_ID,
     capabilities: [],
   },
   translationKey: DASHBOARDS_TRANSLATION_KEY,
@@ -47,7 +49,7 @@ const buildServiceContext = (overrides = {}) => ({
 const buildIntegrationsServiceContext = () =>
   buildServiceContext({
     serviceInstance: {
-      id: 'service-1',
+      id: SERVICE_INSTANCE_ID,
       capabilities: [ServiceRestriction.Upload],
     },
     translationKey: INTEGRATIONS_TRANSLATION_KEY,
@@ -84,7 +86,7 @@ describe('ServiceListHeaderButtons', () => {
       ) => ({
         hasCapability:
           serviceInstance?.capabilities?.includes(capability) ?? false,
-        subscriptionId: 'subscription-1',
+        subscriptionId: SUBSCRIPTION_ID,
       })
     );
   });
@@ -110,7 +112,7 @@ describe('ServiceListHeaderButtons', () => {
       mockUseServiceContext.mockReturnValue(
         buildServiceContext({
           serviceInstance: {
-            id: 'service-1',
+            id: SERVICE_INSTANCE_ID,
             capabilities: serviceCapabilities,
           },
         })
@@ -138,7 +140,7 @@ describe('ServiceListHeaderButtons', () => {
       expect(manageLink).toBeInTheDocument();
       expect(manageLink).toHaveAttribute(
         'href',
-        '/app/manage/service/service-1/subscription/subscription-1'
+        `/app/manage/service/${SERVICE_INSTANCE_ID}/subscription/${SUBSCRIPTION_ID}`
       );
     }
   );
@@ -161,7 +163,7 @@ describe('ServiceListHeaderButtons', () => {
     // Then
     expect(
       queryByRole('button', {
-        name: 'Service.OpenctiCustomDashboards.AddService',
+        name: `${DASHBOARDS_TRANSLATION_KEY}.AddService`,
       })
     ).toBeNull();
     expect(queryByText('integration-dropdown')).toBeNull();
@@ -173,7 +175,7 @@ describe('ServiceListHeaderButtons', () => {
     mockUseServiceContext.mockReturnValue(
       buildServiceContext({
         serviceInstance: {
-          id: 'service-1',
+          id: SERVICE_INSTANCE_ID,
           capabilities: [ServiceRestriction.Upload],
         },
         ServiceForm: () => null,

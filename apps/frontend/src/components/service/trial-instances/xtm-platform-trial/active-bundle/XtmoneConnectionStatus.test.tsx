@@ -43,8 +43,13 @@ const buildStatus = (
   ...overrides,
 });
 
-const getProductRow = (rowLabel: string) =>
-  within(screen.getByText(rowLabel).parentElement!);
+const getProductRow = (rowLabel: string) => {
+  const row = screen.getByText(rowLabel).parentElement;
+  if (!row) {
+    throw new Error(`no product row labelled ${rowLabel}`);
+  }
+  return within(row);
+};
 
 describe('XtmoneConnectionStatus', () => {
   beforeEach(() => {
@@ -104,10 +109,14 @@ describe('XtmoneConnectionStatus', () => {
 
       // Then
       expect(
-        getProductRow(OPENCTI_ROW_LABEL).getByLabelText(expectedOpenctiStatus)
+        getProductRow(OPENCTI_ROW_LABEL).getByRole('img', {
+          name: expectedOpenctiStatus,
+        })
       ).toBeInTheDocument();
       expect(
-        getProductRow(OPENAEV_ROW_LABEL).getByLabelText(expectedOpenaevStatus)
+        getProductRow(OPENAEV_ROW_LABEL).getByRole('img', {
+          name: expectedOpenaevStatus,
+        })
       ).toBeInTheDocument();
     }
   );
@@ -132,7 +141,12 @@ describe('XtmoneConnectionStatus', () => {
       testRender(<XtmoneConnectionStatus status={status} />);
 
       // Then
-      expect(screen.getAllByText(STATUS_UNAVAILABLE)).toHaveLength(2);
+      expect(
+        getProductRow(OPENCTI_ROW_LABEL).getByText(STATUS_UNAVAILABLE)
+      ).toBeInTheDocument();
+      expect(
+        getProductRow(OPENAEV_ROW_LABEL).getByText(STATUS_UNAVAILABLE)
+      ).toBeInTheDocument();
     }
   );
 
@@ -154,7 +168,7 @@ describe('XtmoneConnectionStatus', () => {
       getProductRow(OPENCTI_ROW_LABEL).getByText(STATUS_UNAVAILABLE)
     ).toBeInTheDocument();
     expect(
-      getProductRow(OPENAEV_ROW_LABEL).getByLabelText(STATUS_ACTIVE)
+      getProductRow(OPENAEV_ROW_LABEL).getByRole('img', { name: STATUS_ACTIVE })
     ).toBeInTheDocument();
   });
 
@@ -176,19 +190,23 @@ describe('XtmoneConnectionStatus', () => {
     }
   );
 
-  it('should show no connection status when the status is loading', () => {
-    // Given / When
-    testRender(
-      <XtmoneConnectionStatus
-        status={buildStatus({ data: undefined, isLoading: true })}
-      />
-    );
+  it.each([
+    { product: 'OpenCTI', rowLabel: OPENCTI_ROW_LABEL },
+    { product: 'OpenAEV', rowLabel: OPENAEV_ROW_LABEL },
+  ])(
+    'should show the $product row without any connection status when the status is loading',
+    ({ rowLabel }) => {
+      // Given / When
+      testRender(
+        <XtmoneConnectionStatus
+          status={buildStatus({ data: undefined, isLoading: true })}
+        />
+      );
 
-    // Then
-    expect(screen.queryByLabelText(STATUS_ACTIVE)).not.toBeInTheDocument();
-    expect(
-      screen.queryByLabelText(STATUS_NOT_CONNECTED)
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText(STATUS_UNAVAILABLE)).not.toBeInTheDocument();
-  });
+      // Then
+      const row = getProductRow(rowLabel);
+      expect(row.queryByRole('img')).not.toBeInTheDocument();
+      expect(row.queryByText(STATUS_UNAVAILABLE)).not.toBeInTheDocument();
+    }
+  );
 });

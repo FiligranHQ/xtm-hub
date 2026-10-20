@@ -21,6 +21,14 @@ describe('ServiceListFilterSection', () => {
     },
   };
 
+  const inlineFilter = {
+    [ServiceListFilterKey.ProductVersion]: {
+      title: firstTitle,
+      node: <div>{firstContent}</div>,
+      noAccordion: true,
+    },
+  };
+
   it('should expand the first filter section by default', () => {
     // Given
     // When
@@ -96,16 +104,18 @@ describe('ServiceListFilterSection', () => {
     expect(screen.getByText(secondContent)).toBeInTheDocument();
   });
 
-  it('should render a filter inline without a collapsible section when it opts out of the accordion', () => {
+  it('should show the title and the content of a filter when it opts out of the accordion', () => {
     // Given
-    const inlineFilter = {
-      [ServiceListFilterKey.ProductVersion]: {
-        title: firstTitle,
-        node: <div>{firstContent}</div>,
-        noAccordion: true,
-      },
-    };
+    // When
+    testRender(<ServiceListFilterSection filters={inlineFilter} />);
 
+    // Then
+    expect(screen.getByText(firstTitle)).toBeInTheDocument();
+    expect(screen.getByText(firstContent)).toBeInTheDocument();
+  });
+
+  it('should not let the user collapse a filter when it opts out of the accordion', () => {
+    // Given
     // When
     testRender(<ServiceListFilterSection filters={inlineFilter} />);
 
@@ -113,7 +123,5 @@ describe('ServiceListFilterSection', () => {
     expect(
       screen.queryByRole('button', { name: firstTitle })
     ).not.toBeInTheDocument();
-    expect(screen.getByText(firstTitle)).toBeInTheDocument();
-    expect(screen.getByText(firstContent)).toBeInTheDocument();
   });
 });

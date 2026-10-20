@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 const SEE_MORE_LABEL = 'XtmPlatformTrial.Guide.SeeMore';
 
 describe('BundleGuideCard', () => {
-  it('should link to the XTM Platform trial guide when the user follows the see more button', () => {
+  it('should link the see more button to the XTM Platform trial guide', () => {
     // Given
     vi.mocked(useTranslations).mockImplementation(
       (namespace) => (key) => `${namespace}.${key}`
