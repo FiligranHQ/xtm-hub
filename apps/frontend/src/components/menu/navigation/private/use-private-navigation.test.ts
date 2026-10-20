@@ -10,6 +10,7 @@ import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import {
   OrderingMode,
   OrganizationCapability,
+  PlatformIdentifier,
   PortalCapability,
   ServiceDefinitionIdentifier,
   ServiceInstanceFilterKey,
@@ -521,16 +522,19 @@ describe('usePrivateNavigation', () => {
   });
 
   it('links XTM One registered platforms directly to their instance in a new tab', () => {
-    vi.mocked(getPrivateNavigationRegisteredPlatformsByIdentifier)
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce([
-        {
-          serviceInstanceId: 'xtmone-service-instance-id',
-          title: 'XTM One Production Platform',
-          url: 'https://xtmone.example.com',
-        },
-      ]);
+    vi.mocked(
+      getPrivateNavigationRegisteredPlatformsByIdentifier
+    ).mockImplementation((_queryData, platformIdentifier) =>
+      platformIdentifier === PlatformIdentifier.Xtmone
+        ? [
+            {
+              serviceInstanceId: 'xtmone-service-instance-id',
+              title: 'XTM One Production Platform',
+              url: 'https://xtmone.example.com',
+            },
+          ]
+        : []
+    );
 
     const { result } = renderUsePrivateNavigation({
       selectedOrganizationId: 'org-1',
