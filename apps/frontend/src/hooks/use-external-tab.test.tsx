@@ -1,13 +1,6 @@
-import { logFrontendError } from '@/components/error-frontend-log.graphql';
 import useExternalTab from '@/hooks/use-external-tab';
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-const relayEnvironment = vi.hoisted(() => ({}));
-
-vi.mock('react-relay', () => ({
-  useRelayEnvironment: () => relayEnvironment,
-}));
 
 const TAB_ORIGIN = 'https://opencti.example.com';
 const TAB_URL = `${TAB_ORIGIN}/dashboard/xtm-hub/deploy/instance-id/document-id`;
@@ -111,7 +104,7 @@ describe('useExternalTab', () => {
     );
   });
 
-  it('should log to the backend and ignore the message when it comes from the tab with another origin', () => {
+  it('should ignore the message when it comes from the tab with another origin', () => {
     // Given
     const onMessage = vi.fn();
     renderExternalTab(TAB_URL, onMessage);
@@ -121,27 +114,6 @@ describe('useExternalTab', () => {
 
     // Then
     expect(onMessage).not.toHaveBeenCalled();
-    expect(logFrontendError).toHaveBeenCalledExactlyOnceWith(
-      relayEnvironment,
-      expect.stringContaining(`"${OTHER_ORIGIN}"`)
-    );
-    expect(logFrontendError).not.toHaveBeenCalledWith(
-      relayEnvironment,
-      expect.stringContaining(MESSAGE.token)
-    );
-  });
-
-  it('should silently ignore a message without action from the tab with another origin', () => {
-    // Given
-    const onMessage = vi.fn();
-    renderExternalTab(TAB_URL, onMessage);
-
-    // When
-    dispatchMessage(tab, OTHER_ORIGIN, { type: 'analytics' });
-
-    // Then
-    expect(onMessage).not.toHaveBeenCalled();
-    expect(logFrontendError).not.toHaveBeenCalled();
   });
 
   it('should ignore the message when it comes from another window with the opened url origin', () => {
