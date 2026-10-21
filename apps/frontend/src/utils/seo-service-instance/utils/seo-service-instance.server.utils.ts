@@ -11,6 +11,7 @@ import {
   SeoServiceInstanceBySlugQuery,
   SeoServiceInstanceBySlugQueryVariables,
   SeoServiceInstanceItemFragment,
+  SeoServiceInstanceMetadataItemFragment,
   SeoServiceInstancesDocument,
   SeoServiceInstancesQuery,
   ServiceInstanceLinksByTagsDocument,
@@ -90,10 +91,7 @@ export async function fetchServiceInstanceLinksByTags(
 export async function fetchSeoServiceInstanceMetadata(
   serviceInstanceId: string,
   locale: PublicLocale
-): Promise<
-  | ServiceInstanceSeoMetadataByIdQuery['seoServiceInstanceMetadata'][number]
-  | undefined
-> {
+): Promise<SeoServiceInstanceMetadataItemFragment | undefined> {
   const data = await serverGraphqlFetch<
     ServiceInstanceSeoMetadataByIdQuery,
     ServiceInstanceSeoMetadataByIdQueryVariables

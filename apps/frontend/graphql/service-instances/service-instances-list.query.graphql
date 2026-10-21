@@ -59,11 +59,15 @@ query ServiceInstanceLinksByTags($tags: [ServiceInstanceTag!]!) {
   }
 }
 
+fragment SeoServiceInstanceMetadataItem on SeoServiceInstanceMetadata {
+  service_instance_id
+  language
+  meta_title
+  meta_description
+}
+
 query ServiceInstanceSeoMetadataById($service_instance_id: ServiceInstanceId!) {
   seoServiceInstanceMetadata(service_instance_id: $service_instance_id) {
-    service_instance_id
-    language
-    meta_title
-    meta_description
+    ...SeoServiceInstanceMetadataItem
   }
 }

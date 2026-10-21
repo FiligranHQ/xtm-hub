@@ -3821,6 +3821,8 @@ export type ServiceInstanceLinksByTagsQueryVariables = Exact<{
 
 export type ServiceInstanceLinksByTagsQuery = { __typename?: 'Query', serviceInstanceLinksByTags: Array<{ __typename?: 'SeoServiceInstance', id: string, name: string, slug: string | null, description: string | null, logo_document_id: any | null, illustration_document_id: any | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier }, links: Array<{ __typename?: 'ServiceLink', url: string | null, name: string | null } | null> | null }> };
 
+export type SeoServiceInstanceMetadataItemFragment = { __typename?: 'SeoServiceInstanceMetadata', service_instance_id: any, language: Locale, meta_title: string, meta_description: string };
+
 export type ServiceInstanceSeoMetadataByIdQueryVariables = Exact<{
   service_instance_id: Scalars['ServiceInstanceId']['input'];
 }>;
@@ -4345,6 +4347,14 @@ export const SeoServiceInstanceItemFragmentDoc = `
     url
     name
   }
+}
+    `;
+export const SeoServiceInstanceMetadataItemFragmentDoc = `
+    fragment SeoServiceInstanceMetadataItem on SeoServiceInstanceMetadata {
+  service_instance_id
+  language
+  meta_title
+  meta_description
 }
     `;
 export const SolutionCategoryRowFragmentDoc = `
@@ -7070,13 +7080,10 @@ useServiceInstanceLinksByTagsQuery.fetcher = (client: GraphQLClient, variables: 
 export const ServiceInstanceSeoMetadataByIdDocument = `
     query ServiceInstanceSeoMetadataById($service_instance_id: ServiceInstanceId!) {
   seoServiceInstanceMetadata(service_instance_id: $service_instance_id) {
-    service_instance_id
-    language
-    meta_title
-    meta_description
+    ...SeoServiceInstanceMetadataItem
   }
 }
-    `;
+    ${SeoServiceInstanceMetadataItemFragmentDoc}`;
 
 export const useServiceInstanceSeoMetadataByIdQuery = <
       TData = ServiceInstanceSeoMetadataByIdQuery,

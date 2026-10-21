@@ -1,3 +1,4 @@
+import type { PublicLocale } from '@/i18n/config';
 import { GraphqlRequestError } from '@/lib/graphql-fetch.utils';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
@@ -152,32 +153,39 @@ describe('fetchVisibleServiceSlugs', () => {
 });
 
 describe('fetchSeoServiceInstanceMetadata', () => {
-  it('should fetch every language and return the metadata of the locale', async () => {
-    // Given
-    const frenchMetadata = mockSeoServiceInstanceMetadata({
-      language: Locale.Fr,
-    });
-    vi.mocked(serverGraphqlFetch).mockResolvedValue({
-      seoServiceInstanceMetadata: [
-        mockSeoServiceInstanceMetadata({ language: Locale.En }),
-        frenchMetadata,
-      ],
-    });
+  it.each<[PublicLocale, Locale]>([
+    ['en', Locale.En],
+    ['fr', Locale.Fr],
+    ['ja', Locale.Ja],
+  ])(
+    'should fetch every language and return the %s metadata',
+    async (locale, language) => {
+      // Given
+      const localeMetadata = mockSeoServiceInstanceMetadata({ language });
+      vi.mocked(serverGraphqlFetch).mockResolvedValue({
+        seoServiceInstanceMetadata: Object.values(Locale).map(
+          (otherLanguage) =>
+            otherLanguage === language
+              ? localeMetadata
+              : mockSeoServiceInstanceMetadata({ language: otherLanguage })
+        ),
+      });
 
-    // When
-    const result = await fetchSeoServiceInstanceMetadata(
-      SERVICE_INSTANCE_ID,
-      'fr'
-    );
+      // When
+      const result = await fetchSeoServiceInstanceMetadata(
+        SERVICE_INSTANCE_ID,
+        locale
+      );
 
-    // Then
-    expect(result).toEqual(frenchMetadata);
-    expect(serverGraphqlFetch).toHaveBeenCalledWith(
-      ServiceInstanceSeoMetadataByIdDocument,
-      { service_instance_id: SERVICE_INSTANCE_ID },
-      PUBLIC_PAGE_CACHE
-    );
-  });
+      // Then
+      expect(result).toBe(localeMetadata);
+      expect(serverGraphqlFetch).toHaveBeenCalledWith(
+        ServiceInstanceSeoMetadataByIdDocument,
+        { service_instance_id: SERVICE_INSTANCE_ID },
+        PUBLIC_PAGE_CACHE
+      );
+    }
+  );
 
   it('should return undefined when the locale has no metadata', async () => {
     // Given
