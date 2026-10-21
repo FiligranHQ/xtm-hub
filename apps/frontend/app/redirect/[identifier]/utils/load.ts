@@ -35,12 +35,9 @@ export const loadPlatformOrganizationId = async (
     })();
 
     return data.platformAssociatedOrganization?.id;
-  } catch (error: unknown) {
-    // The redirect falls back to the selected organization: keep a trace.
-    console.error(
-      'Failed to load the platform associated organization:',
-      error
-    );
+  } catch {
+    // Expected when the platform is unknown or not shared with the user:
+    // the redirect falls back to the selected organization.
   }
 };
 

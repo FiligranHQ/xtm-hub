@@ -7,7 +7,7 @@ import {
 } from '@graphql/generated';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadPlatformOrganizationId, loadServiceInstances } from './load';
 
 const { request } = vi.hoisted(() => ({ request: vi.fn() }));
@@ -25,10 +25,6 @@ const REDIRECT_SENTINEL = new Error('NEXT_REDIRECT');
 describe('loadPlatformOrganizationId', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   it('should not query the API when no platform id is given', async () => {
@@ -74,28 +70,12 @@ describe('loadPlatformOrganizationId', () => {
   it('should return undefined when the query fails', async () => {
     // Given
     request.mockRejectedValue(new Error('FORBIDDEN'));
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     // When
     const result = await loadPlatformOrganizationId(PLATFORM_ID, TENANT_ID);
 
     // Then
     expect(result).toBeUndefined();
-  });
-
-  it('should log the error when the query fails', async () => {
-    // Given
-    const queryError = new Error('FORBIDDEN');
-    request.mockRejectedValue(queryError);
-    const consoleError = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined);
-
-    // When
-    await loadPlatformOrganizationId(PLATFORM_ID, TENANT_ID);
-
-    // Then
-    expect(consoleError).toHaveBeenCalledWith(expect.any(String), queryError);
   });
 });
 
