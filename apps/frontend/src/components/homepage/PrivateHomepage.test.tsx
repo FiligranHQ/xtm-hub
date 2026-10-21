@@ -1,4 +1,3 @@
-import { HOMEPAGE_ROADMAP_QUERY_VARIABLES } from '@/components/homepage/roadmap/PrivateHomepageRoadmapSection';
 import {
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
@@ -68,15 +67,9 @@ vi.mock('@/components/homepage/resources/MostDeployedResources', () => ({
   default: mockMostDeployedResources,
 }));
 
-vi.mock(
-  '@/components/homepage/roadmap/PrivateHomepageRoadmapSection',
-  async (importOriginal) => ({
-    ...(await importOriginal<
-      typeof import('@/components/homepage/roadmap/PrivateHomepageRoadmapSection')
-    >()),
-    default: mockPrivateHomepageRoadmapSection,
-  })
-);
+vi.mock('@/components/homepage/roadmap/PrivateHomepageRoadmapSection', () => ({
+  default: mockPrivateHomepageRoadmapSection,
+}));
 
 vi.mock('@/components/homepage/xtm-platform/XtmPlatform', () => ({
   default: mockXtmPlatform,
@@ -347,9 +340,18 @@ describe('PrivateHomepage', () => {
     await PrivateHomepage();
 
     // Then
-    expect(mockServiceInstancesFetcher.mock.calls[0]?.[1]).toEqual(
-      HOMEPAGE_ROADMAP_QUERY_VARIABLES
-    );
+    expect(mockServiceInstancesFetcher.mock.calls[0]?.[1]).toEqual({
+      count: 1,
+      orderBy: 'name',
+      orderMode: 'asc',
+      filters: [
+        {
+          key: 'service_definition_identifier',
+          value: [ServiceDefinitionIdentifier.XtmPlatformRoadmap],
+        },
+      ],
+      searchTerm: null,
+    });
   });
 
   it('should pass the roadmap service instance id to the roadmap section', async () => {

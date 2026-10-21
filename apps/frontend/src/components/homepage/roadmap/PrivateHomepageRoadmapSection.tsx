@@ -1,29 +1,7 @@
 import XtmRoadmap from '@/components/homepage/roadmap/XtmRoadmap';
-import {
-  OrderingMode,
-  PlatformIdentifier,
-  ServiceDefinitionIdentifier,
-  ServiceInstanceFilterKey,
-  ServiceInstanceOrdering,
-  ServiceInstancesListQueryVariables,
-} from '@graphql/generated';
+import { PlatformIdentifier } from '@graphql/generated';
 
 const PRIVATE_ROADMAP_BASE_PATH = '/app/service/xtm_platform_roadmap';
-
-/** Loaded by `PrivateHomepage` along with its other queries, not after them. */
-export const HOMEPAGE_ROADMAP_QUERY_VARIABLES: ServiceInstancesListQueryVariables =
-  {
-    count: 1,
-    orderBy: ServiceInstanceOrdering.Name,
-    orderMode: OrderingMode.Asc,
-    filters: [
-      {
-        key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
-        value: [ServiceDefinitionIdentifier.XtmPlatformRoadmap],
-      },
-    ],
-    searchTerm: null,
-  };
 
 type PrivateHomepageRoadmapSectionProps = {
   platformIdentifiers: PlatformIdentifier[];

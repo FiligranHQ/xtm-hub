@@ -5,14 +5,16 @@ import PendingUserRedirectErrorToast from '@/components/homepage/PendingUserRedi
 import { RegisteredPlatformsSection } from '@/components/homepage/registered-platforms/RegisteredPlatformsSection';
 import MostDeployedResources from '@/components/homepage/resources/MostDeployedResources';
 import NewestResources from '@/components/homepage/resources/NewestResources';
-import PrivateHomepageRoadmapSection, {
-  HOMEPAGE_ROADMAP_QUERY_VARIABLES,
-} from '@/components/homepage/roadmap/PrivateHomepageRoadmapSection';
+import PrivateHomepageRoadmapSection from '@/components/homepage/roadmap/PrivateHomepageRoadmapSection';
 import XtmPlatform from '@/components/homepage/xtm-platform/XtmPlatform';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { getAuthenticatedGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
 import {
+  OrderingMode,
+  ServiceDefinitionIdentifier,
+  ServiceInstanceFilterKey,
+  ServiceInstanceOrdering,
   useMeFirstNameQuery,
   useRegisteredPlatformsQuery,
   useServiceInstancesListQuery,
@@ -51,10 +53,18 @@ export const PrivateHomepage = async () => {
       },
     })(),
     useMeFirstNameQuery.fetcher(authenticatedClient, {})(),
-    useServiceInstancesListQuery.fetcher(
-      authenticatedClient,
-      HOMEPAGE_ROADMAP_QUERY_VARIABLES
-    )(),
+    useServiceInstancesListQuery.fetcher(authenticatedClient, {
+      count: 1,
+      orderBy: ServiceInstanceOrdering.Name,
+      orderMode: OrderingMode.Asc,
+      filters: [
+        {
+          key: ServiceInstanceFilterKey.ServiceDefinitionIdentifier,
+          value: [ServiceDefinitionIdentifier.XtmPlatformRoadmap],
+        },
+      ],
+      searchTerm: null,
+    })(),
   ]);
 
   const platformIdentifiers =
