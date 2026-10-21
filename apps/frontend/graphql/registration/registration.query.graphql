@@ -15,18 +15,6 @@ query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
   }
 }
 
-query RegisteredSaasPlatformData($input: RegisteredPlatformInput!) {
-  registeredSaasPlatformData(input: $input) {
-    metadata {
-      hostname
-      plan
-      start_date
-      end_date
-      region
-    }
-  }
-}
-
 query PlatformAssociatedOrganization($platformId: String!, $tenantId: String) {
   platformAssociatedOrganization(platformId: $platformId, tenantId: $tenantId) {
     id

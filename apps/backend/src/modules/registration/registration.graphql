@@ -174,18 +174,6 @@ input RegisteredPlatformInput {
   service_instance_id: ServiceInstanceId!
 }
 
-type SaasPlatformData {
-  metadata: SaasPlatformMetadata!
-}
-
-type SaasPlatformMetadata {
-  hostname: String
-  plan: String
-  start_date: Date
-  end_date: Date
-  region: String
-}
-
 input AutoRegisterPlatformInput {
   platform: PlatformInput!
   existing_users_count: Int
@@ -199,11 +187,8 @@ type Query {
     input: CanUnregisterPlatformInput!
   ): CanUnregisterResponse! @auth
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform @auth
-  registeredSaasPlatformData(
-    input: RegisteredPlatformInput!
-  ): SaasPlatformData @auth
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
-  @auth
+    @auth
   saasPlatforms(
     first: Int!
     after: ID
@@ -211,7 +196,7 @@ type Query {
     orderMode: OrderingMode!
     searchTerm: String
   ): RegisteredPlatformConnection!
-  @auth(portalCapa: [BYPASS, READ_SAAS_METRICS])
+    @auth(portalCapa: [BYPASS, READ_SAAS_METRICS])
   platformAssociatedOrganization(
     platformId: String!
     tenantId: String

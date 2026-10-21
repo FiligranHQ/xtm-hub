@@ -6,6 +6,7 @@ import { RegisteredPlatformHeader } from '@/components/service/registration/Regi
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { APP_PATH } from '@/utils/path/constant';
 import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registeredPlatformByServiceInstanceIdQuery.graphql';
+import { CommercialModel } from '@graphql/generated';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
@@ -51,7 +52,13 @@ export const RegisteredPlatformOverview = ({
       <RegisteredPlatformHeader
         registeredPlatform={queryData.registeredPlatform}
       />
-      <PlatformInformation registeredPlatform={queryData.registeredPlatform} />
+      <PlatformInformation
+        registeredPlatform={queryData.registeredPlatform}
+        serviceInstanceId={queryData.registeredPlatform.service_instance_id}
+        isSaas={
+          queryData.registeredPlatform.commercial_model === CommercialModel.Saas
+        }
+      />
     </>
   );
 };

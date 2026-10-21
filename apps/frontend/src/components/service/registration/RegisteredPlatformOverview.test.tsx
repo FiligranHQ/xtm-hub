@@ -1,7 +1,12 @@
 import { RegisteredPlatformOverview } from '@/components/service/registration/RegisteredPlatformOverview';
 import { basePlatform } from '@/components/service/registration/registered-platform.fixtures';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import testRender from '@/utils/test/test-render';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
+import {
+  CommercialModel,
+  useRegisteredSaasPlatformDataQuery,
+} from '@graphql/generated';
 import { act, screen, within } from '@testing-library/react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -18,6 +23,15 @@ vi.mock('react-relay', async (importOriginal) => ({
   useFragment: () => mockPlatformData,
   useMutation: () => [vi.fn(), false],
 }));
+
+vi.mock('@graphql/generated', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@graphql/generated')>();
+  const useRegisteredSaasPlatformDataQuery = Object.assign(
+    vi.fn(() => ({ data: undefined, isPending: true })),
+    { getKey: actual.useRegisteredSaasPlatformDataQuery.getKey }
+  );
+  return { ...actual, useRegisteredSaasPlatformDataQuery };
+});
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -96,4 +110,43 @@ describe('RegisteredPlatformOverview', () => {
       })
     ).toBeInTheDocument();
   });
+
+  it('should query the SaaS platform data of a SaaS platform with its service instance id', async () => {
+    // Given
+    vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
+
+    // When
+    await renderOverview({
+      ...basePlatform,
+      commercial_model: CommercialModel.Saas,
+    });
+
+    // Then
+    expect(useRegisteredSaasPlatformDataQuery).toHaveBeenLastCalledWith(
+      expect.anything(),
+      { input: { service_instance_id: basePlatform.service_instance_id } },
+      expect.objectContaining({ enabled: true })
+    );
+  });
+
+  it.each([[CommercialModel.Other], [null]])(
+    'should not query the SaaS platform data when the commercial model is %s',
+    async (commercialModel) => {
+      // Given
+      vi.mocked(useIsFeatureEnabled).mockReturnValue(true);
+
+      // When
+      await renderOverview({
+        ...basePlatform,
+        commercial_model: commercialModel,
+      });
+
+      // Then
+      expect(useRegisteredSaasPlatformDataQuery).toHaveBeenLastCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ enabled: false })
+      );
+    }
+  );
 });

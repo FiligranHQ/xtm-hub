@@ -8,24 +8,24 @@ import {
   requestContextSimpleUserFiligran2,
   SERVICES,
   TEST_ORGANIZATIONS,
-} from '../../../../../tests/tests.const';
+} from '../../../tests/tests.const';
 import {
   CommercialModel,
   PlatformContract,
   PlatformIdentifier,
   SaasPlatformData,
-} from '../../../../__generated__/resolvers-types';
-import { requestContext } from '../../../../context/request.context';
-import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
-import { SaasManagerClient } from '../../../../thirdparty/saasmanager/client';
-import { ServiceInstanceDomain } from '../../../service/instance/service-instance.domain';
-import { PlatformConfigurationDomain } from '../../platform-configuration/platform-configuration.domain';
-import { RegistrationApp } from '../../registration.app';
-import { RegistrationDomain } from '../../registration.domain';
-import registrationResolver from '../../registration.resolver';
+} from '../../__generated__/resolvers-types';
+import { requestContext } from '../../context/request.context';
+import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
+import { SaasManagerClient } from '../../thirdparty/saasmanager/client';
+import { PlatformConfigurationDomain } from '../registration/platform-configuration/platform-configuration.domain';
+import { RegistrationDomain } from '../registration/registration.domain';
+import { ServiceInstanceDomain } from '../service/instance/service-instance.domain';
+import { ProductInformationApp } from './product-information.app';
+import productInformationResolver from './product-information.resolver';
 
 describe('query.registeredSaasPlatformData', () => {
-  it('should pass the service_instance_id to registrationApp and return its data', async () => {
+  it('should pass the service_instance_id to productInformationApp and return its data', async () => {
     // Given
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
     const expectedData: SaasPlatformData = {
@@ -38,12 +38,12 @@ describe('query.registeredSaasPlatformData', () => {
       },
     };
     vi.spyOn(
-      RegistrationApp,
+      ProductInformationApp,
       'loadRegisteredSaasPlatformData'
     ).mockResolvedValue(expectedData);
 
     // When
-    const result = await registrationResolver.Query!
+    const result = await productInformationResolver.Query!
       .registeredSaasPlatformData!(
       {},
       { input: { service_instance_id: serviceInstanceId } },
@@ -52,21 +52,21 @@ describe('query.registeredSaasPlatformData', () => {
     );
 
     // Then
-    expect(RegistrationApp.loadRegisteredSaasPlatformData).toHaveBeenCalledWith(
-      serviceInstanceId
-    );
+    expect(
+      ProductInformationApp.loadRegisteredSaasPlatformData
+    ).toHaveBeenCalledWith(serviceInstanceId);
     expect(result).toMatchObject(expectedData);
   });
 
-  it('should return null when registrationApp cannot load the data', async () => {
+  it('should return null when productInformationApp cannot load the data', async () => {
     // Given
     vi.spyOn(
-      RegistrationApp,
+      ProductInformationApp,
       'loadRegisteredSaasPlatformData'
     ).mockResolvedValue(null);
 
     // When
-    const result = await registrationResolver.Query!
+    const result = await productInformationResolver.Query!
       .registeredSaasPlatformData!(
       {},
       { input: { service_instance_id: uuidv4() as ServiceInstanceId } },
@@ -132,7 +132,7 @@ describe('query.registeredSaasPlatformData', () => {
       const callSpy = spySaasManager();
 
       // When
-      const result = await registrationResolver.Query!
+      const result = await productInformationResolver.Query!
         .registeredSaasPlatformData!(
         {},
         { input: { service_instance_id: serviceInstanceId } },
@@ -153,7 +153,7 @@ describe('query.registeredSaasPlatformData', () => {
       requestContext.set(requestContextSimpleUserFiligran2);
 
       // When
-      const result = await registrationResolver.Query!
+      const result = await productInformationResolver.Query!
         .registeredSaasPlatformData!(
         {},
         { input: { service_instance_id: serviceInstanceId } },
