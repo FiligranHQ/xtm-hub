@@ -24,11 +24,6 @@ export async function serverGraphqlFetch<
   options: ServerGraphqlFetchOptions = {}
 ): Promise<TData> {
   const apiUri = resolveGraphqlApiEndpoint();
-  // `resolveActiveCacheConfig` strips `next.revalidate` in place: work on a
-  // copy so the caller's options stay untouched.
-  const fetchOptions: ServerGraphqlFetchOptions = options.next
-    ? { ...options, next: { ...options.next } }
-    : options;
 
   if (isDevelopment()) {
     // eslint-disable-next-line no-console
@@ -38,11 +33,6 @@ export async function serverGraphqlFetch<
     );
   }
 
-  const activeCacheConfig = resolveActiveCacheConfig(
-    fetchOptions.cache,
-    fetchOptions
-  );
-
   const response = await fetch(apiUri, {
     method: 'POST',
     headers: {
@@ -50,8 +40,7 @@ export async function serverGraphqlFetch<
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ query: document, variables }),
-    ...fetchOptions,
-    cache: activeCacheConfig,
+    ...resolveActiveCacheConfig(options),
   });
 
   const json = (await response.json()) as {

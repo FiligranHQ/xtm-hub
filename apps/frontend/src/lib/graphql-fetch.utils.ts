@@ -93,25 +93,27 @@ export function prepareUri(uri: string | undefined): string {
   return 'http://localhost:4002/';
 }
 
-/**
- * Forces `no-store` in development so devs always see fresh data, and strips
- * `next.revalidate` from `options` when that happens (Next.js throws if both
- * `cache: 'no-store'` and `next.revalidate` are set).
- */
-export function resolveActiveCacheConfig(
-  cacheConfig: RequestCache | undefined,
-  options: { next?: { revalidate?: number | false; tags?: string[] } }
-): RequestCache | undefined {
-  const activeCacheConfig = isDevelopment() ? 'no-store' : cacheConfig;
+type FetchCacheOptions = {
+  cache?: RequestCache;
+  next?: { revalidate?: number | false; tags?: string[] };
+};
 
-  if (
-    activeCacheConfig === 'no-store' &&
-    options.next?.revalidate !== undefined
-  ) {
-    delete options.next.revalidate;
+/**
+ * Returns a copy of `options` with `no-store` forced in development so devs
+ * always see fresh data, and without `next.revalidate` when the cache ends up
+ * as `no-store` (Next.js throws if both are set). `options` is left untouched.
+ */
+export function resolveActiveCacheConfig<TOptions extends FetchCacheOptions>(
+  options: TOptions
+): TOptions {
+  const cache = isDevelopment() ? 'no-store' : options.cache;
+
+  if (cache !== 'no-store' || options.next?.revalidate === undefined) {
+    return { ...options, cache };
   }
 
-  return activeCacheConfig;
+  const { revalidate: _revalidate, ...next } = options.next;
+  return { ...options, cache, next };
 }
 
 export function extractOperationType(query: string): string {
