@@ -152,13 +152,15 @@ describe('DeleteRolePortal', () => {
         HttpResponse.json({ errors: [{ message: 'UNKNOWN_ERROR' }] })
       )
     );
-    const { user } = renderDeleteRolePortal();
+    const onOpenChange = vi.fn();
+    const { user } = renderDeleteRolePortal(onOpenChange);
 
     // When
     await user.click(screen.getByRole('button', { name: 'Utils.Delete' }));
 
     // Then
     expect(await screen.findByText('Utils.Error')).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
     expect(screen.getByText('Error.Server.UNKNOWN_ERROR')).toBeInTheDocument();
   });
 
@@ -178,13 +180,15 @@ describe('DeleteRolePortal', () => {
       }),
     }));
     await loadModules();
-    const { user } = renderDeleteRolePortal();
+    const onOpenChange = vi.fn();
+    const { user } = renderDeleteRolePortal(onOpenChange);
 
     // When
     await user.click(screen.getByRole('button', { name: 'Utils.Delete' }));
 
     // Then
     expect(await screen.findByText('Utils.Error')).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
     expect(screen.getByText('Error.Server.UnknownError')).toBeInTheDocument();
   });
 });

@@ -153,13 +153,15 @@ describe('DeleteSsoGroupRolePortal', () => {
         HttpResponse.json({ errors: [{ message: 'UNKNOWN_ERROR' }] })
       )
     );
-    const { user } = renderDeleteSsoGroupRolePortal();
+    const onOpenChange = vi.fn();
+    const { user } = renderDeleteSsoGroupRolePortal(onOpenChange);
 
     // When
     await user.click(screen.getByRole('button', { name: 'Utils.Delete' }));
 
     // Then
     expect(await screen.findByText('Utils.Error')).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
     expect(screen.getByText('Error.Server.UNKNOWN_ERROR')).toBeInTheDocument();
   });
 });
