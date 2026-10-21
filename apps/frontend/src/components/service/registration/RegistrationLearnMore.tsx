@@ -2,13 +2,8 @@
 import PublicServiceInstanceCard from '@/components/service/PublicServiceInstanceCard';
 import { getTranslate } from '@/hooks/get-translate';
 import { cn } from '@/lib/utils';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
-import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
+import { fetchServiceInstanceLinksByTags } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
 import { seoServiceInstanceToInstanceCardData } from '@/utils/services';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import ServiceLinksByTagsQueryGraphql, {
-  serviceLinksByTagsQuery,
-} from '@generated/serviceLinksByTagsQuery.graphql';
 import { ServiceInstanceTag } from '@graphql/generated';
 import Image from 'next/image';
 import React from 'react';
@@ -32,16 +27,10 @@ interface RegistrationLearnMoreProps {
 export const RegistrationLearnMore = async ({
   serviceInstanceTag,
 }: RegistrationLearnMoreProps) => {
-  const response = await serverFetchGraphQL<serviceLinksByTagsQuery>(
-    ServiceLinksByTagsQueryGraphql,
-    {
-      tags: [ServiceInstanceTag.Trial, serviceInstanceTag],
-    },
-    { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
-  );
-
-  const services = response.data
-    .serviceInstanceLinksByTags as unknown as seoServiceInstanceFragment$data[];
+  const services = await fetchServiceInstanceLinksByTags([
+    ServiceInstanceTag.Trial,
+    serviceInstanceTag,
+  ]);
   const t = await getTranslate();
   const platformName =
     serviceInstanceTag === ServiceInstanceTag.OpenCti ? 'OpenCTI' : 'OpenAEV';
