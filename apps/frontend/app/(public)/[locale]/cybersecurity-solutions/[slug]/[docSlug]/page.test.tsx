@@ -1,4 +1,4 @@
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
+import { fetchSeoServiceInstanceBySlug } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
 import { isPublicDocumentSlug } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import Page, {
   generateMetadata,
@@ -10,9 +10,10 @@ const NOT_FOUND_ERROR = 'NEXT_NOT_FOUND';
 const SERVICE_SLUG = 'opencti-integrations';
 const DOC_SLUG = 'my-connector';
 
-vi.mock('@/relay/server-portal-api-fetch', () => ({
-  serverFetchGraphQL: vi.fn(),
-}));
+vi.mock(
+  '@/utils/seo-service-instance/utils/seo-service-instance.server.utils',
+  () => ({ fetchSeoServiceInstanceBySlug: vi.fn() })
+);
 
 vi.mock(
   '@/utils/shareable-resources/utils/shareable-resources.server.utils',
@@ -57,25 +58,19 @@ describe('public document page', () => {
       // Then it 404s before any by-slug backend call
       await expect(render()).rejects.toThrow(NOT_FOUND_ERROR);
       expect(isPublicDocumentSlug).toHaveBeenCalledWith(SERVICE_SLUG, DOC_SLUG);
-      expect(serverFetchGraphQL).not.toHaveBeenCalled();
+      expect(fetchSeoServiceInstanceBySlug).not.toHaveBeenCalled();
     }
   );
 
   it('should query the backend for a known document slug', async () => {
     // Given a public document slug whose service the backend no longer returns
     vi.mocked(isPublicDocumentSlug).mockResolvedValue(true);
-    vi.mocked(serverFetchGraphQL).mockResolvedValue({
-      data: { seoServiceInstance: null },
-    });
+    vi.mocked(fetchSeoServiceInstanceBySlug).mockResolvedValue(null);
 
     // When rendering the page
     await expect(generateMetadata({ params })).rejects.toThrow(NOT_FOUND_ERROR);
 
     // Then the service instance was looked up by its slug
-    expect(serverFetchGraphQL).toHaveBeenCalledWith(
-      expect.anything(),
-      { slug: SERVICE_SLUG },
-      expect.anything()
-    );
+    expect(fetchSeoServiceInstanceBySlug).toHaveBeenCalledWith(SERVICE_SLUG);
   });
 });

@@ -6,8 +6,6 @@ import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
 import { getTranslate } from '@/hooks/get-translate';
 import type { PublicLocale } from '@/i18n/config';
 import { RelayProvider } from '@/relay/relay-provider';
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
-import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import { formatPersonNames } from '@/utils/format/name';
 import {
   buildFiligranOrganizationJsonLd,
@@ -16,16 +14,13 @@ import {
   stringifyJsonLd,
 } from '@/utils/generate-metadata';
 import { PUBLIC_CYBERSECURITY_SOLUTIONS_PATH } from '@/utils/path/constant';
-import { isPublicServiceSlug } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
+import {
+  fetchSeoServiceInstanceBySlug,
+  fetchSeoServiceInstanceMetadata,
+  isPublicServiceSlug,
+} from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
 import { ServiceSlug } from '@/utils/shareable-resources/shareable-resources.types';
 import { fetchAllDocuments } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
-import SeoServiceInstanceMetadataQuery, {
-  seoServiceInstanceMetadataQuery,
-} from '@generated/seoServiceInstanceMetadataQuery.graphql';
-import SeoServiceInstanceQuery, {
-  seoServiceInstanceQuery,
-} from '@generated/seoServiceInstanceQuery.graphql';
 import { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -42,29 +37,16 @@ const getPageData = cache(async (slug: string, locale: PublicLocale) => {
 
   const baseUrl = await getBaseUrl();
 
-  const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
-    SeoServiceInstanceQuery,
-    { slug },
-    { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
-  );
-
-  const serviceInstance = serviceResponse.data
-    .seoServiceInstance as unknown as seoServiceInstanceFragment$data;
+  const serviceInstance = await fetchSeoServiceInstanceBySlug(slug);
 
   if (!serviceInstance) {
     notFound();
   }
 
-  const seoMetadataResponse =
-    await serverFetchGraphQL<seoServiceInstanceMetadataQuery>(
-      SeoServiceInstanceMetadataQuery,
-      {
-        service_instance_id: serviceInstance.id,
-        language: locale,
-      },
-      { cache: undefined, next: { revalidate: PUBLIC_PAGE_REVALIDATE_SECONDS } }
-    );
-  const seoMetadata = seoMetadataResponse.data.seoServiceInstanceMetadata[0];
+  const seoMetadata = await fetchSeoServiceInstanceMetadata(
+    serviceInstance.id,
+    locale
+  );
 
   const documents = await fetchAllDocuments(
     serviceInstance.slug as ServiceSlug

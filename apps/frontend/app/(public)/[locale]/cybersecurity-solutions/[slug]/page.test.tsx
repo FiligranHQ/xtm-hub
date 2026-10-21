@@ -1,5 +1,7 @@
-import { serverFetchGraphQL } from '@/relay/server-portal-api-fetch';
-import { isPublicServiceSlug } from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
+import {
+  fetchSeoServiceInstanceBySlug,
+  isPublicServiceSlug,
+} from '@/utils/seo-service-instance/utils/seo-service-instance.server.utils';
 import Page, {
   generateMetadata,
 } from '@app/(public)/[locale]/cybersecurity-solutions/[slug]/page';
@@ -9,13 +11,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const NOT_FOUND_ERROR = 'NEXT_NOT_FOUND';
 const SERVICE_SLUG = 'opencti-integrations';
 
-vi.mock('@/relay/server-portal-api-fetch', () => ({
-  serverFetchGraphQL: vi.fn(),
-}));
-
 vi.mock(
   '@/utils/seo-service-instance/utils/seo-service-instance.server.utils',
-  () => ({ isPublicServiceSlug: vi.fn() })
+  () => ({
+    fetchSeoServiceInstanceBySlug: vi.fn(),
+    fetchSeoServiceInstanceMetadata: vi.fn(),
+    isPublicServiceSlug: vi.fn(),
+  })
 );
 
 vi.mock('@/hooks/get-translate', () => ({
@@ -54,25 +56,19 @@ describe('public service page', () => {
       // When rendering the page
       // Then it 404s before any by-slug backend call
       await expect(render()).rejects.toThrow(NOT_FOUND_ERROR);
-      expect(serverFetchGraphQL).not.toHaveBeenCalled();
+      expect(fetchSeoServiceInstanceBySlug).not.toHaveBeenCalled();
     }
   );
 
   it('should query the backend for a known service slug', async () => {
     // Given a public service slug the backend no longer returns
     vi.mocked(isPublicServiceSlug).mockResolvedValue(true);
-    vi.mocked(serverFetchGraphQL).mockResolvedValue({
-      data: { seoServiceInstance: null },
-    });
+    vi.mocked(fetchSeoServiceInstanceBySlug).mockResolvedValue(null);
 
     // When rendering the page
     await expect(Page({ params })).rejects.toThrow(NOT_FOUND_ERROR);
 
     // Then the service instance was looked up by its slug
-    expect(serverFetchGraphQL).toHaveBeenCalledWith(
-      expect.anything(),
-      { slug: SERVICE_SLUG },
-      expect.anything()
-    );
+    expect(fetchSeoServiceInstanceBySlug).toHaveBeenCalledWith(SERVICE_SLUG);
   });
 });
