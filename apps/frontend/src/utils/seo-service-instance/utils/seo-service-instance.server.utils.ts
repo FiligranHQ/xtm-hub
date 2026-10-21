@@ -23,3 +23,13 @@ export async function fetchVisibleServiceSlugs(): Promise<string[]> {
 
   return services.flatMap((service) => (service.slug ? [service.slug] : []));
 }
+
+/**
+ * Whether `slug` is a public service instance, checked against the cached
+ * `seoServiceInstances` list so a guessed slug 404s on the frontend instead of
+ * erroring on the backend.
+ */
+export async function isPublicServiceSlug(slug: string): Promise<boolean> {
+  const slugs = await fetchVisibleServiceSlugs();
+  return slugs.includes(slug);
+}

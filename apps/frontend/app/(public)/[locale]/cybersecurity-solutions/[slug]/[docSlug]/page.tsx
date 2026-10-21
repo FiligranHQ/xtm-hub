@@ -26,7 +26,10 @@ import {
   isConnectorResource,
   ServiceSlug,
 } from '@/utils/shareable-resources/shareable-resources.types';
-import { fetchSingleDocument } from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
+import {
+  fetchSingleDocument,
+  isPublicDocumentSlug,
+} from '@/utils/shareable-resources/utils/shareable-resources.server.utils';
 import { LogoFiligranIcon } from '@filigran/icon';
 import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
 import SeoServiceInstanceQuery, {
@@ -55,6 +58,10 @@ const FALLBACK_DESCRIPTION_KEYS: Record<ServiceSlug, string> = {
  */
 
 const getPageData = cache(async (serviceSlug: string, docSlug: string) => {
+  if (!(await isPublicDocumentSlug(serviceSlug, docSlug))) {
+    notFound();
+  }
+
   const baseUrl = await getBaseUrl();
 
   const serviceResponse = await serverFetchGraphQL<seoServiceInstanceQuery>(
