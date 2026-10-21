@@ -1,5 +1,5 @@
 import { RegistrationLayout } from '@/components/registration/Layout';
-import { useTranslations } from 'next-intl';
+import { useTranslate } from '@/hooks/use-translate';
 
 interface RegisterStateConfirmReregistrationProps {
   cancel: () => void;
@@ -22,7 +22,7 @@ export const RegisterStateConfirmReregistration = ({
   platformUrl,
   organizationName,
 }: RegisterStateConfirmReregistrationProps) => {
-  const t = useTranslations();
+  const t = useTranslate();
   return (
     <RegistrationLayout
       cancel={cancel}

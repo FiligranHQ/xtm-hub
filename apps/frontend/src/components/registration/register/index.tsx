@@ -185,7 +185,12 @@ export const Register = ({
   useLayoutEffect(() => {
     if (registerDataResponse?.token && !hasPostedMessageRef.current) {
       hasPostedMessageRef.current = true;
-      const delivered = postRegistrationMessage(
+      // Best-effort delivery: postMessage gives no receipt, and a targeted post
+      // whose target origin differs from the opener's is dropped silently. So a
+      // targeted platform always gets the token to copy; its own window closes
+      // this popup once it received the message, so the copy box is unseen on
+      // the happy path and is the only fallback when the message did not land.
+      postRegistrationMessage(
         window.opener,
         identifier,
         platform.url,
@@ -194,8 +199,7 @@ export const Register = ({
       );
       dispatch({
         type: 'SET_SUCCEEDED',
-        undeliveredToken:
-          !delivered && targeted ? registerDataResponse.token : null,
+        undeliveredToken: targeted ? registerDataResponse.token : null,
       });
     }
   }, [

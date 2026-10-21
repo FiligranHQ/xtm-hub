@@ -432,5 +432,25 @@ describe('Register', () => {
         );
       });
     });
+
+    it('should still show the token to copy even with an opener, since a cross-origin post cannot be confirmed', async () => {
+      // Given an opener (whose origin may differ from the declared platform URL,
+      // which the browser would then drop with no receipt)
+      Object.defineProperty(window, 'opener', {
+        value: { postMessage: vi.fn() },
+        writable: true,
+      });
+      const { user } = renderXtmOne();
+
+      // When the registration succeeds
+      await user.click(screen.getByRole('button', { name: 'Utils.Confirm' }));
+
+      // Then the token is offered as a fallback regardless of delivery
+      await waitFor(() => {
+        expect(screen.getByTestId('registration-token')).toHaveTextContent(
+          TOKEN
+        );
+      });
+    });
   });
 });
