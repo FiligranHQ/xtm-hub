@@ -4,11 +4,11 @@ import { CookieConsentBanner } from '@/components/cookie-consent/CookieConsentBa
 import { CookieConsentPreferences } from '@/components/cookie-consent/CookieConsentPreferences';
 import { useSelectedLayoutSegment } from 'next/navigation';
 
-const EMBED_ROUTE_GROUP = '(embed)';
+const EMBED_SEGMENT = '(embed)';
 
 export const CookieConsent = () => {
   const segment = useSelectedLayoutSegment();
-  if (segment === EMBED_ROUTE_GROUP) {
+  if (segment === EMBED_SEGMENT) {
     return null;
   }
   return (

@@ -61,7 +61,7 @@ describe('CookieConsent', () => {
     }
   );
 
-  it('should not display anything when the layout segment is the embed route group', () => {
+  it('should not display anything when the layout segment is "(embed)"', () => {
     // Given / When
     renderCookieConsent('(embed)');
 
