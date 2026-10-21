@@ -234,10 +234,6 @@ jobs:
         run: |
           mkdir -p ctrf
           export IMAGE_TAGS="${{ needs.build-images-tests.outputs.docker-tags }}" \
-           TEAMS_WEBHOOK_E2E="${{ secrets.TEAMS_WEBHOOK_E2E }}" \
-           GITHUB_PR_TITLE="${{ github.event.pull_request.title }}" \
-           GITHUB_PR_NUMBER="${{ github.event.pull_request.number }}" \
-           GITHUB_RUN_ID="${{ github.run_id }}" \
            PLAYWRIGHT_SHARD="${{ matrix.shard }}/8"
           docker compose -f ./xtm-hub-dev/docker-compose-ci.yml run \
            -e PLAYWRIGHT_SHARD \

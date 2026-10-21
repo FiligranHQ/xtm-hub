@@ -24,3 +24,9 @@ query RegisteredSaasPlatformMetadata($input: RegisteredPlatformInput!) {
     region
   }
 }
+
+query PlatformAssociatedOrganization($platformId: String!, $tenantId: String) {
+  platformAssociatedOrganization(platformId: $platformId, tenantId: $tenantId) {
+    id
+  }
+}
