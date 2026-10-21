@@ -296,10 +296,10 @@ describe('seo service instance GraphQL query', () => {
       GRAPHQL_RESOLVE_INFO
     );
 
-    // The public SEO pages turn this exact message into a 404.
+    // The public SEO pages turn this error code into a 404.
     await expect(call).rejects.toMatchObject({
       name: ErrorType.NotFound,
-      message: ErrorCode.ServiceNotFound,
+      extensions: { code: ErrorType.NotFound },
     });
   });
 
