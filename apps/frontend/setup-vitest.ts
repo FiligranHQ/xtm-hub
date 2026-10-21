@@ -46,6 +46,7 @@ vi.mock('next/navigation', async (importOriginal) => ({
   useRouter: vi.fn(),
   useParams: vi.fn(),
   useSearchParams: vi.fn(),
+  useSelectedLayoutSegment: vi.fn(),
   redirect: vi.fn(),
   notFound: vi.fn(),
 }));

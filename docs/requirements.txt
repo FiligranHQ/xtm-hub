@@ -5,12 +5,12 @@ click==8.5.0
 colorama==0.4.6
 contourpy==1.4.0
 cycler==0.12.1
-distlib==0.4.3
+distlib==0.4.4
 filelock==3.32.7
 fonttools==4.66.1
 ghp-import==2.1.0
 gitdb==4.0.12
-GitPython==3.2.0
+GitPython==3.2.1
 idna==3.20
 importlib_metadata==8.9.0
 importlib_resources==6.5.2
@@ -35,7 +35,7 @@ paginate==0.5.7
 pandas==2.3.3
 pathspec==0.12.1
 pillow==12.3.0
-platformdirs==4.13.0
+platformdirs==4.13.4
 Pygments==2.21.0
 pymdown-extensions==11.0.2
 pyparsing==3.3.3
