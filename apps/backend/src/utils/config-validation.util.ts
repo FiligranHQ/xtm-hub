@@ -186,5 +186,23 @@ export const validateDevUserPartial = (
   }
 };
 
+/**
+ * Parses the Express `trust proxy` hop count. Only a non-negative integer is
+ * accepted: Express reads `true` as "trust everything" and a raw string such
+ * as "1" (node-config returns env vars as strings) as a list of trusted
+ * addresses. 0 becomes `false` so express-rate-limit still flags an
+ * unexpected X-Forwarded-For header.
+ */
+export const parseTrustProxy = (value: unknown): number | false => {
+  const hops =
+    typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : value;
+  if (typeof hops !== 'number' || !Number.isSafeInteger(hops) || hops < 0) {
+    throw new Error(
+      `Invalid trust_proxy configuration (TRUST_PROXY): expected a non-negative integer hop count, got ${JSON.stringify(value)}`
+    );
+  }
+  return hops === 0 ? false : hops;
+};
+
 // Export schemas for potential reuse
 export { DevUserOrganizationSchema, DevUsersArraySchema, DevUserSchema };
