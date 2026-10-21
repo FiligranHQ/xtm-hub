@@ -29,7 +29,7 @@
     "@dnd-kit/utilities": "3.2.2",
     "@filigran/design-system": "1.2.0",
     "@filigran/icon": "0.24.3",
-    "@hookform/resolvers": "5.9.1",
+    "@hookform/resolvers": "5.9.2",
     "@radix-ui/react-accordion": "1.2.21",
     "@radix-ui/react-dialog": "1.2.0",
     "@radix-ui/react-popover": "1.2.0",
