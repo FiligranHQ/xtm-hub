@@ -2,6 +2,7 @@ import {
   NewsFeedItemMetadataKey,
   NewsFeedItemType,
   NewsFeedUtmContent,
+  NewsFeedUtmMedium,
   PlatformIdentifier,
   ServiceDefinitionIdentifier,
 } from '../../__generated__/resolvers-types';
@@ -39,7 +40,7 @@ export const NEWS_FEED_INTERNAL_METADATA_KEYS: NewsFeedItemMetadataKey[] = [
   NewsFeedItemMetadataKey.BlogPostSlug,
 ];
 
-export const NEWS_FEED_UTM_MEDIUM = 'newsfeed';
+export const NEWS_FEED_UTM_MEDIUM = NewsFeedUtmMedium.Newsfeed;
 export const NEWS_FEED_UTM_CAMPAIGN_FALLBACK = 'hub_resources';
 export const NEWS_FEED_UTM_CAMPAIGN_BLOG_POST = 'blog_posts';
 export const NEWS_FEED_UTM_CONTENT_FALLBACK = NewsFeedUtmContent.Other;

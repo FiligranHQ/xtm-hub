@@ -1,4 +1,4 @@
-import { Express, Request, Response } from 'express';
+import { Express, Request, RequestHandler, Response } from 'express';
 import rateLimit, { type Options } from 'express-rate-limit';
 import {
   NewsFeedApp,
@@ -42,18 +42,23 @@ const sendRedirect = (res: Response, location: string): void => {
 const sendHubRootRedirect = (res: Response): void =>
   sendRedirect(res, HUB_ROOT_PATH);
 
-// Fire and forget: runs after the response is sent, and the event method catches its own errors
+// Fire and forget: runs after the response is sent, so a failure is logged and never reaches the user
 const emitRedirectTelemetry = (
   req: Request,
   redirect: NewsFeedExternalRedirect
 ): void => {
-  void TelemetryApp.sendExternalNewsFeedRedirectEvent({
-    // Read only: the session middleware has already loaded an existing session, and nothing is ever written to it
+  TelemetryApp.sendExternalNewsFeedRedirectEvent({
+    // Read only: the read only session middleware has already loaded an existing session, and nothing is written to it
     user: req.session?.user,
     newsFeedItemId: redirect.newsFeedItemId,
     newsFeedItemType: redirect.newsFeedItemType,
     destinationHost: redirect.host,
     platformId: req.query.platform_id,
+  }).catch((error) => {
+    logApp.error('Unable to send the news feed redirect event', {
+      error,
+      newsFeedItemId: redirect.newsFeedItemId,
+    });
   });
 };
 
@@ -79,10 +84,15 @@ export const NewsFeedRedirectEndpoint = {
   },
 };
 
-export const newsFeedRedirectEndpoint = (app: Express) => {
+// The session middleware is the read only one: this public route never saves nor renews a session
+export const newsFeedRedirectEndpoint = (
+  app: Express,
+  readOnlySessionMiddleware: RequestHandler
+) => {
   app.get(
     `/${NEWS_FEED_REDIRECT_PATH_PREFIX}/:itemId`,
     newsFeedRedirectRateLimiter,
+    readOnlySessionMiddleware,
     NewsFeedRedirectEndpoint.redirect
   );
 };

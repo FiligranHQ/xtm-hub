@@ -165,7 +165,7 @@ describe('NewsFeedList', () => {
     ).toHaveLength(1);
   });
 
-  it('renders a blog post row without a library label', () => {
+  it('renders a placeholder instead of a library label for a blog post row', () => {
     mocks.newsFeedItems = [
       {
         id: 'item-3',
@@ -185,6 +185,7 @@ describe('NewsFeedList', () => {
       within(row).getByText('formatted:2025-01-22T08:00:00.000Z')
     ).toBeInTheDocument();
     expect(within(row).getByText('tag-4')).toBeInTheDocument();
+    expect(within(row).getByText('—')).toBeInTheDocument();
     expect(row).not.toHaveTextContent(
       new RegExp(Object.values(ServiceSlug).join('|'))
     );

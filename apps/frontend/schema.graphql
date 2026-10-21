@@ -988,6 +988,10 @@ enum NewsFeedItemType {
   BLOG_POST
 }
 
+enum NewsFeedUtmMedium {
+  newsfeed
+}
+
 enum NewsFeedUtmContent {
   custom_dashboard
   custom_view

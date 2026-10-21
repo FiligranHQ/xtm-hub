@@ -33,3 +33,8 @@ export const addBlogPostNewsFeedItem = async (
   });
   return id;
 };
+
+// The metadata of the item is removed with it (ON DELETE CASCADE)
+export const deleteNewsFeedItem = async (id: string): Promise<void> => {
+  await db('NewsFeedItem').where({ id }).del();
+};

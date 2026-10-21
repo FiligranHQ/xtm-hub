@@ -9,6 +9,11 @@ enum NewsFeedItemType {
   BLOG_POST
 }
 
+# The utm_medium that the Hub gives to every news feed link. The frontend reads it to recognize a news feed redirect
+enum NewsFeedUtmMedium {
+  newsfeed
+}
+
 # Mirrors the utm_content values that the Hub gives to the news feed links (newsFeedUtmContentMapping and its fallback)
 enum NewsFeedUtmContent {
   custom_dashboard

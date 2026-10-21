@@ -5,9 +5,6 @@ import { getErrorMessage } from '../../utils/error/error-guard.util';
 import { UnknownErrorCode } from '../../utils/error/error.code';
 import { TelemetryApp } from './telemetry.app';
 
-const NEWS_FEED_REDIRECT_NOT_SENT_MESSAGE =
-  'The news feed redirect event was not sent';
-
 const runTelemetryMutation = async (
   send: () => Promise<void>
 ): Promise<{ result: boolean; message?: string }> => {
@@ -52,13 +49,12 @@ const resolvers: Resolvers = {
 
     newsFeedRedirect: async (_, args, context) => {
       const { input } = args;
-      const sent = await TelemetryApp.sendResourceNewsFeedRedirectEvent({
-        user: context.user,
-        input,
-      });
-      return sent
-        ? { result: true }
-        : { result: false, message: NEWS_FEED_REDIRECT_NOT_SENT_MESSAGE };
+      return runTelemetryMutation(() =>
+        TelemetryApp.sendResourceNewsFeedRedirectEvent({
+          user: context.user,
+          input,
+        })
+      );
     },
   },
 };

@@ -4,6 +4,7 @@ import { isValueInEnum } from '@/utils/is-value-in-enum';
 import {
   NewsFeedRedirectInput,
   NewsFeedUtmContent,
+  NewsFeedUtmMedium,
   PlatformIdentifier,
   SendNewsFeedRedirectTelemetryDocument,
   SendNewsFeedRedirectTelemetryMutation,
@@ -11,9 +12,6 @@ import {
   ServiceDefinitionIdentifier,
 } from '@graphql/generated';
 import { NextRequest } from 'next/server';
-
-// Same value as NEWS_FEED_UTM_MEDIUM in the backend, added to the link by `addUtmToUrlPath`
-export const NEWS_FEED_UTM_MEDIUM = 'newsfeed';
 
 // The query string is client-controlled and an enum violation fails the whole
 // mutation, so a value that is not a member of its enum is left out.
@@ -26,7 +24,8 @@ export const buildNewsFeedRedirectInput = (
   identifier: ServiceDefinitionIdentifier,
   searchParams: URLSearchParams
 ): NewsFeedRedirectInput | undefined => {
-  if (searchParams.get('utm_medium') !== NEWS_FEED_UTM_MEDIUM) {
+  // The utm_medium that the backend adds to every news feed link
+  if (searchParams.get('utm_medium') !== NewsFeedUtmMedium.Newsfeed) {
     return undefined;
   }
 

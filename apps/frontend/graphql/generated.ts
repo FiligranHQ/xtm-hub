@@ -1693,6 +1693,10 @@ export enum NewsFeedUtmContent {
   Playbook = 'playbook'
 }
 
+export enum NewsFeedUtmMedium {
+  Newsfeed = 'newsfeed'
+}
+
 export type Node = {
   id: Scalars['ID']['output'];
 };

@@ -90,10 +90,13 @@ describe('news-feed-redirect.helper', () => {
   });
 
   describe('appendUtmParams', () => {
-    it('should forward the utm parameters and nothing else', () => {
+    it('should forward the standard utm parameters and nothing else', () => {
       const url = NewsFeedRedirectHelper.appendUtmParams(BLOG_POST_URL, {
         utm_source: 'opencti',
         utm_medium: 'newsfeed',
+        utm_campaign: 'blog_posts',
+        utm_content: 'other',
+        utm_term: 'term',
         platform_id: '9b0c7a3e-1111-4a9e-8d6f-0d4f5a7c9e10',
         redirect: 'https://evil.example',
         UTM_SOURCE: 'upper',
@@ -101,8 +104,18 @@ describe('news-feed-redirect.helper', () => {
       });
 
       expect(url).toBe(
-        `${BLOG_POST_URL}?utm_source=opencti&utm_medium=newsfeed`
+        `${BLOG_POST_URL}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=other&utm_term=term`
       );
+    });
+
+    it('should drop the utm keys that are not standard', () => {
+      const url = NewsFeedRedirectHelper.appendUtmParams(BLOG_POST_URL, {
+        utm_source: 'opencti',
+        utm_junk: 'x',
+        utm_anything_else: 'y',
+      });
+
+      expect(url).toBe(`${BLOG_POST_URL}?utm_source=opencti`);
     });
 
     it('should encode the forwarded values', () => {
@@ -113,13 +126,22 @@ describe('news-feed-redirect.helper', () => {
       expect(url).toBe(`${BLOG_POST_URL}?utm_content=a%26b%3Dc%23d`);
     });
 
-    it('should forward repeated utm parameters and ignore non string values', () => {
+    it('should ignore repeated and non string values', () => {
       const url = NewsFeedRedirectHelper.appendUtmParams(BLOG_POST_URL, {
         utm_term: ['a', 'b'],
         utm_campaign: { nested: 'x' },
       });
 
-      expect(url).toBe(`${BLOG_POST_URL}?utm_term=a&utm_term=b`);
+      expect(url).toBe(BLOG_POST_URL);
+    });
+
+    it('should drop a value longer than the limit and keep one at the limit', () => {
+      const url = NewsFeedRedirectHelper.appendUtmParams(BLOG_POST_URL, {
+        utm_source: 'a'.repeat(101),
+        utm_campaign: 'b'.repeat(100),
+      });
+
+      expect(url).toBe(`${BLOG_POST_URL}?utm_campaign=${'b'.repeat(100)}`);
     });
 
     it('should leave the url untouched when the query has no utm parameter', () => {

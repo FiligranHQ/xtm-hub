@@ -7,7 +7,7 @@ export interface NewsFeedDestination {
   url: string;
   // Host label reported in telemetry, e.g. filigran.io
   host: string;
-  // Whether the utm_* query parameters of the incoming request are forwarded to the destination
+  // Whether the standard utm query parameters of the incoming request are forwarded to the destination
   forwardUtmParams: boolean;
 }
 
@@ -32,7 +32,16 @@ export const FILIGRAN_WEBSITE_ORIGIN = 'https://www.filigran.io';
 export const FILIGRAN_WEBSITE_HOST_LABEL = 'filigran.io';
 const FILIGRAN_BLOG_PATH = '/blog/';
 
-const UTM_PARAM_PATTERN = /^utm_[A-Za-z0-9_]+$/;
+// The five standard utm keys, the only ones the Hub ever sends. Anything else in the query is dropped, so a crafted
+// link cannot add arbitrary parameters to the destination.
+const FORWARDED_UTM_KEYS = [
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_content',
+  'utm_term',
+] as const;
+const UTM_VALUE_MAX_LENGTH = 100;
 
 export const NewsFeedRedirectHelper = {
   isSafePathSegment: (value: string | null | undefined): value is string =>
@@ -67,22 +76,17 @@ export const NewsFeedRedirectHelper = {
     return url.toString();
   },
 
-  // Appends the utm_* parameters of the incoming query, and nothing else.
+  // Appends the standard utm parameters of the incoming query, and nothing else: each key once, with a bounded value.
   appendUtmParams: (
     destinationUrl: string,
     query: Record<string, unknown>
   ): string => {
     const url = new URL(destinationUrl);
-    Object.entries(query).forEach(([key, value]) => {
-      if (!UTM_PARAM_PATTERN.test(key)) {
-        return;
+    FORWARDED_UTM_KEYS.forEach((key) => {
+      const value = query[key];
+      if (typeof value === 'string' && value.length <= UTM_VALUE_MAX_LENGTH) {
+        url.searchParams.append(key, value);
       }
-      const values = Array.isArray(value) ? value : [value];
-      values.forEach((item) => {
-        if (typeof item === 'string') {
-          url.searchParams.append(key, item);
-        }
-      });
     });
     return url.toString();
   },

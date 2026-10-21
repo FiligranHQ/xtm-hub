@@ -76,7 +76,7 @@ const NEWS_FEED_ITEM_ID_SCHEMA = z.uuid();
 
 export const NewsFeedApp = {
   // The destination only depends on the item (its type and metadata): nothing from the request decides it,
-  // except the utm_* parameters that are forwarded when the destination accepts them.
+  // except the standard utm parameters that are forwarded when the destination accepts them.
   // Returns undefined for anything that cannot produce a safe destination, without telling why.
   resolveExternalRedirect: async ({
     newsFeedItemId,
@@ -97,9 +97,8 @@ export const NewsFeedApp = {
       return undefined;
     }
 
-    const metadata = newsFeedItem.metadata.reduce<NewsFeedMetadataValues>(
-      (acc, { key, value }) => ({ ...acc, [key]: value }),
-      {}
+    const metadata: NewsFeedMetadataValues = Object.fromEntries(
+      newsFeedItem.metadata.map(({ key, value }) => [key, value])
     );
     const destination = buildNewsFeedDestination(newsFeedItem.type, metadata);
     if (!destination) {

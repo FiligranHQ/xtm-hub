@@ -1,6 +1,7 @@
 import { expect, test } from '../fixtures/baseFixtures';
 import {
   addBlogPostNewsFeedItem,
+  deleteNewsFeedItem,
   loadServiceInstanceGlobalIdByDefinitionIdentifier,
 } from '../db-utils/news-feed.helper';
 import LoginPage from '../model/login.pageModel';
@@ -12,13 +13,21 @@ const PLATFORM_ID = '9b0c7a3e-1111-4a9e-8d6f-0d4f5a7c9e10';
 
 test.describe('News feed redirect', () => {
   let newsFeedRedirectPage: NewsFeedRedirectPage;
+  let newsFeedItemId: string | undefined;
 
   test.beforeEach(({ page }) => {
     newsFeedRedirectPage = new NewsFeedRedirectPage(page);
   });
 
+  test.afterEach(async () => {
+    if (newsFeedItemId) {
+      await deleteNewsFeedItem(newsFeedItemId);
+      newsFeedItemId = undefined;
+    }
+  });
+
   test('should redirect a news feed blog post link to filigran.io, without being logged in', async () => {
-    const newsFeedItemId = await addBlogPostNewsFeedItem(BLOG_POST_SLUG);
+    newsFeedItemId = await addBlogPostNewsFeedItem(BLOG_POST_SLUG);
 
     const response = await newsFeedRedirectPage.requestExternalRedirect(
       newsFeedItemId,

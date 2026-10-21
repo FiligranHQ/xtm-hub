@@ -112,7 +112,8 @@ const NewsFeedList = () => {
         cell: ({ row }) => {
           const slug = NEWS_FEED_TYPE_TO_SERVICE_SLUG[row.original.type];
           if (!slug) {
-            return null;
+            // Explicit placeholder: an empty cell reads as missing data, not as "not applicable"
+            return <span>—</span>;
           }
           return <span>{localizedCardName({ slug, name: slug }, t)}</span>;
         },

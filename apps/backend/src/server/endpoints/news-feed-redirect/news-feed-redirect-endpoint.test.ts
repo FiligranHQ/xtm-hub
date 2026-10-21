@@ -2,6 +2,7 @@ import express from 'express';
 import expressSession, {
   MemoryStore,
   type SessionData,
+  type SessionOptions,
 } from 'express-session/index.js';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
@@ -31,6 +32,7 @@ import {
 } from '../../../modules/telemetry/telemetry.const';
 import { TelemetryEventType } from '../../../modules/telemetry/telemetry.types';
 import { logApp } from '../../../utils/app-logger.util';
+import { ReadOnlySessionStore } from '../../session/read-only-session.store';
 import { newsFeedRedirectEndpoint } from './news-feed-redirect-endpoint';
 
 const BLOG_POST_SLUG = 'threat-report-2026';
@@ -44,6 +46,14 @@ const LOGIN_PATH = '/test-login';
 const CLIENT_IP_HEADER = 'x-test-client-ip';
 
 const sessionStore = new MemoryStore();
+const SESSION_OPTIONS: SessionOptions = {
+  name: SESSION_COOKIE_NAME,
+  secret: 'news-feed-redirect-test-secret',
+  saveUninitialized: false,
+  resave: false,
+  proxy: true,
+  cookie: { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 1000 },
+};
 
 const buildApp = () => {
   const app = express();
@@ -52,23 +62,21 @@ const buildApp = () => {
     Object.defineProperty(req, 'ip', { value: req.headers[CLIENT_IP_HEADER] });
     next();
   });
-  app.use(
+  // Same wiring as the real app: the redirect route is registered with its read only session, before the session
+  // middleware that every other route goes through
+  newsFeedRedirectEndpoint(
+    app,
     expressSession({
-      name: SESSION_COOKIE_NAME,
-      store: sessionStore,
-      secret: 'news-feed-redirect-test-secret',
-      saveUninitialized: false,
-      resave: false,
-      proxy: true,
-      cookie: { httpOnly: true, sameSite: 'lax' },
+      ...SESSION_OPTIONS,
+      store: new ReadOnlySessionStore(sessionStore),
     })
   );
+  app.use(expressSession({ ...SESSION_OPTIONS, store: sessionStore }));
   // Test only: logs a user in the way the real login flow does, to get a session cookie
   app.get(LOGIN_PATH, (req, res) => {
     req.session.user = contextSimpleUserFiligran2.user;
     res.status(204).end();
   });
-  newsFeedRedirectEndpoint(app);
   return app;
 };
 
@@ -353,6 +361,10 @@ describe('news feed redirect endpoint', () => {
         .mockResolvedValue(undefined);
       const cookie = await loginAndGetCookie();
       const sessionsBefore = await loadSessions();
+      // The stores written by a real session (PostgreSQL) renew the session on `touch`: neither must be called
+      const setSpy = vi.spyOn(sessionStore, 'set');
+      const touchSpy = vi.spyOn(sessionStore, 'touch');
+      const destroySpy = vi.spyOn(sessionStore, 'destroy');
 
       // When
       const response = await request(redirectPath(item.id), { cookie });
@@ -361,6 +373,9 @@ describe('news feed redirect endpoint', () => {
       expect(response.status).toBe(302);
       expect(response.headers.get('location')).toBe(BLOG_POST_URL);
       expect(response.headers.getSetCookie()).toEqual([]);
+      expect(setSpy).not.toHaveBeenCalled();
+      expect(touchSpy).not.toHaveBeenCalled();
+      expect(destroySpy).not.toHaveBeenCalled();
       expect(await loadSessions()).toEqual(sessionsBefore);
       await vi.waitFor(() =>
         expect(sendTelemetryEvent).toHaveBeenCalledTimes(1)

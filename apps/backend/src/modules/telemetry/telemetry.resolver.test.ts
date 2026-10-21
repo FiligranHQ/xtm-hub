@@ -171,7 +171,7 @@ describe('news feed redirect GraphQL mutation', () => {
     });
   });
 
-  it('should return result false and send no event for a service without telemetry', async () => {
+  it('should send no event, without logging an error, for a service without telemetry', async () => {
     // Given
     const sendTelemetryEvent = vi
       .spyOn(TelemetryApp, 'sendTelemetryEvent')
@@ -185,10 +185,7 @@ describe('news feed redirect GraphQL mutation', () => {
     });
 
     // Then
-    expect(result).toMatchObject({
-      result: false,
-      message: 'The news feed redirect event was not sent',
-    });
+    expect(result).toMatchObject({ result: true });
     expect(sendTelemetryEvent).not.toHaveBeenCalled();
     expect(logError).not.toHaveBeenCalled();
   });

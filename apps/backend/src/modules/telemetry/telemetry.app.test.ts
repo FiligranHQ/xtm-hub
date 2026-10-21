@@ -764,23 +764,6 @@ describe('telemetryApp', () => {
           organization_type: TelemetryOrganizationType.PUBLIC,
         });
       });
-
-      it('should not throw when sending the event fails', async () => {
-        // Given
-        const logErrorSpy = vi
-          .spyOn(logApp, 'error')
-          .mockImplementation(() => undefined);
-        sendTelemetryEventSpy.mockRejectedValue(new Error('telemetry down'));
-
-        // When / Then
-        await expect(
-          TelemetryApp.sendExternalNewsFeedRedirectEvent({
-            user: undefined,
-            ...externalRedirect,
-          })
-        ).resolves.toBe(false);
-        expect(logErrorSpy).toHaveBeenCalledOnce();
-      });
     });
 
     describe('sendResourceNewsFeedRedirectEvent', () => {
@@ -855,7 +838,7 @@ describe('telemetryApp', () => {
         const logErrorSpy = vi.spyOn(logApp, 'error');
 
         // When
-        const sent = await TelemetryApp.sendResourceNewsFeedRedirectEvent({
+        await TelemetryApp.sendResourceNewsFeedRedirectEvent({
           user: LOGGED_IN_USER,
           input: {
             ...resourceRedirect,
@@ -864,27 +847,8 @@ describe('telemetryApp', () => {
         });
 
         // Then
-        expect(sent).toBe(false);
         expect(sendTelemetryEventSpy).not.toHaveBeenCalled();
         expect(logErrorSpy).not.toHaveBeenCalled();
-      });
-
-      it('should not throw when sending the event fails', async () => {
-        // Given
-        const logErrorSpy = vi
-          .spyOn(logApp, 'error')
-          .mockImplementation(() => undefined);
-        sendTelemetryEventSpy.mockRejectedValue(new Error('telemetry down'));
-
-        // When
-        const sent = await TelemetryApp.sendResourceNewsFeedRedirectEvent({
-          user: LOGGED_IN_USER,
-          input: resourceRedirect,
-        });
-
-        // Then
-        expect(sent).toBe(false);
-        expect(logErrorSpy).toHaveBeenCalledOnce();
       });
     });
   });

@@ -64,27 +64,17 @@ type NewsFeedRedirectEventData = Parameters<
   typeof TelemetryHelper.buildNewsFeedRedirectEvent
 >[2];
 
-// Never throws: an unexpected failure is logged and reported as not sent
 const sendNewsFeedRedirectEvent = async (
   user: Pick<UserLoadUserBy, 'id' | 'selected_organization_id'> | undefined,
   data: NewsFeedRedirectEventData
-): Promise<boolean> => {
-  try {
-    const { organization, userId } = await loadLoggedInIdentity(user);
-    const event = TelemetryHelper.buildNewsFeedRedirectEvent(
-      organization,
-      userId,
-      data
-    );
-    await TelemetryApp.sendTelemetryEvent(event);
-    return true;
-  } catch (error) {
-    logApp.error('Unable to send the news feed redirect event', {
-      error,
-      newsFeedItemId: data.news_feed_item_id,
-    });
-    return false;
-  }
+): Promise<void> => {
+  const { organization, userId } = await loadLoggedInIdentity(user);
+  const event = TelemetryHelper.buildNewsFeedRedirectEvent(
+    organization,
+    userId,
+    data
+  );
+  await TelemetryApp.sendTelemetryEvent(event);
 };
 
 const toOneClickDeploymentInitializer = (
@@ -288,9 +278,7 @@ export const TelemetryApp = {
     }
   },
 
-  // Both news feed redirect methods are best-effort analytics with the same contract: they never throw and return
-  // whether the event was handed over to the telemetry pipeline. The external one is fire and forget, so callers
-  // must not await it on the response path.
+  // The external one is fire and forget: callers must not await it on the response path.
   async sendExternalNewsFeedRedirectEvent({
     user,
     newsFeedItemId,
@@ -303,8 +291,8 @@ export const TelemetryApp = {
     newsFeedItemType: NewsFeedItemType;
     destinationHost: string;
     platformId: unknown;
-  }): Promise<boolean> {
-    return sendNewsFeedRedirectEvent(user, {
+  }): Promise<void> {
+    await sendNewsFeedRedirectEvent(user, {
       news_feed_item_id: newsFeedItemId,
       news_feed_item_type: newsFeedItemType,
       destination_host: destinationHost,
@@ -322,16 +310,16 @@ export const TelemetryApp = {
   }: {
     user: Pick<UserLoadUserBy, 'id' | 'selected_organization_id'>;
     input: NewsFeedRedirectInput;
-  }): Promise<boolean> {
+  }): Promise<void> {
     if (!TelemetryHelper.shouldSendEventForService(input.service_identifier)) {
       logApp.debug(
         'Ignored a news feed redirect event for a service without telemetry',
         { service: input.service_identifier }
       );
-      return false;
+      return;
     }
 
-    return sendNewsFeedRedirectEvent(user, {
+    await sendNewsFeedRedirectEvent(user, {
       service: input.service_identifier,
       resource_id: input.resource_id ?? undefined,
       platform_id: parsePlatformId(input.platform_id),

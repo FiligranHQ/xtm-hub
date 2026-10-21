@@ -22,7 +22,7 @@ docs {
 
   Answers a 302 with Cache-Control: no-store:
   - to the destination built from the item type and metadata, e.g. https://www.filigran.io/blog/<slug>
-    (only the utm_* query parameters are forwarded to filigran.io, platform_id never is)
+    (only the five standard utm parameters are forwarded to filigran.io, each at most 100 characters, platform_id never is)
   - to the hub root (/) for a malformed id, an unknown or deleted item, a type without a builder or invalid metadata.
     The response is identical in every case.
 

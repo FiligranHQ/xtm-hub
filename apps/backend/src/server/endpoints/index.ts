@@ -1,4 +1,4 @@
-import { Express } from 'express';
+import { Express, RequestHandler } from 'express';
 import { documentDownloadEndpoint } from './document/document-download-endpoint';
 import { documentVisualizeEndpoint } from './document/document-visualize-endpoint';
 import { healthEndpoint } from './health/health-endpoint';
@@ -10,14 +10,22 @@ import { userPictureEndpoint } from './user-picture/user-picture-endpoint';
 import { verificationEmailEndpoint } from './verification-email/verification-email-endpoint';
 import { versionsMatrixEndpoint } from './versions-matrix/versions-matrix-endpoint';
 
-// Single wiring point for every REST endpoint — add new ones here.
+// The public endpoints that must not write to the session. Called before the session middleware, which would renew the
+// session of a logged in user on every request: each one gets the read only session middleware instead.
+export const registerReadOnlySessionEndpoints = (
+  app: Express,
+  readOnlySessionMiddleware: RequestHandler
+) => {
+  newsFeedRedirectEndpoint(app, readOnlySessionMiddleware);
+};
+
+// Single wiring point for every other REST endpoint — add new ones here.
 export const registerEndpoints = (app: Express) => {
   healthEndpoint(app);
   userPictureEndpoint(app);
   manifestEndpoint(app);
   productVersionEndpoint(app);
   versionsMatrixEndpoint(app);
-  newsFeedRedirectEndpoint(app);
   // Implemented as routes, not GraphQL resolvers: a resolver can't attach a file to the response.
   documentDownloadEndpoint(app);
   documentVisualizeEndpoint(app);

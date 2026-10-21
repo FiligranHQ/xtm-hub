@@ -1686,6 +1686,10 @@ export enum NewsFeedUtmContent {
   Playbook = 'playbook'
 }
 
+export enum NewsFeedUtmMedium {
+  Newsfeed = 'newsfeed'
+}
+
 export type Node = {
   id: Scalars['ID']['output'];
 };
@@ -3570,6 +3574,7 @@ export type ResolversTypes = ResolversObject<{
   NewsFeedItemType: NewsFeedItemType;
   NewsFeedRedirectInput: NewsFeedRedirectInput;
   NewsFeedUtmContent: NewsFeedUtmContent;
+  NewsFeedUtmMedium: NewsFeedUtmMedium;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   OneClickDeployInput: OneClickDeployInput;
   OpenAEVScenario: ResolverTypeWrapper<OpenAevScenario>;
