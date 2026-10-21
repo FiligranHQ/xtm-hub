@@ -1,5 +1,6 @@
 import type { PublicLocale } from '@/i18n/config';
 import { toGraphqlLocale } from '@/i18n/graphql-locale';
+import { GraphqlRequestError } from '@/lib/graphql-fetch.utils';
 import {
   serverGraphqlFetch,
   ServerGraphqlFetchOptions,
@@ -21,7 +22,7 @@ import {
   ServiceInstanceTag,
 } from '@graphql/generated';
 
-const SERVICE_NOT_FOUND_ERROR = 'SERVICE_NOT_FOUND';
+const NOT_FOUND_ERROR_CODE = 'NOT_FOUND';
 
 const PUBLIC_PAGE_CACHE: ServerGraphqlFetchOptions = {
   cache: 'force-cache',
@@ -47,8 +48,8 @@ export async function fetchVisibleServiceSlugs(): Promise<string[]> {
 }
 
 /**
- * Returns null for an unknown slug, which the API reports as a
- * `SERVICE_NOT_FOUND` error rather than a null field.
+ * Returns null for an unknown slug, which the API reports as a `NOT_FOUND`
+ * error code rather than a null field.
  */
 export async function fetchSeoServiceInstanceBySlug(
   slug: string
@@ -61,7 +62,10 @@ export async function fetchSeoServiceInstanceBySlug(
 
     return data.seoServiceInstance;
   } catch (error: unknown) {
-    if (error instanceof Error && error.message === SERVICE_NOT_FOUND_ERROR) {
+    if (
+      error instanceof GraphqlRequestError &&
+      error.code === NOT_FOUND_ERROR_CODE
+    ) {
       return null;
     }
     throw error;

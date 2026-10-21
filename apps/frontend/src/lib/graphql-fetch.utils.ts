@@ -49,6 +49,17 @@ export class UnauthenticatedError extends Error {
   }
 }
 
+/** Keeps the API's `extensions.code`, when it sends one, beside its message. */
+export class GraphqlRequestError extends Error {
+  readonly code?: string;
+
+  constructor(message: string, code?: string) {
+    super(message);
+    this.name = 'GraphqlRequestError';
+    this.code = code;
+  }
+}
+
 export type GraphqlErrorLike = {
   message: string;
   extensions?: { code?: string };
@@ -56,7 +67,7 @@ export type GraphqlErrorLike = {
 
 /**
  * Throws UnauthenticatedError on an UNAUTHENTICATED error code, otherwise
- * throws an Error with the first error's message.
+ * throws a GraphqlRequestError with the first error's message and code.
  */
 export function throwOnGraphqlErrors(errors?: GraphqlErrorLike[]): void {
   if (!Array.isArray(errors) || errors.length === 0) return;
@@ -68,7 +79,11 @@ export function throwOnGraphqlErrors(errors?: GraphqlErrorLike[]): void {
     throw new UnauthenticatedError();
   }
 
-  throw new Error(errors[0]?.message ?? 'GraphQL request failed');
+  const [firstError] = errors;
+  throw new GraphqlRequestError(
+    firstError?.message ?? 'GraphQL request failed',
+    firstError?.extensions?.code
+  );
 }
 
 export function prepareUri(uri: string | undefined): string {

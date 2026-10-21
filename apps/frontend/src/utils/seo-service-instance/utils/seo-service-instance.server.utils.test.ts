@@ -1,3 +1,4 @@
+import { GraphqlRequestError } from '@/lib/graphql-fetch.utils';
 import { serverGraphqlFetch } from '@/lib/server-graphql-fetch';
 import { PUBLIC_PAGE_REVALIDATE_SECONDS } from '@/utils/constant';
 import {
@@ -59,7 +60,7 @@ describe('fetchSeoServiceInstanceBySlug', () => {
   it('should return null when the API reports the slug as not found', async () => {
     // Given
     vi.mocked(serverGraphqlFetch).mockRejectedValue(
-      new Error('SERVICE_NOT_FOUND')
+      new GraphqlRequestError('Service not found', 'NOT_FOUND')
     );
 
     // When
@@ -71,7 +72,10 @@ describe('fetchSeoServiceInstanceBySlug', () => {
 
   it('should rethrow any other API error', async () => {
     // Given
-    const apiError = new Error('INTERNAL_SERVER_ERROR');
+    const apiError = new GraphqlRequestError(
+      'SERVICE_NOT_FOUND',
+      'INTERNAL_SERVER_ERROR'
+    );
     vi.mocked(serverGraphqlFetch).mockRejectedValue(apiError);
 
     // When

@@ -3,6 +3,7 @@ import {
   buildCookieHeader,
   extractOperationName,
   extractOperationType,
+  GraphqlRequestError,
   prepareUri,
   resolveActiveCacheConfig,
   scrubSensitiveVariables,
@@ -170,6 +171,26 @@ describe('throwOnGraphqlErrors', () => {
     expect(() =>
       throwOnGraphqlErrors([{ message: 'Boom' }, { message: 'Second' }])
     ).toThrow('Boom');
+  });
+
+  it('keeps the code of the first error on the thrown error', () => {
+    expect(() =>
+      throwOnGraphqlErrors([
+        { message: 'SERVICE_NOT_FOUND', extensions: { code: 'NOT_FOUND' } },
+        { message: 'Second', extensions: { code: 'BAD_REQUEST' } },
+      ])
+    ).toThrow(
+      expect.objectContaining({
+        message: 'SERVICE_NOT_FOUND',
+        code: 'NOT_FOUND',
+      })
+    );
+  });
+
+  it('throws a GraphqlRequestError when no error is UNAUTHENTICATED', () => {
+    expect(() => throwOnGraphqlErrors([{ message: 'Boom' }])).toThrow(
+      GraphqlRequestError
+    );
   });
 
   it('falls back to a generic message when the first error has no message', () => {
