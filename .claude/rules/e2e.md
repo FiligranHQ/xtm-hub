@@ -29,7 +29,9 @@ Config runs Chromium only, `workers: 1` (sequential) with `retries: 2`, plus set
 `tests/platforms/` connects a real OpenCTI or OpenAEV to XTM Hub from the platform's own settings: the platform opens
 XTM Hub in a new tab and XTM Hub answers with `postMessage`. It also deploys a resource in one click (an OpenCTI custom
 dashboard, an OpenAEV scenario, from the importable exports in `tests/tests_files/assets/`), and checks that each visit
-of the platform's Filigran Experience settings updates `PlatformConfiguration.last_connectivity_check`. Each spec skips unless `OPENCTI_URL` or `OPENAEV_URL` is
+of the platform's Filigran Experience settings updates `PlatformConfiguration.last_connectivity_check`. For OpenCTI, a
+dashboard published in XTM Hub must reach its News Feed and open back in XTM Hub: OpenCTI pulls that feed only from its
+`hub_registration_manager` job, which the compose override runs every 10 s. Each spec skips unless `OPENCTI_URL` or `OPENAEV_URL` is
 set, so a plain `yarn test:e2e` reports them as skipped. They run against the `rolling` images through
 `xtm-hub-dev/docker-compose-ci-opencti.yml` and `xtm-hub-dev/docker-compose-ci-openaev.yml`, layered on
 `docker-compose-ci.yml`:

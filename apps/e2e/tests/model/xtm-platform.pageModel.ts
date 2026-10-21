@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, Request } from '@playwright/test';
 import { expect } from '../fixtures/baseFixtures';
 import { XtmHubRegistrationTab } from './register.pageModel';
 
@@ -12,6 +12,8 @@ export interface XtmPlatform {
   disconnectButtonName: string;
   connectedToast: string;
   disconnectedToast: string;
+  // The call the Filigran Experience page makes to the platform when it opens, to check its connectivity with XTM Hub.
+  isConnectivityCheckRequest: (request: Request) => boolean;
 }
 
 export const OPENCTI: XtmPlatform = {
@@ -23,6 +25,12 @@ export const OPENCTI: XtmPlatform = {
   disconnectButtonName: 'Disconnect from XTM Hub',
   connectedToast: 'Your OpenCTI product is successfully connected',
   disconnectedToast: 'Your OpenCTI product is successfully disconnected',
+  isConnectivityCheckRequest: (request) =>
+    request.method() === 'POST' &&
+    request.url().endsWith('/graphql') &&
+    (request.postData() ?? '').includes(
+      'XtmHubSettingsCheckConnectivityMutation'
+    ),
 };
 
 // OpenAEV prefixes its routes with the tenant: this is the id of its default tenant.
@@ -37,6 +45,9 @@ export const OPENAEV: XtmPlatform = {
   disconnectButtonName: 'Disconnect XTM Hub',
   connectedToast: 'Your OpenAEV platform is successfully connected',
   disconnectedToast: 'Your OpenAEV platform is successfully disconnected',
+  isConnectivityCheckRequest: (request) =>
+    request.method() === 'POST' &&
+    request.url().endsWith('/xtmhub/refresh-connectivity'),
 };
 
 export default class XtmPlatformPage {

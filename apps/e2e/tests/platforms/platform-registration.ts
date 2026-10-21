@@ -104,7 +104,9 @@ export const describePlatformRegistration = (platform: XtmPlatform) => {
       ).toBeVisible();
     });
 
-    test('should check its connectivity with XTM Hub each time the Filigran Experience opens', async () => {
+    test('should check its connectivity with XTM Hub each time the Filigran Experience opens', async ({
+      page,
+    }) => {
       await platformPage.connectToXtmHub(displayedName);
       const platformUrl = platform.url ?? '';
 
@@ -114,7 +116,12 @@ export const describePlatformRegistration = (platform: XtmPlatform) => {
           const previousCheck = await getLastConnectivityCheck(platformUrl);
           expect(previousCheck).not.toBeNull();
 
+          // The page itself asks the platform to check: a background job of the platform may also do it.
+          const connectivityCheck = page.waitForResponse((response) =>
+            platform.isConnectivityCheckRequest(response.request())
+          );
           await platformPage.navigateToExperience();
+          expect((await connectivityCheck).ok()).toBeTruthy();
 
           await expect
             .poll(() => getLastConnectivityCheck(platformUrl))
