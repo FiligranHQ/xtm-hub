@@ -32,9 +32,14 @@ const useExternalTab = ({
     return null;
   };
   const openTab = useCallback(() => {
-    setIsTabOpen(true);
+    const tab = window.open(url, tabName);
+    // The browser blocked the tab: there is nothing to watch or to message.
+    if (!tab) {
+      return;
+    }
+    tabRef.current = tab;
     tabOriginRef.current = getUrlOrigin(url);
-    tabRef.current = window.open(url, tabName);
+    setIsTabOpen(true);
   }, [url, tabName]);
 
   const closeTab = useCallback(() => {
@@ -55,11 +60,13 @@ const useExternalTab = ({
     tabRef.current?.postMessage(message, tabOriginRef.current);
   }, []);
 
-  // A ref, so that a new onMessage on each render of the caller does not re-subscribe the listener.
+  // Refs, so that new callbacks on each render of the caller do not re-subscribe the listeners.
   const onMessageRef = useRef(onMessage);
+  const onClosingTabRef = useRef(onClosingTab);
   useEffect(() => {
     onMessageRef.current = onMessage;
-  }, [onMessage]);
+    onClosingTabRef.current = onClosingTab;
+  }, [onMessage, onClosingTab]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -80,9 +87,7 @@ const useExternalTab = ({
       }
       checkInterval = setInterval(() => {
         if (tabRef.current?.closed) {
-          if (onClosingTab) {
-            onClosingTab();
-          }
+          onClosingTabRef.current?.();
           closeTab();
           clearInterval(checkInterval);
         }
@@ -97,7 +102,7 @@ const useExternalTab = ({
         window.removeEventListener('beforeunload', beforeUnloadHandler);
       }
     };
-  }, [isTabOpen, closeTab, onClosingTab, preventUnload]);
+  }, [isTabOpen, closeTab, preventUnload]);
 
   return {
     isTabOpen,

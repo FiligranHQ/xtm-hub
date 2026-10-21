@@ -25,6 +25,8 @@ export const toExternalHref = (
   }
 };
 
+// Strict on purpose, unlike toExternalHref: the result is a postMessage target, so no scheme is guessed.
+// Returns null when the URL has no http(s) origin: callers then send nothing, never fall back to '*'.
 export const getUrlOrigin = (url: string | null | undefined): string | null => {
   if (!url) return null;
   try {

@@ -24,13 +24,18 @@ const dispatchMessage = (
   });
 };
 
+interface TabCallbacks {
+  onMessage?: (event: MessageEvent) => void;
+  onClosingTab?: () => void;
+}
+
 const renderExternalTab = (
   url: string,
   onMessage: (event: MessageEvent) => void = vi.fn(),
   onClosingTab?: () => void
 ) => {
   const hook = renderHook(
-    ({ onMessage }) =>
+    ({ onMessage, onClosingTab }: TabCallbacks) =>
       useExternalTab({
         url,
         tabName: TAB_NAME,
@@ -38,7 +43,7 @@ const renderExternalTab = (
         onClosingTab,
         preventUnload: false,
       }),
-    { initialProps: { onMessage } }
+    { initialProps: { onMessage, onClosingTab } }
   );
   act(() => {
     hook.result.current.openTab();
@@ -173,6 +178,54 @@ describe('useExternalTab', () => {
     ).toHaveLength(subscriptionCount);
     expect(firstOnMessage).not.toHaveBeenCalled();
     expect(latestOnMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call the latest onClosingTab without subscribing the listener again', () => {
+    // Given
+    const addEventListener = vi.spyOn(window, 'addEventListener');
+    const firstOnClosingTab = vi.fn();
+    const latestOnClosingTab = vi.fn();
+    const onMessage = vi.fn();
+    const { rerender } = renderExternalTab(
+      TAB_URL,
+      onMessage,
+      firstOnClosingTab
+    );
+    const subscriptionCount = addEventListener.mock.calls.filter(
+      ([type]) => type === 'message'
+    ).length;
+
+    // When
+    rerender({ onMessage, onClosingTab: latestOnClosingTab });
+    Object.defineProperty(tab, 'closed', { value: true, configurable: true });
+    act(() => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    // Then
+    expect(
+      addEventListener.mock.calls.filter(([type]) => type === 'message')
+    ).toHaveLength(subscriptionCount);
+    expect(firstOnClosingTab).not.toHaveBeenCalled();
+    expect(latestOnClosingTab).toHaveBeenCalledTimes(1);
+  });
+
+  it('should neither watch nor message the tab when the browser blocks it', () => {
+    // Given
+    vi.mocked(window.open).mockReturnValue(null);
+    const addEventListener = vi.spyOn(window, 'addEventListener');
+    const tabPostMessage = vi.spyOn(tab, 'postMessage');
+    const { result } = renderExternalTab(TAB_URL);
+
+    // When
+    result.current.postMessage(MESSAGE);
+
+    // Then
+    expect(result.current.isTabOpen).toBe(false);
+    expect(
+      addEventListener.mock.calls.filter(([type]) => type === 'message')
+    ).toHaveLength(0);
+    expect(tabPostMessage).not.toHaveBeenCalled();
   });
 
   it('should stop watching the tab once unmounted', () => {
