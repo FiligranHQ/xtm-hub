@@ -1014,6 +1014,7 @@ describe('registration app', () => {
       it.each`
         case                       | response
         ${'the call fails'}        | ${() => Promise.reject(new Error('fetch failed'))}
+        ${'it returns 204'}        | ${async () => ({ ok: true, status: 204, json: async () => ({ commercial_model: 'TRIAL' }) }) as Response}
         ${'it returns 401'}        | ${async () => ({ ok: false, status: 401 }) as Response}
         ${'it returns 500'}        | ${async () => ({ ok: false, status: 500 }) as Response}
         ${'the body is malformed'} | ${async () => ({ ok: true, status: 200, json: async () => Promise.reject(new SyntaxError('Unexpected token')) }) as Response}
@@ -1192,9 +1193,7 @@ describe('registration app', () => {
       const callSpy = mockSaasManagerFullMetadata();
 
       // When
-      await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-        serviceInstanceId
-      );
+      await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
       // Then
       expect(callSpy).toHaveBeenCalledExactlyOnceWith({
@@ -1219,9 +1218,7 @@ describe('registration app', () => {
 
       // When
       const metadata =
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
       // Then
       expect(metadata).toEqual(fullMetadata);
@@ -1245,9 +1242,7 @@ describe('registration app', () => {
 
       // When
       const metadata =
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
       // Then
       expect(metadata).toEqual(emptyMetadata);
@@ -1266,9 +1261,7 @@ describe('registration app', () => {
 
       // When
       const metadata =
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
       // Then
       expect(metadata).toEqual({
@@ -1297,7 +1290,7 @@ describe('registration app', () => {
 
         // When
         const metadata =
-          await RegistrationApp.loadRegisteredSaasPlatformMetadata(
+          await RegistrationApp.loadRegisteredSaasPlatformData(
             serviceInstanceId
           );
 
@@ -1326,9 +1319,7 @@ describe('registration app', () => {
 
       // When
       const metadata =
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
       // Then
       expect(metadata).toEqual(fullMetadata);
@@ -1347,9 +1338,7 @@ describe('registration app', () => {
 
       // When
       const metadata =
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
       // Then
       expect(metadata).toBeNull();
@@ -1360,7 +1349,7 @@ describe('registration app', () => {
       const callSpy = mockSaasManagerFullMetadata();
 
       // When
-      const metadata = await RegistrationApp.loadRegisteredSaasPlatformMetadata(
+      const metadata = await RegistrationApp.loadRegisteredSaasPlatformData(
         uuidv4() as ServiceInstanceId
       );
 
@@ -1376,9 +1365,7 @@ describe('registration app', () => {
 
       // When
       const metadata =
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
       // Then
       expect(metadata).toBeNull();
@@ -1403,7 +1390,7 @@ describe('registration app', () => {
 
         // When
         const metadata =
-          await RegistrationApp.loadRegisteredSaasPlatformMetadata(
+          await RegistrationApp.loadRegisteredSaasPlatformData(
             serviceInstanceId
           );
 
@@ -1424,14 +1411,12 @@ describe('registration app', () => {
         // Given
         vi.useFakeTimers({ toFake: ['Date'] });
         const callSpy = mockSaasManagerFullMetadata();
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
         vi.setSystemTime(Date.now() + 59_000);
 
         // When
         const metadata =
-          await RegistrationApp.loadRegisteredSaasPlatformMetadata(
+          await RegistrationApp.loadRegisteredSaasPlatformData(
             serviceInstanceId
           );
 
@@ -1444,15 +1429,11 @@ describe('registration app', () => {
         // Given
         vi.useFakeTimers({ toFake: ['Date'] });
         const callSpy = mockSaasManagerFullMetadata();
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
         vi.setSystemTime(Date.now() + 60_000);
 
         // When
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
         // Then
         expect(callSpy).toHaveBeenCalledTimes(2);
@@ -1464,8 +1445,8 @@ describe('registration app', () => {
 
         // When
         const metadata = await Promise.all([
-          RegistrationApp.loadRegisteredSaasPlatformMetadata(serviceInstanceId),
-          RegistrationApp.loadRegisteredSaasPlatformMetadata(serviceInstanceId),
+          RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId),
+          RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId),
         ]);
 
         // Then
@@ -1478,13 +1459,11 @@ describe('registration app', () => {
         const callSpy = mockSaasManagerFullMetadata().mockRejectedValueOnce(
           new Error('fetch failed')
         );
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
 
         // When
         const metadata =
-          await RegistrationApp.loadRegisteredSaasPlatformMetadata(
+          await RegistrationApp.loadRegisteredSaasPlatformData(
             serviceInstanceId
           );
 
@@ -1496,14 +1475,12 @@ describe('registration app', () => {
       it('should not serve the cached metadata to a user of another organization', async () => {
         // Given
         mockSaasManagerFullMetadata();
-        await RegistrationApp.loadRegisteredSaasPlatformMetadata(
-          serviceInstanceId
-        );
+        await RegistrationApp.loadRegisteredSaasPlatformData(serviceInstanceId);
         requestContext.set(requestContextSimpleUserFiligran2);
 
         // When
         const metadata =
-          await RegistrationApp.loadRegisteredSaasPlatformMetadata(
+          await RegistrationApp.loadRegisteredSaasPlatformData(
             serviceInstanceId
           );
 

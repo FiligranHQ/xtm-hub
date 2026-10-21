@@ -5,7 +5,7 @@ import testRender from '@/utils/test/test-render';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   CommercialModel,
-  useRegisteredSaasPlatformMetadataQuery,
+  useRegisteredSaasPlatformDataQuery,
 } from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -26,25 +26,27 @@ vi.mock('react-relay', async (importOriginal) => ({
 
 vi.mock('@graphql/generated', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@graphql/generated')>();
-  const useRegisteredSaasPlatformMetadataQuery = Object.assign(vi.fn(), {
-    getKey: actual.useRegisteredSaasPlatformMetadataQuery.getKey,
+  const useRegisteredSaasPlatformDataQuery = Object.assign(vi.fn(), {
+    getKey: actual.useRegisteredSaasPlatformDataQuery.getKey,
   });
-  return { ...actual, useRegisteredSaasPlatformMetadataQuery };
+  return { ...actual, useRegisteredSaasPlatformDataQuery };
 });
 
 const mockMetadataQuery = () =>
-  vi.mocked(useRegisteredSaasPlatformMetadataQuery).mockReturnValue({
+  vi.mocked(useRegisteredSaasPlatformDataQuery).mockReturnValue({
     data: {
-      registeredSaasPlatformMetadata: {
-        hostname: HOSTNAME,
-        plan: null,
-        start_date: null,
-        end_date: null,
-        region: null,
+      registeredSaasPlatformData: {
+        metadata: {
+          hostname: HOSTNAME,
+          plan: null,
+          start_date: null,
+          end_date: null,
+          region: null,
+        },
       },
     },
     isPending: false,
-  } as ReturnType<typeof useRegisteredSaasPlatformMetadataQuery>);
+  } as ReturnType<typeof useRegisteredSaasPlatformDataQuery>);
 
 const renderInformation = () =>
   testRender(<PlatformInformation registeredPlatform={platform} />);

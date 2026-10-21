@@ -2003,7 +2003,7 @@ export type Query = {
    * contains it (case-insensitive) are considered.
    */
   registeredProductVersions: Array<RegisteredProductVersion>;
-  registeredSaasPlatformMetadata: Maybe<SaasPlatformMetadata>;
+  registeredSaasPlatformData: Maybe<SaasPlatformData>;
   rolePortals: Array<RolePortal>;
   saasPlatforms: RegisteredPlatformConnection;
   seoServiceInstance: SeoServiceInstance;
@@ -2241,7 +2241,7 @@ export type QueryRegisteredProductVersionsArgs = {
 };
 
 
-export type QueryRegisteredSaasPlatformMetadataArgs = {
+export type QueryRegisteredSaasPlatformDataArgs = {
   input: RegisteredPlatformInput;
 };
 
@@ -2544,6 +2544,11 @@ export type SsoGroupRolePortal = {
   __typename?: 'SSOGroupRolePortal';
   rolePortal: RolePortal;
   ssoGroup: Scalars['String']['output'];
+};
+
+export type SaasPlatformData = {
+  __typename?: 'SaasPlatformData';
+  metadata: SaasPlatformMetadata;
 };
 
 export type SaasPlatformMetadata = {
@@ -3670,12 +3675,12 @@ export type RegisteredPlatformsQueryVariables = Exact<{
 
 export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, deployment_request: { __typename?: 'DeploymentRequest', parent_id: any | null } | null, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
 
-export type RegisteredSaasPlatformMetadataQueryVariables = Exact<{
+export type RegisteredSaasPlatformDataQueryVariables = Exact<{
   input: RegisteredPlatformInput;
 }>;
 
 
-export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null } | null };
+export type RegisteredSaasPlatformDataQuery = { __typename?: 'Query', registeredSaasPlatformData: { __typename?: 'SaasPlatformData', metadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null } } | null };
 
 export type PlatformAssociatedOrganizationQueryVariables = Exact<{
   platformId: Scalars['String']['input'];
@@ -6128,62 +6133,64 @@ useInfiniteRegisteredPlatformsQuery.getKey = (variables: RegisteredPlatformsQuer
 useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.infinite'] as const;
 useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
 
-export const RegisteredSaasPlatformMetadataDocument = `
-    query RegisteredSaasPlatformMetadata($input: RegisteredPlatformInput!) {
-  registeredSaasPlatformMetadata(input: $input) {
-    hostname
-    plan
-    start_date
-    end_date
-    region
+export const RegisteredSaasPlatformDataDocument = `
+    query RegisteredSaasPlatformData($input: RegisteredPlatformInput!) {
+  registeredSaasPlatformData(input: $input) {
+    metadata {
+      hostname
+      plan
+      start_date
+      end_date
+      region
+    }
   }
 }
     `;
 
-export const useRegisteredSaasPlatformMetadataQuery = <
-      TData = RegisteredSaasPlatformMetadataQuery,
+export const useRegisteredSaasPlatformDataQuery = <
+      TData = RegisteredSaasPlatformDataQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: RegisteredSaasPlatformMetadataQueryVariables,
-      options?: Omit<UseQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>['queryKey'] },
+      variables: RegisteredSaasPlatformDataQueryVariables,
+      options?: Omit<UseQueryOptions<RegisteredSaasPlatformDataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredSaasPlatformDataQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useQuery<RegisteredSaasPlatformMetadataQuery, TError, TData>(
+    return useQuery<RegisteredSaasPlatformDataQuery, TError, TData>(
       {
-    queryKey: ['RegisteredSaasPlatformMetadata', variables],
-    queryFn: fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, variables, headers),
+    queryKey: ['RegisteredSaasPlatformData', variables],
+    queryFn: fetcher<RegisteredSaasPlatformDataQuery, RegisteredSaasPlatformDataQueryVariables>(client, RegisteredSaasPlatformDataDocument, variables, headers),
     ...options
   }
     )};
 
-useRegisteredSaasPlatformMetadataQuery.getKey = (variables: RegisteredSaasPlatformMetadataQueryVariables) => ['RegisteredSaasPlatformMetadata', variables];
-useRegisteredSaasPlatformMetadataQuery.getRootKey = () => ['RegisteredSaasPlatformMetadata'] as const;
-export const useInfiniteRegisteredSaasPlatformMetadataQuery = <
-      TData = InfiniteData<RegisteredSaasPlatformMetadataQuery>,
+useRegisteredSaasPlatformDataQuery.getKey = (variables: RegisteredSaasPlatformDataQueryVariables) => ['RegisteredSaasPlatformData', variables];
+useRegisteredSaasPlatformDataQuery.getRootKey = () => ['RegisteredSaasPlatformData'] as const;
+export const useInfiniteRegisteredSaasPlatformDataQuery = <
+      TData = InfiniteData<RegisteredSaasPlatformDataQuery>,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: RegisteredSaasPlatformMetadataQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>['queryKey'] },
+      variables: RegisteredSaasPlatformDataQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<RegisteredSaasPlatformDataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredSaasPlatformDataQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useInfiniteQuery<RegisteredSaasPlatformMetadataQuery, TError, TData>(
+    return useInfiniteQuery<RegisteredSaasPlatformDataQuery, TError, TData>(
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['RegisteredSaasPlatformMetadata.infinite', variables],
-      queryFn: (metaData) => fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      queryKey: optionsQueryKey ?? ['RegisteredSaasPlatformData.infinite', variables],
+      queryFn: (metaData) => fetcher<RegisteredSaasPlatformDataQuery, RegisteredSaasPlatformDataQueryVariables>(client, RegisteredSaasPlatformDataDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       ...restOptions
     }
   })()
     )};
 
-useInfiniteRegisteredSaasPlatformMetadataQuery.getKey = (variables: RegisteredSaasPlatformMetadataQueryVariables) => ['RegisteredSaasPlatformMetadata.infinite', variables];
-useInfiniteRegisteredSaasPlatformMetadataQuery.getRootKey = () => ['RegisteredSaasPlatformMetadata.infinite'] as const;
-useRegisteredSaasPlatformMetadataQuery.fetcher = (client: GraphQLClient, variables: RegisteredSaasPlatformMetadataQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, variables, headers);
+useInfiniteRegisteredSaasPlatformDataQuery.getKey = (variables: RegisteredSaasPlatformDataQueryVariables) => ['RegisteredSaasPlatformData.infinite', variables];
+useInfiniteRegisteredSaasPlatformDataQuery.getRootKey = () => ['RegisteredSaasPlatformData.infinite'] as const;
+useRegisteredSaasPlatformDataQuery.fetcher = (client: GraphQLClient, variables: RegisteredSaasPlatformDataQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredSaasPlatformDataQuery, RegisteredSaasPlatformDataQueryVariables>(client, RegisteredSaasPlatformDataDocument, variables, headers);
 
 export const PlatformAssociatedOrganizationDocument = `
     query PlatformAssociatedOrganization($platformId: String!, $tenantId: String) {

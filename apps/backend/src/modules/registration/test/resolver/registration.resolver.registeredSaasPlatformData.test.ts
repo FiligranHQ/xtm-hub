@@ -13,7 +13,7 @@ import {
   CommercialModel,
   PlatformContract,
   PlatformIdentifier,
-  SaasPlatformMetadata,
+  SaasPlatformData,
 } from '../../../../__generated__/resolvers-types';
 import { requestContext } from '../../../../context/request.context';
 import { ServiceInstanceId } from '../../../../model/kanel/public/ServiceInstance';
@@ -24,25 +24,27 @@ import { RegistrationApp } from '../../registration.app';
 import { RegistrationDomain } from '../../registration.domain';
 import registrationResolver from '../../registration.resolver';
 
-describe('query.registeredSaasPlatformMetadata', () => {
-  it('should pass the service_instance_id to registrationApp and return its metadata', async () => {
+describe('query.registeredSaasPlatformData', () => {
+  it('should pass the service_instance_id to registrationApp and return its data', async () => {
     // Given
     const serviceInstanceId = uuidv4() as ServiceInstanceId;
-    const expectedMetadata: SaasPlatformMetadata = {
-      hostname: 'my-platform.example.com',
-      plan: 'Enterprise',
-      start_date: new Date('2026-01-01T00:00:00.000Z'),
-      end_date: new Date('2027-01-01T00:00:00.000Z'),
-      region: 'eu-west',
+    const expectedData: SaasPlatformData = {
+      metadata: {
+        hostname: 'my-platform.example.com',
+        plan: 'Enterprise',
+        start_date: new Date('2026-01-01T00:00:00.000Z'),
+        end_date: new Date('2027-01-01T00:00:00.000Z'),
+        region: 'eu-west',
+      },
     };
     vi.spyOn(
       RegistrationApp,
-      'loadRegisteredSaasPlatformMetadata'
-    ).mockResolvedValue(expectedMetadata);
+      'loadRegisteredSaasPlatformData'
+    ).mockResolvedValue(expectedData);
 
     // When
     const result = await registrationResolver.Query!
-      .registeredSaasPlatformMetadata!(
+      .registeredSaasPlatformData!(
       {},
       { input: { service_instance_id: serviceInstanceId } },
       contextSimpleUserFiligran2,
@@ -50,22 +52,22 @@ describe('query.registeredSaasPlatformMetadata', () => {
     );
 
     // Then
-    expect(
-      RegistrationApp.loadRegisteredSaasPlatformMetadata
-    ).toHaveBeenCalledWith(serviceInstanceId);
-    expect(result).toMatchObject(expectedMetadata);
+    expect(RegistrationApp.loadRegisteredSaasPlatformData).toHaveBeenCalledWith(
+      serviceInstanceId
+    );
+    expect(result).toMatchObject(expectedData);
   });
 
-  it('should return null when registrationApp cannot load the metadata', async () => {
+  it('should return null when registrationApp cannot load the data', async () => {
     // Given
     vi.spyOn(
       RegistrationApp,
-      'loadRegisteredSaasPlatformMetadata'
+      'loadRegisteredSaasPlatformData'
     ).mockResolvedValue(null);
 
     // When
     const result = await registrationResolver.Query!
-      .registeredSaasPlatformMetadata!(
+      .registeredSaasPlatformData!(
       {},
       { input: { service_instance_id: uuidv4() as ServiceInstanceId } },
       contextSimpleUserFiligran2,
@@ -125,13 +127,13 @@ describe('query.registeredSaasPlatformMetadata', () => {
         json: async () => metadata,
       } as Response);
 
-    it('should return the metadata of a platform of the user organization', async () => {
+    it('should return the data of a platform of the user organization', async () => {
       // Given
       const callSpy = spySaasManager();
 
       // When
       const result = await registrationResolver.Query!
-        .registeredSaasPlatformMetadata!(
+        .registeredSaasPlatformData!(
         {},
         { input: { service_instance_id: serviceInstanceId } },
         contextRegistererUserSecondOrga,
@@ -139,7 +141,7 @@ describe('query.registeredSaasPlatformMetadata', () => {
       );
 
       // Then
-      expect(result).toMatchObject(metadata);
+      expect(result).toMatchObject({ metadata });
       expect(callSpy).toHaveBeenCalledExactlyOnceWith({
         platform_id: platformId,
       });
@@ -152,7 +154,7 @@ describe('query.registeredSaasPlatformMetadata', () => {
 
       // When
       const result = await registrationResolver.Query!
-        .registeredSaasPlatformMetadata!(
+        .registeredSaasPlatformData!(
         {},
         { input: { service_instance_id: serviceInstanceId } },
         contextSimpleUserFiligran2,

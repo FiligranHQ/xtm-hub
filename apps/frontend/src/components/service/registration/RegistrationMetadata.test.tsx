@@ -4,8 +4,8 @@ import testRender from '@/utils/test/test-render';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   CommercialModel,
-  RegisteredSaasPlatformMetadataQuery,
-  useRegisteredSaasPlatformMetadataQuery,
+  RegisteredSaasPlatformDataQuery,
+  useRegisteredSaasPlatformDataQuery,
 } from '@graphql/generated';
 import { screen, waitFor, within } from '@testing-library/react';
 import { useTranslations } from 'next-intl';
@@ -28,10 +28,10 @@ vi.mock('react-relay', async (importOriginal) => ({
 
 vi.mock('@graphql/generated', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@graphql/generated')>();
-  const useRegisteredSaasPlatformMetadataQuery = Object.assign(vi.fn(), {
-    getKey: actual.useRegisteredSaasPlatformMetadataQuery.getKey,
+  const useRegisteredSaasPlatformDataQuery = Object.assign(vi.fn(), {
+    getKey: actual.useRegisteredSaasPlatformDataQuery.getKey,
   });
-  return { ...actual, useRegisteredSaasPlatformMetadataQuery };
+  return { ...actual, useRegisteredSaasPlatformDataQuery };
 });
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
@@ -52,8 +52,8 @@ const saasPlatform: registeredPlatformByServiceInstanceId_fragment$data = {
 };
 
 type Metadata = NonNullable<
-  RegisteredSaasPlatformMetadataQuery['registeredSaasPlatformMetadata']
->;
+  RegisteredSaasPlatformDataQuery['registeredSaasPlatformData']
+>['metadata'];
 
 const fullMetadata: Metadata = {
   hostname: HOSTNAME,
@@ -78,10 +78,12 @@ const mockMetadataQuery = ({
   metadata?: Metadata | null;
   isPending?: boolean;
 } = {}) =>
-  vi.mocked(useRegisteredSaasPlatformMetadataQuery).mockReturnValue({
-    data: isPending ? undefined : { registeredSaasPlatformMetadata: metadata },
+  vi.mocked(useRegisteredSaasPlatformDataQuery).mockReturnValue({
+    data: isPending
+      ? undefined
+      : { registeredSaasPlatformData: metadata ? { metadata } : null },
     isPending,
-  } as ReturnType<typeof useRegisteredSaasPlatformMetadataQuery>);
+  } as ReturnType<typeof useRegisteredSaasPlatformDataQuery>);
 
 const renderMetadata = (
   platform: registeredPlatformByServiceInstanceId_fragment$data = saasPlatform
@@ -138,7 +140,7 @@ describe('RegistrationMetadata', () => {
       });
 
       // Then
-      expect(useRegisteredSaasPlatformMetadataQuery).toHaveBeenCalledWith(
+      expect(useRegisteredSaasPlatformDataQuery).toHaveBeenCalledWith(
         expect.anything(),
         { input: { service_instance_id: saasPlatform.service_instance_id } },
         expect.objectContaining({ enabled: false })
@@ -152,7 +154,7 @@ describe('RegistrationMetadata', () => {
       renderMetadata();
 
       // Then
-      expect(useRegisteredSaasPlatformMetadataQuery).toHaveBeenCalledWith(
+      expect(useRegisteredSaasPlatformDataQuery).toHaveBeenCalledWith(
         expect.anything(),
         { input: { service_instance_id: saasPlatform.service_instance_id } },
         expect.objectContaining({ enabled: true })

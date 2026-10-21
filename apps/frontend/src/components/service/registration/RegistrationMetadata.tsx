@@ -18,7 +18,7 @@ import {
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   CommercialModel,
-  useRegisteredSaasPlatformMetadataQuery,
+  useRegisteredSaasPlatformDataQuery,
 } from '@graphql/generated';
 import { registrationKeys } from '@graphql/registration/registration.keys';
 import { useId } from 'react';
@@ -51,16 +51,16 @@ export const RegistrationMetadata = ({
   const variables = {
     input: { service_instance_id: platform.service_instance_id },
   };
-  const { data, isPending } = useRegisteredSaasPlatformMetadataQuery(
+  const { data, isPending } = useRegisteredSaasPlatformDataQuery(
     portalGraphqlClient,
     variables,
     {
-      queryKey: registrationKeys.registeredSaasPlatformMetadata(variables),
+      queryKey: registrationKeys.registeredSaasPlatformData(variables),
       enabled: isSaas,
       staleTime: SAAS_PLATFORM_METADATA_STALE_TIME,
     }
   );
-  const metadata = data?.registeredSaasPlatformMetadata;
+  const metadata = data?.registeredSaasPlatformData?.metadata;
   const hostname = metadata?.hostname;
 
   if (!isSaas) {

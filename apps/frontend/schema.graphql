@@ -131,7 +131,7 @@ type Query {
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
-  registeredSaasPlatformMetadata(input: RegisteredPlatformInput!): SaasPlatformMetadata
+  registeredSaasPlatformData(input: RegisteredPlatformInput!): SaasPlatformData
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   saasPlatforms(first: Int!, after: ID, orderBy: RegisteredPlatformOrdering!, orderMode: OrderingMode!, searchTerm: String): RegisteredPlatformConnection!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
@@ -1415,6 +1415,10 @@ input RegisteredPlatformsInput {
 
 input RegisteredPlatformInput {
   service_instance_id: ServiceInstanceId!
+}
+
+type SaasPlatformData {
+  metadata: SaasPlatformMetadata!
 }
 
 type SaasPlatformMetadata {

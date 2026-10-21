@@ -19,6 +19,7 @@ import {
   RegisteredPlatformConnection,
   RegisteredPlatformsInput,
   RegisterPlatformInput,
+  SaasPlatformData,
   SaasPlatformMetadata,
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
@@ -28,26 +29,16 @@ import portalConfig from '../../config';
 import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
-import Organization, {
-  OrganizationId,
-} from '../../model/kanel/public/Organization';
+import Organization, { OrganizationId, } from '../../model/kanel/public/Organization';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { securityGuard } from '../../security/guard';
 import { sendMail } from '../../server/mail-service';
 import { PgBossProducer } from '../../thirdparty/pgboss/producer';
-import {
-  type CommercialModelJobData,
-  REGISTRATION_QUEUES,
-} from '../../thirdparty/pgboss/registration.jobs';
+import { type CommercialModelJobData, REGISTRATION_QUEUES, } from '../../thirdparty/pgboss/registration.jobs';
 import { SaasManagerClient } from '../../thirdparty/saasmanager/client';
 import { logApp } from '../../utils/app-logger.util';
-import {
-  BadRequestErrorCode,
-  ErrorCode,
-  ForbiddenErrorCode,
-  NotFoundErrorCode,
-} from '../../utils/error/error.code';
+import { BadRequestErrorCode, ErrorCode, ForbiddenErrorCode, NotFoundErrorCode, } from '../../utils/error/error.code';
 import { formatName } from '../../utils/format';
 import { isValidVersion } from '../../utils/versioning';
 import { DeploymentRequestDomain } from '../deployment/deployment.domain';
@@ -61,11 +52,7 @@ import { SubscriptionDomain } from '../subscription/subscription.domain';
 import { TelemetryApp } from '../telemetry/telemetry.app';
 import { TelemetryHelper } from '../telemetry/telemetry.helper';
 import { PlatformConfigurationDomain } from './platform-configuration/platform-configuration.domain';
-import {
-  DomainRegisteredPlatform,
-  PlatformConfigurationInput,
-  RegistrationDomain,
-} from './registration.domain';
+import { DomainRegisteredPlatform, PlatformConfigurationInput, RegistrationDomain, } from './registration.domain';
 import { RegistrationHelper } from './registration.helper';
 
 /**
@@ -85,7 +72,7 @@ const loadCommercialModel = async (
     if (response.status === 404) {
       return CommercialModel.Other;
     }
-    if (!response.ok) {
+    if (response.status !== 200) {
       logApp.warn('Unable to load the commercial model from the SaaS Manager', {
         status: response.status,
       });
@@ -112,14 +99,14 @@ const loadCommercialModel = async (
 };
 
 // Hostname, plan, dates and region rarely change: a short cache keeps page refreshes from reaching the SaaS Manager.
-const SAAS_PLATFORM_METADATA_CACHE_TTL_MS = 60_000;
+const SAAS_PLATFORM_DATA_CACHE_TTL_MS = 60_000;
 
-interface CachedSaasPlatformMetadata {
-  metadata: Promise<SaasPlatformMetadata | null>;
+interface CachedSaasPlatformData {
+  data: Promise<SaasPlatformData | null>;
   expiresAt: number;
 }
 
-const saasPlatformMetadataCache = new Map<string, CachedSaasPlatformMetadata>();
+const saasPlatformDataCache = new Map<string, CachedSaasPlatformData>();
 
 const readMetadataString = (
   body: Record<string, unknown>,
@@ -147,38 +134,40 @@ const readMetadataDate = (
   return new Date(time).toISOString();
 };
 
-const parseSaasPlatformMetadata = (body: unknown): SaasPlatformMetadata => {
+const parseSaasPlatformData = (body: unknown): SaasPlatformData => {
   const fields: Record<string, unknown> =
     typeof body === 'object' && body !== null ? { ...body } : {};
+
   return {
-    hostname: readMetadataString(fields, 'hostname'),
-    plan: readMetadataString(fields, 'plan'),
-    start_date: readMetadataDate(fields, 'start_date'),
-    end_date: readMetadataDate(fields, 'end_date'),
-    region: readMetadataString(fields, 'region'),
+    metadata: {
+      hostname: readMetadataString(fields, 'hostname'),
+      plan: readMetadataString(fields, 'plan'),
+      start_date: readMetadataDate(fields, 'start_date'),
+      end_date: readMetadataDate(fields, 'end_date'),
+      region: readMetadataString(fields, 'region'),
+    },
   };
 };
 
-const fetchSaasPlatformMetadata = async (
+const fetchSaasPlatformData = async (
   serviceInstanceId: ServiceInstanceId,
   platformId: string
-): Promise<SaasPlatformMetadata | null> => {
+): Promise<SaasPlatformData | null> => {
   try {
     const response = await SaasManagerClient.callInstanceApi({
       platform_id: platformId,
     });
-    if (!response.ok) {
-      logApp.error(
-        'Unable to load the platform metadata from the SaaS Manager',
-        {
-          serviceInstanceId,
-          platformId,
-          status: response.status,
-        }
-      );
+
+    const statusCode = await response.status;
+    if (statusCode !== 200) {
+      logApp.error('Unable to load the platform data from the SaaS Manager', {
+        serviceInstanceId,
+        platformId,
+        status: response.status,
+      });
       return null;
     }
-    return parseSaasPlatformMetadata(await response.json());
+    return parseSaasPlatformData(await response.json());
   } catch (error) {
     logApp.error('Unable to load the platform metadata from the SaaS Manager', {
       serviceInstanceId,
@@ -193,38 +182,38 @@ const fetchSaasPlatformMetadata = async (
  * Concurrent callers share the same in-flight request. Only an answer is kept: a failure is dropped at once, so the
  * next view asks again instead of showing the platform as unavailable for the whole TTL.
  */
-const loadCachedSaasPlatformMetadata = (
+const loadCachedSaasPlatformData = (
   serviceInstanceId: ServiceInstanceId,
   platformId: string
-): Promise<SaasPlatformMetadata | null> => {
+): Promise<SaasPlatformData | null> => {
   const now = Date.now();
-  const cached = saasPlatformMetadataCache.get(platformId);
+  const cached = saasPlatformDataCache.get(platformId);
   if (cached && now < cached.expiresAt) {
-    return cached.metadata;
+    return cached.data;
   }
 
-  for (const [cachedPlatformId, entry] of saasPlatformMetadataCache) {
+  for (const [cachedPlatformId, entry] of saasPlatformDataCache) {
     if (entry.expiresAt <= now) {
-      saasPlatformMetadataCache.delete(cachedPlatformId);
+      saasPlatformDataCache.delete(cachedPlatformId);
     }
   }
 
-  const entry: CachedSaasPlatformMetadata = {
-    metadata: fetchSaasPlatformMetadata(serviceInstanceId, platformId).then(
+  const entry: CachedSaasPlatformData = {
+    data: fetchSaasPlatformData(serviceInstanceId, platformId).then(
       (metadata) => {
         if (
           metadata === null &&
-          saasPlatformMetadataCache.get(platformId) === entry
+          saasPlatformDataCache.get(platformId) === entry
         ) {
-          saasPlatformMetadataCache.delete(platformId);
+          saasPlatformDataCache.delete(platformId);
         }
         return metadata;
       }
     ),
-    expiresAt: now + SAAS_PLATFORM_METADATA_CACHE_TTL_MS,
+    expiresAt: now + SAAS_PLATFORM_DATA_CACHE_TTL_MS,
   };
-  saasPlatformMetadataCache.set(platformId, entry);
-  return entry.metadata;
+  saasPlatformDataCache.set(platformId, entry);
+  return entry.data;
 };
 
 // The registration does not wait for the SaaS Manager: the platform keeps its
@@ -321,9 +310,9 @@ export const RegistrationApp = {
     return platform ? mapDomainRegisteredPlatformToGraphQL(platform) : null;
   },
 
-  loadRegisteredSaasPlatformMetadata: async (
+  loadRegisteredSaasPlatformData: async (
     serviceInstanceId: ServiceInstanceId
-  ): Promise<SaasPlatformMetadata | null> => {
+  ): Promise<SaasPlatformData | null> => {
     // Resolve the platform through the organization-scoped query first, so that
     // the SaaS Manager is only ever called for a platform the user can access,
     // and with the platform_id stored in the Hub, never a client-supplied one.
@@ -333,10 +322,7 @@ export const RegistrationApp = {
       return null;
     }
 
-    return loadCachedSaasPlatformMetadata(
-      serviceInstanceId,
-      platform.platform_id
-    );
+    return loadCachedSaasPlatformData(serviceInstanceId, platform.platform_id);
   },
 
   loadRegisteredPlatforms: async (

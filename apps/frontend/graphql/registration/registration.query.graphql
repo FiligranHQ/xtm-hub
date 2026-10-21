@@ -15,13 +15,15 @@ query RegisteredPlatforms($input: RegisteredPlatformsInput!) {
   }
 }
 
-query RegisteredSaasPlatformMetadata($input: RegisteredPlatformInput!) {
-  registeredSaasPlatformMetadata(input: $input) {
-    hostname
-    plan
-    start_date
-    end_date
-    region
+query RegisteredSaasPlatformData($input: RegisteredPlatformInput!) {
+  registeredSaasPlatformData(input: $input) {
+    metadata {
+      hostname
+      plan
+      start_date
+      end_date
+      region
+    }
   }
 }
 
