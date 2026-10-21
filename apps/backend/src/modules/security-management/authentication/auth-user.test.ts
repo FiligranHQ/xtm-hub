@@ -469,6 +469,44 @@ describe('loginFromProvider', () => {
       });
     });
 
+    it('should add a new account with the Filigran group to the platform organisation automatically', async () => {
+      // Given
+      const email = newEmail();
+      emails.push(email);
+
+      // When
+      await loginFromProvider(
+        asProviderUserInfo(email, newIdpSubject(), {
+          groups: [PLATFORM_IDP_GROUP],
+        })
+      );
+
+      // Then
+      expect({
+        isPlatformMember: (await loadFiligranRights(email)).isPlatformMember,
+        isPending: await isPendingInPlatform(email),
+      }).toEqual({ isPlatformMember: true, isPending: false });
+    });
+
+    it('should move a pending account to the platform organisation once it signs in with the Filigran group', async () => {
+      // Given
+      const email = newEmail();
+      const idpSubject = newIdpSubject();
+      emails.push(email);
+      await loginFromProvider(asProviderUserInfo(email, idpSubject));
+
+      // When
+      await loginFromProvider(
+        asProviderUserInfo(email, idpSubject, { groups: [PLATFORM_IDP_GROUP] })
+      );
+
+      // Then
+      expect({
+        isPlatformMember: (await loadFiligranRights(email)).isPlatformMember,
+        isPending: await isPendingInPlatform(email),
+      }).toEqual({ isPlatformMember: true, isPending: false });
+    });
+
     it.each`
       description             | groups
       ${'no group'}           | ${[]}

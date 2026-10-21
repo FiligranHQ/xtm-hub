@@ -98,6 +98,11 @@ export const loginFromProvider = async (userInfo: ProviderUserInfo) => {
       user.id,
       PLATFORM_ORGANIZATION_UUID
     );
+    // An earlier sign-in without the group left the account pending
+    await UserOrganizationDomain.removeUserFromPendingList({
+      user_id: user.id,
+      organization_id: PLATFORM_ORGANIZATION_UUID,
+    });
   }
   // Hub roles are reset from the IdP at every sign-in, for every account, so
   // they never outlive the Filigran group.
