@@ -79,10 +79,23 @@ export default defineConfig({
     },
     {
       name: 'chromium',
+      testIgnore: /platforms\//,
       use: {
         ...devices['Desktop Chrome'],
       },
       dependencies: ['setup'],
+    },
+    {
+      // Registration against a real OpenCTI or OpenAEV, see xtm-hub-dev/docker-compose-ci-{opencti,openaev}.yml.
+      name: 'platforms',
+      testMatch: /platforms\/.*\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        // The platforms only allow plain-http requests on port 80 in their CSP, and the CI Hub runs on
+        // http://frontend:3000: without this, OpenCTI cannot check that XTM Hub is reachable and hides its
+        // Connect button. In production the Hub is on https, which their CSP allows.
+        bypassCSP: true,
+      },
     },
   ],
 
