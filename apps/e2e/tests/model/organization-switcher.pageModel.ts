@@ -9,10 +9,11 @@ export default class OrganizationSwitcherPage {
       .click();
     // Switching reloads the whole app on /app, usually the URL already shown:
     // wait for the new page to load, or the next actions hit the old one
-    const reloaded = this.page.waitForEvent('load');
-    await this.page
-      .getByRole('option', { name: organizationName, exact: true })
-      .click();
-    await reloaded;
+    await Promise.all([
+      this.page.waitForEvent('load'),
+      this.page
+        .getByRole('option', { name: organizationName, exact: true })
+        .click(),
+    ]);
   }
 }
