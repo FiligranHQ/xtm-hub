@@ -30,7 +30,6 @@ tests/fixtures/       Playwright fixtures
 tests/model/          Page object models
 tests/db-utils/       Database setup/teardown helpers
 tests/utils/          Shared helpers
-tests/webhooks/       Notification webhook for test reporting
 tests/tests_files/    Test data files
 tests/__screenshots__/ Visual regression baselines
 ```

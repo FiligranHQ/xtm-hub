@@ -1,5 +1,4 @@
 import { defineConfig, devices } from '@playwright/test';
-import notificationWebhook from './tests/webhooks/notification-webhook';
 
 /**
  * Read environment variables from file.
@@ -46,15 +45,6 @@ export default defineConfig({
       {
         name: `XTM Hub e2e Report`,
         outputFile: './test-results/report.html',
-        onEnd: async (reportData) => {
-          // teams integration with webhook
-          const e2eFailed =
-            reportData.summary.failed.value > 0 ||
-            reportData.summary.flaky.value > 0;
-          if (!!process.env.GITHUB_PR_NUMBER && e2eFailed) {
-            await notificationWebhook(reportData);
-          }
-        },
       },
     ],
   ],
