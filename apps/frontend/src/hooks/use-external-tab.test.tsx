@@ -109,16 +109,43 @@ describe('useExternalTab', () => {
     );
   });
 
-  it('should ignore the message when it comes from the tab with another origin', () => {
+  it('should answer the origin of the tab when it was redirected to another origin', () => {
     // Given
     const onMessage = vi.fn();
-    renderExternalTab(TAB_URL, onMessage);
+    const tabPostMessage = vi
+      .spyOn(tab, 'postMessage')
+      .mockImplementation(() => undefined);
+    const { result } = renderExternalTab(TAB_URL, onMessage);
 
     // When
     dispatchMessage(tab, OTHER_ORIGIN);
+    result.current.postMessage(MESSAGE);
+
+    // Then
+    expect(onMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ origin: OTHER_ORIGIN })
+    );
+    expect(tabPostMessage).toHaveBeenCalledExactlyOnceWith(
+      MESSAGE,
+      OTHER_ORIGIN
+    );
+  });
+
+  it('should ignore the message from the tab when its origin is not http(s)', () => {
+    // Given
+    const onMessage = vi.fn();
+    const tabPostMessage = vi
+      .spyOn(tab, 'postMessage')
+      .mockImplementation(() => undefined);
+    const { result } = renderExternalTab(TAB_URL, onMessage);
+
+    // When
+    dispatchMessage(tab, 'null');
+    result.current.postMessage(MESSAGE);
 
     // Then
     expect(onMessage).not.toHaveBeenCalled();
+    expect(tabPostMessage).toHaveBeenCalledExactlyOnceWith(MESSAGE, TAB_ORIGIN);
   });
 
   it('should ignore the message when it comes from another window with the opened url origin', () => {
@@ -134,16 +161,21 @@ describe('useExternalTab', () => {
     expect(onMessage).not.toHaveBeenCalled();
   });
 
-  it('should ignore the message from the tab when the opened url has no valid origin', () => {
+  it('should answer the origin of the tab when the opened url has no valid origin', () => {
     // Given
     const onMessage = vi.fn();
-    renderExternalTab('/dashboard/xtm-hub', onMessage);
+    const tabPostMessage = vi
+      .spyOn(tab, 'postMessage')
+      .mockImplementation(() => undefined);
+    const { result } = renderExternalTab('/dashboard/xtm-hub', onMessage);
 
     // When
     dispatchMessage(tab, TAB_ORIGIN);
+    result.current.postMessage(MESSAGE);
 
     // Then
-    expect(onMessage).not.toHaveBeenCalled();
+    expect(onMessage).toHaveBeenCalledTimes(1);
+    expect(tabPostMessage).toHaveBeenCalledExactlyOnceWith(MESSAGE, TAB_ORIGIN);
   });
 
   it('should keep the same postMessage between renders', () => {

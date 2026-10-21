@@ -70,14 +70,16 @@ const useExternalTab = ({
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const isFromOpenedTab =
-        !!tabRef.current &&
-        event.source === tabRef.current &&
-        !!tabOriginRef.current &&
-        event.origin === tabOriginRef.current;
-      if (isFromOpenedTab) {
-        onMessageRef.current?.(event);
+      if (!tabRef.current || event.source !== tabRef.current) {
+        return;
       }
+      // The tab may have been redirected (http to https, another host name): answer the origin it writes from.
+      const origin = getUrlOrigin(event.origin);
+      if (!origin) {
+        return;
+      }
+      tabOriginRef.current = origin;
+      onMessageRef.current?.(event);
     };
     let checkInterval: ReturnType<typeof setInterval> | undefined;
     if (isTabOpen) {
