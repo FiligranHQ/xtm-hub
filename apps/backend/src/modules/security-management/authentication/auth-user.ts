@@ -5,7 +5,10 @@ import {
   UserInfo,
   UserLoadUserBy,
 } from '../../../model/user';
-import { PLATFORM_ORGANIZATION_UUID } from '../../../portal.const';
+import {
+  PLATFORM_IDP_GROUP,
+  PLATFORM_ORGANIZATION_UUID,
+} from '../../../portal.const';
 import { AppLogsCategory, logApp } from '../../../utils/app-logger.util';
 import { ErrorCode, ForbiddenErrorCode } from '../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
@@ -63,7 +66,9 @@ export const loginFromProvider = async (userInfo: ProviderUserInfo) => {
   if (isEmptyField(idp_subject)) {
     throw ForbiddenAccess(ForbiddenErrorCode.IdpSubjectNotProvided);
   }
-  const isFiligranUser = email.endsWith('@filigran.io');
+  // Membership of the Filigran organisation comes from the IdP group that
+  // Filigran IT manages, never from the email domain.
+  const isFiligranUser = userInfo.groups.includes(PLATFORM_IDP_GROUP);
   const idpSubjectMatches = await checkIdpSubject(email, idp_subject);
 
   const user = await UserProvisioningApp.getOrProvisionUser(userInfo, {
@@ -88,25 +93,25 @@ export const loginFromProvider = async (userInfo: ProviderUserInfo) => {
     // A concurrent sign-in may have bound this account after the initial check.
     await checkIdpSubject(email, idp_subject);
   }
-  // Check if the user has the admin role, so in creation we create user then add admin role
   if (isFiligranUser) {
     await UserOrganizationDomain.ensureUserOrganizationExists(
       user.id,
       PLATFORM_ORGANIZATION_UUID
     );
-    await RolePortalDomain.removeAllUserRolePortal(user.id);
-    if (userInfo.roles.length > 0) {
-      await Promise.all(
-        userInfo.roles.map((role) =>
-          RolePortalDomain.assignRoleByName(user.id, role)
-        )
-      );
-      const reloadedUser = await UserDomain.loadUserBy({ 'User.id': user.id });
-      if (!reloadedUser) {
-        throw new Error(ErrorCode.UserNotFound);
-      }
-      return reloadedUser;
+  }
+  // Hub roles are reset from the IdP at every sign-in, for every account, so
+  // they never outlive the Filigran group.
+  await RolePortalDomain.removeAllUserRolePortal(user.id);
+  const roles = isFiligranUser ? userInfo.roles : [];
+  if (roles.length > 0) {
+    await Promise.all(
+      roles.map((role) => RolePortalDomain.assignRoleByName(user.id, role))
+    );
+    const reloadedUser = await UserDomain.loadUserBy({ 'User.id': user.id });
+    if (!reloadedUser) {
+      throw new Error(ErrorCode.UserNotFound);
     }
+    return reloadedUser;
   }
 
   return user;

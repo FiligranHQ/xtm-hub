@@ -9,9 +9,15 @@ import {
   UserInfo,
   UserLoadUserBy,
 } from '../../../model/user';
+import {
+  PLATFORM_IDP_GROUP,
+  PLATFORM_ORGANIZATION_UUID,
+  ROLE_ADMIN,
+} from '../../../portal.const';
 import { ForbiddenErrorCode } from '../../../utils/error/error.code';
 import { ServiceGroupApp } from '../../deployment/group/service-group.app';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
+import { UserOrganizationPendingDomain } from '../../organization-management/user/user-pending/user-organization-pending.domain';
 import { UserProvisioningApp } from '../../organization-management/user/user-provisioning/user-provisioning.app';
 import { UserHelper } from '../../organization-management/user/user.helper';
 import {
@@ -45,13 +51,43 @@ const asUserInfo = (email: string): UserInfo => ({
 });
 const asProviderUserInfo = (
   email: string,
-  idpSubject: string
-): ProviderUserInfo => ({ ...asUserInfo(email), idp_subject: idpSubject });
+  idpSubject: string,
+  { groups = [], roles = [] }: { groups?: string[]; roles?: string[] } = {}
+): ProviderUserInfo => ({
+  ...asUserInfo(email),
+  idp_subject: idpSubject,
+  groups,
+  roles,
+});
 const newEmail = () => `auth-user-login-${uuidv4()}@filigran.io`;
 const newIdpSubject = () => `auth0|${uuidv4()}`;
 const loadIdpSubject = async (email: string) => {
   const [user] = await UserDomain.loadUser({ email });
   return user?.idp_subject;
+};
+
+const loadFiligranRights = async (email: string) => {
+  const user = await UserDomain.loadUserBy({ email });
+  return {
+    roles: (user?.roles_portal ?? []).map(({ name }) => name),
+    isPlatformMember: (user?.organizations ?? []).some(
+      ({ id }) => id === PLATFORM_ORGANIZATION_UUID
+    ),
+  };
+};
+const isPendingInPlatform = async (email: string) => {
+  const user = await UserDomain.loadUserBy({ email });
+  const pending =
+    await UserOrganizationPendingDomain.loadUserOrganizationPending({
+      user_id: user?.id,
+      organization_id: PLATFORM_ORGANIZATION_UUID,
+    });
+  return pending.length > 0;
+};
+
+const FILIGRAN_ADMIN = {
+  groups: [PLATFORM_IDP_GROUP],
+  roles: [ROLE_ADMIN.name],
 };
 
 const UNVERIFIED_IDP_SUBJECT = 'auth0|unverified-user';
@@ -413,5 +449,88 @@ describe('loginFromProvider', () => {
       );
       expect(await UserDomain.loadUser({ email: otherEmail })).toEqual([]);
     });
+  });
+
+  describe('rights from the Filigran group', () => {
+    it('should add a member of the Filigran group to the platform organisation with its IdP roles', async () => {
+      // Given
+      const email = newEmail();
+      emails.push(email);
+
+      // When
+      await loginFromProvider(
+        asProviderUserInfo(email, newIdpSubject(), FILIGRAN_ADMIN)
+      );
+
+      // Then
+      expect(await loadFiligranRights(email)).toEqual({
+        roles: [ROLE_ADMIN.name],
+        isPlatformMember: true,
+      });
+    });
+
+    it.each`
+      description             | groups
+      ${'no group'}           | ${[]}
+      ${'another group only'} | ${['Customer']}
+    `(
+      'should give no Filigran rights to a Filigran email with $description',
+      async ({ groups }: { groups: string[] }) => {
+        // Given
+        const email = newEmail();
+        emails.push(email);
+
+        // When
+        await loginFromProvider(
+          asProviderUserInfo(email, newIdpSubject(), {
+            groups,
+            roles: [ROLE_ADMIN.name],
+          })
+        );
+
+        // Then
+        expect(await loadFiligranRights(email)).toEqual({
+          roles: [],
+          isPlatformMember: false,
+        });
+      }
+    );
+
+    it('should put a Filigran email outside the Filigran group in the pending list of the platform organisation', async () => {
+      // Given
+      const email = newEmail();
+      emails.push(email);
+
+      // When
+      await loginFromProvider(asProviderUserInfo(email, newIdpSubject()));
+
+      // Then
+      expect(await isPendingInPlatform(email)).toBe(true);
+    });
+
+    it.each`
+      description                    | groups                  | roles
+      ${'leaves the Filigran group'} | ${[]}                   | ${[ROLE_ADMIN.name]}
+      ${'loses its role in the IdP'} | ${[PLATFORM_IDP_GROUP]} | ${[]}
+    `(
+      'should remove the Hub roles once the user $description',
+      async ({ groups, roles }: { groups: string[]; roles: string[] }) => {
+        // Given
+        const email = newEmail();
+        const idpSubject = newIdpSubject();
+        emails.push(email);
+        await loginFromProvider(
+          asProviderUserInfo(email, idpSubject, FILIGRAN_ADMIN)
+        );
+
+        // When
+        await loginFromProvider(
+          asProviderUserInfo(email, idpSubject, { groups, roles })
+        );
+
+        // Then
+        expect((await loadFiligranRights(email)).roles).toEqual([]);
+      }
+    );
   });
 });

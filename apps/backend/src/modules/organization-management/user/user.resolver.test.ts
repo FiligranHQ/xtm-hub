@@ -72,6 +72,7 @@ describe('user query resolver', () => {
         first_name: 'test',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
 
       const options = {
@@ -107,6 +108,7 @@ describe('user query resolver', () => {
         first_name: 'secondOrga',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
       const pendingUserFiligran = await loginFromProvider({
         idp_subject: `auth0|${uuidv4()}`,
@@ -114,6 +116,7 @@ describe('user query resolver', () => {
         first_name: 'filigran',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
 
       const options = {
@@ -163,6 +166,7 @@ describe('user query resolver', () => {
         first_name: 'secondOrga',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
       const pendingUserFiligran = await loginFromProvider({
         idp_subject: `auth0|${uuidv4()}`,
@@ -170,6 +174,7 @@ describe('user query resolver', () => {
         first_name: 'filigran',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
 
       const options = {
@@ -711,6 +716,7 @@ describe('user mutation resolver', () => {
         first_name: 'test',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
 
       await usersResolver.Mutation!.editUserCapabilities!(
@@ -956,6 +962,7 @@ describe('user mutation resolver', () => {
         first_name: 'testToRemove',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
 
       const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
@@ -998,6 +1005,7 @@ describe('user mutation resolver', () => {
         first_name: 'testToRemove',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
       const organizationId = TEST_ORGANIZATIONS.SECOND_ORGANIZATION.ID;
       const subscriptionSpy = new SubscriptionSpy();
@@ -1037,6 +1045,7 @@ describe('user mutation resolver', () => {
         first_name: 'testToRemove',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
 
       const testContext = {
@@ -1081,6 +1090,7 @@ describe('user mutation resolver', () => {
         first_name: 'testToRemove',
         last_name: 'pending',
         roles: [],
+        groups: [],
       });
 
       const testContext = {
