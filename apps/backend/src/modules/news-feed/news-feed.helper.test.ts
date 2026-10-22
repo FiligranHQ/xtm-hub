@@ -256,7 +256,7 @@ describe('news-feed.helper', () => {
 
       // Then
       expect(result).toBe(
-        `redirect/news-feed/${NEWS_FEED_ITEM_ID}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=other`
+        `redirect/news-feed/${NEWS_FEED_ITEM_ID}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=blog_posts`
       );
     });
   });

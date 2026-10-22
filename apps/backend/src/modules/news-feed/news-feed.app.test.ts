@@ -1348,7 +1348,7 @@ describe('newsFeedApp', () => {
           utm_source: 'opencti',
           utm_medium: 'newsfeed',
           utm_campaign: 'blog_posts',
-          utm_content: 'other',
+          utm_content: 'blog_posts',
           platform_id: PLATFORM_ID,
           next: 'https://evil.example',
         },
@@ -1356,7 +1356,7 @@ describe('newsFeedApp', () => {
 
       // Then
       expect(result?.url).toBe(
-        `${BLOG_POST_URL}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=other`
+        `${BLOG_POST_URL}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=blog_posts`
       );
     });
 

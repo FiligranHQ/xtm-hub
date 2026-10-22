@@ -95,7 +95,7 @@ describe('news-feed-redirect.helper', () => {
         utm_source: 'opencti',
         utm_medium: 'newsfeed',
         utm_campaign: 'blog_posts',
-        utm_content: 'other',
+        utm_content: 'blog_posts',
         utm_term: 'term',
         platform_id: '9b0c7a3e-1111-4a9e-8d6f-0d4f5a7c9e10',
         redirect: 'https://evil.example',
@@ -104,7 +104,7 @@ describe('news-feed-redirect.helper', () => {
       });
 
       expect(url).toBe(
-        `${BLOG_POST_URL}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=other&utm_term=term`
+        `${BLOG_POST_URL}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=blog_posts&utm_term=term`
       );
     });
 

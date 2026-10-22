@@ -1679,6 +1679,7 @@ export type NewsFeedRedirectInput = {
 };
 
 export enum NewsFeedUtmContent {
+  BlogPosts = 'blog_posts',
   CustomDashboard = 'custom_dashboard',
   CustomView = 'custom_view',
   Integration = 'integration',

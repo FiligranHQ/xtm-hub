@@ -57,6 +57,7 @@ export const newsFeedUtmCampaignMapping: Partial<
 export const newsFeedUtmContentMapping: Partial<
   Record<NewsFeedItemType, NewsFeedUtmContent>
 > = {
+  [NewsFeedItemType.BlogPost]: NewsFeedUtmContent.BlogPosts,
   [NewsFeedItemType.ResourceCustomDashboard]:
     NewsFeedUtmContent.CustomDashboard,
   [NewsFeedItemType.ResourceCustomView]: NewsFeedUtmContent.CustomView,

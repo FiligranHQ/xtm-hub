@@ -16,6 +16,7 @@ enum NewsFeedUtmMedium {
 
 # Mirrors the utm_content values that the Hub gives to the news feed links (newsFeedUtmContentMapping and its fallback)
 enum NewsFeedUtmContent {
+  blog_posts
   custom_dashboard
   custom_view
   integration

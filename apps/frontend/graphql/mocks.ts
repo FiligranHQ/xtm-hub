@@ -1150,7 +1150,7 @@ export const mockNewsFeedRedirectInput = (overrides?: Partial<NewsFeedRedirectIn
         platform_identifier: overrides && overrides.hasOwnProperty('platform_identifier') ? overrides.platform_identifier! : PlatformIdentifier.Openaev,
         resource_id: overrides && overrides.hasOwnProperty('resource_id') ? overrides.resource_id! : 'temeritas',
         service_identifier: overrides && overrides.hasOwnProperty('service_identifier') ? overrides.service_identifier! : ServiceDefinitionIdentifier.Link,
-        utm_content: overrides && overrides.hasOwnProperty('utm_content') ? overrides.utm_content! : NewsFeedUtmContent.CustomDashboard,
+        utm_content: overrides && overrides.hasOwnProperty('utm_content') ? overrides.utm_content! : NewsFeedUtmContent.BlogPosts,
     };
 };
 

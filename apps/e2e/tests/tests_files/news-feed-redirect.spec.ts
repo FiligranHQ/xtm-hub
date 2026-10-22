@@ -31,13 +31,13 @@ test.describe('News feed redirect', () => {
 
     const response = await newsFeedRedirectPage.requestExternalRedirect(
       newsFeedItemId,
-      `utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=other&platform_id=${PLATFORM_ID}`
+      `utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=blog_posts&platform_id=${PLATFORM_ID}`
     );
 
     expect(response.status()).toBe(302);
     // Only the utm parameters are forwarded to the destination, platform_id is not
     expect(response.headers()['location']).toBe(
-      `https://filigran.io/blog/${BLOG_POST_SLUG}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=other`
+      `https://filigran.io/blog/${BLOG_POST_SLUG}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=blog_posts`
     );
     expect(response.headers()['cache-control']).toBe('no-store');
     expect(response.headers()['set-cookie']).toBeUndefined();

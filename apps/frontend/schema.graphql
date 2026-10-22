@@ -993,6 +993,7 @@ enum NewsFeedUtmMedium {
 }
 
 enum NewsFeedUtmContent {
+  blog_posts
   custom_dashboard
   custom_view
   integration

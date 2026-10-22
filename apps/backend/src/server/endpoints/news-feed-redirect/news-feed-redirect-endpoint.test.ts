@@ -192,14 +192,14 @@ describe('news feed redirect endpoint', () => {
       // Given
       const item = await createBlogPostItem({ slug: BLOG_POST_SLUG });
       vi.spyOn(TelemetryApp, 'sendTelemetryEvent').mockResolvedValue(undefined);
-      const query = `?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=other&platform_id=${PLATFORM_ID}&url=https://evil.example&redirect=https://evil.example&host=evil.example`;
+      const query = `?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=blog_posts&platform_id=${PLATFORM_ID}&url=https://evil.example&redirect=https://evil.example&host=evil.example`;
 
       // When
       const response = await request(redirectPath(item.id, query));
 
       // Then
       expect(response.headers.get('location')).toBe(
-        `${BLOG_POST_URL}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=other`
+        `${BLOG_POST_URL}?utm_source=opencti&utm_medium=newsfeed&utm_campaign=blog_posts&utm_content=blog_posts`
       );
     });
   });
