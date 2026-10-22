@@ -235,21 +235,85 @@ const renderFailure = (failure) => {
 
 const escapeCell = (text) => escapeHtml(text).replace(/\|/g, '&#124;').replace(/\r?\n/g, ' ');
 
+const commonPrefix = (texts) =>
+  texts.reduce((prefix, text) => {
+    let length = 0;
+    while (length < prefix.length && prefix[length] === text[length]) {
+      length++;
+    }
+    return prefix.slice(0, length);
+  });
+const reverse = (text) => [...text].reverse().join('');
+
+export const splitCases = (titles) => {
+  if (new Set(titles).size === 1) {
+    return null;
+  }
+  const sharedStart = commonPrefix(titles);
+  const prefix = sharedStart.slice(0, sharedStart.lastIndexOf(' ') + 1);
+  const rests = titles.map((title) => title.slice(prefix.length));
+  const sharedEnd = reverse(commonPrefix(rests.map(reverse)));
+  const suffix = sharedEnd.includes(' ') ? sharedEnd.slice(sharedEnd.indexOf(' ')) : '';
+  const cases = rests.map((rest) => rest.slice(0, rest.length - suffix.length).trim());
+  if (cases.some((label) => label === '')) {
+    return null;
+  }
+  const title =
+    prefix || suffix
+      ? [prefix.trim(), '…', suffix.trim()].filter(Boolean).join(' ')
+      : `${titles.length} cases`;
+  return { title, cases };
+};
+
+const groupCases = (tests) => {
+  const groups = [];
+  for (const test of tests) {
+    const group = groups.at(-1);
+    const sameCall =
+      group &&
+      test.line !== undefined &&
+      group[0].line === test.line &&
+      group[0].suite.join(' › ') === test.suite.join(' › ');
+    if (sameCall) {
+      group.push(test);
+    } else {
+      groups.push([test]);
+    }
+  }
+  return groups;
+};
+
 const renderTestTable = (tests, changed) => {
+  const row = (result, mark, title) =>
+    `|${(changed ? [result, mark, title] : [result, title]).map((cell) => (cell ? ` ${cell} ` : ' ')).join('|')}|`;
   const rows = changed
     ? ['| Result | Changed | Test |', '| :-: | :-: | :-- |']
     : ['| Result | Test |', '| :-: | :-- |'];
   let currentSuite = '';
-  for (const test of tests) {
-    const suite = test.suite.join(' › ');
+  for (const group of groupCases(tests)) {
+    const suite = group[0].suite.join(' › ');
     if (suite && suite !== currentSuite) {
-      rows.push(changed ? `| | | **${escapeCell(suite)}** |` : `| | **${escapeCell(suite)}** |`);
+      rows.push(row('', '', `**${escapeCell(suite)}**`));
     }
     currentSuite = suite;
-    const cells = changed
-      ? [statusIcon(test.status), changed.has(test) ? '✏️' : '', escapeCell(test.title)]
-      : [statusIcon(test.status), escapeCell(test.title)];
-    rows.push(`| ${cells.join(' | ')} |`);
+    const mark = (test) => (changed?.has(test) ? '✏️' : '');
+    const split = group.length > 1 ? splitCases(group.map((test) => test.title)) : null;
+    if (!split) {
+      rows.push(...group.map((test) => row(statusIcon(test.status), mark(test), escapeCell(test.title))));
+      continue;
+    }
+    const passed = group.filter((test) => test.status === 'passed').length;
+    const failed = group.some((test) => test.status === 'failed');
+    rows.push(
+      row(
+        `${failed ? '❌ ' : ''}${passed} / ${group.length}`,
+        group.some((test) => changed?.has(test)) ? '✏️' : '',
+        escapeCell(split.title)
+      ),
+      ...group.map((test, index) =>
+        row(statusIcon(test.status), '', `&emsp;↳ <code>${escapeCell(split.cases[index])}</code>`)
+      )
+    );
   }
   return rows;
 };

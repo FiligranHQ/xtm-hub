@@ -5,6 +5,7 @@ import {
   classifyChanges,
   findRemovedTitles,
   parseDiff,
+  splitCases,
 } from './report-lib.mjs';
 
 const FILE = 'apps/frontend/src/lib/omit.test.ts';
@@ -173,6 +174,24 @@ describe('findRemovedTitles', () => {
   });
 });
 
+describe('splitCases', () => {
+  it('should keep the shared start and end as the title and the differing part as each case', () => {
+    const titles = [
+      "should redirect when the url is 'missing' and stop",
+      "should redirect when the url is 'file scheme' and stop",
+    ];
+
+    assert.deepEqual(splitCases(titles), {
+      title: 'should redirect when the url is … and stop',
+      cases: ["'missing'", "'file scheme'"],
+    });
+  });
+
+  it('should not split titles that are all the same', () => {
+    assert.equal(splitCases(['same title', 'same title']), null);
+  });
+});
+
 describe('buildReport', () => {
   const testFile = { path: FILE, status: 'passed', message: '', tests: TESTS };
   const report = (overrides) =>
@@ -201,6 +220,23 @@ describe('buildReport', () => {
       },
       { suiteRows: 1, prefixedTitles: null }
     );
+  });
+
+  it('should group the cases of an it.each under one row with their pass count', () => {
+    const { comment } = report({ diff: diffChanging([13]) });
+
+    assert.match(
+      comment,
+      /\| 2 \/ 2 \| ✏️ \| handles … \|\n\| ✅ \| \| &emsp;↳ <code>a<\/code> \|\n\| ✅ \| \| &emsp;↳ <code>b<\/code> \|/
+    );
+  });
+
+  it('should flag the it.each row when one of its cases fails', () => {
+    const failing = { ...testFile, tests: TESTS.map((test) => (test.title === 'handles b' ? { ...test, status: 'failed' } : test)) };
+
+    const { comment } = report({ testFiles: [failing], diff: diffChanging([13]) });
+
+    assert.match(comment, /\| ❌ 1 \/ 2 \| ✏️ \| handles … \|/);
   });
 
   it('should list the unchanged tests in their own table without the changed column', () => {
