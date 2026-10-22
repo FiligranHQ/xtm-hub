@@ -33,11 +33,19 @@ const SOURCE = [
   '});', // 22
   '', // 23
 ];
+const omitTest = (title, line, status = 'passed') => ({
+  name: `omit › ${title}`,
+  suite: ['omit'],
+  title,
+  status,
+  line,
+  failureMessages: [],
+});
 const TESTS = [
-  { name: 'omit › removes keys', status: 'passed', line: 7, failureMessages: [] },
-  { name: 'omit › handles a', status: 'passed', line: 15, failureMessages: [] },
-  { name: 'omit › handles b', status: 'passed', line: 15, failureMessages: [] },
-  { name: 'omit › keeps others', status: 'passed', line: 19, failureMessages: [] },
+  omitTest('removes keys', 7),
+  omitTest('handles a', 15),
+  omitTest('handles b', 15),
+  omitTest('keeps others', 19),
 ];
 
 const diffChanging = (lines, removed = []) =>
@@ -180,7 +188,33 @@ describe('buildReport', () => {
   it('should list the changed test file with its changed test marked', () => {
     const { comment } = report();
 
-    assert.match(comment, /- ✅ ✏️ omit › removes keys/);
+    assert.match(comment, /\| ✅ \| ✏️ \| removes keys \|/);
+  });
+
+  it('should name the suite once above its tests instead of on every test', () => {
+    const { comment } = report({ diff: diffChanging([8, 13]) });
+
+    assert.deepEqual(
+      {
+        suiteRows: comment.match(/\| \| \| \*\*omit\*\* \|/g).length,
+        prefixedTitles: comment.match(/omit › /g),
+      },
+      { suiteRows: 1, prefixedTitles: null }
+    );
+  });
+
+  it('should list the unchanged tests in their own table without the changed column', () => {
+    const { comment } = report();
+
+    assert.match(comment, /3 other tests<\/summary>\n\n\| Result \| Test \|[\s\S]*\| ✅ \| keeps others \|/);
+  });
+
+  it('should escape a pipe in a test title so the table keeps its columns', () => {
+    const piped = { ...testFile, tests: [{ ...TESTS[0], title: 'a | b', name: 'omit › a | b' }] };
+
+    const { comment } = report({ testFiles: [piped] });
+
+    assert.match(comment, /\| ✅ \| ✏️ \| a &#124; b \|/);
   });
 
   it('should warn on the file when shared code changed', () => {
@@ -194,7 +228,7 @@ describe('buildReport', () => {
       diff: diffChanging([7], ["  it('drops keys', () => {"]),
     });
 
-    assert.match(comment, /#### 🗑️ Tests removed or renamed[\s\S]*› drops keys/);
+    assert.match(comment, /#### 🗑️ Tests removed or renamed[\s\S]*\| <code>[^<]*omit\.test\.ts<\/code> \| drops keys \|/);
   });
 
   it('should say so when no test file changed', () => {
@@ -208,6 +242,8 @@ describe('buildReport', () => {
       ...testFile,
       tests: Array.from({ length: 40 }, (_, index) => ({
         name: `failing ${index}`,
+        suite: [],
+        title: `failing ${index}`,
         status: 'failed',
         line: 7,
         failureMessages: [`<details><summary>DOM</summary>\n${'x'.repeat(200)}\n</details>`],
@@ -243,6 +279,8 @@ describe('buildReport', () => {
       ...testFile,
       tests: Array.from({ length: 40 }, (_, index) => ({
         name: `failing ${index}`,
+        suite: [],
+        title: `failing ${index}`,
         status: 'failed',
         line: 7,
         failureMessages: ['x'.repeat(500)],

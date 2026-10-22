@@ -233,30 +233,45 @@ const renderFailure = (failure) => {
   ].join('\n');
 };
 
+const escapeCell = (text) => escapeHtml(text).replace(/\|/g, '&#124;').replace(/\r?\n/g, ' ');
+
+const renderTestTable = (tests, changed) => {
+  const rows = changed
+    ? ['| Result | Changed | Test |', '| :-: | :-: | :-- |']
+    : ['| Result | Test |', '| :-: | :-- |'];
+  let currentSuite = '';
+  for (const test of tests) {
+    const suite = test.suite.join(' › ');
+    if (suite && suite !== currentSuite) {
+      rows.push(changed ? `| | | **${escapeCell(suite)}** |` : `| | **${escapeCell(suite)}** |`);
+    }
+    currentSuite = suite;
+    const cells = changed
+      ? [statusIcon(test.status), changed.has(test) ? '✏️' : '', escapeCell(test.title)]
+      : [statusIcon(test.status), escapeCell(test.title)];
+    rows.push(`| ${cells.join(' | ')} |`);
+  }
+  return rows;
+};
+
 const renderTestFile = (testFile, { changedTests, sharedChanged }) => {
   const changed = new Set(changedTests);
   const failed = testFile.status === 'failed' || testFile.tests.some((test) => test.status === 'failed');
-  const renderTest = (test) =>
-    `- ${statusIcon(test.status)} ${changed.has(test) ? '✏️ ' : ''}${escapeHtml(test.name)}`;
   const shown = testFile.tests.filter((test) => changed.has(test) || test.status === 'failed');
   const others = testFile.tests.filter((test) => !shown.includes(test));
   const lines = [
     `<details open><summary>${failed ? '❌' : '✅'} <code>${escapeHtml(testFile.path)}</code> · ${changed.size} changed of ${pluralize(testFile.tests.length, 'test')}${sharedChanged ? ' · ⚠️ shared code changed' : ''}</summary>`,
     '',
   ];
-  if (sharedChanged) {
-    lines.push(
-      '⚠️ Code outside the tests changed (imports, mocks, hooks or describe blocks): every test of this file may be affected.',
-      ''
-    );
+  if (shown.length > 0) {
+    lines.push(...renderTestTable(shown, changed));
   }
-  lines.push(...shown.map(renderTest));
   if (others.length > 0) {
     lines.push(
       '',
       `<details><summary>${pluralize(others.length, 'other test')}</summary>`,
       '',
-      ...others.map(renderTest),
+      ...renderTestTable(others, null),
       '',
       '</details>'
     );
@@ -266,14 +281,12 @@ const renderTestFile = (testFile, { changedTests, sharedChanged }) => {
 };
 
 const renderRemoved = (removedTitles, deletedFiles) => {
-  const lines = ['#### 🗑️ Tests removed or renamed', ''];
+  const lines = ['#### 🗑️ Tests removed or renamed', '', '| Test file | Removed or renamed tests |', '| :-- | :-- |'];
   for (const file of deletedFiles) {
-    lines.push(`- <code>${escapeHtml(file)}</code>: test file deleted`);
+    lines.push(`| <code>${escapeCell(file)}</code> | _Test file deleted_ |`);
   }
   for (const [file, titles] of removedTitles) {
-    for (const title of titles) {
-      lines.push(`- <code>${escapeHtml(file)}</code> › ${escapeHtml(title)}`);
-    }
+    lines.push(`| <code>${escapeCell(file)}</code> | ${titles.map(escapeCell).join('<br>')} |`);
   }
   return [...lines, ''].join('\n');
 };
@@ -324,7 +337,7 @@ export const buildReport = ({
       blocks.push('_This pull request changes no test file here._\n');
     } else {
       blocks.push(
-        '_✏️ marks the tests whose own code this pull request adds or changes. ⚠️ flags a file whose code outside the tests changed._\n',
+        '_✏️ marks the tests whose own code this pull request adds or changes. ⚠️ shared code changed: code outside the tests (imports, mocks, hooks or describe blocks) changed, so every test of the file may be affected._\n',
         ...fileBlocks
       );
     }
