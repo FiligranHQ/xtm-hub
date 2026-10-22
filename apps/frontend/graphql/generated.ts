@@ -2549,6 +2549,7 @@ export type SsoGroupRolePortal = {
 export type SaasPlatformData = {
   __typename?: 'SaasPlatformData';
   metadata: SaasPlatformMetadata;
+  metrics: Maybe<SaasPlatformMetrics>;
 };
 
 export type SaasPlatformMetadata = {
@@ -2558,6 +2559,26 @@ export type SaasPlatformMetadata = {
   plan: Maybe<Scalars['String']['output']>;
   region: Maybe<Scalars['String']['output']>;
   start_date: Maybe<Scalars['Date']['output']>;
+};
+
+export type SaasPlatformMetricPoint = {
+  __typename?: 'SaasPlatformMetricPoint';
+  t: Scalars['Date']['output'];
+  v: Maybe<Scalars['Float']['output']>;
+};
+
+export type SaasPlatformMetricSeries = {
+  __typename?: 'SaasPlatformMetricSeries';
+  metric_type: Scalars['String']['output'];
+  points: Array<SaasPlatformMetricPoint>;
+};
+
+export type SaasPlatformMetrics = {
+  __typename?: 'SaasPlatformMetrics';
+  end: Scalars['Date']['output'];
+  resolution: Scalars['String']['output'];
+  series: Array<SaasPlatformMetricSeries>;
+  start: Scalars['Date']['output'];
 };
 
 export type SendTelemetryMutation = {
@@ -3666,7 +3687,7 @@ export type RegisteredSaasPlatformDataQueryVariables = Exact<{
 }>;
 
 
-export type RegisteredSaasPlatformDataQuery = { __typename?: 'Query', registeredSaasPlatformData: { __typename?: 'SaasPlatformData', metadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null } } | null };
+export type RegisteredSaasPlatformDataQuery = { __typename?: 'Query', registeredSaasPlatformData: { __typename?: 'SaasPlatformData', metadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null }, metrics: { __typename?: 'SaasPlatformMetrics', start: any, end: any, resolution: string, series: Array<{ __typename?: 'SaasPlatformMetricSeries', metric_type: string, points: Array<{ __typename?: 'SaasPlatformMetricPoint', t: any, v: number | null }> }> } | null } | null };
 
 export type RegisteredPlatformsListQueryVariables = Exact<{
   input: RegisteredPlatformsInput;
@@ -6008,6 +6029,18 @@ export const RegisteredSaasPlatformDataDocument = `
       start_date
       end_date
       region
+    }
+    metrics {
+      start
+      end
+      resolution
+      series {
+        metric_type
+        points {
+          t
+          v
+        }
+      }
     }
   }
 }
