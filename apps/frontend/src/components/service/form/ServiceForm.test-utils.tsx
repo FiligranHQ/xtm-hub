@@ -203,12 +203,38 @@ export const uploadFile = (
   { label, file }: ServiceFormFileField
 ) => user.upload(screen.getByLabelText(label, { selector: 'input' }), file);
 
-interface ServiceFormTestsOptions<Values> {
+interface ReplaceFileConfirmationTestOptions<Values> {
   Form: ServiceFormComponent<Values>;
-  resourceName: ServiceFormResource;
   fileField: ServiceFormFileField;
-  shortDescriptionMaxLength: number;
   buildEditedDocument: () => documentItem_fragment$data;
+}
+
+export const defineReplaceFileConfirmationTest = <Values,>({
+  Form,
+  fileField,
+  buildEditedDocument,
+}: ReplaceFileConfirmationTestOptions<Values>) => {
+  it(`should ask to confirm the replacement of the ${fileField.name} when the user clicks to update it`, async () => {
+    // Given
+    const { user } = renderServiceForm(Form, buildEditedDocument());
+
+    // When
+    await user.click(
+      screen.getByRole('button', { name: fileField.updateLabel })
+    );
+
+    // Then
+    expect(
+      screen.getByRole('alertdialog', { name: fileField.updateLabel })
+    ).toBeInTheDocument();
+  });
+};
+
+interface ServiceFormTestsOptions<
+  Values,
+> extends ReplaceFileConfirmationTestOptions<Values> {
+  resourceName: ServiceFormResource;
+  shortDescriptionMaxLength: number;
   fillCreationFields: (user: ServiceFormUser) => Promise<void>;
   creationValues: NoInfer<Partial<Values>>;
   editionValues?: NoInfer<Partial<Values>>;
@@ -330,20 +356,7 @@ export const defineServiceFormTests = <Values,>({
     );
   });
 
-  it(`should ask to confirm the replacement of the ${fileField.name} when the user clicks to update it`, async () => {
-    // Given
-    const { user } = renderServiceForm(Form, buildEditedDocument());
-
-    // When
-    await user.click(
-      screen.getByRole('button', { name: fileField.updateLabel })
-    );
-
-    // Then
-    expect(
-      screen.getByRole('alertdialog', { name: fileField.updateLabel })
-    ).toBeInTheDocument();
-  });
+  defineReplaceFileConfirmationTest({ Form, fileField, buildEditedDocument });
 
   it(`should save the ${resourceName} without a new ${fileField.name} when the user edits it`, async () => {
     // Given
