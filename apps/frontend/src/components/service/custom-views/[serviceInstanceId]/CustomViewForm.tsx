@@ -121,7 +121,7 @@ export const CustomViewForm = ({
         onSubmit(values as CustomViewFormValues);
       }}
       onValuesChange={(values, form) => {
-        if (isCreation && values.name) {
+        if (isCreation && values.name !== undefined) {
           const generatedSlug = slugify(values.name, {
             lower: true,
             strict: true,

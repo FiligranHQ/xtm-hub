@@ -106,6 +106,11 @@ export enum ServiceFormResource {
   CUSTOM_VIEW = 'view',
   PLAYBOOK = 'playbook',
   SCENARIO = 'scenario',
+  CSV_FEED = 'CSV feed',
+  RSS_FEED = 'RSS feed',
+  STREAM = 'stream',
+  TAXII_FEED = 'TAXII feed',
+  THIRD_PARTY_INTEGRATION = 'third party integration',
 }
 
 export interface ServiceFormFileField {
@@ -203,66 +208,15 @@ export const uploadFile = (
   { label, file }: ServiceFormFileField
 ) => user.upload(screen.getByLabelText(label, { selector: 'input' }), file);
 
-interface ReplaceFileConfirmationTestOptions<Values> {
+interface SlugGenerationTestsOptions<Values> {
   Form: ServiceFormComponent<Values>;
-  fileField: ServiceFormFileField;
-  buildEditedDocument: () => documentItem_fragment$data;
-}
-
-export const defineReplaceFileConfirmationTest = <Values,>({
-  Form,
-  fileField,
-  buildEditedDocument,
-}: ReplaceFileConfirmationTestOptions<Values>) => {
-  it(`should ask to confirm the replacement of the ${fileField.name} when the user clicks to update it`, async () => {
-    // Given
-    const { user } = renderServiceForm(Form, buildEditedDocument());
-
-    // When
-    await user.click(
-      screen.getByRole('button', { name: fileField.updateLabel })
-    );
-
-    // Then
-    expect(
-      screen.getByRole('alertdialog', { name: fileField.updateLabel })
-    ).toBeInTheDocument();
-  });
-};
-
-interface ServiceFormTestsOptions<
-  Values,
-> extends ReplaceFileConfirmationTestOptions<Values> {
   resourceName: ServiceFormResource;
-  shortDescriptionMaxLength: number;
-  fillCreationFields: (user: ServiceFormUser) => Promise<void>;
-  creationValues: NoInfer<Partial<Values>>;
-  editionValues?: NoInfer<Partial<Values>>;
 }
 
-export const defineServiceFormTests = <Values,>({
+export const defineSlugGenerationTests = <Values,>({
   Form,
   resourceName,
-  fileField,
-  shortDescriptionMaxLength,
-  buildEditedDocument,
-  fillCreationFields,
-  creationValues,
-  editionValues = {},
-}: ServiceFormTestsOptions<Values>) => {
-  const fillShortDescription = async (
-    user: ServiceFormUser,
-    shortDescription: string
-  ) => {
-    const shortDescriptionField = screen.getByRole('textbox', {
-      name: SHORT_DESCRIPTION_LABEL,
-    });
-    await user.clear(shortDescriptionField);
-    await user.click(shortDescriptionField);
-    await user.paste(shortDescription);
-    return shortDescriptionField;
-  };
-
+}: SlugGenerationTestsOptions<Values>) => {
   it.each([
     { name: 'Threat hunting', slug: 'threat-hunting' },
     { name: NEW_NAME, slug: NEW_SLUG },
@@ -297,6 +251,82 @@ export const defineServiceFormTests = <Values,>({
       expect(screen.getByRole('textbox', { name: SLUG_LABEL })).toHaveValue('');
     }
   );
+
+  it(`should empty the slug when the user clears the name of a new ${resourceName}`, async () => {
+    // Given
+    const { user } = renderServiceForm(Form);
+    const nameField = screen.getByRole('textbox', { name: NAME_LABEL });
+    await user.type(nameField, NEW_NAME);
+
+    // When
+    await user.clear(nameField);
+
+    // Then
+    expect(screen.getByRole('textbox', { name: SLUG_LABEL })).toHaveValue('');
+  });
+};
+
+interface ReplaceFileConfirmationTestOptions<Values> {
+  Form: ServiceFormComponent<Values>;
+  fileField: ServiceFormFileField;
+  buildEditedDocument: () => documentItem_fragment$data;
+}
+
+export const defineReplaceFileConfirmationTest = <Values,>({
+  Form,
+  fileField,
+  buildEditedDocument,
+}: ReplaceFileConfirmationTestOptions<Values>) => {
+  it(`should ask to confirm the replacement of the ${fileField.name} when the user clicks to update it`, async () => {
+    // Given
+    const { user } = renderServiceForm(Form, buildEditedDocument());
+
+    // When
+    await user.click(
+      screen.getByRole('button', { name: fileField.updateLabel })
+    );
+
+    // Then
+    expect(
+      screen.getByRole('alertdialog', { name: fileField.updateLabel })
+    ).toBeInTheDocument();
+  });
+};
+
+interface ServiceFormTestsOptions<Values>
+  extends
+    SlugGenerationTestsOptions<Values>,
+    ReplaceFileConfirmationTestOptions<Values> {
+  shortDescriptionMaxLength: number;
+  fillCreationFields: (user: ServiceFormUser) => Promise<void>;
+  creationValues: NoInfer<Partial<Values>>;
+  editionValues?: NoInfer<Partial<Values>>;
+}
+
+export const defineServiceFormTests = <Values,>({
+  Form,
+  resourceName,
+  fileField,
+  shortDescriptionMaxLength,
+  buildEditedDocument,
+  fillCreationFields,
+  creationValues,
+  editionValues = {},
+}: ServiceFormTestsOptions<Values>) => {
+  const fillShortDescription = async (
+    user: ServiceFormUser,
+    shortDescription: string
+  ) => {
+    const shortDescriptionField = screen.getByRole('textbox', {
+      name: SHORT_DESCRIPTION_LABEL,
+    });
+    await user.clear(shortDescriptionField);
+    await user.click(shortDescriptionField);
+    await user.paste(shortDescription);
+    return shortDescriptionField;
+  };
+
+  defineSlugGenerationTests({ Form, resourceName });
 
   it(`should keep the slug of the ${resourceName} when the user renames it`, async () => {
     // Given

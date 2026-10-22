@@ -131,7 +131,7 @@ export const RssFeedForm = ({ handleSubmit, document }: RssFeedFormProps) => {
           onSubmit(values as RssFeedFormValues);
         }}
         onValuesChange={(values, form) => {
-          if (isCreation && values.name) {
+          if (isCreation && values.name !== undefined) {
             const generatedSlug = slugify(values.name, {
               lower: true,
               strict: true,
