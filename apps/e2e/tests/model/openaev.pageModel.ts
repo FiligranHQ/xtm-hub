@@ -39,9 +39,11 @@ export default class OpenaevPage {
       .click();
   }
 
-  // Not connected: an OpenAEV link to its own connection flow. Connected: a link to XTM Hub in a new tab.
+  // Not connected: leads to OpenAEV's own connection flow. Connected: opens XTM Hub in a new tab.
   getXtmHubProduct() {
-    return this.page.getByRole('link', { name: /^XTM Hub/ });
+    return this.page
+      .getByRole('menu', { name: 'Filigran products' })
+      .getByRole('menuitem', { name: /^XTM Hub/ });
   }
 
   getAuthorizeConnectionDialog() {
