@@ -42,7 +42,6 @@ import {
   ServiceDefinitionIdentifier,
   ServiceInstanceCreationStatus,
 } from '../../__generated__/resolvers-types';
-import portalConfig from '../../config';
 import { requestContext } from '../../context/request.context';
 import DeploymentRequest, {
   DeploymentRequestId,
@@ -450,82 +449,53 @@ describe('registration app', () => {
         );
       };
 
-      const initialSaasManagerEnabled = portalConfig.saas_manager.enabled;
-
       beforeEach(() => {
         requestContext.set(requestContextRegistererUserSecondOrga);
-        portalConfig.saas_manager.enabled = false;
       });
 
-      afterEach(() => {
-        portalConfig.saas_manager.enabled = initialSaasManagerEnabled;
+      it('should register the platform without waiting for the SaaS Manager', async () => {
+        // Given
+        vi.spyOn(PgBossProducer, 'send').mockResolvedValue(null);
+        const callSpy = vi.spyOn(SaasManagerClient, 'callInstanceApi');
+
+        // When
+        const configuration = await registerNewPlatform();
+
+        // Then
+        expect(callSpy).not.toHaveBeenCalled();
+        expect(configuration?.commercial_model).toBe(CommercialModel.Other);
       });
 
-      it('should not enqueue the commercial model refresh when the SaaS Manager is disabled', async () => {
+      it('should enqueue the commercial model refresh of the registered platform', async () => {
         // Given
         const sendSpy = vi
           .spyOn(PgBossProducer, 'send')
           .mockResolvedValue(null);
 
         // When
-        await registerNewPlatform();
+        const configuration = await registerNewPlatform();
 
         // Then
-        expect(sendSpy).not.toHaveBeenCalledWith(
+        expect(sendSpy).toHaveBeenCalledWith(
           REGISTRATION_QUEUES.COMMERCIAL_MODEL,
-          expect.anything()
+          {
+            serviceInstanceId: configuration?.service_instance_id,
+            platformId: configuration?.platform_id,
+          }
         );
       });
 
-      describe('when the SaaS Manager is enabled', () => {
-        beforeEach(() => {
-          portalConfig.saas_manager.enabled = true;
-        });
+      it('should register the platform when the commercial model refresh cannot be enqueued', async () => {
+        // Given
+        vi.spyOn(PgBossProducer, 'send').mockRejectedValue(
+          new Error('PgBoss has not been started')
+        );
 
-        it('should register the platform without waiting for the SaaS Manager', async () => {
-          // Given
-          vi.spyOn(PgBossProducer, 'send').mockResolvedValue(null);
-          const callSpy = vi.spyOn(SaasManagerClient, 'callInstanceApi');
+        // When
+        const configuration = await registerNewPlatform();
 
-          // When
-          const configuration = await registerNewPlatform();
-
-          // Then
-          expect(callSpy).not.toHaveBeenCalled();
-          expect(configuration?.commercial_model).toBe(CommercialModel.Other);
-        });
-
-        it('should enqueue the commercial model refresh of the registered platform', async () => {
-          // Given
-          const sendSpy = vi
-            .spyOn(PgBossProducer, 'send')
-            .mockResolvedValue(null);
-
-          // When
-          const configuration = await registerNewPlatform();
-
-          // Then
-          expect(sendSpy).toHaveBeenCalledWith(
-            REGISTRATION_QUEUES.COMMERCIAL_MODEL,
-            {
-              serviceInstanceId: configuration?.service_instance_id,
-              platformId: configuration?.platform_id,
-            }
-          );
-        });
-
-        it('should register the platform when the commercial model refresh cannot be enqueued', async () => {
-          // Given
-          vi.spyOn(PgBossProducer, 'send').mockRejectedValue(
-            new Error('PgBoss has not been started')
-          );
-
-          // When
-          const configuration = await registerNewPlatform();
-
-          // Then
-          expect(configuration).toBeDefined();
-        });
+        // Then
+        expect(configuration).toBeDefined();
       });
     });
 
@@ -934,16 +904,6 @@ describe('registration app', () => {
   });
 
   describe('refreshCommercialModel', () => {
-    const initialSaasManagerEnabled = portalConfig.saas_manager.enabled;
-
-    beforeEach(() => {
-      portalConfig.saas_manager.enabled = false;
-    });
-
-    afterEach(() => {
-      portalConfig.saas_manager.enabled = initialSaasManagerEnabled;
-    });
-
     const createPlatform = async (commercialModel: CommercialModel) => {
       const serviceInstanceId = uuidv4() as ServiceInstanceId;
       const platformId = uuidv4();
@@ -975,79 +935,61 @@ describe('registration app', () => {
       );
     };
 
-    it('should not call the SaaS Manager when it is disabled', async () => {
-      // Given
-      const platform = await createPlatform(CommercialModel.Other);
-      const callSpy = vi.spyOn(SaasManagerClient, 'callInstanceApi');
-
+    it('should set the SaaS commercial model when the SaaS Manager returns PROD', async () => {
       // When
-      await RegistrationApp.refreshCommercialModel(platform);
+      const configuration = await refreshCommercialModel(
+        CommercialModel.Other,
+        async () =>
+          ({
+            ok: true,
+            status: 200,
+            json: async () => ({ commercial_model: 'PROD' }),
+          }) as Response
+      );
 
       // Then
-      expect(callSpy).not.toHaveBeenCalled();
+      expect(configuration?.commercial_model).toBe(CommercialModel.Saas);
     });
 
-    describe('when the SaaS Manager is enabled', () => {
-      beforeEach(() => {
-        portalConfig.saas_manager.enabled = true;
-      });
-
-      it('should set the SaaS commercial model when the SaaS Manager returns PROD', async () => {
+    it.each`
+      case                       | response
+      ${'the call fails'}        | ${() => Promise.reject(new Error('fetch failed'))}
+      ${'it returns 204'}        | ${async () => ({ ok: true, status: 204, json: async () => ({ commercial_model: 'TRIAL' }) }) as Response}
+      ${'it returns 401'}        | ${async () => ({ ok: false, status: 401 }) as Response}
+      ${'it returns 500'}        | ${async () => ({ ok: false, status: 500 }) as Response}
+      ${'the body is malformed'} | ${async () => ({ ok: true, status: 200, json: async () => Promise.reject(new SyntaxError('Unexpected token')) }) as Response}
+      ${'the model is missing'}  | ${async () => ({ ok: true, status: 200, json: async () => ({}) }) as Response}
+    `(
+      'should keep the SaaS commercial model when $case',
+      async ({ response }) => {
         // When
         const configuration = await refreshCommercialModel(
-          CommercialModel.Other,
-          async () =>
-            ({
-              ok: true,
-              status: 200,
-              json: async () => ({ commercial_model: 'PROD' }),
-            }) as Response
+          CommercialModel.Saas,
+          response
         );
 
         // Then
         expect(configuration?.commercial_model).toBe(CommercialModel.Saas);
-      });
+      }
+    );
 
-      it.each`
-        case                       | response
-        ${'the call fails'}        | ${() => Promise.reject(new Error('fetch failed'))}
-        ${'it returns 204'}        | ${async () => ({ ok: true, status: 204, json: async () => ({ commercial_model: 'TRIAL' }) }) as Response}
-        ${'it returns 401'}        | ${async () => ({ ok: false, status: 401 }) as Response}
-        ${'it returns 500'}        | ${async () => ({ ok: false, status: 500 }) as Response}
-        ${'the body is malformed'} | ${async () => ({ ok: true, status: 200, json: async () => Promise.reject(new SyntaxError('Unexpected token')) }) as Response}
-        ${'the model is missing'}  | ${async () => ({ ok: true, status: 200, json: async () => ({}) }) as Response}
-      `(
-        'should keep the SaaS commercial model when $case',
-        async ({ response }) => {
-          // When
-          const configuration = await refreshCommercialModel(
-            CommercialModel.Saas,
-            response
-          );
+    it.each`
+      case                               | response
+      ${'it returns a non PROD model'}   | ${async () => ({ ok: true, status: 200, json: async () => ({ commercial_model: 'TRIAL' }) }) as Response}
+      ${'it does not know the platform'} | ${async () => ({ ok: false, status: 404 }) as Response}
+    `(
+      'should switch to the other commercial model when $case',
+      async ({ response }) => {
+        // When
+        const configuration = await refreshCommercialModel(
+          CommercialModel.Saas,
+          response
+        );
 
-          // Then
-          expect(configuration?.commercial_model).toBe(CommercialModel.Saas);
-        }
-      );
-
-      it.each`
-        case                               | response
-        ${'it returns a non PROD model'}   | ${async () => ({ ok: true, status: 200, json: async () => ({ commercial_model: 'TRIAL' }) }) as Response}
-        ${'it does not know the platform'} | ${async () => ({ ok: false, status: 404 }) as Response}
-      `(
-        'should switch to the other commercial model when $case',
-        async ({ response }) => {
-          // When
-          const configuration = await refreshCommercialModel(
-            CommercialModel.Saas,
-            response
-          );
-
-          // Then
-          expect(configuration?.commercial_model).toBe(CommercialModel.Other);
-        }
-      );
-    });
+        // Then
+        expect(configuration?.commercial_model).toBe(CommercialModel.Other);
+      }
+    );
   });
 
   describe('loadRegisteredPlatform', () => {

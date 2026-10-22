@@ -23,7 +23,6 @@ import {
   ServiceInstanceCreationStatus,
   UnregisterPlatformInput,
 } from '../../__generated__/resolvers-types';
-import portalConfig from '../../config';
 import { withTransaction } from '../../context/database.context';
 import { requestContext } from '../../context/request.context';
 import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
@@ -74,9 +73,6 @@ import { RegistrationHelper } from './registration.helper';
 const loadCommercialModel = async (
   platformId: string
 ): Promise<CommercialModel | undefined> => {
-  if (!portalConfig.saas_manager.enabled) {
-    return undefined;
-  }
   try {
     const response = await SaasManagerClient.callInstanceApi({
       platform_id: platformId,
@@ -115,9 +111,6 @@ const loadCommercialModel = async (
 const enqueueCommercialModelRefresh = async (
   data: CommercialModelJobData
 ): Promise<void> => {
-  if (!portalConfig.saas_manager.enabled) {
-    return;
-  }
   try {
     await PgBossProducer.send(REGISTRATION_QUEUES.COMMERCIAL_MODEL, data);
   } catch (error) {
