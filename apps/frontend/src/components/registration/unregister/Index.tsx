@@ -105,7 +105,7 @@ export const Unregister = ({
   if (status === 'succeeded') {
     return (
       <RegistrationLayout>
-        <h1>
+        <h1 className="title-sm">
           {t(`Unregister.Succeeded.Title`, {
             platformIdentifier: displayedIdentifier,
           })}
@@ -118,7 +118,7 @@ export const Unregister = ({
   if (status === 'failed') {
     return (
       <RegistrationLayout>
-        <h1>{t(`Unregister.Failed.Title`)}</h1>
+        <h1 className="title-sm">{t(`Unregister.Failed.Title`)}</h1>
         <p>{t(`Unregister.Failed.Description`)}</p>
       </RegistrationLayout>
     );
@@ -132,7 +132,9 @@ export const Unregister = ({
     if (!isInOrganization) {
       return (
         <RegistrationLayout cancel={cancel}>
-          <h1>{t(`Unregister.Error.NotInOrganization.Title`)}</h1>
+          <h1 className="title-sm">
+            {t(`Unregister.Error.NotInOrganization.Title`)}
+          </h1>
         </RegistrationLayout>
       );
     }
