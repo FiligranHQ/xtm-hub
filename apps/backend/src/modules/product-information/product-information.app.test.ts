@@ -65,7 +65,6 @@ describe('product information app', () => {
     });
 
     afterEach(async () => {
-      vi.restoreAllMocks();
       await PlatformConfigurationDomain.deleteConfigurationBy({
         service_instance_id: serviceInstanceId,
       });

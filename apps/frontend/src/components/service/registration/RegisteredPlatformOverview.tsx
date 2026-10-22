@@ -1,15 +1,31 @@
 'use client';
 
-import { registeredPlatformByServiceInstanceId } from '@/components/registration/register/register.graphql';
+import {
+  registeredPlatformByServiceInstanceId,
+  registeredPlatformByServiceInstanceIdFragment,
+} from '@/components/registration/register/register.graphql';
 import { PlatformInformation } from '@/components/service/registration/PlatformInformation';
 import { RegisteredPlatformHeader } from '@/components/service/registration/RegisteredPlatformHeader';
 import { BreadcrumbNav } from '@/components/ui/BreadcrumbNav';
+import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
+import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
+import { portalGraphqlClient } from '@/lib/graphql-client';
 import { APP_PATH } from '@/utils/path/constant';
+import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import { registeredPlatformByServiceInstanceIdQuery } from '@generated/registeredPlatformByServiceInstanceIdQuery.graphql';
-import { CommercialModel } from '@graphql/generated';
+import {
+  CommercialModel,
+  FeatureFlag,
+  PortalCapability,
+  useRegisteredSaasPlatformDataQuery,
+} from '@graphql/generated';
+import { productInformationKeys } from '@graphql/product-information/product-information.keys';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
-import { useLazyLoadQuery } from 'react-relay';
+import { useFragment, useLazyLoadQuery } from 'react-relay';
+
+// Matches the backend cache: a remount within a minute would only get the same answer back.
+const SAAS_PLATFORM_DATA_STALE_TIME = 60_000;
 
 interface RegisteredPlatformOverviewProps {
   params: Promise<{ serviceInstanceId: string }>;
@@ -30,8 +46,38 @@ export const RegisteredPlatformOverview = ({
         },
       }
     );
+  const platform =
+    useFragment<registeredPlatformByServiceInstanceId_fragment$key>(
+      registeredPlatformByServiceInstanceIdFragment,
+      queryData.registeredPlatform
+    );
 
-  if (!queryData.registeredPlatform) {
+  const canReadSaasMetrics = !!useUserHasPortalCapability([
+    PortalCapability.Bypass,
+    PortalCapability.ReadSaasMetrics,
+  ]);
+  const isSaasMetricsEnabled = useIsFeatureEnabled(FeatureFlag.SaasMetrics);
+  const isSaas = platform?.commercial_model === CommercialModel.Saas;
+  const showSaasPlatformData =
+    isSaasMetricsEnabled && isSaas && canReadSaasMetrics;
+
+  const saasPlatformDataVariables = {
+    input: { service_instance_id: decodedServiceInstanceId },
+  };
+  const { data: saasPlatformData, isPending: isSaasPlatformDataPending } =
+    useRegisteredSaasPlatformDataQuery(
+      portalGraphqlClient,
+      saasPlatformDataVariables,
+      {
+        queryKey: productInformationKeys.registeredSaasPlatformData(
+          saasPlatformDataVariables
+        ),
+        enabled: showSaasPlatformData,
+        staleTime: SAAS_PLATFORM_DATA_STALE_TIME,
+      }
+    );
+
+  if (!queryData.registeredPlatform || !platform) {
     notFound();
   }
 
@@ -41,7 +87,7 @@ export const RegisteredPlatformOverview = ({
       href: `/${APP_PATH}`,
     },
     {
-      label: queryData.registeredPlatform.title,
+      label: platform.title,
       original: true,
     },
   ];
@@ -54,10 +100,9 @@ export const RegisteredPlatformOverview = ({
       />
       <PlatformInformation
         registeredPlatform={queryData.registeredPlatform}
-        serviceInstanceId={queryData.registeredPlatform.service_instance_id}
-        isSaas={
-          queryData.registeredPlatform.commercial_model === CommercialModel.Saas
-        }
+        showMetadata={showSaasPlatformData}
+        metadata={saasPlatformData?.registeredSaasPlatformData?.metadata}
+        isMetadataLoading={isSaasPlatformDataPending}
       />
     </>
   );
