@@ -103,17 +103,20 @@ const mockPlatform: PlatformInput = {
   url: 'https://opencti.example.com',
 };
 
-const renderRegister = () =>
+const renderRegister = (
+  identifier: PlatformIdentifier = PlatformIdentifier.Opencti,
+  state?: string
+) =>
   testRender(
     <RegistrationContext.Provider
       value={{
-        identifier: PlatformIdentifier.Opencti,
-        displayedIdentifier:
-          PlatformMetadataMapping[PlatformIdentifier.Opencti].name,
+        identifier,
+        displayedIdentifier: PlatformMetadataMapping[identifier].name,
       }}>
       <Register
         queryRef={mockQueryRef}
         platform={mockPlatform}
+        state={state}
       />
     </RegistrationContext.Provider>
   );
@@ -343,5 +346,77 @@ describe('Register', () => {
     } as registerIsPlatformRegisteredFragment$data;
     renderRegister();
     expect(screen.getByTestId('loader')).toBeInTheDocument();
+  });
+
+  describe('state echo', () => {
+    beforeEach(() => {
+      testState.isPlatformRegistered = {
+        status: PlatformRegistrationStatus.NeverRegistered,
+        platformTitle: null,
+        organization: null,
+      } as registerIsPlatformRegisteredFragment$data;
+      testState.token = 'my-token';
+    });
+
+    it('echoes the state in the register message for XTM One', async () => {
+      // Given an XTM One platform that opened the page with a state
+      const postMessage = vi.fn();
+      Object.defineProperty(window, 'opener', {
+        value: { postMessage },
+        writable: true,
+      });
+      const { user } = renderRegister(PlatformIdentifier.Xtmone, 's-1');
+
+      // When
+      await user.click(screen.getByRole('button', { name: 'mock-confirm' }));
+
+      // Then
+      await waitFor(() => {
+        expect(postMessage).toHaveBeenCalledWith(
+          { action: 'register', token: 'my-token', state: 's-1' },
+          '*'
+        );
+      });
+    });
+
+    it('echoes the state in the cancel message for XTM One', async () => {
+      // Given
+      const postMessage = vi.fn();
+      Object.defineProperty(window, 'opener', {
+        value: { postMessage },
+        writable: true,
+      });
+      const { user } = renderRegister(PlatformIdentifier.Xtmone, 's-1');
+
+      // When
+      await user.click(screen.getByRole('button', { name: 'mock-cancel' }));
+
+      // Then
+      expect(postMessage).toHaveBeenCalledWith(
+        { action: 'cancel', state: 's-1' },
+        '*'
+      );
+    });
+
+    it('does not echo the state for OpenCTI', async () => {
+      // Given an OpenCTI page opened with a state
+      const postMessage = vi.fn();
+      Object.defineProperty(window, 'opener', {
+        value: { postMessage },
+        writable: true,
+      });
+      const { user } = renderRegister(PlatformIdentifier.Opencti, 's-1');
+
+      // When
+      await user.click(screen.getByRole('button', { name: 'mock-confirm' }));
+
+      // Then
+      await waitFor(() => {
+        expect(postMessage).toHaveBeenCalledWith(
+          { action: 'register', token: 'my-token' },
+          '*'
+        );
+      });
+    });
   });
 });

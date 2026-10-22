@@ -25,7 +25,7 @@ import publicDocumentListGraphql, {
 } from '@generated/publicDocumentList.graphql';
 import { publicDocumentListItemFragment$key } from '@generated/publicDocumentListItemFragment.graphql';
 import { publicDocumentsQuery } from '@generated/publicDocumentsQuery.graphql';
-import { seoServiceInstanceFragment$data } from '@generated/seoServiceInstanceFragment.graphql';
+import { SeoServiceInstanceItemFragment } from '@graphql/generated';
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import {
   PreloadedQuery,
@@ -35,7 +35,7 @@ import {
 } from 'react-relay';
 
 interface PublicDocumentsListProps {
-  serviceInstance: seoServiceInstanceFragment$data;
+  serviceInstance: SeoServiceInstanceItemFragment;
   queryRef: PreloadedQuery<publicDocumentsQuery>;
   baseUrl: string;
 }

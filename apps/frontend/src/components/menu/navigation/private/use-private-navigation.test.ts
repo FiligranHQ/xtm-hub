@@ -10,6 +10,7 @@ import { meContext_fragment$data } from '@generated/meContext_fragment.graphql';
 import {
   OrderingMode,
   OrganizationCapability,
+  PlatformIdentifier,
   PortalCapability,
   ServiceDefinitionIdentifier,
   ServiceInstanceFilterKey,
@@ -515,6 +516,41 @@ describe('usePrivateNavigation', () => {
           label: 'OpenAEV Production Platform',
           href: '/app/service/openaev_registration/openaev-service-instance-id',
           tooltip: 'https://openaev.example.com',
+        },
+      ],
+    });
+  });
+
+  it('links XTM One registered platforms directly to their instance in a new tab', () => {
+    vi.mocked(
+      getPrivateNavigationRegisteredPlatformsByIdentifier
+    ).mockImplementation((_queryData, platformIdentifier) =>
+      platformIdentifier === PlatformIdentifier.Xtmone
+        ? [
+            {
+              serviceInstanceId: 'xtmone-service-instance-id',
+              title: 'XTM One Production Platform',
+              url: 'https://xtmone.example.com',
+            },
+          ]
+        : []
+    );
+
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    const xtmOneSection = getSection(result.current.sections, 'xtm-one');
+
+    expect(xtmOneSection?.links[0]).toEqual({
+      label: 'MyProduct',
+      badge: '1',
+      subLinks: [
+        {
+          label: 'XTM One Production Platform',
+          href: 'https://xtmone.example.com',
+          external: true,
+          tooltip: 'https://xtmone.example.com',
         },
       ],
     });

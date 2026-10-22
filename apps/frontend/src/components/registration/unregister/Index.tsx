@@ -15,6 +15,7 @@ import RegisterCanUnregisterPlatformQueryGraphql, {
   registerCanUnregisterPlatformQuery,
 } from '@generated/registerCanUnregisterPlatformQuery.graphql';
 import { registerUnregisterPlatformMutation } from '@generated/registerUnregisterPlatformMutation.graphql';
+import { PlatformIdentifier } from '@graphql/generated';
 import { useContext, useState } from 'react';
 import {
   PreloadedQuery,
@@ -27,6 +28,8 @@ interface UnregisterProps {
   platformId: string;
   tenantId?: string | null;
   queryRef: PreloadedQuery<registerCanUnregisterPlatformQuery>;
+  /** The nonce XTM One opened the page with, echoed back in its messages. */
+  state?: string;
 }
 
 type UnregistrationStatus = 'idle' | 'succeeded' | 'failed';
@@ -35,6 +38,7 @@ export const Unregister = ({
   queryRef,
   platformId,
   tenantId,
+  state,
 }: UnregisterProps) => {
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
   const t = useTranslate();
@@ -59,9 +63,16 @@ export const Unregister = ({
     useMutation<registerUnregisterPlatformMutation>(UnregisterPlatform);
 
   const [status, setStatus] = useState<UnregistrationStatus>('idle');
-  const cancel = () => {
-    window.opener?.postMessage({ action: 'cancel' }, '*');
+  // OpenCTI and OpenAEV never receive the state: their messages are unchanged.
+  const echoedState =
+    identifier === PlatformIdentifier.Xtmone ? state : undefined;
+  const postToOpener = (action: 'cancel' | 'unregister') => {
+    window.opener?.postMessage(
+      { action, ...(echoedState && { state: echoedState }) },
+      '*'
+    );
   };
+  const cancel = () => postToOpener('cancel');
 
   const confirm = () => {
     if (!identifier) {
@@ -77,7 +88,7 @@ export const Unregister = ({
         },
       },
       onCompleted: () => {
-        window.opener?.postMessage({ action: 'unregister' }, '*');
+        postToOpener('unregister');
         setStatus('succeeded');
       },
       onError: (error) => {
