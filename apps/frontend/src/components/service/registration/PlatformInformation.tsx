@@ -4,11 +4,13 @@ import { RegistrationDetails } from '@/components/service/registration/Registrat
 import { RegistrationMetadata } from '@/components/service/registration/RegistrationMetadata';
 import { Separator } from '@/components/ui/separator';
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
+import { useUserHasPortalCapability } from '@/hooks/use-portal-capability';
 import { useTranslate } from '@/hooks/use-translate';
 import { portalGraphqlClient } from '@/lib/graphql-client';
 import { registeredPlatformByServiceInstanceId_fragment$key } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   FeatureFlag,
+  PortalCapability,
   useRegisteredSaasPlatformDataQuery,
 } from '@graphql/generated';
 import { productInformationKeys } from '@graphql/product-information/product-information.keys';
@@ -28,8 +30,13 @@ export const PlatformInformation = ({
   isSaas,
 }: PlatformInformationProps) => {
   const t = useTranslate();
+  const canReadSaasMetrics = !!useUserHasPortalCapability([
+    PortalCapability.Bypass,
+    PortalCapability.ReadSaasMetrics,
+  ]);
+
   const isSaasMetricsEnabled = useIsFeatureEnabled(FeatureFlag.SaasMetrics);
-  const showMetadata = isSaasMetricsEnabled && isSaas;
+  const showData = isSaasMetricsEnabled && isSaas && canReadSaasMetrics;
 
   const variables = {
     input: { service_instance_id: serviceInstanceId },
@@ -39,7 +46,7 @@ export const PlatformInformation = ({
     variables,
     {
       queryKey: productInformationKeys.registeredSaasPlatformData(variables),
-      enabled: showMetadata,
+      enabled: showData,
       staleTime: SAAS_PLATFORM_DATA_STALE_TIME,
     }
   );
@@ -50,7 +57,7 @@ export const PlatformInformation = ({
       <Separator className="m-3" />
       <div className="grid grid-cols-2">
         <RegistrationDetails registeredPlatform={registeredPlatform} />
-        {showMetadata && (
+        {showData && (
           <RegistrationMetadata
             metadata={data?.registeredSaasPlatformData?.metadata}
             isLoading={isPending}

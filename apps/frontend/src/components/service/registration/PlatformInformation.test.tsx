@@ -3,7 +3,10 @@ import { basePlatform } from '@/components/service/registration/registered-platf
 import { useIsFeatureEnabled } from '@/hooks/use-is-feature-enabled';
 import testRender from '@/utils/test/test-render';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
-import { useRegisteredSaasPlatformDataQuery } from '@graphql/generated';
+import {
+  PortalCapability,
+  useRegisteredSaasPlatformDataQuery,
+} from '@graphql/generated';
 import { screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -47,13 +50,17 @@ const mockSaasPlatformDataQuery = ({
     isPending,
   } as ReturnType<typeof useRegisteredSaasPlatformDataQuery>);
 
-const renderInformation = ({ isSaas = true }: { isSaas?: boolean } = {}) =>
+const renderInformation = ({
+  isSaas = true,
+  capabilities = [PortalCapability.ReadSaasMetrics],
+}: { isSaas?: boolean; capabilities?: PortalCapability[] } = {}) =>
   testRender(
     <PlatformInformation
       registeredPlatform={platform}
       serviceInstanceId={platform.service_instance_id}
       isSaas={isSaas}
-    />
+    />,
+    { me: { capabilities: capabilities.map((name) => ({ name })) } }
   );
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
@@ -147,6 +154,41 @@ describe('PlatformInformation', () => {
       screen.queryByText('Register.Metrics.Metadata.Hostname:')
     ).not.toBeInTheDocument();
   });
+
+  it.each([[PortalCapability.Bypass], [PortalCapability.ReadSaasMetrics]])(
+    'should query and display the SaaS subscription metadata when the user has %s',
+    (capability) => {
+      // Given / When
+      renderInformation({ capabilities: [capability] });
+
+      // Then
+      expect(useRegisteredSaasPlatformDataQuery).toHaveBeenLastCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ enabled: true })
+      );
+      expect(screen.getByText(HOSTNAME)).toBeInTheDocument();
+    }
+  );
+
+  it.each([[[]], [[PortalCapability.ReadTrials]]])(
+    'should neither query nor display the SaaS subscription metadata when the user capabilities are %j',
+    (capabilities) => {
+      // Given / When
+      renderInformation({ capabilities });
+
+      // Then
+      expect(useRegisteredSaasPlatformDataQuery).toHaveBeenLastCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ enabled: false })
+      );
+      expect(
+        screen.queryByText('Register.Metrics.Metadata.Hostname:')
+      ).not.toBeInTheDocument();
+      expect(screen.getByText(platform.url)).toBeInTheDocument();
+    }
+  );
 
   it('should display the SaaS subscription metadata as loading while the query is pending', () => {
     // Given

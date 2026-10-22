@@ -5,6 +5,7 @@ import testRender from '@/utils/test/test-render';
 import { registeredPlatformByServiceInstanceId_fragment$data } from '@generated/registeredPlatformByServiceInstanceId_fragment.graphql';
 import {
   CommercialModel,
+  PortalCapability,
   useRegisteredSaasPlatformDataQuery,
 } from '@graphql/generated';
 import { act, screen, within } from '@testing-library/react';
@@ -50,7 +51,10 @@ const renderOverview = async (
             serviceInstanceId: encodeURIComponent(SERVICE_INSTANCE_ID),
           })}
         />
-      </Suspense>
+      </Suspense>,
+      {
+        me: { capabilities: [{ name: PortalCapability.ReadSaasMetrics }] },
+      }
     );
   });
 };
