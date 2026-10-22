@@ -107,7 +107,7 @@ export const RegistrationMetadata = ({
               {t('Register.Metrics.Metadata.Contract')}:
             </span>
             {contractPeriod
-              ? `${formatDate(metadata?.start_date)} → ${formatDate(metadata?.end_date)}`
+              ? `${formatDate(metadata?.start_date, 'DATE_MEDIUM')} → ${formatDate(metadata?.end_date, 'DATE_MEDIUM')}`
               : t('Register.Metrics.Metadata.Unavailable')}
           </span>
           {contractPeriod && (

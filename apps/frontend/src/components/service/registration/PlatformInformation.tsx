@@ -45,7 +45,7 @@ export const PlatformInformation = ({
   );
 
   return (
-    <div className="my-3 layer-2 bg-elevation-default p-6">
+    <div className="my-3 layer-2 bg-filigran-brand-primary-transparency-10 p-6">
       <h2>{t('Register.Details.PlatformInformation')}</h2>
       <Separator className="m-3" />
       <div className="grid grid-cols-2">
