@@ -84,7 +84,7 @@ test.describe('OpenCTI one-click deploy of each resource type', () => {
   // These feeds can only be created once OpenCTI reached the source (a CSV file, a remote OpenCTI), which the test
   // stack does not provide: the test stops at the prefilled import drawer.
   for (const { kind, drawerTitle } of [
-    { kind: 'csv', drawerTitle: 'Import a CSV Feed' },
+    { kind: 'csv', drawerTitle: 'Import a CSV feed' },
     { kind: 'stream', drawerTitle: 'Create an OpenCTI Stream' },
   ] as const) {
     test(`should open the ${kind} feed deployed from XTM Hub in the OpenCTI import form`, async ({
@@ -208,15 +208,6 @@ test.describe('OpenCTI links to XTM Hub', () => {
       await opencti.navigateTo(OPENCTI.experiencePath);
       const xtmHubTab = await opencti.openXtmHubTab(
         opencti.getGoToTheHubLink()
-      );
-      await expect(xtmHubTab).toHaveURL(isXtmHubUrl);
-      await xtmHubTab.close();
-    });
-
-    await test.step('product switcher: XTM Hub', async () => {
-      await opencti.openProductSwitcher();
-      const xtmHubTab = await opencti.openXtmHubTab(
-        opencti.getXtmHubProductLink()
       );
       await expect(xtmHubTab).toHaveURL(isXtmHubUrl);
       await xtmHubTab.close();

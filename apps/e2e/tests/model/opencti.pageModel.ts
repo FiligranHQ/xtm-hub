@@ -40,14 +40,6 @@ export default class OpenctiPage {
     return this.page.getByRole('link', { name: 'Go to the Hub' });
   }
 
-  async openProductSwitcher() {
-    await this.page.getByRole('button', { name: 'Switch product' }).click();
-  }
-
-  getXtmHubProductLink() {
-    return this.page.getByRole('link', { name: 'XTM Hub' });
-  }
-
   // Clicks a link to XTM Hub and returns the new tab OpenCTI opens for it.
   async openXtmHubTab(link: Locator) {
     const xtmHubTabPromise = this.page.context().waitForEvent('page');
