@@ -10,7 +10,7 @@ import {
 } from './news-feed-redirect.helper';
 
 const BLOG_POST_SLUG = 'threat-report-2026';
-const BLOG_POST_URL = `https://www.filigran.io/blog/${BLOG_POST_SLUG}`;
+const BLOG_POST_URL = `https://filigran.io/blog/${BLOG_POST_SLUG}`;
 
 const UNSAFE_SEGMENTS: [string, string][] = [
   ['a slash', 'a/b'],
@@ -66,7 +66,7 @@ describe('news-feed-redirect.helper', () => {
   describe('buildUrlWithSegment', () => {
     it('should build the url from the fixed origin and path prefix', () => {
       const url = NewsFeedRedirectHelper.buildUrlWithSegment({
-        origin: 'https://www.filigran.io',
+        origin: 'https://filigran.io',
         pathPrefix: '/blog/',
         segment: BLOG_POST_SLUG,
       });
@@ -79,7 +79,7 @@ describe('news-feed-redirect.helper', () => {
       'should not build a url for a segment with %s',
       (_description, segment) => {
         const url = NewsFeedRedirectHelper.buildUrlWithSegment({
-          origin: 'https://www.filigran.io',
+          origin: 'https://filigran.io',
           pathPrefix: '/blog/',
           segment,
         });

@@ -1287,7 +1287,7 @@ describe('newsFeedApp', () => {
   });
   describe('resolveExternalRedirect', () => {
     const BLOG_POST_SLUG = 'threat-report-2026';
-    const BLOG_POST_URL = `https://www.filigran.io/blog/${BLOG_POST_SLUG}`;
+    const BLOG_POST_URL = `https://filigran.io/blog/${BLOG_POST_SLUG}`;
     const PLATFORM_ID = '9b0c7a3e-1111-4a9e-8d6f-0d4f5a7c9e10';
 
     const createBlogPostItem = async ({

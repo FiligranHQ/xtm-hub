@@ -36,7 +36,7 @@ import { ReadOnlySessionStore } from '../../session/read-only-session.store';
 import { newsFeedRedirectEndpoint } from './news-feed-redirect-endpoint';
 
 const BLOG_POST_SLUG = 'threat-report-2026';
-const BLOG_POST_URL = `https://www.filigran.io/blog/${BLOG_POST_SLUG}`;
+const BLOG_POST_URL = `https://filigran.io/blog/${BLOG_POST_SLUG}`;
 const PLATFORM_ID = '9b0c7a3e-1111-4a9e-8d6f-0d4f5a7c9e10';
 const UNKNOWN_ITEM_ID = '3f8d0c1e-2b7a-4d65-8e19-5a4c6b7d8e90';
 const HUB_ROOT = '/';

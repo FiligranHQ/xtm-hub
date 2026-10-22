@@ -18,10 +18,10 @@ docs {
   Public endpoint, no auth required, rate limited per IP (60 requests per minute).
 
   itemId: id of a news feed item (UUID, not the Relay global id). Its type must have a destination builder,
-  today only BLOG_POST, built from the blog_post_slug metadata (appended to https://www.filigran.io/blog/).
+  today only BLOG_POST, built from the blog_post_slug metadata (appended to https://filigran.io/blog/).
 
   Answers a 302 with Cache-Control: no-store:
-  - to the destination built from the item type and metadata, e.g. https://www.filigran.io/blog/<slug>
+  - to the destination built from the item type and metadata, e.g. https://filigran.io/blog/<slug>
     (only the five standard utm parameters are forwarded to filigran.io, each at most 100 characters, platform_id never is)
   - to the hub root (/) for a malformed id, an unknown or deleted item, a type without a builder or invalid metadata.
     The response is identical in every case.

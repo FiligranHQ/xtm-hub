@@ -28,7 +28,7 @@ interface NewsFeedDestinationDefinition {
 const SAFE_PATH_SEGMENT_PATTERN = /^[A-Za-z0-9]+(?:[._-][A-Za-z0-9]+)*$/;
 const SAFE_PATH_SEGMENT_MAX_LENGTH = 200;
 
-export const FILIGRAN_WEBSITE_ORIGIN = 'https://www.filigran.io';
+export const FILIGRAN_WEBSITE_ORIGIN = 'https://filigran.io';
 export const FILIGRAN_WEBSITE_HOST_LABEL = 'filigran.io';
 const FILIGRAN_BLOG_PATH = '/blog/';
 
