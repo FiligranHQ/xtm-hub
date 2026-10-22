@@ -2003,7 +2003,7 @@ export type Query = {
    * contains it (case-insensitive) are considered.
    */
   registeredProductVersions: Array<RegisteredProductVersion>;
-  registeredSaasPlatformMetadata: Maybe<SaasPlatformMetadata>;
+  registeredSaasPlatformData: Maybe<SaasPlatformData>;
   rolePortals: Array<RolePortal>;
   saasPlatforms: RegisteredPlatformConnection;
   seoServiceInstance: SeoServiceInstance;
@@ -2241,7 +2241,7 @@ export type QueryRegisteredProductVersionsArgs = {
 };
 
 
-export type QueryRegisteredSaasPlatformMetadataArgs = {
+export type QueryRegisteredSaasPlatformDataArgs = {
   input: RegisteredPlatformInput;
 };
 
@@ -2544,6 +2544,11 @@ export type SsoGroupRolePortal = {
   __typename?: 'SSOGroupRolePortal';
   rolePortal: RolePortal;
   ssoGroup: Scalars['String']['output'];
+};
+
+export type SaasPlatformData = {
+  __typename?: 'SaasPlatformData';
+  metadata: SaasPlatformMetadata;
 };
 
 export type SaasPlatformMetadata = {
@@ -3656,6 +3661,13 @@ export type OrganizationSubscribedServicesListQueryVariables = Exact<{
 
 export type OrganizationSubscribedServicesListQuery = { __typename?: 'Query', subscriptions: { __typename?: 'SubscriptionConnection', totalCount: number, edges: Array<{ __typename?: 'SubscriptionEdge', node: { __typename?: 'SubscriptionModel', id: string, start_date: any | null, service_instance: { __typename?: 'ServiceInstance', id: string, name: string, creation_status: ServiceInstanceCreationStatus | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', id: string, name: string, identifier: ServiceDefinitionIdentifier } | null } } }>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, startCursor: string | null, endCursor: string | null } } };
 
+export type RegisteredSaasPlatformDataQueryVariables = Exact<{
+  input: RegisteredPlatformInput;
+}>;
+
+
+export type RegisteredSaasPlatformDataQuery = { __typename?: 'Query', registeredSaasPlatformData: { __typename?: 'SaasPlatformData', metadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null } } | null };
+
 export type RegisteredPlatformsListQueryVariables = Exact<{
   input: RegisteredPlatformsInput;
 }>;
@@ -3670,12 +3682,13 @@ export type RegisteredPlatformsQueryVariables = Exact<{
 
 export type RegisteredPlatformsQuery = { __typename?: 'Query', registeredPlatforms: Array<{ __typename?: 'RegisteredPlatform', id: string, identifier: ServiceDefinitionIdentifier, title: string, contract: PlatformContract, deployment_request: { __typename?: 'DeploymentRequest', parent_id: any | null } | null, subscription: { __typename?: 'SubscriptionModel', start_date: any | null, end_date: any | null, service_instance_id: any } | null }> };
 
-export type RegisteredSaasPlatformMetadataQueryVariables = Exact<{
-  input: RegisteredPlatformInput;
+export type PlatformAssociatedOrganizationQueryVariables = Exact<{
+  platformId: Scalars['String']['input'];
+  tenantId: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type RegisteredSaasPlatformMetadataQuery = { __typename?: 'Query', registeredSaasPlatformMetadata: { __typename?: 'SaasPlatformMetadata', hostname: string | null, plan: string | null, start_date: any | null, end_date: any | null, region: string | null } | null };
+export type PlatformAssociatedOrganizationQuery = { __typename?: 'Query', platformAssociatedOrganization: { __typename?: 'Organization', id: string } | null };
 
 export type AddRolePortalMutationVariables = Exact<{
   input: AddRolePortalInput;
@@ -3791,6 +3804,29 @@ export type ServiceInstancesListQueryVariables = Exact<{
 
 
 export type ServiceInstancesListQuery = { __typename?: 'Query', serviceInstances: { __typename?: 'ServiceConnection', edges: Array<{ __typename?: 'ServiceInstanceEdge', node: { __typename?: 'ServiceInstance', id: string, name: string, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier } | null } | null }> } };
+
+export type SeoServiceInstanceItemFragment = { __typename?: 'SeoServiceInstance', id: string, name: string, slug: string | null, description: string | null, logo_document_id: any | null, illustration_document_id: any | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier }, links: Array<{ __typename?: 'ServiceLink', url: string | null, name: string | null } | null> | null };
+
+export type SeoServiceInstancesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SeoServiceInstancesQuery = { __typename?: 'Query', seoServiceInstances: Array<{ __typename?: 'SeoServiceInstance', id: string, name: string, slug: string | null, description: string | null, logo_document_id: any | null, illustration_document_id: any | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier }, links: Array<{ __typename?: 'ServiceLink', url: string | null, name: string | null } | null> | null }> };
+
+export type SeoServiceInstanceBySlugQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type SeoServiceInstanceBySlugQuery = { __typename?: 'Query', seoServiceInstance: { __typename?: 'SeoServiceInstance', id: string, name: string, slug: string | null, description: string | null, logo_document_id: any | null, illustration_document_id: any | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier }, links: Array<{ __typename?: 'ServiceLink', url: string | null, name: string | null } | null> | null } };
+
+export type ServiceInstanceLinksByTagsQueryVariables = Exact<{
+  tags: Array<ServiceInstanceTag> | ServiceInstanceTag;
+}>;
+
+
+export type ServiceInstanceLinksByTagsQuery = { __typename?: 'Query', serviceInstanceLinksByTags: Array<{ __typename?: 'SeoServiceInstance', id: string, name: string, slug: string | null, description: string | null, logo_document_id: any | null, illustration_document_id: any | null, tags: Array<ServiceInstanceTag> | null, service_definition: { __typename?: 'ServiceDefinition', identifier: ServiceDefinitionIdentifier }, links: Array<{ __typename?: 'ServiceLink', url: string | null, name: string | null } | null> | null }> };
+
+export type SeoServiceInstanceMetadataItemFragment = { __typename?: 'SeoServiceInstanceMetadata', service_instance_id: any, language: Locale, meta_title: string, meta_description: string };
 
 export type ServiceInstanceSeoMetadataByIdQueryVariables = Exact<{
   service_instance_id: Scalars['ServiceInstanceId']['input'];
@@ -4298,6 +4334,32 @@ export const OrganizationSubscribedServiceRowFragmentDoc = `
       identifier
     }
   }
+}
+    `;
+export const SeoServiceInstanceItemFragmentDoc = `
+    fragment SeoServiceInstanceItem on SeoServiceInstance {
+  id
+  name
+  slug
+  description
+  logo_document_id
+  illustration_document_id
+  service_definition {
+    identifier
+  }
+  tags
+  links {
+    url
+    name
+  }
+}
+    `;
+export const SeoServiceInstanceMetadataItemFragmentDoc = `
+    fragment SeoServiceInstanceMetadataItem on SeoServiceInstanceMetadata {
+  service_instance_id
+  language
+  meta_title
+  meta_description
 }
     `;
 export const SolutionCategoryRowFragmentDoc = `
@@ -5937,6 +5999,65 @@ useInfiniteOrganizationSubscribedServicesListQuery.getKey = (variables: Organiza
 useInfiniteOrganizationSubscribedServicesListQuery.getRootKey = () => ['OrganizationSubscribedServicesList.infinite'] as const;
 useOrganizationSubscribedServicesListQuery.fetcher = (client: GraphQLClient, variables: OrganizationSubscribedServicesListQueryVariables, headers?: RequestInit['headers']) => fetcher<OrganizationSubscribedServicesListQuery, OrganizationSubscribedServicesListQueryVariables>(client, OrganizationSubscribedServicesListDocument, variables, headers);
 
+export const RegisteredSaasPlatformDataDocument = `
+    query RegisteredSaasPlatformData($input: RegisteredPlatformInput!) {
+  registeredSaasPlatformData(input: $input) {
+    metadata {
+      hostname
+      plan
+      start_date
+      end_date
+      region
+    }
+  }
+}
+    `;
+
+export const useRegisteredSaasPlatformDataQuery = <
+      TData = RegisteredSaasPlatformDataQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredSaasPlatformDataQueryVariables,
+      options?: Omit<UseQueryOptions<RegisteredSaasPlatformDataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredSaasPlatformDataQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<RegisteredSaasPlatformDataQuery, TError, TData>(
+      {
+    queryKey: ['RegisteredSaasPlatformData', variables],
+    queryFn: fetcher<RegisteredSaasPlatformDataQuery, RegisteredSaasPlatformDataQueryVariables>(client, RegisteredSaasPlatformDataDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useRegisteredSaasPlatformDataQuery.getKey = (variables: RegisteredSaasPlatformDataQueryVariables) => ['RegisteredSaasPlatformData', variables];
+useRegisteredSaasPlatformDataQuery.getRootKey = () => ['RegisteredSaasPlatformData'] as const;
+export const useInfiniteRegisteredSaasPlatformDataQuery = <
+      TData = InfiniteData<RegisteredSaasPlatformDataQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: RegisteredSaasPlatformDataQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<RegisteredSaasPlatformDataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredSaasPlatformDataQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<RegisteredSaasPlatformDataQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['RegisteredSaasPlatformData.infinite', variables],
+      queryFn: (metaData) => fetcher<RegisteredSaasPlatformDataQuery, RegisteredSaasPlatformDataQueryVariables>(client, RegisteredSaasPlatformDataDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteRegisteredSaasPlatformDataQuery.getKey = (variables: RegisteredSaasPlatformDataQueryVariables) => ['RegisteredSaasPlatformData.infinite', variables];
+useInfiniteRegisteredSaasPlatformDataQuery.getRootKey = () => ['RegisteredSaasPlatformData.infinite'] as const;
+useRegisteredSaasPlatformDataQuery.fetcher = (client: GraphQLClient, variables: RegisteredSaasPlatformDataQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredSaasPlatformDataQuery, RegisteredSaasPlatformDataQueryVariables>(client, RegisteredSaasPlatformDataDocument, variables, headers);
+
 export const RegisteredPlatformsListDocument = `
     query RegisteredPlatformsList($input: RegisteredPlatformsInput!) {
   registeredPlatforms(input: $input) {
@@ -6071,62 +6192,58 @@ useInfiniteRegisteredPlatformsQuery.getKey = (variables: RegisteredPlatformsQuer
 useInfiniteRegisteredPlatformsQuery.getRootKey = () => ['RegisteredPlatforms.infinite'] as const;
 useRegisteredPlatformsQuery.fetcher = (client: GraphQLClient, variables: RegisteredPlatformsQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredPlatformsQuery, RegisteredPlatformsQueryVariables>(client, RegisteredPlatformsDocument, variables, headers);
 
-export const RegisteredSaasPlatformMetadataDocument = `
-    query RegisteredSaasPlatformMetadata($input: RegisteredPlatformInput!) {
-  registeredSaasPlatformMetadata(input: $input) {
-    hostname
-    plan
-    start_date
-    end_date
-    region
+export const PlatformAssociatedOrganizationDocument = `
+    query PlatformAssociatedOrganization($platformId: String!, $tenantId: String) {
+  platformAssociatedOrganization(platformId: $platformId, tenantId: $tenantId) {
+    id
   }
 }
     `;
 
-export const useRegisteredSaasPlatformMetadataQuery = <
-      TData = RegisteredSaasPlatformMetadataQuery,
+export const usePlatformAssociatedOrganizationQuery = <
+      TData = PlatformAssociatedOrganizationQuery,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: RegisteredSaasPlatformMetadataQueryVariables,
-      options?: Omit<UseQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>['queryKey'] },
+      variables: PlatformAssociatedOrganizationQueryVariables,
+      options?: Omit<UseQueryOptions<PlatformAssociatedOrganizationQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<PlatformAssociatedOrganizationQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useQuery<RegisteredSaasPlatformMetadataQuery, TError, TData>(
+    return useQuery<PlatformAssociatedOrganizationQuery, TError, TData>(
       {
-    queryKey: ['RegisteredSaasPlatformMetadata', variables],
-    queryFn: fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, variables, headers),
+    queryKey: ['PlatformAssociatedOrganization', variables],
+    queryFn: fetcher<PlatformAssociatedOrganizationQuery, PlatformAssociatedOrganizationQueryVariables>(client, PlatformAssociatedOrganizationDocument, variables, headers),
     ...options
   }
     )};
 
-useRegisteredSaasPlatformMetadataQuery.getKey = (variables: RegisteredSaasPlatformMetadataQueryVariables) => ['RegisteredSaasPlatformMetadata', variables];
-useRegisteredSaasPlatformMetadataQuery.getRootKey = () => ['RegisteredSaasPlatformMetadata'] as const;
-export const useInfiniteRegisteredSaasPlatformMetadataQuery = <
-      TData = InfiniteData<RegisteredSaasPlatformMetadataQuery>,
+usePlatformAssociatedOrganizationQuery.getKey = (variables: PlatformAssociatedOrganizationQueryVariables) => ['PlatformAssociatedOrganization', variables];
+usePlatformAssociatedOrganizationQuery.getRootKey = () => ['PlatformAssociatedOrganization'] as const;
+export const useInfinitePlatformAssociatedOrganizationQuery = <
+      TData = InfiniteData<PlatformAssociatedOrganizationQuery>,
       TError = unknown
     >(
       client: GraphQLClient,
-      variables: RegisteredSaasPlatformMetadataQueryVariables,
-      options: Omit<UseInfiniteQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<RegisteredSaasPlatformMetadataQuery, TError, TData>['queryKey'] },
+      variables: PlatformAssociatedOrganizationQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<PlatformAssociatedOrganizationQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<PlatformAssociatedOrganizationQuery, TError, TData>['queryKey'] },
       headers?: RequestInit['headers']
     ) => {
     
-    return useInfiniteQuery<RegisteredSaasPlatformMetadataQuery, TError, TData>(
+    return useInfiniteQuery<PlatformAssociatedOrganizationQuery, TError, TData>(
       (() => {
     const { queryKey: optionsQueryKey, ...restOptions } = options;
     return {
-      queryKey: optionsQueryKey ?? ['RegisteredSaasPlatformMetadata.infinite', variables],
-      queryFn: (metaData) => fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      queryKey: optionsQueryKey ?? ['PlatformAssociatedOrganization.infinite', variables],
+      queryFn: (metaData) => fetcher<PlatformAssociatedOrganizationQuery, PlatformAssociatedOrganizationQueryVariables>(client, PlatformAssociatedOrganizationDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
       ...restOptions
     }
   })()
     )};
 
-useInfiniteRegisteredSaasPlatformMetadataQuery.getKey = (variables: RegisteredSaasPlatformMetadataQueryVariables) => ['RegisteredSaasPlatformMetadata.infinite', variables];
-useInfiniteRegisteredSaasPlatformMetadataQuery.getRootKey = () => ['RegisteredSaasPlatformMetadata.infinite'] as const;
-useRegisteredSaasPlatformMetadataQuery.fetcher = (client: GraphQLClient, variables: RegisteredSaasPlatformMetadataQueryVariables, headers?: RequestInit['headers']) => fetcher<RegisteredSaasPlatformMetadataQuery, RegisteredSaasPlatformMetadataQueryVariables>(client, RegisteredSaasPlatformMetadataDocument, variables, headers);
+useInfinitePlatformAssociatedOrganizationQuery.getKey = (variables: PlatformAssociatedOrganizationQueryVariables) => ['PlatformAssociatedOrganization.infinite', variables];
+useInfinitePlatformAssociatedOrganizationQuery.getRootKey = () => ['PlatformAssociatedOrganization.infinite'] as const;
+usePlatformAssociatedOrganizationQuery.fetcher = (client: GraphQLClient, variables: PlatformAssociatedOrganizationQueryVariables, headers?: RequestInit['headers']) => fetcher<PlatformAssociatedOrganizationQuery, PlatformAssociatedOrganizationQueryVariables>(client, PlatformAssociatedOrganizationDocument, variables, headers);
 
 export const AddRolePortalDocument = `
     mutation AddRolePortal($input: AddRolePortalInput!) {
@@ -6808,16 +6925,172 @@ useInfiniteServiceInstancesListQuery.getKey = (variables: ServiceInstancesListQu
 useInfiniteServiceInstancesListQuery.getRootKey = () => ['ServiceInstancesList.infinite'] as const;
 useServiceInstancesListQuery.fetcher = (client: GraphQLClient, variables: ServiceInstancesListQueryVariables, headers?: RequestInit['headers']) => fetcher<ServiceInstancesListQuery, ServiceInstancesListQueryVariables>(client, ServiceInstancesListDocument, variables, headers);
 
+export const SeoServiceInstancesDocument = `
+    query SeoServiceInstances {
+  seoServiceInstances {
+    ...SeoServiceInstanceItem
+  }
+}
+    ${SeoServiceInstanceItemFragmentDoc}`;
+
+export const useSeoServiceInstancesQuery = <
+      TData = SeoServiceInstancesQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables?: SeoServiceInstancesQueryVariables,
+      options?: Omit<UseQueryOptions<SeoServiceInstancesQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<SeoServiceInstancesQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<SeoServiceInstancesQuery, TError, TData>(
+      {
+    queryKey: variables === undefined ? ['SeoServiceInstances'] : ['SeoServiceInstances', variables],
+    queryFn: fetcher<SeoServiceInstancesQuery, SeoServiceInstancesQueryVariables>(client, SeoServiceInstancesDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useSeoServiceInstancesQuery.getKey = (variables?: SeoServiceInstancesQueryVariables) => variables === undefined ? ['SeoServiceInstances'] : ['SeoServiceInstances', variables];
+useSeoServiceInstancesQuery.getRootKey = () => ['SeoServiceInstances'] as const;
+export const useInfiniteSeoServiceInstancesQuery = <
+      TData = InfiniteData<SeoServiceInstancesQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: SeoServiceInstancesQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<SeoServiceInstancesQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<SeoServiceInstancesQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<SeoServiceInstancesQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? variables === undefined ? ['SeoServiceInstances.infinite'] : ['SeoServiceInstances.infinite', variables],
+      queryFn: (metaData) => fetcher<SeoServiceInstancesQuery, SeoServiceInstancesQueryVariables>(client, SeoServiceInstancesDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteSeoServiceInstancesQuery.getKey = (variables?: SeoServiceInstancesQueryVariables) => variables === undefined ? ['SeoServiceInstances.infinite'] : ['SeoServiceInstances.infinite', variables];
+useInfiniteSeoServiceInstancesQuery.getRootKey = () => ['SeoServiceInstances.infinite'] as const;
+useSeoServiceInstancesQuery.fetcher = (client: GraphQLClient, variables?: SeoServiceInstancesQueryVariables, headers?: RequestInit['headers']) => fetcher<SeoServiceInstancesQuery, SeoServiceInstancesQueryVariables>(client, SeoServiceInstancesDocument, variables, headers);
+
+export const SeoServiceInstanceBySlugDocument = `
+    query SeoServiceInstanceBySlug($slug: String!) {
+  seoServiceInstance(slug: $slug) {
+    ...SeoServiceInstanceItem
+  }
+}
+    ${SeoServiceInstanceItemFragmentDoc}`;
+
+export const useSeoServiceInstanceBySlugQuery = <
+      TData = SeoServiceInstanceBySlugQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: SeoServiceInstanceBySlugQueryVariables,
+      options?: Omit<UseQueryOptions<SeoServiceInstanceBySlugQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<SeoServiceInstanceBySlugQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<SeoServiceInstanceBySlugQuery, TError, TData>(
+      {
+    queryKey: ['SeoServiceInstanceBySlug', variables],
+    queryFn: fetcher<SeoServiceInstanceBySlugQuery, SeoServiceInstanceBySlugQueryVariables>(client, SeoServiceInstanceBySlugDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useSeoServiceInstanceBySlugQuery.getKey = (variables: SeoServiceInstanceBySlugQueryVariables) => ['SeoServiceInstanceBySlug', variables];
+useSeoServiceInstanceBySlugQuery.getRootKey = () => ['SeoServiceInstanceBySlug'] as const;
+export const useInfiniteSeoServiceInstanceBySlugQuery = <
+      TData = InfiniteData<SeoServiceInstanceBySlugQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: SeoServiceInstanceBySlugQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<SeoServiceInstanceBySlugQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<SeoServiceInstanceBySlugQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<SeoServiceInstanceBySlugQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['SeoServiceInstanceBySlug.infinite', variables],
+      queryFn: (metaData) => fetcher<SeoServiceInstanceBySlugQuery, SeoServiceInstanceBySlugQueryVariables>(client, SeoServiceInstanceBySlugDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteSeoServiceInstanceBySlugQuery.getKey = (variables: SeoServiceInstanceBySlugQueryVariables) => ['SeoServiceInstanceBySlug.infinite', variables];
+useInfiniteSeoServiceInstanceBySlugQuery.getRootKey = () => ['SeoServiceInstanceBySlug.infinite'] as const;
+useSeoServiceInstanceBySlugQuery.fetcher = (client: GraphQLClient, variables: SeoServiceInstanceBySlugQueryVariables, headers?: RequestInit['headers']) => fetcher<SeoServiceInstanceBySlugQuery, SeoServiceInstanceBySlugQueryVariables>(client, SeoServiceInstanceBySlugDocument, variables, headers);
+
+export const ServiceInstanceLinksByTagsDocument = `
+    query ServiceInstanceLinksByTags($tags: [ServiceInstanceTag!]!) {
+  serviceInstanceLinksByTags(tags: $tags) {
+    ...SeoServiceInstanceItem
+  }
+}
+    ${SeoServiceInstanceItemFragmentDoc}`;
+
+export const useServiceInstanceLinksByTagsQuery = <
+      TData = ServiceInstanceLinksByTagsQuery,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ServiceInstanceLinksByTagsQueryVariables,
+      options?: Omit<UseQueryOptions<ServiceInstanceLinksByTagsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseQueryOptions<ServiceInstanceLinksByTagsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useQuery<ServiceInstanceLinksByTagsQuery, TError, TData>(
+      {
+    queryKey: ['ServiceInstanceLinksByTags', variables],
+    queryFn: fetcher<ServiceInstanceLinksByTagsQuery, ServiceInstanceLinksByTagsQueryVariables>(client, ServiceInstanceLinksByTagsDocument, variables, headers),
+    ...options
+  }
+    )};
+
+useServiceInstanceLinksByTagsQuery.getKey = (variables: ServiceInstanceLinksByTagsQueryVariables) => ['ServiceInstanceLinksByTags', variables];
+useServiceInstanceLinksByTagsQuery.getRootKey = () => ['ServiceInstanceLinksByTags'] as const;
+export const useInfiniteServiceInstanceLinksByTagsQuery = <
+      TData = InfiniteData<ServiceInstanceLinksByTagsQuery>,
+      TError = unknown
+    >(
+      client: GraphQLClient,
+      variables: ServiceInstanceLinksByTagsQueryVariables,
+      options: Omit<UseInfiniteQueryOptions<ServiceInstanceLinksByTagsQuery, TError, TData>, 'queryKey'> & { queryKey?: UseInfiniteQueryOptions<ServiceInstanceLinksByTagsQuery, TError, TData>['queryKey'] },
+      headers?: RequestInit['headers']
+    ) => {
+    
+    return useInfiniteQuery<ServiceInstanceLinksByTagsQuery, TError, TData>(
+      (() => {
+    const { queryKey: optionsQueryKey, ...restOptions } = options;
+    return {
+      queryKey: optionsQueryKey ?? ['ServiceInstanceLinksByTags.infinite', variables],
+      queryFn: (metaData) => fetcher<ServiceInstanceLinksByTagsQuery, ServiceInstanceLinksByTagsQueryVariables>(client, ServiceInstanceLinksByTagsDocument, {...variables, ...(metaData.pageParam ?? {})}, headers)(),
+      ...restOptions
+    }
+  })()
+    )};
+
+useInfiniteServiceInstanceLinksByTagsQuery.getKey = (variables: ServiceInstanceLinksByTagsQueryVariables) => ['ServiceInstanceLinksByTags.infinite', variables];
+useInfiniteServiceInstanceLinksByTagsQuery.getRootKey = () => ['ServiceInstanceLinksByTags.infinite'] as const;
+useServiceInstanceLinksByTagsQuery.fetcher = (client: GraphQLClient, variables: ServiceInstanceLinksByTagsQueryVariables, headers?: RequestInit['headers']) => fetcher<ServiceInstanceLinksByTagsQuery, ServiceInstanceLinksByTagsQueryVariables>(client, ServiceInstanceLinksByTagsDocument, variables, headers);
+
 export const ServiceInstanceSeoMetadataByIdDocument = `
     query ServiceInstanceSeoMetadataById($service_instance_id: ServiceInstanceId!) {
   seoServiceInstanceMetadata(service_instance_id: $service_instance_id) {
-    service_instance_id
-    language
-    meta_title
-    meta_description
+    ...SeoServiceInstanceMetadataItem
   }
 }
-    `;
+    ${SeoServiceInstanceMetadataItemFragmentDoc}`;
 
 export const useServiceInstanceSeoMetadataByIdQuery = <
       TData = ServiceInstanceSeoMetadataByIdQuery,

@@ -30,6 +30,7 @@ export const PageLoader = () => {
     platform_contract,
     platform_version,
     tenant_id,
+    state,
   } = useDecodedQuery();
 
   // The platform is only messaged on this origin: without one, it could never get the result.
@@ -67,6 +68,7 @@ export const PageLoader = () => {
         queryRef={queryRef}
         platform={platform}
         platformOrigin={platformOrigin}
+        state={state ?? undefined}
       />
     </RegistrationContextProvider>
   ) : (

@@ -24,7 +24,10 @@ import {
   PlatformInput,
   registerPlatformMutation,
 } from '@generated/registerPlatformMutation.graphql';
-import { PlatformRegistrationStatus } from '@graphql/generated';
+import {
+  PlatformIdentifier,
+  PlatformRegistrationStatus,
+} from '@graphql/generated';
 import {
   ReactNode,
   useCallback,
@@ -46,6 +49,8 @@ interface RegisterProps {
   platform: PlatformInput;
   platformOrigin: string;
   queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
+  /** The nonce XTM One opened the page with, echoed back in its messages. */
+  state?: string;
 }
 
 export type RegistrationRequestStatus =
@@ -88,6 +93,7 @@ export const Register = ({
   queryRef,
   platform,
   platformOrigin,
+  state: openerState,
 }: RegisterProps) => {
   const t = useTranslate();
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
@@ -122,11 +128,18 @@ export const Register = ({
   const hasPostedMessageRef = useRef(false);
   const hasAutoRegisteredRef = useRef(false);
 
+  // OpenCTI and OpenAEV never receive the state: their messages are unchanged.
+  const echoedState =
+    identifier === PlatformIdentifier.Xtmone ? openerState : undefined;
+
   const postMessageToPlatform = useCallback(
     (message: Record<string, unknown>) => {
-      window.opener?.postMessage(message, platformOrigin);
+      window.opener?.postMessage(
+        { ...message, ...(echoedState && { state: echoedState }) },
+        platformOrigin
+      );
     },
-    [platformOrigin]
+    [platformOrigin, echoedState]
   );
 
   const cancel = useCallback(() => {
