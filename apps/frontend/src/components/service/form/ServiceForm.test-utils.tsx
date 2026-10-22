@@ -240,6 +240,8 @@ export const defineServiceFormTests = <Values,>({
   it.each([
     { name: 'Threat hunting', slug: 'threat-hunting' },
     { name: NEW_NAME, slug: NEW_SLUG },
+    { name: 'Été à Paris', slug: 'ete-a-paris' },
+    { name: '--Threat--hunting--', slug: 'threat-hunting' },
   ])(
     `should fill the slug with $slug when the user names a new ${resourceName} $name`,
     async ({ name, slug }) => {
@@ -253,6 +255,20 @@ export const defineServiceFormTests = <Values,>({
       expect(screen.getByRole('textbox', { name: SLUG_LABEL })).toHaveValue(
         slug
       );
+    }
+  );
+
+  it.each([{ name: '!!!' }, { name: '   ' }])(
+    `should leave the slug empty when the user names a new ${resourceName} $name`,
+    async ({ name }) => {
+      // Given
+      const { user } = renderServiceForm(Form);
+
+      // When
+      await user.type(screen.getByRole('textbox', { name: NAME_LABEL }), name);
+
+      // Then
+      expect(screen.getByRole('textbox', { name: SLUG_LABEL })).toHaveValue('');
     }
   );
 
