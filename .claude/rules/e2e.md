@@ -33,7 +33,7 @@ of the platform's Filigran Experience settings updates `PlatformConfiguration.la
 dashboard published in XTM Hub must reach its News Feed and open back in XTM Hub: OpenCTI pulls that feed only from its
 `hub_registration_manager` job, which the compose override runs every 10 s. `opencti-redirections.spec.ts` covers
 the other redirections between OpenCTI and XTM Hub: the one-click deploy of each OpenCTI resource type, and every OpenCTI
-link that opens XTM Hub. A CI leg runs the specs whose file name starts with its platform (`opencti-`, `openaev-`).
+link that opens XTM Hub; `openaev-redirections.spec.ts` does the same for every OpenAEV link to XTM Hub. A CI leg runs the specs whose file name starts with its platform (`opencti-`, `openaev-`).
 Each spec skips unless `OPENCTI_URL` or `OPENAEV_URL` is
 set, so a plain `yarn test:e2e` reports them as skipped. They run against the `rolling` images through
 `xtm-hub-dev/docker-compose-ci-opencti.yml` and `xtm-hub-dev/docker-compose-ci-openaev.yml`, layered on
