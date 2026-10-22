@@ -5,6 +5,7 @@ import {
   NEW_DESCRIPTION,
   renderServiceForm,
   ServiceFormFileField,
+  ServiceFormResource,
   typeNewDescription,
 } from '@/components/service/form/ServiceForm.test-utils';
 import { OpenaevScenarioForm } from '@/components/service/openaev-scenarios/[serviceInstanceId]/OpenaevScenarioForm';
@@ -28,7 +29,7 @@ const SCENARIO_FILE_FIELD: ServiceFormFileField = {
 describe('OpenaevScenarioForm', () => {
   defineServiceFormTests({
     Form: OpenaevScenarioForm,
-    resourceName: 'scenario',
+    resourceName: ServiceFormResource.SCENARIO,
     fileField: SCENARIO_FILE_FIELD,
     shortDescriptionMaxLength: 250,
     buildEditedDocument: buildDocument,

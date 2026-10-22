@@ -101,6 +101,13 @@ export const buildDocument = (
   ...overrides,
 });
 
+export enum ServiceFormResource {
+  CUSTOM_DASHBOARD = 'dashboard',
+  CUSTOM_VIEW = 'view',
+  PLAYBOOK = 'playbook',
+  SCENARIO = 'scenario',
+}
+
 export interface ServiceFormFileField {
   name: string;
   label: string;
@@ -198,13 +205,13 @@ export const uploadFile = (
 
 interface ServiceFormTestsOptions<Values> {
   Form: ServiceFormComponent<Values>;
-  resourceName: string;
+  resourceName: ServiceFormResource;
   fileField: ServiceFormFileField;
   shortDescriptionMaxLength: number;
   buildEditedDocument: () => documentItem_fragment$data;
   fillCreationFields: (user: ServiceFormUser) => Promise<void>;
-  creationValues: Record<string, unknown>;
-  editionValues?: Record<string, unknown>;
+  creationValues: NoInfer<Partial<Values>>;
+  editionValues?: NoInfer<Partial<Values>>;
 }
 
 export const defineServiceFormTests = <Values,>({

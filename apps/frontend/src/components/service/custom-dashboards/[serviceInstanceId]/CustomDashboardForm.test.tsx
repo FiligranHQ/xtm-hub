@@ -5,6 +5,7 @@ import {
   fillCommonCreationFields,
   JSON_FILE_FIELD,
   NEW_DESCRIPTION,
+  ServiceFormResource,
   typeNewDescription,
 } from '@/components/service/form/ServiceForm.test-utils';
 import { describe, vi } from 'vitest';
@@ -17,7 +18,7 @@ vi.mock('@graphql/generated', async (importOriginal) => ({
 describe('CustomDashboardForm', () => {
   defineServiceFormTests({
     Form: CustomDashboardForm,
-    resourceName: 'dashboard',
+    resourceName: ServiceFormResource.CUSTOM_DASHBOARD,
     fileField: JSON_FILE_FIELD,
     shortDescriptionMaxLength: 255,
     buildEditedDocument: buildDocument,

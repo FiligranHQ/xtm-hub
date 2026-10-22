@@ -5,6 +5,7 @@ import {
   fillCommonCreationFields,
   JSON_FILE_FIELD,
   renderServiceForm,
+  ServiceFormResource,
 } from '@/components/service/form/ServiceForm.test-utils';
 import {
   descriptionValue,
@@ -21,7 +22,7 @@ vi.mock('@graphql/generated', async (importOriginal) => ({
 describe('OpenctiPlaybookForm', () => {
   defineServiceFormTests({
     Form: OpenctiPlaybookForm,
-    resourceName: 'playbook',
+    resourceName: ServiceFormResource.PLAYBOOK,
     fileField: JSON_FILE_FIELD,
     shortDescriptionMaxLength: 250,
     buildEditedDocument: buildDocument,

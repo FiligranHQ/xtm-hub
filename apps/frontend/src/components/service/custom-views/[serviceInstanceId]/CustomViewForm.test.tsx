@@ -6,6 +6,7 @@ import {
   JSON_FILE_FIELD,
   NEW_DESCRIPTION,
   renderServiceForm,
+  ServiceFormResource,
   typeNewDescription,
   uploadFile,
   VALIDATE_LABEL,
@@ -24,7 +25,7 @@ const ENTITY_TYPE = { id: 'Intrusion-Set', name: 'Intrusion Set' };
 describe('CustomViewForm', () => {
   defineServiceFormTests({
     Form: CustomViewForm,
-    resourceName: 'view',
+    resourceName: ServiceFormResource.CUSTOM_VIEW,
     fileField: JSON_FILE_FIELD,
     shortDescriptionMaxLength: 250,
     buildEditedDocument: () =>
