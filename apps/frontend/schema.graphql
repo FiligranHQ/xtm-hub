@@ -127,11 +127,11 @@ type Query {
   usersWithCapabilitiesInOrganization(input: UsersWithCapabilitiesInOrganizationInput!): [OrganizationMemberContact!]!
   users(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
   pendingUsers(first: Int!, after: ID, orderBy: UserOrdering!, orderMode: OrderingMode!, searchTerm: String, filters: [Filter!]): UserConnection!
+  registeredSaasPlatformData(input: RegisteredPlatformInput!): SaasPlatformData
   openCTIPlatformRegistrationStatus(input: OpenCTIPlatformRegistrationStatusInput!): OpenCTIPlatformRegistrationStatusResponse! @deprecated(reason: "Use `refreshPlatformRegistrationConnectivityStatus` instead. This field is no longer used in the OpenCTI platform due to refactoring and the addition of a version value in the endpoint.")
   isPlatformRegistered(input: IsPlatformRegisteredInput!): IsPlatformRegisteredResponse!
   canUnregisterPlatform(input: CanUnregisterPlatformInput!): CanUnregisterResponse!
   registeredPlatform(input: RegisteredPlatformInput!): RegisteredPlatform
-  registeredSaasPlatformMetadata(input: RegisteredPlatformInput!): SaasPlatformMetadata
   registeredPlatforms(input: RegisteredPlatformsInput!): [RegisteredPlatform!]!
   saasPlatforms(first: Int!, after: ID, orderBy: RegisteredPlatformOrdering!, orderMode: OrderingMode!, searchTerm: String): RegisteredPlatformConnection!
   platformAssociatedOrganization(platformId: String!, tenantId: String): Organization
@@ -1222,6 +1222,18 @@ type Subscription {
   ServiceInstance: ServiceInstanceSubscription
 }
 
+type SaasPlatformData {
+  metadata: SaasPlatformMetadata!
+}
+
+type SaasPlatformMetadata {
+  hostname: String
+  plan: String
+  start_date: Date
+  end_date: Date
+  region: String
+}
+
 enum PlatformConfigurationStatus {
   active
   inactive
@@ -1415,14 +1427,6 @@ input RegisteredPlatformsInput {
 
 input RegisteredPlatformInput {
   service_instance_id: ServiceInstanceId!
-}
-
-type SaasPlatformMetadata {
-  hostname: String
-  plan: String
-  start_date: Date
-  end_date: Date
-  region: String
 }
 
 input AutoRegisterPlatformInput {
