@@ -40,6 +40,7 @@ import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { PortalContext } from '../../../model/portal-context';
 import { UserLoadUserBy } from '../../../model/user';
+import { PLATFORM_IDP_GROUP } from '../../../portal.const';
 import { auth0ClientMock } from '../../../thirdparty/auth0/mock';
 import { ErrorCode } from '../../../utils/error/error.code';
 import { loginFromProvider } from '../../security-management/authentication/auth-user';
@@ -116,7 +117,7 @@ describe('user query resolver', () => {
         first_name: 'filigran',
         last_name: 'pending',
         roles: [],
-        groups: [],
+        groups: [PLATFORM_IDP_GROUP],
       });
 
       const options = {
@@ -174,7 +175,7 @@ describe('user query resolver', () => {
         first_name: 'filigran',
         last_name: 'pending',
         roles: [],
-        groups: [],
+        groups: [PLATFORM_IDP_GROUP],
       });
 
       const options = {

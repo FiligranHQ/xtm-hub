@@ -6,6 +6,7 @@ import {
   UserLoadUserBy,
 } from '../../../model/user';
 import {
+  PLATFORM_DOMAIN,
   PLATFORM_IDP_GROUP,
   PLATFORM_ORGANIZATION_UUID,
 } from '../../../portal.const';
@@ -14,6 +15,7 @@ import { ErrorCode, ForbiddenErrorCode } from '../../../utils/error/error.code';
 import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { startUserSession } from '../../../utils/session.util';
 import { isEmptyField } from '../../../utils/utils';
+import { extractDomain } from '../../../utils/verify-email.util';
 import { ServiceGroupApp } from '../../deployment/group/service-group.app';
 import { UserDomain } from '../../organization-management/user/user-domain/user.domain';
 import { UserOrganizationDomain } from '../../organization-management/user/user-organization/user-organization.domain';
@@ -56,6 +58,30 @@ const checkIdpSubject = async (
   return false;
 };
 
+const isFiligranEmail = (email: string): boolean =>
+  PLATFORM_DOMAIN.includes(extractDomain(email.toLowerCase()) ?? '');
+
+/**
+ * Every Filigran account carries the Filigran group, so a Filigran email
+ * without it is an account that should no longer be used: it is refused, and
+ * an existing account loses its Hub roles.
+ */
+const refuseFiligranEmailOutsideGroup = async (
+  email: string,
+  idpSubject: string
+): Promise<never> => {
+  const [user] = await UserDomain.loadUser({ email });
+  if (user) {
+    await RolePortalDomain.removeAllUserRolePortal(user.id);
+  }
+  logApp.warn(
+    'Sign-in refused: Filigran email without the Filigran group',
+    { userId: user?.id, idpSubject },
+    AppLogsCategory.LOGIN_PROVIDER
+  );
+  throw ForbiddenAccess(ForbiddenErrorCode.FiligranGroupMissing);
+};
+
 export const loginFromProvider = async (userInfo: ProviderUserInfo) => {
   // region test the groups existence and eventually auto create groups
   // endregion
@@ -69,6 +95,9 @@ export const loginFromProvider = async (userInfo: ProviderUserInfo) => {
   // Membership of the Filigran organisation comes from the IdP group that
   // Filigran IT manages, never from the email domain.
   const isFiligranUser = userInfo.groups.includes(PLATFORM_IDP_GROUP);
+  if (!isFiligranUser && isFiligranEmail(email)) {
+    await refuseFiligranEmailOutsideGroup(email, idp_subject);
+  }
   const idpSubjectMatches = await checkIdpSubject(email, idp_subject);
 
   const user = await UserProvisioningApp.getOrProvisionUser(userInfo, {

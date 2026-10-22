@@ -52,7 +52,10 @@ const asUserInfo = (email: string): UserInfo => ({
 const asProviderUserInfo = (
   email: string,
   idpSubject: string,
-  { groups = [], roles = [] }: { groups?: string[]; roles?: string[] } = {}
+  {
+    groups = [PLATFORM_IDP_GROUP],
+    roles = [],
+  }: { groups?: string[]; roles?: string[] } = {}
 ): ProviderUserInfo => ({
   ...asUserInfo(email),
   idp_subject: idpSubject,
@@ -475,11 +478,7 @@ describe('loginFromProvider', () => {
       emails.push(email);
 
       // When
-      await loginFromProvider(
-        asProviderUserInfo(email, newIdpSubject(), {
-          groups: [PLATFORM_IDP_GROUP],
-        })
-      );
+      await loginFromProvider(asProviderUserInfo(email, newIdpSubject()));
 
       // Then
       expect({
@@ -490,15 +489,11 @@ describe('loginFromProvider', () => {
 
     it('should move a pending account to the platform organisation once it signs in with the Filigran group', async () => {
       // Given
-      const email = newEmail();
-      const idpSubject = newIdpSubject();
+      const { email } = await createTestUser();
       emails.push(email);
-      await loginFromProvider(asProviderUserInfo(email, idpSubject));
 
       // When
-      await loginFromProvider(
-        asProviderUserInfo(email, idpSubject, { groups: [PLATFORM_IDP_GROUP] })
-      );
+      await loginFromProvider(asProviderUserInfo(email, newIdpSubject()));
 
       // Then
       expect({
@@ -507,52 +502,50 @@ describe('loginFromProvider', () => {
       }).toEqual({ isPlatformMember: true, isPending: false });
     });
 
-    it.each`
-      description             | groups
-      ${'no group'}           | ${[]}
-      ${'another group only'} | ${['Customer']}
-    `(
-      'should give no Filigran rights to a Filigran email with $description',
-      async ({ groups }: { groups: string[] }) => {
-        // Given
-        const email = newEmail();
-        emails.push(email);
-
-        // When
-        await loginFromProvider(
-          asProviderUserInfo(email, newIdpSubject(), {
-            groups,
-            roles: [ROLE_ADMIN.name],
-          })
-        );
-
-        // Then
-        expect(await loadFiligranRights(email)).toEqual({
-          roles: [],
-          isPlatformMember: false,
-        });
-      }
-    );
-
-    it('should put a Filigran email outside the Filigran group in the pending list of the platform organisation', async () => {
+    it('should remove the Hub roles once the user loses its role in the IdP', async () => {
       // Given
       const email = newEmail();
+      const idpSubject = newIdpSubject();
       emails.push(email);
+      await loginFromProvider(
+        asProviderUserInfo(email, idpSubject, FILIGRAN_ADMIN)
+      );
 
       // When
-      await loginFromProvider(asProviderUserInfo(email, newIdpSubject()));
+      await loginFromProvider(asProviderUserInfo(email, idpSubject));
 
       // Then
-      expect(await isPendingInPlatform(email)).toBe(true);
+      expect((await loadFiligranRights(email)).roles).toEqual([]);
     });
 
-    it.each`
-      description                    | groups                  | roles
-      ${'leaves the Filigran group'} | ${[]}                   | ${[ROLE_ADMIN.name]}
-      ${'loses its role in the IdP'} | ${[PLATFORM_IDP_GROUP]} | ${[]}
-    `(
-      'should remove the Hub roles once the user $description',
-      async ({ groups, roles }: { groups: string[]; roles: string[] }) => {
+    describe('with a Filigran email outside the Filigran group', () => {
+      it.each`
+        description             | groups
+        ${'no group'}           | ${[]}
+        ${'another group only'} | ${['Customer']}
+      `(
+        'should refuse the sign-in without creating the account for $description',
+        async ({ groups }: { groups: string[] }) => {
+          // Given
+          const email = newEmail();
+
+          // When
+          const signingIn = loginFromProvider(
+            asProviderUserInfo(email, newIdpSubject(), {
+              groups,
+              roles: [ROLE_ADMIN.name],
+            })
+          );
+
+          // Then
+          await expect(signingIn).rejects.toThrow(
+            ForbiddenErrorCode.FiligranGroupMissing
+          );
+          expect(await UserDomain.loadUser({ email })).toEqual([]);
+        }
+      );
+
+      it('should refuse the sign-in and remove the Hub roles of an account that left the group', async () => {
         // Given
         const email = newEmail();
         const idpSubject = newIdpSubject();
@@ -562,13 +555,19 @@ describe('loginFromProvider', () => {
         );
 
         // When
-        await loginFromProvider(
-          asProviderUserInfo(email, idpSubject, { groups, roles })
+        const signingIn = loginFromProvider(
+          asProviderUserInfo(email, idpSubject, {
+            groups: [],
+            roles: [ROLE_ADMIN.name],
+          })
         );
 
         // Then
+        await expect(signingIn).rejects.toThrow(
+          ForbiddenErrorCode.FiligranGroupMissing
+        );
         expect((await loadFiligranRights(email)).roles).toEqual([]);
-      }
-    );
+      });
+    });
   });
 });
