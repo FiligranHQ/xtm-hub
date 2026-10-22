@@ -392,6 +392,11 @@ export const usePrivateNavigation = (): NavigationConfig => {
           external: true,
         },
         {
+          href: 'https://docs.xtmone.io/',
+          label: tMenu('Documentation'),
+          external: true,
+        },
+        {
           href: XTM_ONE_ABOUT_URL,
           label: tMenu('About'),
           external: true,

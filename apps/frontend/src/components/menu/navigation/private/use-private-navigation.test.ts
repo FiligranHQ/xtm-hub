@@ -40,6 +40,7 @@ const graphqlMocks = vi.hoisted(() => ({
 }));
 
 const XTM_ONE_LIVE_DEMO_URL = 'https://demo.xtmone.io/login';
+const XTM_ONE_DOCUMENTATION_URL = 'https://docs.xtmone.io/';
 
 vi.mock('@graphql/generated', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@graphql/generated')>();
@@ -240,6 +241,21 @@ describe('usePrivateNavigation', () => {
     expect(xtmOneSection?.links[0]).toEqual({
       href: XTM_ONE_LIVE_DEMO_URL,
       label: 'LiveDemo',
+      external: true,
+    });
+  });
+
+  it('should return an external Documentation link to the XTM One documentation after the Live Demo link when building the XTM One section', () => {
+    // Given / When
+    const { result } = renderUsePrivateNavigation({
+      selectedOrganizationId: 'org-1',
+    });
+
+    // Then
+    const xtmOneSection = getSection(result.current.sections, 'xtm-one');
+    expect(xtmOneSection?.links[1]).toEqual({
+      href: XTM_ONE_DOCUMENTATION_URL,
+      label: 'Documentation',
       external: true,
     });
   });
