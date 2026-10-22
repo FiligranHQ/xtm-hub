@@ -98,14 +98,18 @@ vi.mock('@/components/registration/register/OrganizationForm', () => ({
   ),
 }));
 
+const PLATFORM_ORIGIN = 'https://opencti.example.com';
+const OTHER_ORIGIN = 'https://other.example.com';
+
 const mockQueryRef = {} as PreloadedQuery<registerIsPlatformRegisteredQuery>;
 const mockPlatform: PlatformInput = {
-  url: 'https://opencti.example.com',
+  url: `${PLATFORM_ORIGIN}/dashboard`,
 };
 
 const renderRegister = (
   identifier: PlatformIdentifier = PlatformIdentifier.Opencti,
-  state?: string
+  state?: string,
+  platformOrigin: string = PLATFORM_ORIGIN
 ) =>
   testRender(
     <RegistrationContext.Provider
@@ -116,6 +120,7 @@ const renderRegister = (
       <Register
         queryRef={mockQueryRef}
         platform={mockPlatform}
+        platformOrigin={platformOrigin}
         state={state}
       />
     </RegistrationContext.Provider>
@@ -173,7 +178,45 @@ describe('Register', () => {
     });
     const { user } = renderRegister();
     await user.click(screen.getByRole('button', { name: 'mock-cancel' }));
-    expect(postMessage).toHaveBeenCalledWith({ action: 'cancel' }, '*');
+    expect(postMessage).toHaveBeenCalledWith(
+      { action: 'cancel' },
+      PLATFORM_ORIGIN
+    );
+  });
+
+  it('should post the register message to the given platform origin whatever the opener is', async () => {
+    // Given
+    // The page cannot know where its opener really is: the origin comes from the platform_url
+    // query parameter. A page opening XTM Hub with its own origin as platform_url gets the token;
+    // the browser only stops the message when the opener is no longer on that origin.
+    testState.isPlatformRegistered = {
+      status: PlatformRegistrationStatus.NeverRegistered,
+      platformTitle: null,
+      organization: null,
+    } as registerIsPlatformRegisteredFragment$data;
+    testState.token = 'my-token';
+    const postMessage = vi.fn();
+    Object.defineProperty(window, 'opener', {
+      value: { postMessage },
+      writable: true,
+    });
+    const { user } = renderRegister(
+      PlatformIdentifier.Opencti,
+      undefined,
+      OTHER_ORIGIN
+    );
+
+    // When
+    await user.click(screen.getByRole('button', { name: 'mock-confirm' }));
+
+    // Then
+    await waitFor(() => {
+      expect(postMessage).toHaveBeenCalledWith(
+        { action: 'register', token: 'my-token' },
+        OTHER_ORIGIN
+      );
+    });
+    expect(postMessage).toHaveBeenCalledTimes(1);
   });
 
   it('renders the "too much organization" screen when unregistered with more than two organizations', async () => {
@@ -230,7 +273,7 @@ describe('Register', () => {
     await waitFor(() => {
       expect(postMessage).toHaveBeenCalledWith(
         { action: 'register', token: 'my-token' },
-        '*'
+        PLATFORM_ORIGIN
       );
     });
   });
@@ -260,7 +303,7 @@ describe('Register', () => {
     await waitFor(() => {
       expect(postMessage).toHaveBeenCalledWith(
         { action: 'register', token: testState.token },
-        '*'
+        PLATFORM_ORIGIN
       );
     });
     expect(
@@ -335,7 +378,10 @@ describe('Register', () => {
     });
     expect(screen.getByTestId('missing-capability')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'mock-cancel' }));
-    expect(postMessage).toHaveBeenCalledWith({ action: 'cancel' }, '*');
+    expect(postMessage).toHaveBeenCalledWith(
+      { action: 'cancel' },
+      PLATFORM_ORIGIN
+    );
   });
 
   it('renders a loader as a fallback for any other status', () => {
@@ -374,7 +420,7 @@ describe('Register', () => {
       await waitFor(() => {
         expect(postMessage).toHaveBeenCalledWith(
           { action: 'register', token: 'my-token', state: 's-1' },
-          '*'
+          PLATFORM_ORIGIN
         );
       });
     });
@@ -394,7 +440,7 @@ describe('Register', () => {
       // Then
       expect(postMessage).toHaveBeenCalledWith(
         { action: 'cancel', state: 's-1' },
-        '*'
+        PLATFORM_ORIGIN
       );
     });
 
@@ -414,7 +460,7 @@ describe('Register', () => {
       await waitFor(() => {
         expect(postMessage).toHaveBeenCalledWith(
           { action: 'register', token: 'my-token' },
-          '*'
+          PLATFORM_ORIGIN
         );
       });
     });
