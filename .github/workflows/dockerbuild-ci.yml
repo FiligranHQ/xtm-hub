@@ -474,7 +474,7 @@ jobs:
         run: |
           mkdir -p ctrf
           # Only this platform's spec: the other platform's tests would show as skipped in its report.
-          docker compose $COMPOSE_FILES run e2e sh -lc "yarn test:e2e --project=platforms ${{ matrix.platform }}-registration" || TEST_EXIT_CODE=$?
+          docker compose $COMPOSE_FILES run e2e sh -lc "yarn test:e2e --project=platforms ${{ matrix.platform }}-" || TEST_EXIT_CODE=$?
           CONTAINER_ID=$(docker ps -a --filter "name=e2e-run" --format "{{.ID}}" | head -1)
           docker cp $CONTAINER_ID:/app/apps/e2e/ctrf/. ./ctrf/ || true
           mkdir -p test-results
