@@ -35,7 +35,7 @@ export const ServiceFormReplaceFileField = ({
     <FormItem>
       <FormLabel>
         {t(texts.existingFile, {
-          file_name: field.value?.[0].name ?? document?.file_name,
+          file_name: field.value?.[0]?.name ?? document?.file_name,
         })}
       </FormLabel>
       <FormControl>
