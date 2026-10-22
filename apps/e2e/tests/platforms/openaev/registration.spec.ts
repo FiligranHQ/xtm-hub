@@ -1,15 +1,15 @@
-import { expect, test } from '../fixtures/baseFixtures';
-import { HomePage } from '../model/home.pageModel';
-import OneClickDeployPage from '../model/one-click-deploy.pageModel';
+import { expect, test } from '../../fixtures/baseFixtures';
+import { HomePage } from '../../model/home.pageModel';
+import OneClickDeployPage from '../../model/one-click-deploy.pageModel';
 import OpenaevScenarioPage, {
   DEPLOYABLE_SCENARIO_FILE,
-} from '../model/openaev-scenario.pageModel';
-import { OPENAEV } from '../model/xtm-platform.pageModel';
+} from '../../model/openaev-scenario.pageModel';
+import { OPENAEV } from '../../model/platforms/xtm-platform.pageModel';
 import {
   describePlatformRegistration,
   signInToXtmHubAndPlatform,
   skipWithoutPlatform,
-} from './platform-registration';
+} from '../platform-registration';
 
 describePlatformRegistration(OPENAEV);
 
@@ -42,10 +42,11 @@ test.describe('OpenAEV one-click deploy', () => {
       await expect(
         openaevTab.getByText('The element has been successfully created')
       ).toBeVisible();
+      // OpenAEV keeps the scenarios of earlier attempts: the toast above is the one of this import.
       await expect(
-        openaevTab.getByText(
-          `${DEPLOYABLE_SCENARIO_FILE.scenarioName} (Import)`
-        )
+        openaevTab
+          .getByText(`${DEPLOYABLE_SCENARIO_FILE.scenarioName} (Import)`)
+          .first()
       ).toBeVisible();
     });
   });

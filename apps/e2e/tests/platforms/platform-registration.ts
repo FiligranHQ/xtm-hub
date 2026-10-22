@@ -5,11 +5,15 @@ import { waitForReactIdle } from '../model/common';
 import { HomePage } from '../model/home.pageModel';
 import LoginPage from '../model/login.pageModel';
 import { XtmHubRegistrationTab } from '../model/register.pageModel';
-import XtmPlatformPage, { XtmPlatform } from '../model/xtm-platform.pageModel';
+import XtmPlatformPage, {
+  getPlatformUrl,
+  isPlatformRunning,
+  XtmPlatform,
+} from '../model/platforms/xtm-platform.pageModel';
 
 export const skipWithoutPlatform = (platform: XtmPlatform) =>
   test.skip(
-    !platform.url,
+    !isPlatformRunning(platform),
     `Needs a running ${platform.name}: see xtm-hub-dev/docker-compose-ci-${platform.name.toLowerCase()}.yml`
   );
 
@@ -108,7 +112,7 @@ export const describePlatformRegistration = (platform: XtmPlatform) => {
       page,
     }) => {
       await platformPage.connectToXtmHub(displayedName);
-      const platformUrl = platform.url ?? '';
+      const platformUrl = getPlatformUrl(platform);
 
       // Two visits in a row: each one must reach XTM Hub, not only the first.
       for (const visit of [1, 2]) {
@@ -121,7 +125,11 @@ export const describePlatformRegistration = (platform: XtmPlatform) => {
             platform.isConnectivityCheckRequest(response.request())
           );
           await platformPage.navigateToExperience();
-          expect((await connectivityCheck).ok()).toBeTruthy();
+          const connectivityCheckResponse = await connectivityCheck;
+          expect(connectivityCheckResponse.ok()).toBeTruthy();
+          expect(await connectivityCheckResponse.text()).not.toContain(
+            '"errors"'
+          );
 
           await expect
             .poll(() => getLastConnectivityCheck(platformUrl))

@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
+import { expect } from '../../fixtures/baseFixtures';
 
 // The XTM Hub News Feed page of a real OpenCTI.
 export default class OpenctiNewsFeedPage {
@@ -13,11 +13,12 @@ export default class OpenctiNewsFeedPage {
   }
 
   // OpenCTI pulls the news feed from XTM Hub in a background job, not when the page opens: reload until it shows.
+  // The job runs every second in the CI, and the wait must fit in what remains of the 60 s test timeout.
   async waitForItem(title: string) {
     await expect(async () => {
       await this.page.goto(`${this.openctiUrl}/dashboard/news-feed`);
       await expect(this.getItem(title)).toBeVisible({ timeout: 5_000 });
-    }).toPass({ timeout: 90_000 });
+    }).toPass({ timeout: 30_000 });
   }
 
   // Opens the resource of a news feed item in XTM Hub, in the new tab OpenCTI opens for it.

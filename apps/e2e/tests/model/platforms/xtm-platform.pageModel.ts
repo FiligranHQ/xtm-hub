@@ -1,11 +1,12 @@
 import { Page, Request } from '@playwright/test';
-import { expect } from '../fixtures/baseFixtures';
-import { XtmHubRegistrationTab } from './register.pageModel';
+import { expect } from '../../fixtures/baseFixtures';
+import { XtmHubRegistrationTab } from '../register.pageModel';
 
 // A real OpenCTI or OpenAEV instance, started by xtm-hub-dev/docker-compose-ci-{opencti,openaev}.yml.
 export interface XtmPlatform {
   name: 'OpenCTI' | 'OpenAEV';
-  url: string | undefined;
+  // Set by the CI compose override that starts the platform.
+  urlVariable: 'OPENCTI_URL' | 'OPENAEV_URL';
   adminEmail: string;
   adminPassword: string;
   experiencePath: string;
@@ -18,7 +19,7 @@ export interface XtmPlatform {
 
 export const OPENCTI: XtmPlatform = {
   name: 'OpenCTI',
-  url: process.env.OPENCTI_URL,
+  urlVariable: 'OPENCTI_URL',
   adminEmail: process.env.OPENCTI_ADMIN_EMAIL ?? 'admin@opencti.io',
   adminPassword: process.env.OPENCTI_ADMIN_PASSWORD ?? 'admin',
   experiencePath: '/dashboard/settings/experience',
@@ -38,7 +39,7 @@ const OPENAEV_DEFAULT_TENANT_ID = '2cffad3a-0001-4078-b0e2-ef74274022c3';
 
 export const OPENAEV: XtmPlatform = {
   name: 'OpenAEV',
-  url: process.env.OPENAEV_URL,
+  urlVariable: 'OPENAEV_URL',
   adminEmail: process.env.OPENAEV_ADMIN_EMAIL ?? 'admin@openaev.io',
   adminPassword: process.env.OPENAEV_ADMIN_PASSWORD ?? 'admin',
   experiencePath: `/${OPENAEV_DEFAULT_TENANT_ID}/admin/settings/experience`,
@@ -50,6 +51,20 @@ export const OPENAEV: XtmPlatform = {
     request.url().endsWith('/xtmhub/refresh-connectivity'),
 };
 
+export const isPlatformRunning = (platform: XtmPlatform) =>
+  !!process.env[platform.urlVariable];
+
+// The platform's URL, as the browser of the tests reaches it.
+export const getPlatformUrl = (platform: XtmPlatform): string => {
+  const url = process.env[platform.urlVariable];
+  if (!url) {
+    throw new Error(
+      `${platform.name} is not running: ${platform.urlVariable} is not set`
+    );
+  }
+  return url;
+};
+
 export default class XtmPlatformPage {
   constructor(
     private page: Page,
@@ -57,7 +72,7 @@ export default class XtmPlatformPage {
   ) {}
 
   async login() {
-    await this.page.goto(this.platform.url ?? '');
+    await this.page.goto(getPlatformUrl(this.platform));
     await this.page.getByLabel('Login').fill(this.platform.adminEmail);
     await this.page
       .getByLabel('Password', { exact: true })
@@ -73,7 +88,7 @@ export default class XtmPlatformPage {
     // A redirect the platform still runs after login can abort this navigation: retry until the card shows.
     await expect(async () => {
       await this.page.goto(
-        `${this.platform.url}${this.platform.experiencePath}`
+        `${getPlatformUrl(this.platform)}${this.platform.experiencePath}`
       );
       await expect(this.getXtmHubCard()).toBeVisible({ timeout: 10_000 });
     }).toPass({ timeout: 45_000 });

@@ -1,16 +1,19 @@
-import { expect, test } from '../fixtures/baseFixtures';
+import { expect, test } from '../../fixtures/baseFixtures';
 import DashboardPage, {
   DEPLOYABLE_JSON_FILE,
-} from '../model/dashboard.pageModel';
-import { HomePage } from '../model/home.pageModel';
-import OneClickDeployPage from '../model/one-click-deploy.pageModel';
-import OpenctiNewsFeedPage from '../model/opencti-news-feed.pageModel';
-import { OPENCTI } from '../model/xtm-platform.pageModel';
+} from '../../model/dashboard.pageModel';
+import { HomePage } from '../../model/home.pageModel';
+import OneClickDeployPage from '../../model/one-click-deploy.pageModel';
+import OpenctiNewsFeedPage from '../../model/platforms/opencti-news-feed.pageModel';
+import {
+  getPlatformUrl,
+  OPENCTI,
+} from '../../model/platforms/xtm-platform.pageModel';
 import {
   describePlatformRegistration,
   signInToXtmHubAndPlatform,
   skipWithoutPlatform,
-} from './platform-registration';
+} from '../platform-registration';
 
 describePlatformRegistration(OPENCTI);
 
@@ -66,6 +69,11 @@ test.describe('OpenCTI news feed', () => {
   test('should show a dashboard published in XTM Hub and open it back in XTM Hub', async ({
     page,
   }) => {
+    // OpenCTI keeps the news feed of earlier attempts: a name of this attempt only.
+    const dashboard = {
+      ...NEWS_FEED_DASHBOARD,
+      name: `${NEWS_FEED_DASHBOARD.name} ${Date.now()}`,
+    };
     const platformPage = await signInToXtmHubAndPlatform(page, OPENCTI);
     // XTM Hub only announces a resource to the platforms connected when it is published.
     await platformPage.connectToXtmHub('E2E OpenCTI');
@@ -74,23 +82,21 @@ test.describe('OpenCTI news feed', () => {
       const dashboardPage = new DashboardPage(page);
       await new HomePage(page).navigateTo();
       await dashboardPage.navigateToDashboardService();
-      await dashboardPage.addCustomDashboard(NEWS_FEED_DASHBOARD);
+      await dashboardPage.addCustomDashboard(dashboard);
     });
 
-    const newsFeedPage = new OpenctiNewsFeedPage(page, OPENCTI.url ?? '');
+    const newsFeedPage = new OpenctiNewsFeedPage(page, getPlatformUrl(OPENCTI));
     await test.step('see it in the OpenCTI news feed', async () => {
-      await newsFeedPage.waitForItem(NEWS_FEED_DASHBOARD.name);
+      await newsFeedPage.waitForItem(dashboard.name);
     });
 
     await test.step('open it back in XTM Hub', async () => {
-      const xtmHubTab = await newsFeedPage.openItemInXtmHub(
-        NEWS_FEED_DASHBOARD.name
-      );
+      const xtmHubTab = await newsFeedPage.openItemInXtmHub(dashboard.name);
       await expect(xtmHubTab).toHaveURL(
         /\/app\/service\/opencti_custom_dashboards\/[^/]+\/[^/?]+/
       );
       await expect(
-        xtmHubTab.getByRole('heading', { name: NEWS_FEED_DASHBOARD.name })
+        xtmHubTab.getByRole('heading', { name: dashboard.name })
       ).toBeVisible();
     });
   });

@@ -85,10 +85,11 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
-    {
-      // Registration against a real OpenCTI or OpenAEV, see xtm-hub-dev/docker-compose-ci-{opencti,openaev}.yml.
-      name: 'platforms',
-      testMatch: /platforms\/.*\.spec\.ts/,
+    // Against a real OpenCTI or OpenAEV, see xtm-hub-dev/docker-compose-ci-{opencti,openaev}.yml: each project runs
+    // the specs of its folder in tests/platforms/.
+    ...(['opencti', 'openaev'] as const).map((platform) => ({
+      name: platform,
+      testMatch: new RegExp(`platforms/${platform}/.*\\.spec\\.ts`),
       use: {
         ...devices['Desktop Chrome'],
         // The platforms only allow plain-http requests on port 80 in their CSP, and the CI Hub runs on
@@ -96,7 +97,7 @@ export default defineConfig({
         // Connect button. In production the Hub is on https, which their CSP allows.
         bypassCSP: true,
       },
-    },
+    })),
   ],
 
   /* Run your local dev server before starting the tests */

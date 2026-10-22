@@ -1,11 +1,14 @@
-import { expect, test } from '../fixtures/baseFixtures';
-import OpenaevPage from '../model/openaev.pageModel';
-import { XtmHubRegistrationTab } from '../model/register.pageModel';
-import { OPENAEV } from '../model/xtm-platform.pageModel';
+import { expect, test } from '../../fixtures/baseFixtures';
+import OpenaevPage from '../../model/platforms/openaev.pageModel';
+import { XtmHubRegistrationTab } from '../../model/register.pageModel';
+import {
+  getPlatformUrl,
+  OPENAEV,
+} from '../../model/platforms/xtm-platform.pageModel';
 import {
   signInToXtmHubAndPlatform,
   skipWithoutPlatform,
-} from './platform-registration';
+} from '../platform-registration';
 
 const XTM_HUB_ORIGIN = new URL(
   process.env.E2E_BASE_URL ?? 'http://localhost:3002'
@@ -19,7 +22,7 @@ test.describe('OpenAEV links to XTM Hub', () => {
     page,
   }) => {
     const platformPage = await signInToXtmHubAndPlatform(page, OPENAEV);
-    const openaev = new OpenaevPage(page, OPENAEV.url ?? '');
+    const openaev = new OpenaevPage(page, getPlatformUrl(OPENAEV));
 
     await test.step('not connected, Filigran Experience: Explore XTM Hub', async () => {
       const xtmHubTab = await openaev.openXtmHubTab(

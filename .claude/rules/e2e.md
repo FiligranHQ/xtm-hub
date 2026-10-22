@@ -22,7 +22,8 @@ yarn lint  /  yarn lint:fix
 ```
 
 Config runs Chromium only, `workers: 1` (sequential) with `retries: 2`, plus setup and teardown projects. The
-`chromium` project runs every spec except `tests/platforms/`, which belongs to the `platforms` project.
+`chromium` project runs every spec except `tests/platforms/`, which belongs to one project per platform: `opencti`
+runs `tests/platforms/opencti/` and `openaev` runs `tests/platforms/openaev/`.
 
 ## Platform registration tests
 
@@ -31,16 +32,17 @@ XTM Hub in a new tab and XTM Hub answers with `postMessage`. It also deploys a r
 dashboard, an OpenAEV scenario, from the importable exports in `tests/tests_files/assets/`), and checks that each visit
 of the platform's Filigran Experience settings updates `PlatformConfiguration.last_connectivity_check`. For OpenCTI, a
 dashboard published in XTM Hub must reach its News Feed and open back in XTM Hub: OpenCTI pulls that feed only from its
-`hub_registration_manager` job, which the compose override runs every 10 s. `opencti-redirections.spec.ts` covers
+`hub_registration_manager` job, which the compose override runs every second. `opencti/redirections.spec.ts` covers
 the other redirections between OpenCTI and XTM Hub: the one-click deploy of each OpenCTI resource type, and every OpenCTI
-link that opens XTM Hub; `openaev-redirections.spec.ts` does the same for every OpenAEV link to XTM Hub. A CI leg runs the specs whose file name starts with its platform (`opencti-`, `openaev-`).
+link that opens XTM Hub; `openaev/redirections.spec.ts` does the same for every OpenAEV link to XTM Hub. A CI leg runs
+the project of its platform. Their page models are in `tests/model/platforms/`.
 Each spec skips unless `OPENCTI_URL` or `OPENAEV_URL` is
 set, so a plain `yarn test:e2e` reports them as skipped. They run against the `rolling` images through
 `xtm-hub-dev/docker-compose-ci-opencti.yml` and `xtm-hub-dev/docker-compose-ci-openaev.yml`, layered on
 `docker-compose-ci.yml`:
 
 ```bash
-docker compose -f xtm-hub-dev/docker-compose-ci.yml -f xtm-hub-dev/docker-compose-ci-opencti.yml run e2e sh -lc "yarn test:e2e --project=platforms"
+docker compose -f xtm-hub-dev/docker-compose-ci.yml -f xtm-hub-dev/docker-compose-ci-opencti.yml run e2e sh -lc "yarn test:e2e --project=opencti"
 ```
 
 The platform must start after the Hub frontend is healthy: OpenAEV checks once, at startup, that it can reach XTM Hub.
@@ -51,11 +53,11 @@ test starts from "Not connected".
 
 ```
 tests/fixtures/       Playwright fixtures
-tests/model/          Page object models
+tests/model/          Page object models (`platforms/`: the screens of OpenCTI and OpenAEV)
 tests/db-utils/       Database setup/teardown helpers
 tests/utils/          Shared helpers
 tests/tests_files/    Specs, grouped by feature, and their test data
-tests/platforms/      Specs against a real OpenCTI / OpenAEV (`platforms` project)
+tests/platforms/      Specs against a real OpenCTI / OpenAEV (one folder and project per platform)
 tests/__screenshots__/ Visual regression baselines, created by the first `toHaveScreenshot` baseline
 ```
 

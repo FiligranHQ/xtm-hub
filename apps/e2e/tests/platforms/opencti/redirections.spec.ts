@@ -1,22 +1,24 @@
 import { Page } from '@playwright/test';
-import { expect, test } from '../fixtures/baseFixtures';
-import { HomePage } from '../model/home.pageModel';
+import { expect, test } from '../../fixtures/baseFixtures';
+import { HomePage } from '../../model/home.pageModel';
 import IntegrationPage, {
   DEPLOYABLE_INTEGRATIONS,
   DeployableIntegrationKind,
-} from '../model/integration.pageModel';
-import OneClickDeployPage from '../model/one-click-deploy.pageModel';
+} from '../../model/integration.pageModel';
+import OneClickDeployPage from '../../model/one-click-deploy.pageModel';
 import OpenctiResourcePage, {
   OPENCTI_RESOURCES,
-} from '../model/opencti-resource.pageModel';
-import OpenctiPage from '../model/opencti.pageModel';
-import { OPENCTI } from '../model/xtm-platform.pageModel';
+} from '../../model/opencti-resource.pageModel';
+import OpenctiPage from '../../model/platforms/opencti.pageModel';
+import {
+  getPlatformUrl,
+  OPENCTI,
+} from '../../model/platforms/xtm-platform.pageModel';
 import {
   signInToXtmHubAndPlatform,
   skipWithoutPlatform,
-} from './platform-registration';
+} from '../platform-registration';
 
-const OPENCTI_URL = OPENCTI.url ?? '';
 const XTM_HUB_ORIGIN = new URL(
   process.env.E2E_BASE_URL ?? 'http://localhost:3002'
 ).origin;
@@ -63,7 +65,7 @@ test.describe('OpenCTI one-click deploy of each resource type', () => {
   ] as const) {
     test(`should deploy a ${kind} feed from XTM Hub`, async ({ page }) => {
       const openctiTab = await deployIntegration(page, kind);
-      const opencti = new OpenctiPage(openctiTab, OPENCTI_URL);
+      const opencti = new OpenctiPage(openctiTab, getPlatformUrl(OPENCTI));
       await expect(opencti.getText(drawerTitle)).toBeVisible();
       await expect(opencti.getNameField()).toHaveValue(
         DEPLOYABLE_INTEGRATIONS[kind].feedName
@@ -92,7 +94,7 @@ test.describe('OpenCTI one-click deploy of each resource type', () => {
     }) => {
       const opencti = new OpenctiPage(
         await deployIntegration(page, kind),
-        OPENCTI_URL
+        getPlatformUrl(OPENCTI)
       );
       await expect(opencti.getText(drawerTitle)).toBeVisible();
       await expect(opencti.getNameField()).toHaveValue(
@@ -118,7 +120,7 @@ test.describe('OpenCTI one-click deploy of each resource type', () => {
 
     const opencti = new OpenctiPage(
       await new OneClickDeployPage(page).deployIn('OpenCTI'),
-      OPENCTI_URL
+      getPlatformUrl(OPENCTI)
     );
     await expect(
       opencti.getText('Custom view successfully imported')
@@ -157,7 +159,7 @@ test.describe('OpenCTI links to XTM Hub', () => {
     page,
   }) => {
     await connectOpencti(page);
-    const opencti = new OpenctiPage(page, OPENCTI_URL);
+    const opencti = new OpenctiPage(page, getPlatformUrl(OPENCTI));
 
     await test.step('dashboards: Import from Hub', async () => {
       await opencti.navigateTo('/dashboard/workspaces/dashboards');

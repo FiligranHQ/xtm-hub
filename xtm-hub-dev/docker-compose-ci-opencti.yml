@@ -49,8 +49,8 @@ services:
       # The browser in the e2e container and the OpenCTI backend both reach the Hub on this address.
       - XTM__XTMHUB_URL=http://frontend:3000
       - XTM__XTMHUB_CONNECTIVITY_EMAIL_ENABLED=false
-      # OpenCTI pulls the XTM Hub news feed only from this job, hourly by default: every 10 s for the news feed test.
-      - HUB_REGISTRATION_MANAGER__INTERVAL=10000
+      # OpenCTI pulls the XTM Hub news feed only from this job, hourly by default: every second for the news feed test.
+      - HUB_REGISTRATION_MANAGER__INTERVAL=1000
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/health?health_access_key=e2e-health-key"]
       interval: 10s
