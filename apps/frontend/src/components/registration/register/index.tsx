@@ -24,7 +24,10 @@ import {
   PlatformInput,
   registerPlatformMutation,
 } from '@generated/registerPlatformMutation.graphql';
-import { PlatformRegistrationStatus } from '@graphql/generated';
+import {
+  PlatformIdentifier,
+  PlatformRegistrationStatus,
+} from '@graphql/generated';
 import {
   ReactNode,
   useCallback,
@@ -45,6 +48,8 @@ import {
 interface RegisterProps {
   platform: PlatformInput;
   queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
+  /** The nonce XTM One opened the page with, echoed back in its messages. */
+  state?: string;
 }
 
 export type RegistrationRequestStatus =
@@ -83,7 +88,11 @@ const initialState: State = {
   registerFragmentRef: null,
 };
 
-export const Register = ({ queryRef, platform }: RegisterProps) => {
+export const Register = ({
+  queryRef,
+  platform,
+  state: openerState,
+}: RegisterProps) => {
   const t = useTranslate();
   const { displayedIdentifier, identifier } = useContext(RegistrationContext);
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -117,9 +126,16 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
   const hasPostedMessageRef = useRef(false);
   const hasAutoRegisteredRef = useRef(false);
 
+  // OpenCTI and OpenAEV never receive the state: their messages are unchanged.
+  const echoedState =
+    identifier === PlatformIdentifier.Xtmone ? openerState : undefined;
+
   const cancel = useCallback(() => {
-    window.opener?.postMessage({ action: 'cancel' }, '*');
-  }, []);
+    window.opener?.postMessage(
+      { action: 'cancel', ...(echoedState && { state: echoedState }) },
+      '*'
+    );
+  }, [echoedState]);
 
   const register = useCallback(
     (organizationId: string, platformName: string = platform.title) => {
@@ -165,12 +181,13 @@ export const Register = ({ queryRef, platform }: RegisterProps) => {
         {
           action: 'register',
           token: registerDataResponse.token,
+          ...(echoedState && { state: echoedState }),
         },
         '*'
       );
       dispatch({ type: 'SET_SUCCEEDED' });
     }
-  }, [registerDataResponse?.token]);
+  }, [registerDataResponse?.token, echoedState]);
 
   useLayoutEffect(() => {
     const shouldAutoRegister =

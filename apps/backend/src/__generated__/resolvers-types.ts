@@ -2018,7 +2018,7 @@ export type Query = {
    * contains it (case-insensitive) are considered.
    */
   registeredProductVersions: Array<RegisteredProductVersion>;
-  registeredSaasPlatformMetadata?: Maybe<SaasPlatformMetadata>;
+  registeredSaasPlatformData?: Maybe<SaasPlatformData>;
   rolePortals: Array<RolePortal>;
   saasPlatforms: RegisteredPlatformConnection;
   seoServiceInstance: SeoServiceInstance;
@@ -2256,7 +2256,7 @@ export type QueryRegisteredProductVersionsArgs = {
 };
 
 
-export type QueryRegisteredSaasPlatformMetadataArgs = {
+export type QueryRegisteredSaasPlatformDataArgs = {
   input: RegisteredPlatformInput;
 };
 
@@ -2559,6 +2559,11 @@ export type SsoGroupRolePortal = {
   __typename?: 'SSOGroupRolePortal';
   rolePortal: RolePortal;
   ssoGroup: Scalars['String']['output'];
+};
+
+export type SaasPlatformData = {
+  __typename?: 'SaasPlatformData';
+  metadata: SaasPlatformMetadata;
 };
 
 export type SaasPlatformMetadata = {
@@ -3630,6 +3635,7 @@ export type ResolversTypes = ResolversObject<{
   RolePortal: ResolverTypeWrapper<RolePortal>;
   RssFeed: ResolverTypeWrapper<RssFeed>;
   SSOGroupRolePortal: ResolverTypeWrapper<SsoGroupRolePortal>;
+  SaasPlatformData: ResolverTypeWrapper<SaasPlatformData>;
   SaasPlatformMetadata: ResolverTypeWrapper<SaasPlatformMetadata>;
   SendTelemetryMutation: ResolverTypeWrapper<SendTelemetryMutation>;
   SeoServiceInstance: ResolverTypeWrapper<SeoServiceInstance>;
@@ -3869,6 +3875,7 @@ export type ResolversParentTypes = ResolversObject<{
   RolePortal: RolePortal;
   RssFeed: RssFeed;
   SSOGroupRolePortal: SsoGroupRolePortal;
+  SaasPlatformData: SaasPlatformData;
   SaasPlatformMetadata: SaasPlatformMetadata;
   SendTelemetryMutation: SendTelemetryMutation;
   SeoServiceInstance: SeoServiceInstance;
@@ -4810,7 +4817,7 @@ export type QueryResolvers<ContextType = PortalContext, ParentType extends Resol
   registeredPlatform?: Resolver<Maybe<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformArgs, 'input'>>;
   registeredPlatforms?: Resolver<Array<ResolversTypes['RegisteredPlatform']>, ParentType, ContextType, RequireFields<QueryRegisteredPlatformsArgs, 'input'>>;
   registeredProductVersions?: Resolver<Array<ResolversTypes['RegisteredProductVersion']>, ParentType, ContextType, RequireFields<QueryRegisteredProductVersionsArgs, 'product'>>;
-  registeredSaasPlatformMetadata?: Resolver<Maybe<ResolversTypes['SaasPlatformMetadata']>, ParentType, ContextType, RequireFields<QueryRegisteredSaasPlatformMetadataArgs, 'input'>>;
+  registeredSaasPlatformData?: Resolver<Maybe<ResolversTypes['SaasPlatformData']>, ParentType, ContextType, RequireFields<QueryRegisteredSaasPlatformDataArgs, 'input'>>;
   rolePortals?: Resolver<Array<ResolversTypes['RolePortal']>, ParentType, ContextType>;
   saasPlatforms?: Resolver<ResolversTypes['RegisteredPlatformConnection'], ParentType, ContextType, RequireFields<QuerySaasPlatformsArgs, 'first' | 'orderBy' | 'orderMode'>>;
   seoServiceInstance?: Resolver<ResolversTypes['SeoServiceInstance'], ParentType, ContextType, RequireFields<QuerySeoServiceInstanceArgs, 'slug'>>;
@@ -4943,6 +4950,11 @@ export type RssFeedResolvers<ContextType = PortalContext, ParentType extends Res
 export type SsoGroupRolePortalResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SSOGroupRolePortal'] = ResolversParentTypes['SSOGroupRolePortal']> = ResolversObject<{
   rolePortal?: Resolver<ResolversTypes['RolePortal'], ParentType, ContextType>;
   ssoGroup?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SaasPlatformDataResolvers<ContextType = PortalContext, ParentType extends ResolversParentTypes['SaasPlatformData'] = ResolversParentTypes['SaasPlatformData']> = ResolversObject<{
+  metadata?: Resolver<ResolversTypes['SaasPlatformMetadata'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -5569,6 +5581,7 @@ export type Resolvers<ContextType = PortalContext> = ResolversObject<{
   RolePortal?: RolePortalResolvers<ContextType>;
   RssFeed?: RssFeedResolvers<ContextType>;
   SSOGroupRolePortal?: SsoGroupRolePortalResolvers<ContextType>;
+  SaasPlatformData?: SaasPlatformDataResolvers<ContextType>;
   SaasPlatformMetadata?: SaasPlatformMetadataResolvers<ContextType>;
   SendTelemetryMutation?: SendTelemetryMutationResolvers<ContextType>;
   SeoServiceInstance?: SeoServiceInstanceResolvers<ContextType>;
