@@ -1,4 +1,5 @@
 import config from 'config';
+import { validate as isUuid } from 'uuid';
 import {
   DeploymentRequestDeploymentType,
   OrganizationCapability,
@@ -17,7 +18,6 @@ import { UserDomain } from '../../modules/organization-management/user/user-doma
 import { PlatformConfigurationDomain } from '../../modules/registration/platform-configuration/platform-configuration.domain';
 import { logApp } from '../../utils/app-logger.util';
 import { ErrorCode } from '../../utils/error/error.code';
-import { ForbiddenAccess } from '../../utils/error/error.util';
 import { isValidUrl } from '../../utils/utils';
 import {
   HUBSPOT_TYPE_TO_QUEUE,
@@ -32,27 +32,37 @@ import { PgBossProducer } from '../pgboss/producer';
 const useQueueProcessing = (): boolean =>
   config.get<boolean>('hubspot_use_queue_processing');
 
+/**
+ * Hands a built payload to HubSpot. Delivery is best effort: a failure is logged, never returned to the caller.
+ */
+const deliverHubspotPayload = async <T extends HubspotWebhookType>(
+  type: T,
+  payload: HubspotPayloadMap[T]
+) => {
+  if (useQueueProcessing()) {
+    try {
+      const queueName = HUBSPOT_TYPE_TO_QUEUE[type];
+      await PgBossProducer.send(queueName, { type, payload });
+    } catch (error) {
+      logApp.error(`Failed to enqueue Hubspot ${type} job`, { error });
+    }
+    return;
+  }
+
+  hubspotWebhookSend(type, payload).catch((error) => {
+    logApp.error(`Failed to send Hubspot ${type} hook synchronously`, {
+      error,
+    });
+  });
+};
+
 export async function hubspotHook<T extends HubspotWebhookType>(
   type: T,
   buildPayload: () => Promise<HubspotPayloadMap[T]>
 ) {
   try {
     const payload = await buildPayload();
-    if (useQueueProcessing()) {
-      try {
-        const queueName = HUBSPOT_TYPE_TO_QUEUE[type];
-        await PgBossProducer.send(queueName, { type, payload });
-      } catch (error) {
-        logApp.error(`Failed to enqueue Hubspot ${type} job`, { error });
-      }
-      return;
-    }
-
-    hubspotWebhookSend(type, payload).catch((error) => {
-      logApp.error(`Failed to send Hubspot ${type} hook synchronously`, {
-        error,
-      });
-    });
+    await deliverHubspotPayload(type, payload);
   } catch (error) {
     logApp.error(`Failed to send Hubspot ${type} hook`, { error });
   }
@@ -293,6 +303,10 @@ const loadPlatformContact = async ({
     };
   }
 
+  // A registration is keyed by UUID columns: any other value is refused here, before the database rejects it.
+  if (!isUuid(platformId) || !isUuid(platformToken)) {
+    throw new Error(ErrorCode.InvalidPlatformToken);
+  }
   const registration =
     await PlatformConfigurationDomain.loadResolvedConfigurationByPlatformAndToken(
       { platform_id: platformId, token: platformToken }
@@ -321,7 +335,7 @@ const loadPlatformContact = async ({
     }
   }
 
-  throw ForbiddenAccess(ErrorCode.InvalidPlatformToken);
+  throw new Error(ErrorCode.InvalidPlatformToken);
 };
 
 export const hubspotReachOutSalesFromPlatformHook = async ({
@@ -338,5 +352,5 @@ export const hubspotReachOutSalesFromPlatformHook = async ({
     platformId,
     platformToken,
   });
-  await hubspotHook('reachOutSales', async () => contact);
+  await deliverHubspotPayload('reachOutSales', contact);
 };

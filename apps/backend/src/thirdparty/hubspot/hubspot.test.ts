@@ -435,6 +435,31 @@ describe('hubspot', () => {
       expect(fetchSpy).not.toHaveBeenCalled();
     });
 
+    it.each`
+      description                      | platformId    | platformToken
+      ${'a platform id not a UUID'}    | ${'not-a-id'} | ${uuidv4()}
+      ${'a platform token not a UUID'} | ${uuidv4()}   | ${'not-a-token'}
+    `(
+      'should refuse $description without sending anything',
+      async ({
+        platformId,
+        platformToken,
+      }: {
+        platformId: string;
+        platformToken: string;
+      }) => {
+        // When
+        const call = hubspotReachOutSalesFromPlatformHook({
+          platformId,
+          platformToken,
+        });
+
+        // Then
+        await expect(call).rejects.toThrow(ErrorCode.InvalidPlatformToken);
+        expect(fetchSpy).not.toHaveBeenCalled();
+      }
+    );
+
     it('should refuse a trial deployment token used with another platform id', async () => {
       // Given
       const deploymentRequest =

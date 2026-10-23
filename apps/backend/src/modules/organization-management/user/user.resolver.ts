@@ -25,6 +25,10 @@ import { ForbiddenAccess } from '../../../utils/error/error.util';
 import { createRelayIdScalar } from '../../../utils/scalar.util';
 import { extractId } from '../../../utils/utils';
 import { AuthHelper } from '../../security-management/capability/auth.helper';
+import {
+  extractPlatformId,
+  extractPlatformToken,
+} from '../../security-management/token/platform-token.util';
 import { UserAdminApp } from './user-admin/user.admin.app';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationApp } from './user-organization/user-organization.app';
@@ -341,14 +345,12 @@ const resolvers: Resolvers = {
       portalContext
     ) => {
       try {
-        const platformToken = portalContext.req.header(
-          'XTM-Hub-Platform-Token'
-        );
+        const platformToken = extractPlatformToken(portalContext.req);
 
         if (portalContext.user) {
           await hubspotReachOutSalesHook({
             message: message ?? undefined,
-            platformToken,
+            platformToken: platformToken ?? undefined,
             platformId: platformId ?? undefined,
             platformIdentifier: platformIdentifier ?? undefined,
             deploymentRequestType: deploymentRequestType ?? undefined,
@@ -357,11 +359,9 @@ const resolvers: Resolvers = {
         }
 
         // Without a Hub session, only a platform calling with its own id and token can send a message.
-        const headerPlatformId = portalContext.req.header(
-          'XTM-Hub-Platform-Id'
-        );
+        const headerPlatformId = extractPlatformId(portalContext.req);
         if (!platformToken || !headerPlatformId) {
-          throw ForbiddenAccess(ErrorCode.InvalidPlatformToken);
+          throw new Error(ErrorCode.InvalidPlatformToken);
         }
         await hubspotReachOutSalesFromPlatformHook({
           message: message ?? undefined,

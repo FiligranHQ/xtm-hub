@@ -1,14 +1,24 @@
 import { describe, expect, it, vi } from 'vitest';
-import { GRAPHQL_RESOLVE_INFO } from '../../../../tests/tests.const';
+import {
+  contextAdminSecondOrga,
+  GRAPHQL_RESOLVE_INFO,
+} from '../../../../tests/tests.const';
 import { PortalContext } from '../../../model/portal-context';
 import * as hubspot from '../../../thirdparty/hubspot/hubspot';
 import { ErrorCode } from '../../../utils/error/error.code';
 import userResolver from './user.resolver';
 
-const buildAnonymousContext = (headers: Record<string, string>) =>
+// Express lowercases the header names of a request.
+const buildContext = ({
+  user,
+  headers = {},
+}: {
+  user?: PortalContext['user'];
+  headers?: Record<string, string>;
+}) =>
   ({
-    user: undefined,
-    req: { header: (name: string) => headers[name] },
+    user,
+    req: { headers },
   }) as unknown as PortalContext;
 
 describe('mutation.contactUs', () => {
@@ -23,7 +33,7 @@ describe('mutation.contactUs', () => {
     const call = userResolver.Mutation!.contactUs!(
       {},
       { message: 'Please call me' },
-      buildAnonymousContext({}),
+      buildContext({}),
       GRAPHQL_RESOLVE_INFO
     );
 
@@ -44,9 +54,11 @@ describe('mutation.contactUs', () => {
     const result = await userResolver.Mutation!.contactUs!(
       {},
       { message: 'Please call me' },
-      buildAnonymousContext({
-        'XTM-Hub-Platform-Id': platformId,
-        'XTM-Hub-Platform-Token': platformToken,
+      buildContext({
+        headers: {
+          'xtm-hub-platform-id': platformId,
+          'xtm-hub-platform-token': platformToken,
+        },
       }),
       GRAPHQL_RESOLVE_INFO
     );
@@ -58,5 +70,36 @@ describe('mutation.contactUs', () => {
       platformId,
       platformToken,
     });
+  });
+
+  it('should send the message of a signed-in Hub user through the Hub user flow', async () => {
+    // Given
+    const fromPlatformSpy = vi.spyOn(
+      hubspot,
+      'hubspotReachOutSalesFromPlatformHook'
+    );
+    const hubUserSpy = vi
+      .spyOn(hubspot, 'hubspotReachOutSalesHook')
+      .mockResolvedValue();
+    const platformId = 'c9e8fee1-8cb4-4fff-b335-5ea350615df4';
+
+    // When
+    const result = await userResolver.Mutation!.contactUs!(
+      {},
+      { message: 'Please call me', platformId },
+      buildContext({ user: contextAdminSecondOrga.user }),
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    expect(result).toEqual({ success: true });
+    expect(hubUserSpy).toHaveBeenCalledWith({
+      message: 'Please call me',
+      platformId,
+      platformToken: undefined,
+      platformIdentifier: undefined,
+      deploymentRequestType: undefined,
+    });
+    expect(fromPlatformSpy).not.toHaveBeenCalled();
   });
 });
