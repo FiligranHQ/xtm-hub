@@ -55,8 +55,10 @@ entry, or misconfiguration, without publishing anything.
 ## Deploy the documentation
 
 Deployment is **automated**. The
-[`docs-deploy.yml`](../.github/workflows/docs-deploy.yml) workflow runs on every
-`v*` tag push (i.e. on every release created by `Create Deployment`) and:
+[`docs-deploy.yml`](../.github/workflows/docs-deploy.yml) workflow is
+dispatched by `Create Deployment` for every release it creates (a tag pushed by
+a workflow does not start other workflows), also runs on any `v*` tag pushed by
+hand, and:
 
 1. compares the tag with the previous one and **stops early if nothing changed
    under `docs/`**;
