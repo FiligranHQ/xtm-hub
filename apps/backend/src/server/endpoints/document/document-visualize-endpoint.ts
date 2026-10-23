@@ -1,4 +1,5 @@
 import cors from 'cors';
+import { createHash } from 'crypto';
 import { Application, Request, Response } from 'express';
 import { fromGlobalId } from 'graphql-relay/node/node.js';
 import { Readable } from 'stream';
@@ -130,6 +131,19 @@ export const documentVisualizeEndpoint = (app: Application) => {
           logApp.error(`Invalid document - Missing name for ${documentId}`);
           return res.status(404).json({ message: 'Invalid document' });
         }
+
+        // The URL of an image stays the same when its file is replaced (e.g. a
+        // connector logo), so clients must revalidate instead of caching blindly.
+        // The MinIO name changes with every upload, which makes it a reliable ETag.
+        res.setHeader(
+          'ETag',
+          `"${createHash('sha1').update(document.minio_name).digest('hex')}"`
+        );
+        res.setHeader('Cache-Control', 'public, no-cache');
+        if (req.fresh) {
+          return res.status(304).end();
+        }
+
         const stream = (await MinIOClient.downloadFile(
           document.minio_name
         )) as Readable;
