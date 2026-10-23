@@ -42,7 +42,8 @@ const isRequestedByUserOrganization = (
   );
 
 /**
- * Resolves the contact of a signed-in Hub user: the requester of the trial they name, or their latest trial or bundle.
+ * Resolves the contact of a signed-in Hub user: the requester of the trial they name, of their latest bundle, or
+ * the user themselves.
  * A trial from another organization is refused like a missing one, so its existence is not disclosed.
  */
 const loadHubUserContact = async ({
@@ -112,20 +113,9 @@ const loadHubUserContact = async ({
         message: `${products.join(', ')}: Message sent for free trial: ${bundle.hub_status.toLowerCase()} ${bundle.type}.\n\n${message}`,
       };
     }
-  } else {
-    const trial =
-      await DeploymentRequestDomain.loadLatestDeploymentRequestForUser(
-        user.id,
-        {
-          type: DeploymentRequestDeploymentType.Trial,
-          platform_identifier: platformIdentifier,
-        }
-      );
-    if (trial) {
-      return buildTrialContact(trial, message);
-    }
   }
 
+  // Without a platform, the contact is the sender, never another member of their organizations.
   return {
     email: user.email,
     firstname: user.first_name,

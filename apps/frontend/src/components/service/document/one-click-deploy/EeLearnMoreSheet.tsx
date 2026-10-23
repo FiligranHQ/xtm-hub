@@ -94,7 +94,7 @@ const EeLearnMoreSheet = ({
   const handleSubmit = (values: z.infer<typeof interestFormSchema>) => {
     commitContactUs({
       message: values.message,
-      // The sheet has no platform: the contact is the user's latest trial of this product.
+      // No platform: the Hub sends the signed-in user as the contact.
       platformId: null,
       platformIdentifier,
     });

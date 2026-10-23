@@ -200,22 +200,26 @@ describe('user contact app', () => {
       );
     });
 
-    it('should send full message when request is found from user id and platform identifier', async () => {
+    it('should send the sender as contact even when another member of their organization requested a trial of the product', async () => {
+      // Given
       await TestHelper.deploymentRequest.createWithServiceInstanceAndSubscription(
         {}
       );
+
+      // When
       await UserContactApp.contactSales({});
+
+      // Then
       expect(fetchSpy).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           body: JSON.stringify({
             type: 'reachOutSales',
-            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-            firstname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-            lastname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
+            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
+            firstname: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME,
+            lastname: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.LAST_NAME,
             company: TEST_ORGANIZATIONS.FILIGRAN.NAME,
-            message:
-              'opencti: Message sent for free trial: pending trial.\n\nPlease contact me about the OpenCTI free trial',
+            message: 'opencti: Please contact me about the OpenCTI free trial',
           }),
         })
       );
