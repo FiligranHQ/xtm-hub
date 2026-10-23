@@ -47,6 +47,7 @@ import {
 
 interface RegisterProps {
   platform: PlatformInput;
+  platformOrigin: string;
   queryRef: PreloadedQuery<registerIsPlatformRegisteredQuery>;
   /** The nonce XTM One opened the page with, echoed back in its messages. */
   state?: string;
@@ -91,6 +92,7 @@ const initialState: State = {
 export const Register = ({
   queryRef,
   platform,
+  platformOrigin,
   state: openerState,
 }: RegisterProps) => {
   const t = useTranslate();
@@ -130,12 +132,19 @@ export const Register = ({
   const echoedState =
     identifier === PlatformIdentifier.Xtmone ? openerState : undefined;
 
+  const postMessageToPlatform = useCallback(
+    (message: Record<string, unknown>) => {
+      window.opener?.postMessage(
+        { ...message, ...(echoedState && { state: echoedState }) },
+        platformOrigin
+      );
+    },
+    [platformOrigin, echoedState]
+  );
+
   const cancel = useCallback(() => {
-    window.opener?.postMessage(
-      { action: 'cancel', ...(echoedState && { state: echoedState }) },
-      '*'
-    );
-  }, [echoedState]);
+    postMessageToPlatform({ action: 'cancel' });
+  }, [postMessageToPlatform]);
 
   const register = useCallback(
     (organizationId: string, platformName: string = platform.title) => {
@@ -177,17 +186,13 @@ export const Register = ({
   useLayoutEffect(() => {
     if (registerDataResponse?.token && !hasPostedMessageRef.current) {
       hasPostedMessageRef.current = true;
-      window.opener?.postMessage(
-        {
-          action: 'register',
-          token: registerDataResponse.token,
-          ...(echoedState && { state: echoedState }),
-        },
-        '*'
-      );
+      postMessageToPlatform({
+        action: 'register',
+        token: registerDataResponse.token,
+      });
       dispatch({ type: 'SET_SUCCEEDED' });
     }
-  }, [registerDataResponse?.token, echoedState]);
+  }, [registerDataResponse?.token, postMessageToPlatform]);
 
   useLayoutEffect(() => {
     const shouldAutoRegister =

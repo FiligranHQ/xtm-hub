@@ -5,6 +5,7 @@ import { RegistrationContextProvider } from '@/components/registration/Context';
 import { Register } from '@/components/registration/register';
 import useDecodedQuery from '@/hooks/use-decoded-query';
 import useMountingLoader from '@/hooks/use-mounting-loader';
+import { getUrlOrigin } from '@/utils/external-url';
 import RegisterIsPlatformRegisteredQueryGraphql, {
   registerIsPlatformRegisteredQuery,
 } from '@generated/registerIsPlatformRegisteredQuery.graphql';
@@ -32,8 +33,14 @@ export const PageLoader = () => {
     state,
   } = useDecodedQuery();
 
+  // The platform is only messaged on this origin: without one, it could never get the result.
+  const platformOrigin = getUrlOrigin(platform_url);
   const areParametersValid =
-    platform_id && platform_title && platform_url && platform_contract;
+    platform_id &&
+    platform_title &&
+    platform_url &&
+    platformOrigin &&
+    platform_contract;
   if (!areParametersValid) {
     return redirect('/');
   }
@@ -60,6 +67,7 @@ export const PageLoader = () => {
       <Register
         queryRef={queryRef}
         platform={platform}
+        platformOrigin={platformOrigin}
         state={state ?? undefined}
       />
     </RegistrationContextProvider>
