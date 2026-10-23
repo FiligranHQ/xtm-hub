@@ -23,14 +23,14 @@ interface PortalConfig {
     pending_user_digest: boolean;
     public_roadmap_monthly_reminder: boolean;
   };
-  saas_manager: {
-    enabled: boolean;
-  };
   auth0_sync: {
     enabled: boolean;
     max_users_per_run: number;
     concurrency: number;
     deadline_minutes: number;
+  };
+  user_management: {
+    enforce_idp_subject: boolean;
   };
   elasticsearch: {
     protocol: string;
@@ -83,14 +83,15 @@ const portalConfig: PortalConfig = {
       config.get<boolean>('enabled_emails.public_roadmap_monthly_reminder') ??
       false,
   },
-  saas_manager: {
-    enabled: config.get<boolean>('saas_manager.enabled') ?? false,
-  },
   auth0_sync: {
     enabled: config.get<boolean>('auth0_sync.enabled') ?? false,
     max_users_per_run: config.get<number>('auth0_sync.max_users_per_run'),
     concurrency: config.get<number>('auth0_sync.concurrency'),
     deadline_minutes: config.get<number>('auth0_sync.deadline_minutes'),
+  },
+  user_management: {
+    enforce_idp_subject:
+      config.get<boolean>('user_management.enforce_idp_subject') ?? false,
   },
   elasticsearch: {
     protocol: config.get<string | null>('elasticsearch.protocol') ?? 'https',

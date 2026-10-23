@@ -186,7 +186,7 @@ export const hubspotReachOutSalesHook = async ({
         );
       if (!deploymentRequest) {
         throw new Error(
-          `No deployment request found for platform token: ${platformToken}`
+          'No trial deployment request found for the provided platform token'
         );
       }
 

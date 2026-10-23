@@ -46,6 +46,7 @@ vi.mock('next/navigation', async (importOriginal) => ({
   useRouter: vi.fn(),
   useParams: vi.fn(),
   useSearchParams: vi.fn(),
+  useSelectedLayoutSegment: vi.fn(),
   redirect: vi.fn(),
   notFound: vi.fn(),
 }));
@@ -59,16 +60,15 @@ vi.mock('next/headers', async (importOriginal) => ({
   headers: vi.fn(async () => new Headers()),
 }));
 
-vi.mock('next-intl', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('next-intl')>()),
-  useTranslations: vi.fn(() =>
-    Object.assign((key: string) => key, {
-      has: () => false,
-      rich: (key: string) => key,
-    })
-  ),
-  useLocale: vi.fn(() => 'en'),
-}));
+// vi.mock factories are hoisted above the imports, hence the dynamic import.
+vi.mock('next-intl', async (importOriginal) => {
+  const { mockTranslations } = await import('@/utils/test/mock-translations');
+  return {
+    ...(await importOriginal<typeof import('next-intl')>()),
+    useTranslations: vi.fn(() => mockTranslations()),
+    useLocale: vi.fn(() => 'en'),
+  };
+});
 
 const relayRegistryMocks = vi.hoisted(() => ({
   getClientEnvironment: vi.fn(),
