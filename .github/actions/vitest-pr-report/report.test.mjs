@@ -245,6 +245,32 @@ describe('buildReport', () => {
     assert.match(comment, /3 other tests<\/summary>\n\n\| Result \| Test \|[\s\S]*\| ✅ \| keeps others \|/);
   });
 
+  it('should head the top-level tests that follow a describe so they do not read as part of it', () => {
+    const mixed = {
+      ...testFile,
+      tests: [
+        { ...TESTS[0], suite: [], title: 'top level first', name: 'top level first' },
+        TESTS[0],
+        { ...TESTS[0], suite: [], title: 'top level after', name: 'top level after' },
+      ],
+    };
+
+    const { comment } = report({ testFiles: [mixed] });
+
+    assert.match(
+      comment,
+      /\| Result \| Changed \| Test \|\n\| :-: \| :-: \| :-- \|\n\| ✅ \| ✏️ \| top level first \|\n\| \| \| \*\*omit\*\* \|\n\| ✅ \| ✏️ \| removes keys \|\n\| \| \| \*\*\(top level\)\*\* \|\n\| ✅ \| ✏️ \| top level after \|/
+    );
+  });
+
+  it('should escape the markdown characters of a suite so its bold row stays intact', () => {
+    const starred = { ...testFile, tests: [{ ...TESTS[0], suite: ['*_parse_*'] }] };
+
+    const { comment } = report({ testFiles: [starred] });
+
+    assert.match(comment, /\| \| \| \*\*\\\*\\_parse\\_\\\*\*\* \|/);
+  });
+
   it('should escape a pipe in a test title so the table keeps its columns', () => {
     const piped = { ...testFile, tests: [{ ...TESTS[0], title: 'a | b', name: 'omit › a | b' }] };
 

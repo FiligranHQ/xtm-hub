@@ -233,7 +233,11 @@ const renderFailure = (failure) => {
   ].join('\n');
 };
 
-const escapeCell = (text) => escapeHtml(text).replace(/\|/g, '&#124;').replace(/\r?\n/g, ' ');
+const escapeCell = (text) =>
+  escapeHtml(text)
+    .replace(/[\\`*_~[\]]/g, '\\$&')
+    .replace(/\|/g, '&#124;')
+    .replace(/\r?\n/g, ' ');
 
 const commonPrefix = (texts) =>
   texts.reduce((prefix, text) => {
@@ -289,11 +293,11 @@ const renderTestTable = (tests, changed) => {
   const rows = changed
     ? ['| Result | Changed | Test |', '| :-: | :-: | :-- |']
     : ['| Result | Test |', '| :-: | :-- |'];
-  let currentSuite = '';
+  let currentSuite = null;
   for (const group of groupCases(tests)) {
     const suite = group[0].suite.join(' › ');
-    if (suite && suite !== currentSuite) {
-      rows.push(row('', '', `**${escapeCell(suite)}**`));
+    if (suite !== currentSuite && (suite || currentSuite !== null)) {
+      rows.push(row('', '', suite ? `**${escapeCell(suite)}**` : '**(top level)**'));
     }
     currentSuite = suite;
     const mark = (test) => (changed?.has(test) ? '✏️' : '');
