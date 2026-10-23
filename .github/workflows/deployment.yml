@@ -134,7 +134,7 @@ jobs:
           fi
 
       # A tag pushed with GITHUB_TOKEN does not start other workflows, so the
-      # `push: tags` trigger of docs-deploy.yml never fires from here.
+      # documentation deployment is dispatched explicitly for the new tag.
       - name: Trigger Documentation Deployment Workflow
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
