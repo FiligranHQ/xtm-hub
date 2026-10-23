@@ -206,11 +206,17 @@ export const DocumentChildrenDomain = {
       service_instance_id
     );
 
-    const deletedDocuments = await withTransaction(async () => {
-      const deletedChildrenDocuments =
-        await DocumentChildrenDomain.deleteExternalImages(doc.id);
+    const replacedDocuments = await withTransaction(async () => {
+      if (!logoFile) {
+        return DocumentChildrenDomain.deleteExternalImages(doc.id);
+      }
 
-      if (logoFile) {
+      // Keep the id of the existing external image: its URL is public, indexed
+      // by search engines and shared in link previews, so it must stay valid.
+      const [existingImage] = await DocumentChildrenDomain.loadExternalImages(
+        doc.id
+      );
+      if (!existingImage) {
         await DocumentChildrenDomain.createImageDocuments(
           doc.id,
           service_instance_id,
@@ -218,22 +224,65 @@ export const DocumentChildrenDomain = {
           DocumentImageType.Logo,
           DocumentSourceType.External
         );
+        return [];
       }
 
-      return deletedChildrenDocuments;
+      await DocumentChildrenDomain.replaceImageFile(existingImage.id, logoFile);
+      const deletedDuplicates =
+        await DocumentChildrenDomain.deleteExternalImages(
+          doc.id,
+          existingImage.id
+        );
+      return [
+        ...(existingImage.minio_name === logoFile.minioName
+          ? []
+          : [existingImage]),
+        ...deletedDuplicates,
+      ];
     });
-    // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
-    if (deletedDocuments.length > 0) {
+    // Clean up MinIO files for replaced documents, need to be sure that we are finished with the logic
+    if (replacedDocuments.length > 0) {
       await Promise.all(
-        deletedDocuments.map((doc) => {
-          return MinIOClient.deleteFile(doc.minio_name);
-        })
+        replacedDocuments.map((replaced) =>
+          MinIOClient.deleteFile(replaced.minio_name)
+        )
       );
     }
   },
 
-  deleteExternalImages: async (
+  loadExternalImages: async (
     parentDocumentId: DocumentId
+  ): Promise<{ id: DocumentId; minio_name: string }[]> => {
+    return db('Document')
+      .join(
+        'Document_Children',
+        'Document.id',
+        'Document_Children.child_document_id'
+      )
+      .where('Document_Children.parent_document_id', parentDocumentId)
+      .andWhere('Document.type', '=', 'image')
+      .andWhere('Document.source_type', '=', DocumentSourceType.External)
+      .orderBy([
+        { column: 'Document.created_at', order: 'asc' },
+        { column: 'Document.id', order: 'asc' },
+      ])
+      .select('Document.id', 'Document.minio_name');
+  },
+
+  replaceImageFile: async (imageDocumentId: DocumentId, file: MinioFile) => {
+    await db<DocumentModel>('Document')
+      .where('id', '=', imageDocumentId)
+      .update({
+        file_name: file.fileName,
+        minio_name: file.minioName,
+        mime_type: file.mimeType,
+        updated_at: new Date(),
+      });
+  },
+
+  deleteExternalImages: async (
+    parentDocumentId: DocumentId,
+    excludeDocumentId?: DocumentId
   ): Promise<{ id: string; minio_name: string }[]> => {
     return db('Document')
       .delete()
@@ -244,6 +293,11 @@ export const DocumentChildrenDomain = {
       })
       .andWhere('Document.type', '=', 'image')
       .andWhere('Document.source_type', '=', DocumentSourceType.External)
+      .modify((qb) => {
+        if (excludeDocumentId) {
+          qb.andWhereNot('Document.id', excludeDocumentId);
+        }
+      })
       .returning(['id', 'minio_name']);
   },
 };
