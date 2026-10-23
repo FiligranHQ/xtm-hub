@@ -42,8 +42,8 @@ const isRequestedByUserOrganization = (
   );
 
 /**
- * Resolves the contact of a signed-in Hub user: the requester of the trial they name, of their latest bundle, or
- * the user themselves.
+ * Resolves the contact of a signed-in Hub user: the requester of the trial they name, or the user themselves, with
+ * the products of their latest bundle in the message when they ask about a bundle.
  * A trial from another organization is refused like a missing one, so its existence is not disclosed.
  */
 const loadHubUserContact = async ({
@@ -90,6 +90,16 @@ const loadHubUserContact = async ({
     return buildTrialContact(deploymentRequest, message);
   }
 
+  // Without a platform, the contact is the sender, never another member of their organizations.
+  const sender = {
+    email: user.email,
+    firstname: user.first_name,
+    lastname: user.last_name,
+    company:
+      user.organizations.find((org) => org.id === user.selected_organization_id)
+        ?.name || '',
+  };
+
   if (deploymentRequestType === DeploymentRequestDeploymentType.Bundle) {
     const bundle =
       await DeploymentRequestDomain.loadLatestDeploymentRequestForUser(
@@ -106,25 +116,13 @@ const loadHubUserContact = async ({
           Boolean(identifier)
         );
       return {
-        email: bundle.requester_email,
-        firstname: bundle.requester_first_name,
-        lastname: bundle.requester_last_name,
-        company: bundle.organization_name,
+        ...sender,
         message: `${products.join(', ')}: Message sent for free trial: ${bundle.hub_status.toLowerCase()} ${bundle.type}.\n\n${message}`,
       };
     }
   }
 
-  // Without a platform, the contact is the sender, never another member of their organizations.
-  return {
-    email: user.email,
-    firstname: user.first_name,
-    lastname: user.last_name,
-    company:
-      user.organizations.find((org) => org.id === user.selected_organization_id)
-        ?.name || '',
-    message: `${platformIdentifier}: ${message}`,
-  };
+  return { ...sender, message: `${platformIdentifier}: ${message}` };
 };
 
 /**

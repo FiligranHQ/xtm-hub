@@ -225,7 +225,8 @@ describe('user contact app', () => {
       );
     });
 
-    it('should send a bundle message listing the bundled products when a bundle deployment request is found for the user', async () => {
+    it('should send the sender as contact with the bundled products in the message when another member of their organization requested the bundle', async () => {
+      // Given
       await TestHelper.deploymentRequest.createBundle({
         children: [
           { platform_identifier: PlatformIdentifier.Opencti },
@@ -233,18 +234,20 @@ describe('user contact app', () => {
         ],
       });
 
+      // When
       await UserContactApp.contactSales({
         deploymentRequestType: DeploymentRequestDeploymentType.Bundle,
       });
 
+      // Then
       expect(fetchSpy).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
           body: JSON.stringify({
             type: 'reachOutSales',
-            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.EMAIL,
-            firstname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.FIRST_NAME,
-            lastname: TEST_ORGANIZATIONS.FILIGRAN.USERS.BYPASS.LAST_NAME,
+            email: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.EMAIL,
+            firstname: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.FIRST_NAME,
+            lastname: TEST_ORGANIZATIONS.FILIGRAN.USERS.SIMPLE2.LAST_NAME,
             company: TEST_ORGANIZATIONS.FILIGRAN.NAME,
             message:
               'openaev, opencti: Message sent for free trial: pending bundle.\n\nPlease contact me about the OpenCTI free trial',
