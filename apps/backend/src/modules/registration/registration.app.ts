@@ -31,6 +31,7 @@ import DeploymentRequest from '../../model/kanel/public/DeploymentRequest';
 import Organization, {
   OrganizationId,
 } from '../../model/kanel/public/Organization';
+import { PlatformConfigurationMutator } from '../../model/kanel/public/PlatformConfiguration';
 import { ServiceInstanceId } from '../../model/kanel/public/ServiceInstance';
 import { UserId } from '../../model/kanel/public/User';
 import { securityGuard } from '../../security/guard';
@@ -245,24 +246,28 @@ const enqueueCommercialModelRefresh = async (
   }
 };
 
-// A platform_id has one owner. A request with a tenant id that matches no registration is checked against the
-// tenant-less registration of the same platform, when there is one, instead of creating a second registration
-// beside it: that registration is a legacy OpenAEV one moving to tenants, or someone else's platform.
-const loadExistingRegistration = async (
+// A platform registered before it used tenants keeps one tenant-less registration. OpenAEV gives it to its default
+// tenant when it upgrades, so that tenant finds the tenant-less registration until it has its own. Any other tenant
+// only finds its own registration: it never reads nor takes over the legacy one.
+const loadRegistration = async (
   platformId: string,
-  tenantId?: string | null
+  tenantId?: string | null,
+  filter?: PlatformConfigurationMutator
 ) => {
   const registration =
     await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
       platformId,
-      { tenantId }
+      { ...filter, tenantId }
     );
-  if (registration || !tenantId) {
+  if (
+    registration ||
+    !RegistrationHelper.inheritsLegacyRegistration(tenantId)
+  ) {
     return registration;
   }
   return PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
     platformId,
-    { tenant_id: null }
+    { ...filter, tenant_id: null }
   );
 };
 
@@ -289,11 +294,7 @@ export const RegistrationApp = {
     tenantId?: string | null
   ): Promise<Organization | null> => {
     const user = requestContext.requireUser();
-    const resolvedConfiguration =
-      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
-        platformId,
-        { tenantId }
-      );
+    const resolvedConfiguration = await loadRegistration(platformId, tenantId);
     if (!resolvedConfiguration) {
       return null;
     }
@@ -430,6 +431,10 @@ export const RegistrationApp = {
       throw new Error(BadRequestErrorCode.TenantIdMandatory);
     }
 
+    if (platform.tenantId && !RegistrationHelper.usesTenants(identifier)) {
+      throw new Error(BadRequestErrorCode.TenantIdNotSupported);
+    }
+
     const configuration = buildPlatformConfiguration(platform, user.id, token);
 
     const serviceDefinition =
@@ -448,20 +453,19 @@ export const RegistrationApp = {
       throw new Error(ErrorCode.InvalidPlatformConfiguration);
     }
 
-    if (platform.tenantId && !RegistrationHelper.usesTenants(identifier)) {
-      throw new Error(ErrorCode.InvalidPlatformConfiguration);
+    // A platform_id belongs to one product, whatever the tenant of its registrations.
+    const anyRegistration =
+      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
+        platform.id
+      );
+    if (anyRegistration && anyRegistration.platformIdentifier !== identifier) {
+      throw new Error(ErrorCode.InvalidPlatformIdentifier);
     }
 
-    const existingRegistration = await loadExistingRegistration(
+    const existingRegistration = await loadRegistration(
       platform.id,
       platform.tenantId
     );
-    if (
-      existingRegistration &&
-      existingRegistration.platformIdentifier !== identifier
-    ) {
-      throw new Error(ErrorCode.InvalidPlatformIdentifier);
-    }
     const platformConfiguration = existingRegistration?.platformConfiguration;
 
     const existingConfigTenantId = platformConfiguration?.tenant_id;
@@ -546,14 +550,9 @@ export const RegistrationApp = {
     identifier,
     tenantId,
   }: UnregisterPlatformInput) => {
-    const resolvedConfiguration =
-      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
-        platformId,
-        {
-          tenantId,
-          status: PlatformConfigurationStatus.Active,
-        }
-      );
+    const resolvedConfiguration = await loadRegistration(platformId, tenantId, {
+      status: PlatformConfigurationStatus.Active,
+    });
     if (!resolvedConfiguration) {
       return;
     }
@@ -634,14 +633,14 @@ export const RegistrationApp = {
   isPlatformRegistered: async (
     input: IsPlatformRegisteredInput
   ): Promise<IsPlatformRegisteredResponse> => {
-    const platformConfiguration =
-      await PlatformConfigurationDomain.loadConfigurationByPlatform(
-        input.platformId,
-        { tenantId: input.tenantId }
-      );
-    if (!platformConfiguration) {
+    const registration = await loadRegistration(
+      input.platformId,
+      input.tenantId
+    );
+    if (!registration) {
       return { status: PlatformRegistrationStatus.NeverRegistered };
     }
+    const { platformConfiguration } = registration;
 
     const subscription = await SubscriptionDomain.loadSubscriptionBy({
       service_instance_id: platformConfiguration.service_instance_id,
@@ -669,14 +668,9 @@ export const RegistrationApp = {
     organizationName: string | null;
     isInOrganization: boolean;
   }> => {
-    const resolvedConfiguration =
-      await PlatformConfigurationDomain.loadResolvedConfigurationByPlatform(
-        platformId,
-        {
-          tenantId,
-          status: PlatformConfigurationStatus.Active,
-        }
-      );
+    const resolvedConfiguration = await loadRegistration(platformId, tenantId, {
+      status: PlatformConfigurationStatus.Active,
+    });
     if (!resolvedConfiguration) {
       throw new Error(ErrorCode.PlatformNotRegistered);
     }
