@@ -5,7 +5,10 @@ import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
 } from '../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../context/database.context';
+import {
+  afterCommit,
+  withTransaction,
+} from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
@@ -206,11 +209,20 @@ export const DocumentChildrenDomain = {
       service_instance_id
     );
 
-    const deletedDocuments = await withTransaction(async () => {
-      const deletedChildrenDocuments =
-        await DocumentChildrenDomain.deleteExternalImages(doc.id);
+    const obsoleteMinioNames = await withTransaction(async () => {
+      if (!logoFile) {
+        const deleted = await DocumentChildrenDomain.deleteExternalImages(
+          doc.id
+        );
+        return deleted.map(({ minio_name }) => minio_name);
+      }
 
-      if (logoFile) {
+      // Keep the id of the existing external image: its URL is public, indexed
+      // by search engines and shared in link previews, so it must stay valid.
+      const [existingImage] = await DocumentChildrenDomain.loadExternalImages(
+        doc.id
+      );
+      if (!existingImage) {
         await DocumentChildrenDomain.createImageDocuments(
           doc.id,
           service_instance_id,
@@ -218,22 +230,70 @@ export const DocumentChildrenDomain = {
           DocumentImageType.Logo,
           DocumentSourceType.External
         );
+        return [];
       }
 
-      return deletedChildrenDocuments;
+      await DocumentChildrenDomain.replaceImageFile(existingImage.id, logoFile);
+      const deletedDuplicates =
+        await DocumentChildrenDomain.deleteExternalImages(
+          doc.id,
+          existingImage.id
+        );
+      // The retained image now references the new file: never delete it, even
+      // if the replaced image or a duplicate pointed to the same object.
+      return [existingImage, ...deletedDuplicates]
+        .map(({ minio_name }) => minio_name)
+        .filter((minioName) => minioName !== logoFile.minioName);
     });
-    // Clean up MinIO files for deleted documents, need to be sure that we are finished with the logic
-    if (deletedDocuments.length > 0) {
-      await Promise.all(
-        deletedDocuments.map((doc) => {
-          return MinIOClient.deleteFile(doc.minio_name);
-        })
-      );
+
+    // This may run inside the transaction of a caller, which commits later:
+    // delete the files only once everything is committed, so the database never
+    // references a missing file and a rollback keeps the previous files.
+    const minioNamesToDelete = [...new Set(obsoleteMinioNames)];
+    if (minioNamesToDelete.length > 0) {
+      await afterCommit(async () => {
+        await Promise.all(
+          minioNamesToDelete.map((minioName) =>
+            MinIOClient.deleteFile(minioName)
+          )
+        );
+      });
     }
   },
 
-  deleteExternalImages: async (
+  loadExternalImages: async (
     parentDocumentId: DocumentId
+  ): Promise<{ id: DocumentId; minio_name: string }[]> => {
+    return db('Document')
+      .join(
+        'Document_Children',
+        'Document.id',
+        'Document_Children.child_document_id'
+      )
+      .where('Document_Children.parent_document_id', parentDocumentId)
+      .andWhere('Document.type', '=', 'image')
+      .andWhere('Document.source_type', '=', DocumentSourceType.External)
+      .orderBy([
+        { column: 'Document.created_at', order: 'asc' },
+        { column: 'Document.id', order: 'asc' },
+      ])
+      .select('Document.id', 'Document.minio_name');
+  },
+
+  replaceImageFile: async (imageDocumentId: DocumentId, file: MinioFile) => {
+    await db<DocumentModel>('Document')
+      .where('id', '=', imageDocumentId)
+      .update({
+        file_name: file.fileName,
+        minio_name: file.minioName,
+        mime_type: file.mimeType,
+        updated_at: new Date(),
+      });
+  },
+
+  deleteExternalImages: async (
+    parentDocumentId: DocumentId,
+    excludeDocumentId?: DocumentId
   ): Promise<{ id: string; minio_name: string }[]> => {
     return db('Document')
       .delete()
@@ -244,6 +304,11 @@ export const DocumentChildrenDomain = {
       })
       .andWhere('Document.type', '=', 'image')
       .andWhere('Document.source_type', '=', DocumentSourceType.External)
+      .modify((qb) => {
+        if (excludeDocumentId) {
+          qb.andWhereNot('Document.id', excludeDocumentId);
+        }
+      })
       .returning(['id', 'minio_name']);
   },
 };
