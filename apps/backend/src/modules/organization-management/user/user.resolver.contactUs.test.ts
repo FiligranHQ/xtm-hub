@@ -4,8 +4,8 @@ import {
   GRAPHQL_RESOLVE_INFO,
 } from '../../../../tests/tests.const';
 import { PortalContext } from '../../../model/portal-context';
-import * as hubspot from '../../../thirdparty/hubspot/hubspot';
 import { ErrorCode } from '../../../utils/error/error.code';
+import { UserContactApp } from './user-contact/user-contact.app';
 import userResolver from './user.resolver';
 
 // Express lowercases the header names of a request.
@@ -25,8 +25,8 @@ describe('mutation.contactUs', () => {
   it('should refuse an anonymous call without platform credentials', async () => {
     // Given
     const fromPlatformSpy = vi.spyOn(
-      hubspot,
-      'hubspotReachOutSalesFromPlatformHook'
+      UserContactApp,
+      'contactSalesFromPlatform'
     );
 
     // When
@@ -45,7 +45,7 @@ describe('mutation.contactUs', () => {
   it('should send the message of a platform calling with its id and token', async () => {
     // Given
     const fromPlatformSpy = vi
-      .spyOn(hubspot, 'hubspotReachOutSalesFromPlatformHook')
+      .spyOn(UserContactApp, 'contactSalesFromPlatform')
       .mockResolvedValue();
     const platformId = 'c9e8fee1-8cb4-4fff-b335-5ea350615df4';
     const platformToken = 'b6a1d0c2-3f4e-4a5b-9c8d-7e6f5a4b3c2d';
@@ -75,11 +75,11 @@ describe('mutation.contactUs', () => {
   it('should send the message of a signed-in Hub user through the Hub user flow', async () => {
     // Given
     const fromPlatformSpy = vi.spyOn(
-      hubspot,
-      'hubspotReachOutSalesFromPlatformHook'
+      UserContactApp,
+      'contactSalesFromPlatform'
     );
     const hubUserSpy = vi
-      .spyOn(hubspot, 'hubspotReachOutSalesHook')
+      .spyOn(UserContactApp, 'contactSales')
       .mockResolvedValue();
     const platformId = 'c9e8fee1-8cb4-4fff-b335-5ea350615df4';
 
@@ -101,5 +101,26 @@ describe('mutation.contactUs', () => {
       deploymentRequestType: undefined,
     });
     expect(fromPlatformSpy).not.toHaveBeenCalled();
+  });
+
+  it('should return the error of a Hub user flow that refuses the contact request', async () => {
+    // Given
+    vi.spyOn(UserContactApp, 'contactSales').mockRejectedValue(
+      new Error(ErrorCode.DeploymentRequestNotFound)
+    );
+
+    // When
+    const call = userResolver.Mutation!.contactUs!(
+      {},
+      {
+        message: 'Please call me',
+        platformId: 'c9e8fee1-8cb4-4fff-b335-5ea350615df4',
+      },
+      buildContext({ user: contextAdminSecondOrga.user }),
+      GRAPHQL_RESOLVE_INFO
+    );
+
+    // Then
+    await expect(call).rejects.toThrow(ErrorCode.DeploymentRequestNotFound);
   });
 });

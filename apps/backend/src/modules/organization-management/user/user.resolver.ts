@@ -8,10 +8,6 @@ import {
 import { OrganizationId } from '../../../model/kanel/public/Organization';
 import { UserId } from '../../../model/kanel/public/User';
 import { dispatch, listen } from '../../../pub';
-import {
-  hubspotReachOutSalesFromPlatformHook,
-  hubspotReachOutSalesHook,
-} from '../../../thirdparty/hubspot/hubspot';
 import { logApp } from '../../../utils/app-logger.util';
 import { getErrorMessage } from '../../../utils/error/error-guard.util';
 
@@ -30,6 +26,7 @@ import {
   extractPlatformToken,
 } from '../../security-management/token/platform-token.util';
 import { UserAdminApp } from './user-admin/user.admin.app';
+import { UserContactApp } from './user-contact/user-contact.app';
 import { UserDomain } from './user-domain/user.domain';
 import { UserOrganizationApp } from './user-organization/user-organization.app';
 import { UserOrganizationPendingDomain } from './user-pending/user-organization-pending.domain';
@@ -348,7 +345,7 @@ const resolvers: Resolvers = {
         const platformToken = extractPlatformToken(portalContext.req);
 
         if (portalContext.user) {
-          await hubspotReachOutSalesHook({
+          await UserContactApp.contactSales({
             message: message ?? undefined,
             platformToken: platformToken ?? undefined,
             platformId: platformId ?? undefined,
@@ -363,7 +360,7 @@ const resolvers: Resolvers = {
         if (!platformToken || !headerPlatformId) {
           throw new Error(ErrorCode.InvalidPlatformToken);
         }
-        await hubspotReachOutSalesFromPlatformHook({
+        await UserContactApp.contactSalesFromPlatform({
           message: message ?? undefined,
           platformId: headerPlatformId,
           platformToken,
