@@ -1,13 +1,27 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { Knex } from 'knex';
 import { database } from '../../knexfile';
+import { logApp } from '../utils/app-logger.util';
 import { UnknownErrorCode } from '../utils/error/error.code';
+
+type AfterCommitCallback = () => Promise<void> | void;
 
 interface DatabaseContext {
   transaction?: Knex.Transaction;
+  afterCommitCallbacks?: AfterCommitCallback[];
 }
 
 const dbAsyncLocalStorage = new AsyncLocalStorage<DatabaseContext>();
+
+const runAfterCommitCallbacks = async (callbacks: AfterCommitCallback[]) => {
+  for (const callback of callbacks) {
+    try {
+      await callback();
+    } catch (error) {
+      logApp.error('Error while running an after-commit callback', { error });
+    }
+  }
+};
 
 export const databaseContext = {
   withTransaction: async <T>(callback: () => Promise<T>): Promise<T> => {
@@ -18,14 +32,37 @@ export const databaseContext = {
     }
 
     // Create a new transaction
-    return database.transaction(async (trx) => {
-      const context: DatabaseContext = { transaction: trx };
+    const afterCommitCallbacks: AfterCommitCallback[] = [];
+    const transactionResult = await database.transaction(async (trx) => {
+      const context: DatabaseContext = {
+        transaction: trx,
+        afterCommitCallbacks,
+      };
 
       return dbAsyncLocalStorage.run(context, async () => {
         const result = await callback();
         return result;
       });
     });
+
+    // Only reached once the transaction is committed: a rollback throws above
+    // and drops the callbacks.
+    await runAfterCommitCallbacks(afterCommitCallbacks);
+    return transactionResult;
+  },
+
+  /**
+   * Run `callback` once the outermost transaction is committed, and never if
+   * it rolls back. Outside a transaction it runs immediately. A failing
+   * callback is logged and does not fail the caller, as the data is committed.
+   */
+  afterCommit: async (callback: AfterCommitCallback): Promise<void> => {
+    const callbacks = dbAsyncLocalStorage.getStore()?.afterCommitCallbacks;
+    if (callbacks) {
+      callbacks.push(callback);
+      return;
+    }
+    await runAfterCommitCallbacks([callback]);
   },
 
   withAdvisoryLock: async <T>(
@@ -61,4 +98,5 @@ export const databaseContext = {
   },
 };
 
-export const { withAdvisoryLock, withTransaction } = databaseContext;
+export const { afterCommit, withAdvisoryLock, withTransaction } =
+  databaseContext;

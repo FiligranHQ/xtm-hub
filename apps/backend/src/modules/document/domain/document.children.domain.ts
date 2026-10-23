@@ -5,7 +5,10 @@ import {
   DocumentMetadataKeyCode,
   DocumentSourceType,
 } from '../../../__generated__/resolvers-types';
-import { withTransaction } from '../../../context/database.context';
+import {
+  afterCommit,
+  withTransaction,
+} from '../../../context/database.context';
 import { requestContext } from '../../../context/request.context';
 import {
   DocumentId,
@@ -206,9 +209,12 @@ export const DocumentChildrenDomain = {
       service_instance_id
     );
 
-    const replacedDocuments = await withTransaction(async () => {
+    const obsoleteMinioNames = await withTransaction(async () => {
       if (!logoFile) {
-        return DocumentChildrenDomain.deleteExternalImages(doc.id);
+        const deleted = await DocumentChildrenDomain.deleteExternalImages(
+          doc.id
+        );
+        return deleted.map(({ minio_name }) => minio_name);
       }
 
       // Keep the id of the existing external image: its URL is public, indexed
@@ -233,20 +239,25 @@ export const DocumentChildrenDomain = {
           doc.id,
           existingImage.id
         );
-      return [
-        ...(existingImage.minio_name === logoFile.minioName
-          ? []
-          : [existingImage]),
-        ...deletedDuplicates,
-      ];
+      // The retained image now references the new file: never delete it, even
+      // if the replaced image or a duplicate pointed to the same object.
+      return [existingImage, ...deletedDuplicates]
+        .map(({ minio_name }) => minio_name)
+        .filter((minioName) => minioName !== logoFile.minioName);
     });
-    // Clean up MinIO files for replaced documents, need to be sure that we are finished with the logic
-    if (replacedDocuments.length > 0) {
-      await Promise.all(
-        replacedDocuments.map((replaced) =>
-          MinIOClient.deleteFile(replaced.minio_name)
-        )
-      );
+
+    // This may run inside the transaction of a caller, which commits later:
+    // delete the files only once everything is committed, so the database never
+    // references a missing file and a rollback keeps the previous files.
+    const minioNamesToDelete = [...new Set(obsoleteMinioNames)];
+    if (minioNamesToDelete.length > 0) {
+      await afterCommit(async () => {
+        await Promise.all(
+          minioNamesToDelete.map((minioName) =>
+            MinIOClient.deleteFile(minioName)
+          )
+        );
+      });
     }
   },
 

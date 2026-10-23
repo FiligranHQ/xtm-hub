@@ -7,6 +7,7 @@ import {
   DocumentImageType,
   DocumentSourceType,
 } from '../../../__generated__/resolvers-types';
+import { withTransaction } from '../../../context/database.context';
 import Document, { DocumentId } from '../../../model/kanel/public/Document';
 import { ServiceInstanceId } from '../../../model/kanel/public/ServiceInstance';
 import { ADMIN_UUID } from '../../../portal.const';
@@ -264,6 +265,64 @@ describe('documentChildrenDomain', () => {
       expect(externalImages[0]!.id).toBe(oldExternalId);
       expect(MinIOClient.deleteFile).toHaveBeenCalledWith('duplicate-external');
       expect(MinIOClient.deleteFile).toHaveBeenCalledWith('old-external');
+    });
+
+    it('should not delete the MinIO file of a duplicate that shares the new upload key', async () => {
+      vi.spyOn(DocumentUploadsHelper, 'processUploads').mockResolvedValue([
+        { ...minioFileMock, minioName: 'shared-key' },
+      ]);
+      const duplicateId = await insertDocument({
+        type: 'image',
+        source_type: DocumentSourceType.External,
+        minio_name: 'shared-key',
+        service_instance_id: serviceInstanceId,
+      });
+      await TestHelper.documentChildren.create({
+        parent_document_id: parentId,
+        child_document_id: duplicateId,
+      });
+      const parentDoc = await TestHelper.document.load({
+        id: parentId,
+      });
+      await DocumentChildrenDomain.upsertExternalImage(parentDoc, upload);
+
+      const externalImages =
+        await DocumentChildrenDomain.loadExternalImages(parentId);
+      expect(externalImages).toHaveLength(1);
+      expect(externalImages[0]!.minio_name).toBe('shared-key');
+      expect(MinIOClient.deleteFile).not.toHaveBeenCalledWith('shared-key');
+      expect(MinIOClient.deleteFile).toHaveBeenCalledWith('old-external');
+    });
+
+    it('should delete the old MinIO file only once the enclosing transaction is committed', async () => {
+      const parentDoc = await TestHelper.document.load({
+        id: parentId,
+      });
+      await withTransaction(async () => {
+        await DocumentChildrenDomain.upsertExternalImage(parentDoc, upload);
+        expect(MinIOClient.deleteFile).not.toHaveBeenCalled();
+      });
+
+      expect(MinIOClient.deleteFile).toHaveBeenCalledTimes(1);
+      expect(MinIOClient.deleteFile).toHaveBeenCalledWith('old-external');
+    });
+
+    it('should keep the old MinIO file when the enclosing transaction rolls back', async () => {
+      const parentDoc = await TestHelper.document.load({
+        id: parentId,
+      });
+      await expect(
+        withTransaction(async () => {
+          await DocumentChildrenDomain.upsertExternalImage(parentDoc, upload);
+          throw new Error('rollback');
+        })
+      ).rejects.toThrow('rollback');
+
+      expect(MinIOClient.deleteFile).not.toHaveBeenCalled();
+      const externalImages =
+        await DocumentChildrenDomain.loadExternalImages(parentId);
+      expect(externalImages).toHaveLength(1);
+      expect(externalImages[0]!.minio_name).toBe('old-external');
     });
 
     it('should delete the external images when there is no new logo', async () => {
