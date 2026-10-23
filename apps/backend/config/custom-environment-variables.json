@@ -41,7 +41,10 @@
     "password": "ELASTIC_PASSWORD",
     "tls": {
       "ca_path": "ELASTIC__TLS__CA_PATH",
-      "reject_unauthorized": "ELASTIC__TLS__REJECT_UNAUTHORIZED"
+      "reject_unauthorized": {
+        "__name": "ELASTIC__TLS__REJECT_UNAUTHORIZED",
+        "__format": "boolean"
+      }
     }
   },
   "base_url_front": "BASE_URL_FRONT",

@@ -67,7 +67,8 @@
     "token_reference": "access_token",
     "read_userinfo": false,
     "roles_path": "resource_access.scred-portal-dev.roles",
-    "role_mappings": ["XTMHubAdmin:ADMIN"]
+    "role_mappings": ["XTMHubAdmin:ADMIN"],
+    "enforce_idp_subject": false
   },
   "awx": {
     "activate": false,
@@ -99,7 +100,6 @@
   "mail_use_queue_processing": true,
   "hubspot_webhook_url": "changeMe",
   "saas_manager": {
-    "enabled": true,
     "url": "https://saasmanager.staging.filigran.io",
     "client_id": null,
     "client_secret": null
