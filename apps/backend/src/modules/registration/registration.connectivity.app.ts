@@ -208,7 +208,7 @@ const refreshConnectivityStatus = async ({
     });
 
   const canAttemptTenantUpgrade =
-    !platformConfiguration && tenant_id && tenant_name && platform_identifier;
+    !platformConfiguration && tenant_id && tenant_name;
   if (canAttemptTenantUpgrade) {
     platformConfiguration = await handleTenantUpgrade({
       platform_id,
